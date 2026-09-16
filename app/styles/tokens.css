@@ -1,0 +1,33 @@
+/*
+ * OptimalX design tokens - the single source of truth for brand values.
+ *
+ * The names here are not free choices. @salla.sa/twilight-tailwind-theme maps its
+ * `primary`, `primary-d`, `primary-l` and `primary-reverse` colours onto the
+ * --color-primary* custom properties below (index.js:192-195), and its bundled
+ * component CSS composes alpha tints with rgba(var(--color-primary-rgb), …).
+ * Defining all five is what carries the brand into Salla's own components rather
+ * than only into our own markup.
+ */
+:root {
+  /* Type.
+     --font-ar has to be set as well as --font-main: app.css remaps
+     --font-main to var(--font-ar) under [dir="rtl"], so leaving --font-ar
+     undefined makes --font-main invalid on every Arabic page and drops body
+     text back to the browser default. Arabic is the primary locale here, so
+     that failure would be the normal case, not the edge case. */
+  --font-main: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ar: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Brand. */
+  --color-primary: #EE4D22;
+  --color-primary-dark: #C93D18;
+
+  /* Derived from --color-primary; adjust once the colour ramp is decided.
+     --color-primary-light is the fill mixed 30% toward white.
+     --color-primary-reverse is what sits ON a primary fill (text, icons).
+     --color-primary-rgb is bare channels, for rgba(…) tints - it must stay in
+     sync with --color-primary by hand; CSS cannot derive one from the other. */
+  --color-primary-light: #F38264;
+  --color-primary-reverse: #FFFFFF;
+  --color-primary-rgb: 238, 77, 34;
+}

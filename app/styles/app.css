@@ -1,3 +1,7 @@
+/* Brand tokens first: everything below, and the Twilight Tailwind theme's
+   primary colours, resolve against the custom properties defined here. */
+@import "./tokens.css";
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
