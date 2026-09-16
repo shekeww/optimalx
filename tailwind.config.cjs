@@ -47,9 +47,10 @@ module.exports = {
         200: '800px',
       },
       borderRadius: {
-        large: '22px',
-        big: '40px',
-        tiny: '3px',
+        // The scaffold's `large: 22px`, `big: 40px` and `tiny: 3px` were removed
+        // 2026-09-16: zero uses across app/ and the engine dist. Dead tokens
+        // read as a scale to anyone new, and they were not one.
+        //
         // The brand radius. `rounded` resolves here, and the content globs above
         // scan the engine's dist as well as app/ — so this one value styles our
         // markup AND Salla's own components (s-product-card, s-button-element).

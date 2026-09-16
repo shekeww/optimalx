@@ -29,23 +29,23 @@ This spec was written **before** the React theme scaffold and its packages were 
 
 | | |
 |---|---|
-| Brand | OptimalX (اوبتيمال اكس) — Saudi sports nutrition and supplements |
+| Brand | OptimalX (اوبتيمال اكس) — Saudi sports nutrition and supplements. **Live store disagrees (2026-09-16):** name is "Optimal X" with a space, description reads "اوبتيمال اكس للمنتجات الصحية" (health products), store email is empty, WhatsApp is set on the branch but not the store. P0: align. |
 | Store ID | `1888890798` · Salla **Pro** plan · SAR |
 | Domain | `salla.sa/optimal-x` (no custom domain yet) |
-| Branch | One warehouse + retail store, الخالدية، المدينة المنورة · pickup enabled · COD currently disabled |
-| Stack | Salla React theme (SSR + hot reload), pnpm, Salla CLI |
-| Market | Saudi Arabia, nationwide shipping, both genders |
+| Branch | One branch "الرئيسي" — type warehouse with POS · الخالدية، المدينة المنورة · pickup and shipping enabled · COD disabled. **Record incomplete:** building number, additional number, short address and district are null; hours are the 00:00–23:59 × 7 default. `salla-order-branch` and `salla-bullet-delivery` render these as-is. P0. |
+| Stack | Salla React theme on `@salla.sa/twilight-theme-engine` 1.0.47, pnpm, Salla CLI 3.2.56. **SSR is present but discarded on every page** by an open engine defect — see §15. Do not read "SSR" here as a working capability. |
+| Market | Saudi Arabia (`kyc_country: SA`), shipping enabled on the branch, both genders. **Payment and shipping methods are unverified** — no MCP read exposes them. P0: confirm mada, Apple Pay, tabby/tamara and the carriers before §3.6 or §6 promise them. |
 | Team | Two owners. One handles nutrition and curation, one handles sales. An operations hire is planned, not present. |
 
 **Services offered:** free selection help (written and remote), a paid monthly nutrition-plan subscription, and in-store help at the branch.
 
-**Positioning:** the store that explains things properly. Narrow curated range, real information, no overselling. Competing against iHerb (trusted, soulless) and local Salla stores (prettier, thinner).
+**Positioning:** the store that explains things properly. Narrow curated range, real information, no overselling. *Internal framing — never customer-facing copy:* competing against iHerb (trusted, soulless) and local Salla stores (prettier, thinner). Today the catalogue is one product with no description; "curated range" is intent, not yet fact.
 
 ### The constraint that shapes everything
 
 Two people. Any feature costing human minutes per customer does not scale past a few dozen orders a week. **Favour what runs without a person.** Product content, goal navigation, curation and native commerce carry the national business; the humans carry Medina.
 
-The physical store is the underrated asset — a retail space in a city of ~1.5M plus continuous year-round Umrah traffic. The site has two jobs: **drive footfall locally, sell curated products nationally with zero human involvement.**
+The physical store is the underrated asset — a retail space in Medina with year-round Umrah traffic. *(A "~1.5M" population figure stood here uncited. This document is the project's only claims source, so no number appears in it without a source: cite GASTAT or keep it out of copy.)* The site has two jobs: **drive footfall locally, sell curated products nationally with zero human involvement.**
 
 ---
 
@@ -92,12 +92,16 @@ This keeps roughly all of the retention value, removes the health-data storage p
 | Risk | Severity | Mitigation |
 |---|---|---|
 | Store not registered | **High** | CR, tax number, Maroof outstanding on a live store. Resolve before any marketing spend. |
-| Health claims in copy | **High** | SFDA regulates supplement claims. Claims vocabulary locked in §5. No outcome promises anywhere, including in imagery. |
+| Health claims in copy | **High** | SFDA regulates supplement claims. The banned-claims list is in §4 (HARD). No outcome promises anywhere, including in imagery. |
 | Single point of failure | **High** | One person is advisory, curation and content. Build nothing that assumes daily availability. |
 | Fulfilment before ops | **High** | Soft launch, capped catalogue, no paid marketing until the ops hire. Early bad reviews are very hard to undo. |
 | Subscription load | Medium | Every subscriber is recurring monthly work for one person. Hard cap the seat count and show it as scarcity. |
 | Inventory and expiry | Medium | Narrow range. Near-expiry clearance section turns a liability into a feature. |
 | Over-building | Medium | Two non-developers maintain this. Stay close to Salla native. |
+| **Empty catalogue** | **High** | One product, zero categories, no descriptions, no brands (audited 2026-09-16). Nothing in §5 beyond the PDP can be built or verified against real data. Listing, goal, brand, compare and bestseller surfaces are deferred until ≥ 15 products across ≥ 3 categories exist. |
+| Live-store writes corrupt siblings | Medium | `store_branding_update` re-escapes fields it was not passed (`font_name` is `''Cairo''` today). Every MCP write: diff → confirm → write → read back the whole section. Repair only via the dashboard. |
+| Branch record incomplete | Medium | National-address fields null; hours defaulted to 24/7. Native components render whatever is there. Owner completes before the branch page ships. |
+| Own-store vs marketplace undecided | Medium | Determines whether theme review, the SAR 250 floor and React acceptance matter at all. One owner decision. |
 
 ---
 
@@ -154,7 +158,7 @@ So `tokens.css` owns only what Salla does not emit:
 }
 ```
 
-**Radius — adopt the theme's scale.** This spec originally proposed 6 / 10 / 14 / pill. The theme's Tailwind config defines `tiny: 3px`, `DEFAULT: 16px`, `large: 22px`, `big: 40px`, and all 132 native components are built against it. **Use the theme's values.** Overriding them means every native component beside a custom one renders a different corner, and the mismatch appears on pages nobody thought to check. The hierarchy principle survives intact — `tiny` for badges and inputs, `DEFAULT` for cards, `large` for panels, pill for primary actions — only the numbers change.
+**Radius — one lever, decided.** `tailwind.config.cjs` → `borderRadius.DEFAULT` drives every bare `rounded` — 78 uses in `app/` and 196 in the engine's dist, because the content globs scan both. It therefore styles Salla's own components too: verified 2026-09-16, changing it moved `s-product-card` and `s-button-element`, and the product-card image went `16px 16px 0 0` → `8px 8px 0 0`. **Shipped value: `DEFAULT: 8px`** (owner decision 2026-09-16; the scale reads 6 / 8 / pill). The scaffold's `tiny: 3px`, `large: 22px`, `big: 40px` have **zero uses** — dead tokens, not a scale. Measured on the live storefront, only four radii render at all: 6px, 8px, 9999px and the card-image top corners.
 
 **Dark mode is already wired** as `darkMode: 'class'`. Decide whether the storefront ships a dark theme before components are written; retrofitting one across a component set is expensive.
 
@@ -175,7 +179,7 @@ One family: **Cairo**, weights 400/600/700/800, subset to Arabic + Latin basic. 
 | small | 13 | 400 | normal | 1.6 |
 | micro | 11.5 | 700 | normal | 1.5 |
 
-Tighten tracking as size grows — Cairo Bold reads soft at display sizes without it, and with 800 unavailable, tracking is the only lever left. Weight 800 is reserved for a single hero line per page. **HARD:** Arabic body text never below 15px or below weight 400.
+Tighten tracking as size grows — Cairo Bold reads soft at display sizes without it, and with 800 unavailable, tracking is the only lever left. There is no 800 hero weight until `font_url` is changed in store branding and re-verified. **HARD:** Arabic body text never below 15px or below weight 400.
 
 ### 3.3 The angle, calibrated for trust
 
@@ -214,9 +218,9 @@ Composition carries the energy. Motion confirms that something happened.
 
 ### 3.5 Icons
 
-Custom set, one inline SVG sprite. Derived from the mark: `stroke-linejoin: miter`, `stroke-linecap: square`, 1.8px stroke, one orange fill element per icon. No rounded terminals — that is the generic-wellness tell.
+Salla already loads `sallaicons` from its CDN, and every native component expects `sicon-*` names. **Do not ship a second icon system for UI chrome** — search, account, wishlist, cart, filter, sort, share, chevrons all come from `sallaicons`. A second set doubles the font load and leaves native components on one style and custom ones on another.
 
-Required: protein · vitamin · mineral · creatine · omega · pre-workout · beauty · daily health · authenticity · shipping · payment · expiry · chat · plan · store · search · account · wishlist · cart · filter · sort · compare · points · gift · referral.
+The custom sprite is for **category and trust icons only** — the ones `sallaicons` does not have: protein · vitamin · mineral · creatine · omega · pre-workout · beauty · daily health · authenticity · expiry · plan · points · gift · referral. One inline SVG sprite, derived from the mark: `stroke-linejoin: miter`, `stroke-linecap: square`, 1.8px stroke, one orange fill element per icon. No rounded terminals — that is the generic-wellness tell.
 
 ### 3.6 Trust surface
 
@@ -247,6 +251,18 @@ The brand claim is credibility, so trust is a design system component, not a foo
 
 **HARD — needs owner sign-off before shipping:** any claim about health outcomes, treatment or results; any professional title (<span dir="rtl">صيدلي · أخصائي تغذية</span>) unless classification is confirmed; anything that diagnoses, interprets tests, or promises an outcome.
 
+**HARD — banned in any customer-facing copy, image or alt text** (the list §2.2 refers to; SFDA and SCFHS backing in `salla-saudi-market`):
+
+- Treatment, cure, disease or symptom language — <span dir="rtl">يعالج · يشفي · يقضي على</span> and equivalents
+- Outcome promises and percentages — "lose X kg", "98% saw results", "guaranteed"
+- Weight-loss, fat-burning or muscle-gain promises attached to a product
+- Any professional title — <span dir="rtl">أخصائي · صيدلي · طبيب · مدرب معتمد</span> — without documented classification
+- Diagnosis, interpretation of tests, or individualised prescription
+- Invented statistics of any kind: customer counts, satisfaction rates, years in business
+- Comparative claims naming a competitor
+
+The medical disclaimer in §7 (<span dir="rtl">«للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.»</span>) is a placeholder until a Saudi lawyer confirms its wording.
+
 ---
 
 ## 5. Pages
@@ -255,29 +271,31 @@ The brand claim is credibility, so trust is a design system component, not a foo
 
 ### V1 — launch
 
-| Page | Notes |
-|---|---|
-| Home | Three entry paths (goal, category, brand), trust strip, bestsellers, services, brands, guides, branch, newsletter |
-| Goal landing ×6 | الطاقة · الصحة العامة · الأداء · التعافي · الشعر والبشرة · الوزن المثالي. Editorial intro, curated products, related guides |
-| Category listing | Filters, sort, compare, pagination. **Show a filter group only when ≥5 products sit behind it** |
-| Brand page | Brand story, full catalogue for that brand |
-| Product detail | §6 |
-| Search results | AR/EN synonyms, typo tolerance, zero-result recovery offering categories and the selection service |
-| Cart | Free-shipping progress bar, cross-sell, pickup toggle |
-| Checkout | **HARD: Salla native. Theme only.** |
-| Thank-you | Order summary plus a short "how to start using it" — reduces returns and builds the reorder habit |
-| Account: orders | One-tap reorder |
-| Account: wishlist | Saved items with restock alerts |
-| Branch page | Photography of the space, map, hours, pickup explainer, what to expect |
-| Services hub + ×3 | Selection help · nutrition plan · branch visit |
-| **Booking page** | §7 |
-| Tools hub + ×3 | §8 |
-| Guides index + 8 articles | Evergreen, expert-attributed. A fixed set, not a publishing schedule |
-| Compare | Up to 4 side by side from listing |
-| Policies ×4 | Shipping, returns, privacy (PDPL-aware), terms |
-| About | Who you actually are. No invented numbers |
-| Contact | Form, WhatsApp, branch |
-| 404 and empty states | Designed, in Arabic, with a route out |
+**Audited 2026-09-16 against the engine's route exports and the live catalogue (1 product, 0 categories).** Status: **exists** = engine route, theme it · **build** = custom page · **defer** = right idea, no data yet, trigger named.
+
+| Page | Status | Notes |
+|---|---|---|
+| Home | exists | `routes/home`. Goal/category/brand entry paths **defer** until catalogue ≥ 15 products / 3 categories; trust strip blocked by P0 registration; bestsellers defer |
+| Goal landing ×6 | **defer** | الطاقة · الصحة العامة · الأداء · التعافي · الشعر والبشرة · الوزن المثالي. Trigger: catalogue ≥ 15 products across ≥ 3 categories. Nothing to curate before that |
+| Category listing | exists | `routes/product-listing`. Filters via `salla-filters`. **Show a filter group only when ≥5 products sit behind it** — today that is zero groups |
+| Brand page | exists / **defer** | `routes/brands`. No brand on any product yet |
+| Product detail | exists | `routes/product`. §6 — the one page the current data supports |
+| Search results | exists | `routes/search`. **Synonyms and typo tolerance are the platform's search engine, not theme work.** The zero-result recovery state is yours |
+| Cart | exists | `routes/cart`. Free-shipping progress is native (`FreeShippingBar`); cross-sell via `salla-bought-together` |
+| Checkout | exists | **HARD: Salla native. Theme only.** |
+| Thank-you | exists | `routes/thank-you`. Add the "how to start using it" block |
+| Account: orders | exists | `routes/account/orders`. Reorder is native |
+| Account: wishlist | exists | `salla-wishlist-actions`; restock alerts via `notify_availability` |
+| Branch page | **build** | Gated on P0: national address fields and real hours are null/default today, and `salla-order-branch` will print whatever is there |
+| Services hub + ×3 | **build / defer** | Hub can ship; the three services defer on legal (P0 #9) |
+| **Booking page** | **defer** | §7. Booking products exist; slot grid is dashboard config; intake fields gated on legal |
+| Tools hub + ×3 | **build / defer** | §8. Unit converter ships; supply calculator and compare gated on the product-data convention (P0 #4) |
+| Guides index + 8 articles | exists | `routes/blog`. Content is the work, not the page |
+| Compare | **defer** | Trigger: ≥ 2 products with comparable data |
+| Policies ×4 | exists | Salla pages (`routes/page`). PDPL-aware privacy text needs legal review |
+| About | exists | Salla page. No invented numbers |
+| Contact | exists | Salla page + `salla-contacts`. WhatsApp is set on the branch, not the store — P0 |
+| 404 and empty states | **build** | Designed, in Arabic, with a route out. Engine ships `ErrorPage`; theme it |
 
 ### V2 — this release
 
@@ -298,9 +316,13 @@ Community forum (unmoderatable at two people) · BMI and body-fat calculators ·
 
 The conversion page. Reference implementation exists; improve it where you can.
 
-**Buy zone** — gallery (sticky on desktop, thumbnails, zoom) beside: brand and distributor line · title AR + EN · rating linking to reviews · badges (halal status, bestseller) · price with was-price and savings percentage · servings, amount per serving, expiry · tabby split · size selector updating price · flavour selector with colour swatches · **supply calculator** (scoops per day → days of supply → run-out date) · **delivery estimate with city selector**, showing a named day and pickup availability · quantity · add to cart · buy now · wishlist and share · trust grid.
+**Native first — audited 2026-09-16.** These exist and are composed, not built: `salla-product-options` (size, flavour, swatches) · `salla-quantity-input` · `salla-add-product-button` · `salla-quick-buy` · `salla-installment` (tabby split) · `salla-delivery-promise` (has a city filter and its own API — verify its config expresses Medina-origin timing before promising a named day) · `salla-wishlist-actions` · `salla-social-share` · `salla-rating-stars` · `salla-trust-badges` · `salla-product-size-guide`.
 
-**Below** — frequently bought together with a real combined saving · goal fit (routing, never a negative verdict — a goal that doesn't fit routes to what does) · why this product · nutrition facts with a **third column explaining what each number means in plain Arabic** · timing · pre-purchase information (allergens, medical referral, framed as information not exclusion) · reviews with photo filter and verified badges · FAQ · alternatives · sticky add-to-cart bar carrying the selected variant.
+**Data gate — P0 #4.** `Product` carries `calories` and `weight` only. **There is no field for servings, amount per serving, expiry or nutrition facts.** The supply calculator, the expiry line and the nutrition table cannot be built until the owner picks the carrier (tags convention recommended for launch).
+
+**Buy zone** — gallery (sticky on desktop, thumbnails, zoom) beside: brand and distributor line · title AR + EN · rating linking to reviews · badges (halal status, bestseller) · price with was-price and savings percentage · servings, amount per serving, expiry *(P0 #4)* · tabby split *(native)* · size selector updating price *(native)* · flavour selector with colour swatches *(native)* · **supply calculator** *(P0 #4)* · **delivery estimate with city selector** *(native; verify config)* · quantity *(native)* · add to cart *(native)* · buy now *(native)* · wishlist and share *(native)* · trust grid *(P0 #5, #8)*.
+
+**Below** — frequently bought together *(native: `salla-bought-together`)* · goal fit (routing, never a negative verdict — a goal that doesn't fit routes to what does; every word passes the §4 banned-claims list) · why this product · nutrition facts with a **third column explaining what each number means in plain Arabic** *(P0 #4 for the data)* · timing · pre-purchase information (allergens, medical referral, framed as information not exclusion) · reviews with photo filter and verified badges *(native: `salla-reviews`)* · FAQ *(native: `salla-accordion`)* · alternatives · sticky add-to-cart bar carrying the selected variant.
 
 **HARD:** no per-serving pricing anywhere — removed by owner decision. Serving count carries that comparison instead.
 
@@ -330,12 +352,12 @@ Dedicated page, and the entry point for all three service channels.
 
 Build once, run forever, no human cost. Almost no Arabic-language equivalents exist.
 
-| Tool | Behaviour |
-|---|---|
-| <span dir="rtl">حاسبة مدة العبوة</span> | Servings ÷ daily dose → days and a run-out date. Lives standalone and inside every PDP |
-| <span dir="rtl">محوّل الوحدات</span> | Scoop↔gram, oz↔kg, lb↔kg |
-| <span dir="rtl">مقارنة المنتجات</span> | Up to 4: servings, amount per serving, ingredients, price, expiry |
-| <span dir="rtl">كم باقي للشحن المجاني</span> | Live in cart against the 299 SAR threshold |
+| Tool | Status | Behaviour |
+|---|---|---|
+| <span dir="rtl">حاسبة مدة العبوة</span> | **P0 #4** | Servings ÷ daily dose → days and a run-out date. Needs a servings field that `Product` does not have. Lives standalone and inside every PDP once the data convention exists |
+| <span dir="rtl">محوّل الوحدات</span> | **build** | Scoop↔gram, oz↔kg, lb↔kg. Pure client-side; ships in launch scope |
+| <span dir="rtl">مقارنة المنتجات</span> | **defer** | Up to 4: servings, amount per serving, ingredients, price, expiry. Trigger: ≥ 2 products carrying the P0 #4 convention |
+| <span dir="rtl">كم باقي للشحن المجاني</span> | **native** | `FreeShippingBar` reads `free_shipping_maximum_amount` from the store's shipping rule. Do not build; set the 299 SAR rule in the dashboard and theme the bar |
 
 **Deferred:** a daily-protein calculator using published general ranges (1.6–2.2 g/kg), presented as a range with a visible "starting point, not a plan."
 
@@ -346,6 +368,8 @@ Build once, run forever, no human cost. Almost no Arabic-language equivalents ex
 ## 9. منتجاتك الموصى بها (audited My Plan)
 
 Per §2.1 this is a **recommended product list**, not a health document.
+
+> **Audited 2026-09-16 — this is partner-app work, not theme work.** The engine's `User` type exposes identity and preferences only; there is no custom-field or metadata surface for per-customer records, and a theme cannot run the scheduled job that "automatic deletion 12 months after the subscription ends" requires. This section describes an app with its own backend (`salla-partner-apps`), which also answers §2.1's cross-border question: the data lives where *you* host it. The partner account currently owns zero apps; creating one is a write that needs consent. **Deferred** until that decision. The data model and consent rules below stand as the app's requirements.
 
 **Data model — HARD**
 
@@ -385,6 +409,8 @@ Nothing else. No weight, no measurements, no conditions, no medication, no lab v
 
 Passive and on-site. **HARD: no outbound messaging about consumption** — that carries privacy exposure with no upside the on-site version doesn't already give.
 
+> **Audited 2026-09-16 — same finding as §9.** Per-customer state (purchase date, a customer-set dose) needs persistence the theme engine does not provide. Partner-app work; deferred with §9.
+
 - Account panel listing purchased consumables
 - For each: purchase date, daily dose the customer sets themselves, estimated remaining, approximate run-out date
 - A reorder button that becomes prominent as the estimate approaches zero
@@ -395,20 +421,19 @@ Passive and on-site. **HARD: no outbound messaging about consumption** — that 
 
 ## 11. Loyalty
 
-Salla-native where possible. Design it as purely commercial.
+**Salla-native, full stop.** Audited 2026-09-16: Salla ships a loyalty program — fourteen `salla-loyalty*` / `salla-reward*` components, an engine `loyalty` route, and a data model carrying `points`, `prizes`, `cost_points`, `points_validity_by/value` (expiry) and `birthday`. **It is prize-based, not cash-at-checkout.** The economy below was written before that was known; it is now a *configuration wish-list for the dashboard*, kept only for what the native program can express.
 
-**Earning**
+**Earning** — configure in the dashboard, do not build:
 
-| Action | Points |
-|---|---|
-| Purchase | 1 per SAR spent |
-| First order | 100 bonus |
-| Review with photo | 50 |
-| Review without photo | 20 |
-| Referral, on their first order | 200 |
-| Birthday | 100 |
+| Action | Points | Native? |
+|---|---|---|
+| Purchase | 1 per SAR spent | yes |
+| First order | 100 bonus | verify in dashboard |
+| Review with photo / without | 50 / 20 | **unverified** — the program may not expose review triggers; do not promise until confirmed |
+| Referral, on their first order | 200 | **unverified** — see §12; the affiliate program is the likelier home |
+| Birthday | 100 | yes (`birthday` in the model) |
 
-**Redemption:** 100 points = 5 SAR at checkout, minimum 200 points. Points expire after 12 months of account inactivity, shown clearly in the account.
+**Redemption:** prizes with `cost_points`, as the native program defines them — not "100 points = 5 SAR". Points validity is a native setting (`points_validity_*`); set it to 12 months and let the native components display it.
 
 **Tiers** — defer past launch. With a small customer base tiers mostly create an interface promising depth the numbers can't back.
 
@@ -422,8 +447,10 @@ Salla-native where possible. Design it as purely commercial.
 
 Distribution at near-zero acquisition cost. Trainers already tell clients what to buy.
 
-- Application form: name, gym, city, contact
-- On approval: a unique code, a shareable link, and a simple dashboard showing uses, order value and commission owed
+> **Audited 2026-09-16 — this is Salla's affiliate program.** The merchant surface already exposes marketers, GMV, opportunity orders and performance (`reports_affiliates`, `reports_affiliates_marketers`, `reports_affiliates_summary`). A trainer is an affiliate with a code. The application form, the code, the link and the dashboard are native; the theme adds at most a landing page and the HARD rule below.
+
+- Application: a Salla page with a form, or the native affiliate sign-up — do not build a portal
+- On approval: the affiliate code and link Salla issues; the dashboard Salla provides
 - Commission paid manually at first — do not build payouts before there is volume to justify it
 - Codes give the customer a real discount, so the trainer is offering something rather than just tracking
 - **HARD:** trainers may not be presented as giving nutrition advice on OptimalX's behalf. They are a referral channel, not practitioners.
@@ -434,37 +461,39 @@ Distribution at near-zero acquisition cost. Trainers already tell clients what t
 
 Built once in a kitchen-sink route, in every state: default, hover, focus, loading, empty, error, and with the longest Arabic product name in the catalogue.
 
-**Product** — card · price block · servings badge · stock state · expiry line · wishlist toggle · compare checkbox · variant pills · quantity stepper · add-to-cart · supply calculator · delivery estimator · bundle row
+**Audited 2026-09-16 against the 132 native elements.** Most of this list already exists. Build only the remainder; the kitchen-sink route (`app/routes/kitchen-sink.tsx`, dev-gated) is where each custom piece is proven in every state.
 
-**Navigation** — header · mega panel · mobile drawer · breadcrumb · pagination · sticky action bar · skip link · filter group · sort select · active filter chips
+**Native — compose, do not build:** product card (`salla-product-card`) · price · stock state (`salla-product-availability`) · wishlist (`salla-wishlist-actions`) · variant pills (`salla-product-options`) · quantity (`salla-quantity-input`) · add-to-cart (`salla-add-product-button`) · delivery estimator (`salla-delivery-promise`) · bundle row (`salla-bought-together`) · header, mega panel, mobile drawer (engine `Header`, `MainMenu`, `salla-menu`) · breadcrumb (`salla-breadcrumb`) · filter group and chips (`salla-filters`) · infinite scroll · review summary, rating bars, review card, verified badge (`salla-reviews`, `salla-rating-stars`) · slot picker (`salla-booking-field`) · points balance and history (`salla-loyalty*`) · modal, drawer, tabs, accordion, tooltip, badge, alert, progress bar, skeletons (all native) · button (`SallaButton`).
 
-**Content** — section header · goal card · category tile · brand plate · article card · trust strip · facts table · FAQ accordion · timeline row · info list
-
-**Social** — review summary · rating bars · review card · photo strip · verified badge
-
-**Service** — service card · booking channel card · slot picker · intake field · confirmation panel · recommendation row · points balance · referral code block
-
-**System** — button set · form field · select · toast · modal · skeleton · empty state · error state · pill · tag
+**Custom — the genuine remainder:** servings badge and expiry line *(P0 #4)* · compare checkbox *(defer)* · supply calculator *(P0 #4)* · sticky action bar · skip link · section header · goal card *(defer)* · category tile *(defer)* · brand plate *(defer)* · article card · trust strip *(P0 #5, #8)* · facts table with the plain-Arabic third column · timeline row · info list · photo strip · service card · booking channel card · intake field *(legal)* · confirmation panel · empty state · error state · unit converter.
 
 ---
 
 ## 14. Quality bar
 
-Measured on a mid-range Android over 4G.
+Measured on Slow 4G, 4× CPU throttle, 390×844 — production build only.
+
+**Achievable now, from theme code — gate G4 checks these:**
 
 | Metric | Target |
 |---|---|
-| LCP | < 2.5s |
-| INP | < 200ms |
-| CLS | < 0.1 |
-| JS on first load, gzipped | ~180–200 KB of a 356 KB route-split total (measured) — hold, don't grow |
-| Render-blocking CSS, gzipped | ~94 KB — platform cost, see note |
-| LCP | < 2.5s — **measured 7,459 ms**, see note |
-| CLS | < 0.1 — **measured 0.29**, see note |
-| Third-party origins | ≤ 2 — **measured 7** |
-| Webfont files | 4 (Cairo, subset) |
-| Third-party scripts | ≤ 2 |
-| Hero image | < 120KB |
+| INP | < 200 ms |
+| JS on first load, gzipped | ~180–200 KB of a ~356 KB route-split total — hold, don't grow |
+| Render-blocking CSS, gzipped | ~94 KB — platform cost, hold |
+| Webfont files | 3 (Cairo variable, one per unicode subset) — single-sourced, never Google *and* self-hosted |
+| Hero image | < 120 KB, a real `<img>` with `fetchpriority="high"`, never a CSS background |
+| Third-party origins | 7 is the platform floor (four Salla CDNs, api.salla.dev, Google Fonts, GTM). Add none. |
+
+**Capped by Salla — P2, trigger: engine fix shipped and re-measured:**
+
+| Metric | Target | Measured floor today |
+|---|---|---|
+| LCP | < 2.5 s | 6,582–7,798 ms (four runs; noise ±600 ms) |
+| CLS | < 0.1 | 0.29, invariant |
+
+Both are set by engine 1.0.47 discarding the SSR tree on every page and by server markup being skeleton-only (§15). No theme change moves them meaningfully until Salla ships a fix. Quote the measured floor and attribute the gap; never promise the target.
+
+**"Zero issues" — the testable standard, not the hope:** (1) zero console errors *attributable to theme code* — the engine's #418 is documented and disclosed, never hidden by a placebo fix; (2) every page verified at 390 px and 1440 px in RTL with real Arabic content; (3) every HARD rule mechanically checked — no strings outside `locales/`, logical properties only, 44 px targets, one `h1`, dev routes compiled out; (4) no number quoted without a production build and two measured runs; (5) no live-store write without diff → confirm → write → read back.
 
 **Measured 2026-09-16** against the scaffold at engine `1.0.47`, React 19.2.8, Vite 8.2.2, TanStack Start 1.168.54.
 
@@ -549,14 +578,25 @@ Four traces of **identical** production code gave LCP **6,582 / 7,390 / 7,459 / 
 
 ## 16. Build order
 
-**Blocked externally, not by us:** commercial registration, tax number, Maroof; written legal confirmation of advisory scope and who may deliver the nutrition plans.
+**Re-sequenced 2026-09-16 against the audit.** Every step names the gate that opens it. Nothing in P2 starts before its trigger.
 
-1. **Foundation** — `tokens.css`, kitchen sink, the full component set, icon sprite
-2. **Commerce spine** — PDP, listing, search, cart, account, thank-you
-3. **Discovery** — home, goals, categories, brands, guides
-4. **Services** — services hub, booking page, branch page, tools
-5. **V2** — recommended products, supply tracker, loyalty, trainer portal
-6. **Polish** — empty states, 404, policies, QA at 390px and 1440px in RTL on a real device
+**Owner decisions first (P0, not build work):** locale/URL structure · own-store or marketplace · the product-data convention for servings/expiry/nutrition · dark mode · registration (CR, VAT, Maroof, store email) · branch address and real hours · store description alignment · payment and shipping methods confirmed · legal ×3 (SCFHS status, subscription scope, PDPL status of intake fields) · repair `font_name` via the dashboard.
+
+| Step | Gate |
+|---|---|
+| 1. **Foundation** — `tokens.css` (what Salla does not emit), kitchen sink in every state, category-icon sprite | locale/URL and dark mode decided |
+| 2. **PDP** — theme the engine route; supply calculator, expiry line, nutrition table | product-data convention decided; ≥ 1 product carrying it |
+| 3. **Catalogue entry** (owner, in parallel) | — |
+| 4. **Commerce spine** — listing, search zero-result state, cart, account, thank-you: theme the engine routes | ≥ 15 products across ≥ 3 categories |
+| 5. **Home** — themed engine route; trust strip; entry paths | step 4; registration complete for the trust strip |
+| 6. **Branch, About, Contact, Policies** | branch record complete; description aligned; privacy text legally reviewed |
+| 7. **Services hub + written-question channel** | legal clears intake fields; a booking or service product configured |
+| 8. **Loyalty and affiliates** — dashboard configuration, native components themed | payment methods confirmed |
+| 9. **Goal landings, brand pages, compare, bestsellers** | catalogue ≥ 15 / 3 and brands set |
+| 10. **Video-call channel, subscription** | legal cleared; a product mechanism exists |
+| 11. **§9 recommended products, §10 supply tracker — as an app** | consent to create a partner app; backend chosen; retention job designed |
+| 12. **Performance re-measure** | Salla ships the hydration fix |
+| 13. **Marketplace submission** | only if P0 says marketplace, and React acceptance is confirmed |
 
 ---
 
@@ -568,6 +608,7 @@ Four traces of **identical** production code gave LCP **6,582 / 7,390 / 7,459 / 
 - Fill every component with real Arabic content — placeholder text hides RTL bugs
 - Prefer deleting code over adding it; two non-developers maintain this after launch
 - When a change would touch checkout, cart internals or search, stop and ask
+- **Any write to the live store through MCP is a stop-and-ask** — show the diff, get a yes to that specific call, write, read back the whole section. Deletes are never autonomous
 - Reference mockups exist as static HTML build guides. Copy the patterns and the reasoning, not the markup — they use placeholder product graphics and are deliberately simple
 - Trust, price and delivery move this business more than design does. A beautiful storefront behind slow fulfilment loses to a plain one that ships on time
 
@@ -575,6 +616,6 @@ Four traces of **identical** production code gave LCP **6,582 / 7,390 / 7,459 / 
 
 ## 18. Where to improve on this
 
-This spec was written without seeing the React scaffold, so §15 is the weakest part — replace it with what the scaffold actually provides. The component boundaries in §13 are a reasonable first cut, not a schema. The motion table in §3.4 describes intent; if there is a better way to express "confirms what changed without competing for attention," build that.
+This spec was written without seeing the React scaffold. §15 has since been trued up against the engine; the audit ledger at `docs/audit-2026-09-16-build-spec.md` records what was verified, what changed, and the eleven owner decisions that gate a full rewrite. The component boundaries in §13 are a reasonable first cut, not a schema. The motion table in §3.4 describes intent; if there is a better way to express "confirms what changed without competing for attention," build that.
 
 What should not drift: the items marked **HARD**, the risk mitigations in §2, the accessibility floor in §14, and the principle that this store's advantage is being the one that explains things properly rather than the one that sells hardest.
