@@ -8,7 +8,7 @@
 
 This spec was written **before** the React theme scaffold and its packages were inspected. Two hard sources have since surfaced and are now authoritative over anything below that contradicts them:
 
-- **`@salla.sa/twilight-theme-engine`** — fully typed surface (336 `.d.ts`), a `HookName` enum of 24 named extension points, 14 typed hooks (`useStore`, `useTheme`, `useUser`, `useMoney`, `useProduct`, `useWishlist`, `useCoupon`, `useGtm`, …), pre-built route exports for product / cart / listing / blog / brands / account / loyalty / thank-you, a component registry for swapping registered components by name, a Vite plugin with virtual modules, and `/tanstack` and `/nextjs` adapters. Its own framing: *a theme is a small app, not a fork of a storefront.*
+- **`@salla.sa/twilight-theme-engine`** — fully typed surface (336 `.d.ts`), a `HookName` enum of 26 named extension points, 14 typed hooks (`useStore`, `useTheme`, `useUser`, `useMoney`, `useProduct`, `useWishlist`, `useCoupon`, `useGtm`, …), pre-built route exports for product / cart / listing / blog / brands / account / loyalty / thank-you, a component registry for swapping registered components by name, a Vite plugin with virtual modules, and `/tanstack` and `/nextjs` adapters. Its own framing: *a theme is a small app, not a fork of a storefront.*
 - **`@salla.sa/twilight-components-react`** — **132** enumerable `salla-*` elements, including ~10 loyalty components plus `salla-booking-field`, `salla-datetime-picker`, `salla-bought-together`, `salla-trust-badges`, `salla-delivery-promise`.
 
 **Sections pending verification.** Each describes something to build that a native component may already provide. Do not build these until each has been checked against the component library on three gates — **(a)** does it exist, **(b)** does it do the *specific* job described here, **(c)** does it accept the token system in §3.1. Existence alone is not fit.
@@ -117,7 +117,11 @@ Set the primary colour in **store branding** (`store_branding_get` / `store_bran
 
 **Second trap — `--font-ar`.** `app/styles/app.css` sets `[dir="rtl"] { --font-main: var(--font-ar); }`, and `--font-ar` ships undefined. An undefined `var()` invalidates the whole declaration, so Arabic pages fall back to the browser default font — the normal case, not an edge case. Salla's inline `--font-main` masks it until you override from CSS, at which point the trapdoor opens. **Define `--font-ar`.**
 
-**Verified platform defect — `store_branding_update` mutates fields you did not pass.** 2026-09-16: an update passing **only** `brand_color` silently re-escaped `font_name` from `'Cairo'` to `''Cairo''`, producing an invalid CSS `font-family` and breaking the storefront font. The call returned success (`تم حفظ البيانات بنجاح`); the damage was visible only on read-back. The tool's own description states omitted fields are preserved — they are not; the section is round-tripped and re-serialised.
+**Verified platform defect — `store_branding_update` mutates fields you did not pass.** 2026-09-16: an update passing **only** `brand_color` silently re-escaped `font_name` from `'Cairo'` to `''Cairo''`. The call returned success (`تم حفظ البيانات بنجاح`); the damage was visible only on read-back. The tool's own description states omitted fields are preserved — they are not; the section is round-tripped and re-serialised.
+
+**Corrected 2026-09-16 — the storefront is NOT broken by this, and the field is still corrupt.** `store_branding_get` still returns `font_name: "''Cairo''"`, but the rendered storefront is fine: the inline `--font-main` on `<html>` is `Cairo`, `body` computes to `Cairo`, and `document.fonts.check('16px Cairo')` is true. The theme loads the face from `font_url` (clean) and never consumes `font_name` raw, so the corruption is confined to the branding record. An earlier draft of this note claimed it broke the storefront font; measurement says otherwise.
+
+**The real hazard is compounding, not the current state.** Each branding write re-escapes, so the next unrelated update — a logo swap, a social link — takes it to `'''Cairo'''` and onward. Leave it alone, and when it is eventually repaired through the dashboard, read `font_name` back immediately afterwards.
 
 **Consequence for every write in this project:** show the diff, write, then **read back and compare the whole section**. A success response is not evidence of a correct write. Do not attempt a repair with a second write to the same field — re-escaping may compound. Repair through the dashboard.
 
@@ -512,6 +516,34 @@ Follow the React scaffold's own conventions. Keep constant:
 - **HARD:** use the engine's `HookName` extension points and typed hooks rather than reimplementing store, user, money, asset or cart state. The engine treats a theme as a small app on top of a storefront, not a fork of one — build with that grain
 - **HARD:** checkout, cart logic and the search engine stay Salla's. Theme them only
 - Salla Booking Products for anything scheduled
+
+### Open engine defect — SSR is discarded on every page (verified 2026-09-16)
+
+**Every page fails hydration in production.** React throws minified error **#418** and discards the entire server-rendered tree, re-rendering client-side. The storefront is therefore not effectively server-rendered, whatever the SSR pipeline suggests.
+
+**Root cause, in Salla's own `dist`:**
+
+`chunk-QVPMWMPP.js:497` — `hydrateTwilightContext()` reads `router.state?.matches?.[0]`, finds it empty, calls `warnHydrationBail("no root match in router state")` and returns **without populating the client twilight context**. Then `chunk-DTWFNS3F.js:130` seeds `const [isReady] = useState(() => !!settingsData)`, which is now `false` on the client and `true` on the server. `chunk-DTWFNS3F.js:1297` renders `!isReady && <div className="loading-overlay">` as a **conditional child** of `MasterLayout`, so the children array changes shape between server and client.
+
+Confirmed against the SSR HTML: `app-inner` appears once outside `<style>`; `loading-overlay` appears **zero** times outside `<style>`. The server rendered the app, the client renders the overlay.
+
+`warnHydrationBail` is gated behind `import.meta.env?.DEV`, so **production fails silently.** The only symptom a merchant sees is a slow site.
+
+**A red herring to avoid.** The dev hydration diff points at `<style id="twilight-loading">` and Stencil's `data-styles` nodes at the top of `<head>`. That is a mis-binding, not the cause — React 19 makes `<head>` a HostSingleton (`react-dom-client.development.js:4922`), skips non-matching siblings, and **disables the leftover-node throw for tag 27** (`:5358`). Foreign head children cannot raise #418. Adding `href` + `precedence` to the engine's head styles removes the dev warning while React keeps discarding the tree — a placebo. Do not ship it and call it fixed.
+
+**No theme-side fix exists.** `hydrateTwilightContext` and `updateTwilightContext` are not exported from `index.d.ts` or `tanstack.d.ts`; `TwilightProvider` has no `layout` prop. Re-running the engine's `router.options.hydrate` fails structurally — TanStack's dehydrated stream is single-read (`ReadableStream ... already locked to a reader`). Salla's own `salla-hydration.plugin` (auto `suppressHydrationWarning` on `salla-*` JSX) covers the **body only**, is already active here, and does not help. Nothing to upgrade either: engine `1.0.47` is `latest`, and `twilight-components-react 3.0.0-beta.1` is the only version ever published.
+
+**Escalate.** Until Salla fixes it, treat SSR as unavailable and do not attribute LCP work to it.
+
+### A second, independent problem: content is not server-rendered
+
+Even with hydration fixed, the page would still paint late. Of **165 KB** of SSR HTML, only **18.7 KB (11%)** is markup; the rest is the serialized hydration payload. `<main>` is **5.2 KB of skeletons** inside React Suspense boundaries (`<!--$-->`). The hero — the LCP element — appears **zero** times in server markup; its image URL exists only inside the script payload.
+
+That is why the LCP image downloads in **3–5 ms** but is discovered **~5.6–6.3 s** in. It is not a bandwidth or preload-scanner problem; the element does not exist until JS renders it. Fixing hydration is necessary but **not sufficient** to reach the < 2.5 s target.
+
+### Measurement harness — the noise band is wide
+
+Four traces of **identical** production code gave LCP **6,582 / 7,390 / 7,459 / 7,798 ms** — a 1,216 ms spread (~16%). **Any LCP claim under ~1.2 s on this harness is noise.** CLS was invariant at **0.29** across all four, so CLS deltas are trustworthy. Always take at least two runs before and after a change, and quote the spread.
 
 ---
 

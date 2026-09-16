@@ -7,3 +7,6 @@ dist/
 stats.html
 coverage/
 tsconfig.tsbuildinfo
+
+# Local-only agent instructions — not shared
+CLAUDE.md
