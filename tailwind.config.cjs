@@ -50,7 +50,14 @@ module.exports = {
         large: '22px',
         big: '40px',
         tiny: '3px',
-        DEFAULT: '16px',
+        // The brand radius. `rounded` resolves here, and the content globs above
+        // scan the engine's dist as well as app/ — so this one value styles our
+        // markup AND Salla's own components (s-product-card, s-button-element).
+        // 274 call sites at the time of writing: 78 in app/, 196 in the engine.
+        // 8px rather than the scaffold's 16px: it reads considered instead of
+        // friendly, and pairs with the 6px already used on small elements, so the
+        // scale reads 6 / 8 / pill instead of 6 / 16 / pill.
+        DEFAULT: '8px',
       },
       fontSize: {
         'icon-lg': '33px',

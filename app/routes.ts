@@ -30,6 +30,11 @@
  * ];
  * ```
  */
-// import { route } from "@tanstack/virtual-file-routes";
+import { route } from '@tanstack/virtual-file-routes';
 
-export const routes = [];
+export const routes = [
+  // Dev-only component gallery. The component itself renders "Not found."
+  // when import.meta.env.DEV is false, so a published build exposes nothing
+  // useful even though the path still exists in the route tree.
+  route('/kitchen-sink', 'kitchen-sink.tsx'),
+];

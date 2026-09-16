@@ -15,6 +15,7 @@ import { Route as DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightTheme
 import { Route as blogRouteImport } from './routes/blog'
 import { Route as brandsRouteImport } from './routes/brands'
 import { Route as cartRouteImport } from './routes/cart'
+import { Route as kitchenSinkRouteImport } from './routes/kitchen-sink'
 import { Route as latestProductsRouteImport } from './routes/latest-products'
 import { Route as loyaltyRouteImport } from './routes/loyalty'
 import { Route as mostSalesProductsRouteImport } from './routes/most-sales-products'
@@ -81,6 +82,12 @@ const brandsRoute = brandsRouteImport.update({
 const cartRoute = cartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () =>
+    DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightThemeEn_0d498908f52b85eb67136089d73316eaNode_modulesAtsallaDotsaTwilightThemeEngineDottwilightLocaleRoute,
+} as any)
+const kitchenSinkRoute = kitchenSinkRouteImport.update({
+  id: '/kitchen-sink',
+  path: '/kitchen-sink',
   getParentRoute: () =>
     DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightThemeEn_0d498908f52b85eb67136089d73316eaNode_modulesAtsallaDotsaTwilightThemeEngineDottwilightLocaleRoute,
 } as any)
@@ -257,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/blog': typeof blogRoute
   '/{-$locale}/brands': typeof brandsRoute
   '/{-$locale}/cart': typeof cartRoute
+  '/{-$locale}/kitchen-sink': typeof kitchenSinkRoute
   '/{-$locale}/latest-products': typeof latestProductsRoute
   '/{-$locale}/loyalty': typeof loyaltyRoute
   '/{-$locale}/most-sales-products': typeof mostSalesProductsRoute
@@ -291,6 +299,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/blog': typeof blogRoute
   '/{-$locale}/brands': typeof brandsRoute
   '/{-$locale}/cart': typeof cartRoute
+  '/{-$locale}/kitchen-sink': typeof kitchenSinkRoute
   '/{-$locale}/latest-products': typeof latestProductsRoute
   '/{-$locale}/loyalty': typeof loyaltyRoute
   '/{-$locale}/most-sales-products': typeof mostSalesProductsRoute
@@ -327,6 +336,7 @@ export interface FileRoutesById {
   '/{-$locale}/blog': typeof blogRoute
   '/{-$locale}/brands': typeof brandsRoute
   '/{-$locale}/cart': typeof cartRoute
+  '/{-$locale}/kitchen-sink': typeof kitchenSinkRoute
   '/{-$locale}/latest-products': typeof latestProductsRoute
   '/{-$locale}/loyalty': typeof loyaltyRoute
   '/{-$locale}/most-sales-products': typeof mostSalesProductsRoute
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/blog'
     | '/{-$locale}/brands'
     | '/{-$locale}/cart'
+    | '/{-$locale}/kitchen-sink'
     | '/{-$locale}/latest-products'
     | '/{-$locale}/loyalty'
     | '/{-$locale}/most-sales-products'
@@ -398,6 +409,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/blog'
     | '/{-$locale}/brands'
     | '/{-$locale}/cart'
+    | '/{-$locale}/kitchen-sink'
     | '/{-$locale}/latest-products'
     | '/{-$locale}/loyalty'
     | '/{-$locale}/most-sales-products'
@@ -433,6 +445,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/blog'
     | '/{-$locale}/brands'
     | '/{-$locale}/cart'
+    | '/{-$locale}/kitchen-sink'
     | '/{-$locale}/latest-products'
     | '/{-$locale}/loyalty'
     | '/{-$locale}/most-sales-products'
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/{-$locale}/cart'
       preLoaderRoute: typeof cartRouteImport
+      parentRoute: typeof DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightThemeEn_0d498908f52b85eb67136089d73316eaNode_modulesAtsallaDotsaTwilightThemeEngineDottwilightLocaleRoute
+    }
+    '/{-$locale}/kitchen-sink': {
+      id: '/{-$locale}/kitchen-sink'
+      path: '/kitchen-sink'
+      fullPath: '/{-$locale}/kitchen-sink'
+      preLoaderRoute: typeof kitchenSinkRouteImport
       parentRoute: typeof DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightThemeEn_0d498908f52b85eb67136089d73316eaNode_modulesAtsallaDotsaTwilightThemeEngineDottwilightLocaleRoute
     }
     '/{-$locale}/latest-products': {
@@ -734,6 +754,7 @@ interface DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightThemeEn_0d498
   blogRoute: typeof blogRoute
   brandsRoute: typeof brandsRoute
   cartRoute: typeof cartRoute
+  kitchenSinkRoute: typeof kitchenSinkRoute
   latestProductsRoute: typeof latestProductsRoute
   loyaltyRoute: typeof loyaltyRoute
   mostSalesProductsRoute: typeof mostSalesProductsRoute
@@ -764,6 +785,7 @@ const DotDotDotDotNode_modulesDotpnpmAtsallaDotsaChar43twilightThemeEn_0d498908f
     blogRoute: blogRoute,
     brandsRoute: brandsRoute,
     cartRoute: cartRoute,
+    kitchenSinkRoute: kitchenSinkRoute,
     latestProductsRoute: latestProductsRoute,
     loyaltyRoute: loyaltyRoute,
     mostSalesProductsRoute: mostSalesProductsRoute,
