@@ -54,6 +54,19 @@ export default defineConfig(async () => ({
           '@salla.sa/twilight-theme-engine > react-i18next > use-sync-external-store',
         ],
       },
+      // Stale-optimizer trap, seen 2026-09-16. Editing this file changes the
+      // optimizer's configHash, so Vite re-optimizes and rotates browserHash.
+      // Pre-bundled deps are served at …/deps_ssr/<name>.js?v=<browserHash>; a
+      // browser recovers by reloading, but the workerd SSR runner keeps the old
+      // URL and dies with "The file does not exist at …?v=<old hash>", which
+      // takes down `salla theme dev` and `vite preview` alike.
+      //
+      // Do NOT try to fix this with optimizeDeps.exclude — the Cloudflare plugin
+      // puts @cloudflare/unenv-preset/polyfill/performance into `include` itself,
+      // and include wins, so the exclude is silently a no-op (verified: the entry
+      // is still emitted into deps_ssr after a clean re-optimize with it set).
+      //
+      // The fix is to drop the cache and let it rebuild: `pnpm dev:fresh`.
     },
   },
   css: {

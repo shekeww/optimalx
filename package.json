@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev:fresh": "node -e \"fs.rmSync('node_modules/.vite',{recursive:true,force:true})\" && vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
