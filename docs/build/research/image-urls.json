@@ -1,0 +1,122 @@
+{
+  "OX-003": {
+    "url": "https://www.sporter.com/media/catalog/product/1/0/102403-25623-n.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/muscletech-nitro-tech-performance-series/",
+    "verified": true,
+    "note": "Main hero image on Sporter's MuscleTech Nitro-Tech Performance Series product page. Exact brand/product match; page sells 2 lb and 4 lb sizes (catalogue targets 1.81 kg = 4 lb), flavor variant on this shot not confirmed but is the page's default listing image."
+  },
+  "OX-005": {
+    "url": "https://www.sporter.com/media/catalog/product/1/0/101529-newup24.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/dymatize-iso-100/",
+    "verified": true,
+    "note": "Main hero image on Sporter's Dymatize ISO 100 Protein product page. Exact brand/product match; page sells multiple sizes including sizes near catalogue's 2.3 kg (5 lb); flavor variant on this shot not confirmed."
+  },
+  "OX-026": {
+    "url": "https://www.sporter.com/media/catalog/product/1/1/119856.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/now-zma/",
+    "verified": true,
+    "note": "Exact match: NOW ZMA product image (alt text 'Now ZMA Image') from Sporter's dedicated NOW ZMA product page."
+  },
+  "OX-028": {
+    "url": "https://www.sporter.com/media/catalog/product/1/2/125375-NP_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/centrum-men-multivitamin/",
+    "verified": true,
+    "note": "Exact match: Centrum Men Multivitamin product image (alt text 'Centrum Men Multivitamin Image') from Sporter's dedicated Centrum Men product page."
+  },
+  "OX-023": {
+    "url": "https://www.sporter.com/media/catalog/product/t/h/this-is-it-omega-90-now-n22_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/now-super-omega-3-6-9-1200-mg-cardiovascular-health/",
+    "verified": true,
+    "note": "og:image from Sporter Saudi Arabia's NOW Super Omega 3-6-9 1200 mg product page. Exact brand/product match."
+  },
+  "OX-024": {
+    "url": "https://www.sporter.com/media/catalog/product/m/a/magnesium-caps-now-n22_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/now-magnesium-caps-400-mg/",
+    "verified": true,
+    "note": "og:image from Sporter Saudi Arabia's NOW Magnesium Caps 400 mg product page. Exact brand/product/size match."
+  },
+  "OX-025": {
+    "url": "https://www.sporter.com/media/catalog/product/1/2/127716_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/now-vitamin-d-3-5000-iu/",
+    "verified": true,
+    "note": "og:image from Sporter Saudi Arabia's NOW Vitamin D-3 5000 IU product page. Exact brand/product/potency match."
+  },
+  "OX-032": {
+    "url": "https://www.sporter.com/media/catalog/product/b/i/biotin-update-imageapril_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/now-biotin-10-mg-extra-strength/",
+    "verified": true,
+    "note": "og:image from Sporter's NOW Biotin 10 mg (10,000 mcg) Extra Strength product page. Exact brand/product/potency match."
+  },
+  "OX-041": {
+    "url": "https://ecombe.nahdionline.com/media/catalog/product/1/0/103128277_ac32955b69a70e82a.jpg",
+    "host": "ecombe.nahdionline.com",
+    "product_page": "https://www.nahdionline.com/en-sa/optimum-nutrition-100-whey-gold-standard-vanilla-ice-cream-453kg/pdp/103128277",
+    "verified": true,
+    "note": "Reused OX-001's verified whey image per instructions for the Starter Bundle (OX-041 = ON Gold Standard Whey + ON Creatine + Centrum Men); this is the 4.54 kg tub art, same label design as the 2.27 kg bundled unit."
+  },
+  "OX-015": {
+    "url": "https://cloudinary.images-iherb.com/image/upload/f_auto,q_auto:eco/images/opn/opn02385/k/53.jpg",
+    "host": "cloudinary.images-iherb.com",
+    "product_page": "https://www.iherb.com/pr/optimum-nutrition-micronized-creatine-powder-unflavored-1-32-lb-600-g/68616",
+    "verified": true,
+    "note": "Exact match: Optimum Nutrition Micronized Creatine Powder, Unflavored, 1.32 lb (600 g) on iHerb; og:image, verified 200 + JPEG magic bytes."
+  },
+  "OX-016": {
+    "url": "https://cloudinary.images-iherb.com/image/upload/f_auto,q_auto:eco/images/thr/thr00635/k/61.jpg",
+    "host": "cloudinary.images-iherb.com",
+    "product_page": "https://www.iherb.com/pr/thorne-creatine-16-oz-450-g/70006",
+    "verified": true,
+    "note": "Exact match: Thorne Creatine, 16 oz (450 g) on iHerb; og:image, verified 200 + JPEG magic bytes."
+  },
+  "OX-022": {
+    "url": "https://cloudinary.images-iherb.com/image/upload/f_auto,q_auto:eco/images/sre/sre01183/k/127.jpg",
+    "host": "cloudinary.images-iherb.com",
+    "product_page": "https://www.iherb.com/pr/sports-research-alaskan-omega-3-fish-oil-90-softgels/90284",
+    "verified": true,
+    "note": "Exact match: Sports Research Alaskan Omega-3 Fish Oil, Triple Strength 1,250 mg, 90 Softgels on iHerb; og:image, verified 200 + JPEG magic bytes."
+  },
+  "OX-027": {
+    "url": "https://cloudinary.images-iherb.com/image/upload/f_auto,q_auto:eco/images/sre/sre01134/k/86.jpg",
+    "host": "cloudinary.images-iherb.com",
+    "product_page": "https://www.iherb.com/pr/sports-research-d3-k2-plant-based-125-mcg-100-mcg-60-veggie-softgels/79975",
+    "verified": true,
+    "note": "Exact match: Sports Research D3 + K2, Plant-Based, 125 mcg (5000 IU) / 100 mcg, 60 Veggie Softgels on iHerb; og:image, verified 200 + JPEG magic bytes."
+  },
+  "OX-036": {
+    "url": "https://www.sporter.com/media/catalog/product/1/3/134153_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/blenderbottle-classic-v2-shaker-bottle-red/",
+    "verified": true,
+    "note": "Exact match: BlenderBottle Classic V2 Shaker Bottle, Red, from Sporter Saudi Arabia (og:image). Catalogue says any colour is fine for this SKU."
+  },
+  "OX-037": {
+    "url": "https://www.sporter.com/media/catalog/product/1/3/137919-new_1.jpg",
+    "host": "www.sporter.com",
+    "product_page": "https://www.sporter.com/en-sa/grenade-carb-killa-protein-bar-box-of-12-2022/",
+    "verified": true,
+    "note": "Exact match: Grenade Carb Killa Protein Bar, Box of 12, from Sporter Saudi Arabia (og:image, the page's default hero shot). Specific flavour on this box shot not confirmed against catalogue's four listed flavours."
+  },
+  "OX-038": {
+    "url": "https://cloudinary.images-iherb.com/image/upload/f_auto,q_auto:eco/images/qst/qst01028/k/49.jpg",
+    "host": "cloudinary.images-iherb.com",
+    "product_page": "https://www.iherb.com/pr/quest-nutrition-tortilla-style-protein-chips-chili-lime-8-bags-1-1-oz-32-g-each/119046",
+    "verified": true,
+    "note": "Exact match: Quest Nutrition Tortilla Style Protein Chips, Chili Lime, 8 Bags x 32 g, on iHerb; Chili Lime is one of the catalogue's three listed flavours."
+  },
+  "OX-039": {
+    "url": null,
+    "note": "No verified match after multiple searches (site:sporter.com/en-sa, site:iherb.com, site:nahdionline.com, and general web search for the Myprotein brand store on each). Myprotein All-Natural Peanut Butter is not carried by Sporter KSA, Nahdi Online, or iHerb -- only on myprotein.com itself and third-party marketplaces (eBay etc.), none of which are on the approved host list."
+  },
+  "OX-040": {
+    "url": null,
+    "note": "No verified match after multiple searches (site:sporter.com/en-sa, site:iherb.com, site:nahdionline.com, and general web search for the Myprotein brand store on each). Myprotein Instant Oats is not carried by Sporter KSA, Nahdi Online, or iHerb -- only on myprotein.com itself, none of which are on the approved host list."
+  }
+}
