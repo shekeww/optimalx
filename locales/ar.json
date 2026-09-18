@@ -9,7 +9,7 @@
   "pages.products.out_of_stock": "نفذت الكمية",
   "common.actions.save": "حفظ",
   "common.actions.cancel": "إلغاء",
-  "pages.thank_you.hero_title": "شكراً لتسوقكم عبر متجرنا... 😊",
+  "pages.thank_you.hero_title": "شكرا لتسوقكم عبر متجرنا... 😊",
   "pages.thank_you.description": "تم استقبال طلبك بنجاح وسيتم مراجعته وتأكيده في أقرب وقت.",
   "pages.thank_you.view_order_details": "عرض تفاصيل الطلب",
   "pages.thank_you.order_id_label": "رقم الطلب",
@@ -26,7 +26,7 @@
   "blocks.header.cart": "السلة",
   "blocks.header.close": "إغلاق",
   "blocks.header.back": "رجوع",
-  "blocks.header.browse_all": "تصفّح كل",
+  "blocks.header.browse_all": "تصفح كل",
   "blocks.cart.products": "المنتجات",
   "blocks.cart.item_total": "المجموع",
   "blocks.home.featured_products_tab": "منتجات",
@@ -46,5 +46,10 @@
   "blocks.catalog.show_filters": "اظهار التصفية",
   "blocks.catalog.view": "طريقة العرض",
   "blocks.catalog.view_grid": "عرض شبكي",
-  "blocks.catalog.view_list": "عرض قائمة"
+  "blocks.catalog.view_list": "عرض قائمة",
+  "ox.a11y.skip": "تخطي إلى المحتوى",
+  "ox.common.view_all": "عرض الكل",
+  "ox.common.loading": "جار التحميل",
+  "ox.common.close": "إغلاق",
+  "ox.common.back": "رجوع"
 }

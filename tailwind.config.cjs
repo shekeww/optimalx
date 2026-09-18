@@ -24,17 +24,56 @@ module.exports = {
     },
     extend: {
       transitionTimingFunction: {
+        // Motion-law tokens (app/styles/tokens.css). `elastic` stays for the
+        // engine's classes; app/ must not use it.
+        out: 'var(--ease-out)',
+        in: 'var(--ease-in)',
+        'in-out': 'var(--ease-in-out)',
         elastic: 'cubic-bezier(0.55, 0, 0.1, 1)',
       },
       gridTemplateColumns: {
         'auto-fill': 'repeat(auto-fill, 290px)',
       },
       colors: {
-        dark: '#1D1F1F',
-        darker: '#0E0F0F',
-        danger: '#AE0A0A',
+        // Engine classes use these names; pointing them at the token sheet
+        // makes Salla's own components match the OptimalX bands.
+        dark: 'var(--ox-graphite)',
+        darker: '#0F0F12',
+        danger: 'var(--ox-stop)',
         primary: 'var(--color-primary)',
         'primary-dark': 'var(--color-primary-dark)',
+        // OptimalX palette and role tokens (app/styles/tokens.css). Plain var()
+        // so a runtime change to --color-primary (engine applyTheme) follows.
+        ox: {
+          paper: 'var(--ox-paper)',
+          card: 'var(--ox-card)',
+          plate: 'var(--ox-plate)',
+          plate2: 'var(--ox-plate-2)',
+          graphite: 'var(--ox-graphite)',
+          graphite2: 'var(--ox-graphite-2)',
+          graphite3: 'var(--ox-graphite-3)',
+          ink: 'var(--ox-ink)',
+          ink2: 'var(--ox-ink-2)',
+          ink3: 'var(--ox-ink-3)',
+          ink4: 'var(--ox-ink-4)',
+          line: 'var(--ox-line)',
+          line2: 'var(--ox-line-2)',
+          accent: 'var(--ox-accent)',
+          accentSoft: 'var(--ox-accent-soft)',
+          onAccent: 'var(--ox-on-accent)',
+          go: 'var(--ox-go)',
+          goSoft: 'var(--ox-go-soft)',
+          note: 'var(--ox-note)',
+          noteSoft: 'var(--ox-note-soft)',
+          stop: 'var(--ox-stop)',
+          stopSoft: 'var(--ox-stop-soft)',
+          fg: 'var(--ox-fg)',
+          fg2: 'var(--ox-fg-2)',
+          fg3: 'var(--ox-fg-3)',
+          bg: 'var(--ox-bg)',
+          surface: 'var(--ox-surface)',
+          bd: 'var(--ox-bd)',
+        },
       },
       spacing: {
         3.75: '15px',
@@ -59,6 +98,8 @@ module.exports = {
         // friendly, and pairs with the 6px already used on small elements, so the
         // scale reads 6 / 8 / pill instead of 6 / 16 / pill.
         DEFAULT: '8px',
+        sm: '6px',
+        full: '9999px',
       },
       fontSize: {
         'icon-lg': '33px',
@@ -66,6 +107,16 @@ module.exports = {
         xxxs: '8px',
         'title-size': '42px',
         '22px': '22px',
+        // Fluid type scale, 390 to 1440, linear between (DIRECTION 3.1).
+        // Line-heights are Arabic-safe: display never below 1.15, headings 1.2+.
+        display: ['clamp(34px, 25.83px + 2.095vw, 56px)', { lineHeight: '1.15' }],
+        h1: ['clamp(28px, 23.54px + 1.143vw, 40px)', { lineHeight: '1.2' }],
+        h2: ['clamp(24px, 21.03px + 0.762vw, 32px)', { lineHeight: '1.25' }],
+        h3: ['clamp(18px, 17.26px + 0.190vw, 20px)', { lineHeight: '1.4' }],
+        lead: ['clamp(17px, 15.89px + 0.286vw, 20px)', { lineHeight: '1.6' }],
+        body: ['clamp(15px, 14.63px + 0.095vw, 16px)', { lineHeight: '1.7' }],
+        small: ['clamp(13px, 12.63px + 0.095vw, 14px)', { lineHeight: '1.6' }],
+        micro: ['clamp(11.5px, 11.31px + 0.048vw, 12px)', { lineHeight: '1.5' }],
       },
       lineHeight: {
         12: '3rem',
@@ -75,15 +126,15 @@ module.exports = {
         20: '5rem',
       },
       boxShadow: {
-        default: '5px 10px 30px #2B2D340D;',
-        top: '0px 0px 10px #0000001A;',
-        md: '5px 10px 99px #2B2D340D',
-        dropdown: '0 4px 8px rgba(161, 121, 121, 0.07)',
-        light: '0px 4px 15px rgba(1, 1, 1, 0.06)',
-        huge: '0px 3px 6px #00000029',
-        progress: '0 5px 15px rgba(92, 213, 196, 0.4)',
-        mobile:
-          'rgb(0 0 0 / 9%) 0px 2px 1px, rgb(0 0 0 / 9%) 0px 4px 2px, rgb(0 0 0 / 9%) 0px 8px 4px, rgb(0 0 0 / 9%) 0px 16px 18px, rgb(0 0 0 / 9%) -15px 10px 7px, rgb(0 0 0 / 9%) -20px 10px 20px, rgb(0 0 0 / 9%) -20px 10px 20px, rgb(0 0 0 / 9%) -25px 20px 20px',
+        // Scaffold names kept for engine compatibility; values come from the
+        // three-shadow sheet (raised / floating / panel). `progress` (teal,
+        // unused) and `mobile` (an eight-layer shadow) were removed.
+        default: 'var(--ox-shadow-1)',
+        light: 'var(--ox-shadow-1)',
+        dropdown: 'var(--ox-shadow-1)',
+        md: 'var(--ox-shadow-2)',
+        top: 'var(--ox-shadow-2)',
+        huge: 'var(--ox-shadow-3)',
       },
       width: {
         18: '4.5rem',
@@ -135,8 +186,8 @@ module.exports = {
         },
       },
       animation: {
-        slideUpFromBottom: 'slideUpFromBottom .6s linear',
-        slideDownFromBottom: 'slideDownFromBottom .6s linear',
+        slideUpFromBottom: 'slideUpFromBottom var(--dur-slow) var(--ease-out)',
+        slideDownFromBottom: 'slideDownFromBottom var(--dur-slow) var(--ease-in)',
       },
     },
   },

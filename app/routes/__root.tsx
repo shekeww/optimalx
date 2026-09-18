@@ -5,9 +5,9 @@ import {
   createTwilightRootRoute,
   getTwilightContext,
 } from '@salla.sa/twilight-theme-engine/tanstack';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import themeTranslations from 'virtual:twilight/theme-translations';
 import devSchema from 'virtual:twilight/schema';
+import { OptimalXLayout } from '../components/layout/OptimalXLayout';
 import '../styles/app.css';
 
 // Dev-only: reads the theme's local twilight.json (settings + components),
@@ -16,6 +16,16 @@ import '../styles/app.css';
 const DevSettingsWidget = import.meta.env.DEV
   ? lazy(() =>
       import('@salla.sa/twilight-theme-engine/dev').then((m) => ({ default: m.DevSettingsWidget }))
+    )
+  : null;
+
+// Dev-only, same gate as DevSettingsWidget: the router devtools never reach a
+// production bundle.
+const RouterDevtools = import.meta.env.DEV
+  ? lazy(() =>
+      import('@tanstack/react-router-devtools').then((m) => ({
+        default: m.TanStackRouterDevtools,
+      }))
     )
   : null;
 
@@ -42,10 +52,14 @@ function RootComponent() {
           </a>
           .
         </noscript>
-        <TwilightProvider translations={themeTranslations}>
+        <TwilightProvider translations={themeTranslations} layout={OptimalXLayout}>
           <Outlet />
         </TwilightProvider>
-        <TanStackRouterDevtools position="bottom-right" />
+        {RouterDevtools && (
+          <Suspense fallback={null}>
+            <RouterDevtools position="bottom-right" />
+          </Suspense>
+        )}
         {DevSettingsWidget && (
           <Suspense fallback={null}>
             <DevSettingsWidget schema={devSchema} />

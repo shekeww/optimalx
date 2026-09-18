@@ -7,8 +7,15 @@
  * component CSS composes alpha tints with rgba(var(--color-primary-rgb), …).
  * Defining all five is what carries the brand into Salla's own components rather
  * than only into our own markup.
+ *
+ * The engine's applyTheme() overwrites the four --color-primary* values inline
+ * on <html> after hydration (dashboard is the source of truth); the same values
+ * live here so the first paint matches. Everything under "ours" (--ox-*, --dur-*,
+ * --ease-*) is untouched by the engine.
  */
 :root {
+  /* ---------- Salla-owned names (fallbacks, same values as the dashboard) ---------- */
+
   /* Type.
      --font-ar has to be set as well as --font-main: app.css remaps
      --font-main to var(--font-ar) under [dir="rtl"], so leaving --font-ar
@@ -30,4 +37,136 @@
   --color-primary-light: #F38264;
   --color-primary-reverse: #FFFFFF;
   --color-primary-rgb: 238, 77, 34;
+
+  /* ---------- Ours: accent aliases ---------- */
+  --ox-accent: var(--color-primary);
+  --ox-accent-dark: var(--color-primary-dark);
+  --ox-accent-light: var(--color-primary-light);
+  --ox-accent-rgb: var(--color-primary-rgb);
+  --ox-accent-soft: #FDEDE9;
+  --ox-on-accent: #17171A;
+
+  /* ---------- Ours: ground and surfaces ---------- */
+  --ox-paper: #F7F7F8;
+  --ox-card: #FFFFFF;
+  --ox-plate: #F1F1F3;
+  --ox-plate-2: #E9E9EC;
+  --ox-graphite: #17171A;
+  --ox-graphite-2: #222226;
+  --ox-graphite-3: #2C2C32;
+
+  /* ---------- Ours: ink and lines ---------- */
+  --ox-ink: #17171A;
+  --ox-ink-2: #5A5A61;
+  --ox-ink-3: #6F6F78;
+  --ox-ink-4: #9A9AA3;
+  --ox-ink-on-dark: #F7F7F8;
+  --ox-ink-2-on-dark: #B9B9C1;
+  --ox-ink-3-on-dark: #8C8C96;
+  --ox-line: #E6E6E9;
+  --ox-line-2: #D2D2D8;
+  --ox-line-on-dark: rgba(255, 255, 255, 0.12);
+
+  /* ---------- Ours: semantic ---------- */
+  --ox-go: #0F7B4F;
+  --ox-go-soft: #E8F4EE;
+  --ox-note: #8A5E0E;
+  --ox-note-soft: #FBF2E0;
+  --ox-stop: #B3261E;
+  --ox-stop-soft: #FBEAE8;
+
+  /* ---------- Ours: role tokens (what components actually reference) ---------- */
+  --ox-bg: var(--ox-paper);
+  --ox-surface: var(--ox-card);
+  --ox-fg: var(--ox-ink);
+  --ox-fg-2: var(--ox-ink-2);
+  --ox-fg-3: var(--ox-ink-3);
+  --ox-bd: var(--ox-line);
+  --ox-bd-2: var(--ox-line-2);
+  --ox-focus: var(--ox-ink);
+
+  /* ---------- Ours: focus, shadows, radii ---------- */
+  --ox-focus-ring: 2px solid var(--ox-focus);
+  --ox-shadow-1: 0 1px 3px rgba(23, 23, 26, 0.08);
+  --ox-shadow-2: 0 8px 24px rgba(23, 23, 26, 0.1);
+  --ox-shadow-3: 0 24px 48px rgba(23, 23, 26, 0.18);
+  --ox-r-1: 6px;
+  --ox-r-2: 8px;
+  --ox-r-pill: 9999px;
+
+  /* ---------- Ours: spacing, containers, chrome heights, z-index ---------- */
+  --ox-1: 4px;
+  --ox-2: 8px;
+  --ox-3: 12px;
+  --ox-4: 16px;
+  --ox-6: 24px;
+  --ox-8: 32px;
+  --ox-12: 48px;
+  --ox-16: 64px;
+  --ox-24: 96px;
+  --ox-gutter: 16px;
+  --ox-container: 1280px;
+  --ox-container-narrow: 880px;
+  --ox-container-text: 720px;
+  --ox-h-util: 36px;
+  --ox-h-bar: 56px;
+  --ox-h-nav: 48px;
+  --ox-h-tabbar: calc(56px + env(safe-area-inset-bottom, 0px));
+  --ox-h-sticky: 64px;
+  --ox-z-raised: 10;
+  --ox-z-sticky: 100;
+  --ox-z-overlay: 200;
+  --ox-z-modal: 300;
+  --ox-z-toast: 400;
+  --ox-z-skip: 500;
+
+  /* ---------- Motion and the angle ---------- */
+  --dur-fast: 120ms;
+  --dur-confirm: 160ms;
+  --dur-base: 180ms;
+  --dur-slow: 280ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --stagger-step: 40ms;
+  --direction-factor: 1;
+  --ox-angle: 22deg;
+  --ox-angle-tan: 0.4040;
+  /* --ox-band-h is set per band (560, 500, 420, 360); this root value only
+     keeps --ox-wedge-run resolvable outside a band. */
+  --ox-band-h: 560px;
+  --ox-wedge-run: calc(var(--ox-band-h) * var(--ox-angle-tan));
+}
+
+/* Every horizontal translate multiplies by --direction-factor, keyframes included. */
+[dir="rtl"] {
+  --direction-factor: -1;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --ox-gutter: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --ox-gutter: 32px;
+    --ox-h-bar: 72px;
+  }
+}
+
+/* A dark band re-declares the role tokens once; every component inside it
+   adapts without a variant class. */
+.ox-band-dark {
+  --ox-bg: var(--ox-graphite);
+  --ox-surface: var(--ox-graphite-2);
+  --ox-fg: var(--ox-ink-on-dark);
+  --ox-fg-2: var(--ox-ink-2-on-dark);
+  --ox-fg-3: var(--ox-ink-3-on-dark);
+  --ox-bd: var(--ox-line-on-dark);
+  --ox-bd-2: var(--ox-line-on-dark);
+  --ox-focus: var(--ox-paper);
+  color: var(--ox-fg);
+  background: var(--ox-bg);
 }

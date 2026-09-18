@@ -46,5 +46,10 @@
   "blocks.catalog.show_filters": "Show filters",
   "blocks.catalog.view": "View",
   "blocks.catalog.view_grid": "Grid view",
-  "blocks.catalog.view_list": "List view"
+  "blocks.catalog.view_list": "List view",
+  "ox.a11y.skip": "Skip to content",
+  "ox.common.view_all": "View all",
+  "ox.common.loading": "Loading",
+  "ox.common.close": "Close",
+  "ox.common.back": "Back"
 }
