@@ -1,11 +1,11 @@
 {
   "type": "react",
   "name": {
-    "ar": "optimalx",
-    "en": "optimalx"
+    "ar": "اوبتيمال اكس",
+    "en": "OptimalX"
   },
-  "repository": "https://github.com/SallaApp/theme-raed",
-  "author_email": "support@salla.sa",
+  "repository": "https://github.com/OWNER/optimalx-theme",
+  "author_email": "optimal.x5@gmail.com",
   "features": [
     "mega-menu",
     "fonts",
@@ -26,47 +26,6 @@
     "filters"
   ],
   "settings": [
-    {
-      "id": "squar_photo_bg_image_size",
-      "type": "items",
-      "format": "dropdown-list",
-      "label": "طريقة عرض الصور في قسم قائمة عناصر ",
-      "description": null,
-      "labelHTML": null,
-      "icon": "sicon-list",
-      "selected": [
-        {
-          "label": "اظهار الصورة كاملةً في المنتصف (Contain)",
-          "value": "contain",
-          "key": "f4adec13-6e4c-654b-b978-b2807935ced9"
-        }
-      ],
-      "options": [
-        {
-          "label": "تغطية الصورة كامل المساحة مع المحافظة على أبعاد الصورة (Cover)",
-          "value": "cover",
-          "key": "e9c8ea8f-c5c6-234e-935-3bce269afde4"
-        },
-        {
-          "label": "اظهار الصورة كاملةً في المنتصف (Contain)",
-          "value": "contain",
-          "key": "f4adec13-6e4c-654b-b978-b2807935ced9"
-        }
-      ],
-      "source": "Manual",
-      "required": true
-    },
-    {
-      "type": "boolean",
-      "icon": "sicon-toggle-off",
-      "label": "وضع عمودي للمنتجات في مربع المنتجات الثابتة في الصفحة الرئيسية",
-      "description": null,
-      "id": "vertical_fixed_products",
-      "format": "switch",
-      "required": false,
-      "value": false,
-      "selected": false
-    },
     {
       "type": "boolean",
       "id": "is_more_button_enabled",
@@ -113,17 +72,6 @@
       "label": "عرض روابط الصفحات الهامة في الشريط العلوي",
       "description": "مثل صفحة الهبوط ، المدونة ،الصفحات التعريفية",
       "id": "important_links",
-      "format": "switch",
-      "required": false,
-      "value": true,
-      "selected": true
-    },
-    {
-      "type": "boolean",
-      "icon": "sicon-toggle-off",
-      "label": "تفعيل قائمة المزيد في القائمة الرئيسية",
-      "description": "عند تفعيلها، ستظهر الروابط الإضافية في قائمة منسدلة تسمى 'المزيد' عند عدم وجود مساحة كافية",
-      "id": "enable_more_menu",
       "format": "switch",
       "required": false,
       "value": true,
@@ -178,31 +126,9 @@
     {
       "type": "boolean",
       "icon": "sicon-toggle-off",
-      "label": "إظهار مسار التنقل في صفحة قائمة المنتجات",
-      "description": null,
-      "id": "product_index_show_breadcrumbs",
-      "format": "switch",
-      "required": false,
-      "value": true,
-      "selected": true
-    },
-    {
-      "type": "boolean",
-      "icon": "sicon-toggle-off",
       "label": "تفعيل إشعار الإضافة للسلة المحسن",
       "description": null,
       "id": "enable_add_product_toast",
-      "format": "switch",
-      "required": false,
-      "value": true,
-      "selected": true
-    },
-    {
-      "type": "boolean",
-      "icon": "sicon-toggle-off",
-      "label": "إظهار زر \"أعلمني عند التوفر\" في بطاقة المنتج",
-      "description": "يظهر زر إشعار التوفر في بطاقات المنتجات التي نفذت كميتها",
-      "id": "notify_when_available_in_card",
       "format": "switch",
       "required": false,
       "value": true,
@@ -261,15 +187,135 @@
       "required": true
     },
     {
-      "type": "boolean",
-      "icon": "sicon-toggle-off",
-      "label": "تكبير الصور في سليدر صور المنتج",
-      "description": "هذه الخاصية تمكنك من تكبير الصورة لتسهل رؤية المزيد من التفاصيل بها",
-      "id": "imageZoom",
-      "format": "switch",
+      "id": "static-line-ox",
+      "type": "static",
+      "format": "line"
+    },
+    {
+      "id": "static-label-ox",
+      "type": "static",
+      "format": "title",
+      "value": "<div class='rounded-lg' style='background-color: #21636d; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 15px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'> خيارات اوبتيمال اكس</h6></div>"
+    },
+    {
+      "id": "announcement_text",
+      "type": "string",
+      "format": "text",
+      "label": "نص شريط الإعلان",
+      "icon": "sicon-format-text-alt",
+      "value": null,
       "required": false,
-      "value": false,
-      "selected": false
+      "placeholder": null,
+      "description": "سطر واحد يظهر أعلى الصفحة؛ اتركه فارغا لإخفاء الشريط",
+      "multilanguage": true
+    },
+    {
+      "id": "free_shipping_threshold",
+      "type": "string",
+      "format": "text",
+      "label": "حد الشحن المجاني (بالريال)",
+      "icon": "sicon-format-text-alt",
+      "value": "299",
+      "required": false,
+      "placeholder": null,
+      "description": "المبلغ الذي يصبح الشحن مجانيا عنده؛ يظهر في السلة وصفحة المنتج"
+    },
+    {
+      "id": "delivery_promise_line",
+      "type": "string",
+      "format": "text",
+      "label": "سطر وعد التوصيل",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": null,
+      "description": "مثال: توصيل خلال يومين داخل المدينة المنورة",
+      "multilanguage": true
+    },
+    {
+      "id": "whatsapp_number",
+      "type": "string",
+      "format": "text",
+      "label": "رقم واتساب",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": "9665xxxxxxxx",
+      "description": "بالصيغة الدولية بدون علامة +"
+    },
+    {
+      "id": "branch_address",
+      "type": "string",
+      "format": "textarea",
+      "label": "عنوان الفرع",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": null,
+      "description": null,
+      "multilanguage": true
+    },
+    {
+      "id": "branch_hours",
+      "type": "string",
+      "format": "textarea",
+      "label": "ساعات عمل الفرع",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": null,
+      "description": "سطر لكل فترة، مثال: السبت إلى الخميس 16:00 إلى 23:00"
+    },
+    {
+      "id": "cr_number",
+      "type": "string",
+      "format": "text",
+      "label": "رقم السجل التجاري",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": null,
+      "description": null
+    },
+    {
+      "id": "vat_number",
+      "type": "string",
+      "format": "text",
+      "label": "الرقم الضريبي",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": null,
+      "description": null
+    },
+    {
+      "id": "maroof_url",
+      "type": "string",
+      "format": "text",
+      "label": "رابط معروف",
+      "icon": "sicon-format-text-alt",
+      "value": null,
+      "required": false,
+      "placeholder": null,
+      "description": null
+    },
+    {
+      "id": "show_bottom_tabbar",
+      "type": "boolean",
+      "format": "switch",
+      "label": "إظهار شريط التنقل السفلي على الجوال",
+      "icon": "sicon-toggle-off",
+      "value": true,
+      "description": null
+    },
+    {
+      "id": "show_goal_nav",
+      "type": "boolean",
+      "format": "switch",
+      "label": "إظهار قائمة الأهداف في الرأس",
+      "icon": "sicon-toggle-off",
+      "value": true,
+      "description": null
     }
   ],
   "components": [
@@ -1132,7 +1178,7 @@
   ],
   "support_url": "https://salla.com/",
   "description": {
-    "ar": "مجموعة كبيرة من المزايا لدعم تجارتك وتقديم تجربة تسوق مثيرة لعملائك",
-    "en": "A wide range of features to support your business and provide an exciting shopping experience for your customers"
+    "ar": "ثيم اوبتيمال اكس لمتجر مكملات غذائية ورياضية: عربي أولا، خفيف وسريع، مبني على محرك سلة رياكت",
+    "en": "OptimalX theme for a sports nutrition store: Arabic-first, light and fast, built on the Salla React engine"
   }
 }

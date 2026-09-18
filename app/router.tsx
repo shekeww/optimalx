@@ -2,10 +2,13 @@ import { createRouter } from '@salla.sa/twilight-theme-engine/tanstack';
 import { routeTree } from './routeTree.gen';
 import { registerOxHomeComponents } from './components/home/register';
 import { registerOxProductComponents } from './components/product/register';
+import { registerHeadHooks } from './components/seo/registerHeadHooks';
 import { registerThemeHooks } from './hooks';
 
 // Register theme-level hooks (AddProductToast, DigitalFilesSettings, etc.)
 registerThemeHooks();
+// Site-wide Organization + WebSite JSON-LD at head:end.
+registerHeadHooks();
 
 // Home blocks (+ reserved heights) and product-level overrides, before the
 // first render so the engine's one-time registry lookups see them.

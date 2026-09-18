@@ -22,3 +22,10 @@ allowBuilds:
   sharp: true
   utf-8-validate: true
   workerd: true
+
+# Audit GHSA-rgj7-g3m4-5g8c (sharp <0.35.4, libheif). sharp is transitive only
+# (webpack > minimizer-webpack-plugin and miniflare, 19 paths); pin the
+# every requester to the patched release (a range selector only matched the
+# miniflare path, not webpack's optional peer). pnpm 10+ reads overrides here.
+overrides:
+  sharp: '0.35.4'

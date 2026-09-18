@@ -65,6 +65,10 @@
   --ox-ink-3-on-dark: #8C8C96;
   --ox-line: #E6E6E9;
   --ox-line-2: #D2D2D8;
+  /* Control boundaries at rest (inputs, checkboxes, switches): 3.2 to 3.7:1
+     on paper, card and plate, which meets WCAG 1.4.11; --ox-line-2 measures
+     1.6:1 and stays decorative (DIRECTION section 9, amendment A1). */
+  --ox-line-3: #85858E;
   --ox-line-on-dark: rgba(255, 255, 255, 0.12);
 
   /* ---------- Ours: semantic ---------- */

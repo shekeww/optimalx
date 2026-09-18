@@ -58,6 +58,7 @@ module.exports = {
           ink4: 'var(--ox-ink-4)',
           line: 'var(--ox-line)',
           line2: 'var(--ox-line-2)',
+          line3: 'var(--ox-line-3)',
           accent: 'var(--ox-accent)',
           accentSoft: 'var(--ox-accent-soft)',
           onAccent: 'var(--ox-on-accent)',
