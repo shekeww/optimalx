@@ -37,4 +37,12 @@ export const routes = [
   // when import.meta.env.DEV is false, so a published build exposes nothing
   // useful even though the path still exists in the route tree.
   route('/kitchen-sink', 'kitchen-sink.tsx'),
+  // P0 seam: the page routes B5 fills in (DIRECTION 6.11, 6.12, 6.15, 6.16 and
+  // the unit converter). The plugin nests them under `{-$locale}`, so they
+  // serve at /ar/services etc.; the engine gives them no RouteId or body class.
+  route('/services', 'services.tsx'),
+  route('/branch', 'branch.tsx'),
+  route('/about', 'about.tsx'),
+  route('/contact', 'contact.tsx'),
+  route('/tools/converter', 'tools.converter.tsx'),
 ];

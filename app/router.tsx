@@ -2,6 +2,8 @@ import { createRouter } from '@salla.sa/twilight-theme-engine/tanstack';
 import { routeTree } from './routeTree.gen';
 import { registerOxHomeComponents } from './components/home/register';
 import { registerOxProductComponents } from './components/product/register';
+import { registerOxListingHooks } from './components/listing/register';
+import { registerOxCommerceHooks } from './components/commerce/register';
 import { registerHeadHooks } from './components/seo/registerHeadHooks';
 import { registerThemeHooks } from './hooks';
 
@@ -14,6 +16,9 @@ registerHeadHooks();
 // first render so the engine's one-time registry lookups see them.
 registerOxHomeComponents();
 registerOxProductComponents();
+// Listing (B4) and commerce (B6) seams: no-ops until those batches land.
+registerOxListingHooks();
+registerOxCommerceHooks();
 
 // Singleton for client-side (preserves QueryClient cache across navigations)
 // SSR creates fresh instances per request via getRouter()

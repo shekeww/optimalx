@@ -1,0 +1,43 @@
+# OptimalX owner checklist (draft, 2026-09-18)
+
+Everything the theme cannot do for you, in the order that unblocks the most. Each item says where in the dashboard it lives and what the theme does once it is done.
+
+## A. Dashboard data the theme reads (do these first)
+
+1. Categories. Create the tree exactly as in research/FINAL-catalogue.md section A (10 type categories, 5 protein subcategories, 4 utility categories, 6 goal collections). Dashboard: المنتجات > التصنيفات. Set each category's SEO URL to the Latin slug in the table (for example protein, whey-protein, goal-energy). Then assign every mock product to its primary type category and its goal collections (the mapping is the "categories" field per item in batch-0*.md and column primary_category_slug / goal_slugs in the CSV). Until this is done, the goal pages and category links in the theme fall back to search links.
+2. Brands. Create the brands in research/FINAL-catalogue.md section B (dashboard: المنتجات > الماركات) and set each product's brand.
+3. Product options. The API used to create the mock products cannot add options; add flavours and sizes from the "options" field per item (batch-0*.md) in the dashboard if you want variant pills on the mock PDPs. Optional for the mockup.
+4. Booking products (OX-045, OX-046, OX-047 once created). Dashboard: المنتجات > the product > جدولة الحجوزات: choose "أيام وأوقات", set working days, two-hour windows around prayer times, capacity 1 per slot, buffer 10 minutes, a late-booking limit of 12 hours, and exclude Fridays before Asr. Max 12 bookable slots per day is achieved by the windows you enable. Add the intake form fields (نموذج الطلب) from research/FINAL-content.md section 4; do NOT add medication, conditions or body-measurement fields.
+5. The 50 SAR video-consultation credit: create a coupon rule in التسويق > الكوبونات and paste its code into the theme setting "consultation_credit_note" (or leave the text generic until the coupon exists).
+6. Store branding: the theme is built for Cairo weights 400/600/700/800 self-hosted; in الإعدادات > الهوية change the font to "خط مخصص" (upload the three woff2 files from public/assets/fonts) so the Google Fonts link stops loading. Also repair the font_name value in the same screen (it is stored as ''Cairo'' with doubled quotes). Do not change the brand colour (#EE4D22).
+7. Registration: CR number, VAT number, Maroof. Enter them in الإعدادات and copy the numbers into the theme settings cr_number, vat_number, maroof_url. The footer trust line stays hidden until all three exist.
+8. Branch: add building number, additional number, short address, district, and real opening hours (الإعدادات > الفروع). The branch page reads the theme settings branch_address and branch_hours; keep both in sync with the dashboard.
+9. Store description: change "اوبتيمال اكس للمنتجات الصحية." to the one-line MSA description in research/FINAL-content.md (about section), or the theme's default.
+10. Payments and shipping: enable mada, Apple Pay, tabby/tamara, Visa/Mastercard and the carriers; set the free-shipping rule to 299 SAR (or change the theme setting free_shipping_threshold to match).
+11. Languages: enable English in الإعدادات > اللغات only when the English product names and descriptions are entered (the mock catalogue's English twins are in the CSV); the theme then serves /ar and /en automatically.
+12. Static pages: create About, Contact, Shipping, Returns, Privacy, Terms in الصفحات using the copy in research/FINAL-content.md section 6, then add them to the footer menu.
+13. Blog: create the blog categories (أدلة) and paste the three full guide articles from research/FINAL-content.md section 7; outlines for the other nine are ready to write.
+14. Menus: after categories exist, the header menu can be built via the API (the conductor will do it) or by hand: تسوق حسب الهدف (6 goals), التصنيفات (10), الخدمات, الأدلة, الفرع, من نحن.
+15. Maintenance mode: the domain optimalx.com.sa currently shows the construction page. Turn it off only after the React theme is installed and the catalogue is real.
+
+## B. Assets to generate (the exact list with sizes and prompts is DIRECTION.md section 8)
+
+Logo SVGs (full, compact, mark, reversed), hero athletes (desktop 1600x1000 and mobile 900x1200, two or three variants), 10 category tile photos 800x600, 3 services photos 900x675, 2 branch storefront photos 1600x1200 and 1200x900, OG image 1200x630, favicon and app icons from the mark, the category and trust icon sprite (or approve the ones the build ships), product photos for the 21 items without a usable image (list in research/FINAL-catalogue-tail.md section G), optional hero loop video.
+
+## C. Theme publishing (docs/deployment-runbook.md)
+
+Create the GitHub repository, push the theme, register it as a private React theme in the Salla Partners Portal, submit for review, install on store 1888890798, set it as the active version, configure the home blocks (defaults are pre-filled), then switch maintenance off.
+
+## D. Legal (before public launch)
+
+SFDA registration display, PDPL privacy and consent text, SCFHS scope for the written-question service, halal wording, the subscription scope. All marked "needs a lawyer" in the content.
+
+## E. Added 2026-09-18 (conductor)
+
+16. Product photo alt text: the image API rejects the alt field, so the 27 photos attached by the API have no alt text. Add the product name as alt in المنتجات > the product > الصور, or wait for the real product sheet import which carries alt per image.
+17. Bundle members: OX-041 حزمة البداية was created as a product group but the API cannot attach members; in the dashboard open the product and add OX-001, OX-015 and OX-028 as the bundle items.
+18. Stray scaffold inside the repo: a second Salla CLI scaffold was generated at optimalx/optimalx (its own .git, node_modules, "Initial commit") and the last commit 5464b3a recorded it as a gitlink. Before the theme is pushed to GitHub it must be removed: `git rm --cached optimalx` then delete the folder; the conductor lists this in the pre-commit cleanup and will not delete it without your go-ahead.
+19. Copy placeholders (research/FINAL-content.md sections 4 to 6): {HOURS_WEEKDAY} {HOURS_FRIDAY} {HOURS_SATURDAY} {HOURS_RAMADAN} {NEXT_OPEN} {LANDMARK} {PICKUP_READY_HOURS} {PICKUP_HOLD_DAYS} {CARRIER} {SHIP_FEE} {RETURN_DAYS} {REFUND_DAYS} {SOCIAL_HANDLES} {EMAIL_USER}. They map to theme settings; the branch hours table and the pickup lines stay hidden until the settings are filled, and the shipping and returns intros render without the fee and day counts until they exist.
+20. Lawyer items before the intake form and privacy page ship: the PDPL consent sentence, the privacy intro, and the mandated medical line "للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك." wording. Returns intro needs your sign-off against the Ministry of Commerce e-commerce rules.
+21. Services claims gates: the written-question channel must be staffed before "نجيب على سؤالك المكتوب خلال 24 ساعة عمل" renders, and the 50 SAR first-order credit needs the coupon in the dashboard (items 5 and 11). Until then the theme shows the neutral lines the content marks as fallback.
+22. Guides: three full articles are ready (creatine, protein timing, whey vs isolate); nine outlines remain (FINAL-content.md section 7). Paste the three into المدونة first.

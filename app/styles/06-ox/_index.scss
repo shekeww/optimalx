@@ -1,0 +1,11 @@
+// OptimalX layer (P0 seam). Order is load-bearing: primitives first, the shared
+// blocks second, then one partial per batch. Nobody edits this file after P0;
+// each batch owns exactly its own partial (PLAN-final 2.1, SCSS seam).
+@import 'primitives';
+@import 'blocks';
+@import 'b1-layout';
+@import 'b2-home';
+@import 'b3-product';
+@import 'b4-listing';
+@import 'b5-pages';
+@import 'b6-commerce';

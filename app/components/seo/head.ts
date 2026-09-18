@@ -46,3 +46,37 @@ export function canonicalFor(
 export function robots(noindex: boolean): string {
   return noindex ? 'noindex, follow' : 'index, follow';
 }
+
+/** Removes a leading `/{lang}` segment when it is one of the store languages. */
+export function stripLocale(path: string, languages: readonly string[]): string {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  const first = normalized.split('/')[1] ?? '';
+  if (!first || !languages.includes(first)) return normalized;
+  const rest = normalized.slice(first.length + 1);
+  return rest === '' ? '/' : rest;
+}
+
+export interface HreflangLink {
+  hreflang: string;
+  href: string;
+}
+
+/**
+ * hreflang cluster for a multilingual store (head `alternateLanguages`):
+ * x-default first (ar when the store has it, else the first language), then
+ * one prefix-aware entry per language. Undefined for a single-language store,
+ * which gets no cluster at all.
+ */
+export function hreflangFor(
+  origin: string,
+  path: string,
+  languages: readonly string[]
+): HreflangLink[] | undefined {
+  if (languages.length < 2) return undefined;
+  const clean = stripLocale(path.replace(/[?#].*$/, ''), languages);
+  const fallback = languages.includes('ar') ? 'ar' : languages[0];
+  return [
+    { hreflang: 'x-default', href: currentUrl(origin, fallback, clean) },
+    ...languages.map((lang) => ({ hreflang: lang, href: currentUrl(origin, lang, clean) })),
+  ];
+}

@@ -1,0 +1,1081 @@
+// OptimalX primitives (P1a). Every later batch composes from these classes
+// and mixins; nothing here knows about a page. Rules: role tokens only
+// (--ox-fg, --ox-bg, --ox-surface, --ox-bd), logical properties only,
+// motion only through --dur-* and --ease-*, transform and opacity only
+// (the accordion panel is the one written exception, DIRECTION 7.1).
+@use 'sass:math';
+
+// ---------------------------------------------------------------------------
+// 1. The wedge (DIRECTION 4.5, A9)
+// ---------------------------------------------------------------------------
+// The angle is 22deg from vertical; run = band height * tan(22deg).
+// Polygons are declared for RTL (the document default) and mirrored under
+// [dir="ltr"]. The mixins never emit a transition or an animation: a wedge
+// is a static paint-time clip on an element that never animates.
+$ox-angle-tan: 0.404;
+
+@function ox-run($band-h) {
+  @return math.round(math.div($band-h, 1px) * $ox-angle-tan) * 1px;
+}
+
+// A panel whose inner edge carries the angle, wider at the top than at the
+// bottom. `$side` names the panel's angled edge in logical terms:
+//   start (default): the panel sits at inline-end, its inline-start edge is cut
+//   end:             the panel sits at inline-start, its inline-end edge is cut
+@mixin ox-wedge($band-h, $side: start) {
+  $run: ox-run($band-h);
+  @if $side == start {
+    clip-path: polygon(0 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
+    [dir='ltr'] & {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, #{$run} 100%);
+    }
+  } @else {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, #{$run} 100%);
+    [dir='ltr'] & {
+      clip-path: polygon(0 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
+    }
+  }
+}
+
+// The home hero pair: the photo polygon shifted by the stroke width so the
+// orange stroke is not covered, and the stroke itself (a 12px parallelogram
+// along the shared edge). Apply `ox-wedge-photo-stroked` to .ox-hero__photo
+// and `ox-wedge-stroke` to the .ox-hero__stroke sibling that shares its box.
+@mixin ox-wedge-photo-stroked($band-h, $stroke: 12px) {
+  $run: ox-run($band-h);
+  $far: $run + $stroke;
+  clip-path: polygon(0 0, calc(100% - #{$stroke}) 0, calc(100% - #{$far}) 100%, 0 100%);
+  [dir='ltr'] & {
+    clip-path: polygon(#{$stroke} 0, 100% 0, 100% 100%, #{$far} 100%);
+  }
+}
+
+@mixin ox-wedge-stroke($band-h, $stroke: 12px) {
+  $run: ox-run($band-h);
+  $far: $run + $stroke;
+  background: var(--ox-accent);
+  clip-path: polygon(calc(100% - #{$stroke}) 0, 100% 0, calc(100% - #{$run}) 100%, calc(100% - #{$far}) 100%);
+  [dir='ltr'] & {
+    clip-path: polygon(0 0, #{$stroke} 0, #{$far} 100%, #{$run} 100%);
+  }
+}
+
+// The mobile corner: a $w by $h triangle anchored at the top inline-end of
+// its band (top-left in RTL, top-right in LTR). The caller sets the fill.
+@mixin ox-wedge-corner($w: 64px, $h: 158px) {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inline-size: $w;
+  block-size: $h;
+  pointer-events: none;
+  clip-path: polygon(0 0, #{$w} 0, 0 #{$h});
+  [dir='ltr'] & {
+    clip-path: polygon(100% 0, calc(100% - #{$w}) 0, 100% #{$h});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. Focus, hit area, visually hidden, containers, type
+// ---------------------------------------------------------------------------
+@mixin ox-focus($offset: 2px) {
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: $offset;
+  }
+}
+
+// A 44 by 44 hit area on a control whose drawn box is smaller (touch only).
+@mixin ox-hit-area {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: max(100%, 44px);
+    block-size: max(100%, 44px);
+    transform: translate(calc(var(--direction-factor) * 50%), -50%);
+  }
+  [dir='ltr'] &::after {
+    transform: translate(-50%, -50%);
+  }
+}
+
+// The clip pattern (DIRECTION 10.1): never -9999px.
+.ox-sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ox-container,
+.ox-container--narrow,
+.ox-container--text {
+  inline-size: 100%;
+  max-inline-size: var(--ox-container);
+  margin-inline: auto;
+  padding-inline: var(--ox-gutter);
+}
+.ox-container--narrow {
+  max-inline-size: calc(var(--ox-container-narrow) + 2 * var(--ox-gutter));
+}
+.ox-container--text {
+  max-inline-size: calc(var(--ox-container-text) + 2 * var(--ox-gutter));
+}
+
+// Fluid type roles (DIRECTION 3.1). Arabic letter-spacing is always 0.
+.ox-display { @apply text-display font-extrabold; }
+.ox-h1 { @apply text-h1 font-bold; }
+.ox-h2 { @apply text-h2 font-bold; }
+.ox-h3 { @apply text-h3 font-bold; }
+.ox-lead { @apply text-lead font-normal; }
+.ox-body { @apply text-body font-normal; }
+.ox-small { @apply text-small; }
+.ox-micro { @apply text-micro font-bold; }
+.ox-display,
+.ox-h1,
+.ox-h2,
+.ox-h3,
+.ox-lead,
+.ox-body,
+.ox-small,
+.ox-micro {
+  letter-spacing: 0;
+  color: var(--ox-fg);
+}
+.ox-num {
+  font-variant-numeric: tabular-nums;
+}
+
+// Icons that indicate direction mirror on the icon only (DIRECTION 3.4).
+.ox-mirror {
+  display: inline-block;
+  [dir='rtl'] & {
+    transform: scaleX(-1);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. Icon and sprite (DIRECTION 8.7)
+// ---------------------------------------------------------------------------
+.ox-icon {
+  display: inline-block;
+  inline-size: 24px;
+  block-size: 24px;
+  flex: none;
+  vertical-align: middle;
+  color: currentColor;
+  fill: none;
+  stroke: currentColor;
+  overflow: visible;
+  &--16 { inline-size: 16px; block-size: 16px; }
+  &--20 { inline-size: 20px; block-size: 20px; }
+  &--24 { inline-size: 24px; block-size: 24px; }
+  &--32 { inline-size: 32px; block-size: 32px; }
+}
+// Exactly one element per symbol is the accent: a fill with no stroke, except
+// ox-tick whose stroke is the accent (the only icon drawn that way).
+.ox-icon__accent {
+  fill: var(--ox-accent);
+  stroke: none;
+}
+.ox-icon__accent--stroke {
+  fill: none;
+  stroke: var(--ox-accent);
+}
+.ox-sprite {
+  position: absolute;
+  inline-size: 0;
+  block-size: 0;
+  overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// 4. Button (DIRECTION 5.7, 7.1)
+// ---------------------------------------------------------------------------
+.ox-btn {
+  @include ox-focus(2px);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  min-inline-size: 44px;
+  block-size: 44px;
+  padding-inline: 20px;
+  border: 1px solid transparent;
+  border-radius: var(--ox-r-2);
+  font-family: inherit;
+  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  color: var(--ox-fg);
+  background: transparent;
+  transition: transform var(--dur-fast) var(--ease-in);
+  -webkit-tap-highlight-color: transparent;
+
+  &--s40 { block-size: 40px; padding-inline: 16px; }
+  &--s44 { block-size: 44px; padding-inline: 20px; }
+  &--s48 { block-size: 48px; padding-inline: 24px; }
+  &--block { inline-size: 100%; }
+
+  &:active:not([aria-disabled='true']):not(:disabled) {
+    transform: translateY(1px);
+    transition-timing-function: var(--ease-out);
+  }
+
+  &--primary {
+    background: var(--ox-accent);
+    border-color: var(--ox-accent);
+    color: var(--ox-on-accent);
+    &:hover { background: var(--ox-accent-dark); border-color: var(--ox-accent-dark); }
+    &:active { background: var(--ox-accent-dark); }
+  }
+  &--secondary {
+    background: var(--ox-surface);
+    border-color: var(--ox-fg);
+    color: var(--ox-fg);
+    &:hover { background: var(--ox-plate); }
+  }
+  &--ghost {
+    background: transparent;
+    color: var(--ox-fg);
+    &:hover { background: var(--ox-plate); }
+  }
+  &--link {
+    display: inline;
+    min-inline-size: 0;
+    block-size: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: inherit;
+    line-height: inherit;
+    white-space: normal;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 1px;
+    color: var(--ox-fg);
+    &:hover { color: var(--ox-accent-dark); }
+    &:active { transform: none; }
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    background: var(--ox-plate-2);
+    border-color: var(--ox-plate-2);
+    color: var(--ox-ink-4);
+    cursor: not-allowed;
+    transform: none;
+    &:hover { background: var(--ox-plate-2); }
+  }
+  &--link:disabled,
+  &--link[aria-disabled='true'] {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  &__icon {
+    flex: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ox-2);
+  }
+
+  // Loading: the width is locked by the component (inline min-inline-size),
+  // the label goes to opacity 0 and a 20px ring in the label colour is
+  // centred. A control state, exempt from the no-spinner rule.
+  &.is-loading {
+    cursor: progress;
+    .ox-btn__label { opacity: 0; }
+  }
+  &__loader {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: 20px;
+    block-size: 20px;
+    margin-block-start: -10px;
+    margin-inline-start: -10px;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: var(--ox-r-pill);
+    animation: ox-spin 0.8s linear infinite;
+  }
+
+  // Confirmed (primary only): the tick replaces the label for --dur-confirm.
+  &.is-confirmed .ox-btn__label {
+    animation: ox-confirm var(--dur-confirm) var(--ease-out);
+  }
+}
+
+.ox-band-dark .ox-btn--secondary {
+  background: transparent;
+  border-color: var(--ox-paper);
+  color: var(--ox-paper);
+  &:hover { background: var(--ox-graphite-3); }
+}
+.ox-band-dark .ox-btn--ghost:hover {
+  background: var(--ox-graphite-3);
+}
+
+@keyframes ox-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes ox-confirm {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Input, select, textarea, checkbox, radio (DIRECTION 5.7, A2)
+// ---------------------------------------------------------------------------
+.ox-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  &__label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ox-fg);
+  }
+  &__help,
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: var(--ox-1);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ox-fg-3);
+  }
+  &__error { color: var(--ox-stop); }
+}
+
+.ox-input,
+.ox-select,
+.ox-textarea {
+  inline-size: 100%;
+  min-block-size: 48px;
+  padding-inline: var(--ox-4);
+  padding-block: 0;
+  border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-1);
+  background: var(--ox-card);
+  color: var(--ox-fg);
+  font-family: inherit;
+  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+  line-height: 1.7;
+  &::placeholder { color: var(--ox-ink-4); }
+  &:hover { border-color: var(--ox-ink-3); }
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 0;
+    border-color: transparent;
+  }
+  &:disabled {
+    background: var(--ox-plate);
+    color: var(--ox-ink-4);
+    cursor: not-allowed;
+  }
+  &[aria-invalid='true'] {
+    border-color: var(--ox-stop);
+    &:focus-visible { outline-color: var(--ox-stop); }
+  }
+  &.is-success { border-color: var(--ox-go); }
+  &--compact { min-block-size: 44px; }
+  &--ltr {
+    direction: ltr;
+    text-align: start;
+  }
+}
+.ox-textarea {
+  min-block-size: calc(3 * 1.7em + 2 * var(--ox-3));
+  padding-block: var(--ox-3);
+  resize: vertical;
+}
+.ox-select {
+  appearance: none;
+  padding-inline-end: calc(var(--ox-4) + 24px);
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2317171A' stroke-width='1.8' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M3.5 6l4.5 4.5L12.5 6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  background-position: left var(--ox-4) center;
+  [dir='ltr'] & { background-position: right var(--ox-4) center; }
+}
+.ox-band-dark {
+  .ox-input,
+  .ox-select,
+  .ox-textarea {
+    background: var(--ox-graphite-3);
+    border-color: var(--ox-line-3);
+    color: var(--ox-fg);
+  }
+}
+
+.ox-check,
+.ox-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 44px;
+  cursor: pointer;
+  color: var(--ox-fg);
+  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+  &__count {
+    margin-inline-start: auto;
+    font-size: 13px;
+    color: var(--ox-fg-3);
+  }
+  input {
+    appearance: none;
+    flex: none;
+    inline-size: 20px;
+    block-size: 20px;
+    margin: 0;
+    border: 1px solid var(--ox-line-3);
+    background: var(--ox-card);
+    cursor: inherit;
+    &:hover { border-color: var(--ox-ink-3); }
+    &:focus-visible {
+      outline: var(--ox-focus-ring);
+      outline-offset: 2px;
+    }
+    &:checked {
+      background-color: var(--ox-ink);
+      border-color: var(--ox-ink);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    &:disabled {
+      background: var(--ox-plate);
+      border-color: var(--ox-line-2);
+      cursor: not-allowed;
+    }
+  }
+}
+.ox-check input {
+  border-radius: 4px;
+  &:checked {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23F7F7F8' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M5 10.5l3.5 3.5L15.5 7'/%3E%3C/svg%3E");
+    background-size: 20px 20px;
+  }
+  &:indeterminate {
+    background-color: var(--ox-ink);
+    border-color: var(--ox-ink);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23F7F7F8'%3E%3Crect x='5' y='9' width='10' height='2'/%3E%3C/svg%3E");
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+.ox-radio input {
+  border-radius: var(--ox-r-pill);
+  &:checked {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23F7F7F8'%3E%3Ccircle cx='10' cy='10' r='3.5'/%3E%3C/svg%3E");
+    background-size: 20px 20px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Chip and Badge
+// ---------------------------------------------------------------------------
+.ox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  max-inline-size: 100%;
+  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--ox-fg);
+
+  // Spec chips: static, --ox-plate fill, 6px radius; 24 on the card, 32 on the PDP.
+  &--spec {
+    block-size: 24px;
+    padding-inline: var(--ox-2);
+    border-radius: var(--ox-r-1);
+    background: var(--ox-plate);
+    .ox-icon { inline-size: 16px; block-size: 16px; }
+  }
+  &--spec.ox-chip--pdp {
+    block-size: 32px;
+    padding-inline: var(--ox-3);
+  }
+
+  // Filter chips: interactive 36 pill, --ox-line-3 rest border (A2).
+  &--filter {
+    @include ox-focus(2px);
+    @include ox-hit-area;
+    block-size: 36px;
+    padding-inline: var(--ox-4);
+    border: 1px solid var(--ox-line-3);
+    border-radius: var(--ox-r-pill);
+    background: var(--ox-card);
+    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-family: inherit;
+    cursor: pointer;
+    &:hover { border-color: var(--ox-ink-3); }
+    &.is-selected,
+    &[aria-pressed='true'] {
+      background: var(--ox-ink);
+      border-color: var(--ox-ink);
+      color: var(--ox-paper);
+    }
+    &:disabled,
+    &[aria-disabled='true'] {
+      background: var(--ox-plate);
+      border-color: var(--ox-line-2);
+      color: var(--ox-ink-4);
+      cursor: not-allowed;
+    }
+  }
+  &--removable {
+    padding-inline-end: var(--ox-2);
+  }
+  &__remove {
+    @include ox-focus(0);
+    @include ox-hit-area;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 24px;
+    block-size: 24px;
+    margin-inline-start: var(--ox-1);
+    border: 0;
+    border-radius: var(--ox-r-pill);
+    background: transparent;
+    color: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    &:hover { background: var(--ox-plate-2); }
+  }
+  .ox-band-dark & {
+    background: var(--ox-surface);
+  }
+  .ox-band-dark &--filter.is-selected {
+    background: var(--ox-paper);
+    border-color: var(--ox-paper);
+    color: var(--ox-ink);
+  }
+}
+.ox-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  min-block-size: 24px;
+}
+
+.ox-badge {
+  display: inline-flex;
+  align-items: center;
+  block-size: 20px;
+  padding-inline: var(--ox-2);
+  border: 1px solid transparent;
+  border-radius: var(--ox-r-1);
+  font-size: clamp(11.5px, 11.31px + 0.048vw, 12px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  // Never orange, never a shadow (orange is for pressable things).
+  &--popular { background: var(--ox-graphite); color: var(--ox-paper); }
+  &--new { background: var(--ox-card); border-color: var(--ox-line-2); color: var(--ox-fg); }
+  &--saving { background: var(--ox-go-soft); color: var(--ox-go); }
+  &--note { background: var(--ox-note-soft); color: var(--ox-note); }
+  &--stop { background: var(--ox-stop-soft); color: var(--ox-stop); }
+  &--neutral { background: var(--ox-plate); color: var(--ox-fg-2); }
+}
+.ox-badge-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
+}
+
+// ---------------------------------------------------------------------------
+// 7. SectionHeader (DIRECTION 5.2, A4)
+// ---------------------------------------------------------------------------
+.ox-sh {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'eyebrow eyebrow'
+    'title actions'
+    'desc desc'
+    'link link';
+  column-gap: var(--ox-4);
+  row-gap: var(--ox-2);
+  margin-block-end: var(--ox-6);
+  color: var(--ox-fg);
+  @media (min-width: 1024px) {
+    grid-template-areas:
+      'eyebrow eyebrow'
+      'title actions'
+      'desc link';
+    margin-block-end: var(--ox-8);
+  }
+  &__eyebrow {
+    grid-area: eyebrow;
+    display: flex;
+    align-items: center;
+    gap: var(--ox-2);
+    font-size: clamp(13px, 12.63px + 0.095vw, 14px);
+    font-weight: 600;
+    color: var(--ox-fg-3);
+    &::before {
+      content: '';
+      flex: none;
+      inline-size: 24px;
+      block-size: 2px;
+      background: var(--ox-accent);
+    }
+  }
+  &__title {
+    grid-area: title;
+    margin: 0;
+    letter-spacing: 0;
+  }
+  &__actions {
+    grid-area: actions;
+    display: none;
+    align-self: center;
+    gap: var(--ox-2);
+    @media (min-width: 1024px) { display: flex; }
+  }
+  &__desc {
+    grid-area: desc;
+    margin: 0;
+    color: var(--ox-fg-2);
+    letter-spacing: 0;
+  }
+  &__link {
+    @include ox-focus(2px);
+    grid-area: link;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ox-1);
+    min-block-size: 44px;
+    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ox-fg);
+    border-radius: var(--ox-r-1);
+    @media (min-width: 1024px) {
+      justify-self: end;
+      align-self: end;
+    }
+    .ox-sh__chevron {
+      font-size: 16px;
+      transition: transform var(--dur-fast) var(--ease-in);
+    }
+    &:hover {
+      color: var(--ox-accent-dark);
+      .ox-sh__chevron {
+        transform: translateX(calc(var(--direction-factor) * 2px));
+        transition-timing-function: var(--ease-out);
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. Price and bidi (DIRECTION 3.3, 9.8, A5)
+// ---------------------------------------------------------------------------
+.ox-price {
+  unicode-bidi: isolate;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25em;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ox-fg);
+  white-space: nowrap;
+  .sicon-sar {
+    font-size: 0.85em;
+    line-height: 1;
+  }
+  &--h2 { @apply text-h2; font-weight: 700; }
+  &--h3 { @apply text-h3; font-weight: 700; }
+  &--small { @apply text-small; font-weight: 600; }
+  &--was {
+    @apply text-small;
+    font-weight: 400;
+    color: var(--ox-fg-3);
+    text-decoration: line-through;
+  }
+  &--go { color: var(--ox-go); }
+}
+.ox-bdi {
+  unicode-bidi: isolate;
+}
+.ox-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+
+// ---------------------------------------------------------------------------
+// 9. Skeleton (DIRECTION 5.6, A7)
+// ---------------------------------------------------------------------------
+// Block rectangles are static --ox-plate-2. The 1.2s opacity pulse runs only
+// on the text bars of the one root currently in the viewport (.is-pulsing is
+// moved by a single IntersectionObserver in Skeleton.tsx). Reduced motion:
+// nothing pulses; bars sit at opacity 0.8.
+.ox-skel {
+  display: block;
+  color: transparent;
+  pointer-events: none;
+  user-select: none;
+  &__block,
+  &__bar,
+  &__circle {
+    display: block;
+    background: var(--ox-plate-2);
+  }
+  &__block { border-radius: var(--ox-r-2); }
+  &__bar {
+    block-size: 1em;
+    border-radius: var(--ox-r-1);
+    opacity: 0.8;
+  }
+  &__circle { border-radius: var(--ox-r-pill); }
+  &.is-pulsing &__bar {
+    animation: ox-pulse 1.2s var(--ease-in-out) infinite;
+  }
+  .ox-band-dark & {
+    &__block,
+    &__bar,
+    &__circle { background: var(--ox-graphite-3); }
+  }
+}
+@keyframes ox-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+// ---------------------------------------------------------------------------
+// 10. Accordion (DIRECTION 5.4 PrePurchaseInfo and Faq, 7.1)
+// ---------------------------------------------------------------------------
+.ox-acc {
+  border-block-start: 1px solid var(--ox-bd);
+  &__row {
+    border-block-end: 1px solid var(--ox-bd);
+  }
+  &__trigger {
+    @include ox-focus(-2px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ox-4);
+    inline-size: 100%;
+    min-block-size: 56px;
+    padding-block: var(--ox-3);
+    padding-inline: 0;
+    background: transparent;
+    border: 0;
+    font-family: inherit;
+    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-align: start;
+    color: var(--ox-fg);
+    cursor: pointer;
+  }
+  &__title {
+    margin: 0;
+    font: inherit;
+  }
+  &__chevron {
+    flex: none;
+    font-size: 16px;
+    color: var(--ox-fg-3);
+    transition: transform var(--dur-fast) var(--ease-in);
+  }
+  &__trigger[aria-expanded='true'] &__chevron {
+    transform: rotate(180deg);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  // The engine Collapse.Content sets grid-template-rows 0fr/1fr and opacity;
+  // the tokens below replace its fixed 200ms transition-all.
+  &__panel {
+    transition:
+      grid-template-rows var(--dur-fast) var(--ease-in),
+      opacity var(--dur-fast) var(--ease-in);
+    &[data-open='true'] {
+      transition:
+        grid-template-rows var(--dur-base) var(--ease-out),
+        opacity var(--dur-base) var(--ease-out);
+    }
+  }
+  &__body {
+    padding-block: var(--ox-1) var(--ox-4);
+    color: var(--ox-fg-2);
+    @apply text-body;
+    letter-spacing: 0;
+    p { margin: 0 0 var(--ox-3); }
+    p:last-child { margin-block-end: 0; }
+  }
+  // A locked row (the medical line) has no control at all.
+  &__static {
+    padding-block: var(--ox-3) 0;
+    .ox-acc__title {
+      display: flex;
+      align-items: center;
+      min-block-size: 32px;
+      font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+      font-weight: 600;
+      color: var(--ox-fg);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Tabs (SallaTabs styled), Tooltip
+// ---------------------------------------------------------------------------
+.ox-tabs {
+  display: block;
+  .s-tabs-header,
+  &__list {
+    position: relative;
+    display: flex;
+    gap: var(--ox-2);
+    overflow-x: auto;
+    border-block-end: 1px solid var(--ox-bd);
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+  .s-tabs-header-item,
+  &__tab {
+    @include ox-focus(-2px);
+    position: relative;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 48px;
+    padding-inline: var(--ox-4);
+    background: transparent;
+    border: 0;
+    font-family: inherit;
+    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ox-fg-2);
+    cursor: pointer;
+    white-space: nowrap;
+    &:hover { color: var(--ox-fg); }
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: -1px;
+      block-size: 2px;
+      background: var(--ox-fg);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform var(--dur-base) var(--ease-in-out);
+    }
+  }
+  .s-tabs-header-item.s-tabs-active,
+  &__tab[aria-selected='true'] {
+    color: var(--ox-fg);
+    &::after { transform: scaleX(1); }
+  }
+  .s-tabs-content,
+  &__panel {
+    padding-block-start: var(--ox-4);
+  }
+}
+
+// Tooltip: only on icon-only buttons, never on touch, never for information
+// that matters. A 32 tall graphite panel, small paper text, 6px radius.
+.ox-tooltip {
+  --ox-tooltip-bg: var(--ox-graphite);
+  --ox-tooltip-fg: var(--ox-paper);
+  display: inline-block;
+  .s-tooltip,
+  [data-ox-tooltip] {
+    block-size: 32px;
+    padding-inline: var(--ox-2);
+    border-radius: var(--ox-r-1);
+    background: var(--ox-tooltip-bg);
+    color: var(--ox-tooltip-fg);
+    font-size: clamp(13px, 12.63px + 0.095vw, 14px);
+    line-height: 32px;
+    box-shadow: none;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+}
+@media (hover: none) {
+  .ox-tooltip .s-tooltip,
+  .ox-tooltip [data-ox-tooltip] {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 12. Table (hours, nutrition, cart totals, order details)
+// ---------------------------------------------------------------------------
+.ox-table-wrap {
+  position: relative;
+  inline-size: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.ox-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  @apply text-body;
+  letter-spacing: 0;
+  color: var(--ox-fg);
+  caption {
+    caption-side: top;
+    text-align: start;
+    padding-block-end: var(--ox-2);
+    @apply text-small;
+    color: var(--ox-fg-3);
+  }
+  th,
+  td {
+    padding-inline: var(--ox-3);
+    text-align: start;
+    vertical-align: middle;
+    border-block-end: 1px solid var(--ox-line-2);
+  }
+  thead th {
+    block-size: 44px;
+    background: var(--ox-plate-2);
+    @apply text-small;
+    font-weight: 600;
+    color: var(--ox-fg-2);
+  }
+  tbody td,
+  tbody th {
+    block-size: 48px;
+  }
+  tbody th {
+    font-weight: 600;
+  }
+  .ox-table__num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+  &--scroll {
+    min-inline-size: 560px;
+    thead th:first-child,
+    tbody th:first-child,
+    tbody td:first-child {
+      position: sticky;
+      inset-inline-start: 0;
+      background: var(--ox-card);
+      z-index: 1;
+    }
+    thead th:first-child { background: var(--ox-plate-2); }
+  }
+  .ox-band-dark & {
+    th,
+    td { border-color: var(--ox-bd); }
+    thead th { background: var(--ox-graphite-3); }
+    &--scroll thead th:first-child { background: var(--ox-graphite-3); }
+    &--scroll tbody th:first-child,
+    &--scroll tbody td:first-child { background: var(--ox-surface); }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 13. EmptyState (DIRECTION 5.6)
+// ---------------------------------------------------------------------------
+.ox-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-block: var(--ox-12);
+  margin-inline: auto;
+  max-inline-size: 420px;
+  color: var(--ox-fg);
+  @media (min-width: 1024px) { padding-block: var(--ox-16); }
+  &__mark {
+    display: inline-flex;
+    inline-size: 48px;
+    block-size: 48px;
+    margin-block-end: var(--ox-4);
+    color: var(--ox-accent);
+  }
+  &__title {
+    margin: 0 0 var(--ox-2);
+  }
+  &__body {
+    margin: 0 0 var(--ox-6);
+    color: var(--ox-fg-2);
+  }
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ox-3);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 14. Card base (the border rule every card shares, DIRECTION 2.7)
+// ---------------------------------------------------------------------------
+.ox-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+  // Hover changes only the border colour and never transitions it.
+  &:hover { border-color: var(--ox-bd-2); }
+  &.is-selected { border-color: var(--ox-fg); }
+  &__actions { margin-block-start: auto; }
+}
+.ox-band-dark .ox-card:hover {
+  background: var(--ox-graphite-3);
+}
+
+// ---------------------------------------------------------------------------
+// 15. Reduced motion (DIRECTION 7.1 reduced column, 9.6)
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+  .ox-btn,
+  .ox-btn__label,
+  .ox-sh__chevron,
+  .ox-acc__chevron,
+  .ox-acc__panel,
+  .ox-tabs .s-tabs-header-item::after,
+  .ox-tabs__tab::after,
+  .ox-tooltip .s-tooltip,
+  .ox-tooltip [data-ox-tooltip] {
+    transition: none;
+    animation: none;
+  }
+  .ox-btn:active { transform: none; }
+  .ox-btn__loader { animation: none; border-inline-end-color: currentColor; opacity: 0.6; }
+  .ox-skel.is-pulsing .ox-skel__bar { animation: none; opacity: 0.8; }
+}

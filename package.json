@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "check:copy": "node scripts/check-copy.mjs",
+    "i18n:merge": "node scripts/i18n-merge.mjs",
     "check:jsonld": "node scripts/check-jsonld.mjs tests/fixtures/jsonld/*.json"
   },
   "dependencies": {
