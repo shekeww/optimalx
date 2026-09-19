@@ -82,3 +82,12 @@ Backup of the composition before any change: 10 blocks, order 1..100:
 | 2026-09-19 07:47 | homepage_component_edit visibility false | 692876762 duplicate dark band | hidden, not deleted | recoverable |
 | 2026-09-19 07:47 | homepage_component_edit settings + visibility false | 309059894 bundle | retitled "اختيارات تناسبك", hidden | it personalises on purchase history and the store has no orders |
 | 2026-09-19 07:48 | homepage_component_edit visibility false | 195240438 صور مربعة | hidden, not deleted | it rendered as six empty grey boxes; unhide once the owner uploads the tile images |
+
+## 2026-09-19 ~14:55 The OptimalX skin went live on optimalx.com.sa
+The owner pasted `docs/live-theme/optimalx-raed.min.css` and `optimalx-raed.min.js` into the Raed customizer's custom code boxes. Salla now serves both from its own CDN:
+- https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.css
+- https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.js
+
+Verified against the live store, no injection, cache busted, at 1440 and 390 in Arabic on home, product, search and cart: body ground #F7F7F8 on all eight, Cairo, `--ox-paper` resolving, the script flag set on every page, one h1 per page, document width 1425 at 1440 and 375 at 390 so no horizontal scroll, and zero uncaught page errors on all eight. On the product page: 15 spec chip elements, the supply calculator rendering "تكفي نحو 24 يوما", and the nutrition table carrying its third column.
+
+Note: `custom_css_enabled` still reads false in the theme-versions API while the stylesheet is demonstrably being served, so that flag is not a reliable signal.
