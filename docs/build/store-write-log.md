@@ -65,3 +65,20 @@ Every write, in order, with read-back status. Never delete anything listed here 
 | 2026-09-18 15:53 | product_image_add x2 (main, no alt) | OX-004 1652585902, OX-008 905834922 (nahdi host) | 201 | 1000x1000 |
 | 2026-09-18 16:25 | product_image_add x16 (main, no alt) | OX-003 743352570, OX-005 2116794363, OX-026 1099379655, OX-028 1349008335, OX-023 1025393360, OX-024 251355601, OX-025 1489076434, OX-032 76271324, OX-041 640007724 (reuses the OX-001 whey shot), OX-015 358316074, OX-016 606887986, OX-022 498912573, OX-027 922052666, OX-036 2012295425, OX-037 1105088514, OX-038 331054851 | all 201, 1000x1000 on cdn.salla.sa | Sources verified by the image-research agent (research/image-urls.json). OX-003 and OX-005 are the Sporter line hero shots (flavour on the shot not confirmed), OX-037 flavour not confirmed. OX-039 and OX-040 (Myprotein) have no image on the accepted hosts. |
 | 2026-09-18 16:30 | product_image_add x2 (main, no alt) | OX-039 302770808, OX-040 752669248 (static.thcdn.com, Myprotein's own CDN, 1600x1600) | 201 | Fourth accepted host. Every physical and food item now has a photo; OX-042..047 (digital, codes, service placeholders) wait for the owner's generated artwork per DIRECTION.md section 8. |
+
+## Live Raed home composition (theme version 499745075), 2026-09-19
+Backup of the composition before any change: 10 blocks, order 1..100:
+415756255 custom_component صور متحركة (محسنة) hero | 906554936 fixed_products title "الأكثر مبيعا" type most_sales | 2132346943 featured_products title "مجموعة منتجات فقط" | 303875307 custom_component منتجات متحركة مع خلفية | 195240438 custom_component صور مربعة (محسنة) | 692876762 custom_component منتجات متحركة مع خلفية | 791947048 photos_slider | 309059894 bundle_component title "Products on Your Taste" | 1815085111 featured_products title "مجموعة منتجات فقط" | 1929931795 featured_products title "مجموعة منتجات فقط"
+
+| when | call | target | result | note |
+|---|---|---|---|---|
+| 2026-09-19 07:40 | homepage_component_edit settings | 906554936 fixed_products | read back: title {"ar":"أحدث المنتجات"}, type latest_products | Removes a popularity claim the store cannot support: the title said "الأكثر مبيعا" and the source was most_sales on a store with no orders. FINAL-content 1.4 defers bestsellers until real order data exists. |
+| 2026-09-19 07:42 | homepage_component_edit settings | 2132346943 featured_products | read back: tab "بروتين وواي", six chosen products resolved by name | was an untitled tab sourced from most_sales |
+| 2026-09-19 07:43 | homepage_component_edit settings | 1815085111 featured_products | tab "فيتامينات ومعادن", six chosen products | same |
+| 2026-09-19 07:43 | homepage_component_edit settings | 1929931795 featured_products | tab "سناكس ومستلزمات", six chosen products | same |
+| 2026-09-19 07:44 | homepage_component_edit add + settings | 1144282907 store_features (new) | three items: منتجات أصلية / شحن من المدينة المنورة / مساعدة في الاختيار | wording from locales ox.trust.*; no payment names, no reply-time promise, no distributor claim |
+| 2026-09-19 07:45 | homepage_component_edit add + settings | 1677696357 custom_component روابط سريعة (new) | title "تصفح حسب النوع", six links to /search for بروتين كرياتين فيتامين اوميغا كولاجين امينو | search verified live: "أكثر من 15 منتج" for بروتين. Repoint to categories once the owner creates them. |
+| 2026-09-19 07:46 | homepage_component_edit reorder | all 12 | hero, type links, trust, latest, protein, dark band, vitamins, banner, snacks | verified in the rendered DOM |
+| 2026-09-19 07:47 | homepage_component_edit visibility false | 692876762 duplicate dark band | hidden, not deleted | recoverable |
+| 2026-09-19 07:47 | homepage_component_edit settings + visibility false | 309059894 bundle | retitled "اختيارات تناسبك", hidden | it personalises on purchase history and the store has no orders |
+| 2026-09-19 07:48 | homepage_component_edit visibility false | 195240438 صور مربعة | hidden, not deleted | it rendered as six empty grey boxes; unhide once the owner uploads the tile images |
