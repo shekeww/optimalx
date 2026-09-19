@@ -5,7 +5,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { DefaultHome } from '../components/home/DefaultHome';
 import { HomeSkeleton } from '../components/home/HomeSkeleton';
-import { hasHeroBlock } from '../components/home/defaults';
+import { hasHeroBlock, hasOxBlock } from '../components/home/defaults';
 import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
 
 /**
@@ -51,7 +51,10 @@ export const Route = createFileRoute('/{-$locale}/')({
 function HomeComponent() {
   const data: HomeLoaderData = Route.useLoaderData();
   const { t } = useTranslation();
-  const configured = data.components.length > 0;
+  // A composition counts as the merchant's only when it holds a block of ours.
+  // A store arriving from another theme sends that theme's blocks instead, and
+  // rendering them would hide this theme's home behind the old one.
+  const configured = data.components.length > 0 && hasOxBlock(data.components);
   const heroPresent = configured ? hasHeroBlock(data.components) : true;
 
   return (

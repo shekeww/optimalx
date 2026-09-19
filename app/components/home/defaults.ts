@@ -148,6 +148,23 @@ export function hasHeroBlock(components: readonly { path?: string }[]): boolean 
 }
 
 /**
+ * True when the merchant's saved composition belongs to this theme.
+ *
+ * A store that has run another theme keeps that theme's home blocks in the
+ * dashboard, and the engine hands them to us on the first load: a list that is
+ * not empty but contains none of ours. Rendering it would show the previous
+ * theme's composition under our chrome, so the theme treats "no ox block" the
+ * same way it treats an empty list and renders its own default home instead
+ * (D5: a fresh install must still render a full home). The merchant's own
+ * composition wins the moment they place one OptimalX block.
+ */
+export function hasOxBlock(components: readonly { path?: string }[]): boolean {
+  return components.some((component) =>
+    (HOME_BLOCK_PATHS as readonly string[]).includes(blockPath(component))
+  );
+}
+
+/**
  * What a home block actually receives. The renderer passes ONE prop,
  * `data`, with the merchant fields spread flat on it plus `position`
  * (1-based) and `priority` (true for the first three blocks) INSIDE it, not
