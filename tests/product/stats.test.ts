@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { statCells } from '../../app/components/product/lib/stats';
+import { statCells, unitBearingWeight } from '../../app/components/product/lib/stats';
 import { bandBadges, hasTag, VEGAN_TOKENS } from '../../app/components/product/lib/bandBadges';
 import { splitStep } from '../../app/components/product/lib/steps';
 import { parseSpecLineText } from '../../app/components/product/lib/specLine';
@@ -56,12 +56,39 @@ describe('statCells', () => {
     expect(cells[0]).toMatchObject({ id: 'pack_size', value: '2kg' });
   });
 
+  it('drops a catalogue weight that is a bare number, because it names no unit', () => {
+    // What the live storefront API actually sends: "0.35" with no unit field
+    // anywhere beside it. Rendered alone it reads as a second price.
+    for (const weight of ['0.35', '2.27', ' 1.1 ', '1,5']) {
+      const cells = statCells({ product: product({ weight }), spec: null, nutrition: null });
+      expect(cells).toEqual([]);
+    }
+  });
+
   it('falls back to the product calories field only for a real positive figure', () => {
     const zero = statCells({ product: product({ calories: 0 }), spec: null, nutrition: null });
     expect(zero).toEqual([]);
 
     const real = statCells({ product: product({ calories: 220 }), spec: null, nutrition: null });
     expect(real[0]).toMatchObject({ id: 'calories', value: '220' });
+  });
+});
+
+describe('unitBearingWeight', () => {
+  it('keeps a weight that carries its unit, in either script', () => {
+    expect(unitBearingWeight('907g')).toBe('907g');
+    expect(unitBearingWeight(' 2 kg ')).toBe('2 kg');
+    expect(unitBearingWeight('2.27 كجم')).toBe('2.27 كجم');
+    expect(unitBearingWeight('12 × 60g')).toBe('12 × 60g');
+  });
+
+  it('drops a bare number, empty string and nothing at all', () => {
+    expect(unitBearingWeight('0.35')).toBeNull();
+    expect(unitBearingWeight('1,5')).toBeNull();
+    expect(unitBearingWeight('٠٥')).toBeNull();
+    expect(unitBearingWeight('   ')).toBeNull();
+    expect(unitBearingWeight(undefined)).toBeNull();
+    expect(unitBearingWeight(null)).toBeNull();
   });
 });
 

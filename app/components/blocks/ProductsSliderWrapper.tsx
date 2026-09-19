@@ -9,9 +9,25 @@ import {
 } from '@salla.sa/twilight-theme-engine/api/product';
 import { SectionHeader } from '../common/SectionHeader';
 
+/** One thing to ask the catalogue for: a source and, where it needs one, its value. */
+export interface ProductsSliderQuery {
+  source: ProductsListSource;
+  sourceValue?: ProductsListParams['sourceValue'];
+}
+
 export interface ProductsSliderWrapperProps {
   source: ProductsListSource;
   sourceValue?: ProductsListParams['sourceValue'];
+  /**
+   * Tried in order, only when the source above comes back with nothing. A rail
+   * whose primary source is merchant-curated (`related`) can name the honest
+   * alternatives here instead of disappearing on a catalogue that has not been
+   * curated yet. Leave it unset and the rail keeps its all-or-nothing
+   * behaviour, which is what every existing caller relies on.
+   */
+  fallbacks?: ProductsSliderQuery[];
+  /** A product id dropped from the result: a rail never offers the page it is on. */
+  exclude?: number | string;
   perPage?: number;
   sort?: string;
   /** Rendered as a SectionHeader above the rail when given. */
@@ -43,6 +59,8 @@ export interface ProductsSliderWrapperProps {
 export function ProductsSliderWrapper({
   source,
   sourceValue,
+  fallbacks,
+  exclude,
   perPage,
   sort,
   title,
@@ -56,19 +74,37 @@ export function ProductsSliderWrapper({
   const [isEmpty, setIsEmpty] = useState(false);
   // The params are read inside the loader, so the callback identity stays
   // stable and the web component is not asked to reload on every render.
-  const params = useRef({ source, sourceValue, perPage, sort });
-  params.current = { source, sourceValue, perPage, sort };
+  const params = useRef({ source, sourceValue, fallbacks, exclude, perPage, sort });
+  params.current = { source, sourceValue, fallbacks, exclude, perPage, sort };
 
   const loader = useCallback(async () => {
-    const { source: s, sourceValue: value, perPage: size, sort: order } = params.current;
-    const result = await product.list({
+    const {
       source: s,
-      ...(value !== undefined ? { sourceValue: value } : {}),
-      ...(size !== undefined ? { perPage: size } : {}),
-      ...(order !== undefined ? { sort: order } : {}),
-    });
-    setIsEmpty(result.items.length === 0);
-    return result;
+      sourceValue: value,
+      fallbacks: rest,
+      exclude: skip,
+      perPage: size,
+      sort: order,
+    } = params.current;
+    const queries: ProductsSliderQuery[] = [{ source: s, sourceValue: value }, ...(rest ?? [])];
+    let last: Awaited<ReturnType<typeof product.list>> | null = null;
+    for (const query of queries) {
+      const result = await product.list({
+        source: query.source,
+        ...(query.sourceValue !== undefined ? { sourceValue: query.sourceValue } : {}),
+        ...(size !== undefined ? { perPage: size } : {}),
+        ...(order !== undefined ? { sort: order } : {}),
+      });
+      const items =
+        skip === undefined
+          ? result.items
+          : result.items.filter((item) => String(item.id) !== String(skip));
+      last = { ...result, items };
+      if (items.length > 0) break;
+    }
+    const final = last ?? { items: [] as Product[] };
+    setIsEmpty(final.items.length === 0);
+    return final as Awaited<ReturnType<typeof product.list>>;
   }, []);
 
   if (isEmpty) return null;

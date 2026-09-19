@@ -253,18 +253,53 @@
   border-radius: var(--ox-r-4, 16px);
 }
 
+// ---------------------------------------------------------------------------
+// THE MIRRORING RULE, and it is one rule, not a list of patches
+// ---------------------------------------------------------------------------
+// Every mirrored row on this page had the same cause. A grid track list is
+// read in WRITING order, so in an RTL document `grid-template-columns: A B`
+// puts A on the RIGHT. The tracks on this page were authored by reading the
+// approved image left to right and typing the widths in that order, which in
+// Arabic reverses every one of them.
+//
+// The rule from here on: read the image from the RIGHT, because that is the
+// inline start, and write the track list in that order. Where the DOM order
+// must stay as it is (the engine owns the markup, or a phone has to meet the
+// gallery before the buy column), name the tracks with `grid-template-areas`
+// and place the children, rather than reordering source.
+//
+// Four rows were mirrored by this and all four are corrected below: the fold,
+// the gallery's thumbnail rail, the buy row inside the engine's form, and the
+// payment marks.
 @media (min-width: 1024px) {
-  // 664 / 56 / 576 at a 1296 container, expressed as ratios so the split
-  // holds at every width above the breakpoint. Neither column sticks: the
-  // design puts the band directly under the taller of the two.
+  // Two columns from here up. Below this width the grid is a single column and
+  // source order governs, which is what puts the gallery above the buy column
+  // on a phone; the areas below only apply once there are two columns to place.
+  // Neither column sticks: the design puts the band under the taller of the two.
   .ox-pdp__top {
-    grid-template-columns: minmax(0, 664fr) minmax(0, 576fr);
-    column-gap: 56px;
+    // Measured off the approved image at 1024 and scaled by 1.40625. Read from
+    // the inline start, which is the right edge:
+    //   buy column   x 565 to 975 = 410 -> 577
+    //   gutter       x 530 to 565 =  35 ->  49, drawn at 48
+    //   media column x  55 to 530 = 475 -> 668
+    // The media column is the thumbnail rail (x 55 to 95) PLUS its gap PLUS
+    // the plate (x 110 to 530), which is why it is the wider of the two even
+    // though the plate alone is near the buy column's width. An earlier pass
+    // measured the plate instead of the column and made the two near equal,
+    // which shrank the gallery by 40px and stretched the buy column by 36.
+    grid-template-columns: minmax(0, 577fr) minmax(0, 668fr);
+    grid-template-areas: 'buy media';
+    column-gap: 48px;
     margin-block-start: 34px;
   }
 
   .ox-pdp__buy {
+    grid-area: buy;
     gap: 18px;
+  }
+
+  .ox-pdp__media {
+    grid-area: media;
   }
 }
 
@@ -307,18 +342,26 @@
   inline-size: 46%;
   background: var(--ox-plate-2);
   opacity: 0.55;
-  transform: skewX(calc(var(--direction-factor) * -1 * var(--ox-angle)));
+  transform: skewX(var(--ox-skew));
   pointer-events: none;
 }
 
+// The accent bar on the plate, measured off the approved image rather than
+// guessed. Read at 1024 inside a plate spanning x 110 to 530 and y 118 to 508:
+// the bar is 23 wide, about 80 tall, it starts 37 in from the plate's inline
+// end and it STOPS about 23 per cent above the plate's floor. It used to sit
+// on `inset-block-end: 0` at 26 by 118, so `overflow: hidden` cut it into a
+// heavy orange triangle in the plate's bottom corner, which is the single
+// loudest thing in the fold and is not in the image at all. Everything is a
+// percentage so the same bar holds its proportion on a 343 wide phone plate.
 .ox-gallery__mark {
   position: absolute;
-  inset-block-end: 0;
+  inset-block-end: 22%;
   inset-inline-end: 8%;
-  inline-size: 26px;
-  block-size: 118px;
+  inline-size: 4.5%;
+  block-size: 19%;
   background: var(--ox-accent);
-  transform: skewX(calc(var(--direction-factor) * -1 * var(--ox-angle)));
+  transform: skewX(var(--ox-skew));
   pointer-events: none;
 }
 
@@ -470,10 +513,24 @@
 }
 
 @media (min-width: 1024px) {
+  // The fourth place the mirroring rule bit, and the last. Read the approved
+  // image from the inline start, which is the right: the plate comes first
+  // (x 110 to 530) and the thumbnail rail sits past it at the column's far
+  // end (x 55 to 95). The track list said `64px minmax(0, 1fr)`, so in Arabic
+  // the rail took the start and stood between the plate and the buy column.
+  //
+  // `order` on the rail is left alone: it is what stacks the rail UNDER the
+  // plate on a phone, where the grid is one column and order governs. The
+  // areas only exist here, where there are two tracks to place.
   .ox-gallery--railed {
-    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 64px;
+    grid-template-areas: 'plate thumbs';
     column-gap: 20px;
     align-items: start;
+  }
+
+  .ox-gallery--railed .ox-gallery__plate {
+    grid-area: plate;
   }
 
   .ox-gallery__plate {
@@ -482,16 +539,21 @@
   }
 
   .ox-thumbs {
+    grid-area: thumbs;
     order: 0;
     flex-direction: column;
     gap: var(--ox-1);
     inline-size: 64px;
   }
 
+  // Exactly four thumbs, which is what the approved image draws, and which is
+  // 4 x 72 plus 3 x 12 of gap. It was 348, so a fifth image showed a 24px
+  // sliver under the fourth and the rail read as a clipped list rather than a
+  // full one; the chevron below is the affordance, not a half-drawn thumb.
   .ox-thumbs__list {
     flex-direction: column;
     gap: var(--ox-3);
-    max-block-size: 348px;
+    max-block-size: 324px;
     overflow-x: hidden;
     overflow-y: auto;
     scroll-snap-type: y mandatory;
@@ -636,6 +698,12 @@
   margin: 0;
 }
 
+// The hero price is one of the four orange things on the page (target-spec
+// "The accent is not the token"): the price, the add button, the active tab
+// indicator and the card buttons. The approved image sets the amount AND the
+// mark in the accent here, and only the mark on a card, which is why the two
+// sizes differ in colour. At 36/800 this is large text, so the 3:1 floor
+// applies and #F54915 on the page ground clears it.
 .ox-price--hero {
   display: inline-flex;
   align-items: baseline;
@@ -643,12 +711,14 @@
   font-size: 36px;
   font-weight: 800;
   line-height: 1.1;
-  color: var(--ox-fg);
+  color: var(--ox-accent);
 
+  .ox-price__mark,
   i,
   .sicon-sar {
     font-size: 0.55em;
-    color: var(--ox-accent);
+    font-weight: 700;
+    color: inherit;
   }
 }
 
@@ -661,9 +731,11 @@
   line-height: 1.2;
   color: var(--ox-fg);
 
+  .ox-price__mark,
   i,
   .sicon-sar {
     font-size: 0.6em;
+    font-weight: 700;
     color: var(--ox-accent);
   }
 }
@@ -689,7 +761,10 @@
   color: var(--ox-ink-4);
 }
 
-// Reserved so the widgets' late load cannot move the buy button.
+// Reserved so the widget's late load cannot move the buy button. The slot
+// itself only exists when the store has a split-payment gateway
+// (`hasInstallmentGateway`), so on a store with none this reservation is not
+// 48px of empty column: there is no element at all.
 .ox-pdp__installment {
   min-block-size: 48px;
 }
@@ -914,9 +989,14 @@
 // ---------------------------------------------------------------------------
 // 8. Payment marks and the delivery row (design regions 24 and 25)
 // ---------------------------------------------------------------------------
+// The marks sit at the column's inline END, which in Arabic is the left, under
+// the quantity stepper rather than under the add button. A flex row defaults to
+// packing at the inline start, so without this they mirror (see THE MIRRORING
+// RULE above). Measured on the image at 1024: x 565 to 720, the column's left.
 .ox-pay {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   min-block-size: 24px;
 }
 
@@ -924,15 +1004,48 @@
   min-block-size: 21px;
 }
 
+// Salla draws each mark in a white rounded tile with a border. The approved
+// image has no tile: four bare marks on the page ground, which is the same
+// "separated by value, not by borders and shadows" rule the rest of the page
+// follows. The component is restyled, never reimplemented, so the marks stay
+// exactly the set the store has enabled.
 .ox-pay__marks {
   display: flex;
   align-items: center;
   gap: 20px;
 
+  .s-payments-list {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .s-payments-list-item {
+    display: inline-flex;
+    align-items: center;
+    inline-size: auto;
+    block-size: 21px;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  // Salla's own artwork is not one aspect ratio: mada and Visa are square-ish
+  // marks, the STC one is a wide "STC Bank" wordmark that ran three times the
+  // width of its neighbours and took over the row on a phone. Capping the
+  // width and containing inside it evens the row without touching the set.
   img,
   svg {
     block-size: 21px;
     inline-size: auto;
+    max-inline-size: 60px;
+    object-fit: contain;
   }
 }
 
@@ -1009,14 +1122,27 @@
   // from the store's own setting rather than from the React prop. The quantity
   // and the add button belong in the flow, side by side, where the design puts
   // them; the one fixed bar on this page is `.ox-sticky`.
+  // The buy row. The engine writes the quantity first and the add button
+  // second, and the track list used to be written in that same order, so in
+  // Arabic the stepper took the inline start and the button the end: the
+  // mirroring rule again, one level down from the fold.
+  //
+  // Measured on the image at 1024, read from the inline start (the right):
+  //   add button x 690 to 975 = 285 -> 401
+  //   gap        x 680 to 690 =  10 ->  14
+  //   stepper    x 565 to 680 = 115 -> 162, drawn at 160
+  //
+  // The tracks are named rather than reordered, because the engine owns this
+  // markup and a source-order swap would fight it on every release.
   .sticky-product-bar {
     position: static;
     inset: auto;
     z-index: auto;
     display: grid;
-    grid-template-columns: 120px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 120px;
+    grid-template-areas: 'add qty';
     gap: 12px;
-    align-items: center;
+    align-items: stretch;
     padding: 0;
     margin: 0;
     inline-size: 100%;
@@ -1027,7 +1153,18 @@
     transition: none;
   }
 
+  // Everything that is not the stepper is the add button: the engine wraps the
+  // web component in an unclassed div, so the grid item is that wrapper and not
+  // the component itself. Naming it by exclusion is what survives a release
+  // that adds or removes a wrapper.
+  .sticky-product-bar > *:not(.sticky-product-bar__quantity) {
+    grid-area: add;
+    display: flex;
+    min-inline-size: 0;
+  }
+
   .sticky-product-bar__quantity {
+    grid-area: qty;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1060,16 +1197,52 @@
     inline-size: 100%;
   }
 
+  // The add button is three elements deep: wrapper div, web component, and the
+  // `s-button-element` the component renders. Only the last one draws, so the
+  // height has to reach it or the button sits 40 tall inside a 52 row.
   .sticky-product-bar salla-add-product-button,
   .sticky-product-bar__btn {
     inline-size: 100%;
-    flex: none;
+    flex: 1 1 auto;
     min-block-size: 52px;
     margin: 0;
     opacity: 1;
     transform: none;
     transition: none;
   }
+
+  .sticky-product-bar salla-add-product-button .s-button-element,
+  .sticky-product-bar__btn.s-button-element {
+    inline-size: 100%;
+    min-block-size: 52px;
+  }
+
+  // The cart glyph the approved image draws before the label. The product
+  // card puts the same icon in as a child, but this button is the engine's
+  // and takes no children, so it is a mask on a pseudo element: the exact
+  // paths `PdpIcon` draws for `cart`, on the same 24 grid, at stroke 1.5,
+  // inheriting the button's own colour. Decorative, and out of the
+  // accessibility tree, because the button already says what it does.
+  .sticky-product-bar salla-add-product-button .s-button-text::before,
+  .sticky-product-bar__btn.s-button-element .s-button-text::before {
+    content: '';
+    display: inline-block;
+    inline-size: 18px;
+    block-size: 18px;
+    margin-inline-end: 10px;
+    vertical-align: -3px;
+    background: currentColor;
+    // Both spellings: Safari only dropped the prefix at 17.4 and autoprefixer
+    // is not configured to add it for the mask shorthand.
+    -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+    mask: var(--ox-cart-glyph) center / contain no-repeat;
+  }
+}
+
+// One copy of the glyph, so the sticky bar and anything else that needs it
+// read the same file. `stroke` and no `fill`, exactly as `PdpIcon` renders it.
+:root {
+  --ox-cart-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.8 3.6h2.4l2.3 10.6h9.5l2.2-7.7H6.2'/%3E%3Cpath d='M9.4 19.1a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z'/%3E%3Cpath d='M16.6 19.1a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z'/%3E%3C/svg%3E");
 }
 
 // The scaffold also pads the page for its fixed bar; ours is not fixed, and
@@ -1080,13 +1253,15 @@ body.is-sticky-product-bar.product-single {
 
 @media (min-width: 1024px) {
   .ox-buy .sticky-product-bar {
-    grid-template-columns: 160px minmax(0, 1fr);
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) 160px;
+    gap: 14px;
   }
 
   .ox-buy .sticky-product-bar__quantity,
   .ox-buy .sticky-product-bar salla-add-product-button,
-  .ox-buy .sticky-product-bar__btn {
+  .ox-buy .sticky-product-bar__btn,
+  .ox-buy .sticky-product-bar salla-add-product-button .s-button-element,
+  .ox-buy .sticky-product-bar__btn.s-button-element {
     min-block-size: 56px;
   }
 }
@@ -1269,7 +1444,7 @@ body.is-sticky-product-bar.product-single {
   position: absolute;
   inset-block-start: 0;
   background: var(--ox-accent);
-  transform: skewX(calc(var(--direction-factor) * -1 * var(--ox-angle)));
+  transform: skewX(var(--ox-skew));
   pointer-events: none;
 }
 
@@ -1729,12 +1904,65 @@ body.is-sticky-product-bar.product-single {
 }
 
 .ox-nutrition__caption {
+  display: block;
   margin: 0;
-  margin-block-end: var(--ox-2);
   font-size: 12px;
   font-weight: 500;
   color: var(--ox-ink-4);
   text-align: end;
+}
+
+// Two columns, as the approved image draws them: the nutrient at the inline
+// start, the figure at the end. The glossary line sits under the nutrient
+// instead of in a column of its own, which is what let the table fit a 427
+// wide panel without a scrollbar.
+.ox-nutrition__table {
+  table-layout: fixed;
+
+  // The header row is a caption line in the approved image, not the filled
+  // bar the shared table draws: no fill, no bold, and the label column's own
+  // header clipped to a screen reader.
+  thead th {
+    block-size: 40px;
+    background: none;
+    font-weight: 500;
+  }
+
+  th,
+  td {
+    padding-block: 10px;
+    vertical-align: top;
+  }
+
+  tbody th,
+  tbody td {
+    block-size: auto;
+    min-block-size: 44px;
+  }
+
+  // The figure column takes only what a figure needs; the rest is the label.
+  thead th:last-child,
+  tbody td:last-child {
+    inline-size: 33%;
+  }
+}
+
+.ox-nutrition__name {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--ox-fg);
+}
+
+.ox-nutrition__meaning {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--ox-fg-3);
+  text-wrap: pretty;
 }
 
 .ox-nutrition__more {
@@ -1927,10 +2155,21 @@ body.is-sticky-product-bar.product-single {
 
 // The rail keeps its own scroll; only its own arrows are hidden, because the
 // design's pair lives in the header row above it.
+//
+// The component names them `.s-slider-prev` and `.s-slider-next`
+// (components-react native/salla-slider/SallaSlider.js), not the Swiper class
+// names this used to list, which is why two round chevrons were still being
+// painted over the cards. They stay in the DOM and stay clickable, because the
+// header arrows drive the slider by clicking them: the rule takes them out of
+// sight and out of the mouse's reach, never out of the tree.
 .ox-related__body .ox-rail__slider {
   --swiper-navigation-size: 0;
 }
 
+.ox-related__body .s-slider-block__title,
+.ox-related__body .s-slider-block__title-nav,
+.ox-related__body .s-slider-prev,
+.ox-related__body .s-slider-next,
 .ox-related__body .swiper-button-prev,
 .ox-related__body .swiper-button-next {
   position: absolute;
@@ -1945,6 +2184,26 @@ body.is-sticky-product-bar.product-single {
   .ox-related__nav {
     display: flex;
     gap: var(--ox-1);
+  }
+}
+
+// Card width. `SallaSlider` runs `slidesPerView: "auto"`, so the number of
+// cards in view is whatever the slide's own width divides into: the platform
+// stylesheet gives it 320px, which lands four across a 1296 container. The
+// approved image shows five, measured at 1024 as five 180 wide cards six
+// apart, which is 253 and 8 at 1440. Below 1280 the container is short enough
+// that five would crowd, so four is kept there and the platform width governs
+// on a phone, where the rail is a scroll strip.
+@media (min-width: 1024px) {
+  .ox-related__body .s-products-slider-card {
+    inline-size: 25%;
+    padding-inline: 4px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-related__body .s-products-slider-card {
+    inline-size: 20%;
   }
 }
 

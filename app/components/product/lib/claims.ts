@@ -197,3 +197,35 @@ export function enabledPayments(payments: unknown): string[] {
   }
   return out;
 }
+
+/**
+ * Salla's split-payment gateways, the only ones `salla-installment` can draw.
+ *
+ * Verified on the live store on 2026-09-20: `store.settings.payments` is
+ * `["mada","credit_card","stc_pay","apple_pay"]`, none of them a split
+ * provider, and `salla-installment` mounted anyway and sat in its own
+ * `s-skeleton-card` forever, 116px of pulsing grey bars between the price and
+ * the buy button on every product. A widget that cannot resolve is worse than
+ * no widget, so the slot is gated on the store actually having a provider.
+ *
+ * A gateway slug not on this list means the slot stays shut until the list is
+ * extended. That failure is a missing row, never a permanent skeleton, which
+ * is the direction this store's gates always fail in.
+ */
+export const INSTALLMENT_GATEWAYS = [
+  'tabby',
+  'tamara',
+  'mispay',
+  'madfu',
+  'emkan',
+  'spotii',
+  'baseeta',
+  'quara',
+  'forsa',
+];
+
+/** True when at least one enabled gateway is a split-payment provider. */
+export function hasInstallmentGateway(payments: unknown): boolean {
+  const enabled = enabledPayments(payments).map((slug) => slug.toLowerCase());
+  return enabled.some((slug) => INSTALLMENT_GATEWAYS.some((name) => slug.indexOf(name) >= 0));
+}

@@ -1202,7 +1202,7 @@ body.ox-has-tabbar {
     inset-block: -20%;
     inline-size: 14px;
     background: var(--ox-accent);
-    transform: skewX(calc(var(--direction-factor) * -1 * var(--ox-angle)));
+    transform: skewX(var(--ox-skew));
   }
 
   &::before {

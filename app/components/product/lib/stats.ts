@@ -5,6 +5,7 @@
  * averaged, defaulted or inferred from the product name:
  *
  *   pack size  the spec line's size field, else the product's own `weight`
+ *              when that carries a unit (a bare number names nothing)
  *   vegan      a real tag on the product, never the word "نباتي" in its name
  *   calories   the label table's calorie row, else the product's `calories`
  *   protein    the label table's protein row
@@ -54,6 +55,27 @@ function trimmed(value: string | null | undefined): string | null {
   return out.length > 0 ? out : null;
 }
 
+/**
+ * The catalogue's own `weight`, but only when it carries its own unit.
+ *
+ * Salla's storefront API sends `weight` as a bare numeric string ("0.35",
+ * "2.27") and sends no unit field beside it, verified against the live
+ * catalogue on 2026-09-19. Printed alone that is not a fact: it is a number
+ * the shopper has to guess the unit of, and sitting next to a price on a card
+ * it reads as one. Naming a unit we were not given would be inventing it.
+ *
+ * A merchant who types the unit into the field ("907g", "2 kg", "2.27 كجم")
+ * gets it rendered unchanged. A bare number is dropped, and the slot that held
+ * it closes, which both the statistic strip and the card are built to survive.
+ */
+export function unitBearingWeight(value: string | null | undefined): string | null {
+  const out = trimmed(value);
+  if (out === null) return null;
+  // Anything that is not a digit, a separator or Arabic-Indic digits counts as
+  // a unit: a letter in either script, a percent sign, a multiplication cross.
+  return /[^\s\d.,٠-٩]/u.test(out) ? out : null;
+}
+
 /** The first spec-line field whose label is one of `labels`. */
 export function specField(spec: SpecLine | null | undefined, labels: readonly string[]): string | null {
   if (!spec) return null;
@@ -90,7 +112,7 @@ export interface StatSources {
 export function statCells({ product, spec, nutrition }: StatSources): StatCell[] {
   const cells: StatCell[] = [];
 
-  const packSize = specField(spec, PACK_SIZE_LABELS) ?? trimmed(product.weight);
+  const packSize = specField(spec, PACK_SIZE_LABELS) ?? unitBearingWeight(product.weight);
   if (packSize) {
     cells.push({
       id: 'pack_size',

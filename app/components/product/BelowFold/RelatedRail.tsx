@@ -5,6 +5,8 @@ import { Alternatives } from './Alternatives';
 
 export interface RelatedRailProps {
   productId: number;
+  /** The product's own category, passed down so the rail can fall back to it. */
+  categoryId?: number | null;
 }
 
 /**
@@ -18,7 +20,7 @@ export interface RelatedRailProps {
  * when the loader comes back empty, because `ProductsSliderWrapper` returns
  * null and this wrapper has no content of its own to leave behind.
  */
-export function RelatedRail({ productId }: RelatedRailProps) {
+export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
   const { t } = useTranslation();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [empty, setEmpty] = useState(false);
@@ -37,23 +39,51 @@ export function RelatedRail({ productId }: RelatedRailProps) {
     return () => observer.disconnect();
   }, []);
 
-  // The arrows drive the slider's own controls, so the web component keeps
-  // owning the scroll position, the loop and the snap. Without them the rail
-  // is scrolled directly, which is what happens below 1024 anyway.
+  // The arrows drive the slider itself, so the web component keeps owning the
+  // position, the loop and the snap.
+  //
+  // Three routes, in this order, because the first two each fail on their own.
+  //
+  //   1. The Swiper instance. `SallaProductsSlider` leaves it on the
+  //      `.swiper.swiper-initialized` element as `.swiper`, and `slideNext`
+  //      and `slidePrev` are already direction-aware, so RTL needs no
+  //      arithmetic here. Measured on the live store on 2026-09-20: this is
+  //      the only route that moves the rail in BOTH directions.
+  //   2. The component's own nav buttons. They exist (`.s-slider-prev` and
+  //      `.s-slider-next`) and the stylesheet hides them in favour of the
+  //      design's arrows, but `.s-slider-prev` keeps `swiper-button-disabled`
+  //      after the rail has advanced, so clicking it does nothing. That is
+  //      why route 1 is tried first; this stays as the fallback for a build
+  //      that does not expose the instance.
+  //   3. A plain scroll, which is what a phone gets, where the rail is a
+  //      scroll-snap strip with no Swiper at all.
   const nudge = useCallback((direction: number) => {
     const host = hostRef.current;
     if (!host) return;
-    const control = host.querySelector(
-      direction < 0 ? '.swiper-button-prev' : '.swiper-button-next'
-    ) as HTMLElement | null;
-    if (control && typeof control.click === 'function') {
+
+    const instance = (host.querySelector('.swiper.swiper-initialized') as
+      | (HTMLElement & { swiper?: { slideNext?: () => void; slidePrev?: () => void } })
+      | null)?.swiper;
+    const step = direction < 0 ? instance?.slidePrev : instance?.slideNext;
+    if (typeof step === 'function') {
+      step.call(instance);
+      return;
+    }
+
+    const selector =
+      direction < 0 ? '.s-slider-prev, .swiper-button-prev' : '.s-slider-next, .swiper-button-next';
+    const control = host.querySelector(selector) as HTMLElement | null;
+    if (control && !control.classList.contains('swiper-button-disabled')) {
       control.click();
       return;
     }
-    const scroller = host.querySelector('.ox-rail__slider') as HTMLElement | null;
+
+    const scroller = host.querySelector(
+      '.swiper-wrapper, .swiper, .ox-rail__slider'
+    ) as HTMLElement | null;
     if (!scroller || typeof scroller.scrollBy !== 'function') return;
-    const step = Math.round(scroller.clientWidth * 0.8) || 260;
-    scroller.scrollBy({ left: direction * step, behavior: 'smooth' });
+    const distance = Math.round(scroller.clientWidth * 0.8) || 260;
+    scroller.scrollBy({ left: direction * distance, behavior: 'smooth' });
   }, []);
 
   return (
@@ -86,7 +116,7 @@ export function RelatedRail({ productId }: RelatedRailProps) {
         </div>
       </div>
       <div className="ox-related__body" ref={hostRef}>
-        <Alternatives productId={productId} title="" />
+        <Alternatives productId={productId} categoryId={categoryId} title="" />
       </div>
     </section>
   );

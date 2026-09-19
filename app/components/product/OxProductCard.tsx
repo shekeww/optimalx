@@ -11,7 +11,7 @@ import { Price } from '../common/Price';
 import { PdpIcon } from './PdpIcon';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
-import { specField, PACK_SIZE_LABELS } from './lib/stats';
+import { specField, unitBearingWeight, PACK_SIZE_LABELS } from './lib/stats';
 import { monthsUntilExpiry } from './lib/supply';
 import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
 
@@ -59,8 +59,11 @@ export const OxProductCard = memo(function OxProductCard({
   // Two facts, never more: the design gives the line one row, and a third fact
   // would push the title or the price out of its slot.
   const facts: string[] = [];
-  const packSize =
-    specField(spec, PACK_SIZE_LABELS) ?? (product.weight ? product.weight.trim() : null);
+  // A list card carries no description, so the spec line is usually empty here
+  // and the catalogue `weight` is all there is. It is a bare number with no
+  // unit on this store, and a bare number on a card reads as a second price,
+  // so it renders only when the merchant typed the unit in with it.
+  const packSize = specField(spec, PACK_SIZE_LABELS) ?? unitBearingWeight(product.weight);
   if (packSize) facts.push(packSize);
   if (typeof spec?.servings === 'number') facts.push(t('ox.card.servings', { n: spec.servings }));
   else if (spec?.form) facts.push(spec.form);

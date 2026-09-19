@@ -53,10 +53,12 @@
      store whose dashboard has not been updated yet. Do not "fix" these back
      into aliases; update both sides together instead.
 
-     Contrast: white on #F54915 is 3.6:1, so an accent fill carries a label
-     only at 19px/700 and above, which is what .ox-btn--primary is. #F54915 on
-     the cream paper is 3.4:1, fine for the large bold price and not for small
-     text; small accent text uses --ox-accent-dark, which is 5.1:1 on paper. */
+     Contrast, remeasured against the lighter ground: white on #F54915 is
+     3.59:1, so an accent fill carries a label only at 19px/700 and above,
+     which is what .ox-btn--primary is. #F54915 on paper is 3.44:1, fine for
+     the large bold price and not for small text; small accent text uses
+     --ox-accent-dark, which is 4.59:1 on paper and so clears AA for body
+     copy, with less headroom than it had on the cream. */
   --ox-accent: #F54915;
   --ox-accent-dark: #D33A0C;
   --ox-accent-light: #F98A6B;
@@ -65,18 +67,31 @@
   --ox-on-accent: #FFFFFF;
 
   /* ---------- Ours: ground and surfaces ----------
-     The ground is warm, not neutral. Paper, card, fill and plate are four
-     values inside a narrow cream band: the approved design separates a panel
-     from the page by value and a hairline, never by a shadow. A cool grey
-     palette here is the single largest reason a built page reads as generic
-     against the target image. */
-  --ox-paper: #F9F5EE;
-  --ox-card: #FBF8F3;
-  --ox-fill: #F3EEE8;
-  --ox-plate: #F1E9E1;
-  --ox-plate-2: #EFE7DE;
+     The ground is light and close to neutral, by owner decision.
+
+     These were a warm cream band sampled from the approved image
+     (#F9F5EE paper, #FBF8F3 card, #F1E9E1 plate). On screen at full size the
+     owner read that as darker and more saturated than intended and asked for
+     the lighter ground the Saudi market is used to, naming iHerb. Measured
+     from sa.iherb.com at 1440: a white body with very light neutral grey
+     section bands and no warmth anywhere.
+
+     So the band keeps its STRUCTURE, which is what the design depends on -
+     four values inside a narrow range, a panel separated from the page by
+     value and a hairline and never by a shadow - and loses its warmth. A
+     trace of warmth stays in the last digit so the page is not clinically
+     cold next to the orange; it is far below the threshold where it reads as
+     beige.
+
+     This is a deliberate departure from the target image's ground. Nothing
+     else in the image changes. */
+  --ox-paper: #FAFAF9;
+  --ox-card: #FFFFFF;
+  --ox-fill: #F4F4F3;
+  --ox-plate: #F2F2F1;
+  --ox-plate-2: #E9E9E8;
   --ox-input: #FFFFFF;
-  --ox-input-bd: #EBEAE7;
+  --ox-input-bd: #E6E6E5;
   --ox-graphite: #0E1014;
   --ox-graphite-2: #14181F;
   --ox-graphite-3: #1C2128;
@@ -100,20 +115,20 @@
   --ox-ink-on-dark: #F7F4EE;
   --ox-ink-2-on-dark: #B7B6B2;
   --ox-ink-3-on-dark: #8A8D8E;
-  --ox-line: #F0ECE5;
-  --ox-line-2: #EEEBE3;
-  /* Control boundaries at rest (inputs, checkboxes, switches): still above
-     3:1 on paper, card and plate, which meets WCAG 1.4.11; --ox-line-2
-     measures well under it and stays decorative (DIRECTION section 9,
-     amendment A1). */
-  --ox-line-3: #8B857C;
+  --ox-line: #ECECEB;
+  --ox-line-2: #E4E4E3;
+  /* Control boundaries at rest (inputs, checkboxes, switches): 3.47:1 on
+     paper and 3.24:1 on the plate, both clearing the 3:1 WCAG 1.4.11 asks of
+     a non-text boundary. --ox-line-2 measures well under it and stays
+     decorative (DIRECTION section 9, amendment A1). */
+  --ox-line-3: #86868A;
   --ox-line-on-dark: rgba(255, 255, 255, 0.12);
 
   /* ---------- Ours: semantic ---------- */
   --ox-go: #0F7B4F;
   --ox-go-soft: #E8F4EE;
   /* The verification green: trust glyphs, the delivery estimate and the
-     saving figure. Darker than --ox-go so it clears 4.5:1 on cream. */
+     saving figure. Darker than --ox-go; 8.70:1 on the ground. */
   --ox-verify: #14514C;
   --ox-verify-soft: #E7F0EE;
   /* The one light green: the emphasised closing word of the footer line,
@@ -185,6 +200,19 @@
   --direction-factor: 1;
   --ox-angle: 22deg;
   --ox-angle-tan: 0.4040;
+  /* The lean of the wedge, defined once because five stylesheets draw it and
+     they must never disagree.
+
+     Pixel-scanned from the approved image: in the brand band the accent bar's
+     left edge runs from x142 at its top to x51 at its foot, so the motif
+     leans top-RIGHT to bottom-LEFT. Every wedge in the build leaned the other
+     way, which put the one piece of the identity that repeats on every page
+     backwards on all of them.
+
+     It multiplies by --direction-factor so the lean mirrors with the
+     document: the motif belongs to the reading direction, not to the screen.
+     Consume it as skewX(var(--ox-skew)) and never re-derive it. */
+  --ox-skew: calc(var(--direction-factor) * var(--ox-angle));
   /* --ox-band-h is set per band (560, 500, 420, 360); this root value only
      keeps --ox-wedge-run resolvable outside a band. */
   --ox-band-h: 560px;

@@ -741,6 +741,9 @@ $ox-angle-tan: 0.404;
   letter-spacing: 0;
   color: var(--ox-fg);
   white-space: nowrap;
+  // The written riyal mark Price.tsx puts in place of the engine's icon
+  // glyph, plus the glyph itself for any node the theme did not render.
+  .ox-price__mark,
   .sicon-sar {
     font-size: 0.85em;
     line-height: 1;

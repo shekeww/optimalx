@@ -115,18 +115,28 @@ describe('SectionHeader', () => {
 });
 
 describe('Price', () => {
-  it('renders the SAR glyph inside the isolate wrapper', () => {
+  it('writes the riyal mark instead of the engine icon glyph, inside the isolate wrapper', () => {
     const { container } = renderWithProviders(<Price amount={349} size="h2" />);
     const wrapper = container.querySelector('.ox-price') as HTMLElement;
     expect(wrapper).not.toBeNull();
     expect(wrapper.classList.contains('ox-price--h2')).toBe(true);
-    expect(wrapper.querySelector('i.sicon-sar')).not.toBeNull();
+    // The icon font codepoint resolves to the U+FDFC ligature, which the
+    // approved design does not use and which falls back to a box on several
+    // Android system fonts. It is replaced by real text, so it is selectable
+    // and a screen reader reads it.
+    expect(wrapper.querySelector('i.sicon-sar')).toBeNull();
+    const mark = wrapper.querySelector('.ox-price__mark') as HTMLElement;
+    expect(mark).not.toBeNull();
+    expect(mark.textContent).toBe(t('ox.common.sar'));
+    expect(mark.textContent).toBe('ر.س');
     expect(wrapper.textContent).toContain('349.00');
+    expect(wrapper.textContent).not.toContain(String.fromCharCode(0xfdfc));
   });
 
-  it('strikes the was-price', () => {
+  it('strikes the was-price and still writes the mark', () => {
     const { container } = renderWithProviders(<Price amount={399} was />);
     expect(container.querySelector('.ox-price--was s')).not.toBeNull();
+    expect(container.querySelector('.ox-price--was s .ox-price__mark')).not.toBeNull();
   });
 });
 

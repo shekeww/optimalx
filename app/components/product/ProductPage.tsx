@@ -157,6 +157,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                   settings={settings}
                   country={store?.country}
                   language={locale}
+                  payments={payments}
                 />
               </>
             )}
@@ -268,7 +269,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
       <HookSlot name="product:related.start" context={hookContext} />
       <RenderWhenVisible>
         <div className="ox-container">
-          <RelatedRail productId={product.id} />
+          <RelatedRail productId={product.id} categoryId={product.category?.id ?? null} />
         </div>
       </RenderWhenVisible>
       <HookSlot name="product:related.end" context={hookContext} />
