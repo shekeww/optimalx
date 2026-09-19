@@ -1,6 +1,6 @@
 {
-  "ox.listing.empty": "TODO-copy: لا توجد منتجات في هذا القسم الآن.",
-  "ox.listing.empty_body": "TODO-copy: ابدأ من هدفك أو تصفح حسب النوع.",
+  "ox.listing.empty": "لا منتجات في هذا القسم الآن",
+  "ox.listing.empty_body": "إما أن الكمية نفدت، أو أننا ما زلنا نضيف إلى التشكيلة. ابدأ من هدفك، أو تصفح حسب النوع.",
   "ox.listing.load_more": "عرض المزيد",
   "ox.listing.showing": "عرض {{count}} منتجا",
   "ox.listing.showing_all": "عرض {{count}} منتجا",
@@ -15,7 +15,7 @@
   "ox.goal.name_recovery": "التعافي",
   "ox.goal.name_hair_skin": "الشعر والبشرة",
   "ox.goal.name_ideal_weight": "الوزن المثالي",
-  "ox.goal.hero_cta": "TODO-copy: تصفح المنتجات",
+  "ox.goal.hero_cta": "اعرض منتجات هذا الهدف",
   "ox.goal.subneeds_title": "اختر حسب حاجتك",
   "ox.goal.subneed_cta": "عرض",
   "ox.goal.grid_title": "المنتجات",
@@ -54,7 +54,7 @@
   "ox.search.chip_3": "بري وورك اوت",
   "ox.search.chip_4": "فيتامين د3",
   "ox.search.chip_5": "كولاجين",
-  "ox.brands.intro": "TODO-copy: العلامات التي نوفرها في المتجر.",
-  "ox.brands.empty": "TODO-copy: لا توجد علامات لعرضها الآن.",
+  "ox.brands.intro": "العلامات المعروضة هنا هي التي نوفرها في المتجر. اختر علامة لترى منتجاتها، أو ابدأ من هدفك إن لم تكن قد استقريت على علامة بعد.",
+  "ox.brands.empty": "لا علامات لعرضها الآن",
   "ox.brands.empty_cta": "تصفح أحدث المنتجات"
 }

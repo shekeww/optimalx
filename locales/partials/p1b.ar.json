@@ -27,6 +27,6 @@
   "ox.newsletter.button": "اشترك",
   "ox.newsletter.success": "تم الاشتراك. أول رسالة تصلك الأسبوع القادم.",
   "ox.newsletter.privacy": "نستخدم بريدك لهذه الرسالة فقط، ويمكنك إلغاء الاشتراك في أي وقت.",
-  "ox.newsletter.invalid": "TODO-copy: أدخل بريدا إلكترونيا صحيحا.",
-  "ox.newsletter.error": "TODO-copy: تعذر إتمام الاشتراك الآن. أعد المحاولة."
+  "ox.newsletter.invalid": "تحقق من صيغة البريد الإلكتروني. نحتاج عنوانا كاملا على هيئة name@example.com.",
+  "ox.newsletter.error": "لم يكتمل الاشتراك من جهتنا، ولم يحفظ بريدك. أعد المحاولة بعد قليل."
 }

@@ -13,3 +13,6 @@ CLAUDE.md
 
 # A second Salla CLI scaffold was generated here by mistake; it is not part of the theme.
 optimalx/
+
+# TanStack build cache
+.tanstack/

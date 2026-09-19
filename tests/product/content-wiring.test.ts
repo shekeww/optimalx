@@ -38,12 +38,12 @@ describe('PDP FAQ rows', () => {
     expect(prePurchaseRows(undefined)).toEqual([]);
   });
 
-  it('drops a row whose copy is still a TODO-copy placeholder', () => {
-    // The mandatory price item's answer is a marked placeholder until the
-    // copywriter delivers it, so it must not reach a shopper or a crawler.
+  it('renders no TODO-copy placeholder, and carries the mandatory price row B7 delivered', () => {
+    // A marked placeholder must never reach a shopper or a crawler; the price
+    // item's answer is now written, so the row itself has to be there.
     const rows = pdpFaqItems(t, 'https://optimalx.com.sa/whey-protein/c1');
     expect(rows.every((row) => !row.answer.startsWith('TODO-copy:'))).toBe(true);
-    expect(rows.map((row) => row.id)).not.toContain('faq-price');
+    expect(rows.map((row) => row.id)).toContain('faq-price');
   });
 
   it('resolves the owning category rows when the slug is one the map knows', () => {
@@ -68,10 +68,14 @@ describe('glossary lookup for the nutrition table', () => {
     expect(createGlossaryLookup(undefined)('البروتين')).toBeNull();
   });
 
-  it('leaves the macronutrient rows empty, as P1a records', () => {
+  it('fills the macronutrient rows B7 added to the glossary', () => {
     for (const name of ['البروتين', 'الكربوهيدرات', 'الدهون', 'السكريات', 'السعرات الحرارية']) {
-      expect(lookup(name), name).toBeNull();
+      const key = lookup(name);
+      expect(key, name).not.toBeNull();
+      expect(t(key as string).startsWith('ox.'), name).toBe(false);
     }
+    // The longer alias wins, so the saturated row is never given the fat line.
+    expect(lookup('الدهون المشبعة')).toBe('ox.content.glossary.saturated_fat.def');
   });
 
   it('fills a row the glossary does cover', () => {

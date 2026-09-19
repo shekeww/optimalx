@@ -1,7 +1,8 @@
 /**
- * The supplement glossary (FINAL-content 8): thirty terms, each with the MSA
- * term, the way people actually search for it, and a one-sentence definition
- * that can be lifted into the nutrition table's third column or a PDP tooltip.
+ * The supplement glossary: the thirty terms of FINAL-content 8 plus the eleven
+ * label macronutrients B7 added, each with the MSA term, the way people
+ * actually search for it, and a one-sentence definition that can be lifted
+ * into the nutrition table's third column or a PDP tooltip.
  *
  * Structure and keys only. Matching a nutrient name printed on a label to a
  * term is done at runtime against the TRANSLATED aliases string, so the search
@@ -33,7 +34,7 @@ function term(id: string): GlossaryTerm {
 }
 
 /** The thirty terms, in FINAL-content 8 order. */
-export const GLOSSARY: GlossaryTerm[] = [
+export const CONTENT_TERM_IDS: string[] = [
   'whey',
   'concentrate',
   'isolate',
@@ -64,7 +65,30 @@ export const GLOSSARY: GlossaryTerm[] = [
   'collagen',
   'biotin',
   'electrolytes',
-].map(term);
+];
+
+/**
+ * The macronutrient and micronutrient rows a Saudi supplement label actually
+ * prints (B7). Their definitions stay at the level of the label: what the
+ * number counts and what it is compared against, never what it does to the
+ * body.
+ */
+export const LABEL_TERM_IDS: string[] = [
+  'calories',
+  'protein',
+  'carbohydrates',
+  'sugars',
+  'fibre',
+  'fat',
+  'saturated_fat',
+  'sodium',
+  'caffeine',
+  'zinc',
+  'vitamin_c',
+];
+
+/** Every term, the FINAL-content 8 set first. */
+export const GLOSSARY: GlossaryTerm[] = [...CONTENT_TERM_IDS, ...LABEL_TERM_IDS].map(term);
 
 export const GLOSSARY_PAGE = {
   h1Key: `${KEY}.page_h1`,
@@ -75,10 +99,8 @@ export const GLOSSARY_PAGE = {
 
 /**
  * Nutrient names a Saudi supplement label prints that DO have a term here.
- * Everything else on a label, the macronutrient rows above all (protein,
- * carbohydrates, fat, sugars, sodium, calories) and caffeine, zinc and vitamin
- * C, has no definition yet: those rows show an empty third cell until the
- * copywriter delivers them (B7 owns the list).
+ * With the B7 macronutrient set added, the third column now fills on the rows
+ * every label carries, so an empty cell is the exception rather than the rule.
  */
 export const LABEL_COVERED_TERM_IDS: string[] = [
   'creatine',
@@ -101,19 +123,18 @@ export const LABEL_COVERED_TERM_IDS: string[] = [
   'serving',
   'scoop',
   'nutrition_facts',
+  ...LABEL_TERM_IDS,
 ];
 
-/** Label rows this build knowingly leaves without a third-column explanation. */
+/**
+ * Label rows this build knowingly leaves without a third-column explanation.
+ * They render an empty cell; nothing is invented to fill it.
+ */
 export const LABEL_UNCOVERED_NUTRIENTS: string[] = [
-  'protein',
-  'carbohydrates',
-  'fat',
-  'sugars',
-  'sodium',
-  'calories',
-  'caffeine',
-  'zinc',
-  'vitamin-c',
+  'potassium',
+  'calcium',
+  'cholesterol',
+  'iron',
 ];
 
 const ARABIC_COMMA = String.fromCharCode(0x060c);

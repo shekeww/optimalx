@@ -1,6 +1,6 @@
 {
-  "ox.listing.empty": "TODO-copy: No products in this section right now.",
-  "ox.listing.empty_body": "TODO-copy: Start from your goal or browse by type.",
+  "ox.listing.empty": "No products in this section right now",
+  "ox.listing.empty_body": "Either the stock has run out, or we are still adding to the range. Start from your goal, or browse by type.",
   "ox.listing.load_more": "Show more",
   "ox.listing.showing": "Showing {{count}} products",
   "ox.listing.showing_all": "Showing {{count}} products",
@@ -15,7 +15,7 @@
   "ox.goal.name_recovery": "Recovery",
   "ox.goal.name_hair_skin": "Hair and skin",
   "ox.goal.name_ideal_weight": "Ideal weight",
-  "ox.goal.hero_cta": "TODO-copy: Browse the products",
+  "ox.goal.hero_cta": "Show the products for this goal",
   "ox.goal.subneeds_title": "Choose by need",
   "ox.goal.subneed_cta": "View",
   "ox.goal.grid_title": "Products",
@@ -54,7 +54,7 @@
   "ox.search.chip_3": "Pre-workout",
   "ox.search.chip_4": "Vitamin D3",
   "ox.search.chip_5": "Collagen",
-  "ox.brands.intro": "TODO-copy: The brands we stock.",
-  "ox.brands.empty": "TODO-copy: No brands to show right now.",
+  "ox.brands.intro": "These are the brands we stock. Pick one to see its products, or start from your goal if you have not settled on a brand yet.",
+  "ox.brands.empty": "No brands to show right now",
   "ox.brands.empty_cta": "Browse the latest products"
 }

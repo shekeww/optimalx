@@ -18,7 +18,13 @@ import {
 import { BRANCH, BRANCH_GEO, parseBranchHours, hoursStatus, toSchemaOpeningHours } from '../../app/content/branch';
 import { HOME_FAQ, PDP_INFO_ROWS, pdpFaq, PRICE_FAQ } from '../../app/content/faq';
 import { THANKYOU, THANKYOU_LINE_BY_CATEGORY, thankYouLines } from '../../app/content/thankyou';
-import { GLOSSARY, glossaryForLabel, LABEL_COVERED_TERM_IDS } from '../../app/content/glossary';
+import {
+  CONTENT_TERM_IDS,
+  GLOSSARY,
+  glossaryForLabel,
+  LABEL_COVERED_TERM_IDS,
+  LABEL_TERM_IDS,
+} from '../../app/content/glossary';
 import { SALLA_IDS, SALLA_PRODUCT_IDS, idForSku, pathForSku } from '../../app/content/salla-ids';
 import { loadDictionary } from '../helpers/i18n';
 
@@ -319,9 +325,11 @@ describe('faq.ts and thankyou.ts', () => {
 });
 
 describe('glossary.ts', () => {
-  it('has the thirty terms from FINAL-content 8', () => {
-    expect(GLOSSARY).toHaveLength(30);
-    expect(new Set(GLOSSARY.map((term) => term.id)).size).toBe(30);
+  it('has the thirty terms from FINAL-content 8 plus the eleven label nutrients', () => {
+    expect(CONTENT_TERM_IDS).toHaveLength(30);
+    expect(LABEL_TERM_IDS).toHaveLength(11);
+    expect(GLOSSARY).toHaveLength(41);
+    expect(new Set(GLOSSARY.map((term) => term.id)).size).toBe(41);
   });
 
   it('matches a label cell to a term through the translated aliases', () => {
@@ -331,9 +339,19 @@ describe('glossary.ts', () => {
     expect(glossaryForLabel('electrolytes', t)?.id).toBe('electrolytes');
   });
 
+  it('matches the macronutrient rows a label prints, longest alias winning', () => {
+    const t = (key: string) => ar[key] ?? key;
+    expect(glossaryForLabel('البروتين', t)?.id).toBe('protein');
+    expect(glossaryForLabel('إجمالي الكربوهيدرات', t)?.id).toBe('carbohydrates');
+    expect(glossaryForLabel('الدهون', t)?.id).toBe('fat');
+    expect(glossaryForLabel('الدهون المشبعة', t)?.id).toBe('saturated_fat');
+    expect(glossaryForLabel('صوديوم', t)?.id).toBe('sodium');
+    expect(glossaryForLabel('Saturated Fat', t)?.id).toBe('saturated_fat');
+  });
+
   it('returns nothing rather than inventing text for an uncovered nutrient', () => {
     const t = (key: string) => ar[key] ?? key;
-    expect(glossaryForLabel('صوديوم', t)).toBeUndefined();
+    expect(glossaryForLabel('بوتاسيوم', t)).toBeUndefined();
     expect(glossaryForLabel('', t)).toBeUndefined();
   });
 
