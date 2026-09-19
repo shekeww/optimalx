@@ -5,6 +5,7 @@ import { ProductDetailSkeleton } from '@salla.sa/twilight-theme-engine/skeleton'
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { ProductPage } from '../components/product/ProductPage';
 import { canonicalForRequest, localeCodesOf, robots, tryOriginOf } from '../components/seo/head';
+import { headTranslator } from '../components/seo/strings';
 import { faqPage, graph, service, type JsonLdNode } from '../components/seo/jsonld';
 import { pdpFaqItems } from '../components/product/lib/faq';
 import { variantOf } from '../components/product/lib/variant';
@@ -63,7 +64,7 @@ export const Route = createFileRoute('/{-$locale}/$slug/p{$id}')({
     // The same rows the Faq block renders, resolved through the request's own
     // i18n so the page and the FAQPage node can never disagree.
     const rows = pdpFaqItems(
-      ctx.i18n ? (key: string) => ctx.i18n.t(key) : undefined,
+      headTranslator(ctx.locale),
       product?.category?.url
     );
     if (rows.length > 0) nodes.push(faqPage(rows, canonical));

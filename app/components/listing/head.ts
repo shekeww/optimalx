@@ -2,6 +2,7 @@ import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head'
 import type { TwilightContext } from '@salla.sa/twilight-theme-engine/tanstack';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { canonicalForRequest, localeCodesOf, robots, tryOriginOf } from '../seo/head';
+import { headTranslator } from '../seo/strings';
 import { faqPage, graph, itemList, type JsonLdNode } from '../seo/jsonld';
 import { listingFaqItems } from './faq';
 import { slugFromUrl } from './resolve';
@@ -64,7 +65,7 @@ export function listingHeadExtend({ noindex = false }: ListingHeadOptions = {}) 
 
     const slug = slugFromUrl(path);
     const rows = listingFaqItems(
-      ctx.i18n ? (key: string) => ctx.i18n.t(key) : undefined,
+      headTranslator(ctx.locale),
       slug
     );
     if (canonical && rows.length > 0) nodes.push(faqPage(rows, canonical));

@@ -1,6 +1,7 @@
 import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head';
 import type { TwilightContext } from '@salla.sa/twilight-theme-engine/tanstack';
 import { canonicalFor, hreflangFor, robots, tryOriginOf } from '../seo/head';
+import { headTranslator } from '../seo/strings';
 import { faqPage, graph, type FaqPair, type JsonLdNode } from '../seo/jsonld';
 
 /**
@@ -42,7 +43,9 @@ export function pageHead(options: PageHeadOptions) {
       .map((language) => language?.code)
       .filter((code): code is string => typeof code === 'string' && code.length > 0);
 
-    const translate = ctx.i18n ? (key: string) => ctx.i18n.t(key) : (key: string) => key;
+    // `TwilightContext` carries no translator (seo/strings), so head strings
+    // are read from the theme dictionaries rather than a runtime `t`.
+    const translate = headTranslator(ctx.locale);
     const title = translate(options.titleKey);
     const description = translate(options.descriptionKey);
 
