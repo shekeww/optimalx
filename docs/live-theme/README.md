@@ -8,14 +8,16 @@ These two files put the OptimalX design on optimalx.com.sa while the store still
 
 Open the design customizer at `s.salla.sa/design/277388345?version_id=499745075` and find the custom code section you enabled.
 
-| Box | File | Size |
+| Box | File | Characters |
 |---|---|---|
-| Custom CSS | `optimalx-raed.css` | 52,886 characters |
-| Custom JavaScript | `optimalx-raed.min.js` | 59,233 characters |
+| Custom CSS | `optimalx-raed.min.css` | 37,623 |
+| Custom JavaScript | `optimalx-raed.min.js` | 59,233 |
 
 Both sit under Salla's 65,535 character limit. Paste the whole of each file, save, then open the store in a private window so you are not seeing a cached page.
 
-Paste `optimalx-raed.min.js`, not `optimalx-raed.js`. The unminified file is the readable source, kept so the code can be understood and changed later; it is too large for the box.
+Paste the two minified files, not `optimalx-raed.css` and `optimalx-raed.js`. Those two are the readable sources, kept so the code can be understood and changed later. The script source is too large for its box, and the minified stylesheet leaves far more headroom for the rules you may want to add.
+
+The two switches are separate. As of the last check custom JavaScript is on and custom CSS is still off, and the storefront needs both: the two files together are 96,856 characters, which cannot fit in one box.
 
 ## What each file does
 
