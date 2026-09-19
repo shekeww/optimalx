@@ -109,12 +109,21 @@ export function BrandsSkeleton() {
   );
 }
 
+/**
+ * The services band is dark, so its placeholder is too: a light grey box where
+ * a near-black band is about to land is a flash, not a placeholder. The root
+ * carries `.ox-band-dark`, which is what re-points the skeleton's own fills at
+ * the graphite step.
+ */
 export function ServicesSkeleton() {
   return (
-    <BlockSkeleton path="ox-services" className="ox-skel-grid ox-skel-grid--channels">
-      {rows(3).map((index) => (
-        <SkeletonBlock key={index} height="100%" />
-      ))}
+    <BlockSkeleton path="ox-services" className="ox-skel-services ox-band-dark">
+      <SkeletonBar width="30%" />
+      <div className="ox-skel-grid ox-skel-grid--channels">
+        {rows(3).map((index) => (
+          <SkeletonBlock key={index} height="100%" />
+        ))}
+      </div>
     </BlockSkeleton>
   );
 }
@@ -129,13 +138,16 @@ export function GuidesSkeleton() {
   );
 }
 
+/**
+ * One card, not a photo panel beside one: the storefront photograph is gated
+ * and the theme ships none, so the block that lands here is the flat card.
+ */
 export function BranchSkeleton() {
   return (
     <BlockSkeleton path="ox-branch" className="ox-skel-branch">
-      <SkeletonBlock height="100%" />
       <span className="ox-skel-branch__card">
-        <SkeletonBar width="60%" />
-        <SkeletonBar width="85%" />
+        <SkeletonBar width="30%" />
+        <SkeletonBar width="55%" height={28} />
         <SkeletonBar width="70%" />
       </span>
     </BlockSkeleton>

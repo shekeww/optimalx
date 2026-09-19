@@ -9,7 +9,7 @@
 // ---------------------------------------------------------------------------
 .ox-branch {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ox-6);
   align-items: stretch;
 }
@@ -43,6 +43,22 @@
   border-radius: var(--ox-r-2);
 }
 
+.ox-branch__head,
+.ox-branch__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  min-inline-size: 0;
+}
+
+// Without a photograph the block is one column: an angled plate with nothing
+// in it reads as a failed upload, and the store may not caption an invented
+// shopfront as this branch. The card takes the row and splits its own content
+// instead, so the section is finished either way.
+.ox-branch--flat {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .ox-branch__eyebrow {
   color: var(--ox-fg-3);
   font-weight: 600;
@@ -68,7 +84,7 @@
 
 @media (min-width: 1024px) {
   .ox-branch {
-    grid-template-columns: 7fr 5fr;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: var(--ox-8);
     min-block-size: 480px;
   }
@@ -88,6 +104,37 @@
   .ox-branch__card {
     order: 1;
     padding: var(--ox-6);
+  }
+
+  // Declared again inside the query: the desktop `.ox-branch` rule above sets
+  // the 7/5 split at the same specificity and would otherwise win on order.
+  .ox-branch--flat {
+    grid-template-columns: minmax(0, 1fr);
+    min-block-size: 0;
+  }
+
+  .ox-branch--flat .ox-branch__card {
+    padding: var(--ox-8);
+  }
+
+  .ox-branch--flat .ox-branch__card[data-meta='full'] {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--ox-8);
+    align-items: start;
+  }
+
+  // One column: the measure stops a three line card from running the full
+  // width of a 1296 container, which no reader wants to track across.
+  .ox-branch--flat .ox-branch__card[data-meta='bare'] .ox-branch__head,
+  .ox-branch--flat .ox-branch__card[data-meta='bare'] .ox-branch__meta {
+    max-inline-size: var(--ox-container-text);
+  }
+
+  // The actions stop pushing to the foot of a tall card: in the flat layout
+  // they sit under the hours, where they belong.
+  .ox-branch--flat .ox-branch__actions {
+    margin-block-start: 0;
   }
 }
 
@@ -162,7 +209,7 @@
 // ---------------------------------------------------------------------------
 .ox-channels {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ox-4);
   align-items: stretch;
 }
@@ -211,7 +258,7 @@
 
 @media (min-width: 768px) {
   .ox-channels {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .ox-channel {
@@ -224,7 +271,7 @@
 // ---------------------------------------------------------------------------
 .ox-guides {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ox-4);
   align-items: stretch;
 }
@@ -286,7 +333,7 @@
 
 @media (min-width: 1024px) {
   .ox-guides {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

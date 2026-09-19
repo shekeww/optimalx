@@ -4,6 +4,7 @@ import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { OxBranch } from '../blocks/OxBranch';
 import { Accordion } from '../common/Accordion';
 import { Icon } from '../common/Icon';
+import { Panel } from '../common/Panel';
 import { BRANCH } from '../../content/branch';
 import { BranchMap } from './BranchMap';
 import { ContactRow } from './ContactRow';
@@ -33,6 +34,10 @@ export interface BranchPageProps {
  * the page header and the block heading is the section's h2. One h1, and the
  * mandated wording is the one a shopper and a crawler see.
  *
+ * The page carries no dark band: `OxBranch` already puts a photograph at the
+ * top of it, and a second full-width dark block would be the screen's second
+ * hero. The wedge is spent on the block's own photo edge.
+ *
  * LocalBusiness structured data is NOT declared here: the site-wide graph in
  * `components/seo/registerHeadHooks.tsx` emits the one `#localbusiness` node,
  * with this branch's geo and opening hours, on every route (PLAN-final B5).
@@ -54,7 +59,7 @@ export function BranchPage({ now }: BranchPageProps) {
 
       <header className="ox-page-head">
         <h1 className="ox-page-head__title ox-h1">{t(BRANCH.h1Key)}</h1>
-        <p className="ox-page-head__lead ox-body">{t(BRANCH.introKey)}</p>
+        <p className="ox-page-head__lead ox-lead">{t(BRANCH.introKey)}</p>
       </header>
 
       <OxBranch headingLevel="h2" showEyebrow={false} now={now} className="ox-page--branch__block" />
@@ -62,20 +67,20 @@ export function BranchPage({ now }: BranchPageProps) {
       <BranchMap className="ox-page--branch__map" />
 
       <section className="ox-branch-do" aria-labelledby="ox-branch-do-title">
-        <h2 id="ox-branch-do-title" className="ox-h3">
+        <h2 id="ox-branch-do-title" className="ox-h2">
           {t(BRANCH.doTitleKey)}
         </h2>
-        <ul className="ox-branch-do__list">
+        <div className="ox-branch-do__grid">
           {BRANCH.doList.map((item) => (
-            <li key={item.titleKey} className="ox-branch-do__item">
-              <Icon name="tick" size={20} className="ox-branch-do__tick" />
-              <div>
-                <h3 className="ox-branch-do__item-title">{t(item.titleKey)}</h3>
-                <p className="ox-branch-do__line ox-small">{t(item.lineKey)}</p>
-              </div>
-            </li>
+            <Panel key={item.titleKey} className="ox-branch-do__item">
+              <h3 className="ox-branch-do__item-title">
+                <Icon name="tick" size={20} className="ox-branch-do__tick" />
+                <span>{t(item.titleKey)}</span>
+              </h3>
+              <p className="ox-branch-do__line ox-small">{t(item.lineKey)}</p>
+            </Panel>
           ))}
-        </ul>
+        </div>
       </section>
 
       <PickupSteps className="ox-page--branch__pickup" />

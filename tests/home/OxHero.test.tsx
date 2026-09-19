@@ -23,7 +23,9 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     }),
 }));
 
-const { OxHero } = await import('../../app/components/home/OxHero');
+const { OxHero, DEFAULT_HERO, DEFAULT_HERO_MOBILE } = await import(
+  '../../app/components/home/OxHero'
+);
 
 function data(extra: Record<string, unknown> = {}): OxBlockData {
   return { path: 'ox-hero', key: 'hero', ...HOME_BLOCK_FIELDS['ox-hero'], ...extra } as OxBlockData;
@@ -56,10 +58,24 @@ describe('OxHero', () => {
     expect(container.querySelector('.ox-hero__headline')?.textContent).toBe('ما هدفك اليوم؟');
   });
 
-  it('renders no image at all until the owner uploads one (never a broken image)', () => {
+  it('ships its own photograph, so the first screen is finished with nothing configured', () => {
     const { container } = renderWithProviders(<OxHero data={data()} />);
-    expect(container.querySelector('img')).toBeNull();
-    expect(container.querySelector('.ox-hero__photo')).not.toBeNull();
+    const photo = screen.getByTestId('ox-hero-default-photo') as HTMLImageElement;
+    // Art directed: a 3:4 crop for the full-bleed mobile band, a 3:2 crop for
+    // the desktop wedge panel, both theme assets and both decorative.
+    expect(photo.getAttribute('src')).toBe(DEFAULT_HERO_MOBILE);
+    expect(container.querySelector('source')?.getAttribute('srcset')).toBe(DEFAULT_HERO);
+    expect(photo.getAttribute('alt')).toBe('');
+    // It is the LCP element whether it came from the theme or the dashboard.
+    expect(photo.getAttribute('fetchpriority')).toBe('high');
+    expect(photo.getAttribute('loading')).toBe('eager');
+    expect(photo.getAttribute('width')).toBe('780');
+    expect(photo.getAttribute('height')).toBe('1040');
+  });
+
+  it('steps aside the moment the owner uploads their own', () => {
+    renderWithProviders(<OxHero data={data({ image: 'https://cdn.example/hero.jpg' })} />);
+    expect(screen.queryByTestId('ox-hero-default-photo')).toBeNull();
   });
 
   it('marks the hero image as the LCP candidate with explicit dimensions', () => {

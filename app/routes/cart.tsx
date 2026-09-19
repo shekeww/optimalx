@@ -17,8 +17,9 @@ import { commerceHeadExtend } from '../components/commerce/head';
  *  1. `CartContextProvider`. The engine exports it and documents it
  *     (contexts/CartContext.d.ts:11-20) but mounts it nowhere, so every
  *     `cart:*` hook handler would otherwise see a null context. Mounting it
- *     here is what lets `CartTrust`, registered at `cart:items.end`, read the
- *     cart.
+ *     here is what lets `CartHeader` at `cart:start` and `CartTrust` at
+ *     `cart:items.end` read the cart: the title row's item count and the
+ *     free-shipping bar both come from it.
  *  2. The empty state. The engine renders its own `NoContent` with a "Back to
  *     Home" button; FINAL-content 6.5 routes the visitor to their goal, to the
  *     type list, or to a free written question instead.
@@ -46,7 +47,9 @@ function CartComponent() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="ox-cart ox-cart--empty">
-        <CartEmpty />
+        <div className="ox-container">
+          <CartEmpty />
+        </div>
       </div>
     );
   }

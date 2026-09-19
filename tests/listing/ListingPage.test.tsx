@@ -184,6 +184,25 @@ describe('ListingPage, category variant', () => {
     expect(off.querySelector('.ox-filters')).toBeNull();
   });
 
+  it('opens in the masthead band, with the breadcrumb and the h1 inside it', () => {
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="whey-protein" />);
+    const band = container.querySelector('.ox-listing__band');
+    expect(band).not.toBeNull();
+    const inner = band?.querySelector('.ox-listing__band-inner');
+    expect(inner?.querySelector('[data-testid="engine-breadcrumb"]')).not.toBeNull();
+    expect(inner?.querySelector('h1')).not.toBeNull();
+  });
+
+  it('puts the chips and the controls in one toolbar, directly on the grid', () => {
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="protein" />);
+    const toolbar = container.querySelector('.ox-listing__toolbar');
+    expect(toolbar).not.toBeNull();
+    expect(toolbar?.querySelector('.ox-listing__chips')).not.toBeNull();
+    expect(toolbar?.querySelector('.ox-listing__sort select')).not.toBeNull();
+    // The toolbar is the last thing before the results, inside the grid anchor.
+    expect(container.querySelector('#listing-grid .ox-listing__toolbar')).not.toBeNull();
+  });
+
   it('navigates with ?sort= and drops the page cursor, as the engine does', () => {
     renderWithProviders(<ListingPage {...data()} slug="whey-protein" />);
     const select = screen.getByLabelText('ترتيب حسب') as HTMLSelectElement;
@@ -223,6 +242,14 @@ describe('ListingPage, goal variant', () => {
     expect(container.querySelector('.ox-explainer')).not.toBeNull();
     expect(container.querySelectorAll('.ox-subneed')).toHaveLength(3);
     expect(container.querySelector('.ox-needhelp')).not.toBeNull();
+  });
+
+  it('replaces the masthead band with the dark hero', () => {
+    const { container } = renderWithProviders(
+      <ListingPage {...goalData} slug="goal-performance" />
+    );
+    expect(container.querySelector('.ox-listing__band')).toBeNull();
+    expect(container.querySelector('.ox-goal-hero')).not.toBeNull();
   });
 
   it('renders the two anchored groups of the ideal-weight goal', () => {
@@ -303,6 +330,53 @@ describe('ListingPage, brand and static variants', () => {
     expect(container.querySelector('.ox-listing__intro-text')?.textContent).toBe('وصف العلامة');
   });
 
+  it('gives the offers listing its own intro and its own empty state', () => {
+    const { container } = renderWithProviders(
+      <ListingPage
+        {...data({
+          page: { title: 'العروض', slug: 'product.index.offers', breadcrumbs: [] },
+          source: { type: 'offers' },
+          products: [],
+          pagination: { next: null },
+          filters: undefined,
+        })}
+      />
+    );
+    expect(container.querySelector('.ox-listing__intro-text')?.textContent).toBe(
+      'المنتجات هنا بسعر أقل من سعرها المعتاد. السعر السابق يظهر بجانب السعر الحالي، والفرق بينهما بالريال.'
+    );
+    const empty = container.querySelector('.ox-listing__empty');
+    expect(empty).not.toBeNull();
+    expect(empty?.querySelector('.ox-empty__title')?.textContent).toBe('لا عروض سارية الآن');
+    // Two routes out: the goals page and the whole range.
+    expect(empty?.querySelectorAll('.ox-empty__actions a')).toHaveLength(2);
+  });
+
+  it('gives a brand with nothing in stock its own empty state and a route to /brands', () => {
+    const { container } = renderWithProviders(
+      <ListingPage
+        {...data({
+          page: { title: 'Optimum Nutrition', slug: 'brands.index', breadcrumbs: [] },
+          source: {
+            type: 'brands',
+            value: '7',
+            entity: { id: '7', name: 'Optimum Nutrition', url: `${ORIGIN}/optimum/b7` },
+          },
+          products: [],
+          pagination: { next: null },
+          filters: undefined,
+        })}
+      />
+    );
+    expect(container.querySelector('.ox-empty__title')?.textContent).toBe(
+      'لا منتجات لهذه العلامة الآن'
+    );
+    const hrefs = Array.from(container.querySelectorAll('.ox-empty__actions a')).map((node) =>
+      node.getAttribute('href')
+    );
+    expect(hrefs).toContain('/brands');
+  });
+
   it('renders a static source with no intro, no chips and no FAQ', () => {
     const { container } = renderWithProviders(
       <ListingPage
@@ -316,6 +390,9 @@ describe('ListingPage, brand and static variants', () => {
     expect(container.querySelector('.ox-listing--static')).not.toBeNull();
     expect(container.querySelector('.ox-listing__faq')).toBeNull();
     expect(container.querySelector('.ox-listing__chips')).toBeNull();
+    expect(container.querySelector('.ox-listing__intro-text')?.textContent).toBe(
+      'آخر ما أضفناه إلى المتجر، الأحدث أولا.'
+    );
     expect(screen.getByTestId('items-list')).toBeTruthy();
   });
 });

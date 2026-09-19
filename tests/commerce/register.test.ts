@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  * exactly once"). A second handler on a slot would render the block twice,
  * which is what the module-level guard prevents.
  *
- * Both the registry and the four blocks are doubled. Importing
+ * Both the registry and the five blocks are doubled. Importing
  * `@salla.sa/twilight-theme-engine/hooks` or any of the blocks for real pulls
  * the whole components-react runtime into jsdom (the same reason B3's
  * register test doubles the component registry); what is under test is which
@@ -45,6 +45,11 @@ vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({
   hookRegistry,
   HookName: { CART_ITEMS_END: 'cart:items.end', CART_ITEMS_START: 'cart:items.start' },
 }));
+vi.mock('../../app/components/commerce/CartHeader', () => ({
+  CartHeader: function CartHeader() {
+    return null;
+  },
+}));
 vi.mock('../../app/components/commerce/CartTrust', () => ({
   CartTrust: function CartTrust() {
     return null;
@@ -68,8 +73,14 @@ const { registerOxCommerceHooks, resetOxCommerceHooks } = await import(
   '../../app/components/commerce/register'
 );
 
-/** The four slots B6 owns, in the engine's own naming. */
-const SLOTS = ['cart:items.end', 'blog:start', 'blog:single.start', 'blog:single.end'];
+/** The five slots B6 owns, in the engine's own naming. */
+const SLOTS = [
+  'cart:start',
+  'cart:items.end',
+  'blog:start',
+  'blog:single.start',
+  'blog:single.end',
+];
 
 describe('registerOxCommerceHooks', () => {
   beforeEach(() => {
@@ -77,7 +88,7 @@ describe('registerOxCommerceHooks', () => {
     resetOxCommerceHooks();
   });
 
-  it('registers one handler in each of the four engine slots', () => {
+  it('registers one handler in each of the five engine slots', () => {
     registerOxCommerceHooks();
     for (const slot of SLOTS) {
       expect(hookRegistry.getHandlers(slot)).toHaveLength(1);

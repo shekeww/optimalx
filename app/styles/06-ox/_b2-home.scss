@@ -70,15 +70,28 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: var(--ox-graphite-2);
+  // The ground under the photo is the band colour, not a lighter graphite:
+  // the utility bar, the header and this band read as one block of near-black
+  // at the top of the page, which is the first thing the approved design does.
+  background: var(--ox-bg);
 
   // Mobile legibility is a linear gradient to the band colour, never a blur
-  // (render budget rule 2).
+  // (render budget rule 2). The stops are set against the shipped photograph,
+  // which is a bright product shot: the top third stays clean so the bottles
+  // read, and everything under the copy goes to the band colour. A gradient
+  // that only starts working at 40 per cent leaves the headline on the image.
   &::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(23, 23, 26, 0) 40%, var(--ox-graphite) 100%);
+    background: linear-gradient(
+      to bottom,
+      rgba(14, 17, 23, 0) 0%,
+      rgba(14, 17, 23, 0.42) 20%,
+      rgba(14, 17, 23, 0.82) 38%,
+      rgba(14, 17, 23, 0.96) 60%,
+      var(--ox-graphite) 100%
+    );
   }
 }
 
@@ -87,12 +100,26 @@
   inset: 0;
 }
 
+// The shipped default is a <picture> (a theme asset has no CDN behind it, so
+// the two crops are art-directed with a media query rather than a srcset).
+.ox-hero__photo picture {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
 .ox-hero__img,
 .ox-hero__video {
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
   object-position: center top;
+}
+
+@media (min-width: 640px) {
+  .ox-hero__img {
+    object-position: center;
+  }
 }
 
 .ox-hero__video {
@@ -104,7 +131,12 @@
   display: none;
 }
 
+// DIRECTION 4.5, the mobile hero row: a 64 by 158 triangle at the band's top
+// inline end. The element carried the accent fill and no geometry at all, so
+// the phone hero shipped with no wedge on it; the mixin is what draws it.
 .ox-hero__corner {
+  @include ox-wedge-corner(64px, 158px);
+  z-index: 1;
   background: var(--ox-accent);
 }
 
@@ -129,10 +161,13 @@
   }
 }
 
+// No `inline-size: 100%` here: the element also carries `.ox-container`, and a
+// later declaration of the same specificity beat it, so the hero copy ran to
+// the viewport edge while every other section sat in the measure. That one
+// line was why the first screen looked unaligned with the rest of the page.
 .ox-hero__inner {
   position: relative;
   z-index: 1;
-  inline-size: 100%;
   padding-block: var(--ox-6);
 }
 
@@ -228,31 +263,38 @@
 // ---------------------------------------------------------------------------
 // 3. OxTrustStrip (DIRECTION 5.2, 6.2 row 2)
 // ---------------------------------------------------------------------------
+// Drawn as `.ox-stats`, the statistic strip the product page already uses:
+// equal cells on the page ground, a hairline between them, no fill and no
+// border. That class is declared once in _b3-product.scss and consumed here;
+// nothing below redefines it, it only styles what sits inside a cell.
 .ox-trust {
   background: var(--ox-paper);
   border-block-end: 1px solid var(--ox-line);
 }
 
-.ox-trust__row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.ox-trust__item {
+  position: relative;
+  min-inline-size: 0;
 }
 
-.ox-trust__item {
-  min-inline-size: 0;
+// A merchant who writes a single promise gets a single cell, not one cell and
+// an empty half. Scoped to this row so the shared `.ox-stats` rules are read,
+// never rewritten.
+.ox-trust__row[data-count='1'] {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .ox-trust__btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--ox-3);
+  justify-content: center;
+  gap: 6px;
   inline-size: 100%;
-  min-block-size: 72px;
+  block-size: 100%;
+  min-block-size: 56px;
   padding-inline: var(--ox-2);
-  text-align: start;
+  text-align: center;
   color: var(--ox-fg);
   @include ox-focus(-2px);
 }
@@ -261,14 +303,24 @@ button.ox-trust__btn:hover .ox-trust__title {
   text-decoration: underline;
 }
 
+// The open cell carries the one indicator this block is allowed: the same 2px
+// accent rule the tab strip uses, and one of the four places a page spends
+// orange.
+.ox-trust__btn[aria-expanded='true']::after {
+  content: '';
+  position: absolute;
+  inset-inline: var(--ox-4);
+  inset-block-end: calc(var(--ox-2) * -1);
+  block-size: 2px;
+  background: var(--ox-accent);
+}
+
 .ox-trust__icon {
   flex: none;
   color: var(--ox-fg);
 }
 
 .ox-trust__text {
-  display: flex;
-  flex-direction: column;
   min-inline-size: 0;
 }
 
@@ -276,10 +328,14 @@ button.ox-trust__btn:hover .ox-trust__title {
   font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
+  color: var(--ox-fg);
 }
 
 .ox-trust__line {
-  color: var(--ox-fg-2);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--ox-fg-3);
 }
 
 .ox-trust__panel {
@@ -307,9 +363,9 @@ button.ox-trust__btn:hover .ox-trust__title {
   padding-block: var(--ox-4);
 }
 
-@media (min-width: 640px) {
-  .ox-trust__row {
-    grid-template-columns: repeat(4, 1fr);
+@media (min-width: 1024px) {
+  .ox-trust__title {
+    font-size: 16px;
   }
 }
 
@@ -322,7 +378,10 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 .ox-goals__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  // minmax(0, 1fr), never 1fr: `1fr` is `minmax(auto, 1fr)`, so a track holding
+  // a clamped or nowrap label takes that label's min-content width and the grid
+  // runs past the viewport. On a 390 phone that is a sideways-scrolling page.
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ox-4);
   margin: 0;
   padding: 0;
@@ -347,8 +406,27 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 
   &:active {
-    background: var(--ox-plate);
+    background: var(--ox-fill);
   }
+}
+
+// The symbol sits on the plate, the same ground the design puts behind every
+// piece of imagery. It is what stops six line drawings on cream reading as a
+// stock icon set.
+.ox-goal__plate {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--ox-r-1);
+  background: var(--ox-plate);
+}
+
+.ox-goal:hover .ox-goal__plate,
+.ox-goal:active .ox-goal__plate {
+  background: var(--ox-plate-2);
 }
 
 .ox-goal__icon {
@@ -400,19 +478,24 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 @media (min-width: 640px) {
   .ox-goals__grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
   .ox-goals__grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: var(--ox-6);
   }
 
   .ox-goal {
     block-size: 160px;
     padding: 20px;
+  }
+
+  .ox-goal__plate {
+    inline-size: 48px;
+    block-size: 48px;
   }
 }
 
@@ -436,7 +519,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 // ---------------------------------------------------------------------------
 .ox-cats__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ox-4);
   margin: 0;
   padding: 0;
@@ -481,7 +564,15 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 .ox-tile__icon {
-  color: var(--ox-ink-2);
+  // Light enough to read as artwork rather than as an interface control, dark
+  // enough to hold its own line weight on the plate.
+  color: var(--ox-ink-3);
+  stroke-width: 1.25;
+  // The drawn size is an inline custom property, which no class can override,
+  // so the plate constrains the box instead. The viewBox keeps the artwork
+  // square inside it.
+  max-inline-size: 100%;
+  max-block-size: 100%;
 }
 
 .ox-tile__strip {
@@ -489,17 +580,23 @@ button.ox-trust__btn:hover .ox-trust__title {
   align-items: center;
   justify-content: space-between;
   gap: var(--ox-2);
-  block-size: 48px;
+  // Two lines of label plus padding, fixed, so every tile in a row is level
+  // whether its name needs one line or two.
+  block-size: 60px;
   padding-inline: var(--ox-3);
+  // The plate and the label strip are two surfaces, so a hairline separates
+  // them: the same rule the panel draws between a heading and its table.
+  border-block-start: 1px solid var(--ox-bd);
 }
 
 .ox-tile__label {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .ox-tile__count {
@@ -509,8 +606,25 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 @media (min-width: 640px) {
   .ox-cats__grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--ox-6);
+  }
+
+  .ox-tile__strip {
+    block-size: 56px;
+  }
+
+  .ox-tile__label {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  // A shallower plate from tablet up. At 4/3 a 305 wide tile gives a 229 tall
+  // plate, and with no category photography in the catalogue that is a lot of
+  // empty ground under one symbol; 3/2 keeps the tile a tile and takes 50px of
+  // dead height out of the section.
+  .ox-tile__plate {
+    aspect-ratio: 3 / 2;
   }
 }
 
@@ -570,7 +684,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 @media (min-width: 1024px) {
   .ox-brands__strip {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     overflow-x: visible;
   }
 
@@ -581,50 +695,156 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
-// 8. OxServices (DIRECTION 5.2, 4.5 services polygon, 6.2 row 7)
+// 8. OxServices: the home's one dark band and its one wedge
 // ---------------------------------------------------------------------------
+// Built to the approved image's band contract: a photograph under a gradient,
+// the accent wedge at 22 degrees, the copy, and the lockup. DIRECTION 4.3 rule
+// 2 sketched a tonal graphite panel instead; the image is the identity and it
+// is explicit that a band carries a photograph, so the image wins. There is
+// still exactly one wedge motif on this screen.
 .ox-services {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   padding-block: var(--ox-12);
+  background: var(--ox-band-brand, #0e1117);
 }
 
-// Scoped to the services band: the hub and goal heroes carry their own band
-// height, and DIRECTION 4.5 gives each band its own run.
+// On a phone the band is 1400 tall and the photograph is a 1580 by 600 frame,
+// so covering the whole band would zoom it four times and show noise. It sits
+// as a strip at the top instead, under the heading, which is exactly how the
+// product page's band handles the same problem.
+.ox-services__photo {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 240px;
+  object-fit: cover;
+  object-position: center;
+}
+
+// One flat gradient, never a blur (render budget rule 2). It keeps the top of
+// the photograph legible where the heading sits and buries the rest, so the
+// cards read as cards and not as objects floating on a picture. The gradient
+// runs block-wise, so it needs no direction variant.
+.ox-services__scrim {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 0;
+  block-size: 240px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(14, 17, 23, 0.5) 0%,
+    rgba(14, 17, 23, 0.9) 55%,
+    rgba(14, 17, 23, 0.99) 100%
+  );
+}
+
+// The pair of skewed bars from the approved image, at the band's top inline
+// end. They sit in the gutter outside the container, so nothing in the header
+// row ever runs under them.
 .ox-services .ox-band__wedge {
   position: absolute;
-  inset-block: 0;
-  inset-inline-end: 0;
-  z-index: 0;
-  inline-size: 80px;
-  block-size: 198px;
-  background: var(--ox-graphite-2);
+  inset-block-start: 0;
+  z-index: 1;
+  background: var(--ox-accent);
+  transform: skewX(calc(var(--direction-factor) * -1 * var(--ox-angle)));
   pointer-events: none;
-  @include ox-wedge-corner(80px, 198px);
+}
+
+.ox-services .ox-band__wedge--wide {
+  inset-inline-end: 0;
+  inline-size: 14px;
+  block-size: 84px;
+}
+
+.ox-services .ox-band__wedge--thin {
+  inset-inline-end: 30px;
+  inline-size: 8px;
+  block-size: 84px;
 }
 
 .ox-services__inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+
+.ox-services__foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  margin-block-start: var(--ox-6);
+}
+
+.ox-services__notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  min-inline-size: 0;
 }
 
 .ox-services__reply,
 .ox-services__note {
-  margin: var(--ox-4) 0 0;
+  margin: 0;
   color: var(--ox-fg-2);
+}
+
+.ox-services__lockup {
+  display: flex;
+  margin: 0;
 }
 
 @media (min-width: 1024px) {
   .ox-services {
-    min-block-size: 480px;
+    min-block-size: 544px;
     padding-block: var(--ox-16);
   }
 
-  .ox-services .ox-band__wedge {
-    inline-size: calc(34% + 194px);
-    block-size: auto;
-    @include ox-wedge(480px);
+  // The row fits on one screen from here up, so the photograph takes the whole
+  // band and the gradient does the legibility work.
+  .ox-services__photo,
+  .ox-services__scrim {
+    inset-block: 0;
+    block-size: 100%;
+  }
+
+  .ox-services__scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(14, 17, 23, 0.7) 0%,
+      rgba(14, 17, 23, 0.93) 44%,
+      rgba(14, 17, 23, 0.985) 100%
+    );
+  }
+
+  // 126, not 150: the bars sit in the gutter at the band's top inline end and
+  // the section header's route-out link sits just below them. This is the
+  // clearance that keeps an orange bar from crowding a text link.
+  .ox-services .ox-band__wedge--wide {
+    inline-size: 26px;
+    block-size: 126px;
+  }
+
+  .ox-services .ox-band__wedge--thin {
+    inset-inline-end: 40px;
+    inline-size: 14px;
+    block-size: 126px;
+  }
+
+  .ox-services__foot {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--ox-8);
+    margin-block-start: var(--ox-8);
+  }
+
+  .ox-services__notes {
+    max-inline-size: 72ch;
   }
 }
 
@@ -637,7 +857,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 @media (min-width: 1024px) {
   .ox-guides {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--ox-6);
   }
 }
@@ -649,8 +869,20 @@ button.ox-trust__btn:hover .ox-trust__title {
 // ---------------------------------------------------------------------------
 // 10. OxFaq (DIRECTION 6.2 row 10)
 // ---------------------------------------------------------------------------
-.ox-faq .ox-acc {
+// The rows sit in a panel, which is the system's unit for a block of
+// structured content. The accordion's own top and bottom rules come off: the
+// panel's border already draws that boundary and two lines 1px apart is the
+// kind of detail that makes a page read as assembled rather than designed.
+.ox-faq__panel {
   max-inline-size: var(--ox-container-text);
+}
+
+.ox-faq .ox-acc {
+  border-block-start: 0;
+}
+
+.ox-faq .ox-acc__row:last-child {
+  border-block-end: 0;
 }
 
 .ox-faq__answer {
@@ -722,8 +954,20 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-skel-hero {
   display: flex;
   align-items: flex-end;
-  background: var(--ox-graphite-2);
+  background: var(--ox-graphite);
   padding-block-end: var(--ox-6);
+}
+
+.ox-skel-services {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+  padding-block: var(--ox-12);
+  background: var(--ox-band-brand, #0e1117);
+
+  .ox-skel-grid {
+    flex: 1 1 auto;
+  }
 }
 
 .ox-skel-hero__text {
@@ -735,7 +979,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 .ox-skel-trust {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   gap: var(--ox-3);
 }
@@ -743,7 +987,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-skel-grid {
   display: grid;
   gap: var(--ox-4);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .ox-skel-grid--channels,
@@ -775,15 +1019,19 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 .ox-skel-branch {
-  display: grid;
-  gap: var(--ox-4);
-  grid-template-rows: 268px auto;
+  display: flex;
+  align-items: stretch;
 }
 
 .ox-skel-branch__card {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
+  justify-content: center;
   gap: var(--ox-3);
+  padding: var(--ox-4);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
 }
 
 .ox-skel-faq {
@@ -802,22 +1050,22 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 @media (min-width: 640px) {
   .ox-skel-trust {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .ox-skel-grid--tiles {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
   .ox-skel-grid--goals {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .ox-skel-grid--channels,
   .ox-skel-grid--guides {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .ox-skel-rail {
@@ -825,8 +1073,7 @@ button.ox-trust__btn:hover .ox-trust__title {
     block-size: 510px;
   }
 
-  .ox-skel-branch {
-    grid-template-rows: none;
-    grid-template-columns: 7fr 5fr;
+  .ox-skel-branch__card {
+    padding: var(--ox-8);
   }
 }

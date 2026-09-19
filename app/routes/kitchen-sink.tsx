@@ -153,7 +153,7 @@ function Banner({ probe }: { probe: Probe | null }) {
         <strong>Fonts</strong>{' '}
         {probe.fonts.map((font) => `${font.spec}: ${font.ok ? 'ok' : 'MISSING'}`).join(' · ')}
         {failingFonts.length > 0
-          ? ' — display falls back to 700 at the same size and line height (DIRECTION 3).'
+          ? ' - display falls back to 700 at the same size and line height (DIRECTION 3).'
           : ''}
       </p>
       <p style={{ margin: '4px 0 0' }}>

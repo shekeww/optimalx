@@ -20,6 +20,12 @@ export interface GoalCardProps {
  * orange element of the sprite, and the card never animates on its own: the
  * only motion it takes part in is the grid settle its parent runs once
  * (DIRECTION 7.2).
+ *
+ * The symbol sits on a plate, which is the same move the approved design makes
+ * behind every piece of imagery: it gives a line drawing a ground to sit on and
+ * it is what stops six flat icon cards reading as a stock icon grid. The plate
+ * is the only fill on the card; the separation from the page is a value step
+ * and a hairline, never a shadow.
  */
 export function GoalCard({ slug, label, line, icon, to, index = 0 }: GoalCardProps) {
   return (
@@ -30,7 +36,9 @@ export function GoalCard({ slug, label, line, icon, to, index = 0 }: GoalCardPro
       data-goal={slug}
       style={{ ['--i' as string]: String(index) }}
     >
-      <Icon name={icon} size={32} className="ox-goal__icon" />
+      <span className="ox-goal__plate" aria-hidden="true">
+        <Icon name={icon} size={28} className="ox-goal__icon" />
+      </span>
       <span className="ox-goal__body">
         <span className="ox-goal__label ox-h3">{label}</span>
         {line ? <span className="ox-goal__line ox-small">{line}</span> : null}

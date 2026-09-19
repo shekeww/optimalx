@@ -52,7 +52,12 @@ export function OxFaq({ data }: OxBlockProps) {
     <section className="ox-faq" data-testid="ox-faq">
       <div className="ox-container">
         <SectionHeader title={t(FAQ_TITLE_KEY)} />
-        <Accordion items={items} />
+        {/* The panel is the design system's unit for a block of structured
+            content, and an FAQ is one. On the page ground the rows read as a
+            loose list; inside the panel they read as a document. */}
+        <div className="ox-panel ox-faq__panel">
+          <Accordion items={items} />
+        </div>
       </div>
     </section>
   );

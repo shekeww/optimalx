@@ -21,9 +21,21 @@ import { fieldText, type OxBlockProps } from './defaults';
  *
  * The image is the LCP element: `priority` makes it eager with
  * `fetchpriority="high"` and `decoding="sync"`, and the explicit width and
- * height plus the band's own reserved height keep CLS at zero. With no upload
- * the panel is simply the graphite plate, never a broken image.
+ * height plus the band's own reserved height keep CLS at zero.
+ *
+ * The theme ships its own photograph, so the first screen is finished on a
+ * store that has configured nothing. That is the render the design is checked
+ * in, because it is what a visitor sees today. A merchant upload replaces it
+ * and goes through the engine `Image` so the CDN resizes it; ours is a plain
+ * `<picture>` because a theme asset has no CDN to resize it.
  */
+
+/**
+ * The shipped hero. Two crops, because the desktop panel is a 3:2 wedge at the
+ * inline end and the mobile band is a 3:4 full bleed behind the copy.
+ */
+export const DEFAULT_HERO = '/assets/images/hero-home.jpg';
+export const DEFAULT_HERO_MOBILE = '/assets/images/hero-home-mobile.jpg';
 
 /** An internal route goes through the engine Link; an anchor or an absolute URL does not. */
 function linkProps(url: string): { to: string } | { href: string } {
@@ -97,13 +109,28 @@ export function OxHero({ data }: OxBlockProps) {
               className="ox-hero__img"
               noWrapper
             />
-          ) : null}
+          ) : (
+            <picture>
+              <source media="(min-width: 640px)" srcSet={DEFAULT_HERO} />
+              <img
+                className="ox-hero__img"
+                src={DEFAULT_HERO_MOBILE}
+                alt=""
+                width={780}
+                height={1040}
+                decoding="sync"
+                loading="eager"
+                fetchPriority="high"
+                data-testid="ox-hero-default-photo"
+              />
+            </picture>
+          )}
           {showVideo ? (
             <video
               ref={videoRef}
               className="ox-hero__video"
               src={videoUrl}
-              {...(image ? { poster: image } : {})}
+              poster={image || DEFAULT_HERO}
               autoPlay
               muted
               loop

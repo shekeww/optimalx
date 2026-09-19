@@ -1,13 +1,125 @@
 // B4: listing, goal landing, filters, search and brands (DIRECTION 5.3, 5.5,
-// 6.3, 6.4, 6.8, 6.14). Role tokens only, logical properties only, motion only
-// through --dur-* and --ease-*, transform and opacity only, and nothing on a
-// wedge element animates (amendment A9).
+// 6.3, 6.4, 6.8, 6.14), carried onto the approved design
+// (docs/design-target/pdp-target.png, scratchpad/target-spec.md).
+//
+// Rules this file obeys, checked by scripts/check-rtl.mjs and check-motion.mjs:
+// logical properties only, role tokens only, motion only through --dur-* and
+// --ease-* on transform and opacity, colour never transitions, and no shadow
+// anywhere. Surfaces separate by value plus a 1px hairline, which is the one
+// thing that keeps a wall of mixed supplier photography reading as one store.
+//
+// The listing carries no wedge. The wedge is a signature that belongs to a
+// screen's dark band; a category page has no dark band, and the goal landing's
+// one wedge is the hero corner in section 9.
+
+// ---------------------------------------------------------------------------
+// 0. SHARED: the site-wide breadcrumb (shared part 9)
+//
+// Consumed by PAGES (about, contact, services, branch, blog, static pages) and
+// COMMERCE (account, cart), which is why a site-wide rule lives in a batch
+// partial: LISTING owns it, nobody redeclares it. The engine `Breadcrumb`
+// renders `nav.breadcrumbs.w-full.py-5 > ol.s-breadcrumb-wrapper >
+// li.s-breadcrumb-item`, with a 32px chevron in `span.s-breadcrumb-arrow`
+// (theme-engine Breadcrumb-W64WMO56.js). Passing `className="ox-crumbs"`
+// replaces the engine's own Tailwind classes; both selectors are styled so a
+// route that forgets the class still gets the design.
+//
+// The scoped overrides in _b6-commerce.scss (the account profile header) and
+// in the inherited Raed sheets keep winning where they apply: they are more
+// specific and they come later.
+// ---------------------------------------------------------------------------
+.ox-crumbs,
+nav.breadcrumbs {
+  display: block;
+  inline-size: 100%;
+  padding-block: var(--ox-3);
+  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
+  line-height: 1.6;
+  color: var(--ox-fg-3);
+}
+
+.ox-crumbs .s-breadcrumb-wrapper,
+nav.breadcrumbs .s-breadcrumb-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  // A long trail scrolls rather than wrapping to three lines on a phone.
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-crumbs .s-breadcrumb-item,
+nav.breadcrumbs .s-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  flex: none;
+  color: var(--ox-fg-3);
+}
+
+.ox-crumbs .s-breadcrumb-item a,
+nav.breadcrumbs .s-breadcrumb-item a {
+  @include ox-focus(2px);
+  color: var(--ox-fg-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+}
+
+// The current page is the only item set in the ink, and it is never a link.
+.ox-crumbs .s-breadcrumb-item[aria-current='page'],
+nav.breadcrumbs .s-breadcrumb-item[aria-current='page'] {
+  color: var(--ox-fg);
+  font-weight: 600;
+}
+
+// The engine ships a 32px viewBox chevron with no size attributes of its own.
+.ox-crumbs .s-breadcrumb-arrow,
+nav.breadcrumbs .s-breadcrumb-arrow {
+  color: var(--ox-ink-4);
+
+  svg {
+    inline-size: 16px;
+    block-size: 16px;
+    fill: currentColor;
+  }
+
+  [dir='ltr'] & svg {
+    transform: scaleX(-1);
+  }
+}
+
+.ox-crumbs .s-breadcrumb-item button,
+nav.breadcrumbs .s-breadcrumb-item button {
+  @include ox-focus(2px);
+  min-block-size: 32px;
+  padding-inline: var(--ox-1);
+  color: var(--ox-fg-2);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
 
 // ---------------------------------------------------------------------------
 // 1. Page frame and vertical rhythm (DIRECTION 4.2)
 // ---------------------------------------------------------------------------
 .ox-listing {
-  padding-block-end: var(--ox-12);
+  padding-block-end: var(--ox-16);
 }
 
 .ox-listing__body {
@@ -19,28 +131,76 @@
 
 @media (min-width: 1024px) {
   .ox-listing__body {
-    padding-block-start: var(--ox-16);
+    gap: var(--ox-16);
+    padding-block-start: var(--ox-8);
   }
 }
 
 // ---------------------------------------------------------------------------
-// 2. ListingHeader (DIRECTION 5.3, 6.3 block 2)
+// 2. The masthead band (DIRECTION 6.3 blocks 1 and 2)
+//
+// The head region is a full-bleed warm plate carrying the breadcrumb, the h1
+// and the category intro, closed by a hairline in the darker plate tone. It is
+// the same value-and-hairline separation the approved image uses between the
+// page and its panels, applied at page scale: it gives every listing a
+// masthead without a photograph the store does not own, and it stops a
+// catalogue page opening as a bare grid under the dark chrome.
+//
+// The goal landing has no masthead: its dark hero is the head region, and two
+// stacked head bands would be one too many.
+// ---------------------------------------------------------------------------
+.ox-listing__band {
+  background: var(--ox-plate);
+  border-block-end: 1px solid var(--ox-plate-2);
+}
+
+.ox-listing__band-inner {
+  display: flex;
+  flex-direction: column;
+  padding-block-end: var(--ox-6);
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__band-inner {
+    padding-block-end: var(--ox-8);
+  }
+}
+
+// The breadcrumb inside the masthead loses its own top padding: the band sets
+// the rhythm, and the trail sits 12 under the chrome.
+.ox-listing__band .ox-crumbs {
+  padding-block: var(--ox-3) var(--ox-4);
+}
+
+// ---------------------------------------------------------------------------
+// 3. ListingHeader: the title block (DIRECTION 5.3, 6.3 block 2)
+//
+// No count line. The products API returns no total, and a total is never
+// invented (PLAN-final B4, claims gate); the progress line under the grid
+// states the loaded count instead.
 // ---------------------------------------------------------------------------
 .ox-listing__head {
   display: flex;
   flex-direction: column;
   gap: var(--ox-3);
+  min-inline-size: 0;
 }
 
 .ox-listing__title-row {
   display: flex;
   align-items: center;
-  gap: var(--ox-3);
+  gap: var(--ox-4);
   min-block-size: 48px;
 }
 
 .ox-listing__media {
   flex: 0 0 auto;
+}
+
+.ox-listing__title-row h1,
+.ox-listing__title-row h2 {
+  margin: 0;
+  min-inline-size: 0;
 }
 
 .ox-listing__intro,
@@ -58,11 +218,69 @@
   overflow: hidden;
 }
 
+@media (min-width: 1024px) {
+  .ox-listing__title-row {
+    min-block-size: 56px;
+  }
+  .ox-listing__intro-text.is-clamped {
+    -webkit-line-clamp: 1;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. The toolbar: child chips, filters trigger and sort (6.3 blocks 3 and 2)
+//
+// One instrument rather than three stray controls: a rule above and below, the
+// sub-category scroller at the RTL start and the controls at the end, sharing
+// one 64 row on desktop and stacking on a phone. It sits directly on the grid,
+// which is where a shopper looks for it.
+// ---------------------------------------------------------------------------
+.ox-listing__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  padding-block: var(--ox-2);
+  border-block: 1px solid var(--ox-bd);
+}
+
+.ox-listing__chips {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  min-block-size: 44px;
+}
+
+.ox-listing__chips-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > li {
+    flex: none;
+  }
+}
+
+.ox-chip--link {
+  text-decoration: none;
+}
+
 .ox-listing__controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--ox-3);
+  flex: none;
   min-block-size: 44px;
 }
 
@@ -92,9 +310,12 @@
   gap: var(--ox-2);
   margin-inline-start: auto;
 
+  // Width only. The `background` shorthand would drop the chevron the
+  // primitive draws as a background image, and the fill is already the card
+  // cream the design asks for.
   .ox-select {
     inline-size: auto;
-    min-inline-size: 168px;
+    min-inline-size: 176px;
   }
 }
 
@@ -102,7 +323,7 @@
   display: none;
   font-size: clamp(13px, 12.63px + 0.095vw, 14px);
   font-weight: 600;
-  color: var(--ox-fg-2);
+  color: var(--ox-fg-3);
   white-space: nowrap;
 }
 
@@ -113,52 +334,42 @@
 }
 
 @media (min-width: 1024px) {
-  .ox-listing__title-row {
-    min-block-size: 56px;
+  .ox-listing__toolbar {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ox-6);
+    min-block-size: 64px;
+    padding-block: 0;
   }
-  .ox-listing__intro-text.is-clamped {
-    -webkit-line-clamp: 1;
+  .ox-listing__chips {
+    min-block-size: 64px;
   }
+  // The rail carries the same facets from 1024 up, so the trigger is a
+  // mobile-only control and is removed rather than hidden behind the rail.
   .ox-listing__filters-trigger {
     display: none;
   }
-}
-
-// ---------------------------------------------------------------------------
-// 3. Child chips (DIRECTION 6.3 block 3)
-// ---------------------------------------------------------------------------
-.ox-listing__chips {
-  min-block-size: 52px;
-  display: flex;
-  align-items: center;
-}
-
-.ox-listing__chips-row {
-  display: flex;
-  gap: var(--ox-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
+  .ox-listing__controls {
+    min-block-size: 64px;
   }
 }
 
-.ox-chip--link {
-  text-decoration: none;
+// ---------------------------------------------------------------------------
+// 5. Rail and grid (DIRECTION 6.3 blocks 4 and 5)
+// ---------------------------------------------------------------------------
+// The toolbar and the grid are one block: the rule under the toolbar is the
+// grid's own top edge, so they are never separated by a section gap.
+.ox-listing__catalogue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
 }
 
-// ---------------------------------------------------------------------------
-// 4. Rail and grid (DIRECTION 6.3 blocks 4 and 5)
-// ---------------------------------------------------------------------------
 .ox-listing__grid-head {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
-  scroll-margin-block-start: var(--ox-16);
+  gap: var(--ox-4);
+  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-4));
 }
 
 .ox-listing__results {
@@ -171,8 +382,43 @@
   min-inline-size: 0;
 }
 
+// The rail is a panel, not a bare column: cream fill, one hairline, 16 radius,
+// the same card contract the rest of the store uses. It renders only when the
+// API returned facets, so a store with none gets the full row for the grid and
+// that render is the designed one.
 .ox-filters {
   display: none;
+  min-inline-size: 0;
+}
+
+.ox-filters__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  min-block-size: 44px;
+  padding: var(--ox-3) var(--ox-4);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-filters__title {
+  margin: 0;
+  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+  font-weight: 700;
+  color: var(--ox-fg);
+}
+
+.ox-filters__body {
+  padding: var(--ox-2) var(--ox-4) var(--ox-4);
+}
+
+// `salla-filters` is a platform web component whose light-DOM class names are
+// not in this repository, so it is given the surface and the type roles rather
+// than a per-class restyle it could rename out from under us.
+.ox-filters salla-filters {
+  display: block;
+  color: var(--ox-fg);
+  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
 }
 
 @media (min-width: 1024px) {
@@ -187,29 +433,63 @@
     z-index: var(--ox-z-raised);
     max-block-size: calc(100vh - var(--ox-h-bar) - var(--ox-6));
     overflow-y: auto;
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4);
   }
 }
 
 .ox-grid-products {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ox-3);
+  gap: var(--ox-4);
   margin: 0;
   padding: 0;
   list-style: none;
   align-items: stretch;
+
+  // `ItemsList` renders the cards as direct children of this wrapper: it
+  // honours `itemsAs` only for the value "Fragment" and emits a div for every
+  // other value (components-react native/items-list/ItemsList.js). The card is
+  // therefore the grid item itself, which is what keeps one baseline per row.
+  > * {
+    min-inline-size: 0;
+  }
+
+  // The kitchen sink hand-writes list items around the same cards.
+  > li {
+    display: flex;
+  }
+
+  > li > * {
+    inline-size: 100%;
+  }
+}
+
+// The zero-products render: `ItemsList` puts the empty node inside this same
+// wrapper and marks it, so the grid stops being a grid rather than dropping the
+// state into the first column.
+.ox-grid-products.s-items-list-empty {
+  display: block;
 }
 
 @media (min-width: 640px) {
   .ox-grid-products {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--ox-4);
   }
 }
 
 @media (min-width: 1024px) {
   .ox-grid-products {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ox-6);
+    // A listing cell is 306 wide where the product page's carousel card is
+    // 211, so the card's default plate cap leaves the photograph filling about
+    // a third of the cell with dead space either side. The card reads the cap
+    // from this property, so raising it here scales the image with the cell
+    // without redefining anything the card owns. Below 1024 the cells are
+    // narrow enough that the default is already correct.
+    --ox-card-plate-max: 184px;
   }
   .ox-grid-products--with-rail {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -222,25 +502,35 @@
   }
 }
 
-// The card skeleton: the same box as a loaded card, row for row.
+// The card skeleton: the same box as a loaded card, row for row, so the swap
+// from loading to loaded shifts nothing. Padding, gap, radius, plate cap and
+// the six fixed rows are the values `.ox-card-product` declares in
+// _b3-product.scss; they are mirrored here rather than shared because that
+// file is frozen and its classes are consumed, never redefined.
 .ox-card-skeleton {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-2);
-  padding: var(--ox-3);
+  gap: var(--ox-3);
+  padding: var(--ox-4);
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4);
 }
 
 .ox-card-skeleton__plate {
   aspect-ratio: 1 / 1;
+  max-block-size: 132px;
   border-radius: var(--ox-r-2);
   margin-block-end: var(--ox-1);
 }
 
 // ---------------------------------------------------------------------------
-// 5. LoadMore: the ItemsList chrome restyled (DIRECTION 5.3)
+// 6. LoadMore: the ItemsList chrome restyled (DIRECTION 5.3)
+//
+// `ItemsList` renders the button as `<salla-button width="normal">` inside
+// `.s-items-list-load-more` (components-react native/items-list/ItemsList.js),
+// so the secondary contract is written onto the element's own button part and
+// onto the light-DOM fallback class.
 // ---------------------------------------------------------------------------
 .ox-listing__list {
   display: block;
@@ -249,11 +539,25 @@
 .s-items-list-load-more {
   display: flex;
   justify-content: center;
-  padding-block-start: var(--ox-12);
+  padding-block-start: var(--ox-8);
 
   salla-button::part(button),
   .s-button-element {
     block-size: 48px;
+    min-inline-size: 200px;
+    padding-inline: var(--ox-6);
+    border: 1px solid var(--ox-fg);
+    border-radius: var(--ox-r-2);
+    background: var(--ox-surface);
+    color: var(--ox-fg);
+    font-family: inherit;
+    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-weight: 600;
+  }
+
+  salla-button::part(button):hover,
+  .s-button-element:hover {
+    background: var(--ox-plate);
   }
 }
 
@@ -268,7 +572,7 @@
 
 .ox-listing__progress {
   margin: 0;
-  padding-block-start: var(--ox-3);
+  padding-block-start: var(--ox-4);
   color: var(--ox-fg-3);
   text-align: center;
 }
@@ -280,8 +584,31 @@
   padding-block: var(--ox-6);
 }
 
+// The empty grid: the state sits on a plate inset the width of the grid
+// column, so a category with nothing in it still reads as a finished page
+// rather than a hole. Every category on this store is empty today, which is
+// exactly why this render is the one the design is checked in.
+.ox-listing__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-4);
+}
+
+.ox-listing__empty .ox-empty {
+  padding-block: var(--ox-12);
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__empty .ox-empty {
+    padding-block: var(--ox-16);
+  }
+}
+
 // ---------------------------------------------------------------------------
-// 6. Filters drawer (DIRECTION 5.3, 5.6 Drawer)
+// 7. Filters drawer (DIRECTION 5.3, 5.6 Drawer)
 // ---------------------------------------------------------------------------
 .ox-filters-drawer__footer {
   position: sticky;
@@ -292,12 +619,19 @@
 }
 
 // ---------------------------------------------------------------------------
-// 7. Search zero state (DIRECTION 5.3 ZeroResults, 6.8)
+// 8. Search zero state (DIRECTION 5.3 ZeroResults, 6.8)
 // ---------------------------------------------------------------------------
 .ox-zero {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-12);
+  gap: var(--ox-16);
+}
+
+.ox-zero__state {
+  max-inline-size: 560px;
+  padding-inline: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-4);
 }
 
 .ox-zero__row {
@@ -305,6 +639,7 @@
   flex-direction: column;
   gap: var(--ox-2);
   align-items: center;
+  inline-size: 100%;
 }
 
 .ox-zero__label {
@@ -322,15 +657,24 @@
   list-style: none;
 }
 
+// The chip sits on the plate here, so it takes the card fill to stay readable.
+.ox-zero__chips .ox-chip {
+  background: var(--ox-card);
+}
+
 .ox-zero__ask {
   margin: 0;
+  padding-block-start: var(--ox-2);
   color: var(--ox-fg-2);
   text-align: center;
   max-inline-size: 420px;
+  border-block-start: 1px solid var(--ox-plate-2);
 }
 
 // ---------------------------------------------------------------------------
-// 8. Goal landing (DIRECTION 5.3 GoalLanding hero, 6.4, 4.5 goal polygon)
+// 9. Goal landing (DIRECTION 5.3 GoalLanding hero, 6.4, 4.5 goal polygon)
+//
+// The corner is this screen's one wedge, and nothing on it moves (A9).
 // ---------------------------------------------------------------------------
 .ox-goal-hero {
   position: relative;
@@ -358,12 +702,14 @@
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(23, 23, 26, 0.72),
-      rgba(23, 23, 26, 0.88)
+      rgba(14, 17, 23, 0.72),
+      rgba(14, 17, 23, 0.9)
     );
   }
 }
 
+// The tonal edge, not the orange stroke: DIRECTION 5.3 builds this hero as the
+// home hero "without the stroke", so the goal page spends no accent here.
 .ox-goal-hero__corner {
   @include ox-wedge-corner(64px, 158px);
   background: var(--ox-graphite-2);
@@ -388,8 +734,8 @@
 
 .ox-goal-hero__eyebrow {
   margin: 0;
-  font-weight: 600;
-  color: var(--ox-fg-3);
+  font-weight: 700;
+  color: var(--ox-fg-2);
 }
 
 .ox-goal-hero__title {
@@ -483,8 +829,8 @@
 .ox-subneeds {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-4);
-  scroll-margin-block-start: var(--ox-16);
+  gap: var(--ox-6);
+  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-4));
 }
 
 .ox-subneeds__row {
@@ -503,23 +849,34 @@
   }
 }
 
+.ox-subneed {
+  display: flex;
+  min-inline-size: 0;
+}
+
 .ox-subneed__link {
   @include ox-focus(2px);
   display: flex;
   flex-direction: column;
   gap: var(--ox-2);
-  block-size: 100%;
-  padding: var(--ox-4);
+  inline-size: 100%;
+  min-block-size: 168px;
+  padding: var(--ox-6);
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4);
   text-decoration: none;
   color: var(--ox-fg);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  transition: transform var(--dur-fast) var(--ease-out);
 
   &:hover {
-    border-color: var(--ox-bd-2);
+    border-color: var(--ox-fg);
+    transform: translateY(-2px);
   }
+}
+
+.ox-subneed__title {
+  margin: 0;
 }
 
 .ox-subneed__line {
@@ -531,21 +888,25 @@
   align-items: center;
   gap: var(--ox-1);
   margin-block-start: auto;
-  font-weight: 600;
+  padding-block-start: var(--ox-3);
+  font-weight: 700;
   color: var(--ox-fg);
 }
 
+// The panel that closes a goal landing: plate, hairline, no shadow.
 .ox-needhelp {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
-  padding: var(--ox-4);
+  gap: var(--ox-4);
+  padding: var(--ox-6);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
+  border: 1px solid var(--ox-plate-2);
+  border-radius: var(--ox-r-4);
   align-items: flex-start;
 
   p {
     margin: 0;
+    max-inline-size: 54ch;
   }
 }
 
@@ -554,12 +915,13 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: var(--ox-6);
+    gap: var(--ox-8);
+    padding: var(--ox-8);
   }
 }
 
 // ---------------------------------------------------------------------------
-// 9. FAQ and related guides (DIRECTION 6.3 blocks 7 and 8)
+// 10. FAQ and related guides (DIRECTION 6.3 blocks 7 and 8)
 // ---------------------------------------------------------------------------
 .ox-listing__faq,
 .ox-listing__guides {
@@ -568,10 +930,15 @@
   gap: var(--ox-4);
 }
 
+.ox-listing__faq {
+  max-inline-size: var(--ox-container-narrow);
+}
+
 .ox-listing__guides-list {
   margin: 0;
   padding: 0;
   list-style: none;
+  max-inline-size: var(--ox-container-narrow);
   border-block-start: 1px solid var(--ox-bd);
 }
 
@@ -593,10 +960,17 @@
 }
 
 // ---------------------------------------------------------------------------
-// 10. Brands (DIRECTION 6.14)
+// 11. Brands (DIRECTION 6.14)
 // ---------------------------------------------------------------------------
 .ox-brands {
-  padding-block: var(--ox-6) var(--ox-16);
+  padding-block-end: var(--ox-16);
+}
+
+// The band is a grandparent of its own container, so this reaches only the
+// content column under it: the grid, or the empty state when the store has no
+// brands yet.
+.ox-brands > .ox-container {
+  padding-block-start: var(--ox-8);
 }
 
 .ox-brands__head {
@@ -635,6 +1009,7 @@
 @media (min-width: 1024px) {
   .ox-brands__grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--ox-6);
   }
   .ox-brands__head {
     min-block-size: 88px;
@@ -657,12 +1032,12 @@
   aspect-ratio: 3 / 2;
   padding: var(--ox-6);
   background: var(--ox-plate);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  border: 1px solid var(--ox-plate-2);
+  border-radius: var(--ox-r-4);
+  transition: transform var(--dur-fast) var(--ease-out);
 
   .ox-brand-tile:hover & {
-    border-color: var(--ox-bd-2);
+    transform: translateY(-2px);
   }
 }
 
@@ -687,7 +1062,7 @@
   inline-size: 96px;
   block-size: 64px;
   padding: var(--ox-2);
-  background: var(--ox-plate);
+  background: var(--ox-card);
   border: 1px solid var(--ox-bd);
   border-radius: var(--ox-r-2);
 }
@@ -699,11 +1074,15 @@
 }
 
 // ---------------------------------------------------------------------------
-// 11. Reduced motion (DIRECTION 7.1, 9.6)
+// 12. Reduced motion (DIRECTION 7.1, 9.6)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
   .ox-subneed__link,
   .ox-brand-tile__plate {
     transition: none;
+  }
+  .ox-subneed__link:hover,
+  .ox-brand-tile:hover .ox-brand-tile__plate {
+    transform: none;
   }
 }

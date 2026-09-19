@@ -3,9 +3,11 @@ import { HowItWorks } from './HowItWorks';
 import { ScopePanel } from './ScopePanel';
 import { PickupSteps } from './PickupSteps';
 import { ContactRow } from './ContactRow';
+import { ServiceSection } from './ServiceSection';
 import { UnitConverter } from './UnitConverter';
 import { UNIT_IDS, convert } from './convert';
-import { SERVICE_STEPS } from '../../content/services';
+import { SERVICE_PAGES, SERVICE_STEPS } from '../../content/services';
+import { ABOUT_FACTS } from '../../content/about';
 
 /**
  * The B5 kitchen-sink section (dev only, PLAN-final C16).
@@ -14,9 +16,13 @@ import { SERVICE_STEPS } from '../../content/services';
  * that are conditional: the scope panel with its mandated line, the steps
  * strip, the pickup steps (which render nothing until both pickup settings
  * are filled), the contact row (nothing without a number or a phone), the
- * converter and the error state at each status the engine can hand us.
+ * converter, one service section at each of its two shapes, and the error state
+ * at each status the engine can hand us.
  */
 export default function KitchenSink() {
+  const withProduct = SERVICE_PAGES.find((page) => page.sku);
+  const editorial = SERVICE_PAGES.find((page) => !page.sku);
+
   return (
     <div className="ox-ks-pages">
       <h3>ScopePanel</h3>
@@ -30,6 +36,15 @@ export default function KitchenSink() {
 
       <h3>ContactRow (hidden without a WhatsApp number and a phone)</h3>
       <ContactRow />
+
+      <h3>About facts (the strip that replaced three invented statistics)</h3>
+      <p>{ABOUT_FACTS.map((fact) => fact.id).join(' ')}</p>
+
+      <h3>ServiceSection, product backed</h3>
+      {withProduct ? <ServiceSection page={withProduct} /> : null}
+
+      <h3>ServiceSection, editorial (no product, so no price cell)</h3>
+      {editorial ? <ServiceSection page={editorial} /> : null}
 
       <h3>UnitConverter</h3>
       <UnitConverter />

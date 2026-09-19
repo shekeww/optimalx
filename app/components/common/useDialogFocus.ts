@@ -16,7 +16,7 @@ const FOCUSABLE = [
  *    `containerRef` (its first focusable descendant, or the container itself),
  *  - keep Tab / Shift+Tab wrapped inside the container while `active`,
  *  - when `active` goes false (or the component unmounts), return focus to the
- *    element that had it — i.e. the trigger that opened the dialog.
+ *    element that had it - i.e. the trigger that opened the dialog.
  *
  * Pass the *entered* (post-mount, painted) state as `active`, not the raw `open`
  * prop, so focus isn't grabbed a frame before the overlay is visible. The

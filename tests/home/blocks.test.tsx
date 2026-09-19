@@ -65,6 +65,13 @@ describe('OxFaq', () => {
     expect(rows[0].textContent).toContain('لماذا قد تجد سعرا أقل في مكان آخر؟');
   });
 
+  it('puts the rows in a panel, which is the unit for structured content', () => {
+    const { container } = renderWithProviders(<OxFaq data={data('ox-faq')} />);
+    const panel = container.querySelector('.ox-faq__panel');
+    expect(panel?.classList.contains('ox-panel')).toBe(true);
+    expect(panel?.querySelector('.ox-acc')).not.toBeNull();
+  });
+
   it('keeps the price question first even when the merchant writes their own rows', () => {
     const { container } = renderWithProviders(
       <OxFaq data={data('ox-faq', { items: [{ 'items.q': 'سؤال التاجر', 'items.a': 'جواب التاجر' }] })} />
@@ -153,6 +160,29 @@ describe('OxCategories', () => {
       `/${ROOT_CATEGORY_SLUGS[0]}/c7`
     ));
     expect(screen.getAllByTestId('ox-category-tile')[0].textContent).toContain('12');
+  });
+
+  it('never prints a zero count: the API returns 0 for "empty" and for "unknown"', async () => {
+    categories.length = 0;
+    categories.push({ id: 8, name: 'كرياتين', url: `/${ROOT_CATEGORY_SLUGS[0]}/c8`, products_count: 0, image: null });
+    renderWithProviders(<OxCategories data={data('ox-categories')} />);
+    await waitFor(() =>
+      expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe(
+        `/${ROOT_CATEGORY_SLUGS[0]}/c8`
+      )
+    );
+    expect(screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__count')).toBeNull();
+  });
+
+  it('reads the count out with its unit, so a bare numeral is never the whole label', async () => {
+    categories.length = 0;
+    categories.push({ id: 7, name: 'بروتين', url: `/${ROOT_CATEGORY_SLUGS[0]}/c7`, products_count: 12, image: null });
+    renderWithProviders(<OxCategories data={data('ox-categories')} />);
+    await waitFor(() =>
+      expect(screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__count')).not.toBeNull()
+    );
+    const count = screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__count');
+    expect(count?.querySelector('.ox-sr-only')?.textContent).toBe('12 منتج');
   });
 
   it('renders the merchant selection when there is one', async () => {

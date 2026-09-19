@@ -1,5 +1,6 @@
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Panel } from '../common/Panel';
 import { BRANCH } from '../../content/branch';
 import { settingText } from '../product/lib/claims';
 
@@ -16,6 +17,10 @@ export interface PickupStepsProps {
  * promise with a missing number is a promise the store cannot keep, so the
  * whole block is hidden until both settings carry a value. That gate is the
  * reason this is a component and not four lines inside the page.
+ *
+ * It renders on the shared plate `Panel`, so a numbered procedure looks like
+ * every other block of structured content on the site rather than like a
+ * loose list under a heading.
  */
 export function PickupSteps({ className }: PickupStepsProps) {
   const { t } = useTranslation();
@@ -29,14 +34,13 @@ export function PickupSteps({ className }: PickupStepsProps) {
   const values = { PICKUP_READY_HOURS: readyHours, PICKUP_HOLD_DAYS: holdDays };
 
   return (
-    <section
+    <Panel
+      tone="plate"
+      headingLevel="h2"
+      title={t(BRANCH.pickup.titleKey)}
       className={['ox-pickup', className].filter(Boolean).join(' ')}
-      aria-labelledby="ox-pickup-title"
-      data-testid="ox-pickup-steps"
+      testId="ox-pickup-steps"
     >
-      <h2 id="ox-pickup-title" className="ox-pickup__title ox-h3">
-        {t(BRANCH.pickup.titleKey)}
-      </h2>
       <ol className="ox-pickup__list">
         {BRANCH.pickup.stepKeys.map((key, index) => (
           <li key={key} className="ox-pickup__step ox-body">
@@ -48,6 +52,6 @@ export function PickupSteps({ className }: PickupStepsProps) {
         ))}
       </ol>
       <p className="ox-pickup__late ox-small">{t(BRANCH.pickup.lateKey)}</p>
-    </section>
+    </Panel>
   );
 }

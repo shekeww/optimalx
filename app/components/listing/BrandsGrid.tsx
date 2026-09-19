@@ -18,6 +18,10 @@ import { EmptyState } from '../common/EmptyState';
  * The h1 falls back to the navigation label when the loader could not name the
  * page (the route degrades a brands API failure to an empty group), because a
  * page without an h1 is an accessibility failure, not an empty state.
+ *
+ * The head sits in the same masthead band every listing carries, so /brands
+ * and a brand's own products open identically. The tiles are plates because
+ * that is what every piece of supplier artwork in this store sits on.
  */
 export function BrandsGrid({ page, brands }: BrandsPageProps) {
   const { t } = useTranslation();
@@ -28,22 +32,29 @@ export function BrandsGrid({ page, brands }: BrandsPageProps) {
 
   return (
     <div className="ox-brands">
-      <div className="ox-container">
-        <Breadcrumb page={page} />
-        <header className="ox-brands__head">
-          <h1 className="ox-h1">{page.title || t('ox.nav.brands')}</h1>
-          <p className="ox-body ox-brands__intro">{t('ox.brands.intro')}</p>
-        </header>
+      <div className="ox-listing__band">
+        <div className="ox-container ox-listing__band-inner">
+          <Breadcrumb page={page} className="ox-crumbs" />
+          <header className="ox-brands__head">
+            <h1 className="ox-h1">{page.title || t('ox.nav.brands')}</h1>
+            <p className="ox-body ox-brands__intro">{t('ox.brands.intro')}</p>
+          </header>
+        </div>
+      </div>
 
+      <div className="ox-container">
         {items.length === 0 ? (
-          <EmptyState
-            title={t('ox.brands.empty')}
-            primary={
-              <Button variant="primary" size={48} to="/latest-products">
-                {t('ox.brands.empty_cta')}
-              </Button>
-            }
-          />
+          <div className="ox-listing__empty">
+            <EmptyState
+              icon="shaker"
+              title={t('ox.brands.empty')}
+              primary={
+                <Button variant="primary" size={48} to="/latest-products">
+                  {t('ox.brands.empty_cta')}
+                </Button>
+              }
+            />
+          </div>
         ) : (
           <ul className="ox-brands__grid">
             {items.map((brand) => (

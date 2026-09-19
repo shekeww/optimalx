@@ -50,6 +50,15 @@ function readSetting(settings: unknown, key: string): string {
  * key and every fact (address, hours, number, map URL, pickup hours) comes
  * from theme settings, so an unset setting removes its row instead of
  * printing a promise.
+ *
+ * The photograph is gated the same way, and the theme ships no default for it.
+ * Every other image on this site is product or lifestyle imagery, which is
+ * ordinary stock usage; a shopfront captioned as this branch at Al Khalidiyah
+ * is a statement about a specific real place, and the only picture that may
+ * carry it is a photograph of that place. Until the owner supplies one the
+ * block renders flat: the card takes the whole row and lays its content out in
+ * two columns, which is a finished composition rather than an empty plate
+ * waiting for an upload.
  */
 export function OxBranch({
   headingLevel: Heading = 'h2',
@@ -85,10 +94,20 @@ export function OxBranch({
     ? `https://wa.me/${number}?text=${encodeURIComponent(t('ox.blocks.branch.whatsapp_prefill'))}`
     : undefined;
 
+  const classes = ['ox-branch', photo ? '' : 'ox-branch--flat', className]
+    .filter(Boolean)
+    .join(' ');
+
+  // Whether there is a second column's worth of content. On a store with no
+  // hours, no number and no map link the flat card stays one column, because a
+  // two column split whose end column holds one short line reads as a layout
+  // that lost something.
+  const meta = rows.length > 0 || whatsappHref || mapUrl ? 'full' : 'bare';
+
   return (
-    <section className={['ox-branch', className].filter(Boolean).join(' ')} data-testid="ox-branch">
-      <div className="ox-branch__photo">
-        {photo ? (
+    <section className={classes} data-testid="ox-branch">
+      {photo ? (
+        <div className="ox-branch__photo">
           <Image
             src={photo}
             alt={t('ox.blocks.branch.photo_alt')}
@@ -99,49 +118,59 @@ export function OxBranch({
             objectFit="cover"
             noWrapper
           />
-        ) : null}
-        <span className="ox-branch__corner" aria-hidden="true" />
-      </div>
+          <span className="ox-branch__corner" aria-hidden="true" />
+        </div>
+      ) : null}
 
-      <div className="ox-branch__card">
-        {showEyebrow ? <p className="ox-branch__eyebrow ox-small">{t('ox.blocks.branch.eyebrow')}</p> : null}
-        <Heading className={Heading === 'h1' ? 'ox-h1' : 'ox-h2'}>{t('ox.blocks.branch.title')}</Heading>
-        <p className="ox-branch__address ox-body">{intro ?? address}</p>
-
-        <HoursTable rows={rows} now={now} status={status} />
-
-        <div className="ox-branch__actions">
-          {whatsappHref ? (
-            <Button
-              href={whatsappHref}
-              size={48}
-              variant="primary"
-              target="_blank"
-              rel="noopener noreferrer"
-              iconStart={<i className="sicon-whatsapp" aria-hidden="true" />}
-            >
-              {t('ox.blocks.branch.whatsapp')}
-            </Button>
+      <div className="ox-branch__card" data-meta={meta}>
+        <div className="ox-branch__head">
+          {showEyebrow ? (
+            <p className="ox-branch__eyebrow ox-small">{t('ox.blocks.branch.eyebrow')}</p>
           ) : null}
-          {mapUrl ? (
-            <Button
-              href={mapUrl}
-              size={48}
-              variant="secondary"
-              target="_blank"
-              rel="noopener noreferrer"
-              iconStart={<Icon name="branch-visit" size={20} />}
-            >
-              {t('ox.blocks.branch.map')}
-            </Button>
-          ) : null}
+          <Heading className={Heading === 'h1' ? 'ox-h1' : 'ox-h2'}>
+            {t('ox.blocks.branch.title')}
+          </Heading>
+          <p className="ox-branch__address ox-body">{intro ?? address}</p>
         </div>
 
-        <p className="ox-branch__pickup ox-small">
-          {pickupHours
-            ? t('ox.blocks.branch.pickup_note_timed', { hours: pickupHours })
-            : t('ox.blocks.branch.pickup_note')}
-        </p>
+        <div className="ox-branch__meta">
+          <HoursTable rows={rows} now={now} status={status} />
+
+          {whatsappHref || mapUrl ? (
+            <div className="ox-branch__actions">
+              {whatsappHref ? (
+                <Button
+                  href={whatsappHref}
+                  size={48}
+                  variant="primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  iconStart={<i className="sicon-whatsapp" aria-hidden="true" />}
+                >
+                  {t('ox.blocks.branch.whatsapp')}
+                </Button>
+              ) : null}
+              {mapUrl ? (
+                <Button
+                  href={mapUrl}
+                  size={48}
+                  variant="secondary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  iconStart={<Icon name="branch-visit" size={20} />}
+                >
+                  {t('ox.blocks.branch.map')}
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+
+          <p className="ox-branch__pickup ox-small">
+            {pickupHours
+              ? t('ox.blocks.branch.pickup_note_timed', { hours: pickupHours })
+              : t('ox.blocks.branch.pickup_note')}
+          </p>
+        </div>
       </div>
     </section>
   );

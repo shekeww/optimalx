@@ -1,7 +1,7 @@
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
 
 interface BlockHookSlotProps {
-  /** Exact hook name — `salla-hook` matches app targets by literal string. */
+  /** Exact hook name - `salla-hook` matches app targets by literal string. */
   name: string;
   /** `s-before-*` / `s-after-*` modifier for the `.s-blocks-wrapper` div. */
   wrapper: string;
@@ -12,7 +12,7 @@ interface BlockHookSlotProps {
 /**
  * A page hook point wrapped in `<div class="s-blocks-wrapper s-before-…">`,
  * matching the classic storefront markup so merchant apps that inject blocks at
- * these points — and the CSS/JS they ship targeting those wrapper classes —
+ * these points - and the CSS/JS they ship targeting those wrapper classes -
  * keep working here.
  *
  * The engine's own `product:*` (colon) hook slots stay as-is; this adds back the

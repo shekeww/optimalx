@@ -23,9 +23,11 @@ import { SubNeeds } from './GoalLanding/SubNeeds';
 import { ListEnd, LoadMore } from './LoadMore';
 import { ProductGrid } from './ProductGrid';
 import { RelatedGuides } from './RelatedGuides';
+import { listingSourceCopy } from './listingCopy';
 import { categoryEntity, listingCategory, listingGoal, listingSlug, listingVariant } from './resolve';
 import { currentSort, sortOptions } from './sortOptions';
 import { ListingHeader } from './ListingHeader';
+import { ListingToolbar } from './ListingToolbar';
 import { useNextPage } from './useNextPage';
 import { ZeroResults } from './ZeroResults';
 import type { ListingPageProps } from './types';
@@ -37,6 +39,15 @@ const GRID_TITLE_ID = 'listing-grid-title';
  * One page for every product list (PLAN-final C3): category, goal landing,
  * search, brand and the three static sources, composed from the engine's own
  * primitives rather than wrapping `ProductListing.Component`.
+ *
+ * The design, carried from the approved target image:
+ *  - a full-bleed masthead band on `--ox-plate` under the dark chrome, holding
+ *    the breadcrumb, the h1 and the intro, closed by a hairline. The goal
+ *    landing swaps it for its own dark hero, which is that page's head region;
+ *  - a ruled toolbar sitting directly on the grid, carrying the sub-category
+ *    chips at the RTL start and the filter and sort controls at the end;
+ *  - the grid itself on paper, every card the one `product:card` override, so
+ *    a listing cell and a carousel cell are the same component.
  *
  * What is kept from the engine, deliberately:
  *  - the loader and the head of each route (the routes still call them);
@@ -104,14 +115,22 @@ export function ListingPage(props: ListingPageProps) {
     page.title
   );
 
+  // Each source states its own line and its own empty state; the card, the
+  // grid and the toolbar are the same on every one of them.
+  const copy = listingSourceCopy(source.type, variant);
   const intro = brand ? (
     <BrandIntro brand={brand} />
   ) : category ? (
     <CategoryIntro introKey={category.introKey} />
+  ) : copy.introKey ? (
+    <CategoryIntro introKey={copy.introKey} clamp={false} />
   ) : null;
 
-  const headerSort = options.length > 0 && !isZero ? { value: sort, options, onChange: onSortChange } : null;
-  const headerFilters = showFilters && !isZero ? { count: 0, onOpen: () => setFiltersOpen(true) } : null;
+  const toolbarSort = options.length > 0 && !isZero ? { value: sort, options, onChange: onSortChange } : null;
+  const toolbarFilters = showFilters && !isZero ? { count: 0, onOpen: () => setFiltersOpen(true) } : null;
+  const chips = goal ? null : <ChildChips categories={entity?.sub_categories} slug={slug} />;
+
+  const crumbs = <Breadcrumb page={page} className="ox-crumbs" />;
 
   const grid = (
     <>
@@ -126,15 +145,25 @@ export function ListingPage(props: ListingPageProps) {
         ariaLabel={t('ox.listing.results_label')}
         end={<ListEnd />}
         empty={
-          <EmptyState
-            title={t('ox.listing.empty')}
-            body={t('ox.listing.empty_body')}
-            primary={
-              <Button variant="primary" size={48} to="/">
-                {t('ox.nav.goals')}
-              </Button>
-            }
-          />
+          <div className="ox-listing__empty">
+            <EmptyState
+              icon="shaker"
+              title={t(copy.emptyTitleKey ?? 'ox.listing.empty')}
+              body={t(copy.emptyBodyKey ?? 'ox.listing.empty_body')}
+              primary={
+                <Button variant="primary" size={48} to="/">
+                  {t('ox.nav.goals')}
+                </Button>
+              }
+              secondary={
+                copy.secondary ? (
+                  <Button variant="secondary" size={48} to={copy.secondary.to}>
+                    {t(copy.secondary.labelKey)}
+                  </Button>
+                ) : undefined
+              }
+            />
+          </div>
         }
         t={t}
       />
@@ -145,13 +174,25 @@ export function ListingPage(props: ListingPageProps) {
 
   return (
     <div className={`ox-listing ox-listing--${variant}`}>
-      <div className="ox-container">
-        <Breadcrumb page={page} />
-      </div>
-
       {goal ? (
-        <GoalHero goal={goal} image={entity?.image} gridId={GRID_ID} titleId="listing-title" />
-      ) : null}
+        <>
+          <div className="ox-container">{crumbs}</div>
+          <GoalHero goal={goal} image={entity?.image} gridId={GRID_ID} titleId="listing-title" />
+        </>
+      ) : (
+        <div className="ox-listing__band">
+          <div className="ox-container ox-listing__band-inner">
+            {crumbs}
+            <ListingHeader
+              title={title}
+              as="h1"
+              titleId="listing-title"
+              media={brand ? <BrandHeader brand={brand} /> : undefined}
+              intro={intro}
+            />
+          </div>
+        </div>
+      )}
 
       <HookSlot name="product:list.start" />
 
@@ -174,25 +215,21 @@ export function ListingPage(props: ListingPageProps) {
           </>
         ) : null}
 
-        <div id={GRID_ID} className="ox-listing__grid-head">
-          <ListingHeader
-            title={goal ? t('ox.goal.grid_title') : title}
-            as={goal ? 'h2' : 'h1'}
-            titleId={goal ? GRID_TITLE_ID : 'listing-title'}
-            media={brand ? <BrandHeader brand={brand} /> : undefined}
-            intro={goal ? undefined : intro}
-            sort={headerSort}
-            filters={headerFilters}
-          />
-          {!goal ? <ChildChips categories={entity?.sub_categories} slug={slug} /> : null}
-        </div>
-
         {isZero ? (
           <ZeroResults query={queryText} />
         ) : (
-          <div className={`ox-listing__results${showFilters ? ' has-rail' : ''}`}>
-            {showFilters ? <FiltersRail filters={filters} /> : null}
-            <div className="ox-listing__main">{grid}</div>
+          <div className="ox-listing__catalogue">
+            <div id={GRID_ID} className="ox-listing__grid-head">
+              {goal ? (
+                <ListingHeader title={t('ox.goal.grid_title')} as="h2" titleId={GRID_TITLE_ID} />
+              ) : null}
+              <ListingToolbar chips={chips} sort={toolbarSort} filters={toolbarFilters} />
+            </div>
+
+            <div className={`ox-listing__results${showFilters ? ' has-rail' : ''}`}>
+              {showFilters ? <FiltersRail filters={filters} /> : null}
+              <div className="ox-listing__main">{grid}</div>
+            </div>
           </div>
         )}
 

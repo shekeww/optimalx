@@ -82,3 +82,4 @@ export function pageHead(options: PageHeadOptions) {
     };
   };
 }
+

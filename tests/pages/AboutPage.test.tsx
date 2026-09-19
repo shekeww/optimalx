@@ -69,6 +69,36 @@ describe('AboutPage', () => {
     expect(panel.textContent).not.toContain('{{');
   });
 
+  it('opens on the band, which carries the h1 and the owner mark as an asset', () => {
+    renderWithProviders(<AboutPage />);
+    expect(screen.getByTestId('ox-band')).toBeTruthy();
+    const mark = screen.getByTestId('ox-wordmark').querySelector('img');
+    expect(mark?.getAttribute('src')).toBe('/assets/brand/optimalx-full-reverse.png');
+  });
+
+  it('replaces the reference stat strip with three facts the store can prove', () => {
+    renderWithProviders(<AboutPage />);
+    const strip = screen.getByTestId('ox-stat-strip');
+    expect(strip.getAttribute('data-count')).toBe('3');
+    const text = strip.textContent ?? '';
+    // The reference reads "100+ Personalized Plans", "5+ Expert Specialists"
+    // and "98% Client Satisfaction". None of the three may appear in any form.
+    for (const banned of ['%', '100', '98', '+']) {
+      expect(text).not.toContain(banned);
+    }
+    expect(text).toContain(t('ox.branch.locality'));
+    expect(text).toContain(t('ox.pages.about.stat_shipping_sub'));
+  });
+
+  it('labels each registration number rather than running them into one line', () => {
+    setSettings(FULL);
+    renderWithProviders(<AboutPage />);
+    const panel = screen.getByTestId('ox-registration-panel');
+    expect(panel.querySelectorAll('[data-testid="ox-panel-row"]')).toHaveLength(3);
+    expect(panel.textContent).toContain(t('ox.pages.about.cr_label'));
+    expect(panel.textContent).toContain(t('ox.pages.about.vat_label'));
+  });
+
   it('names no titles and no team size beyond the claims-source wording', () => {
     renderWithProviders(<AboutPage />);
     const text = document.body.textContent ?? '';

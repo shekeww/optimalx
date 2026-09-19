@@ -42,6 +42,19 @@ describe('OxTrustStrip', () => {
     expect(screen.getByTestId('ox-trust-help').textContent).toContain('مساعدة في الاختيار');
   });
 
+  it('is drawn as the shared statistic strip, hairlines and all', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<OxTrustStrip data={data()} />);
+    const row = container.querySelector('.ox-stats') as HTMLElement;
+    // `.ox-stats` is the product page's strip, consumed unchanged. `data-count`
+    // is what re-spaces the survivors when a cell is gated away, so it has to
+    // be the real number of cells and never a literal.
+    expect(row).not.toBeNull();
+    expect(row.getAttribute('data-count')).toBe('4');
+    expect(container.querySelectorAll('.ox-stats__cell')).toHaveLength(4);
+    expect(container.querySelectorAll('.ox-stats__cell .ox-stats__label')).toHaveLength(4);
+  });
+
   it('claims official distributors only when the owner has turned the gate on', () => {
     setSettings({});
     const closed = renderWithProviders(<OxTrustStrip data={data()} />);

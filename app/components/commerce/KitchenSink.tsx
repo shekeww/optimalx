@@ -4,7 +4,10 @@ import type { Order } from '@salla.sa/twilight-theme-engine/routes/account';
 import { EmptyState } from '../common/EmptyState';
 import { Button } from '../common/Button';
 import { CartEmpty } from './CartEmpty';
+import { CartHeader } from './CartHeader';
 import { CartTrust } from './CartTrust';
+import { AccountNav } from './AccountNav';
+import { AccountEmpty } from './AccountEmpty';
 import { ThankYouBlocks } from './ThankYouBlocks';
 import { BlogIndexHeader } from './BlogIndexHeader';
 import { PolicyIntro } from './PolicyIntro';
@@ -17,6 +20,11 @@ import { PolicyIntro } from './PolicyIntro';
  * question Q14), and the three account empty states, whose live pages are the
  * engine's own placeholder because those routes expose no hook slot.
  */
+const CART_FULL = {
+  count: 3,
+  sub_total: 320,
+} as unknown as Cart;
+
 const CART_PROGRESS = {
   sub_total: 120,
   free_shipping_bar: { minimum_amount: 200, has_free_shipping: false, percent: 60, remaining: 80 },
@@ -42,6 +50,11 @@ export default function KitchenSink() {
   return (
     <section>
       <h2>Commerce (B6)</h2>
+
+      <h3>Cart: title row</h3>
+      <div className="ox-cart">
+        <CartHeader cart={CART_FULL} />
+      </div>
 
       <h3>Cart: empty</h3>
       <div className="ox-cart ox-cart--empty">
@@ -76,29 +89,54 @@ export default function KitchenSink() {
         <PolicyIntro slug="terms-and-conditions" />
       </div>
 
+      <h3>Account rail</h3>
+      <div className="ox-acct">
+        <AccountNav current="orders" />
+        <div className="ox-acct__main">
+          <header className="ox-acct__head">
+            <h1 className="ox-acct__title ox-h1">{t('ox.account.orders')}</h1>
+            <p className="ox-acct__lead ox-body">{t('ox.account.orders_lead')}</p>
+          </header>
+          <AccountEmpty
+            icon="plan"
+            titleKey="ox.empty.orders_title"
+            bodyKey="ox.empty.orders_body"
+            secondaryTo="/"
+            secondaryKey="ox.empty.cta_goals"
+          />
+        </div>
+      </div>
+
       <h3>Account empty states</h3>
-      <EmptyState
+      <AccountEmpty
         icon="gift"
-        title={t('ox.empty.wishlist_title')}
-        body={t('ox.empty.wishlist_body')}
-        primary={<Button to="/latest-products">{t('ox.empty.cta_shop')}</Button>}
+        titleKey="ox.empty.wishlist_title"
+        bodyKey="ox.empty.wishlist_body"
       />
-      <EmptyState
-        icon="plan"
-        title={t('ox.empty.orders_title')}
-        body={t('ox.empty.orders_body')}
-        primary={<Button to="/latest-products">{t('ox.empty.cta_shop')}</Button>}
-        secondary={
-          <Button to="/" variant="secondary">
-            {t('ox.empty.cta_goals')}
-          </Button>
-        }
+      <AccountEmpty
+        icon="points"
+        titleKey="ox.empty.wallet_title"
+        bodyKey="ox.empty.wallet_body"
+        primaryTo="/account/orders"
+        primaryKey="ox.account.orders"
+      />
+      <AccountEmpty
+        icon="help"
+        titleKey="ox.empty.notifications_title"
+        bodyKey="ox.empty.notifications_body"
+        primaryTo="/account/orders"
+        primaryKey="ox.account.back"
+      />
+      <AccountEmpty
+        icon="points"
+        titleKey="ox.empty.loyalty_title"
+        bodyKey="ox.empty.loyalty_body"
       />
       <EmptyState
         icon="help"
-        title={t('ox.empty.notifications_title')}
-        body={t('ox.empty.notifications_body')}
-        primary={<Button to="/account/orders">{t('ox.account.back')}</Button>}
+        title={t('ox.empty.testimonials_title')}
+        body={t('ox.empty.testimonials_body')}
+        primary={<Button to="/latest-products">{t('ox.empty.cta_shop')}</Button>}
       />
     </section>
   );

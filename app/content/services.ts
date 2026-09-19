@@ -1,4 +1,5 @@
 import type { OxIconName } from '../components/common/Icon';
+import { pathForSku } from './salla-ids';
 
 /**
  * The three "ask before you buy" channels plus the personal training session
@@ -69,7 +70,7 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     outputKey: `${KEY}.written_output`,
     changeKey: `${KEY}.written_change`,
     ctaKey: `${KEY}.written_cta`,
-    to: '/services',
+    to: pathForSku('OX-044') ?? '/services',
   },
   {
     id: 'video',
@@ -85,7 +86,7 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     outputKey: `${KEY}.video_output`,
     changeKey: `${KEY}.video_change`,
     ctaKey: `${KEY}.video_cta`,
-    to: '/services',
+    to: pathForSku('OX-045') ?? '/services',
     gatedSetting: 'consultation_credit_note',
   },
   {
@@ -103,7 +104,7 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     outputKey: `${KEY}.visit_output`,
     changeKey: `${KEY}.visit_change`,
     ctaKey: `${KEY}.visit_cta`,
-    to: '/branch',
+    to: pathForSku('OX-046') ?? '/services',
   },
 ];
 
@@ -157,3 +158,157 @@ export function channelById(id: string | undefined): ServiceChannel | undefined 
 export function channelByCode(code: string | undefined): ServiceChannel | undefined {
   return SERVICE_CHANNELS.find((channel) => channel.code === code);
 }
+
+// ---------------------------------------------------------------------------
+// The five advisory services, as anchored sections of `/services`
+// ---------------------------------------------------------------------------
+
+/**
+ * Band photography. Three files, reused across the five pages on purpose:
+ * the store owns three clean photographs and a stretched or text-burnt frame
+ * would undo the design faster than a repeat does. Every reference cover in
+ * `references/` carries burnt-in headline text, which is never reproduced.
+ */
+export const SERVICE_PHOTOS = {
+  services: '/assets/images/services-band.jpg',
+  training: '/assets/images/athlete-band.jpg',
+  nutrition: '/assets/images/nutrition-band.jpg',
+} as const;
+
+export interface ServicePage {
+  /** Anchor id on `/services`, so the service has a `#slug` address. */
+  slug: string;
+  /** Catalogue code; absent when no product backs the page. */
+  sku?: string;
+  icon: OxIconName;
+  photo: string;
+  /** Band line 1, and the page's h1. */
+  titleKey: string;
+  /** Band line 2, when the title reads better split. */
+  line2Key?: string;
+  /** The supporting line inside the band. */
+  sublineKey: string;
+  /** The paragraph under the band, in the text measure. */
+  introKey: string;
+  scopeTitleKey: string;
+  scopeKeys: readonly string[];
+  prepareKey?: string;
+  outputKey?: string;
+  /** How a booking is moved or cancelled; also the third statistic cell. */
+  changeKey?: string;
+  /** The limit-of-our-work line; it renders on every service surface. */
+  footerKey: string;
+  ctaKey: string;
+  /**
+   * Where the primary action goes when no product backs the section. With a
+   * `sku` the action resolves to that product's own page instead.
+   */
+  ctaTo?: string;
+}
+
+const PAGE = 'ox.services';
+
+/**
+ * The five advisory services.
+ *
+ * Four are backed by a real catalogue item (OX-044 to OX-047) and their
+ * primary action opens that product, which is where Salla takes the booking
+ * and the payment: no slot grid is built in theme markup, because slots are
+ * checkout configuration (BUILD.md section 5).
+ *
+ * `nutrition-plans` is the fifth and it is deliberately different. No
+ * nutrition-plan product exists and BUILD.md defers the three advisory
+ * services on legal review, so the page is editorial: no price, no product of
+ * its own, no timeframe, no outcome, and a single action that routes to the
+ * video consultation, which is how a plan is actually delivered today. The
+ * reference image's "real results" sub-line is an outcome promise and is not
+ * built.
+ */
+export const SERVICE_PAGES: ServicePage[] = [
+  {
+    slug: 'written-question',
+    sku: 'OX-044',
+    icon: 'written-question',
+    photo: SERVICE_PHOTOS.services,
+    titleKey: `${KEY}.written_title`,
+    sublineKey: `${KEY}.written_meta`,
+    introKey: `${KEY}.written_desc`,
+    scopeTitleKey: `${PAGE}.covers_title`,
+    scopeKeys: scope('written', 5),
+    prepareKey: `${KEY}.written_prepare`,
+    outputKey: `${KEY}.written_output`,
+    changeKey: `${KEY}.written_change`,
+    footerKey: `${KEY}.card_footer`,
+    ctaKey: `${KEY}.written_cta`,
+  },
+  {
+    slug: 'video-consultation',
+    sku: 'OX-045',
+    icon: 'video-consult',
+    photo: SERVICE_PHOTOS.services,
+    titleKey: `${KEY}.video_title`,
+    sublineKey: `${KEY}.video_meta`,
+    introKey: `${KEY}.video_desc`,
+    scopeTitleKey: `${PAGE}.covers_title`,
+    scopeKeys: scope('video', 4),
+    prepareKey: `${KEY}.video_prepare`,
+    outputKey: `${KEY}.video_output`,
+    changeKey: `${KEY}.video_change`,
+    footerKey: `${KEY}.card_footer`,
+    ctaKey: `${KEY}.video_cta`,
+  },
+  {
+    slug: 'branch-visit',
+    sku: 'OX-046',
+    icon: 'branch-visit',
+    photo: SERVICE_PHOTOS.services,
+    titleKey: `${KEY}.visit_title`,
+    sublineKey: `${KEY}.visit_meta`,
+    introKey: `${KEY}.visit_desc`,
+    scopeTitleKey: `${PAGE}.covers_title`,
+    scopeKeys: scope('visit', 4),
+    prepareKey: `${KEY}.visit_prepare`,
+    outputKey: `${KEY}.visit_output`,
+    changeKey: `${KEY}.visit_change`,
+    footerKey: `${KEY}.card_footer`,
+    ctaKey: `${KEY}.visit_cta`,
+  },
+  {
+    slug: 'personal-training',
+    sku: 'OX-047',
+    icon: 'plan',
+    photo: SERVICE_PHOTOS.training,
+    titleKey: `${KEY}.training_title`,
+    sublineKey: `${KEY}.training_where`,
+    introKey: `${KEY}.training_desc`,
+    scopeTitleKey: `${PAGE}.covers_title`,
+    scopeKeys: scope('training', 4),
+    prepareKey: `${KEY}.training_prepare`,
+    changeKey: `${KEY}.training_change`,
+    footerKey: `${KEY}.training_footer`,
+    ctaKey: `${KEY}.training_cta`,
+  },
+  {
+    slug: 'nutrition-plans',
+    icon: 'plan',
+    photo: SERVICE_PHOTOS.nutrition,
+    titleKey: `${PAGE}.nutrition.title`,
+    sublineKey: `${PAGE}.nutrition.subline`,
+    introKey: `${PAGE}.nutrition.intro`,
+    scopeTitleKey: `${PAGE}.covers_title`,
+    scopeKeys: [1, 2, 3, 4].map((n) => `${PAGE}.nutrition.scope_${n}`),
+    prepareKey: `${PAGE}.nutrition.prepare`,
+    outputKey: `${PAGE}.nutrition.output`,
+    footerKey: `${PAGE}.nutrition.footer`,
+    ctaKey: `${PAGE}.nutrition.cta`,
+    ctaTo: pathForSku('OX-045') ?? '/services',
+  },
+];
+
+export function servicePageBySlug(slug: string | undefined): ServicePage | undefined {
+  if (!slug) return undefined;
+  return SERVICE_PAGES.find((page) => page.slug === slug);
+}
+
+/** Every anchor the hub publishes, in order. */
+export const SERVICE_PAGE_SLUGS: string[] = SERVICE_PAGES.map((page) => page.slug);

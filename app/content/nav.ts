@@ -57,8 +57,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     headingKey: 'ox.footer.about',
     links: [
       { key: 'about', labelKey: 'ox.nav.about', to: '/about' },
-      { key: 'terms', labelKey: 'ox.footer.terms', tokens: ['terms', 'conditions', 'الشروط'] },
-      { key: 'privacy', labelKey: 'ox.footer.privacy_policy', tokens: ['privacy', 'الخصوصية'] },
+      { key: 'terms', labelKey: 'ox.footer.terms', tokens: ['terms', 'conditions', 'الشروط'] }, // ox-allow: arabic-literal
+      { key: 'privacy', labelKey: 'ox.footer.privacy_policy', tokens: ['privacy', 'الخصوصية'] }, // ox-allow: arabic-literal
     ],
   },
   {
@@ -71,7 +71,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       {
         key: 'returns',
         labelKey: 'ox.footer.returns',
-        tokens: ['return', 'refund', 'الاسترجاع', 'الاستبدال'],
+        tokens: ['return', 'refund', 'الاسترجاع', 'الاستبدال'], // ox-allow: arabic-literal
       },
     ],
   },

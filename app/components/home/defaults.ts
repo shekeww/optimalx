@@ -37,18 +37,42 @@ export const HOME_BLOCK_PATHS = [
 
 export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
 
-/** Reserved heights from the DIRECTION 6.2 table, at 390 and at 1440. */
+/**
+ * Reserved heights, at 390 and at 1440.
+ *
+ * DIRECTION 6.2 sketched these before the blocks existed. Both columns are
+ * now MEASURED off the rendered page, desktop at a 1425 viewport and mobile at
+ * a 375 one, with the mobile figure adjusted for the slightly wider 390 column
+ * the table is defined at. The reserved box is only a pre-mount `min-height` that the
+ * lazy shell releases once the block mounts, so a number that does not match
+ * the built block is a one-off jump at exactly the moment the shopper is
+ * reading. Five rows moved, and each for a reason worth writing down:
+ *
+ * - `ox-trust-strip` grew: the cells are the shared statistic strip now, so
+ *   the caption sits under a centred glyph instead of beside it, and on a
+ *   phone both caption lines wrap inside a 179px cell.
+ * - `ox-services` grew a lot: 6.2 assumed a 220px channel card, and a real one
+ *   with its meta line, its three-line description, its price and its button
+ *   is half as tall again. The band also carries the lockup now.
+ * - `ox-branch` shrank a lot: the storefront photograph is gated and the theme
+ *   ships none, so the block renders the flat card. The 810 / 480 that the
+ *   table reserved for a photo panel was mostly empty box.
+ * - `ox-categories` and `ox-faq` moved by a few pixels, to what they measure.
+ *
+ * Re-measure these whenever a block's composition changes. A guess here is
+ * indistinguishable from a bug to the person reading the page.
+ */
 export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop: number }> = {
   'ox-hero': { mobile: 500, desktop: 560 },
-  'ox-trust-strip': { mobile: 144, desktop: 72 },
-  'ox-goals': { mobile: 544, desktop: 280 },
-  'ox-categories': { mobile: 880, desktop: 694 },
+  'ox-trust-strip': { mobile: 208, desktop: 88 },
+  'ox-goals': { mobile: 512, desktop: 280 },
+  'ox-categories': { mobile: 932, desktop: 668 },
   'ox-products': { mobile: 508, desktop: 630 },
   'ox-brands': { mobile: 64, desktop: 80 },
-  'ox-services': { mobile: 920, desktop: 480 },
+  'ox-services': { mobile: 1416, desktop: 704 },
   'ox-guides': { mobile: 485, desktop: 556 },
-  'ox-branch': { mobile: 810, desktop: 480 },
-  'ox-faq': { mobile: 408, desktop: 400 },
+  'ox-branch': { mobile: 212, desktop: 240 },
+  'ox-faq': { mobile: 392, desktop: 424 },
   'ox-newsletter': { mobile: 320, desktop: 300 },
   'ox-banner': { mobile: 268, desktop: 240 },
 };
@@ -112,7 +136,7 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   'ox-categories': { categories: [] },
   'ox-products': { title: null, products: [] },
   'ox-brands': { brands: [] },
-  'ox-services': { title: null, intro: null },
+  'ox-services': { image: null, title: null, intro: null },
   'ox-guides': { title: null },
   'ox-branch': {},
   'ox-faq': { items: [] },

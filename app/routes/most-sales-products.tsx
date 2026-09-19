@@ -4,13 +4,20 @@ import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/rout
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { ListingPage } from '../components/listing/ListingPage';
 import { listingHeadExtend } from '../components/listing/head';
+import { STATIC_TITLE_KEYS } from '../components/listing/listingCopy';
+import { headString } from '../components/seo/strings';
 
 /**
- * The most-sold listing (DIRECTION 6.3 composition, static source).
+ * The catalogue listing on the platform's `sales` route (DIRECTION 6.3
+ * composition, static source).
  *
- * The ordering is the platform's `sales` source and the page title is the
- * platform's own string: this theme never labels a product as popular on its
- * own authority (claims gate, PLAN-final 5.1).
+ * The ordering stays the platform's `sales` source and the route keeps its URL
+ * because Salla ships it. The page is NOT titled by sales: the store has zero
+ * orders, so "الأكثر مبيعا" would be an invented statistic (PLAN-final 4.4 and
+ * open question 2). The engine's own title key for this source
+ * (`common.titles.most_sales`) is absent from this theme's dictionary and
+ * would print raw, so the h1 is our own neutral catalogue title. It becomes a
+ * sales title the day order data exists, and not before.
  */
 export const Route = createFileRoute('/{-$locale}/most-sales-products')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -23,7 +30,7 @@ export const Route = createFileRoute('/{-$locale}/most-sales-products')({
     ProductListing.loader({
       params: {
         source: 'sales',
-        title: 'Most Sales Products',
+        title: headString(params.locale, STATIC_TITLE_KEYS.sales),
         slug: 'most-sales-products',
       },
       search: { page: deps.page, sort: deps.sort },

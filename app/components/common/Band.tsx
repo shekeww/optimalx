@@ -1,0 +1,121 @@
+import { useId, type ReactNode } from 'react';
+import { Icon, type OxIconName } from './Icon';
+import { Wordmark } from './Wordmark';
+
+export interface BandBadge {
+  id: string;
+  glyph: OxIconName;
+  label: ReactNode;
+  /** A Latin gloss under the Arabic label; the caller passes it already wrapped. */
+  latin?: ReactNode;
+}
+
+export interface BandProps {
+  /** Decorative photograph; it always renders with an empty alt. */
+  photo: string;
+  line1: ReactNode;
+  line2?: ReactNode;
+  subline?: ReactNode;
+  /** Zero to three. An empty array collapses the band's lower tier. */
+  badges?: BandBadge[];
+  /** The owner's mark at the foot of the band. */
+  lockup?: boolean;
+  /** False when the screen already spends its one wedge somewhere else. */
+  wedge?: boolean;
+  headingLevel?: 'h1' | 'h2';
+  /** A single primary action; the service pages are the only callers. */
+  action?: ReactNode;
+  id?: string;
+  className?: string;
+}
+
+/**
+ * The dark full-width section break the whole site shares: a photograph under
+ * two flat overlays, the wedge at the brand's 22 degrees, a one or two line
+ * statement, an optional badge row and the lockup.
+ *
+ * It emits exactly the `.ox-bband` markup the product page's `BrandBand`
+ * emits, and it imports nothing from `app/components/product/**`. The small
+ * duplication is on purpose: `BrandBand` is shipped and verified against the
+ * approved image and is not reopened to make this generic.
+ *
+ * Two rules the band enforces for the page rather than for itself:
+ *  - the wedge is a signature, so a screen carries at most one. A page whose
+ *    hero already spends it passes `wedge={false}`;
+ *  - the badges are facts, not decoration. A caller with nothing to put in
+ *    them passes none and the band drops its lower tier and centres the
+ *    statement, which is the render most pages get today.
+ */
+export function Band({
+  photo,
+  line1,
+  line2,
+  subline,
+  badges = [],
+  lockup = true,
+  wedge = true,
+  headingLevel: Heading = 'h2',
+  action,
+  id,
+  className,
+}: BandProps) {
+  const generatedId = useId();
+  const titleId = `${id ?? generatedId}-title`;
+  const classes = [
+    'ox-bband',
+    badges.length > 0 ? null : 'ox-bband--short',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <section className={classes} id={id} aria-labelledby={titleId} data-testid="ox-band">
+      <img className="ox-bband__photo" src={photo} alt="" loading="lazy" decoding="async" />
+      <span className="ox-bband__scrim" aria-hidden="true" />
+      <span className="ox-bband__wash" aria-hidden="true" />
+      {wedge ? (
+        <>
+          <span className="ox-bband__wedge ox-bband__wedge--wide" aria-hidden="true" />
+          <span className="ox-bband__wedge ox-bband__wedge--thin" aria-hidden="true" />
+        </>
+      ) : null}
+
+      <div className="ox-bband__inner">
+        <Heading className="ox-bband__headline" id={titleId}>
+          <span className="ox-bband__line">{line1}</span>
+          {line2 ? <span className="ox-bband__line">{line2}</span> : null}
+        </Heading>
+        {subline ? <p className="ox-bband__sub">{subline}</p> : null}
+
+        {badges.length > 0 ? (
+          <ul className="ox-bband__badges">
+            {badges.map((badge) => (
+              <li className="ox-bband__badge" key={badge.id}>
+                <span className="ox-bband__ring">
+                  <Icon name={badge.glyph} size={16} />
+                </span>
+                <span className="ox-bband__badge-text">
+                  <span className="ox-bband__badge-ar">{badge.label}</span>
+                  {badge.latin ? (
+                    <span className="ox-bband__badge-latin">{badge.latin}</span>
+                  ) : null}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        {action ? <div className="ox-bband__action">{action}</div> : null}
+      </div>
+
+      {lockup ? (
+        <p className="ox-bband__lockup">
+          <Wordmark width={156} variant="full" tone="dark" />
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+export default Band;

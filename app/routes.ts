@@ -1,5 +1,5 @@
 /**
- * Custom routes file — extend or override built-in engine routes.
+ * Custom routes file - extend or override built-in engine routes.
  *
  * The `twilightReact()` plugin auto-discovers this file at build time.
  * Routes defined here are merged with the engine's defaults:

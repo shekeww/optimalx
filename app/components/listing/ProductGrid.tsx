@@ -106,20 +106,23 @@ function bridgeT(t: TFunction): ItemsListTFunction {
 
 /**
  * The card skeleton, box for box (DIRECTION 5.6 "every block has a skeleton
- * whose outer box equals the final block"): a 1:1 plate, then the card's six
- * fixed rows (brand 20, name two lines, chips 24, rating 20, price 32,
- * action 44), so a loading row and a loaded row are the same height.
+ * whose outer box equals the final block").
+ *
+ * The rows are the ones `.ox-card-product` reserves in _b3-product.scss: the
+ * 1:1 plate capped at 132, then brand 18, name two lines at 40, spec 18,
+ * rating 20, price 30 and the 44 action. Padding, gap and radius match the
+ * card's as well, so the swap from loading to loaded shifts nothing.
  */
 export function ProductCardSkeleton() {
   return (
     <Skeleton className="ox-card-skeleton">
       <SkeletonBlock className="ox-card-skeleton__plate" />
-      <SkeletonBar height={20} width="50%" />
-      <SkeletonBar height={20} width="90%" />
-      <SkeletonBar height={20} width="70%" />
-      <SkeletonBar height={24} width="60%" />
-      <SkeletonBar height={20} width="40%" />
-      <SkeletonBar height={32} width="55%" />
+      <SkeletonBar height={18} width="45%" />
+      <SkeletonBar height={20} width="92%" />
+      <SkeletonBar height={20} width="64%" />
+      <SkeletonBar height={18} width="55%" />
+      <SkeletonBar height={20} width="38%" />
+      <SkeletonBar height={30} width="50%" />
       <SkeletonBlock height={44} />
     </Skeleton>
   );

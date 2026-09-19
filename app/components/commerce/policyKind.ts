@@ -65,3 +65,31 @@ function decodeSafely(value: string): string {
     return value;
   }
 }
+
+/**
+ * Tokens that identify the store's FAQ page, in either language.
+ *
+ * The FAQ is the one store page whose body the theme replaces rather than
+ * renders: its questions live in `app/content/faq.ts`, where they are shared
+ * with the hub, the home block and the branch page, so a merchant editing the
+ * dashboard page cannot put a second version of the same answer in front of a
+ * shopper. Everything else the merchant writes in the dashboard is rendered as
+ * written.
+ */
+const FAQ_TOKENS: readonly string[] = [
+  'faq',
+  'questions',
+  'الاسئلة', // ox-allow: arabic-literal match tokens, not copy
+  'أسئلة', // ox-allow: arabic-literal match tokens, not copy
+  'اسئلة', // ox-allow: arabic-literal match tokens, not copy
+];
+
+/** True when the route's slug or the page title names the FAQ page. */
+export function isFaqPage(...candidates: (string | undefined | null)[]): boolean {
+  const raw = candidates
+    .filter((value): value is string => typeof value === 'string' && value.length > 0)
+    .join(' ');
+  if (raw.length === 0) return false;
+  const haystack = foldArabic(decodeSafely(raw));
+  return FAQ_TOKENS.some((token) => haystack.includes(foldArabic(token)));
+}

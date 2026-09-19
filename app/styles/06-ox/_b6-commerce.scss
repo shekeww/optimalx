@@ -1,39 +1,114 @@
 // ---------------------------------------------------------------------------
-// B6 commerce: cart, thank-you, guides, policies, account, modal, drawer and
-// toast (DIRECTION 5.5, 5.6, 6.9, 6.10, 6.13, 6.18). Owned by B6.
+// B6 commerce: cart, thank-you, guides, policies, account, loyalty,
+// testimonials, modal, drawer and toast (DIRECTION 5.5, 5.6, 6.9, 6.10, 6.13,
+// 6.18). Owned by B6.
+//
+// The design contract this file answers to, from the approved image
+// (docs/design-target/pdp-target.png) and scratchpad/target-spec.md:
+//
+//   1. The ground is warm. `--ox-surface` (card `#FBF8F3`) is the panel fill,
+//      `--ox-plate` (`#F1E9E1`) sits behind every product photograph, and
+//      `--ox-input` white belongs to form controls and the quantity stepper
+//      and nowhere else. Every `bg-white` the engine writes is overridden.
+//   2. There is no drop shadow in the approved image, and there is none here.
+//      Surfaces separate by a value step plus a 1px `--ox-bd` hairline. The
+//      `box-shadow: none` declarations below are not decoration: each one
+//      switches off a shadow the engine or the CDN component draws for
+//      itself, and removing the declaration puts the shadow back.
+//   3. Orange is rationed to the price, the primary button, the active
+//      indicator, the card add button and the wedge. That is why the
+//      thank-you and loyalty hero bands, which the engine paints in
+//      `bg-primary` across 208 and 248 pixels of viewport, are repainted to
+//      the brand band black: a field of orange that size is not a price and
+//      not a button, and it is the single loudest template tell on the site.
+//   4. The wedge is a signature, at most one per screen, and it belongs to
+//      that screen's dark band. The thank-you band carries this batch's one.
+//   5. Red is never a price colour (DIRECTION 2.5). The engine paints sale
+//      prices `text-red-400`, discounted line items `text-red-800` and the
+//      free ribbon `bg-red-600`; all three are brought back to the ink.
 //
 // Engine selector contract. The cart, account and blog pages are the engine's
 // own React components and they carry NO `s-*` classes: what looks like one
 // ("s-center" inside "items-center") is a Tailwind substring. The stable
 // hooks these rules pin to, all read from the engine dist on 2026-09-19, are:
-//   .cart-item, .btn--delete, .item-total, .item-regular-price,
-//   .item-original-price                    (CartItem-UOVSSW5O.js)
-//   .cart-submit-wrap, .coupon-text, .progress-bg, .shipping-item,
-//   #free-shipping, #cart-submit, [data-cart-total]
+//   .cart-item, .btn--delete, .item-total, .item-price,
+//   .item-regular-price, .item-original-price  (CartItem-UOVSSW5O.js)
+//   .cart-submit-wrap, .coupon-text, .shipping-item, #free-shipping,
+//   #cart-submit, #sub-total, #total-discount, [data-cart-total]
 //                                           (CartSummary-4V3L56U7.js)
 //   .profile-header, .sidebar, .avatar-wrap (CustomerLayout-PLJTAXCP.js)
+//   .s-orders-table*, .s-orders-status-container, .s-orders-mobile-title
+//                                           (OrdersPage-A3K5BDBZ.js)
+//   .single-order-header-item, .order-item, .shipping-orders
+//                                           (OrderSinglePage-LP7FUHKL.js)
+//   .product-entry--wishlist, .product-entry__image (WishlistPage-KDLBETWD.js)
+//   .s-wallet-table*                        (WalletPage-FNGL7Z3Z.js)
+//   .s-notifications-*                      (NotificationsPage-KF6AIPK3.js)
+//   .loyalty__banner, .points-ways, .loyalty-star (LoyaltyPage-C7FKYLIW.js)
 //   .blog-category__title, .post-entry, .post-entry__title, .blog-slider
 //                                           (BlogPage-OZTHYA3G.js)
 //   .content--single-page, .content-entry   (PageSingle-FHHC5QDA.js)
 //   .no-content-placeholder                 (04-components/no-content-placeholder)
 //   .s-add-product-toast*, .s-modal-*, .s-drawer-* (CDN web components)
+// Tailwind utilities are matched with `[class~='name']`, never `.name`. A
+// utility used as a class selector in this codebase is expanded into every
+// semantic class that applies it (`.ox-order .bg-white` compiles to a rule
+// naming `.s-input`, `.s-form-control`, `.swal2-*` and two hundred others),
+// which multiplies the sheet without changing what renders. The attribute
+// form matches the same elements, at the same specificity, as one selector.
+//
 // Every one of them is scoped under a wrapper this batch owns, except the
-// four web-component families, which the engine renders into <body>.
+// four web-component families, which the engine renders into <body>, and the
+// account frame, which is scoped by `body.ox-account` instead because the
+// engine's `CustomerLayout` sits above every wrapper the theme can mount.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// 0. Shared commerce surfaces
+//
+// `.ox-surface` is the plain page frame the two standalone Salla surfaces
+// (loyalty, testimonials) use when they fall back to an empty state and have
+// no engine chrome of their own to inherit.
+// ---------------------------------------------------------------------------
+.ox-surface {
+  padding-block: var(--ox-8) var(--ox-16);
+
+  &__head {
+    max-inline-size: var(--ox-container-text);
+    margin-block-end: var(--ox-8);
+  }
+
+  &__lead {
+    margin: var(--ox-2) 0 0;
+    color: var(--ox-fg-2);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // 1. Cart page frame (DIRECTION 6.9)
 // ---------------------------------------------------------------------------
 .ox-cart {
   display: block;
+  padding-block-end: var(--ox-16);
 
-  .container {
+  [class~='container'] {
     max-inline-size: var(--ox-container);
   }
 
-  // Two columns from 1024: rows 7 of 12, summary 5 of 12 sticky at the
-  // header offset. The engine writes the split as `lg:w-[calc(100%-384px)]`
-  // and `lg:w-96`, which is a fixed 384 column; the grid below replaces it.
+  // The engine prints its own screen-reader h1 from the platform string. Ours is
+  // visible, comes from `ox.cart.title`, and is rendered into `cart:start`,
+  // so the engine's is dropped rather than left as a second h1 in the
+  // accessibility tree.
+  h1[class~='sr-only'] {
+    display: none;
+  }
+
+  // Two columns from 1024. The engine writes the split as
+  // `lg:w-[calc(100%-384px)]` on the rows and `lg:w-96` on the summary, which
+  // is a fixed 384 column; both are replaced below. DIRECTION 6.9 asks for
+  // 7/12 and 5/12, which at the 1296 measure is a 540 summary. A 540 panel
+  // holding four short number rows reads as an empty box, so the summary is
+  // set at 400 and 440, and the rows take the rest.
   @media (min-width: 1024px) {
     .main-content {
       inline-size: auto;
@@ -43,50 +118,80 @@
   }
 }
 
-.ox-cart--empty {
-  min-block-size: 360px;
-  padding-block: var(--ox-12);
+// The title row (CartHeader, rendered into `cart:start`).
+.ox-cart__head {
+  padding-block: var(--ox-4) var(--ox-6);
+
+  @media (min-width: 1024px) {
+    padding-block: var(--ox-6) var(--ox-8);
+  }
+}
+
+.ox-cart__title {
+  margin: 0;
+}
+
+.ox-cart__lead {
+  margin: var(--ox-2) 0 0;
+  color: var(--ox-fg-2);
 }
 
 // Cart row (DIRECTION 5.5 CartRow): 112 on mobile as two lines, 96 on desktop
-// in one. The engine's card chrome (shadow, 20/28 padding) is removed; rows
-// are separated by a rule, as everywhere else in the theme.
+// in one. Each row is the panel contract, which is what "line items on the
+// plate contract" means here: a cream card, a hairline, a 16 radius, no
+// shadow, and the product photograph on the warm plate inside it.
 .ox-cart .cart-item {
   position: relative;
   background: var(--ox-surface);
-  border: 0;
-  border-block-end: 1px solid var(--ox-bd);
-  border-radius: 0;
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-4, 16px);
   box-shadow: none;
-  margin: 0;
-  padding: var(--ox-4) 0;
+  margin: 0 0 var(--ox-3);
+  padding: var(--ox-4);
   min-block-size: 112px;
 
   @media (min-width: 1024px) {
     min-block-size: 96px;
+    padding: 20px var(--ox-6);
   }
 
-  &:last-child {
-    border-block-end: 0;
+  &:hover {
+    border-color: var(--ox-bd-2);
   }
 
   img {
-    inline-size: 80px;
-    block-size: 80px;
+    inline-size: 88px;
+    block-size: 88px;
     background: var(--ox-plate);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-1);
+    border-radius: var(--ox-r-2);
     object-fit: contain;
   }
 
   a {
     color: var(--ox-fg);
     font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+      text-decoration-thickness: 1px;
+    }
   }
 
-  .item-total {
-    font-weight: 700;
+  // The row total is the only figure in the row that carries weight. The
+  // engine sets it in `text-primary`; a per-row orange total on a page that
+  // already has an orange grand total and an orange checkout button spends
+  // the accent three times in one column.
+  .item-total,
+  [class~='text-primary'] {
     color: var(--ox-fg);
+    font-weight: 700;
+  }
+
+  .item-price {
+    color: var(--ox-fg-2);
   }
 
   // Red is never a price colour in this theme (DIRECTION 2.5).
@@ -120,8 +225,23 @@
     }
   }
 
+  // The quantity stepper is one of the two white surfaces the approved image
+  // has (target-spec.md "Quantity stepper, inputs"), so it keeps the input
+  // fill and takes the hairline and the 44 hit area.
   .s-quantity-input-container {
-    min-block-size: 40px;
+    min-block-size: 44px;
+    background: var(--ox-input);
+    border: 1px solid var(--ox-line-3);
+    border-radius: var(--ox-r-2);
+    overflow: hidden;
+  }
+
+  // The rule the engine draws around the stepper row on mobile is the row's
+  // own hairline once the row is a panel; two rules inside one card is the
+  // seam that makes a list look unfinished.
+  [class~='border-t'],
+  [class~='border-b'] {
+    border-color: var(--ox-bd);
   }
 }
 
@@ -130,23 +250,33 @@
 // ---------------------------------------------------------------------------
 .ox-cart {
   // The engine gives the summary column and each of its panels a shadow and a
-  // 20/28 padding box. One card, one border, no shadow.
-  .sticky > div,
-  .sticky > form {
+  // 20/28 padding box. One panel, one hairline, no shadow.
+  [class~='sticky'] > div,
+  [class~='sticky'] > form {
     box-shadow: none;
     background: var(--ox-surface);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
-    padding: var(--ox-5, 20px);
+    border-radius: var(--ox-r-4, 16px);
+    padding: var(--ox-4);
     margin-block-end: var(--ox-4);
+
+    @media (min-width: 1024px) {
+      padding: var(--ox-6);
+    }
   }
 
   @media (min-width: 1024px) {
-    .sticky {
-      inline-size: 360px;
+    [class~='sticky'] {
+      inline-size: 400px;
       flex: none;
-      // Below the sticky header (72 bar + 48 nav) plus the rhythm step.
+      // Below the sticky header plus the rhythm step.
       inset-block-start: calc(var(--ox-h-bar) + var(--ox-4));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    [class~='sticky'] {
+      inline-size: 440px;
     }
   }
 
@@ -157,14 +287,42 @@
     display: none;
   }
 
+  [class~='sticky'] h2 {
+    margin: 0 0 var(--ox-4);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ox-fg);
+  }
+
+  // Summary rows: the key at the muted weight, the value at the heavier one,
+  // exactly the `.ox-details__row` contract the approved image uses for the
+  // product panel.
+  [class~='sticky'] [class~='text-gray-500'] {
+    color: var(--ox-fg-3);
+  }
+
+  #sub-total,
+  #cart-options-total,
+  #shipping-cost b,
+  #total-discount b,
+  #tax-amount {
+    color: var(--ox-fg);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
   .coupon-text,
   .shipping-item {
     color: var(--ox-fg-2);
   }
 
+  // The grand total is the one price on this page, and a price is orange.
   [data-cart-total] {
-    font-weight: 700;
-    color: var(--ox-fg);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--ox-accent);
+    font-variant-numeric: tabular-nums;
   }
 
   .cart-submit-wrap {
@@ -176,17 +334,34 @@
     }
   }
 
-  // The checkout button is repeated in the fixed bar below 1024, so the
-  // in-column one only needs to exist there for keyboard order; it stays
-  // visible (a duplicate control is not a defect) but the bar carries the
-  // total, which is why the bar is the primary at that width.
+  // The coupon field is Salla's: it validates the code, applies it and
+  // reports its own error. Only the box is ours.
+  form:has(#coupon-input) {
+    border-color: var(--ox-bd);
+  }
+
+  #coupon-input,
   input.form-input,
   .form-input {
     block-size: 44px;
-    border-color: var(--ox-bd-2);
+    border: 1px solid var(--ox-line-3);
     border-radius: var(--ox-r-1);
-    background: var(--ox-surface);
+    background: var(--ox-input);
     color: var(--ox-fg);
+
+    &::placeholder {
+      color: var(--ox-ink-4);
+    }
+
+    &:focus-visible {
+      outline: var(--ox-focus-ring);
+      outline-offset: 0;
+      border-color: transparent;
+    }
+  }
+
+  .btn--coupon {
+    min-block-size: 44px;
   }
 }
 
@@ -203,7 +378,7 @@
 .ox-ship {
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4, 16px);
   padding: var(--ox-4);
 
   &__line {
@@ -255,7 +430,7 @@
   display: flex;
   align-items: center;
   background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4, 16px);
   padding: var(--ox-3);
   min-block-size: 56px;
 
@@ -277,6 +452,14 @@
   padding: 0;
   list-style: none;
   color: var(--ox-fg-3);
+}
+
+// The empty cart: the EmptyState in the content column, at the height the
+// rows and the summary would have taken, so the page does not jump between
+// the skeleton and an empty answer.
+.ox-cart--empty {
+  min-block-size: 360px;
+  padding-block: var(--ox-12);
 }
 
 // ---------------------------------------------------------------------------
@@ -315,6 +498,10 @@
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+
+    .ox-price {
+      color: var(--ox-accent);
+    }
   }
 
   &__label {
@@ -344,20 +531,59 @@ body.ox-sticky-bar .ox-cart {
 
 // ---------------------------------------------------------------------------
 // 5. Thank-you (DIRECTION 6.10)
+//
+// The engine paints a 208 tall `bg-primary` band behind the header and a wave
+// svg under it. Both go: a 208px field of the accent breaks the rationing
+// rule (section 0 point 3 above) and a decorative wave is the one shape in
+// the engine's kit that has no counterpart anywhere in the approved design.
+// What replaces it is the system's own section break, the brand band, with
+// this screen's single wedge in the corner.
 // ---------------------------------------------------------------------------
 .ox-thankyou {
-  // The engine paints a 208 primary-orange band behind the header and a wave
-  // svg under it. The band stays (it is the store's brand colour and the one
-  // celebratory moment in the flow); the card below it takes our chrome.
-  .container {
+  padding-block-end: var(--ox-16);
+
+  [class~='container'] {
     max-inline-size: var(--ox-container-narrow);
   }
 
+  // The direct child is the band itself; a `bg-primary` deeper in the tree
+  // is one of Salla's own buttons and keeps the accent it is entitled to.
+  > [class~='bg-primary'] {
+    position: relative;
+    background: var(--ox-band-brand);
+    overflow: hidden;
+
+    // The wedge: the same 22 degree pair the brand band and the footer carry,
+    // at the top inline-end corner, drawn once per screen.
+    &::after {
+      content: '';
+      @include ox-wedge-corner(56px, 138px);
+      background: var(--ox-accent);
+      z-index: 1;
+    }
+
+    // The wave.
+    svg {
+      display: none;
+    }
+  }
+
+  // The breadcrumb the engine renders on top of that band is written in
+  // `text-primary-reverse`, which is white on the old orange. On the band
+  // black it takes the on-dark ink.
+  [class~='text-primary-reverse'] {
+    color: var(--ox-ink-2-on-dark);
+
+    &:hover {
+      color: var(--ox-ink-on-dark);
+    }
+  }
+
   .thankyou-block,
-  .bg-white {
+  [class~='bg-white'] {
     box-shadow: none;
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
+    border-radius: var(--ox-r-4, 16px);
     background: var(--ox-surface);
   }
 
@@ -385,8 +611,12 @@ body.ox-sticky-bar .ox-cart {
   &__card {
     background: var(--ox-surface);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
-    padding: var(--ox-6);
+    border-radius: var(--ox-r-4, 16px);
+    padding: var(--ox-4);
+
+    @media (min-width: 1024px) {
+      padding: var(--ox-6);
+    }
 
     h2 {
       display: flex;
@@ -439,7 +669,7 @@ body.ox-sticky-bar .ox-cart {
     padding: var(--ox-4);
     list-style: none;
     background: var(--ox-plate);
-    border-radius: var(--ox-r-1);
+    border-radius: var(--ox-r-2);
     display: flex;
     flex-direction: column;
     gap: var(--ox-2);
@@ -463,17 +693,20 @@ body.ox-sticky-bar .ox-cart {
 
 // ---------------------------------------------------------------------------
 // 6. Guides index (DIRECTION 6.13 Index)
+//
+// PAGES owns the blog components; the rules live here because a batch writes
+// only its own stylesheet partial (PLAN-final 7.4). B9 may move the block.
 // ---------------------------------------------------------------------------
 .ox-blog {
   // One h1 per page. The engine renders its own from the SDK string, either
   // visible (`.blog-category__title`, no slides) or screen-reader only (with
   // slides); ours comes from the `blog:start` hook with the spec's wording.
   .blog-category__title,
-  h1.sr-only {
+  h1[class~='sr-only'] {
     display: none;
   }
 
-  .container {
+  [class~='container'] {
     max-inline-size: var(--ox-container);
   }
 
@@ -535,7 +768,7 @@ body.ox-sticky-bar .ox-cart {
   .post-entry {
     background: var(--ox-surface);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
+    border-radius: var(--ox-r-4, 16px);
     box-shadow: none;
     transition: none;
 
@@ -554,7 +787,7 @@ body.ox-sticky-bar .ox-cart {
   }
 
   .blog-slider {
-    border-radius: var(--ox-r-2);
+    border-radius: var(--ox-r-4, 16px);
   }
 }
 
@@ -576,7 +809,7 @@ body.ox-sticky-bar .ox-cart {
 // 7. Article (DIRECTION 6.13 Article)
 // ---------------------------------------------------------------------------
 .ox-article {
-  .container {
+  [class~='container'] {
     max-inline-size: var(--ox-container);
   }
 
@@ -590,7 +823,7 @@ body.ox-sticky-bar .ox-cart {
     flex-direction: column;
     background: var(--ox-surface);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
+    border-radius: var(--ox-r-4, 16px);
 
     > * {
       order: 3;
@@ -649,7 +882,7 @@ body.ox-sticky-bar .ox-cart {
     > div {
       background: var(--ox-surface);
       border: 1px solid var(--ox-bd);
-      border-radius: var(--ox-r-2);
+      border-radius: var(--ox-r-4, 16px);
       box-shadow: none;
     }
   }
@@ -657,8 +890,8 @@ body.ox-sticky-bar .ox-cart {
 
 .ox-keypoints {
   background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
-  padding: var(--ox-5, 20px);
+  border-radius: var(--ox-r-4, 16px);
+  padding: 20px;
   margin-block: var(--ox-6);
   max-inline-size: var(--ox-container-text);
 
@@ -671,7 +904,7 @@ body.ox-sticky-bar .ox-cart {
     flex-direction: column;
     gap: var(--ox-2);
     margin: 0;
-    padding-inline-start: var(--ox-5, 20px);
+    padding-inline-start: 20px;
 
     li {
       color: var(--ox-fg);
@@ -728,7 +961,7 @@ body.ox-sticky-bar .ox-cart {
 // ---------------------------------------------------------------------------
 // 8. Static pages and the policy intro (DIRECTION 6.18)
 //
-// `display: contents` on the engine's own `.container` lifts the breadcrumb
+// `display: contents` on the engine's own `container` lifts the breadcrumb
 // and the page card into this flex column, so the intro, which is a sibling
 // after them in the DOM, can be ordered between the two. The container's own
 // width and gutters move here with it.
@@ -740,15 +973,15 @@ body.ox-sticky-bar .ox-cart {
   margin-inline: auto;
   padding-inline: var(--ox-gutter);
 
-  > .container {
+  > [class~='container'] {
     display: contents;
   }
 
-  > .container > nav {
+  > [class~='container'] > nav {
     order: 0;
   }
 
-  > .container > div:has(> .content--single-page) {
+  > [class~='container'] > div:has(> .content--single-page) {
     order: 2;
   }
 
@@ -756,8 +989,8 @@ body.ox-sticky-bar .ox-cart {
     order: 1;
     max-inline-size: var(--ox-container-text);
     background: var(--ox-plate);
-    border-radius: var(--ox-r-2);
-    padding: var(--ox-5, 20px);
+    border-radius: var(--ox-r-4, 16px);
+    padding: 20px;
     margin-block: var(--ox-4) 0;
 
     p {
@@ -777,7 +1010,7 @@ body.ox-sticky-bar .ox-cart {
   .content--single-page {
     background: var(--ox-surface);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
+    border-radius: var(--ox-r-4, 16px);
     max-inline-size: var(--ox-container-text);
     inline-size: 100%;
   }
@@ -802,73 +1035,727 @@ body.ox-sticky-bar .ox-cart {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Account (DIRECTION 5.5 AccountNav, 6.18). No route ownership: the engine
-//    `CustomerLayout` and `salla-user-menu` are styled where they stand, and
-//    the engine's own placeholder copy stays because those pages expose no
-//    hook slot to replace it with ours.
+// 9. Account (DIRECTION 5.5 AccountNav, PLAN-final 6.3)
+//
+// The engine's `CustomerLayout` is mounted by a generated layout route inside
+// the engine package, above anything a theme can wrap, so this block is
+// scoped by `body.ox-account` instead: `AccountShell` registers that class
+// through `useDocumentClass`, which the engine mirrors into the server render
+// (chunk-JWXJPJBO.js), so the frame is right on first paint.
+//
+// Three things the engine does that the design cannot keep:
+//   - `nav.sidebar` carries `SallaUserMenu` behind `hidden lg:block`, so a
+//     phone gets no account navigation at all. `AccountNav` replaces it;
+//   - `.main-content` is capped at `max-w-3xl` (768), too narrow for a rail
+//     and a content column;
+//   - `page.title` is printed as a centred `h1` from the platform strings.
+//     Ours is at the RTL start, in the theme's voice, from `ox.account.*`.
 // ---------------------------------------------------------------------------
-.profile-header.gradient-bg {
-  background-image: none;
-  background: var(--ox-graphite);
+body.ox-account {
+  .profile-header.gradient-bg {
+    background-image: none;
+    background: var(--ox-band-header);
+    min-block-size: 0;
 
-  .breadcrumbs a,
-  .breadcrumbs span,
-  .breadcrumbs .arrow {
-    color: var(--ox-ink-2-on-dark);
-  }
-}
+    .breadcrumbs a,
+    .breadcrumbs span,
+    .breadcrumbs .arrow,
+    .s-breadcrumb-item,
+    .s-breadcrumb-item a {
+      color: var(--ox-ink-2-on-dark);
+    }
 
-nav.sidebar {
-  box-shadow: none;
+    .s-breadcrumb-item[aria-current='page'] {
+      color: var(--ox-ink-on-dark);
+    }
 
-  @media (min-width: 1024px) {
-    inline-size: 240px;
-    background: var(--ox-surface);
-    border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-2);
-  }
-
-  .avatar-wrap {
-    background: var(--ox-plate);
-    inline-size: 48px;
-    block-size: 48px;
-  }
-
-  // The menu is a CDN web component; these are the classes it renders.
-  .s-user-menu-item,
-  .s-user-menu-list a {
-    min-block-size: 44px;
-    display: flex;
-    align-items: center;
-    gap: var(--ox-2);
-    padding-inline: var(--ox-4);
-    color: var(--ox-fg);
-    border-radius: 0;
-
-    &:hover {
-      background: var(--ox-plate);
+    .s-breadcrumb-arrow {
+      color: var(--ox-ink-3-on-dark);
     }
   }
 
-  .s-user-menu-item.active,
-  .s-user-menu-list a.active {
-    background: var(--ox-plate);
-    border-inline-start: 2px solid var(--ox-accent);
-    font-weight: 600;
+  // The engine's own column split stands down: the rail and the content
+  // column are `AccountShell`'s, inside `.main-content`.
+  [class~='container'] > div:has(> nav.sidebar) {
+    display: block;
+  }
+
+  .main-content {
+    inline-size: 100%;
+    max-inline-size: none;
+    flex: none;
+  }
+
+  // The platform's centred title.
+  .main-content > h1 {
+    display: none;
+  }
+
+  nav.sidebar {
+    inline-size: auto;
+    max-inline-size: none;
+    margin: 0 0 var(--ox-6);
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    position: static;
+
+    // `SallaUserMenu` is the CDN list `AccountNav` replaces. The avatar
+    // uploader beside it is kept, because it is the only control that writes
+    // the profile image and a second `SallaFileUpload` would bind twice.
+    salla-user-menu,
+    .s-user-menu {
+      display: none;
+    }
+
+    .avatar-wrap {
+      inline-size: 72px;
+      block-size: 72px;
+      margin: 0;
+      background: var(--ox-plate);
+      border: 1px solid var(--ox-bd);
+    }
+
+    [class~='text-center'] {
+      text-align: start;
+      margin: 0;
+    }
+
+    .avatar-placeholder {
+      color: var(--ox-fg-3);
+    }
+  }
+
+  // With the menu gone the sidebar is an empty 288 column on every surface
+  // but the profile, where the avatar still lives in it.
+  nav.sidebar:not(:has(.avatar-wrap)) {
+    display: none;
   }
 }
 
-.main-content .no-content-placeholder,
+// The frame `AccountShell` renders inside `.main-content`.
+.ox-acct {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ox-6);
+  padding-block: var(--ox-6) var(--ox-16);
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: var(--ox-8);
+    padding-block: var(--ox-8) var(--ox-24);
+  }
+
+  &__main {
+    min-inline-size: 0;
+  }
+
+  &__head {
+    margin-block-end: var(--ox-6);
+  }
+
+  &__title {
+    margin: 0;
+  }
+
+  &__lead {
+    margin: var(--ox-2) 0 0;
+    color: var(--ox-fg-2);
+    max-inline-size: var(--ox-container-text);
+  }
+
+  &__body > * + * {
+    margin-block-start: var(--ox-4);
+  }
+}
+
+// The rail. Text rows, hairlines, a 2px accent bar on the current row: the
+// same device the approved image uses for the active product tab. No icons:
+// the theme sprite (P1a, frozen) has no user, bell or wallet glyph, and
+// mixing Salla's `sicon` font into our own stroke language is the seam that
+// makes a store read as assembled rather than designed.
+.ox-acct-nav {
+  align-self: start;
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    inset-block-start: calc(var(--ox-h-bar) + var(--ox-4));
+  }
+
+  &__group + &__group {
+    margin-block-start: var(--ox-6);
+  }
+
+  &__heading {
+    margin: 0 0 var(--ox-2);
+    color: var(--ox-fg-3);
+    text-transform: none;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: 1px solid var(--ox-bd);
+  }
+
+  &__item {
+    border-block-end: 1px solid var(--ox-bd);
+  }
+
+  &__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-block-size: 48px;
+    padding-inline: var(--ox-3);
+    color: var(--ox-fg-2);
+    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ox-fg);
+      background: var(--ox-plate);
+    }
+
+    &:focus-visible {
+      outline: var(--ox-focus-ring);
+      outline-offset: -2px;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      inline-size: 2px;
+      background: var(--ox-accent);
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform var(--dur-base) var(--ease-out);
+    }
+
+    &.is-current {
+      color: var(--ox-fg);
+      background: var(--ox-plate);
+
+      &::before {
+        transform: scaleY(1);
+      }
+    }
+  }
+}
+
+// Below 1024 the rail would put seven rows between the title and the content,
+// so it becomes the strip instead: one horizontal scroller, both groups
+// flattened, the current item marked by the accent underline. That is the
+// same device the approved image uses for the product page's tab row, which
+// is what "the in-page navigation for any page longer than one screen" means
+// on a phone.
+@media (max-width: 1023px) {
+  .ox-acct-nav {
+    display: flex;
+    gap: var(--ox-4);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    border-block-end: 1px solid var(--ox-bd);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &__group + &__group {
+      margin-block-start: 0;
+    }
+
+    &__heading {
+      display: none;
+    }
+
+    &__list {
+      display: flex;
+      gap: var(--ox-4);
+      border-block-start: 0;
+    }
+
+    &__item {
+      flex: none;
+      border-block-end: 0;
+    }
+
+    &__link {
+      padding-inline: 0;
+
+      &:hover,
+      &.is-current {
+        background: none;
+      }
+
+      &::before {
+        inset-block: auto 0;
+        inset-inline: 0;
+        inline-size: auto;
+        block-size: 2px;
+        transform: scaleX(0);
+      }
+
+      &.is-current::before {
+        transform: scaleX(1);
+      }
+    }
+  }
+}
+
+// The empty state inside a panel, so the content column still reads as a
+// finished page next to the rail.
+.ox-acct-empty {
+  .ox-empty {
+    padding-block: var(--ox-8);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9.1 The account surfaces the engine renders inside the shell
+// ---------------------------------------------------------------------------
+
+// Order history. The engine's table is kept, because `ItemsList` owns Salla's
+// cursor pagination; the row becomes a panel and the shadow goes.
+body.ox-account {
+  .s-orders-table {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0 var(--ox-3);
+  }
+
+  .s-orders-table-head-tr-th {
+    padding-inline: var(--ox-3);
+    text-align: start;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ox-fg-3);
+  }
+
+  .s-orders-table-tbody-tr,
+  .s-orders-table-tbody-tr-shadow {
+    background: var(--ox-surface);
+    box-shadow: none;
+    border-radius: var(--ox-r-4, 16px);
+  }
+
+  .s-orders-table-tbody-tr-td {
+    background: var(--ox-surface);
+    border-block: 1px solid var(--ox-bd);
+    padding: var(--ox-4) var(--ox-3);
+    color: var(--ox-fg);
+    vertical-align: middle;
+
+    &:first-child {
+      border-inline-start: 1px solid var(--ox-bd);
+      border-start-start-radius: var(--ox-r-4, 16px);
+      border-end-start-radius: var(--ox-r-4, 16px);
+    }
+
+    &:last-child {
+      border-inline-end: 1px solid var(--ox-bd);
+      border-start-end-radius: var(--ox-r-4, 16px);
+      border-end-end-radius: var(--ox-r-4, 16px);
+    }
+  }
+
+  .s-orders-mobile-title {
+    color: var(--ox-fg-3);
+    font-size: 13px;
+  }
+
+  .s-orders-reference-id {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    unicode-bidi: isolate;
+  }
+
+  // The status keeps the colour the merchant chose in the dashboard, because
+  // that colour is the store's own operational language; everything around it
+  // takes the chip shape so a row of them reads as one control set.
+  .s-orders-status-container {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ox-1);
+    min-block-size: 24px;
+    padding-inline: var(--ox-2);
+    border-radius: var(--ox-r-1);
+    background: var(--ox-plate);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .s-orders-status-rated {
+    color: var(--ox-ink-4);
+  }
+
+  // One order. The engine's blocks are `bg-white` cards with the platform's
+  // own radius; they become panels.
+  .ox-order {
+    [class~='bg-white'] {
+      background: var(--ox-surface);
+      border-radius: var(--ox-r-4, 16px);
+      box-shadow: none;
+    }
+
+    .single-order-header-item {
+      border-color: var(--ox-bd);
+      color: var(--ox-fg-2);
+
+      [class~='font-bold'] {
+        color: var(--ox-fg);
+      }
+    }
+
+    .gradient-bg {
+      background-image: none;
+      background: var(--ox-plate);
+      color: var(--ox-fg);
+    }
+
+    .order-item {
+      background: var(--ox-surface);
+      border-block-end: 1px solid var(--ox-bd);
+
+      img {
+        background: var(--ox-plate);
+        border-radius: var(--ox-r-2);
+      }
+    }
+
+    [class~='divide-y'] > * + * {
+      border-color: var(--ox-bd);
+    }
+
+    [class~='border'],
+    [class~='border-t'],
+    [class~='border-b'],
+    [class~='border-gray-100'],
+    [class~='border-gray-200'] {
+      border-color: var(--ox-bd);
+    }
+
+    // The engine's blue information panels. Blue is not in this palette; the
+    // note tone is.
+    [class~='bg-blue-50'] {
+      background: var(--ox-note-soft);
+      border-color: var(--ox-note);
+      color: var(--ox-note);
+    }
+
+    [class~='text-blue-500'] {
+      color: var(--ox-note);
+    }
+
+    [class~='text-primary'],
+    [class~='!text-primary'] {
+      color: var(--ox-fg);
+    }
+  }
+
+  // Saved products.
+  .ox-wishlist .product-entry {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+    padding: var(--ox-4);
+    margin-block-end: var(--ox-3);
+
+    &:hover {
+      border-color: var(--ox-bd-2);
+    }
+  }
+
+  .ox-wishlist .product-entry__image {
+    inline-size: 88px;
+    block-size: 88px;
+    background: var(--ox-plate);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+    overflow: hidden;
+    display: block;
+
+    img {
+      object-fit: contain;
+    }
+  }
+
+  .ox-wishlist h3 a {
+    color: var(--ox-fg);
+    font-weight: 600;
+  }
+
+  // Never red, and never a struck price in a colour of its own.
+  .ox-wishlist [class~='text-red-400'] {
+    color: var(--ox-fg);
+  }
+
+  .ox-wishlist [class~='line-through'] {
+    color: var(--ox-fg-3);
+  }
+
+  // Wallet.
+  .ox-wallet .s-wallet-table {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0 var(--ox-2);
+  }
+
+  .ox-wallet .s-wallet-table-balance-container {
+    display: flex;
+    align-items: center;
+    gap: var(--ox-3);
+    background: var(--ox-plate);
+    border-radius: var(--ox-r-4, 16px);
+    padding: var(--ox-4);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ox-fg);
+  }
+
+  .ox-wallet .s-wallet-table-balance-icon {
+    color: var(--ox-fg-3);
+  }
+
+  .ox-wallet [class~='font-normal'] {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ox-fg-3);
+  }
+
+  .ox-wallet .s-wallet-table-head-tr-th,
+  .ox-wallet .s-wallet-table-head th {
+    padding-inline: var(--ox-3);
+    text-align: start;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ox-fg-3);
+  }
+
+  .ox-wallet .s-wallet-table-tbody td {
+    background: var(--ox-surface);
+    border-block: 1px solid var(--ox-bd);
+    padding: var(--ox-3);
+    color: var(--ox-fg);
+  }
+
+  // Notifications.
+  .ox-notifications .s-notifications-item,
+  .ox-notifications .s-notifications-item-shadow {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+    min-block-size: 72px;
+    padding: var(--ox-4);
+    color: var(--ox-fg);
+
+    &:hover {
+      border-color: var(--ox-bd-2);
+    }
+  }
+
+  .ox-notifications .s-notifications-item-read {
+    background: var(--ox-paper);
+  }
+
+  .ox-notifications .s-notifications-item-icon {
+    color: var(--ox-fg-3);
+  }
+
+  // The one accent in this surface: the unread mark.
+  .ox-notifications .s-notifications-item-icon-new {
+    color: var(--ox-accent);
+  }
+
+  .ox-notifications .s-notifications-item-content-trailing {
+    color: var(--ox-fg-3);
+    font-size: 13px;
+  }
+
+  // Profile and settings: Salla's own forms, restyled to the theme's control
+  // contract. The white fill is correct here, because form controls are the
+  // one white surface the approved image has.
+  .ox-forms {
+    salla-user-profile,
+    salla-user-settings,
+    salla-verify {
+      display: block;
+    }
+
+    salla-user-settings {
+      margin-block-start: var(--ox-8);
+    }
+
+    input:not([type='checkbox']):not([type='radio']),
+    select,
+    textarea,
+    .form-input {
+      min-block-size: 48px;
+      border: 1px solid var(--ox-line-3);
+      border-radius: var(--ox-r-1);
+      background: var(--ox-input);
+      color: var(--ox-fg);
+
+      &:focus-visible {
+        outline: var(--ox-focus-ring);
+        outline-offset: 0;
+        border-color: transparent;
+      }
+    }
+  }
+
+  // The engine's placeholder, wherever a surface still reaches for it.
+  .no-content-placeholder {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+    padding-block: var(--ox-12);
+    color: var(--ox-fg-2);
+
+    i {
+      color: var(--ox-fg-3);
+    }
+  }
+}
+
+// The placeholder also appears outside the account frame (the engine's own
+// cart and listing fallbacks), so the base rule is not scoped.
 .no-content-placeholder {
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4, 16px);
   box-shadow: none;
-  padding-block: var(--ox-12);
   color: var(--ox-fg-2);
+}
 
-  i {
-    color: var(--ox-fg-3);
+// ---------------------------------------------------------------------------
+// 9.2 Loyalty and testimonials (PLAN-final 6.3)
+// ---------------------------------------------------------------------------
+.ox-loyalty {
+  padding-block-end: var(--ox-16);
+
+  // The engine's hero is `bg-primary` under a 50 percent black overlay: an
+  // orange field the size of the thank-you band, for the same reason not kept.
+  // Only the direct child is the band; a `bg-primary` deeper in is a button.
+  > [class~='bg-primary'] {
+    background: var(--ox-band-brand);
+  }
+
+  .overlay {
+    background: var(--ox-band-brand);
+    opacity: 0.55;
+  }
+
+  .loyalty__banner {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+  }
+
+  // The engine animates two decorative stars on a loop. Nothing in this
+  // design loops, and a looping ornament is the opposite of premium.
+  .loyalty-star,
+  .star-anime {
+    animation: none;
+  }
+
+  .loyalty-star {
+    display: none;
+  }
+
+  [class~='text-amber-400'] {
+    color: var(--ox-note);
+  }
+
+  .points-ways__list > * {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+  }
+
+  .product-entry {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+  }
+
+  .product-entry__image {
+    background: var(--ox-plate);
+  }
+
+  [class~='text-primary'] {
+    color: var(--ox-fg);
+  }
+
+  [class~='border-primary'] {
+    border-color: var(--ox-bd);
+  }
+}
+
+// Testimonials. The note is rendered before the engine's container and
+// ordered between the breadcrumb and the list, the same `display: contents`
+// lift the policy pages use.
+.ox-testimonials {
+  display: flex;
+  flex-direction: column;
+  max-inline-size: var(--ox-container);
+  margin-inline: auto;
+  padding-inline: var(--ox-gutter);
+  padding-block-end: var(--ox-16);
+
+  > [class~='container'] {
+    display: contents;
+  }
+
+  > [class~='container'] > nav {
+    order: 0;
+  }
+
+  > [class~='container'] > div {
+    order: 2;
+  }
+
+  &__note {
+    order: 1;
+    max-inline-size: var(--ox-container-text);
+    margin-block: var(--ox-4) 0;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  [class~='bg-white'] {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4, 16px);
+    box-shadow: none;
+  }
+
+  h1 {
+    font-size: clamp(24px, 21px + 1.2vw, 30px);
+    font-weight: 800;
+    color: var(--ox-fg);
+  }
+
+  .form-input {
+    min-block-size: 44px;
+    border: 1px solid var(--ox-line-3);
+    border-radius: var(--ox-r-1);
+    background: var(--ox-input);
+    color: var(--ox-fg);
   }
 }
 
@@ -885,7 +1772,7 @@ nav.sidebar {
 .s-modal-body,
 .s-modal-content {
   background: var(--ox-card);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4, 16px);
   box-shadow: none;
   color: var(--ox-ink);
 }
@@ -907,11 +1794,11 @@ nav.sidebar {
 }
 
 @media (max-width: 767px) {
-  // The panel becomes a bottom sheet: full width, a 12 top radius, 90vh cap.
+  // The panel becomes a bottom sheet: full width, a 16 top radius, 90vh cap.
   .s-modal-body,
   .s-modal-content {
-    border-start-start-radius: 12px;
-    border-start-end-radius: 12px;
+    border-start-start-radius: var(--ox-r-4, 16px);
+    border-start-end-radius: var(--ox-r-4, 16px);
     border-end-start-radius: 0;
     border-end-end-radius: 0;
     max-block-size: 90vh;
@@ -936,7 +1823,8 @@ nav.sidebar {
 .s-add-product-toast {
   background: var(--ox-card);
   box-shadow: none;
-  border-radius: var(--ox-r-2);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-4, 16px);
   gap: var(--ox-3);
   padding: var(--ox-4);
   color: var(--ox-ink);
@@ -962,7 +1850,7 @@ nav.sidebar {
   &__image {
     background: var(--ox-plate);
     border-color: var(--ox-line);
-    border-radius: var(--ox-r-1);
+    border-radius: var(--ox-r-2);
   }
 
   &__name {
@@ -1023,7 +1911,7 @@ nav.sidebar {
     inset-block-end: calc(var(--ox-h-tabbar) + var(--ox-2) + env(safe-area-inset-bottom));
     inset-inline: var(--ox-4);
     inline-size: auto;
-    border-radius: var(--ox-r-2);
+    border-radius: var(--ox-r-4, 16px);
     transform: translateY(16px);
 
     &.s-add-product-toast--visible {
@@ -1045,6 +1933,10 @@ body.ox-sticky-bar .s-add-product-toast {
   .ox-checkout-bar {
     animation: none;
     transform: none;
+  }
+
+  .ox-acct-nav__link::before {
+    transition: none;
   }
 
   .s-add-product-toast {

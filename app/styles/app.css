@@ -19,7 +19,7 @@ body {
 
 /* Reserve the scrollbar gutter on the viewport at all times. When a modal or
    drawer locks scrolling (see below) the scrollbar goes away, but the reserved
-   gutter keeps the content box the same width — so the page never jumps.
+   gutter keeps the content box the same width - so the page never jumps.
    Must live on <html>, which owns the viewport scrollbar; putting it on <body>
    has no effect once body overflow is hidden. */
 html {

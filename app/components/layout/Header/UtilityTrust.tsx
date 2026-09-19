@@ -28,8 +28,15 @@ const TRUST_ITEMS: TrustItem[] = [
   { key: 'shipping', icon: 'shipping', labelKey: 'ox.trust.ships_kingdom' },
 ];
 
-/** Fragments that identify a merchant page about product authenticity. */
-const AUTHENTICITY_TOKENS = ['authentic', 'original', 'الأصلية', 'أصلية', 'الاصالة'];
+/**
+ * Fragments that identify a merchant page about product authenticity.
+ *
+ * These are matchers against the store's own page titles, not copy: nothing
+ * here is ever rendered. They cannot move to locales/ for the same reason a
+ * regular expression cannot - the text they compare against is whatever the
+ * merchant typed in the dashboard, in either language.
+ */
+const AUTHENTICITY_TOKENS = ['authentic', 'original', 'الأصلية', 'أصلية', 'الاصالة']; // ox-allow: arabic-literal
 
 export interface UtilityTrustProps {
   /**

@@ -39,7 +39,18 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 1 / 1;
-  max-block-size: 132px;
+  // 132px was sized for the 211px card in the product page's carousel, and it
+  // is right there. A listing cell is 306 wide, where the same flat cap leaves
+  // the square photograph filling about a third of the card with dead space
+  // either side, which is what makes a grid read weaker than the carousel it
+  // is meant to match.
+  //
+  // The cap is a custom property rather than a percentage because a percentage
+  // max-block-size resolves against the containing block's height, which is
+  // indefinite here, so it would compute to none in some engines and to the
+  // floor in others. The listing grid raises it; every other context keeps the
+  // carousel value.
+  max-block-size: var(--ox-card-plate-max, 132px);
   overflow: hidden;
 }
 

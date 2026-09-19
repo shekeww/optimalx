@@ -70,6 +70,13 @@ describe('OxGoals', () => {
     expect(cards[1].getAttribute('href')).toContain('/search?q=');
   });
 
+  it('sits every symbol on the plate, the ground the design puts behind imagery', () => {
+    const { container } = renderWithProviders(<OxGoals data={data()} />);
+    expect(container.querySelectorAll('.ox-goal__plate')).toHaveLength(6);
+    // The plate is decoration around a symbol the label already names.
+    expect(container.querySelector('.ox-goal__plate')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it('carries the anchor the hero CTA scrolls to', () => {
     const { container } = renderWithProviders(<OxGoals data={data()} />);
     expect(container.querySelector('#ox-goals')).not.toBeNull();
