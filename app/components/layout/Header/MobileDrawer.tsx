@@ -4,8 +4,10 @@ import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { digitsOnly } from '../../blocks/href';
+import { HEADER_NAV } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
+import { resolveNavHref } from '../navLinks';
 import { LocalizationButton } from './LocalizationButton';
 import { Logo } from './Logo';
 import { useHeaderMenu } from './useHeaderMenu';
@@ -94,12 +96,27 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const phone = digitsOnly(store?.contacts?.phone || store?.contacts?.mobile || '');
   const promise = settingValue(settings, 'delivery_promise_line');
 
+  // The five header items collapse in here below 1024, above the standing
+  // pages. An item with no destination is dropped, exactly as on the bar.
+  const primary: Array<{ key: string; label: string; to: string }> = [];
+  for (const entry of HEADER_NAV) {
+    const label = t(entry.labelKey);
+    const to = resolveNavHref(entry, label, items);
+    if (to) primary.push({ key: entry.key, label, to });
+  }
+
   const pages = [
     { key: 'services', label: t('ox.nav.services'), to: '/services' },
     { key: 'guides', label: t('ox.nav.guides'), to: '/blog' },
     { key: 'branch', label: t('ox.nav.branch'), to: '/branch' },
-    { key: 'about', label: t('ox.nav.about'), to: '/about' },
     { key: 'contact', label: t('ox.nav.contact'), to: '/contact' },
+  ];
+
+  // Wishlist and account leave the mobile bar, which carries the cart, and
+  // arrive here as their own group.
+  const account = [
+    { key: 'account', label: t('ox.nav.account'), to: '/account/profile', icon: 'sicon-user' },
+    { key: 'wishlist', label: t('ox.header.wishlist'), to: '/account/wishlist', icon: 'sicon-heart' },
   ];
 
   return (
@@ -115,7 +132,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
         tabIndex={-1}
       >
         <div className="ox-drawer__head">
-          <Logo size={40} className="ox-drawer__logo" />
+          <Logo raster size={40} className="ox-drawer__logo" />
           <button
             type="button"
             className="ox-iconbtn"
@@ -128,7 +145,15 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
         </div>
 
         <nav className="ox-drawer__nav" aria-label={t('ox.nav.drawer_label')}>
-          <ul className="ox-drawer__list">
+          <ul className="ox-drawer__list" data-testid="ox-drawer-list">
+            {primary.map((item) => (
+              <li key={item.key} data-drawer-primary="">
+                <Link to={item.to} className="ox-drawer__row" onClick={onClose}>
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            ))}
+
             <Group
               label={t('ox.nav.goals')}
               open={group === 'goals'}
@@ -177,6 +202,19 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
               <li key={page.key}>
                 <Link to={page.to} className="ox-drawer__row" onClick={onClose}>
                   <span>{page.label}</span>
+                </Link>
+              </li>
+            ))}
+
+            {account.map((item) => (
+              <li key={item.key} className="ox-drawer__account" data-drawer-account="">
+                <Link
+                  to={item.to}
+                  className="ox-drawer__row ox-drawer__row--sub"
+                  onClick={onClose}
+                >
+                  <i className={item.icon} aria-hidden="true" />
+                  <span>{item.label}</span>
                 </Link>
               </li>
             ))}

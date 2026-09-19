@@ -1,14 +1,23 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { SallaInstallment } from '@salla.sa/twilight-components-react/installment';
+import { Badge, BadgeStack } from '../../common/Badge';
 import { Price } from '../../common/Price';
-import { effectivePrice, savingOf, showsVatLine, type Settings } from '../lib/claims';
-import { pricePerServing } from '../lib/supply';
+import {
+  claimsOfficialDistributors,
+  effectivePrice,
+  savingOf,
+  showsVatLine,
+  type Settings,
+} from '../lib/claims';
+import { monthsUntilExpiry, pricePerServing } from '../lib/supply';
 
 export interface PdpPriceBlockProps {
   product: Product;
   /** Servings from the spec line; the per-serving line hides without it. */
   servings?: number | null;
+  /** Expiry as YYYY-MM from the spec line, for the near-expiry badge. */
+  expiry?: string | null;
   settings?: Settings;
   /** Store country and language for the installment widgets. */
   country?: string;
@@ -16,20 +25,23 @@ export interface PdpPriceBlockProps {
 }
 
 /**
- * Price, was-price, saving, tax note, per-serving line and the installment
- * widgets (DIRECTION 5.4 PdpPriceBlock).
+ * The price (design region 22), with the badge row the title block used to
+ * carry underneath it.
  *
- * Every amount goes through `Price`, which is `useMoney().format()` inside a
- * bidi isolate, so no money is ever concatenated into a sentence. Red never
- * appears on a price: the was-price is struck in --ox-fg-3 and the saving is
- * --ox-go (DIRECTION 2.5). Percentages are never shown.
+ * The amount is 36/800 and the currency mark sits after it in the accent, at
+ * the digits' cap height. Money is always `useMoney().format()` inside
+ * `Price`, so no amount is ever concatenated into a sentence, and red never
+ * touches a price: the was-price is struck in a grey and the saving is the
+ * verified green.
  *
- * The installment widgets get a fixed 48 slot so their late load cannot push
- * the buy button down (DIRECTION 6.5 row 4).
+ * The per-serving line and the installment widgets are not in the approved
+ * image but are both real sourced facts, so they stay under the price with the
+ * installment slot keeping its reserved height; one conditional removes them.
  */
 export function PdpPriceBlock({
   product,
   servings,
+  expiry,
   settings,
   country,
   language,
@@ -38,11 +50,14 @@ export function PdpPriceBlock({
   const saving = savingOf(product);
   const price = effectivePrice(product);
   const perServing = pricePerServing(price, servings);
+  const outOfStock = product.is_out_of_stock || product.status === 'out';
+  const expiryMonths = monthsUntilExpiry(expiry);
+  const nearExpiry = expiryMonths !== null && expiryMonths >= 0 && expiryMonths < 6;
 
   return (
     <div className="ox-pdp__price-block">
       <p className="ox-pdp__price">
-        <Price amount={price} size="h2" currency={product.currency} />
+        <Price amount={price} size="hero" currency={product.currency} />
         {product.is_on_sale ? (
           <span className="ox-pdp__was">
             <span className="ox-pdp__was-label">{t('ox.pdp.was_price_label')}</span>
@@ -50,12 +65,22 @@ export function PdpPriceBlock({
           </span>
         ) : null}
       </p>
-      {saving !== null ? (
-        <p className="ox-pdp__saving">
-          <span>{t('ox.pdp.save_label')}</span>{' '}
-          <Price amount={saving} go currency={product.currency} />
-        </p>
-      ) : null}
+
+      <BadgeStack className="ox-pdp__badges">
+        {outOfStock ? <Badge tone="stop">{t('ox.card.out_of_stock')}</Badge> : null}
+        {!outOfStock && saving !== null ? (
+          <Badge tone="saving">
+            {t('ox.pdp.save_label')} <Price amount={saving} go currency={product.currency} />
+          </Badge>
+        ) : null}
+        {nearExpiry && expiry ? (
+          <Badge tone="note">{t('ox.card.expiry', { date: expiry })}</Badge>
+        ) : null}
+        {claimsOfficialDistributors(settings) ? (
+          <Badge tone="neutral">{t('ox.pdp.official_distributors')}</Badge>
+        ) : null}
+      </BadgeStack>
+
       {showsVatLine(settings) ? (
         <p className="ox-pdp__tax">{t('ox.trust.vat_included')}</p>
       ) : null}

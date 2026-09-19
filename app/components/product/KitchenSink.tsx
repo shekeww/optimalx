@@ -123,18 +123,18 @@ export function KitchenSink() {
       </Panel>
 
       <Panel title="PdpTitleBlock and PdpPriceBlock: plain, on sale, with a VAT number">{/* ox-allow: latin-sentence */}
-        <PdpTitleBlock product={fixture()} expiry={spec?.expiry} />
-        <PdpPriceBlock product={fixture()} servings={spec?.servings} />
+        <PdpTitleBlock product={fixture()} lead={parts.lead} />
+        <PdpPriceBlock product={fixture()} servings={spec?.servings} expiry={spec?.expiry} />
         <hr />
         <PdpTitleBlock
           product={fixture({ is_on_sale: true, regular_price: 300, sale_price: 240 })}
-          expiry="2026-11"
-          settings={{ claim_official_distributors: true }}
+          lead={parts.lead}
         />
         <PdpPriceBlock
           product={fixture({ is_on_sale: true, regular_price: 300, sale_price: 240 })}
           servings={spec?.servings}
-          settings={{ vat_number: '310000000000003' }}
+          expiry="2026-11"
+          settings={{ vat_number: '310000000000003', claim_official_distributors: true }}
         />
       </Panel>
 

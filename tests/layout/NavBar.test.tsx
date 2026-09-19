@@ -29,6 +29,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 
 const { NavBar, fitCount } = await import('../../app/components/layout/Header/NavBar');
 const { matchesSlug, pathSegments } = await import('../../app/components/layout/Header/useHeaderMenu');
+const { resolveNavHref } = await import('../../app/components/layout/navLinks');
 
 const realRect = Element.prototype.getBoundingClientRect;
 
@@ -46,6 +47,7 @@ function stubWidths({ row, item, fixed, more }: { row: number; item: number; fix
 
 beforeEach(() => {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
+  twilight.location = { pathname: '/branch' };
   class RO {
     constructor(private cb: () => void) {}
     observe() {
@@ -92,11 +94,37 @@ describe('slug matching', () => {
 });
 
 describe('NavBar', () => {
-  it('shows every item when the row is wide enough', async () => {
+  it('carries the design\'s five items, in its order', async () => {
     stubWidths({ row: 2000, item: 100, fixed: 120, more: 96 });
     renderWithProviders(<NavBar />);
-    await waitFor(() => expect(screen.getByText('بروتين')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('المنتجات')).toBeTruthy());
+    const labels = Array.from(document.querySelectorAll('[data-nav-item] a')).map(
+      (node) => node.textContent
+    );
+    expect(labels).toEqual([
+      'المنتجات',
+      'المكملات',
+      'البروتين',
+      'الخطط الغذائية',
+      'عن اوبتيمال اكس',
+    ]);
     await waitFor(() => expect(screen.queryByTestId('ox-nav-more')).toBeNull());
+  });
+
+  it('prefers the live category, then the standing route, then a search', async () => {
+    stubWidths({ row: 2000, item: 100, fixed: 120, more: 96 });
+    renderWithProviders(<NavBar />);
+    const href = (label: string) => screen.getByText(label).getAttribute('href');
+
+    // `protein` exists in the mocked menu, so the item follows it once the
+    // menu query resolves.
+    await waitFor(() => expect(href('البروتين')).toBe('/protein/c1'));
+    // `products` does not, so it falls to its standing route.
+    expect(href('المنتجات')).toBe('/latest-products');
+    // `supplements` has neither, so it lands on a search for its own label
+    // rather than a dead URL.
+    expect(href('المكملات')).toContain('/search?q=');
+    expect(href('عن اوبتيمال اكس')).toBe('/about');
   });
 
   it('moves the trailing items into the overflow control on a narrow row', async () => {
@@ -107,20 +135,30 @@ describe('NavBar', () => {
     expect(more.textContent).toContain('المزيد');
     expect(more.getAttribute('aria-expanded')).toBe('false');
 
+    // The goals item is off by default, so the whole 400 is the budget; minus
+    // the control leaves 304, which fits two 150 wide items out of the five.
     const shown = document.querySelectorAll('[data-nav-item]');
-    // 400 minus the fixed goals item leaves 300; minus the control leaves 204,
-    // which fits exactly one 150 wide item out of the six.
-    expect(shown.length).toBe(1);
+    expect(shown.length).toBe(2);
   });
 
   it('marks the item matching the current path as the current page', async () => {
+    twilight.location = { pathname: '/about' };
     stubWidths({ row: 2000, item: 100, fixed: 120, more: 96 });
     renderWithProviders(<NavBar />);
-    const branch = await screen.findByText('فرع المدينة المنورة');
-    expect(branch.getAttribute('aria-current')).toBe('page');
+    const about = await screen.findByText('عن اوبتيمال اكس');
+    expect(about.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('never marks a search fallback as the current page', async () => {
+    twilight.location = { pathname: '/search' };
+    stubWidths({ row: 2000, item: 100, fixed: 120, more: 96 });
+    renderWithProviders(<NavBar />);
+    const supplements = await screen.findByText('المكملات');
+    expect(supplements.getAttribute('aria-current')).toBeNull();
   });
 
   it('resolves a goal to its live category URL and falls back to search', async () => {
+    themeSettings.show_goal_nav = true;
     stubWidths({ row: 2000, item: 100, fixed: 120, more: 96 });
     renderWithProviders(<NavBar />);
     const goals = await screen.findByTestId('ox-nav-goals');
@@ -131,5 +169,28 @@ describe('NavBar', () => {
     // Only goal-energy exists in the mocked menu tree.
     expect(links[0].getAttribute('href')).toBe('/goal-energy/c3');
     expect(links[1].getAttribute('href')).toContain('/search?q=');
+  });
+});
+
+describe('resolveNavHref', () => {
+  const menuTree = [{ id: 1, title: 'بروتين', url: '/protein/c1', children: [] }] as never;
+
+  it('drops an entry that has no slug, no route and no label', () => {
+    expect(resolveNavHref({ key: 'x', labelKey: 'x' }, '   ', undefined)).toBeNull();
+  });
+
+  it('reads a slug out of a nested child as well as a top-level item', () => {
+    const nested = [
+      { id: 1, title: 'مكملات', url: '/c1', children: [{ id: 2, title: 'بروتين', url: '/protein/c2' }] },
+    ] as never;
+    expect(resolveNavHref({ key: 'p', labelKey: 'p', slug: 'protein' }, 'البروتين', nested)).toBe(
+      '/protein/c2'
+    );
+  });
+
+  it('prefers the live category over the standing route', () => {
+    expect(
+      resolveNavHref({ key: 'p', labelKey: 'p', slug: 'protein', to: '/latest-products' }, 'x', menuTree)
+    ).toBe('/protein/c1');
   });
 });

@@ -1,5 +1,10 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
+// Hoisted, not inline. useSyncExternalStore compares the snapshot functions by
+// identity, and a fresh arrow on every render makes React warn that "the
+// result of getServerSnapshot should be cached to avoid an infinite loop".
+const snapshotServer = () => false;
+
 /**
  * SSR-safe media query subscription. Returns `false` on the server and
  * during hydration (so the server and first client render agree), then the
@@ -21,5 +26,5 @@ export function useMediaQuery(query: string): boolean {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
     return window.matchMedia(query).matches;
   }, [query]);
-  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+  return useSyncExternalStore(subscribe, getSnapshot, snapshotServer);
 }

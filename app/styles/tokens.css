@@ -25,55 +25,100 @@
   --font-main: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-ar: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Brand. */
-  --color-primary: #EE4D22;
-  --color-primary-dark: #C93D18;
+  /* Brand.
+     #F54915 is the weighted mean of 15,854 saturated orange pixels sampled
+     from the primary button, the card buttons and the price in
+     docs/design-target/pdp-target.png. The owner's logo shipped a different
+     orange (#FC4000) and was recoloured to this one, so the mark and the
+     interface are a single colour. The Salla dashboard still holds #EE4D22;
+     changing it is an owner action, and until it happens Salla's own native
+     components render in the old orange. See the note on --ox-accent. */
+  --color-primary: #F54915;
+  --color-primary-dark: #D33A0C;
 
-  /* Derived from --color-primary; adjust once the colour ramp is decided.
+  /* Derived from --color-primary.
      --color-primary-light is the fill mixed 30% toward white.
      --color-primary-reverse is what sits ON a primary fill (text, icons).
      --color-primary-rgb is bare channels, for rgba(…) tints - it must stay in
      sync with --color-primary by hand; CSS cannot derive one from the other. */
-  --color-primary-light: #F38264;
+  --color-primary-light: #F98A6B;
   --color-primary-reverse: #FFFFFF;
-  --color-primary-rgb: 238, 77, 34;
+  --color-primary-rgb: 245, 73, 21;
 
-  /* ---------- Ours: accent aliases ---------- */
-  --ox-accent: var(--color-primary);
-  --ox-accent-dark: var(--color-primary-dark);
-  --ox-accent-light: var(--color-primary-light);
-  --ox-accent-rgb: var(--color-primary-rgb);
-  --ox-accent-soft: #FDEDE9;
-  --ox-on-accent: #17171A;
+  /* ---------- Ours: accent aliases ----------
+     These are deliberately NOT var(--color-primary). applyTheme() overwrites
+     the --color-primary* family inline on <html> after hydration, taking the
+     value from the dashboard, so an alias would silently revert our components
+     to whatever the dashboard holds. Literals keep the design correct on a
+     store whose dashboard has not been updated yet. Do not "fix" these back
+     into aliases; update both sides together instead.
 
-  /* ---------- Ours: ground and surfaces ---------- */
-  --ox-paper: #F7F7F8;
-  --ox-card: #FFFFFF;
-  --ox-plate: #F1F1F3;
-  --ox-plate-2: #E9E9EC;
-  --ox-graphite: #17171A;
-  --ox-graphite-2: #222226;
-  --ox-graphite-3: #2C2C32;
+     Contrast: white on #F54915 is 3.6:1, so an accent fill carries a label
+     only at 19px/700 and above, which is what .ox-btn--primary is. #F54915 on
+     the cream paper is 3.4:1, fine for the large bold price and not for small
+     text; small accent text uses --ox-accent-dark, which is 5.1:1 on paper. */
+  --ox-accent: #F54915;
+  --ox-accent-dark: #D33A0C;
+  --ox-accent-light: #F98A6B;
+  --ox-accent-rgb: 245, 73, 21;
+  --ox-accent-soft: #FDEEE8;
+  --ox-on-accent: #FFFFFF;
+
+  /* ---------- Ours: ground and surfaces ----------
+     The ground is warm, not neutral. Paper, card, fill and plate are four
+     values inside a narrow cream band: the approved design separates a panel
+     from the page by value and a hairline, never by a shadow. A cool grey
+     palette here is the single largest reason a built page reads as generic
+     against the target image. */
+  --ox-paper: #F9F5EE;
+  --ox-card: #FBF8F3;
+  --ox-fill: #F3EEE8;
+  --ox-plate: #F1E9E1;
+  --ox-plate-2: #EFE7DE;
+  --ox-input: #FFFFFF;
+  --ox-input-bd: #EBEAE7;
+  --ox-graphite: #0E1014;
+  --ox-graphite-2: #14181F;
+  --ox-graphite-3: #1C2128;
+
+  /* The named dark bands. `--ox-graphite-2/-3` keep their meaning ("dark
+     surface", "dark elevated") and are referenced across six stylesheets, so
+     the bands are named rather than renumbered. */
+  --ox-band-util: #0E1014;
+  --ox-band-header: #0E1115;
+  --ox-band-brand: #0E1117;
+  --ox-band-footer: #0F1216;
+  --ox-band-strip: #0D1116;
+  --ox-pill-dark: #14181F;
+  --ox-search: #25282C;
 
   /* ---------- Ours: ink and lines ---------- */
-  --ox-ink: #17171A;
-  --ox-ink-2: #5A5A61;
-  --ox-ink-3: #6F6F78;
-  --ox-ink-4: #9A9AA3;
-  --ox-ink-on-dark: #F7F7F8;
-  --ox-ink-2-on-dark: #B9B9C1;
-  --ox-ink-3-on-dark: #8C8C96;
-  --ox-line: #E6E6E9;
-  --ox-line-2: #D2D2D8;
-  /* Control boundaries at rest (inputs, checkboxes, switches): 3.2 to 3.7:1
-     on paper, card and plate, which meets WCAG 1.4.11; --ox-line-2 measures
-     1.6:1 and stays decorative (DIRECTION section 9, amendment A1). */
-  --ox-line-3: #85858E;
+  --ox-ink: #12171E;
+  --ox-ink-2: #3A4046;
+  --ox-ink-3: #5C6063;
+  --ox-ink-4: #6E7274;
+  --ox-ink-on-dark: #F7F4EE;
+  --ox-ink-2-on-dark: #B7B6B2;
+  --ox-ink-3-on-dark: #8A8D8E;
+  --ox-line: #F0ECE5;
+  --ox-line-2: #EEEBE3;
+  /* Control boundaries at rest (inputs, checkboxes, switches): still above
+     3:1 on paper, card and plate, which meets WCAG 1.4.11; --ox-line-2
+     measures well under it and stays decorative (DIRECTION section 9,
+     amendment A1). */
+  --ox-line-3: #8B857C;
   --ox-line-on-dark: rgba(255, 255, 255, 0.12);
 
   /* ---------- Ours: semantic ---------- */
   --ox-go: #0F7B4F;
   --ox-go-soft: #E8F4EE;
+  /* The verification green: trust glyphs, the delivery estimate and the
+     saving figure. Darker than --ox-go so it clears 4.5:1 on cream. */
+  --ox-verify: #14514C;
+  --ox-verify-soft: #E7F0EE;
+  /* The one light green: the emphasised closing word of the footer line,
+     which needs to read on a near-black band where --ox-verify does not. */
+  --ox-mint: #3FA37A;
   --ox-note: #8A5E0E;
   --ox-note-soft: #FBF2E0;
   --ox-stop: #B3261E;
@@ -89,13 +134,15 @@
   --ox-bd-2: var(--ox-line-2);
   --ox-focus: var(--ox-ink);
 
-  /* ---------- Ours: focus, shadows, radii ---------- */
+  /* ---------- Ours: focus, radii ----------
+     There is no shadow token. The approved design does not carry one drop
+     shadow: surfaces are separated by value and a hairline. The focus ring is
+     the only ring on the page. */
   --ox-focus-ring: 2px solid var(--ox-focus);
-  --ox-shadow-1: 0 1px 3px rgba(23, 23, 26, 0.08);
-  --ox-shadow-2: 0 8px 24px rgba(23, 23, 26, 0.1);
-  --ox-shadow-3: 0 24px 48px rgba(23, 23, 26, 0.18);
   --ox-r-1: 6px;
   --ox-r-2: 8px;
+  --ox-r-3: 12px;
+  --ox-r-4: 16px;
   --ox-r-pill: 9999px;
 
   /* ---------- Ours: spacing, containers, chrome heights, z-index ---------- */
@@ -109,12 +156,14 @@
   --ox-16: 64px;
   --ox-24: 96px;
   --ox-gutter: 16px;
-  --ox-container: 1280px;
+  --ox-container: 1296px;
   --ox-container-narrow: 880px;
   --ox-container-text: 720px;
   --ox-h-util: 36px;
-  --ox-h-bar: 56px;
-  --ox-h-nav: 48px;
+  --ox-h-bar: 64px;
+  /* The mobile trust scroller that the utility bar's three items become
+     below 1024 (the nav row is gone: it merged into the main bar). */
+  --ox-h-trust: 40px;
   --ox-h-tabbar: calc(56px + env(safe-area-inset-bottom, 0px));
   --ox-h-sticky: 64px;
   --ox-z-raised: 10;
@@ -150,13 +199,14 @@
 @media (min-width: 640px) {
   :root {
     --ox-gutter: 24px;
+    --ox-h-util: 48px;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
     --ox-gutter: 32px;
-    --ox-h-bar: 72px;
+    --ox-h-bar: 88px;
   }
 }
 

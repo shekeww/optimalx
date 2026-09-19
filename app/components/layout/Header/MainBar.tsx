@@ -3,6 +3,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Logo } from './Logo';
+import { NavBar } from './NavBar';
 import { useCartCountPill } from './useCartCountPill';
 
 const SallaSearch = lazy(() =>
@@ -26,7 +27,8 @@ const SallaCartSummary = lazy(() =>
  * `.s-cart-summary-count`, which the SDK keeps current on every route, while
  * `useCartContext()` is null outside the cart page (engine
  * contexts/CartContext.d.ts:23-33). The stylesheet dresses that element as
- * this pill instead.
+ * this pill instead. Either way the pill is absent at zero and the icon keeps
+ * its full 44px hit area without it (B26).
  */
 export function CountPill({ count }: { count: number }) {
   if (!count) return null;
@@ -39,35 +41,48 @@ export function CountPill({ count }: { count: number }) {
 
 export interface SearchFieldProps {
   className?: string;
+  /**
+   * Below 1024 the pill collapses to a glyph that opens Salla's own search
+   * modal (`placeholder` is the component's own button mode).
+   */
+  collapsed?: boolean;
 }
 
 /**
  * The store search, kept as Salla's (BUILD rule: search stays Salla's). The
  * wrapper carries `role="search"` and the accessible name, because the web
- * component owns the input inside its own shadow tree.
+ * component owns the input inside its own shadow tree; the pill's fill, its
+ * radius and its placeholder are painted onto the component's shadow parts
+ * from `_b1-layout.scss`.
  */
-export function SearchField({ className }: SearchFieldProps) {
+export function SearchField({ className, collapsed = false }: SearchFieldProps) {
   const { t } = useTranslation();
   return (
     <div
-      className={['ox-search', className].filter(Boolean).join(' ')}
+      className={['ox-search', collapsed ? 'ox-search--collapsed' : null, className]
+        .filter(Boolean)
+        .join(' ')}
       role="search"
       aria-label={t('ox.header.search_label')}
       data-testid="ox-search"
     >
       <Suspense fallback={<div className="ox-search__placeholder" aria-hidden="true" />}>
-        <SallaSearch inline oval height={48} />
+        {collapsed ? <SallaSearch placeholder /> : <SallaSearch inline oval height={40} />}
       </Suspense>
     </div>
   );
 }
 
 /**
- * The desktop main bar (DIRECTION 5.1 MainBar, 6.1: 72 tall): the mark at the
- * start, the search field in the middle, then account, wishlist and cart at
- * the end. Wishlist is a plain link with the engine's count; account and cart
- * are the Salla web components with our icon in the cart's icon slot
- * (engine-surface 9.2 salla-cart-summary).
+ * The desktop main bar: the lockup at the inline-start, the five nav items
+ * beside it, the search pill, then wishlist, account and cart at the
+ * inline-end.
+ *
+ * The icon order is the design's: in Arabic the row reads from the end edge,
+ * so the DOM order wishlist, account, cart puts the cart at the physical left
+ * where the image has it. Wishlist is a plain link with the engine's count;
+ * account and cart are the Salla web components, with our glyph in the cart's
+ * icon slot (engine-surface 9.2 salla-cart-summary).
  */
 export function MainBar() {
   const { t } = useTranslation();
@@ -77,19 +92,25 @@ export function MainBar() {
 
   return (
     <div className="ox-mainbar__inner ox-container">
-      <Logo size={48} priority className="ox-mainbar__logo" />
+      <Logo width={112} priority className="ox-mainbar__logo" />
+
+      <NavBar />
 
       <SearchField className="ox-mainbar__search" />
 
       <div className="ox-mainbar__actions" ref={actionsRef}>
-        <Suspense fallback={null}>
-          <SallaUserMenu avatarOnly showHeader className="ox-iconbtn" />
-        </Suspense>
-
-        <Link to="/account/wishlist" className="ox-iconbtn ox-wishlist" aria-label={t('ox.header.wishlist')}>
+        <Link
+          to="/account/wishlist"
+          className="ox-iconbtn ox-wishlist"
+          aria-label={t('ox.header.wishlist')}
+        >
           <i className="sicon-heart" aria-hidden="true" />
           <CountPill count={wishlist?.count ?? 0} />
         </Link>
+
+        <Suspense fallback={null}>
+          <SallaUserMenu avatarOnly showHeader className="ox-iconbtn" />
+        </Suspense>
 
         <Suspense fallback={null}>
           <SallaCartSummary className="ox-iconbtn ox-cart">

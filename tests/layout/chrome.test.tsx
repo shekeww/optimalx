@@ -45,9 +45,12 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 
 const { BottomTabBar } = await import('../../app/components/layout/BottomTabBar');
 const { Footer } = await import('../../app/components/layout/Footer/Footer');
-const { TrustLine, maroofId } = await import('../../app/components/layout/Footer/TrustLine');
+const { RegistrationBlock } = await import(
+  '../../app/components/layout/Footer/RegistrationBlock'
+);
 const { RouteAnnouncer } = await import('../../app/components/layout/RouteAnnouncer');
 const { SkipLink } = await import('../../app/components/layout/SkipLink');
+const { findMenuLink } = await import('../../app/content/nav');
 
 function setSettings(next: Record<string, unknown>) {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
@@ -121,37 +124,61 @@ describe('BottomTabBar', () => {
   });
 });
 
-describe('TrustLine', () => {
-  it('stays hidden while any of the three registrations is empty', () => {
-    for (const settings of [
-      {},
-      { cr_number: '1', vat_number: '2' },
-      { cr_number: '1', maroof_url: 'https://maroof.sa/3' },
-      { vat_number: '2', maroof_url: 'https://maroof.sa/3' },
-    ]) {
-      setSettings(settings);
-      const view = renderWithProviders(<TrustLine />);
-      expect(view.container.querySelector('[data-testid="ox-trust-line"]')).toBeNull();
-      // The second line names no payment method and no carrier, so it is not gated.
-      expect(view.container.querySelector('[data-testid="ox-payment-line"]')).not.toBeNull();
-      view.unmount();
-    }
+describe('RegistrationBlock', () => {
+  it('drops the whole numbers block when neither number is set, and keeps the social row', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<RegistrationBlock />);
+    expect(container.querySelector('[data-testid="ox-footer-numbers"]')).toBeNull();
+    expect(container.querySelector('[data-testid="ox-footer-cr"]')).toBeNull();
+    expect(container.querySelector('[data-testid="ox-footer-vat"]')).toBeNull();
+    // The column is not empty: the social row is its remaining content.
+    expect(container.querySelector('.ox-footer__social')).not.toBeNull();
   });
 
-  it('renders with all three, interpolating the Maroof id out of its URL', () => {
-    setSettings({ cr_number: '4030000000', vat_number: '300000000000003', maroof_url: 'https://maroof.sa/123456' });
-    renderWithProviders(<TrustLine />);
-    const line = screen.getByTestId('ox-trust-line').textContent ?? '';
-    expect(line).toContain('4030000000');
-    expect(line).toContain('300000000000003');
-    expect(line).toContain('123456');
-    expect(line).not.toContain('{{');
+  it('gates the two lines separately', () => {
+    setSettings({ cr_number: '4030000000' });
+    const crOnly = renderWithProviders(<RegistrationBlock />);
+    expect(crOnly.container.querySelector('[data-testid="ox-footer-cr"]')).not.toBeNull();
+    expect(crOnly.container.querySelector('[data-testid="ox-footer-vat"]')).toBeNull();
+    crOnly.unmount();
+
+    setSettings({ vat_number: '300000000000003' });
+    const vatOnly = renderWithProviders(<RegistrationBlock />);
+    expect(vatOnly.container.querySelector('[data-testid="ox-footer-cr"]')).toBeNull();
+    expect(vatOnly.container.querySelector('[data-testid="ox-footer-vat"]')).not.toBeNull();
+    vatOnly.unmount();
   });
 
-  it('reads the Maroof id off the end of the profile URL', () => {
-    expect(maroofId('https://maroof.sa/123456')).toBe('123456');
-    expect(maroofId('https://maroof.sa/123456/?x=1')).toBe('123456');
-    expect(maroofId('')).toBe('');
+  it('interpolates the numbers and never prints a placeholder', () => {
+    setSettings({ cr_number: '4030000000', vat_number: '300000000000003' });
+    renderWithProviders(<RegistrationBlock />);
+    const block = screen.getByTestId('ox-footer-numbers').textContent ?? '';
+    expect(block).toContain('4030000000');
+    expect(block).toContain('300000000000003');
+    expect(block).not.toContain('{{');
+  });
+
+  it('asserts no VAT position anywhere while the store holds no registration', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<RegistrationBlock />);
+    expect(container.textContent ?? '').not.toContain('ضريبة القيمة المضافة');
+  });
+});
+
+describe('findMenuLink', () => {
+  it('returns nothing rather than a guess when the page is not published', () => {
+    expect(findMenuLink([], ['privacy'])).toBeUndefined();
+    expect(findMenuLink(undefined, ['privacy'])).toBeUndefined();
+    expect(findMenuLink([{ id: 1, title: 'من نحن', url: '/about' }], ['privacy'])).toBeUndefined();
+  });
+
+  it('matches on either the URL or the merchant-written title', () => {
+    const items = [
+      { id: 1, title: 'سياسة الخصوصية', url: '/pages/p-9' },
+      { id: 2, title: 'Terms', url: '/terms-and-conditions/page-2' },
+    ];
+    expect(findMenuLink(items, ['privacy', 'الخصوصية'])?.id).toBe(1);
+    expect(findMenuLink(items, ['terms', 'الشروط'])?.id).toBe(2);
   });
 });
 
@@ -183,6 +210,63 @@ describe('Footer', () => {
     for (const brand of ['مدى', 'أبل باي', 'تابي', 'فيزا', 'Visa', 'Mada']) {
       expect(text).not.toContain(brand);
     }
+  });
+
+  it('carries the brand block and the design\'s three link columns', async () => {
+    renderWithProviders(<Footer />);
+    expect(screen.getByTestId('ox-footer-brand')).toBeTruthy();
+    const headings = await waitFor(() => {
+      const found = Array.from(document.querySelectorAll('.ox-footer__heading')).map(
+        (node) => node.textContent
+      );
+      expect(found.length).toBeGreaterThan(0);
+      return found;
+    });
+    expect(headings).toEqual(['عن اوبتيمال اكس', 'خدمة العملاء', 'المنتجات']);
+  });
+
+  it('drops a policy link the merchant has not published, and never invents one', async () => {
+    renderWithProviders(<Footer />);
+    const columns = await screen.findByTestId('ox-footer-columns');
+    const hrefs = Array.from(columns.querySelectorAll('a')).map((a) => a.getAttribute('href'));
+    // menu.footer() is empty in this mock, so terms, privacy and returns are
+    // absent rather than pointed at a guessed URL.
+    expect(hrefs).not.toContain('/terms');
+    expect(hrefs).not.toContain('/privacy');
+    expect(hrefs.some((href) => href?.includes('return'))).toBe(false);
+    // The standing routes are still there.
+    expect(hrefs).toContain('/about');
+    expect(hrefs).toContain('/contact');
+  });
+
+  it('shows the WhatsApp row only when the store publishes a number', async () => {
+    const bare = renderWithProviders(<Footer />);
+    const bareColumns = await screen.findByTestId('ox-footer-columns');
+    expect(
+      Array.from(bareColumns.querySelectorAll('a')).some((a) =>
+        a.getAttribute('href')?.includes('wa.me')
+      )
+    ).toBe(false);
+    bare.unmount();
+
+    storeValue.contacts = { whatsapp: '+966 50 123 4567' };
+    renderWithProviders(<Footer />);
+    const columns = await screen.findByTestId('ox-footer-columns');
+    const whatsapp = Array.from(columns.querySelectorAll('a')).find((a) =>
+      a.getAttribute('href')?.includes('wa.me')
+    );
+    expect(whatsapp?.getAttribute('href')).toBe('https://wa.me/966501234567');
+    storeValue.contacts = {};
+  });
+
+  it('keeps the unapproved Latin tagline behind a setting that is off', () => {
+    const bare = renderWithProviders(<Footer />);
+    expect(bare.container.querySelector('[data-testid="ox-footer-en-tagline"]')).toBeNull();
+    bare.unmount();
+
+    setSettings({ show_en_tagline: true });
+    renderWithProviders(<Footer />);
+    expect(screen.getByTestId('ox-footer-en-tagline').textContent).toContain('Fuel Your Progress');
   });
 });
 

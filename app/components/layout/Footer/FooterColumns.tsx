@@ -1,20 +1,20 @@
-import { Suspense, lazy, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { digitsOnly } from '../../blocks/href';
+import { FOOTER_COLUMNS, findMenuLink, type NavEntry } from '../../../content/nav';
+import { Icon } from '../../common/Icon';
 import { useMediaQuery } from '../../common/hooks/useMediaQuery';
+import { resolveNavHref } from '../navLinks';
 import { useHeaderMenu } from '../Header/useHeaderMenu';
-
-const SallaContacts = lazy(() =>
-  import('@salla.sa/twilight-components-react/contacts').then((m) => ({ default: m.SallaContacts }))
-);
 
 interface ColumnProps {
   heading: string;
   children: ReactNode;
-  /** Collapsible below 1024, a plain column above it (DIRECTION 5.2 Footer). */
+  /** An accordion below 1024, a plain column above it. */
   collapsible: boolean;
 }
 
@@ -23,7 +23,7 @@ function Column({ heading, children, collapsible }: ColumnProps) {
   if (!collapsible) {
     return (
       <div className="ox-footer__col">
-        <p className="ox-footer__heading ox-small">{heading}</p>
+        <p className="ox-footer__heading">{heading}</p>
         {children}
       </div>
     );
@@ -32,12 +32,12 @@ function Column({ heading, children, collapsible }: ColumnProps) {
     <div className={`ox-footer__col is-collapsible${open ? ' is-open' : ''}`}>
       <button
         type="button"
-        className="ox-footer__heading ox-footer__toggle ox-small"
+        className="ox-footer__heading ox-footer__toggle"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
       >
         <span>{heading}</span>
-        <i className="sicon-keyboard_arrow_down ox-footer__chevron" aria-hidden="true" />
+        <Icon name="chevron-down" size={16} className="ox-footer__chevron" />
       </button>
       <div className="ox-footer__panel">
         <div className="ox-footer__panel-inner">{children}</div>
@@ -46,14 +46,23 @@ function Column({ heading, children, collapsible }: ColumnProps) {
   );
 }
 
+/** What one entry resolves to, or null when it has no destination. */
+type Resolved = { key: string; label: string; href: string; external: boolean } | null;
+
 /**
- * The four footer columns (DIRECTION 5.2 Footer): the live categories, the
- * dashboard's footer menu (policies), the standing company pages, and the
- * contacts web component.
+ * The three footer link columns of the approved design: the brand pages,
+ * customer service, and the product families.
  *
- * The policies column is omitted rather than filled with guesses when
- * `menu.queries.footer()` comes back empty: an invented policy URL is a dead
- * link on a legal page.
+ * Three kinds of destination, and each fails differently on purpose:
+ *
+ * - a standing theme route is always rendered
+ * - a product family resolves to the live category, or to a search for its own
+ *   label, so the column is never short and never dead
+ * - a policy page resolves against the merchant's own footer menu and is
+ *   dropped when it is not there. It gets no search fallback: a search results
+ *   page is not a returns policy, and an invented policy URL is a dead link on
+ *   a legal page
+ * - WhatsApp renders only when the store publishes a number
  */
 export function FooterColumns() {
   const { t } = useTranslation();
@@ -67,58 +76,61 @@ export function FooterColumns() {
   const desktop = useMediaQuery('(min-width: 1024px)');
   const collapsible = !desktop;
 
-  const company = [
-    { key: 'about', label: t('ox.nav.about'), to: '/about' },
-    { key: 'contact', label: t('ox.nav.contact'), to: '/contact' },
-    { key: 'branch', label: t('ox.nav.branch'), to: '/branch' },
-    { key: 'guides', label: t('ox.nav.guides'), to: '/blog' },
-  ];
+  const whatsapp = digitsOnly(store?.contacts?.whatsapp ?? '');
+
+  const resolve = (entry: NavEntry): Resolved => {
+    const label = t(entry.labelKey);
+    if (entry.kind === 'whatsapp') {
+      return whatsapp
+        ? { key: entry.key, label, href: `https://wa.me/${whatsapp}`, external: true }
+        : null;
+    }
+    if (entry.tokens) {
+      const match = findMenuLink(footerMenu, entry.tokens);
+      return match?.url
+        ? { key: entry.key, label: match.title || label, href: match.url, external: false }
+        : null;
+    }
+    const href = resolveNavHref(entry, label, items);
+    return href ? { key: entry.key, label, href, external: false } : null;
+  };
 
   return (
-    <nav className="ox-footer__cols" aria-label={t('ox.nav.page_links_label')} data-testid="ox-footer-columns">
-      <Column heading={t('ox.footer.shop')} collapsible={collapsible}>
-        <ul>
-          {items.map((item) => (
-            <li key={String(item.id)}>
-              <Link to={item.url} className="ox-footer__link">
-                {item.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </Column>
-
-      {footerMenu && footerMenu.length > 0 ? (
-        <Column heading={t('ox.footer.policies')} collapsible={collapsible}>
-          <ul>
-            {footerMenu.map((item) => (
-              <li key={String(item.id)}>
-                <Link to={item.url} className="ox-footer__link">
-                  {item.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Column>
-      ) : null}
-
-      <Column heading={t('ox.footer.company')} collapsible={collapsible}>
-        <ul>
-          {company.map((item) => (
-            <li key={item.key}>
-              <Link to={item.to} className="ox-footer__link">
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </Column>
-
-      <Column heading={t('ox.footer.contact')} collapsible={collapsible}>
-        <Suspense fallback={null}>
-          <SallaContacts contacts={store?.contacts} hideTitle />
-        </Suspense>
-      </Column>
+    <nav
+      className="ox-footer__cols"
+      aria-label={t('ox.nav.page_links_label')}
+      data-testid="ox-footer-columns"
+    >
+      {FOOTER_COLUMNS.map((column) => {
+        const links = column.links.map(resolve).filter((link): link is NonNullable<Resolved> =>
+          Boolean(link)
+        );
+        if (links.length === 0) return null;
+        return (
+          <Column key={column.key} heading={t(column.headingKey)} collapsible={collapsible}>
+            <ul>
+              {links.map((link) => (
+                <li key={link.key}>
+                  {link.external ? (
+                    <a
+                      className="ox-footer__link"
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} className="ox-footer__link">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </Column>
+        );
+      })}
     </nav>
   );
 }

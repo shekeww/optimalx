@@ -1,34 +1,56 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { Icon, type OxIconName } from '../../common/Icon';
-import { claimsOfficialDistributors, type Settings } from '../lib/claims';
+import {
+  authenticityPageUrl,
+  enabledPayments,
+  orderTrackingUrl,
+  type Settings,
+} from '../lib/claims';
 
 export interface TrustGridProps {
   settings?: Settings;
   /** Digital goods swap the shipping promise for instant delivery (D 6.7). */
   digital?: boolean;
+  /** `store.settings.payments`, so the payment sub-line can be gated. */
+  payments?: unknown;
+}
+
+interface TrustItem {
+  key: string;
+  icon: OxIconName;
+  title: ReactNode;
+  /** The second line, or null when the store cannot yet stand behind it. */
+  line: string | null;
 }
 
 /**
- * The store's own four promises under the buy zone (DIRECTION 5.4 TrustGrid).
+ * The three trust items under the buy box (design region 26).
  *
- * Claims gates (PLAN-final 5.1):
- *  - the authenticity item reads "منتجات أصلية" until the owner sets
- *    `claim_official_distributors`, and only then "موزعون رسميون" (Q3);
- *  - the payment item never names a payment method; the marks row is the
- *    footer's `salla-payments`;
- *  - the help item promises a free reply, never a reply time: that would need
- *    `reply_sla_hours`, which is empty (Q15).
+ * Every sub-line is a promise, so every sub-line is gated and the item is
+ * drawn to look finished as a title alone, vertically centred in the same row:
+ *
+ *   B18  "مضمونة 100%" needs a page that says what the guarantee is. Without
+ *        one the item is the authenticity title, unlinked, and no guarantee is
+ *        asserted anywhere on the page.
+ *   B17  "تتبع طلبك" needs a carrier that provides tracking. There is none, so
+ *        item two ships as its title alone.
+ *   B10  the payment sub-line renders only when the store has a gateway
+ *        enabled, and it still names none of them.
  */
-export function TrustGrid({ settings, digital = false }: TrustGridProps) {
+export function TrustGrid({ settings, digital = false, payments }: TrustGridProps) {
   const { t } = useTranslation();
-  const items: { key: string; icon: OxIconName; title: string; line: string }[] = [
+  const authenticity = authenticityPageUrl(settings);
+  const tracking = orderTrackingUrl(settings);
+  const hasPayments = enabledPayments(payments).length > 0;
+
+  const items: TrustItem[] = [
     {
-      key: 'authentic',
-      icon: 'authentic',
-      title: claimsOfficialDistributors(settings)
-        ? t('ox.pdp.official_distributors')
-        : t('ox.trust.authentic'),
-      line: t('ox.trust.authentic_line'),
+      key: 'payment',
+      icon: 'secure-payment',
+      title: t('ox.trust.payment'),
+      line: hasPayments ? t('ox.pdp.trust_payment_sub') : null,
     },
     digital
       ? {
@@ -40,31 +62,31 @@ export function TrustGrid({ settings, digital = false }: TrustGridProps) {
       : {
           key: 'shipping',
           icon: 'shipping',
-          title: t('ox.trust.shipping'),
-          line: t('ox.trust.shipping_line'),
+          title: t('ox.pdp.trust_ships_kingdom'),
+          line: tracking ? t('ox.pdp.trust_track_order') : null,
         },
     {
-      key: 'payment',
-      icon: 'secure-payment',
-      title: t('ox.trust.payment'),
-      line: t('ox.trust.payment_line'),
-    },
-    {
-      key: 'help',
-      icon: 'help',
-      title: t('ox.trust.help'),
-      line: t('ox.trust.help_line'),
+      key: 'authentic',
+      icon: 'authentic',
+      title: authenticity ? (
+        <Link to={authenticity} className="ox-trust-grid__link">
+          {t('ox.trust.authentic')}
+        </Link>
+      ) : (
+        t('ox.trust.authentic')
+      ),
+      line: authenticity ? t('ox.pdp.trust_authentic_sub') : null,
     },
   ];
 
   return (
     <ul className="ox-trust-grid">
       {items.map((item) => (
-        <li className="ox-trust-grid__item" key={item.key}>
-          <Icon name={item.icon} size={20} />
+        <li className={'ox-trust-grid__item' + (item.line ? '' : ' is-single')} key={item.key}>
+          <Icon name={item.icon} size={22} className="ox-trust-grid__icon" />
           <div className="ox-trust-grid__text">
             <p className="ox-trust-grid__title">{item.title}</p>
-            <p className="ox-trust-grid__line">{item.line}</p>
+            {item.line ? <p className="ox-trust-grid__line">{item.line}</p> : null}
           </div>
         </li>
       ))}

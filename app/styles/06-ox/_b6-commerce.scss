@@ -146,7 +146,7 @@
       inline-size: 360px;
       flex: none;
       // Below the sticky header (72 bar + 48 nav) plus the rhythm step.
-      inset-block-start: calc(var(--ox-h-bar) + var(--ox-h-nav) + var(--ox-4));
+      inset-block-start: calc(var(--ox-h-bar) + var(--ox-4));
     }
   }
 
@@ -291,7 +291,7 @@
   z-index: var(--ox-z-sticky);
   background: var(--ox-surface);
   border-block-start: 1px solid var(--ox-bd);
-  box-shadow: var(--ox-shadow-1);
+  box-shadow: none;
   padding-block-end: env(safe-area-inset-bottom);
   transform: translateY(100%);
   animation: ox-checkout-bar-in var(--dur-slow) var(--ease-out) forwards;
@@ -886,7 +886,7 @@ nav.sidebar {
 .s-modal-content {
   background: var(--ox-card);
   border-radius: var(--ox-r-2);
-  box-shadow: var(--ox-shadow-3);
+  box-shadow: none;
   color: var(--ox-ink);
 }
 
@@ -921,7 +921,7 @@ nav.sidebar {
 .s-drawer-body,
 .s-drawer-content {
   background: var(--ox-card);
-  box-shadow: var(--ox-shadow-3);
+  box-shadow: none;
   color: var(--ox-ink);
 }
 
@@ -935,7 +935,7 @@ nav.sidebar {
 // width above the bottom bars on mobile.
 .s-add-product-toast {
   background: var(--ox-card);
-  box-shadow: var(--ox-shadow-2);
+  box-shadow: none;
   border-radius: var(--ox-r-2);
   gap: var(--ox-3);
   padding: var(--ox-4);

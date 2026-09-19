@@ -5,30 +5,36 @@ import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import type { ProductCardProps } from '@salla.sa/twilight-theme-engine/product';
 import { SallaAddProductButton } from '@salla.sa/twilight-components-react/add-product-button';
-import { SallaButton } from '@salla.sa/twilight-components-react/button';
-import { SallaRatingStars } from '@salla.sa/twilight-components-react/rating-stars';
 import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
-import { Chip } from '../common/Chip';
 import { Price } from '../common/Price';
+import { PdpIcon } from './PdpIcon';
+import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
+import { specField, PACK_SIZE_LABELS } from './lib/stats';
 import { monthsUntilExpiry } from './lib/supply';
 import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
 
 /**
  * OptimalX's product card, registered over the engine's `product:card` key so
- * every listing, slider and wishlist grid gets it (PLAN-final C1).
+ * every listing, slider and wishlist grid gets it (PLAN-final C1), rebuilt to
+ * the approved design (region 42).
  *
  * It never renders the engine `ProductCard`: that component performs the
- * registry lookup itself (theme-engine chunk-UQRLBMIO.js:219-231), so calling
- * it from here would recurse on every card. Anatomy and states are DIRECTION
- * 5.3: fixed-height rows so a grid of cards never shifts, badges only from
- * real product flags, and no rating row content when the count is zero.
+ * registry lookup itself, so calling it from here would recurse on every card.
+ *
+ * Every row keeps its height when its content is absent, which is what lets a
+ * row of mixed products put every price on one baseline. The rating slot in
+ * particular stays 20px tall at zero reviews (B28) instead of collapsing and
+ * dragging the price up on one card out of five.
  */
 
-/** 2x the widest slot the card ever occupies (171 at 390, 296 at 1440): A8. */
-const CARD_IMAGE_WIDTHS = [150, 300, 600] as const;
-const CARD_IMAGE_SIZES = '(min-width: 1024px) 296px, 45vw';
+/** 2x the widest slot the card ever occupies (171 at 390, 243 at 1440): A8. */
+const CARD_IMAGE_WIDTHS = [150, 300, 500] as const;
+const CARD_IMAGE_SIZES = '(min-width: 1024px) 211px, 45vw';
+/** A hair space each side of the divider, so the line breathes without a gap. */
+const DIVIDER =
+  String.fromCharCode(0x200a) + String.fromCharCode(124) + String.fromCharCode(0x200a);
 
 export const OxProductCard = memo(function OxProductCard({
   product,
@@ -48,8 +54,16 @@ export const OxProductCard = memo(function OxProductCard({
   const saving = savingOf(product);
   const price = effectivePrice(product);
   const expiryMonths = monthsUntilExpiry(spec?.expiry);
-  const ratingCount = product.rating?.count ?? 0;
   const hoverImage = product.images?.find((image) => image.url && image.url !== product.image?.url);
+
+  // Two facts, never more: the design gives the line one row, and a third fact
+  // would push the title or the price out of its slot.
+  const facts: string[] = [];
+  const packSize =
+    specField(spec, PACK_SIZE_LABELS) ?? (product.weight ? product.weight.trim() : null);
+  if (packSize) facts.push(packSize);
+  if (typeof spec?.servings === 'number') facts.push(t('ox.card.servings', { n: spec.servings }));
+  else if (spec?.form) facts.push(spec.form);
 
   const classes = [
     'ox-card-product',
@@ -65,7 +79,7 @@ export const OxProductCard = memo(function OxProductCard({
       <div className="ox-card-product__plate">
         {/* The plate is not a second link: the card has exactly one tab stop
             for navigation (the title link, stretched over the card by CSS),
-            plus the wishlist and add buttons. */}
+            plus the wishlist and add controls. */}
         <Image
           src={product.image?.url}
           alt={product.image?.alt ?? product.name}
@@ -101,18 +115,15 @@ export const OxProductCard = memo(function OxProductCard({
             <Badge tone="note">{t('ox.card.expiry', { date: spec.expiry })}</Badge>
           ) : null}
         </BadgeStack>
-        <SallaButton
-          shape="icon"
-          fill="none"
-          className={
-            'ox-card-product__wish' + (inWishlist ? ' is-active' : '')
-          }
-          ariaLabel={t('ox.a11y.wishlist_toggle')}
+        <button
+          type="button"
+          className={'ox-card-product__wish' + (inWishlist ? ' is-active' : '')}
+          aria-label={t('ox.a11y.wishlist_toggle')}
           aria-pressed={inWishlist}
           onClick={() => wishlist.toggle(product.id)}
         >
           <i className="sicon-heart" aria-hidden="true" />
-        </SallaButton>
+        </button>
       </div>
 
       <div className="ox-card-product__body">
@@ -124,24 +135,18 @@ export const OxProductCard = memo(function OxProductCard({
             <Bdi>{product.name}</Bdi>
           </Link>
         </h3>
-        <div className="ox-card-product__chips">
-          {spec?.servings !== null && spec?.servings !== undefined ? (
-            <Chip icon="servings">{t('ox.card.servings', { n: spec.servings })}</Chip>
-          ) : null}
-          {spec?.form ? <Chip icon="form">{spec.form}</Chip> : null}
-        </div>
+        <p className="ox-card-product__chips">
+          {facts.length > 0 ? <Bdi lang={null}>{facts.join(DIVIDER)}</Bdi> : null}
+        </p>
         <div className="ox-card-product__rating">
-          {ratingCount > 0 ? (
-            <>
-              <SallaRatingStars value={product.rating?.stars ?? 0} size="small" />
-              <span className="ox-card-product__rating-count">
-                {t('ox.pdp.rating_count', { count: ratingCount })}
-              </span>
-            </>
-          ) : null}
+          <RatingRow
+            stars={product.rating?.stars ?? 0}
+            count={product.rating?.count ?? 0}
+            size={12}
+          />
         </div>
         <div className="ox-card-product__price">
-          <Price amount={price} currency={product.currency} />
+          <Price amount={price} size="card" currency={product.currency} />
           {product.is_on_sale ? (
             <>
               <span className="ox-sr-only">{t('ox.pdp.was_price_label')}</span>
@@ -176,6 +181,7 @@ function AddButton({ product }: { product: Product }) {
       loaderPosition="center"
       className="ox-card-product__add"
     >
+      <PdpIcon name="cart" size={16} className="ox-card-product__add-icon" />
       {product.add_to_cart_label ?? t('ox.card.add')}
     </SallaAddProductButton>
   );

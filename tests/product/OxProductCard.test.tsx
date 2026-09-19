@@ -128,22 +128,35 @@ describe('OxProductCard', () => {
   });
 
   it('shows the stars only when the store has real reviews', () => {
-    renderWithProviders(
+    const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ rating: { count: 12, stars: 4 } })} />
     );
-    expect(screen.getByTestId('rating-stars').textContent).toBe('4');
+    expect(container.querySelector('.ox-rating')).not.toBeNull();
+    expect(container.querySelector('.ox-rating__value')?.textContent).toBe('4.0');
     expect(screen.getByText(t('ox.pdp.rating_count', { count: 12 }))).toBeTruthy();
   });
 
-  it('renders the spec chips off the spec line and nothing without one', () => {
-    renderWithProviders(<OxProductCard product={makeProduct()} />);
-    expect(screen.getByText(t('ox.card.servings', { n: 30 }))).toBeTruthy();
-    expect(screen.getByText('بودرة')).toBeTruthy();
+  it('renders the spec line off the label and leaves the row empty without one', () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const spec = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
+    expect(spec).toContain(t('ox.card.servings', { n: 30 }));
 
-    const { container } = renderWithProviders(
+    const plain = renderWithProviders(
       <OxProductCard product={makeProduct({ description: '<p>نص عادي.</p>' })} />
     );
-    expect(container.querySelectorAll('.ox-chip')).toHaveLength(0);
+    // The row keeps its height so a grid of mixed products shares one
+    // baseline, but it states nothing the label did not.
+    const empty = plain.container.querySelector('.ox-card-product__chips');
+    expect(empty).not.toBeNull();
+    expect(empty?.textContent).toBe('');
+  });
+
+  it('keeps the rating row reserved and empty on a store with no reviews (B28)', () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const slot = container.querySelector('.ox-card-product__rating');
+    expect(slot).not.toBeNull();
+    expect(slot?.textContent).toBe('');
+    expect(container.querySelector('.ox-rating')).toBeNull();
   });
 
   it('badges only from real product flags: out of stock and a real saving', () => {

@@ -116,19 +116,20 @@ $ox-angle-tan: 0.404;
   border: 0;
 }
 
+// The measure is the content box, not the padding box: at 1440 the content
+// measures 1296 with 72px gutters, which is what the approved design gives.
+// No padding-inline, so a child that needs to bleed can simply be wider.
 .ox-container,
 .ox-container--narrow,
 .ox-container--text {
-  inline-size: 100%;
-  max-inline-size: var(--ox-container);
+  inline-size: min(var(--ox-container), 100% - 2 * var(--ox-gutter));
   margin-inline: auto;
-  padding-inline: var(--ox-gutter);
 }
 .ox-container--narrow {
-  max-inline-size: calc(var(--ox-container-narrow) + 2 * var(--ox-gutter));
+  inline-size: min(var(--ox-container-narrow), 100% - 2 * var(--ox-gutter));
 }
 .ox-container--text {
-  max-inline-size: calc(var(--ox-container-text) + 2 * var(--ox-gutter));
+  inline-size: min(var(--ox-container-text), 100% - 2 * var(--ox-gutter));
 }
 
 // Fluid type roles (DIRECTION 3.1). Arabic letter-spacing is always 0.
@@ -151,6 +152,28 @@ $ox-angle-tan: 0.404;
   letter-spacing: 0;
   color: var(--ox-fg);
 }
+// Retuned to the approved design (the image reads 30/800/38 for a page title
+// and 15/400/24 for body). These land after the @apply above, so they win.
+@media (min-width: 1024px) {
+  .ox-h1 {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 38px;
+  }
+  .ox-body {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+}
+
+// The only tracked runs in the system: uppercase Latin set inside Arabic copy.
+// Arabic itself is always letter-spacing 0.
+.ox-latin-track {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .ox-num {
   font-variant-numeric: tabular-nums;
 }
@@ -168,8 +191,10 @@ $ox-angle-tan: 0.404;
 // ---------------------------------------------------------------------------
 .ox-icon {
   display: inline-block;
-  inline-size: 24px;
-  block-size: 24px;
+  // The component publishes its drawn size as --ox-icon-size, so the chrome
+  // can ask for 18 or 34 without a modifier class per number.
+  inline-size: var(--ox-icon-size, 24px);
+  block-size: var(--ox-icon-size, 24px);
   flex: none;
   vertical-align: middle;
   color: currentColor;
@@ -237,10 +262,15 @@ $ox-angle-tan: 0.404;
     transition-timing-function: var(--ease-out);
   }
 
+  // The filled label carries the page's only reversed type, so it is set at
+  // 19/700: at the shipped 15/600 the white on accent measures under 4.5:1 for
+  // the size and reads thin against the fill.
   &--primary {
     background: var(--ox-accent);
     border-color: var(--ox-accent);
     color: var(--ox-on-accent);
+    font-size: 19px;
+    font-weight: 700;
     &:hover { background: var(--ox-accent-dark); border-color: var(--ox-accent-dark); }
     &:active { background: var(--ox-accent-dark); }
   }
@@ -1085,8 +1115,9 @@ $ox-angle-tan: 0.404;
   flex-direction: column;
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4);
   color: var(--ox-fg);
+  box-shadow: none;
   // Hover changes only the border colour and never transitions it.
   &:hover { border-color: var(--ox-bd-2); }
   &.is-selected { border-color: var(--ox-fg); }

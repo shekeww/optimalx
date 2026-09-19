@@ -1,11 +1,15 @@
 import type { HTMLAttributes } from 'react';
 import { useMoney } from '@salla.sa/twilight-theme-engine/hooks/useMoney';
 
-export type PriceSize = 'inherit' | 'small' | 'h3' | 'h2';
+export type PriceSize = 'inherit' | 'small' | 'h3' | 'h2' | 'card' | 'hero';
 
 export interface PriceProps extends Omit<HTMLAttributes<HTMLElement>, 'children'> {
   amount: number | string | undefined;
-  /** Type size; the amount is always 700 (600 at small). */
+  /**
+   * Type size; the amount is always 700 (600 at small). `card` is the
+   * product card's 20/800 and `hero` the buy column's 36/800, both with the
+   * currency mark in the accent after the digits (design regions 22 and 42).
+   */
   size?: PriceSize;
   /** The was-price: small, --ox-fg-3, struck. */
   was?: boolean;

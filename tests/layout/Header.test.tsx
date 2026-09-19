@@ -151,7 +151,9 @@ describe('Header', () => {
   });
 
   it('opens the mega panel from the goals item and closes it on Escape', async () => {
-    setSettings({});
+    // The goals item is opt-in now: the approved design carries five nav items
+    // on the bar, and the mega panel would be a sixth.
+    setSettings({ show_goal_nav: true });
     renderWithProviders(<Header />);
     const goals = screen.getByTestId('ox-nav-goals');
     expect(goals.getAttribute('aria-expanded')).toBe('false');
@@ -194,9 +196,62 @@ describe('Header', () => {
     expect(document.documentElement.style.getPropertyValue('--ox-header-h')).toBe('');
   });
 
-  it('drops the goals item when show_goal_nav is off', () => {
-    setSettings({ show_goal_nav: false });
+  it('drops the goals item when show_goal_nav is off, and by default', () => {
+    for (const settings of [{ show_goal_nav: false }, {}]) {
+      setSettings(settings);
+      const view = renderWithProviders(<Header />);
+      expect(screen.queryByTestId('ox-nav-goals')).toBeNull();
+      view.unmount();
+    }
+  });
+
+  it('carries the utility strip whether or not its two outer zones have content', () => {
+    setSettings({});
+    const bare = renderWithProviders(<Header />);
+    // The three trust items are standing statements about the store, so the
+    // strip renders even with no contact number and nothing to localise.
+    expect(screen.getByTestId('ox-utility-bar')).toBeTruthy();
+    expect(screen.getByTestId('ox-utility-trust').querySelectorAll('li')).toHaveLength(3);
+    expect(bare.container.querySelector('[data-testid="ox-utility-contact"]')).toBeNull();
+    expect(bare.container.querySelector('[data-testid="ox-country-control"]')).toBeNull();
+    bare.unmount();
+
+    setSettings({ whatsapp_number: '+966 50 123 4567' });
     renderWithProviders(<Header />);
-    expect(screen.queryByTestId('ox-nav-goals')).toBeNull();
+    expect(screen.getByTestId('ox-utility-contact').getAttribute('href')).toBe(
+      'https://wa.me/966501234567'
+    );
+  });
+
+  it('re-mounts the same three trust items as the mobile scroller', () => {
+    setSettings({});
+    renderWithProviders(<Header />);
+    const scroller = screen.getByTestId('ox-trust-scroller');
+    expect(scroller.querySelectorAll('li')).toHaveLength(3);
+    // Same copy in both, so the two never disagree; CSS shows exactly one.
+    const bar = screen.getByTestId('ox-utility-trust');
+    expect(scroller.textContent).toBe(bar.textContent);
+  });
+
+  it('collapses the search pill to a glyph on a route with no search row', () => {
+    setSettings({});
+    const home = renderWithProviders(<Header />);
+    expect(home.container.querySelector('.ox-search--collapsed')).not.toBeNull();
+    expect(home.container.querySelector('.ox-mobilebar__search')).toBeNull();
+    home.unmount();
+
+    twilight.routeId = '/{-$locale}/search';
+    const search = renderWithProviders(<Header />);
+    expect(search.container.querySelector('.ox-mobilebar__search')).not.toBeNull();
+    expect(search.container.querySelector('.ox-search--collapsed')).toBeNull();
+  });
+
+  it('makes no claim in the chrome that the store cannot support', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<Header />);
+    const text = container.textContent ?? '';
+    for (const banned of ['تتبع', 'خلال', 'يوم', 'مجاني', 'مضمونة']) {
+      expect(text).not.toContain(banned);
+    }
   });
 });

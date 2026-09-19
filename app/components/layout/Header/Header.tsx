@@ -6,10 +6,9 @@ import { AnnouncementBar } from './AnnouncementBar';
 import { MainBar } from './MainBar';
 import { MobileDrawer } from './MobileDrawer';
 import { MobileHeader } from './MobileHeader';
-import { NavBar } from './NavBar';
 import { UtilityBar } from './UtilityBar';
+import { UtilityTrust } from './UtilityTrust';
 import { useHeaderHeightVar } from './useHeaderHeightVar';
-import { useScrolled } from './useScrolled';
 
 /**
  * The bottom tab bar lives outside the header, so its "categories" tab asks
@@ -63,7 +62,6 @@ const SEARCH_ROW_ROUTES = new Set([
 export function Header() {
   const { settings } = useTheme();
   const { routeId } = useTwilight();
-  const scrolled = useScrolled(8);
   const [menuOpen, setMenuOpen] = useState(false);
   const [group, setGroup] = useState<'goals' | 'categories'>('goals');
   const adSlotRef = useRef<HTMLDivElement>(null);
@@ -89,7 +87,6 @@ export function Header() {
     'store-header',
     'ox-header',
     sticky ? 'is-sticky' : null,
-    scrolled ? 'is-scrolled' : null,
     withSearchRow ? 'has-search-row' : null,
   ]
     .filter(Boolean)
@@ -118,7 +115,11 @@ export function Header() {
         />
       </div>
 
-      <NavBar />
+      {/* Below 1024 the utility strip is hidden and its three trust items
+          re-mount here on paper as a 40px snap scroller (spec A1). Only one of
+          the two is ever in the accessibility tree: the other is display:none
+          at that width. */}
+      <UtilityTrust variant="scroller" />
 
       <MobileDrawer
         id={drawerId}

@@ -106,9 +106,12 @@ describe('MobileDrawer', () => {
   });
 
   it('shows a contact row only for the numbers the store actually has', async () => {
-    renderWithProviders(<Harness initialOpen />);
+    const first = renderWithProviders(<Harness initialOpen />);
     const bare = await screen.findByTestId('ox-mobile-drawer');
     expect(bare.querySelectorAll('.ox-drawer__contact-link')).toHaveLength(0);
+    // The second render has to stand alone: the query below reaches the whole
+    // document, so leaving this drawer mounted would count its links twice.
+    first.unmount();
 
     storeValue.contacts = { whatsapp: '+966 50 123 4567', phone: '0148000000' };
     const { unmount } = renderWithProviders(<Harness initialOpen />);
