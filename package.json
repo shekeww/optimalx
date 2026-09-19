@@ -14,7 +14,12 @@
     "test:coverage": "vitest run --coverage",
     "check:copy": "node scripts/check-copy.mjs",
     "i18n:merge": "node scripts/i18n-merge.mjs",
-    "check:jsonld": "node scripts/check-jsonld.mjs tests/fixtures/jsonld/*.json"
+    "check:jsonld": "node scripts/check-jsonld.mjs tests/fixtures/jsonld/*.json",
+    "check:rtl": "node scripts/check-rtl.mjs",
+    "check:motion": "node scripts/check-motion.mjs",
+    "check:strings": "node scripts/check-strings.mjs",
+    "check:all": "pnpm check:copy && pnpm check:jsonld && pnpm check:rtl && pnpm check:motion && pnpm check:strings",
+    "gen:salla-ids": "node scripts/gen-salla-ids.mjs"
   },
   "dependencies": {
     "@salla.sa/twilight-components-react": "^3.0.0-beta.1",

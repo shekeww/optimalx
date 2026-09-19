@@ -2,6 +2,11 @@ import { hookRegistry, type HookContext } from '@salla.sa/twilight-theme-engine/
 import type { Store } from '@salla.sa/twilight-theme-engine/types';
 import { currentUrl, tryOriginOf } from './head';
 import {
+  BRANCH_GEO,
+  parseBranchHours,
+  toSchemaOpeningHours,
+} from '../../content/branch';
+import {
   graph,
   localBusiness,
   organization,
@@ -36,26 +41,44 @@ function localized(value: unknown, locale: string): string | undefined {
   return undefined;
 }
 
-/** schema.org openingHours line, e.g. "Sa-Th 16:00-23:00". Free text is dropped. */
-const OPENING_HOURS = /^(Mo|Tu|We|Th|Fr|Sa|Su)(-(Mo|Tu|We|Th|Fr|Sa|Su))? \d\d:\d\d-\d\d:\d\d$/;
+/** The branch city and region, published with the address (FINAL-content 5). */
+const BRANCH_LOCALITY = 'ox.branch.locality';
+const BRANCH_REGION = 'ox.branch.region';
 
 /**
- * Branch facts from the theme settings (twilight.json: branch_address,
- * branch_hours, whatsapp_number). Geo and structured hours arrive with the
- * branch content map (B5); until then only schema-shaped hours lines pass.
+ * Branch facts for the one `#localbusiness` node the site graph declares
+ * (twilight.json: branch_address, branch_hours, branch_map_url,
+ * whatsapp_number; coordinates from `content/branch.ts`).
+ *
+ * Opening hours go through the same parser the visible hours table uses
+ * (`parseBranchHours` then `toSchemaOpeningHours`), so the table and the
+ * structured data can never disagree: a line the table refuses to print is a
+ * line the graph does not publish either. A store whose `branch_hours` is
+ * empty publishes no `openingHours` at all rather than a default.
+ *
+ * The geo point is the branch's published coordinate pair from the claims
+ * source, and it is emitted only alongside a real address: a pin with no
+ * street is a pin a shopper cannot use.
  */
 export function branchFromSettings(
   settings: Record<string, unknown> | undefined,
-  locale: string
+  locale: string,
+  t?: (key: string) => string
 ): BranchInfo {
-  const hours = (localized(settings?.branch_hours, locale) ?? '')
-    .split(String.fromCharCode(10))
-    .map((line) => line.trim())
-    .filter((line) => OPENING_HOURS.test(line));
+  const address = localized(settings?.branch_address, locale);
+  const hours = toSchemaOpeningHours(parseBranchHours(localized(settings?.branch_hours, locale)));
+  const label = (key: string): string | undefined => {
+    const value = t?.(key);
+    return value && value !== key ? value : undefined;
+  };
   return {
-    address: localized(settings?.branch_address, locale),
+    address,
+    locality: address ? label(BRANCH_LOCALITY) : undefined,
+    region: address ? label(BRANCH_REGION) : undefined,
     hours: hours.length ? hours : undefined,
     phone: localized(settings?.whatsapp_number, locale),
+    mapUrl: localized(settings?.branch_map_url, locale),
+    geo: address ? BRANCH_GEO : undefined,
   };
 }
 
@@ -68,7 +91,8 @@ export function branchFromSettings(
 export function siteJsonLd(
   store: Store | undefined,
   locale: string,
-  settings?: Record<string, unknown>
+  settings?: Record<string, unknown>,
+  t?: (key: string) => string
 ): string | null {
   const origin = tryOriginOf(store?.url);
   if (!store || !origin) return null;
@@ -76,7 +100,7 @@ export function siteJsonLd(
   const doc = graph(
     organization({ store, sameAs: socialLinks(store) }),
     website({ store, searchUrl: currentUrl(origin, prefix, '/search') }),
-    localBusiness({ store, branch: branchFromSettings(settings, locale) })
+    localBusiness({ store, branch: branchFromSettings(settings, locale, t) })
   );
   return toScriptText(doc);
 }
@@ -94,7 +118,8 @@ export function registerHeadHooks() {
     (context: HookContext) => {
       const twilight = context.twilight;
       const settings = twilight?.theme?.settings as unknown as Record<string, unknown> | undefined;
-      const json = siteJsonLd(twilight?.store, twilight?.locale ?? 'ar', settings);
+      const translate = twilight?.i18n ? (key: string) => String(twilight.i18n.t(key)) : undefined;
+      const json = siteJsonLd(twilight?.store, twilight?.locale ?? 'ar', settings, translate);
       if (!json) return null;
       return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
     },

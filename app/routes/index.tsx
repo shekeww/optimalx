@@ -1,27 +1,63 @@
-// @auto-generated
 import { createFileRoute } from '@tanstack/react-router';
 import { Home } from '@salla.sa/twilight-theme-engine/routes/home';
 import type { HomeLoaderData } from '@salla.sa/twilight-theme-engine/routes/home';
-import { HomeSkeleton } from '@salla.sa/twilight-theme-engine/skeleton';
+import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
+import { DefaultHome } from '../components/home/DefaultHome';
+import { HomeSkeleton } from '../components/home/HomeSkeleton';
+import { hasHeroBlock } from '../components/home/defaults';
+import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
 
 /**
- * Home (index) route configuration.
- * Loads page data via loader and renders the Home component.
+ * Home (PLAN-final B2).
+ *
+ * The loader and the head stay the engine's: `Home.loader` fetches the
+ * merchant's block list and `Home.head` builds the title, description, OG block
+ * and the WebSite JSON-LD. `extend` applies the C12 correction only, the same
+ * one every owned route applies: the engine's canonical is `origin + path` with
+ * no locale prefix while og:url and hreflang carry one, so both are rebuilt
+ * with `canonicalFor`, which adds the prefix only on a multilingual store. A
+ * single-language store emits no hreflang cluster at all.
+ *
+ * Composition: the merchant's blocks when the dashboard has any, the twelve
+ * DIRECTION 6.2 blocks otherwise (C2). A merchant may delete the hero block, so
+ * the h1 rule (C19, DIRECTION 9.2) is enforced here: without an `ox-hero` in
+ * the composition the route renders the keyword line as a visually hidden h1,
+ * which keeps exactly one h1 on the page in every configuration.
  */
 export const Route = createFileRoute('/{-$locale}/')({
   loader: ({ params }): Promise<HomeLoaderData> => Home.loader({ locale: params.locale }),
-  head: withHead(Home),
+  head: withHead(Home, (result, ctx) => {
+    const origin = tryOriginOf(ctx.settings?.store?.url);
+    const path = ctx.location?.pathname ?? '';
+    const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
+    const canonical =
+      origin && path
+        ? canonicalFor(origin, multilingual ? ctx.locale : null, path)
+        : result.canonical;
+
+    return {
+      ...result,
+      robots: robots(false),
+      canonical,
+      openGraph: { ...result.openGraph, url: canonical },
+      alternateLanguages: multilingual ? result.alternateLanguages : undefined,
+    };
+  }),
   pendingComponent: () => <HomeSkeleton />,
   component: HomeComponent,
 });
 
-/**
- * Home page component.
- * Uses Route.useLoaderData() to access the data loaded by the route loader,
- * following React best practices for data fetching in route components.
- */
 function HomeComponent() {
   const data: HomeLoaderData = Route.useLoaderData();
-  return <Home.Component {...data} />;
+  const { t } = useTranslation();
+  const configured = data.components.length > 0;
+  const heroPresent = configured ? hasHeroBlock(data.components) : true;
+
+  return (
+    <>
+      {heroPresent ? null : <h1 className="ox-sr-only">{t('ox.home.h1')}</h1>}
+      {configured ? <Home.Component {...data} /> : <DefaultHome locale={data.locale} />}
+    </>
+  );
 }

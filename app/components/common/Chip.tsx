@@ -8,7 +8,9 @@ interface ChipBaseProps {
   children: ReactNode;
 }
 
-export interface SpecChipProps extends ChipBaseProps, HTMLAttributes<HTMLSpanElement> {
+export interface SpecChipProps
+  extends ChipBaseProps,
+    Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
   kind?: 'spec';
   /** 24 tall on the card (default), 32 on the PDP. */
   size?: 'card' | 'pdp';

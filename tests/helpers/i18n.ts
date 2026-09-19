@@ -25,7 +25,20 @@ export type Lang = 'ar' | 'en';
 export type Dictionary = Record<string, string>;
 
 export const I18N_MODULE = '@salla.sa/twilight-theme-engine/i18n';
-export const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
+/**
+ * Vitest rewrites `import.meta.url` to a plain module id, not a file URL, so
+ * the URL form is tried first and the runner's working directory (the repo
+ * root, per vitest.config.ts) is the fallback.
+ */
+function repoRoot(): string {
+  const url = import.meta.url;
+  if (typeof url === 'string' && url.startsWith('file:')) {
+    return fileURLToPath(new URL('../../', url));
+  }
+  return process.cwd();
+}
+
+export const REPO_ROOT = repoRoot();
 export const LOCALES_DIR = path.join(REPO_ROOT, 'locales');
 export const PARTIALS_DIR = path.join(LOCALES_DIR, 'partials');
 

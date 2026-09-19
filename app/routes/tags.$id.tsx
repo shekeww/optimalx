@@ -1,12 +1,15 @@
-// @auto-generated
 import { createFileRoute } from '@tanstack/react-router';
 import { ProductListing } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
+import { ListingPage } from '../components/listing/ListingPage';
+import { listingHeadExtend } from '../components/listing/head';
 
 /**
- * ProductListing route configuration.
- * Loads page data via loader and renders the ProductListing component.
+ * Tag listing (DIRECTION 6.3 composition).
+ *
+ * `noindex, follow`: a tag page is a slice of the catalogue that duplicates
+ * the category pages, so it is a crawl path rather than an index target.
  */
 export const Route = createFileRoute('/{-$locale}/tags/$id')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -21,16 +24,11 @@ export const Route = createFileRoute('/{-$locale}/tags/$id')({
       search: { page: deps.page, sort: deps.sort },
       locale: params.locale,
     }),
-  head: withHead(ProductListing),
-  component: ProductListingComponent,
+  head: withHead(ProductListing, listingHeadExtend({ noindex: true })),
+  component: TagListingComponent,
 });
 
-/**
- * ProductListing page component.
- * Uses Route.useLoaderData() to access the data loaded by the route loader,
- * following React best practices for data fetching in route components.
- */
-function ProductListingComponent() {
+function TagListingComponent() {
   const data: ProductListLoaderData = Route.useLoaderData();
-  return <ProductListing.Component {...data} />;
+  return <ListingPage {...data} />;
 }

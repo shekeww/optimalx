@@ -1,0 +1,411 @@
+// OptimalX shared blocks (P1b): the branch block and its hours table, the
+// service channel card, the guide card, the newsletter band and the product
+// rail. Role tokens only, logical properties only, motion only through the
+// --dur-* and --ease-* tokens, and nothing on a wedge element animates
+// (DIRECTION 4.5 rules, amendment A9).
+
+// ---------------------------------------------------------------------------
+// 1. OxBranch (DIRECTION 5.2, 4.5 branch row, 6.12)
+// ---------------------------------------------------------------------------
+.ox-branch {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-6);
+  align-items: stretch;
+}
+
+.ox-branch__photo {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+
+  img {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+// Mobile: a paper corner cut over the photo instead of the full angled edge.
+.ox-branch__corner {
+  @include ox-wedge-corner(64px, 158px);
+  background: var(--ox-bg);
+}
+
+.ox-branch__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  padding: var(--ox-4);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-branch__eyebrow {
+  color: var(--ox-fg-3);
+  font-weight: 600;
+  margin: 0;
+}
+
+.ox-branch__address {
+  color: var(--ox-fg-2);
+  margin: 0;
+}
+
+.ox-branch__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+  margin-block-start: auto;
+}
+
+.ox-branch__pickup {
+  color: var(--ox-fg-2);
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .ox-branch {
+    grid-template-columns: 7fr 5fr;
+    gap: var(--ox-8);
+    min-block-size: 480px;
+  }
+
+  .ox-branch__photo {
+    // The photo takes the end side and its inner edge carries the 22deg cut.
+    order: 2;
+    aspect-ratio: auto;
+    @include ox-wedge(480px, start);
+    border-radius: 0;
+  }
+
+  .ox-branch__corner {
+    display: none;
+  }
+
+  .ox-branch__card {
+    order: 1;
+    padding: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. HoursTable
+// ---------------------------------------------------------------------------
+.ox-hours {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+}
+
+.ox-hours__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-2);
+}
+
+.ox-hours__title {
+  margin: 0;
+}
+
+.ox-hours__status {
+  display: inline-flex;
+  align-items: center;
+  block-size: 24px;
+  padding-inline: var(--ox-2);
+  border-radius: var(--ox-r-pill);
+  font-size: 12px;
+  font-weight: 700;
+
+  &.is-open {
+    color: var(--ox-go);
+    background: var(--ox-go-soft);
+  }
+
+  &.is-closed {
+    color: var(--ox-note);
+    background: var(--ox-note-soft);
+  }
+}
+
+.ox-hours__table {
+  inline-size: 100%;
+
+  th[scope='row'] {
+    font-weight: 400;
+    text-align: start;
+  }
+
+  tr.is-today th[scope='row'],
+  tr.is-today td {
+    font-weight: 700;
+  }
+}
+
+.ox-hours__today {
+  margin-inline-start: var(--ox-2);
+  color: var(--ox-fg-3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ox-hours__note {
+  color: var(--ox-fg-3);
+  margin: 0;
+}
+
+// ---------------------------------------------------------------------------
+// 3. ChannelCard (DIRECTION 5.2 OxServices)
+// ---------------------------------------------------------------------------
+.ox-channels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  align-items: stretch;
+}
+
+.ox-channel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding: 20px; // DIRECTION 5.2: card padding 20 mobile, 24 desktop
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+
+  &:hover {
+    // Inside a dark band the card lifts one step; on paper the border carries it.
+    border-color: var(--ox-bd-2);
+  }
+}
+
+.ox-channel__title,
+.ox-channel__desc,
+.ox-channel__meta,
+.ox-channel__price {
+  margin: 0;
+}
+
+.ox-channel__meta {
+  color: var(--ox-fg-3);
+}
+
+.ox-channel__desc {
+  color: var(--ox-fg-2);
+}
+
+.ox-channel__free {
+  font-weight: 700;
+}
+
+.ox-channel__cta {
+  margin-block-start: auto;
+}
+
+.ox-band-dark .ox-channel:hover {
+  background: var(--ox-graphite-3);
+}
+
+@media (min-width: 768px) {
+  .ox-channels {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ox-channel {
+    padding: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. GuideCard
+// ---------------------------------------------------------------------------
+.ox-guides {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  align-items: stretch;
+}
+
+.ox-guide {
+  block-size: 100%;
+}
+
+.ox-guide__link {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  overflow: hidden;
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--ox-bd-2);
+  }
+
+  @include ox-focus(2px);
+}
+
+.ox-guide__plate {
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: var(--ox-plate);
+
+  img {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+.ox-guide__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  // Three lines of text plus the padding, so every card in a row is level.
+  min-block-size: 108px;
+  padding: var(--ox-4);
+}
+
+.ox-guide__label,
+.ox-guide__meta {
+  color: var(--ox-fg-3);
+  font-weight: 600;
+}
+
+.ox-guide__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .ox-guides {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. OxNewsletter
+// ---------------------------------------------------------------------------
+.ox-newsletter {
+  background: var(--ox-plate);
+  padding-block: var(--ox-12);
+}
+
+.ox-newsletter__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-newsletter__title,
+.ox-newsletter__body,
+.ox-newsletter__privacy,
+.ox-newsletter__error {
+  margin: 0;
+}
+
+.ox-newsletter__body {
+  color: var(--ox-fg-2);
+}
+
+// The slot keeps the form and the success line the same height, so the band
+// does not resize when the form is replaced (DIRECTION 5.2 states).
+.ox-newsletter__slot {
+  display: flex;
+  align-items: center;
+  min-block-size: 48px;
+}
+
+.ox-newsletter__form {
+  display: flex;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  max-inline-size: 520px;
+}
+
+.ox-newsletter__input {
+  flex: 1 1 auto;
+  block-size: 48px;
+  text-align: start;
+
+  &.is-invalid {
+    border-color: var(--ox-stop);
+  }
+}
+
+.ox-newsletter__success {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  color: var(--ox-go);
+  font-weight: 600;
+  // The one cross-fade DIRECTION 7.1 grants this block.
+  animation: ox-newsletter-in var(--dur-base) var(--ease-in-out);
+}
+
+.ox-newsletter__error {
+  color: var(--ox-stop);
+}
+
+.ox-newsletter__privacy {
+  color: var(--ox-fg-3);
+}
+
+@keyframes ox-newsletter-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-newsletter__success {
+    animation: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-newsletter {
+    padding-block: var(--ox-16);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. ProductsSliderWrapper
+// ---------------------------------------------------------------------------
+// Every horizontal scroller is position relative so its absolute children
+// (arrows, badges) belong to it and not to body (render budget 10.1).
+.ox-rail {
+  position: relative;
+}
+
+.ox-rail__slider {
+  position: relative;
+}
+
+// Arrows are the web component's own controls; below 1024 the rail is a
+// scroll-snap strip and the arrows are not shown (DIRECTION 5.2).
+.ox-rail .s-slider-nav,
+.ox-rail .swiper-button-next,
+.ox-rail .swiper-button-prev {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .ox-rail .s-slider-nav,
+  .ox-rail .swiper-button-next,
+  .ox-rail .swiper-button-prev {
+    display: flex;
+  }
+}

@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-export interface BdiProps extends HTMLAttributes<HTMLElement> {
+export interface BdiProps extends Omit<HTMLAttributes<HTMLElement>, 'lang'> {
   /**
    * Language of the isolated run. Latin product and brand names carry
    * `lang="en"` so screen readers switch voice (DIRECTION A5). Pass `null`

@@ -1,12 +1,13 @@
-// @auto-generated
 import { createFileRoute } from '@tanstack/react-router';
 import { ProductListing } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
+import { ListingPage } from '../components/listing/ListingPage';
+import { listingHeadExtend } from '../components/listing/head';
 
 /**
- * ProductListing route configuration.
- * Loads page data via loader and renders the ProductListing component.
+ * The slug form of a tag listing (`/{slug}/tag-{id}`), same composition and
+ * the same `noindex, follow` rule as `/tags/{id}`.
  */
 export const Route = createFileRoute('/{-$locale}/$slug/tag-{$id}')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -21,16 +22,11 @@ export const Route = createFileRoute('/{-$locale}/$slug/tag-{$id}')({
       search: { page: deps.page, sort: deps.sort },
       locale: params.locale,
     }),
-  head: withHead(ProductListing),
-  component: ProductListingComponent,
+  head: withHead(ProductListing, listingHeadExtend({ noindex: true })),
+  component: SlugTagListingComponent,
 });
 
-/**
- * ProductListing page component.
- * Uses Route.useLoaderData() to access the data loaded by the route loader,
- * following React best practices for data fetching in route components.
- */
-function ProductListingComponent() {
+function SlugTagListingComponent() {
   const data: ProductListLoaderData = Route.useLoaderData();
-  return <ProductListing.Component {...data} />;
+  return <ListingPage {...data} />;
 }

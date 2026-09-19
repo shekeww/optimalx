@@ -153,6 +153,13 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
     const { to, disabled, style, ...anchorRest } = rest as ButtonAsLinkProps;
     const isDisabled = Boolean(disabled) || ariaDisabled;
     const classes = classesFor({ variant, size, block, loading, confirmed: showConfirmed, className }, isDisabled);
+    // The engine Link's props do not declare tabIndex; it rides along in the
+    // spread the wrapper already casts and still reaches the DOM anchor
+    // (theme-engine dist/components/common Link forwards the rest).
+    const linkRest: Record<string, unknown> = {
+      ...(anchorRest as Record<string, unknown>),
+      ...(isDisabled ? { tabIndex: -1 } : {}),
+    };
     return (
       <Link
         to={to}
@@ -160,9 +167,8 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
         className={classes}
         aria-disabled={isDisabled || undefined}
         aria-busy={loading || undefined}
-        tabIndex={isDisabled ? -1 : undefined}
         style={{ ...style, ...lockStyle }}
-        {...(anchorRest as Record<string, unknown>)}
+        {...linkRest}
       >
         {label}
         {loader}

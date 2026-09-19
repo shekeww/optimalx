@@ -1,0 +1,202 @@
+import type { ReactNode } from 'react';
+import { Skeleton, SkeletonBar, SkeletonBlock } from '../common/Skeleton';
+import { HOME_BLOCK_HEIGHT_CSS, type HomeBlockPath } from './defaults';
+
+/**
+ * One skeleton per home block (amendment A7, DIRECTION 6.2 heights).
+ *
+ * Each root reserves exactly the height its block occupies at that viewport, so
+ * the swap from skeleton to content shifts nothing. Rectangles are static plate
+ * colour; only the text bars pulse, and only inside the one root currently in
+ * the viewport, which the shared observer in `common/Skeleton` enforces.
+ */
+
+function rows(count: number): number[] {
+  return Array.from({ length: count }, (unused, index) => index);
+}
+
+interface BlockSkeletonProps {
+  path: HomeBlockPath;
+  className?: string;
+  children?: ReactNode;
+}
+
+function BlockSkeleton({ path, className, children }: BlockSkeletonProps) {
+  return (
+    <Skeleton
+      height={HOME_BLOCK_HEIGHT_CSS[path]}
+      className={['ox-skel-block', className].filter(Boolean).join(' ')}
+      data-block={path}
+    >
+      {children}
+    </Skeleton>
+  );
+}
+
+export function HeroSkeleton() {
+  return (
+    <BlockSkeleton path="ox-hero" className="ox-skel-hero">
+      <span className="ox-skel-hero__text">
+        <SkeletonBar width="40%" />
+        <SkeletonBar width="70%" height={40} />
+        <SkeletonBar width="90%" />
+      </span>
+    </BlockSkeleton>
+  );
+}
+
+export function TrustSkeleton() {
+  return (
+    <BlockSkeleton path="ox-trust-strip" className="ox-skel-trust">
+      {rows(4).map((index) => (
+        <SkeletonBar key={index} width="80%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+export function GoalsSkeleton() {
+  return (
+    <BlockSkeleton path="ox-goals" className="ox-skel-grid ox-skel-grid--goals">
+      {rows(6).map((index) => (
+        <SkeletonBlock key={index} height="100%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+export function CategoriesSkeleton() {
+  return (
+    <BlockSkeleton path="ox-categories" className="ox-skel-grid ox-skel-grid--tiles">
+      {rows(8).map((index) => (
+        <SkeletonBlock key={index} height="100%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+/** The rail placeholder the slider itself shows while its first page loads. */
+export function ProductsRailSkeleton() {
+  return (
+    <div className="ox-skel-rail" aria-hidden="true">
+      {rows(4).map((index) => (
+        <SkeletonBlock key={index} height="100%" />
+      ))}
+    </div>
+  );
+}
+
+export function ProductsSkeleton() {
+  return (
+    <BlockSkeleton path="ox-products" className="ox-skel-products">
+      <SkeletonBar width="35%" />
+      <div className="ox-skel-rail">
+        {rows(4).map((index) => (
+          <SkeletonBlock key={index} height="100%" />
+        ))}
+      </div>
+    </BlockSkeleton>
+  );
+}
+
+export function BrandsSkeleton() {
+  return (
+    <BlockSkeleton path="ox-brands" className="ox-skel-strip">
+      {rows(8).map((index) => (
+        <SkeletonBlock key={index} height="100%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+export function ServicesSkeleton() {
+  return (
+    <BlockSkeleton path="ox-services" className="ox-skel-grid ox-skel-grid--channels">
+      {rows(3).map((index) => (
+        <SkeletonBlock key={index} height="100%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+export function GuidesSkeleton() {
+  return (
+    <BlockSkeleton path="ox-guides" className="ox-skel-grid ox-skel-grid--guides">
+      {rows(3).map((index) => (
+        <SkeletonBlock key={index} height="100%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+export function BranchSkeleton() {
+  return (
+    <BlockSkeleton path="ox-branch" className="ox-skel-branch">
+      <SkeletonBlock height="100%" />
+      <span className="ox-skel-branch__card">
+        <SkeletonBar width="60%" />
+        <SkeletonBar width="85%" />
+        <SkeletonBar width="70%" />
+      </span>
+    </BlockSkeleton>
+  );
+}
+
+export function FaqSkeleton() {
+  return (
+    <BlockSkeleton path="ox-faq" className="ox-skel-faq">
+      {rows(5).map((index) => (
+        <SkeletonBar key={index} width="90%" />
+      ))}
+    </BlockSkeleton>
+  );
+}
+
+export function NewsletterSkeleton() {
+  return (
+    <BlockSkeleton path="ox-newsletter" className="ox-skel-news">
+      <SkeletonBar width="45%" />
+      <SkeletonBar width="65%" />
+      <SkeletonBlock height={48} />
+    </BlockSkeleton>
+  );
+}
+
+export function BannerSkeleton() {
+  return (
+    <BlockSkeleton path="ox-banner" className="ox-skel-banner">
+      <SkeletonBlock height="100%" />
+    </BlockSkeleton>
+  );
+}
+
+/**
+ * The route's pending state: the first screen only. The remaining blocks are
+ * lazy and bring their own placeholders when they scroll into view, and twelve
+ * skeleton roots on one screen is exactly what A7 exists to prevent.
+ */
+export function HomeSkeleton() {
+  return (
+    <div className="ox-home-skeleton" data-testid="ox-home-skeleton">
+      <HeroSkeleton />
+      <TrustSkeleton />
+      <GoalsSkeleton />
+    </div>
+  );
+}
+
+/** Every block's placeholder, keyed by registry path (registerHomeComponentConfig). */
+export const BLOCK_SKELETONS: Record<HomeBlockPath, () => ReactNode> = {
+  'ox-hero': HeroSkeleton,
+  'ox-trust-strip': TrustSkeleton,
+  'ox-goals': GoalsSkeleton,
+  'ox-categories': CategoriesSkeleton,
+  'ox-products': ProductsSkeleton,
+  'ox-brands': BrandsSkeleton,
+  'ox-services': ServicesSkeleton,
+  'ox-guides': GuidesSkeleton,
+  'ox-branch': BranchSkeleton,
+  'ox-faq': FaqSkeleton,
+  'ox-newsletter': NewsletterSkeleton,
+  'ox-banner': BannerSkeleton,
+};

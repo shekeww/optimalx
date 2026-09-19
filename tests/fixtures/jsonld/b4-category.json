@@ -1,0 +1,55 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ItemList",
+      "@id": "https://optimalx.com.sa/whey-protein/c1#itemlist",
+      "url": "https://optimalx.com.sa/whey-protein/c1",
+      "numberOfItems": 2,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "url": "https://optimalx.com.sa/p1996831868",
+          "name": "Gold Standard Whey"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "url": "https://optimalx.com.sa/p1497955814",
+          "name": "Impact Whey Isolate"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://optimalx.com.sa/whey-protein/c1#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "متى آخذ الواي بروتين: قبل التمرين أم بعده؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "الوقتان مقبولان والفارق بينهما صغير. إجمالي البروتين خلال اليوم أهم من التوقيت الدقيق. من يتدرب على معدة فارغة قد يناسبه سكوب قبل التمرين، ومن أكل وجبة قبل الحصة بساعتين يأخذه بعدها. في أيام الراحة يحسب السكوب ضمن وجبات اليوم العادية."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل الواي بروتين يزيد الوزن؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "الواي بروتين بحد ذاته منخفض السعرات، فالسكوب مع الماء يعطي نحو 120 سعرة. الوزن يتبع إجمالي ما تأكله خلال اليوم، لا المكمل وحده. يستخدم ضمن أهداف زيادة الوزن مع الحليب والشوفان، وضمن إدارة الوزن بالماء فقط، حسب بقية النظام الغذائي."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "كم سكوب في علبة الواي بروتين؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "يختلف حسب الحجم. عبوة 5 باوند أي 2.27 كغم تعطي عادة 60 إلى 75 حصة، وعبوة 2 باوند نحو 28 إلى 30 حصة. الرقم الدقيق مكتوب على الملصق تحت عدد الحصص، ونضعه في أول سطر من وصف كل منتج لتقارن العبوات بسهولة."
+          }
+        }
+      ]
+    }
+  ]
+}

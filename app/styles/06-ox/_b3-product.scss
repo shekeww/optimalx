@@ -1,1 +1,972 @@
-// B3 product page and product card styles (gallery, buy row, sticky bar); owned by B3.
+// B3: the product card and the product page (DIRECTION 5.3, 5.4, 6.5 to 6.7).
+//
+// Rules this file obeys, checked by scripts/check-rtl.mjs and check-motion.mjs:
+// logical properties only, role tokens only, motion only through --dur-* and
+// --ease-* on transform and opacity, no shadow on a card at rest or on hover,
+// and a reserved height on every row that loads late so nothing shifts.
+
+// ---------------------------------------------------------------------------
+// 1. Product card (DIRECTION 5.3)
+// ---------------------------------------------------------------------------
+// Fixed row heights: brand 20, name two lines, chips 24, rating 20, price 32,
+// action 44. Each row keeps its height when its content is absent, so a grid
+// of mixed products has one baseline.
+.ox-card-product {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding: var(--ox-3);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  transition: border-color var(--dur-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--ox-bd-2);
+  }
+
+  &:focus-within {
+    border-color: var(--ox-fg);
+  }
+}
+
+.ox-card-product__plate {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: var(--ox-3);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
+}
+
+.ox-card-product__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-card-product__img--hover {
+  position: absolute;
+  inset: var(--ox-3);
+  inline-size: auto;
+  block-size: auto;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .ox-card-product:hover .ox-card-product__img--hover {
+    opacity: 1;
+  }
+}
+
+.ox-card-product__badges {
+  position: absolute;
+  inset-block-start: var(--ox-2);
+  inset-inline-start: var(--ox-2);
+  z-index: 1;
+}
+
+.ox-card-product__wish {
+  position: absolute;
+  inset-block-start: var(--ox-1);
+  inset-inline-end: var(--ox-1);
+  z-index: 2;
+  inline-size: 44px;
+  block-size: 44px;
+
+  &.is-active {
+    color: var(--ox-accent);
+  }
+}
+
+.ox-card-product__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+}
+
+.ox-card-product__brand {
+  min-block-size: 20px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--ox-fg-3);
+}
+
+.ox-card-product__name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-block-size: 44px;
+  margin: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--ox-fg);
+}
+
+// One tab stop for the card: the title link is stretched over the whole card,
+// under the wishlist and add controls, which raise themselves above it.
+.ox-card-product__title-link {
+  color: inherit;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--ox-r-2);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::after {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-card-product__chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--ox-2);
+  min-block-size: 24px;
+  overflow: hidden;
+}
+
+.ox-card-product__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 20px;
+}
+
+.ox-card-product__rating-count {
+  font-size: 13px;
+  color: var(--ox-fg-3);
+}
+
+.ox-card-product__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ox-2);
+  min-block-size: 32px;
+  font-weight: 700;
+}
+
+.ox-card-product__action {
+  position: relative;
+  z-index: 2;
+  min-block-size: 44px;
+}
+
+.ox-card-product__add {
+  inline-size: 100%;
+}
+
+.ox-card-product.is-out .ox-card-product__plate {
+  opacity: 0.72;
+}
+
+// ---------------------------------------------------------------------------
+// 2. Page frame (DIRECTION 6.5)
+// ---------------------------------------------------------------------------
+.ox-pdp {
+  padding-block-end: var(--ox-16);
+}
+
+.ox-pdp__top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+  align-items: flex-start;
+  margin-block-start: var(--ox-4);
+}
+
+.ox-pdp__media {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.ox-pdp__buy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  inline-size: 100%;
+}
+
+.ox-pdp__below {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-12);
+  margin-block-start: var(--ox-12);
+}
+
+@media (min-width: 1024px) {
+  .ox-pdp__top {
+    flex-direction: row;
+    gap: var(--ox-8);
+  }
+
+  // The gallery column sticks, not the buy column: its 632 box fits the
+  // viewport and the buy column does not (DIRECTION 6.5).
+  .ox-pdp__media {
+    position: sticky;
+    inset-block-start: var(--ox-24);
+    inline-size: 58.333%;
+    max-inline-size: 58.333%;
+    flex-shrink: 0;
+  }
+
+  .ox-pdp__buy {
+    inline-size: 41.667%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. Gallery (DIRECTION 5.4 PdpGallery)
+// ---------------------------------------------------------------------------
+// The slider is a Swiper web component: it lays its slides out in a row and
+// gives them no width of its own, so every box inside must be pinned to 100%
+// of the gallery. Without this the plate takes the image's intrinsic width,
+// the 1:1 ratio makes the height match, and the buy zone ends up thousands of
+// pixels down the page (caught in the browser walk at 390).
+.ox-gallery {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  overflow: hidden;
+}
+
+.ox-gallery__slider {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
+.ox-gallery__slider > [slot='items'] {
+  display: flex;
+  inline-size: 100%;
+}
+
+.ox-gallery__slide {
+  flex: 0 0 100%;
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
+.ox-gallery__slider > [slot='thumbs'] {
+  display: flex;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  max-inline-size: 100%;
+  margin-block-start: var(--ox-2);
+  overflow-x: auto;
+}
+
+.ox-gallery--empty {
+  aspect-ratio: 1 / 1;
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+}
+
+// Portrait sources letterbox on the plate instead of cropping: the plate keeps
+// the square, the image is contained inside it (store-write-log: OX-002,
+// OX-006 and OX-014 are portrait).
+.ox-gallery__plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  aspect-ratio: 1 / 1;
+  padding: var(--ox-6);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-gallery__img {
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-gallery__thumb {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 64px;
+  block-size: 64px;
+  padding: var(--ox-1);
+  background: var(--ox-plate);
+  border: 2px solid transparent;
+  border-radius: var(--ox-r-1);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.ox-gallery__thumb-img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-gallery__play {
+  position: absolute;
+  font-size: 24px;
+  color: var(--ox-fg);
+}
+
+.ox-gallery .swiper-slide-thumb-active .ox-gallery__thumb,
+.ox-gallery__thumb.is-active {
+  border-color: var(--ox-fg);
+}
+
+.ox-gallery__share {
+  margin-block-start: var(--ox-3);
+}
+
+// ---------------------------------------------------------------------------
+// 4. Title and price block (DIRECTION 5.4)
+// ---------------------------------------------------------------------------
+.ox-pdp__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-pdp__brand {
+  min-block-size: 20px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ox-fg-3);
+}
+
+.ox-pdp__brand-link {
+  color: inherit;
+}
+
+.ox-pdp__h1 {
+  margin: 0;
+  color: var(--ox-fg);
+}
+
+.ox-pdp__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 24px;
+  margin: 0;
+}
+
+.ox-pdp__rating-link {
+  font-size: 13px;
+  color: var(--ox-fg-3);
+}
+
+.ox-pdp__badges {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  min-block-size: 24px;
+}
+
+.ox-pdp__price-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+}
+
+.ox-pdp__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ox-3);
+  min-block-size: 40px;
+  margin: 0;
+}
+
+.ox-pdp__was {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--ox-1);
+  font-size: 13px;
+  color: var(--ox-fg-3);
+}
+
+.ox-pdp__saving {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ox-go);
+}
+
+.ox-pdp__tax,
+.ox-pdp__per-serving {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-fg-2);
+}
+
+// Reserved so the widgets' late load cannot move the buy button.
+.ox-pdp__installment {
+  min-block-size: 48px;
+}
+
+// ---------------------------------------------------------------------------
+// 5. Spec chips and facts
+// ---------------------------------------------------------------------------
+.ox-pdp__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  margin-block-end: var(--ox-4);
+}
+
+.ox-pdp__facts {
+  margin-block-end: var(--ox-4);
+}
+
+.ox-facts {
+  margin: 0;
+  padding: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-1);
+}
+
+.ox-facts__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ox-4);
+  min-block-size: 32px;
+}
+
+.ox-facts__label {
+  font-size: 13px;
+  color: var(--ox-fg-3);
+}
+
+.ox-facts__value {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ox-fg);
+  text-align: end;
+}
+
+// ---------------------------------------------------------------------------
+// 6. Supply calculator (DIRECTION 5.4)
+// ---------------------------------------------------------------------------
+.ox-supply {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding: var(--ox-4);
+  margin-block-end: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-1);
+}
+
+.ox-supply__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ox-fg);
+}
+
+.ox-supply__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-4);
+}
+
+.ox-supply__label {
+  font-size: 15px;
+  color: var(--ox-fg-2);
+}
+
+.ox-supply__stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-1);
+}
+
+.ox-supply__step {
+  inline-size: 44px;
+  block-size: 44px;
+  font-size: 18px;
+  color: var(--ox-fg);
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--ox-ink-4);
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.ox-supply__value {
+  min-inline-size: 32px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ox-supply__result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  min-block-size: 24px;
+  margin: 0;
+  font-size: 15px;
+}
+
+.ox-supply__runout {
+  color: var(--ox-fg-2);
+}
+
+.ox-supply__note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ox-fg-3);
+}
+
+// ---------------------------------------------------------------------------
+// 7. Delivery lines (DIRECTION 5.4)
+// ---------------------------------------------------------------------------
+.ox-delivery {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--ox-2);
+  margin-block-end: var(--ox-4);
+  border-block: 1px solid var(--ox-bd);
+}
+
+.ox-delivery__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 44px;
+  margin: 0;
+  font-size: 15px;
+  color: var(--ox-fg);
+}
+
+// ---------------------------------------------------------------------------
+// 8. The engine form inside our buy zone
+// ---------------------------------------------------------------------------
+// The form markup is the engine's (dist/AddToCartForm-NICDUAS3.js); only its
+// s-* and utility surfaces are restyled here. Nothing below changes its DOM.
+.ox-buy {
+  .product-form > section {
+    padding: 0;
+    margin-block-end: var(--ox-4);
+    background: none;
+    border-radius: 0;
+  }
+
+  // The engine repeats the price in a row above the add button; ours sits in
+  // the price block directly under the title, where the shopper looks first,
+  // and the out-of-stock state is a badge in the title block. The selector
+  // may not name a Tailwind utility class (`.block` would make every
+  // `@apply block` in the theme circular), so it keys off `.price-wrapper`.
+  .product-form section:has(.price-wrapper) {
+    display: none;
+  }
+
+  // The scaffold pins `.sticky-product-bar` to the bottom of the viewport
+  // whenever `body.is-sticky-product-bar` is set (04-components/product.scss
+  // :135-176), and the SDK sets that class from the store's own
+  // `sticky_add_to_cart` setting, not from the React prop. That took the
+  // quantity row and the add button out of the buy zone, parked them under
+  // B1's bottom tab bar, and duplicated our own bar. The quantity and the add
+  // button belong in the flow, where DIRECTION 6.5 row 9 puts them; the one
+  // fixed bar on this page is `.ox-sticky`.
+  .sticky-product-bar {
+    position: static;
+    inset: auto;
+    z-index: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ox-3);
+    padding: 0;
+    inline-size: 100%;
+    opacity: 1;
+    transform: none;
+    box-shadow: none;
+    transition: none;
+  }
+
+  .sticky-product-bar__quantity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: 44px;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .sticky-product-bar salla-add-product-button,
+  .sticky-product-bar__btn {
+    inline-size: 100%;
+    flex: none;
+    min-block-size: 48px;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+// The scaffold also pads the page for its fixed bar; ours is not fixed, and
+// the page's own bottom padding already clears B1's tab bar.
+body.is-sticky-product-bar.product-single {
+  padding-block-end: 0;
+}
+
+// ---------------------------------------------------------------------------
+// 9. Wishlist, share and the trust grid (DIRECTION 5.4)
+// ---------------------------------------------------------------------------
+.ox-pdp__wishshare {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-3);
+}
+
+.ox-pdp__wish {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+
+  &.is-active {
+    color: var(--ox-accent);
+  }
+}
+
+.ox-pdp__share {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+}
+
+.ox-pdp__share-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  font-size: 13px;
+  color: var(--ox-fg-2);
+}
+
+.ox-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  padding-block-start: var(--ox-4);
+  margin: 0;
+  list-style: none;
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-trust-grid__item {
+  display: flex;
+  gap: var(--ox-2);
+  align-items: flex-start;
+  min-block-size: 56px;
+}
+
+.ox-trust-grid__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ox-fg);
+}
+
+.ox-trust-grid__line {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-fg-2);
+}
+
+// ---------------------------------------------------------------------------
+// 10. Sticky buy bar (DIRECTION 5.4, 10.2 fixed inventory)
+// ---------------------------------------------------------------------------
+.ox-sticky {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--ox-z-sticky);
+  background: var(--ox-surface);
+  border-block-start: 1px solid var(--ox-bd);
+  box-shadow: var(--ox-shadow-1);
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform var(--dur-base) var(--ease-in),
+    opacity var(--dur-base) var(--ease-in),
+    visibility 0s linear var(--dur-base);
+
+  &.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      opacity var(--dur-slow) var(--ease-out),
+      visibility 0s;
+  }
+}
+
+.ox-sticky__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: var(--ox-h-sticky);
+  padding-block: var(--ox-2);
+}
+
+.ox-sticky__thumb {
+  inline-size: 40px;
+  block-size: 40px;
+  padding: var(--ox-1);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-1);
+  flex-shrink: 0;
+}
+
+.ox-sticky__name {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ox-sticky__price {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ox-sticky__add {
+  min-block-size: 44px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 359px) {
+  .ox-sticky__name,
+  .ox-sticky__price {
+    display: none;
+  }
+
+  .ox-sticky__add {
+    flex: 1 1 auto;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Below the fold (DIRECTION 5.4, 6.5 rows 13 to 20)
+// ---------------------------------------------------------------------------
+.ox-prose {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--ox-fg-2);
+
+  p {
+    margin-block: 0 var(--ox-4);
+  }
+
+  h2,
+  h3,
+  h4 {
+    margin-block: var(--ox-6) var(--ox-3);
+    font-weight: 700;
+    color: var(--ox-fg);
+  }
+
+  ul,
+  ol {
+    margin-block: 0 var(--ox-4);
+    padding-inline-start: var(--ox-6);
+  }
+
+  li {
+    margin-block-end: var(--ox-2);
+  }
+
+  a {
+    color: var(--ox-accent);
+  }
+}
+
+.ox-nutrition__caption,
+.ox-nutrition__note {
+  margin-block: var(--ox-2) 0;
+  font-size: 12px;
+  color: var(--ox-fg-3);
+}
+
+.ox-nutrition__note {
+  margin-block-start: var(--ox-3);
+}
+
+.ox-howto__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-howto__step {
+  display: flex;
+  gap: var(--ox-3);
+  align-items: flex-start;
+  margin-block-end: var(--ox-4);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.ox-howto__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  block-size: 28px;
+  font-weight: 700;
+  color: var(--ox-fg);
+  background: var(--ox-plate-2);
+  border-radius: var(--ox-r-pill);
+  flex-shrink: 0;
+}
+
+.ox-prepurchase__list {
+  margin: 0;
+  padding-inline-start: var(--ox-6);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ox-fg-2);
+}
+
+.ox-prepurchase__medical {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ox-fg);
+}
+
+.ox-bundle__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-bundle__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 72px;
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-bundle__thumb {
+  inline-size: 56px;
+  block-size: 56px;
+  padding: var(--ox-1);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-1);
+  flex-shrink: 0;
+}
+
+.ox-bundle__name {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ox-bundle__qty {
+  font-size: 13px;
+  color: var(--ox-fg-3);
+}
+
+// ---------------------------------------------------------------------------
+// 12. Service and booking buy zone (DIRECTION 5.5, 6.6)
+// ---------------------------------------------------------------------------
+.ox-service {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-service__price {
+  min-block-size: 40px;
+  margin: 0;
+}
+
+.ox-service__free {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ox-go);
+}
+
+.ox-service__slot-note,
+.ox-service__credit {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-fg-2);
+}
+
+// The mandated medical line: never small print, never collapsed.
+.ox-service__scope {
+  padding: var(--ox-3) var(--ox-4);
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ox-fg);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-1);
+}
+
+// ---------------------------------------------------------------------------
+// 13. Reduced motion (DIRECTION 7, the global contract)
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+  .ox-card-product,
+  .ox-card-product__img--hover,
+  .ox-gallery__thumb,
+  .ox-sticky {
+    transition: none;
+  }
+
+  .ox-sticky {
+    transform: none;
+  }
+}

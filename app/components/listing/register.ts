@@ -1,14 +1,20 @@
 /**
- * Registration seam for the listing batch (B4): handlers for the four
- * `product:list.*` hook slots the engine listing renders and any
- * `registry.override` the ListingPage needs (PLAN-final C3). Called once from
+ * Registration seam for the listing batch (B4). Called once from
  * app/router.tsx before `getRouter()`, next to the home and product
- * registrations, because the engine resolves overrides a single time at first
- * render (theme-engine chunk-UQRLBMIO.js:219-231).
+ * registrations (PLAN-final 2.1, Router seam).
  *
- * P0 ships it as a no-op so router.tsx is not edited again when B4 lands
- * (PLAN-final 2.1, Router seam). B4 owns this file.
+ * It stays a no-op, and that is the finding rather than an omission: B4
+ * composes the listing page from the engine's own primitives inside its nine
+ * route files (PLAN-final C3) instead of overriding
+ * `ProductListing.Component`, so no registry key changes hands and no
+ * `product:list.*` handler belongs to the theme. Those four slots are rendered
+ * by `ListingPage` in the engine's own positions and left empty for merchant
+ * apps, which is what a hook slot is for.
+ *
+ * The file and its call site stay so that a later batch that does need a
+ * listing-level override (a merchant app shim, a promo strip) has one place to
+ * add it without editing the router again.
  */
 export function registerOxListingHooks() {
-  // Intentionally empty until B4 lands (see the docblock).
+  // Intentionally empty: see the docblock. B4 registers nothing.
 }

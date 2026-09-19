@@ -1,1 +1,1006 @@
-// B1 layout styles (header, footer, drawer, tab bar, route announcer); owned by B1.
+// OptimalX chrome (B1): skip link, header (announcement, utility, main bar,
+// nav, mega panel, mobile bar, drawer), bottom tab bar and footer.
+// Role tokens only, logical properties only, transform and opacity only
+// (the accordion panel is the written exception, DIRECTION 7.1), and colour
+// never transitions.
+
+// ---------------------------------------------------------------------------
+// 1. Skip link (DIRECTION 5.1)
+// ---------------------------------------------------------------------------
+.ox-skip {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  &:focus-visible {
+    position: fixed;
+    inset-block-start: var(--ox-2);
+    inset-inline-start: var(--ox-2);
+    z-index: var(--ox-z-skip);
+    display: inline-flex;
+    align-items: center;
+    inline-size: auto;
+    block-size: 44px;
+    padding-inline: var(--ox-4);
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    background: var(--ox-graphite);
+    border-radius: var(--ox-r-2);
+    color: var(--ox-paper);
+    font-weight: 600;
+    outline: 2px solid var(--ox-paper);
+    outline-offset: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. Header shell (DIRECTION 6.1 heights)
+// ---------------------------------------------------------------------------
+.ox-header {
+  // The scaffold's `04-components/header.scss` hides `.store-header` below md
+  // because the old theme rendered its own mobile header from the root route.
+  // Ours carries the mobile bar, so it is visible at every width; this file
+  // loads after that one, so the same-specificity declaration wins.
+  display: block;
+  position: relative;
+  z-index: var(--ox-z-sticky);
+  background: var(--ox-card);
+
+  &.is-sticky {
+    position: sticky;
+    inset-block-start: 0;
+  }
+
+  // The raised state is a shadow swap, never a transition (DIRECTION 7.1).
+  &.is-scrolled {
+    box-shadow: var(--ox-shadow-1);
+  }
+
+  .advertisement-slot:empty {
+    display: none;
+  }
+}
+
+.ox-announce {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 40px;
+  padding-inline: var(--ox-4);
+}
+
+.ox-announce__text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.ox-utility {
+  display: none;
+}
+
+.ox-utility__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  block-size: var(--ox-h-util);
+}
+
+.ox-utility__promise {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+// ---------------------------------------------------------------------------
+// 3. Localization button
+// ---------------------------------------------------------------------------
+.ox-localize {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+  padding-inline: var(--ox-2);
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover .ox-localize__label {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-localize__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+}
+
+// ---------------------------------------------------------------------------
+// 4. Main bar, logo, icon buttons, counts
+// ---------------------------------------------------------------------------
+.ox-mainbar {
+  border-block-end: 1px solid var(--ox-line);
+}
+
+.ox-mainbar__inner {
+  display: none;
+  align-items: center;
+  gap: var(--ox-4);
+  block-size: var(--ox-h-bar);
+}
+
+.ox-logo {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+
+  // The mark is a square raster (DIRECTION 8.6 stopgap): the intrinsic width
+  // and height attributes size it, the cap keeps a future wide wordmark inside
+  // the slot, and `contain` keeps whichever file is in place undistorted.
+  img {
+    display: block;
+    max-inline-size: 132px;
+    max-block-size: 100%;
+    object-fit: contain;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// The stopgap mark is a raster on white (DIRECTION 8.6): on a dark band it
+// sits on a paper plate instead of bleeding a white rectangle into graphite.
+.ox-logo--on-dark img {
+  background: var(--ox-paper);
+  border-radius: var(--ox-r-1);
+  padding: var(--ox-1);
+}
+
+.ox-mainbar__logo {
+  block-size: 48px;
+}
+
+.ox-mainbar__search {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.ox-mainbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin-inline-start: auto;
+}
+
+.ox-iconbtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  background: none;
+  border: 0;
+  color: var(--ox-fg);
+  font-size: 24px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-cart__icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// `salla-cart-summary` renders its own count and a running total beside the
+// icon. The total has no place in a 44px control, and the count is the one
+// the SDK keeps current, so it is dressed as our pill instead of duplicated.
+.ox-cart {
+  position: relative;
+
+  .s-cart-summary-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    color: inherit;
+  }
+
+  .s-cart-summary-content {
+    display: none;
+  }
+
+  .s-cart-summary-count {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 18px;
+    block-size: 18px;
+    padding-inline: 5px;
+    background: var(--ox-accent);
+    border-radius: var(--ox-r-pill);
+    color: var(--ox-on-accent);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  // Zero is not news: `useCartCountPill` marks the component's own count
+  // element when it reads 0 or empty, and the pill disappears with it.
+  .s-cart-summary-count:empty,
+  .s-cart-summary-count.is-zero {
+    display: none;
+  }
+}
+
+.ox-count {
+  position: absolute;
+  inset-block-start: -2px;
+  inset-inline-end: -6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 18px;
+  block-size: 18px;
+  padding-inline: 5px;
+  background: var(--ox-accent);
+  border-radius: var(--ox-r-pill);
+  color: var(--ox-on-accent);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  animation: ox-count-bump var(--dur-confirm) var(--ease-out);
+}
+
+@keyframes ox-count-bump {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Search field (Salla's component inside our box)
+// ---------------------------------------------------------------------------
+.ox-search {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 640px;
+}
+
+.ox-search__placeholder {
+  block-size: 48px;
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-search salla-search {
+  display: block;
+  inline-size: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// 6. Nav row and mega panel
+// ---------------------------------------------------------------------------
+.ox-nav {
+  display: none;
+  background: var(--ox-card);
+  border-block-end: 1px solid var(--ox-line);
+}
+
+.ox-nav__inner {
+  block-size: var(--ox-h-nav);
+}
+
+.ox-nav__list {
+  display: flex;
+  align-items: stretch;
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-nav__item {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+}
+
+.ox-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  padding-inline: var(--ox-4);
+  background: none;
+  border: 0;
+  border-block-end: 2px solid transparent;
+  color: var(--ox-fg);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &.is-active,
+  &.is-open {
+    border-block-end-color: var(--ox-accent);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.ox-nav__dropdown,
+.ox-mega {
+  position: absolute;
+  inset-block-start: 100%;
+  z-index: var(--ox-z-overlay);
+  background: var(--ox-card);
+  border-radius: var(--ox-r-2);
+  box-shadow: var(--ox-shadow-2);
+  animation: ox-pop-in var(--dur-base) var(--ease-out);
+}
+
+.ox-nav__dropdown {
+  inset-inline-start: 0;
+  min-inline-size: 220px;
+  margin: 0;
+  padding: var(--ox-2) 0;
+  list-style: none;
+  animation-duration: var(--dur-fast);
+}
+
+.ox-nav__droplink {
+  display: flex;
+  align-items: center;
+  block-size: 44px;
+  padding-inline: var(--ox-4);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--ox-accent-soft);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.ox-mega {
+  inset-inline-start: 0;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--ox-8);
+  inline-size: min(var(--ox-container), calc(100vw - 2 * var(--ox-gutter)));
+  padding: var(--ox-8);
+}
+
+.ox-mega__goals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-goalcard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  block-size: 160px;
+  padding: 20px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--ox-line-2);
+  }
+
+  &:active {
+    background: var(--ox-plate);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-goalcard__title {
+  margin: 0;
+}
+
+.ox-mega__cats {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.ox-mega__heading {
+  margin: 0 0 var(--ox-2);
+  color: var(--ox-fg-3);
+  font-weight: 600;
+}
+
+.ox-mega__link {
+  display: flex;
+  align-items: center;
+  block-size: 40px;
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes ox-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. Mobile bar
+// ---------------------------------------------------------------------------
+.ox-mobilebar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-2);
+  block-size: 56px;
+  padding-inline: var(--ox-gutter);
+}
+
+.ox-mobilebar__logo {
+  block-size: 40px;
+}
+
+.ox-mobilebar__search {
+  block-size: 48px;
+  padding-inline: var(--ox-gutter);
+  padding-block-end: var(--ox-2);
+  max-inline-size: none;
+}
+
+// ---------------------------------------------------------------------------
+// 8. Mobile drawer (DIRECTION 5.1, render budget 10.1 rule 6)
+// ---------------------------------------------------------------------------
+.ox-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ox-z-overlay);
+  overflow: hidden;
+}
+
+.ox-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(23, 23, 26, 0.5);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.ox-drawer__panel-root {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  inline-size: min(86vw, 360px);
+  background: var(--ox-card);
+  box-shadow: var(--ox-shadow-3);
+  overflow-y: auto;
+  transform: translateX(calc(var(--direction-factor) * -100%));
+  transition: transform var(--dur-fast) var(--ease-in);
+}
+
+.ox-drawer.is-entered {
+  .ox-drawer__backdrop {
+    opacity: 1;
+  }
+
+  .ox-drawer__panel-root {
+    transform: translateX(0);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+}
+
+.ox-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  block-size: 56px;
+  padding-inline: var(--ox-4);
+  border-block-end: 1px solid var(--ox-line);
+}
+
+.ox-drawer__logo {
+  block-size: 40px;
+}
+
+.ox-drawer__nav {
+  flex: 1 1 auto;
+}
+
+.ox-drawer__list,
+.ox-drawer__sublist,
+.ox-drawer__panel-inner ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-drawer__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  inline-size: 100%;
+  block-size: 48px;
+  padding-inline: var(--ox-4);
+  background: none;
+  border: 0;
+  color: var(--ox-fg);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.ox-drawer__row--sub {
+  justify-content: flex-start;
+  font-weight: 400;
+}
+
+.ox-drawer__row--child {
+  justify-content: flex-start;
+  padding-inline-start: calc(var(--ox-4) + var(--ox-4));
+  font-weight: 400;
+}
+
+.ox-drawer__chevron {
+  transform: rotate(0deg);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+[aria-expanded='true'] > .ox-drawer__chevron {
+  transform: rotate(180deg);
+}
+
+// The one property outside transform and opacity, written down as the
+// exception in DIRECTION 7.1: a user-initiated open of one bounded panel.
+.ox-drawer__panel,
+.ox-footer__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-fast) var(--ease-in);
+
+  &.is-open,
+  .is-open > & {
+    grid-template-rows: 1fr;
+    transition: grid-template-rows var(--dur-base) var(--ease-out);
+  }
+}
+
+.ox-drawer__panel-inner,
+.ox-footer__panel-inner {
+  overflow: hidden;
+}
+
+.ox-drawer__foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  padding: var(--ox-4);
+  background: var(--ox-plate);
+}
+
+.ox-drawer__promise {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+.ox-drawer__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-4);
+}
+
+.ox-drawer__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+  color: var(--ox-fg);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. Bottom tab bar
+// ---------------------------------------------------------------------------
+.ox-tabbar {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: var(--ox-z-sticky);
+  background: var(--ox-card);
+  border-block-start: 1px solid var(--ox-line);
+  box-shadow: var(--ox-shadow-1);
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+}
+
+.ox-tabbar__list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  inline-size: 100%;
+  block-size: 56px;
+  background: none;
+  border: 0;
+  color: var(--ox-ink-2);
+  font: inherit;
+  font-size: 20px;
+  text-decoration: none;
+  cursor: pointer;
+
+  &.is-active {
+    color: var(--ox-accent);
+  }
+
+  &.is-active .ox-tab__label {
+    color: var(--ox-ink);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.ox-tab__icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.ox-tab__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ox-ink-2);
+}
+
+// Only while the bar is mounted: the setting can switch it off.
+body.ox-has-tabbar {
+  padding-block-end: var(--ox-h-tabbar);
+}
+
+// ---------------------------------------------------------------------------
+// 10. Footer
+// ---------------------------------------------------------------------------
+// The scaffold paints `.store-footer` from the engine's `footer_is_dark`
+// setting, and the body class `.footer-is-light` outranks `.ox-band-dark`
+// (0,2,0 against 0,1,0). The band is the theme's decision, not a dashboard
+// toggle, so both states are re-declared here at a higher specificity.
+.ox-footer.ox-band-dark,
+.footer-is-light .ox-footer.ox-band-dark,
+.footer-is-dark .ox-footer.ox-band-dark {
+  background: var(--ox-bg);
+  color: var(--ox-fg);
+}
+
+.ox-footer {
+  padding-block: var(--ox-12);
+}
+
+.ox-footer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+}
+
+.ox-footer__logo {
+  block-size: 56px;
+}
+
+.ox-footer__cols {
+  display: flex;
+  flex-direction: column;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.ox-footer__col {
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-footer__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inline-size: 100%;
+  margin: 0;
+  color: var(--ox-fg-3);
+  font-weight: 600;
+}
+
+.ox-footer__toggle {
+  block-size: 48px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.ox-footer__chevron {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+[aria-expanded='true'] > .ox-footer__chevron {
+  transform: rotate(180deg);
+}
+
+.ox-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 40px;
+  color: var(--ox-fg-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-fg);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-footer__social {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-4);
+  min-block-size: 48px;
+}
+
+.ox-footer__marks,
+.ox-footer__badges {
+  min-block-size: 48px;
+}
+
+// Payment marks keep their own colours, so they sit on a paper plate.
+.ox-footer__marks salla-payments img,
+.ox-footer__marks salla-payments svg {
+  background: var(--ox-paper);
+  border-radius: var(--ox-r-1);
+}
+
+.ox-footer__vat {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 56px;
+  margin: 0;
+  color: var(--ox-fg-2);
+  font-size: 14px;
+}
+
+.ox-footer__vat-number {
+  font-weight: 700;
+}
+
+.ox-footer__trust {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+}
+
+.ox-footer__trust-line,
+.ox-footer__payment-line {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
+.ox-footer__copyright {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
+// ---------------------------------------------------------------------------
+// 11. Breakpoints
+// ---------------------------------------------------------------------------
+@media (min-width: 1024px) {
+  .ox-announce {
+    block-size: 36px;
+  }
+
+  .ox-utility {
+    display: block;
+  }
+
+  .ox-mainbar__inner {
+    display: flex;
+  }
+
+  .ox-mobilebar {
+    display: none;
+  }
+
+  .ox-nav {
+    display: block;
+  }
+
+  .ox-tabbar {
+    display: none;
+  }
+
+  body.ox-has-tabbar {
+    padding-block-end: 0;
+  }
+
+  .ox-footer {
+    padding-block: var(--ox-16);
+  }
+
+  .ox-footer__cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ox-8);
+  }
+
+  .ox-footer__col {
+    border-block-end: 0;
+  }
+
+  .ox-footer__heading {
+    margin-block-end: var(--ox-3);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 12. Reduced motion (DIRECTION 7.1 reduced column)
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+  .ox-count {
+    animation: none;
+  }
+
+  .ox-nav__dropdown,
+  .ox-mega {
+    animation: ox-fade-in var(--dur-fast) var(--ease-out);
+  }
+
+  .ox-drawer__panel-root {
+    transform: none;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-in);
+  }
+
+  .ox-drawer.is-entered .ox-drawer__panel-root {
+    opacity: 1;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+
+  .ox-drawer__chevron,
+  .ox-footer__chevron {
+    transition: none;
+  }
+
+  .ox-drawer__panel,
+  .ox-footer__panel {
+    transition: none;
+  }
+}
+
+@keyframes ox-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

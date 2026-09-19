@@ -1,12 +1,17 @@
-// @auto-generated
 import { createFileRoute } from '@tanstack/react-router';
 import { ProductListing } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
+import { ListingPage } from '../components/listing/ListingPage';
+import { listingHeadExtend } from '../components/listing/head';
 
 /**
- * ProductListing route configuration.
- * Loads page data via loader and renders the ProductListing component.
+ * A brand's products (DIRECTION 6.14: the 6.3 composition with the brand
+ * logo plate in the header).
+ *
+ * The engine's own brand header is not rendered: it prints the merchant's
+ * brand description through `dangerouslySetInnerHTML`. Ours renders it as
+ * text (components/listing/BrandHeader).
  */
 export const Route = createFileRoute('/{-$locale}/brands/$id')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -21,16 +26,11 @@ export const Route = createFileRoute('/{-$locale}/brands/$id')({
       search: { page: deps.page, sort: deps.sort },
       locale: params.locale,
     }),
-  head: withHead(ProductListing),
-  component: ProductListingComponent,
+  head: withHead(ProductListing, listingHeadExtend()),
+  component: BrandListingComponent,
 });
 
-/**
- * ProductListing page component.
- * Uses Route.useLoaderData() to access the data loaded by the route loader,
- * following React best practices for data fetching in route components.
- */
-function ProductListingComponent() {
+function BrandListingComponent() {
   const data: ProductListLoaderData = Route.useLoaderData();
-  return <ProductListing.Component {...data} />;
+  return <ListingPage {...data} />;
 }

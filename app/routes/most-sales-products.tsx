@@ -1,12 +1,16 @@
-// @auto-generated
 import { createFileRoute } from '@tanstack/react-router';
 import { ProductListing } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
+import { ListingPage } from '../components/listing/ListingPage';
+import { listingHeadExtend } from '../components/listing/head';
 
 /**
- * ProductListing route configuration.
- * Loads page data via loader and renders the ProductListing component.
+ * The most-sold listing (DIRECTION 6.3 composition, static source).
+ *
+ * The ordering is the platform's `sales` source and the page title is the
+ * platform's own string: this theme never labels a product as popular on its
+ * own authority (claims gate, PLAN-final 5.1).
  */
 export const Route = createFileRoute('/{-$locale}/most-sales-products')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -25,16 +29,11 @@ export const Route = createFileRoute('/{-$locale}/most-sales-products')({
       search: { page: deps.page, sort: deps.sort },
       locale: params.locale,
     }),
-  head: withHead(ProductListing),
-  component: ProductListingComponent,
+  head: withHead(ProductListing, listingHeadExtend()),
+  component: MostSalesProductsComponent,
 });
 
-/**
- * ProductListing page component.
- * Uses Route.useLoaderData() to access the data loaded by the route loader,
- * following React best practices for data fetching in route components.
- */
-function ProductListingComponent() {
+function MostSalesProductsComponent() {
   const data: ProductListLoaderData = Route.useLoaderData();
-  return <ProductListing.Component {...data} />;
+  return <ListingPage {...data} />;
 }

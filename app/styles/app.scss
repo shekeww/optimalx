@@ -87,3 +87,7 @@
 @import './05-utilities/swal';
 @import './05-utilities/safari-fixes';
 @import './05-utilities/font-customization';
+
+// OptimalX layer (P0 seam): primitives, shared blocks, then one partial per
+// batch. Appended once by P0; nobody edits this file again.
+@import './06-ox/index';

@@ -3,40 +3,71 @@ import {
   registerHomeComponentConfig,
   DefaultHomeComponents,
 } from '@salla.sa/twilight-theme-engine/routes/home';
-import {
-  Brands,
-  CustomTestimonials,
-  EnhancedSlider,
-  MainLinks,
-  SliderProductsWithHeader,
-  EnhancedSquareBanners,
-} from './index';
+import type { AnyHomeComponent } from '@salla.sa/twilight-theme-engine/routes/home';
+import { createElement } from 'react';
+import { HOME_BLOCK_HEIGHT_CSS, HOME_BLOCK_PATHS, type HomeBlockPath } from './defaults';
+import { BLOCK_SKELETONS } from './HomeSkeleton';
+import { OxHero } from './OxHero';
+import { OxTrustStrip } from './OxTrustStrip';
+import { OxGoals } from './OxGoals';
+import { OxCategories } from './OxCategories';
+import { OxProducts } from './OxProducts';
+import { OxBrands } from './OxBrands';
+import { OxServices } from './OxServices';
+import { OxGuides } from './OxGuides';
+import { OxBranchBlock } from './OxBranchBlock';
+import { OxFaq } from './OxFaq';
+import { OxNewsletterBlock } from './OxNewsletterBlock';
+import { OxBanner } from './OxBanner';
 
 /**
- * Registers every home block this theme renders (`home:<path>` registry keys)
- * and the render-shell height each block reserves before it mounts, so the
- * lazy wrapper does not collapse and push the page around while a block loads
- * (`registerHomeComponentConfig` -> `estimatedHeight`, theme-engine
- * HomePageRenderer). Called once from app/router.tsx before `getRouter()`.
+ * The twelve home blocks (DIRECTION 6.2) and their render shells.
+ *
+ * `registerHomeComponents` writes `home:<path>` registry keys; the loader
+ * strips the `home.` prefix off the manifest path, so `home.ox-hero` in
+ * twilight.json resolves to the `ox-hero` key here (theme-engine
+ * chunk-L42W6YS3.js:20, chunk-WITIL2MK.js:580-595). The engine's own
+ * `DefaultHomeComponents` stay registered underneath: a merchant who still has
+ * a stock Salla block on the page keeps it rendering.
+ *
+ * `registerHomeComponentConfig` is what keeps the page from jumping. Every
+ * block declares the exact height its DIRECTION 6.2 row reserves, expressed as
+ * a clamp that is linear between 390 and 1440, plus its own skeleton as the
+ * placeholder (amendment A7) and the `s-block--<path>` wrapper class the
+ * stylesheet and the G2 measurements key off. Theme config wins over the
+ * engine's per-path table (`resolveComponentConfig`, chunk-WITIL2MK.js:650-652).
+ *
+ * Called once from `app/router.tsx` before `getRouter()`.
  */
-export function registerOxHomeComponents() {
-  registerHomeComponents({
-    ...DefaultHomeComponents,
-    brands: Brands,
-    'enhanced-slider': EnhancedSlider,
-    'custom-testimonials': CustomTestimonials,
-    'main-links': MainLinks,
-    'square-links': MainLinks,
-    'slider-products-with-header': SliderProductsWithHeader,
-    'enhanced-square-banners': EnhancedSquareBanners,
-  });
 
-  registerHomeComponentConfig({
-    'enhanced-slider': { height: 'clamp(200px, 42vw, 560px)' },
-    'main-links': { height: '200px' },
-    'slider-products-with-header': { height: '450px' },
-    'enhanced-square-banners': { height: '250px' },
-    brands: { height: '200px' },
-    'custom-testimonials': { height: '350px' },
-  });
+const BLOCKS: Record<HomeBlockPath, AnyHomeComponent> = {
+  'ox-hero': OxHero,
+  'ox-trust-strip': OxTrustStrip,
+  'ox-goals': OxGoals,
+  'ox-categories': OxCategories,
+  'ox-products': OxProducts,
+  'ox-brands': OxBrands,
+  'ox-services': OxServices,
+  'ox-guides': OxGuides,
+  'ox-branch': OxBranchBlock,
+  'ox-faq': OxFaq,
+  'ox-newsletter': OxNewsletterBlock,
+  'ox-banner': OxBanner,
+};
+
+export function registerOxHomeComponents() {
+  registerHomeComponents({ ...DefaultHomeComponents, ...BLOCKS });
+
+  registerHomeComponentConfig(
+    Object.fromEntries(
+      HOME_BLOCK_PATHS.map((path) => [
+        path,
+        {
+          height: HOME_BLOCK_HEIGHT_CSS[path],
+          className: `s-block s-block--${path}`,
+          placeholder: createElement(BLOCK_SKELETONS[path]),
+        },
+      ])
+    )
+  );
 }

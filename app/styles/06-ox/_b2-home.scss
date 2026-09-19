@@ -1,1 +1,832 @@
-// B2 home page block styles (hero, goals, bands, FAQ); owned by B2.
+// OptimalX home (B2): the twelve blocks of DIRECTION 6.2, their rhythm, the
+// hero and services wedges (4.5), the goal settle (7.2) and the block
+// skeletons (A7).
+//
+// Role tokens only, logical properties only, transform and opacity only. The
+// trust panel's `grid-template-rows` is the one written exception DIRECTION 7.1
+// allows, and it is user initiated. Nothing on a wedge element ever animates
+// (amendment A9).
+
+// ---------------------------------------------------------------------------
+// 1. Block rhythm (DIRECTION 4.2, 6.2 sequence rules)
+// ---------------------------------------------------------------------------
+// Every block is wrapped by the engine renderer in `.s-block.s-block--<path>`
+// with the reserved height from register.ts, so the gaps live on the wrapper
+// and the blocks themselves carry none.
+.s-block--ox-hero,
+.s-block--ox-trust-strip,
+.s-block--ox-goals,
+.s-block--ox-categories,
+.s-block--ox-products,
+.s-block--ox-brands,
+.s-block--ox-services,
+.s-block--ox-guides,
+.s-block--ox-branch,
+.s-block--ox-faq,
+.s-block--ox-newsletter,
+.s-block--ox-banner {
+  margin-block-start: var(--ox-12);
+}
+
+// The first screen is one composition: the hero and the strip that reads it.
+.s-block--ox-hero,
+.s-block--ox-trust-strip {
+  margin-block-start: 0;
+}
+
+@media (min-width: 1024px) {
+  .s-block--ox-goals,
+  .s-block--ox-categories,
+  .s-block--ox-products,
+  .s-block--ox-brands,
+  .s-block--ox-faq,
+  .s-block--ox-banner {
+    margin-block-start: var(--ox-16);
+  }
+
+  // The breaths that make the dark band read as a chapter (DIRECTION 4.2).
+  .s-block--ox-services,
+  .s-block--ox-guides,
+  .s-block--ox-branch,
+  .s-block--ox-newsletter {
+    margin-block-start: var(--ox-24);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. OxHero (DIRECTION 5.2, 4.5 hero polygons, 8.1)
+// ---------------------------------------------------------------------------
+.ox-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  min-block-size: 500px;
+  overflow: hidden;
+}
+
+.ox-hero__panel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--ox-graphite-2);
+
+  // Mobile legibility is a linear gradient to the band colour, never a blur
+  // (render budget rule 2).
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(23, 23, 26, 0) 40%, var(--ox-graphite) 100%);
+  }
+}
+
+.ox-hero__photo {
+  position: absolute;
+  inset: 0;
+}
+
+.ox-hero__img,
+.ox-hero__video {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.ox-hero__video {
+  position: absolute;
+  inset: 0;
+}
+
+.ox-hero__stroke {
+  display: none;
+}
+
+.ox-hero__corner {
+  background: var(--ox-accent);
+}
+
+.ox-hero__videobtn {
+  position: absolute;
+  inset-block-end: var(--ox-4);
+  inset-inline-end: var(--ox-4);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border: 1px solid var(--ox-line-on-dark);
+  border-radius: var(--ox-r-2);
+  background: var(--ox-graphite-2);
+  color: var(--ox-ink-on-dark);
+
+  &:focus-visible {
+    outline: 2px solid var(--ox-paper);
+    outline-offset: 2px;
+  }
+}
+
+.ox-hero__inner {
+  position: relative;
+  z-index: 1;
+  inline-size: 100%;
+  padding-block: var(--ox-6);
+}
+
+.ox-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-hero__eyebrow {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ox-fg-2);
+}
+
+.ox-hero__headline {
+  margin: 0;
+  color: var(--ox-fg);
+}
+
+.ox-hero__sub {
+  margin: 0;
+  max-inline-size: 46ch;
+  color: var(--ox-fg-2);
+}
+
+.ox-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+  margin-block-start: var(--ox-2);
+}
+
+@media (min-width: 640px) {
+  .ox-hero {
+    min-block-size: 520px;
+    align-items: center;
+  }
+
+  .ox-hero__photo {
+    inset-inline-start: auto;
+    inline-size: 52%;
+    @include ox-wedge-photo-stroked(520px);
+  }
+
+  .ox-hero__stroke {
+    display: block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: 52%;
+    @include ox-wedge-stroke(520px);
+  }
+
+  .ox-hero__corner {
+    display: none;
+  }
+
+  .ox-hero__panel::after {
+    display: none;
+  }
+
+  .ox-hero__text {
+    max-inline-size: 48%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-hero {
+    min-block-size: 560px;
+  }
+
+  .ox-hero__photo {
+    inline-size: 58%;
+    @include ox-wedge-photo-stroked(560px);
+  }
+
+  .ox-hero__stroke {
+    inline-size: 58%;
+    @include ox-wedge-stroke(560px);
+  }
+
+  .ox-hero__inner {
+    padding-block: var(--ox-16);
+  }
+
+  // Columns 1 to 5 of 12 at the start side (DIRECTION 4.3 rule 1).
+  .ox-hero__text {
+    max-inline-size: 41.6667%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. OxTrustStrip (DIRECTION 5.2, 6.2 row 2)
+// ---------------------------------------------------------------------------
+.ox-trust {
+  background: var(--ox-paper);
+  border-block-end: 1px solid var(--ox-line);
+}
+
+.ox-trust__row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-trust__item {
+  min-inline-size: 0;
+}
+
+.ox-trust__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  inline-size: 100%;
+  min-block-size: 72px;
+  padding-inline: var(--ox-2);
+  text-align: start;
+  color: var(--ox-fg);
+  @include ox-focus(-2px);
+}
+
+button.ox-trust__btn:hover .ox-trust__title {
+  text-decoration: underline;
+}
+
+.ox-trust__icon {
+  flex: none;
+  color: var(--ox-fg);
+}
+
+.ox-trust__text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.ox-trust__title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.ox-trust__line {
+  color: var(--ox-fg-2);
+}
+
+.ox-trust__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-base) var(--ease-out);
+
+  &[data-open='true'] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.ox-trust__panelinner {
+  overflow: hidden;
+}
+
+.ox-trust__def {
+  margin: 0;
+  padding-block: var(--ox-4);
+  max-inline-size: 72ch;
+  color: var(--ox-fg-2);
+}
+
+.ox-trust__marks {
+  padding-block: var(--ox-4);
+}
+
+@media (min-width: 640px) {
+  .ox-trust__row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. OxGoals and GoalCard (DIRECTION 5.2, 6.2 row 3, 7.2 settle)
+// ---------------------------------------------------------------------------
+.ox-goals {
+  scroll-margin-block-start: calc(var(--ox-header-h, 96px) + var(--ox-4));
+}
+
+.ox-goals__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-goal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--ox-2);
+  block-size: 128px;
+  padding: var(--ox-4);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+  @include ox-focus(2px);
+
+  &:hover {
+    border-color: var(--ox-bd-2);
+  }
+
+  &:active {
+    background: var(--ox-plate);
+  }
+}
+
+.ox-goal__icon {
+  color: var(--ox-fg);
+}
+
+.ox-goal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.ox-goal__label {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ox-goal__line {
+  color: var(--ox-fg-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes ox-goal-settle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Armed only after mount and only when motion is allowed, so the server HTML
+// and a no-JS client always show the six cards.
+.ox-goals__grid[data-settle='pending'] .ox-goal {
+  opacity: 0;
+}
+
+.ox-goals__grid[data-settle='running'] .ox-goal {
+  animation: ox-goal-settle var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--stagger-step) * var(--i, 0));
+}
+
+@media (min-width: 640px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--ox-6);
+  }
+
+  .ox-goal {
+    block-size: 160px;
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-goals__grid .ox-goal {
+    opacity: 1;
+    animation: none;
+  }
+
+  // DIRECTION 7.1, anchor scrolls: the scaffold sets `scroll-behavior: smooth`
+  // on html in 02-generic/common.scss and never turns it off. The hero CTA is
+  // the anchor scroll this theme ships, so the correction rides with it; the
+  // conductor should move this line next to the declaration it answers.
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. OxCategories and CategoryTile (DIRECTION 5.2, 6.2 row 4)
+// ---------------------------------------------------------------------------
+.ox-cats__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+.ox-tile {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
+  color: var(--ox-fg);
+  @include ox-focus(2px);
+
+  &:hover {
+    border-color: var(--ox-bd-2);
+  }
+
+  &:hover .ox-tile__plate {
+    background: var(--ox-plate-2);
+  }
+}
+
+.ox-tile__plate {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  padding: var(--ox-3);
+  background: var(--ox-plate);
+}
+
+.ox-tile__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-tile__icon {
+  color: var(--ox-ink-2);
+}
+
+.ox-tile__strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-2);
+  block-size: 48px;
+  padding-inline: var(--ox-3);
+}
+
+.ox-tile__label {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ox-tile__count {
+  flex: none;
+  color: var(--ox-fg-3);
+}
+
+@media (min-width: 640px) {
+  .ox-cats__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. OxProducts (the rail itself is styled by _blocks.scss)
+// ---------------------------------------------------------------------------
+.ox-products {
+  position: relative;
+}
+
+// ---------------------------------------------------------------------------
+// 7. OxBrands (DIRECTION 6.2 row 6)
+// ---------------------------------------------------------------------------
+.ox-brands__strip {
+  position: relative;
+  display: flex;
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-brands__item {
+  flex: none;
+}
+
+.ox-brands__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 120px;
+  block-size: 64px;
+  padding: var(--ox-2);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  @include ox-focus(2px);
+}
+
+.ox-brands__logo {
+  max-inline-size: 100%;
+  max-block-size: 48px;
+  object-fit: contain;
+}
+
+.ox-brands__name {
+  color: var(--ox-fg-2);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .ox-brands__strip {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    overflow-x: visible;
+  }
+
+  .ox-brands__link {
+    inline-size: 100%;
+    block-size: 80px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. OxServices (DIRECTION 5.2, 4.5 services polygon, 6.2 row 7)
+// ---------------------------------------------------------------------------
+.ox-services {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--ox-12);
+}
+
+// Scoped to the services band: the hub and goal heroes carry their own band
+// height, and DIRECTION 4.5 gives each band its own run.
+.ox-services .ox-band__wedge {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 0;
+  inline-size: 80px;
+  block-size: 198px;
+  background: var(--ox-graphite-2);
+  pointer-events: none;
+  @include ox-wedge-corner(80px, 198px);
+}
+
+.ox-services__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.ox-services__reply,
+.ox-services__note {
+  margin: var(--ox-4) 0 0;
+  color: var(--ox-fg-2);
+}
+
+@media (min-width: 1024px) {
+  .ox-services {
+    min-block-size: 480px;
+    padding-block: var(--ox-16);
+  }
+
+  .ox-services .ox-band__wedge {
+    inline-size: calc(34% + 194px);
+    block-size: auto;
+    @include ox-wedge(480px);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. OxGuides and OxBranch wrappers (DIRECTION 6.2 rows 8 and 9)
+// ---------------------------------------------------------------------------
+.ox-guides-block {
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .ox-guides {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ox-6);
+  }
+}
+
+.ox-branch-block {
+  position: relative;
+}
+
+// ---------------------------------------------------------------------------
+// 10. OxFaq (DIRECTION 6.2 row 10)
+// ---------------------------------------------------------------------------
+.ox-faq .ox-acc {
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-faq__answer {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+// ---------------------------------------------------------------------------
+// 11. OxBanner (DIRECTION 6.2 row 12): straight edges, one line, one link
+// ---------------------------------------------------------------------------
+.ox-banner__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
+  background: var(--ox-plate);
+  color: var(--ox-fg);
+  @include ox-focus(2px);
+}
+
+.ox-banner__media {
+  display: block;
+  aspect-ratio: 4 / 3;
+}
+
+.ox-banner__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.ox-banner__line {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  padding: var(--ox-4);
+}
+
+.ox-banner__chevron {
+  flex: none;
+}
+
+@media (min-width: 1024px) {
+  .ox-banner__media {
+    aspect-ratio: auto;
+    block-size: 240px;
+  }
+
+  .ox-banner__inner {
+    position: relative;
+  }
+
+  .ox-banner__line {
+    padding-inline: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 12. Block skeletons (amendment A7): the box is the block's reserved height,
+// rectangles are static plate, only the text bars pulse.
+// ---------------------------------------------------------------------------
+.ox-skel-block {
+  display: block;
+  inline-size: 100%;
+  padding-inline: var(--ox-gutter);
+}
+
+.ox-skel-hero {
+  display: flex;
+  align-items: flex-end;
+  background: var(--ox-graphite-2);
+  padding-block-end: var(--ox-6);
+}
+
+.ox-skel-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  inline-size: min(100%, 420px);
+}
+
+.ox-skel-trust {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  gap: var(--ox-3);
+}
+
+.ox-skel-grid {
+  display: grid;
+  gap: var(--ox-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.ox-skel-grid--channels,
+.ox-skel-grid--guides {
+  grid-template-columns: 1fr;
+}
+
+.ox-skel-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 172px;
+  gap: var(--ox-4);
+  overflow: hidden;
+  block-size: 380px;
+}
+
+.ox-skel-products {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+}
+
+.ox-skel-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 120px;
+  gap: var(--ox-3);
+  overflow: hidden;
+}
+
+.ox-skel-branch {
+  display: grid;
+  gap: var(--ox-4);
+  grid-template-rows: 268px auto;
+}
+
+.ox-skel-branch__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-skel-faq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+  justify-content: center;
+}
+
+.ox-skel-news {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .ox-skel-trust {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .ox-skel-grid--tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-skel-grid--goals {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .ox-skel-grid--channels,
+  .ox-skel-grid--guides {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ox-skel-rail {
+    grid-auto-columns: 300px;
+    block-size: 510px;
+  }
+
+  .ox-skel-branch {
+    grid-template-rows: none;
+    grid-template-columns: 7fr 5fr;
+  }
+}

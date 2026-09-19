@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://optimalx.com.sa/p662137586#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "الرئيسية",
+          "item": "https://optimalx.com.sa/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "OptimalX Gift Card",
+          "item": "https://optimalx.com.sa/p662137586"
+        }
+      ]
+    },
+    {
+      "@type": "Product",
+      "name": "OptimalX Gift Card",
+      "description": "بطاقة رقمية.",
+      "sku": "OX-043",
+      "image": [
+        "https://cdn.salla.sa/OX-043.jpg"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://optimalx.com.sa/p662137586",
+        "availability": "https://schema.org/InStock",
+        "price": 240,
+        "priceCurrency": "SAR",
+        "priceValidUntil": "2026-10-19",
+        "seller": {
+          "@type": "Organization",
+          "name": "اوبتيمال اكس"
+        }
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://optimalx.com.sa/p662137586#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "لماذا قد تجد سعرا أقل في مكان آخر؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "نشتري كميات صغيرة ونعرض سعرا واحدا."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -16,8 +16,11 @@ export function registerThemeHooks() {
     50
   );
 
-  // Register DigitalFilesSettings at product:single.description hook slot
-  // Receives product from ProductDetails via context prop
+  // Register DigitalFilesSettings at the product:single.description hook slot.
+  // The engine's own ProductPage passes no context to any of its eleven slots
+  // (dist/routes/product.js:85-117), so this handler never fired. Our
+  // ProductPage renders the same slots with `context={{ product }}`
+  // (PLAN-final C4), which is what makes `context.product` available here.
   hookRegistry.register(
     HookName.PRODUCT_DESCRIPTION,
     (context: HookContext) => {

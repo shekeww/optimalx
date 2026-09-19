@@ -1,0 +1,117 @@
+import { useId, useState, type FormEvent } from 'react';
+import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
+import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
+
+export interface OxNewsletterProps {
+  /**
+   * Submits the address. No provider is chosen yet (PLAN-final open question
+   * Q1), so the block takes the transport as a prop and ships hidden until
+   * `show_newsletter` is turned on.
+   */
+  subscribe?: (email: string) => Promise<void>;
+  /** Overrides the `show_newsletter` theme setting (kitchen sink, tests). */
+  enabled?: boolean;
+  className?: string;
+}
+
+type Status = 'idle' | 'submitting' | 'success' | 'error';
+
+/** A deliberately plain check: one "@" with something on each side and a dot after it. */
+export function looksLikeEmail(value: string): boolean {
+  const at = value.indexOf('@');
+  if (at <= 0 || at !== value.lastIndexOf('@')) return false;
+  const domain = value.slice(at + 1);
+  const dot = domain.indexOf('.');
+  return dot > 0 && dot < domain.length - 1 && !value.includes(' ');
+}
+
+/**
+ * The newsletter band (DIRECTION 5.2 OxNewsletter). Hidden unless the
+ * `show_newsletter` theme setting is on (PLAN-final C7). On success the form
+ * is replaced by one line of the same height, announced politely
+ * (DIRECTION 9.5). The band sits on the plate, not on graphite, because the
+ * footer below it is graphite.
+ */
+export function OxNewsletter({ subscribe, enabled, className }: OxNewsletterProps) {
+  const { t } = useTranslation();
+  const { settings } = useTheme();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<Status>('idle');
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
+
+  const settingOn = Boolean((settings as Record<string, unknown> | undefined)?.show_newsletter);
+  const visible = enabled ?? settingOn;
+  if (!visible) return null;
+
+  const invalid = status === 'error';
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!looksLikeEmail(email)) {
+      setStatus('error');
+      return;
+    }
+    setStatus('submitting');
+    try {
+      await subscribe?.(email);
+      setStatus('success');
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  return (
+    <section className={['ox-newsletter', className].filter(Boolean).join(' ')} data-testid="ox-newsletter">
+      <div className="ox-newsletter__inner ox-container">
+        <h2 className="ox-newsletter__title ox-h2">{t('ox.newsletter.title')}</h2>
+        <p className="ox-newsletter__body ox-body">{t('ox.newsletter.body')}</p>
+
+        <div className="ox-newsletter__slot">
+          {status === 'success' ? (
+            <p className="ox-newsletter__success" role="status" data-testid="ox-newsletter-success">
+              <Icon name="tick" size={20} />
+              {t('ox.newsletter.success')}
+            </p>
+          ) : (
+            <form className="ox-newsletter__form" onSubmit={onSubmit} noValidate>
+              <label className="ox-sr-only" htmlFor={inputId}>
+                {t('ox.newsletter.placeholder')}
+              </label>
+              <input
+                id={inputId}
+                className={`ox-input ox-newsletter__input${invalid ? ' is-invalid' : ''}`}
+                type="email"
+                name="email"
+                dir="ltr"
+                inputMode="email"
+                autoComplete="email"
+                placeholder={t('ox.newsletter.placeholder')}
+                value={email}
+                aria-invalid={invalid || undefined}
+                aria-describedby={invalid ? errorId : undefined}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (status === 'error') setStatus('idle');
+                }}
+              />
+              <Button type="submit" size={48} variant="primary" loading={status === 'submitting'}>
+                {t('ox.newsletter.button')}
+              </Button>
+            </form>
+          )}
+        </div>
+
+        {invalid ? (
+          <p className="ox-newsletter__error" id={errorId} role="alert">
+            {looksLikeEmail(email) ? t('ox.newsletter.error') : t('ox.newsletter.invalid')}
+          </p>
+        ) : null}
+
+        <p className="ox-newsletter__privacy ox-small">{t('ox.newsletter.privacy')}</p>
+      </div>
+    </section>
+  );
+}

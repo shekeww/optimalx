@@ -1,1 +1,709 @@
-// B4 listing, goal landing and search styles (filters rail, load more); owned by B4.
+// B4: listing, goal landing, filters, search and brands (DIRECTION 5.3, 5.5,
+// 6.3, 6.4, 6.8, 6.14). Role tokens only, logical properties only, motion only
+// through --dur-* and --ease-*, transform and opacity only, and nothing on a
+// wedge element animates (amendment A9).
+
+// ---------------------------------------------------------------------------
+// 1. Page frame and vertical rhythm (DIRECTION 4.2)
+// ---------------------------------------------------------------------------
+.ox-listing {
+  padding-block-end: var(--ox-12);
+}
+
+.ox-listing__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-12);
+  padding-block-start: var(--ox-6);
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__body {
+    padding-block-start: var(--ox-16);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. ListingHeader (DIRECTION 5.3, 6.3 block 2)
+// ---------------------------------------------------------------------------
+.ox-listing__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-listing__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 48px;
+}
+
+.ox-listing__media {
+  flex: 0 0 auto;
+}
+
+.ox-listing__intro,
+.ox-listing__intro-text {
+  margin: 0;
+  color: var(--ox-fg-2);
+  max-inline-size: var(--ox-container-text);
+}
+
+// Two lines on mobile, one on desktop; the DOM keeps the whole paragraph.
+.ox-listing__intro-text.is-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.ox-listing__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  min-block-size: 44px;
+}
+
+.ox-listing__filters-trigger {
+  &.is-active {
+    border-color: var(--ox-fg);
+  }
+}
+
+.ox-listing__filters-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 20px;
+  block-size: 20px;
+  padding-inline: var(--ox-1);
+  border-radius: var(--ox-r-pill);
+  background: var(--ox-ink);
+  color: var(--ox-paper);
+  font-size: clamp(11.5px, 11.31px + 0.048vw, 12px);
+  font-weight: 700;
+}
+
+.ox-listing__sort {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin-inline-start: auto;
+
+  .ox-select {
+    inline-size: auto;
+    min-inline-size: 168px;
+  }
+}
+
+.ox-listing__sort-label {
+  display: none;
+  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
+  font-weight: 600;
+  color: var(--ox-fg-2);
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .ox-listing__sort-label {
+    display: inline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__title-row {
+    min-block-size: 56px;
+  }
+  .ox-listing__intro-text.is-clamped {
+    -webkit-line-clamp: 1;
+  }
+  .ox-listing__filters-trigger {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. Child chips (DIRECTION 6.3 block 3)
+// ---------------------------------------------------------------------------
+.ox-listing__chips {
+  min-block-size: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.ox-listing__chips-row {
+  display: flex;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-chip--link {
+  text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// 4. Rail and grid (DIRECTION 6.3 blocks 4 and 5)
+// ---------------------------------------------------------------------------
+.ox-listing__grid-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  scroll-margin-block-start: var(--ox-16);
+}
+
+.ox-listing__results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-6);
+}
+
+.ox-listing__main {
+  min-inline-size: 0;
+}
+
+.ox-filters {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__results.has-rail {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: var(--ox-8);
+  }
+  .ox-listing__results.has-rail .ox-filters {
+    display: block;
+    position: sticky;
+    inset-block-start: calc(var(--ox-h-bar) + var(--ox-4));
+    z-index: var(--ox-z-raised);
+    max-block-size: calc(100vh - var(--ox-h-bar) - var(--ox-6));
+    overflow-y: auto;
+  }
+}
+
+.ox-grid-products {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .ox-grid-products {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-grid-products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ox-grid-products--with-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-grid-products--with-rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+// The card skeleton: the same box as a loaded card, row for row.
+.ox-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  padding: var(--ox-3);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-card-skeleton__plate {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--ox-r-2);
+  margin-block-end: var(--ox-1);
+}
+
+// ---------------------------------------------------------------------------
+// 5. LoadMore: the ItemsList chrome restyled (DIRECTION 5.3)
+// ---------------------------------------------------------------------------
+.ox-listing__list {
+  display: block;
+}
+
+.s-items-list-load-more {
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--ox-12);
+
+  salla-button::part(button),
+  .s-button-element {
+    block-size: 48px;
+  }
+}
+
+.s-items-list-end {
+  padding-block-start: var(--ox-6);
+  text-align: center;
+}
+
+.ox-listing__end {
+  color: var(--ox-fg-3);
+}
+
+.ox-listing__progress {
+  margin: 0;
+  padding-block-start: var(--ox-3);
+  color: var(--ox-fg-3);
+  text-align: center;
+}
+
+.s-items-list-loading,
+.s-items-list-loading-inline {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--ox-6);
+}
+
+// ---------------------------------------------------------------------------
+// 6. Filters drawer (DIRECTION 5.3, 5.6 Drawer)
+// ---------------------------------------------------------------------------
+.ox-filters-drawer__footer {
+  position: sticky;
+  inset-block-end: 0;
+  background: var(--ox-surface);
+  border-block-start: 1px solid var(--ox-bd);
+  padding: var(--ox-4);
+}
+
+// ---------------------------------------------------------------------------
+// 7. Search zero state (DIRECTION 5.3 ZeroResults, 6.8)
+// ---------------------------------------------------------------------------
+.ox-zero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-12);
+}
+
+.ox-zero__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  align-items: center;
+}
+
+.ox-zero__label {
+  color: var(--ox-fg-3);
+  font-weight: 600;
+}
+
+.ox-zero__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-zero__ask {
+  margin: 0;
+  color: var(--ox-fg-2);
+  text-align: center;
+  max-inline-size: 420px;
+}
+
+// ---------------------------------------------------------------------------
+// 8. Goal landing (DIRECTION 5.3 GoalLanding hero, 6.4, 4.5 goal polygon)
+// ---------------------------------------------------------------------------
+.ox-goal-hero {
+  position: relative;
+  overflow: hidden;
+  min-block-size: 360px;
+  display: flex;
+  align-items: center;
+}
+
+// Mobile: the photo is full bleed behind the text with a scrim, and the one
+// angled element is the corner. Desktop: the corner goes and the photo panel
+// takes the end half with the 420 band's 170 run. No stroke on this hero.
+.ox-goal-hero__photo {
+  display: none;
+}
+
+.ox-goal-hero.has-photo .ox-goal-hero__photo {
+  display: block;
+  position: absolute;
+  inset: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(23, 23, 26, 0.72),
+      rgba(23, 23, 26, 0.88)
+    );
+  }
+}
+
+.ox-goal-hero__corner {
+  @include ox-wedge-corner(64px, 158px);
+  background: var(--ox-graphite-2);
+  z-index: 1;
+}
+
+.ox-goal-hero__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.ox-goal-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding-block: var(--ox-12);
+  align-items: flex-start;
+}
+
+.ox-goal-hero__eyebrow {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ox-fg-3);
+}
+
+.ox-goal-hero__title {
+  margin: 0;
+  max-inline-size: 14em;
+}
+
+.ox-goal-hero__lead {
+  margin: 0;
+  color: var(--ox-fg-2);
+  max-inline-size: 42em;
+}
+
+.ox-goal-hero__cta {
+  margin-block-start: var(--ox-2);
+}
+
+@media (min-width: 1024px) {
+  .ox-goal-hero {
+    min-block-size: 420px;
+  }
+  .ox-goal-hero__corner {
+    display: none;
+  }
+  .ox-goal-hero__photo,
+  .ox-goal-hero.has-photo .ox-goal-hero__photo {
+    @include ox-wedge(420px);
+    display: block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    inline-size: 50%;
+    background: var(--ox-graphite-2);
+
+    &::after {
+      content: none;
+    }
+  }
+  .ox-goal-hero__inner {
+    padding-block: var(--ox-16);
+  }
+  .ox-goal-hero__title {
+    max-inline-size: 11em;
+  }
+}
+
+.ox-goal-intro,
+.ox-explainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  padding-inline: 0;
+
+  p {
+    margin: 0;
+    color: var(--ox-fg-2);
+  }
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.ox-explainer__body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  overflow: hidden;
+
+  &.is-expanded {
+    display: block;
+    overflow: visible;
+  }
+}
+
+.ox-explainer__toggle {
+  align-self: flex-start;
+}
+
+@media (min-width: 1024px) {
+  .ox-explainer__body {
+    display: block;
+    overflow: visible;
+  }
+  .ox-explainer__toggle {
+    display: none;
+  }
+}
+
+.ox-subneeds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  scroll-margin-block-start: var(--ox-16);
+}
+
+.ox-subneeds__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .ox-subneeds__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ox-subneed__link {
+  @include ox-focus(2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  block-size: 100%;
+  padding: var(--ox-4);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  text-decoration: none;
+  color: var(--ox-fg);
+  transition: border-color var(--dur-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--ox-bd-2);
+  }
+}
+
+.ox-subneed__line {
+  color: var(--ox-fg-2);
+}
+
+.ox-subneed__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  margin-block-start: auto;
+  font-weight: 600;
+  color: var(--ox-fg);
+}
+
+.ox-needhelp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  align-items: flex-start;
+
+  p {
+    margin: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-needhelp {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. FAQ and related guides (DIRECTION 6.3 blocks 7 and 8)
+// ---------------------------------------------------------------------------
+.ox-listing__faq,
+.ox-listing__guides {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+}
+
+.ox-listing__guides-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-listing__guide-row {
+  @include ox-focus(2px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  min-block-size: 48px;
+  padding-inline: var(--ox-1);
+  border-block-end: 1px solid var(--ox-bd);
+  text-decoration: none;
+  color: var(--ox-fg);
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10. Brands (DIRECTION 6.14)
+// ---------------------------------------------------------------------------
+.ox-brands {
+  padding-block: var(--ox-6) var(--ox-16);
+}
+
+.ox-brands__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  min-block-size: 96px;
+  justify-content: center;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.ox-brands__intro {
+  margin: 0;
+  color: var(--ox-fg-2);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-brands__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .ox-brands__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-brands__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .ox-brands__head {
+    min-block-size: 88px;
+  }
+}
+
+.ox-brand-tile {
+  @include ox-focus(2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  text-decoration: none;
+  color: var(--ox-fg);
+}
+
+.ox-brand-tile__plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 2;
+  padding: var(--ox-6);
+  background: var(--ox-plate);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  transition: border-color var(--dur-fast) var(--ease-out);
+
+  .ox-brand-tile:hover & {
+    border-color: var(--ox-bd-2);
+  }
+}
+
+.ox-brand-tile__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-brand-tile__name {
+  display: block;
+  min-block-size: 40px;
+  font-weight: 600;
+  text-align: center;
+}
+
+// The 64 logo plate in a brand listing header (DIRECTION 6.14).
+.ox-brand-plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 96px;
+  block-size: 64px;
+  padding: var(--ox-2);
+  background: var(--ox-plate);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-brand-plate__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+// ---------------------------------------------------------------------------
+// 11. Reduced motion (DIRECTION 7.1, 9.6)
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+  .ox-subneed__link,
+  .ox-brand-tile__plate {
+    transition: none;
+  }
+}

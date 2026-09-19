@@ -1,0 +1,49 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ItemList",
+      "@id": "https://optimalx.com.sa/goal-performance/c9#itemlist",
+      "url": "https://optimalx.com.sa/goal-performance/c9",
+      "numberOfItems": 1,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "url": "https://optimalx.com.sa/p702549495",
+          "name": "Creatine Monohydrate"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://optimalx.com.sa/goal-performance/c9#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "ما أهم مكملات الجيم للمبتدئ؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "واي بروتين إذا كان طعامك لا يغطي احتياجك من البروتين، وكرياتين مونوهيدرات بجرعة يومية ثابتة. هذان يكفيان في الأشهر الأولى. ما قبل التمرين والأحماض الأمينية إضافات لاحقة، وليست شرطا للبداية. الأهم من كل مكمل هو النوم والطعام والانتظام في التمرين."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل أحتاج إلى كل هذه المكملات معا؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "لا. كل مكمل هنا يؤدي دورا محددا، وكثير منها يتداخل. من يشرب واي بروتين يحصل على الأحماض الأمينية المتفرعة منه، فلا يحتاج غالبا إلى بي سي اي اي منفصل. اسألنا قبل أن تشتري أكثر من منتجين، فهذا أرخص من تجربة كل شيء."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "ما الفرق بين الكرياتين والبروتين؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "البروتين مصدر غذائي يساهم في الحفاظ على الكتلة العضلية ونموها. الكرياتين مركب يدعم إنتاج الطاقة في التمارين القصيرة عالية الشدة. يمكن استخدامهما معا في الكوب نفسه، ولكل منهما جرعته الخاصة المكتوبة على الملصق."
+          }
+        }
+      ]
+    }
+  ]
+}

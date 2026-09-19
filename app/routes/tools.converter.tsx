@@ -1,27 +1,30 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
-import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { robots } from '../components/seo/head';
+import { useDocumentClass } from '@salla.sa/twilight-theme-engine/hooks';
+import { pageHead } from '../components/pages/head';
+import { UnitConverter } from '../components/pages/UnitConverter';
 
 /**
- * /tools/converter (P0 stub). B5 owns this file and builds the unit converter
- * here (`ox.tools.*`). Custom routes sit under `{-$locale}` through
- * app/routes.ts, so this serves at /ar/tools/converter; the engine gives it no
- * RouteId and no body class (engine-surface 8.5), which B5 sets through
- * `useDocumentClass`. The layout already renders <main id="main-content">, so
- * a page is a section. noindex until the real head lands.
+ * `/tools/converter` (DIRECTION 6.18): the weight converter.
+ *
+ * The only B5 page that is `noindex, follow`. It is a utility for a shopper
+ * comparing two tubs, not a page that should compete in search with the
+ * category and guide pages that answer the same question in words.
  */
 export const Route = createFileRoute('/{-$locale}/tools/converter')({
-  head: withHead({ head: () => ({ robots: robots(true) }) }),
-  component: ConverterStub,
+  loader: () => ({ path: '/tools/converter' }),
+  head: withHead({
+    head: pageHead({
+      path: '/tools/converter',
+      titleKey: 'ox.tools.converter.meta_title',
+      descriptionKey: 'ox.tools.converter.meta_description',
+      noindex: true,
+    }),
+  }),
+  component: ConverterRoute,
 });
 
-function ConverterStub() {
-  const { t } = useTranslation();
-  return (
-    <section aria-busy="true">
-      <p>{t('ox.common.loading')}</p>
-      {import.meta.env.DEV && <p>TODO B5: unit converter</p>}
-    </section>
-  );
+function ConverterRoute() {
+  useDocumentClass({ body: { class: 'ox-page-converter' } });
+  return <UnitConverter />;
 }
