@@ -4,7 +4,7 @@ import type { ProductPageProps } from '@salla.sa/twilight-theme-engine/routes/pr
 import { ProductDetailSkeleton } from '@salla.sa/twilight-theme-engine/skeleton';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { ProductPage } from '../components/product/ProductPage';
-import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
+import { canonicalForRequest, localeCodesOf, robots, tryOriginOf } from '../components/seo/head';
 import { faqPage, graph, service, type JsonLdNode } from '../components/seo/jsonld';
 import { pdpFaqItems } from '../components/product/lib/faq';
 import { variantOf } from '../components/product/lib/variant';
@@ -43,7 +43,11 @@ export const Route = createFileRoute('/{-$locale}/$slug/p{$id}')({
     const path = ctx.location?.pathname ?? '';
     const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
     const canonical =
-      origin && path ? canonicalFor(origin, multilingual ? ctx.locale : null, path) : result.canonical;
+      origin && path ? canonicalForRequest(origin, path, {
+        multilingual,
+        locale: ctx.locale,
+        languages: localeCodesOf(ctx.settings),
+      }) : result.canonical;
 
     const engineNodes = result.jsonLd
       ? Array.isArray(result.jsonLd)

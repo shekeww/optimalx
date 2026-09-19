@@ -1,1 +1,632 @@
-// B5 page styles (services hub, branch, about, contact, converter, 404, error); owned by B5.
+// B5: services hub, branch, about, contact, converter, 404 and error
+// (DIRECTION 5.6, 6.11, 6.12, 6.15, 6.16, 6.17, 6.18). Role tokens only,
+// logical properties only, motion only through --dur-* and --ease-*, transform
+// and opacity only, and nothing on a wedge element animates (amendment A9).
+
+// ---------------------------------------------------------------------------
+// 1. Page frame and vertical rhythm (DIRECTION 4.2)
+// ---------------------------------------------------------------------------
+.ox-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-12);
+  inline-size: 100%;
+  max-inline-size: var(--ox-container);
+  margin-inline: auto;
+  padding-inline: var(--ox-gutter);
+  padding-block-end: var(--ox-16);
+}
+
+// The text-measure pages read as documents, not as grids (DIRECTION 4.1).
+.ox-page--about,
+.ox-page--converter {
+  max-inline-size: calc(var(--ox-container-narrow) + 2 * var(--ox-gutter));
+}
+
+.ox-page-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-page-head__title,
+.ox-page-head__lead {
+  margin: 0;
+}
+
+.ox-page-head__lead {
+  color: var(--ox-fg-2);
+}
+
+// ---------------------------------------------------------------------------
+// 2. Hub hero (DIRECTION 6.11 block 2, 4.5 "goal landing and services hub
+//    hero" row: 360 mobile, 420 desktop, run 170)
+// ---------------------------------------------------------------------------
+.ox-page-hero {
+  --ox-band-h: 360px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--ox-4);
+  min-block-size: var(--ox-band-h);
+  padding-block: var(--ox-8);
+  overflow: hidden;
+}
+
+.ox-page-hero__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-page-hero__title,
+.ox-page-hero__sub,
+.ox-page-hero__intro,
+.ox-page-hero__reply {
+  margin: 0;
+}
+
+.ox-page-hero__sub {
+  color: var(--ox-fg-2);
+}
+
+.ox-page-hero__intro {
+  color: var(--ox-fg-2);
+}
+
+.ox-page-hero__reply {
+  color: var(--ox-fg-3);
+}
+
+// Mobile: the tonal corner, never a full panel behind the text.
+.ox-page-hero__panel {
+  @include ox-wedge-corner(64px, 158px);
+  background: var(--ox-graphite-2);
+}
+
+@media (min-width: 1024px) {
+  .ox-page-hero {
+    --ox-band-h: 420px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .ox-page-hero__panel {
+    @include ox-wedge(420px, start);
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: 50%;
+    block-size: auto;
+    background: var(--ox-graphite-2);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. Services hub sections (DIRECTION 6.11 blocks 3 to 7)
+// ---------------------------------------------------------------------------
+.ox-hub__section,
+.ox-hub__faq,
+.ox-contact,
+.ox-contact-ask,
+.ox-contact-branch,
+.ox-contact-social,
+.ox-about-why,
+.ox-branch-do {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+}
+
+// A grid child that carries the card plus the two notes under it, so the
+// three columns stay equal height (DIRECTION 4.4).
+.ox-hub__channel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+}
+
+.ox-hub__channel > .ox-channel {
+  flex: 1;
+}
+
+.ox-hub__card-note {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
+.ox-hub__foot {
+  margin: 0;
+}
+
+.ox-channels--one {
+  max-inline-size: 420px;
+}
+
+// ---------------------------------------------------------------------------
+// 4. ScopePanel (DIRECTION 6.11 block 4)
+// ---------------------------------------------------------------------------
+.ox-scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding: var(--ox-6);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-scope__title,
+.ox-scope__closing {
+  margin: 0;
+}
+
+.ox-scope__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-scope__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  margin: 0;
+}
+
+.ox-scope__tick {
+  flex: none;
+  margin-block-start: 2px;
+}
+
+.ox-scope__closing {
+  color: var(--ox-fg-2);
+  border-block-start: 1px solid var(--ox-bd);
+  padding-block-start: var(--ox-3);
+}
+
+@media (min-width: 768px) {
+  .ox-scope__list {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. HowItWorks and PickupSteps (DIRECTION 6.11 block 5, 6.12 block 4)
+// ---------------------------------------------------------------------------
+.ox-how,
+.ox-pickup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+}
+
+.ox-how__title,
+.ox-pickup__title,
+.ox-pickup__late {
+  margin: 0;
+}
+
+.ox-how__list,
+.ox-pickup__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.ox-how__step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+}
+
+.ox-pickup__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-3);
+  margin: 0;
+}
+
+.ox-how__num,
+.ox-pickup__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: var(--ox-r-pill);
+  background: var(--ox-plate);
+  color: var(--ox-fg-2);
+  font-weight: 700;
+}
+
+.ox-how__step-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ox-how__line {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+.ox-pickup__late {
+  color: var(--ox-fg-3);
+}
+
+@media (min-width: 768px) {
+  .ox-how__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Branch page (DIRECTION 6.12)
+// ---------------------------------------------------------------------------
+.ox-branch-map {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  align-items: flex-start;
+}
+
+.ox-branch-map__frame,
+.ox-branch-map__plate {
+  inline-size: 100%;
+  block-size: 268px;
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
+}
+
+.ox-branch-map__frame salla-map {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ox-branch-map__skeleton {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ox-branch-map__plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  background: var(--ox-plate);
+  text-align: center;
+  padding-inline: var(--ox-4);
+}
+
+.ox-branch-map__address,
+.ox-branch-map__landmark {
+  margin: 0;
+}
+
+.ox-branch-map__landmark {
+  color: var(--ox-fg-3);
+}
+
+.ox-branch-do__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-branch-do__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-2);
+}
+
+.ox-branch-do__tick {
+  flex: none;
+  margin-block-start: 2px;
+}
+
+.ox-branch-do__item-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ox-branch-do__line {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+@media (min-width: 768px) {
+  .ox-branch-do__list {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--ox-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-branch-map__frame,
+  .ox-branch-map__plate {
+    block-size: 400px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. About (DIRECTION 6.15)
+// ---------------------------------------------------------------------------
+.ox-about-why__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-about-why__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+}
+
+.ox-about-why__item-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ox-about-why__body {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+.ox-about-story {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-about-story__p {
+  margin: 0;
+}
+
+.ox-about-reg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  padding: var(--ox-6);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-about-reg__title,
+.ox-about-reg__line {
+  margin: 0;
+}
+
+.ox-about-reg__line {
+  color: var(--ox-fg-2);
+}
+
+.ox-about-out {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+@media (min-width: 768px) {
+  .ox-about-why__grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--ox-8);
+  }
+
+  .ox-about-out {
+    flex-direction: row;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. Contact (DIRECTION 6.16)
+// ---------------------------------------------------------------------------
+.ox-contact__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-contact__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  min-block-size: 72px;
+  padding: var(--ox-4);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-contact__label {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ox-contact__value,
+.ox-contact__line,
+.ox-contact__hours,
+.ox-contact__pdpl,
+.ox-contact-branch__address,
+.ox-contact-branch__line,
+.ox-contact-social__line {
+  margin: 0;
+}
+
+.ox-contact__line,
+.ox-contact__hours,
+.ox-contact__pdpl,
+.ox-contact-branch__line,
+.ox-contact-social__line {
+  color: var(--ox-fg-2);
+}
+
+.ox-contact-branch,
+.ox-contact-social {
+  align-items: flex-start;
+  gap: var(--ox-3);
+}
+
+.ox-contact-social__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-contact-row__title,
+.ox-contact-row__phone {
+  margin: 0;
+}
+
+.ox-contact-row__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  align-items: flex-start;
+}
+
+@media (min-width: 768px) {
+  .ox-contact__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ox-contact-row__actions {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. Unit converter (DIRECTION 6.18)
+// ---------------------------------------------------------------------------
+.ox-converter {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-converter__result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: 0;
+  padding: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-converter__result-label {
+  color: var(--ox-fg-3);
+  font-weight: 600;
+}
+
+.ox-converter__invalid {
+  color: var(--ox-fg-2);
+}
+
+.ox-converter__note {
+  margin: 0;
+  color: var(--ox-fg-3);
+  max-inline-size: var(--ox-container-text);
+}
+
+@media (min-width: 768px) {
+  .ox-converter {
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: end;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10. NotFound and ErrorState (DIRECTION 5.6, 6.17)
+// ---------------------------------------------------------------------------
+.ox-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-4);
+  max-inline-size: calc(var(--ox-container-text) + var(--ox-8));
+  padding-block: var(--ox-16);
+}
+
+.ox-state__mark {
+  // The one orange decoration outside buttons and the hero stroke
+  // (DIRECTION 5.6). Static: no rotation, no spin.
+  inline-size: 64px;
+  block-size: 64px;
+  color: var(--ox-accent);
+}
+
+.ox-state__mark--lg {
+  inline-size: 96px;
+  block-size: 96px;
+}
+
+.ox-state__title,
+.ox-state__body,
+.ox-state__report,
+.ox-state__code {
+  margin: 0;
+}
+
+.ox-state__body {
+  color: var(--ox-fg-2);
+}
+
+.ox-state__report,
+.ox-state__code {
+  color: var(--ox-fg-3);
+}
+
+.ox-state__search {
+  inline-size: 100%;
+  max-inline-size: 420px;
+}
+
+.ox-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+}
+
+.ox-page--404__latest {
+  inline-size: 100%;
+}

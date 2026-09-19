@@ -37,6 +37,15 @@ export function getRouter() {
     defaultPendingMinMs: 200,
   });
 
+  // C10 (DIRECTION 7.3): same-document view transitions around the router's
+  // DOM commit. The engine's `createRouter` forwards only four options
+  // (theme-engine chunk-QVPMWMPP.js:547-555), so the flag is set afterwards
+  // through the router's own `update`. Where the API is unsupported the
+  // navigation swaps instantly: no polyfill, no library. The root cross-fade,
+  // the pinned header and tab bar groups and the reduced-motion opt-out live
+  // in `app/styles/06-ox/_b6-commerce.scss`.
+  router.update({ defaultViewTransition: true });
+
   // Cache for client-side
   if (typeof window !== 'undefined') {
     clientRouter = router;

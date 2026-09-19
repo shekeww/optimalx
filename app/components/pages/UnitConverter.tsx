@@ -3,33 +3,7 @@ import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../common/Bdi';
-
-/** Grams per unit. Weight only: no volume, and no scoop, which is per product. */
-export const UNITS = {
-  g: 1,
-  kg: 1000,
-  oz: 28.349523125,
-  lb: 453.59237,
-} as const;
-
-export type UnitId = keyof typeof UNITS;
-export const UNIT_IDS = Object.keys(UNITS) as UnitId[];
-
-/**
- * Converts `value` from one weight unit to another.
- * Returns null for anything that is not a finite, positive number, so a
- * half-typed input shows the hint rather than NaN.
- */
-export function convert(value: number, from: UnitId, to: UnitId): number | null {
-  if (!Number.isFinite(value) || value <= 0) return null;
-  return (value * UNITS[from]) / UNITS[to];
-}
-
-/** Up to three decimals, trailing zeros dropped, always Western numerals. */
-export function formatAmount(value: number): string {
-  const rounded = Math.round(value * 1000) / 1000;
-  return String(rounded);
-}
+import { convert, formatAmount, UNIT_IDS, type UnitId } from './convert';
 
 /**
  * `/tools/converter` (DIRECTION 6.18): a narrow form of one input and two

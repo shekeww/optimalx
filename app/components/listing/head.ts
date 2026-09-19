@@ -1,7 +1,7 @@
 import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head';
 import type { TwilightContext } from '@salla.sa/twilight-theme-engine/tanstack';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
-import { canonicalFor, robots, tryOriginOf } from '../seo/head';
+import { canonicalForRequest, localeCodesOf, robots, tryOriginOf } from '../seo/head';
 import { faqPage, graph, itemList, type JsonLdNode } from '../seo/jsonld';
 import { listingFaqItems } from './faq';
 import { slugFromUrl } from './resolve';
@@ -46,7 +46,11 @@ export function listingHeadExtend({ noindex = false }: ListingHeadOptions = {}) 
     const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
     const canonical =
       origin && path
-        ? canonicalFor(origin, multilingual ? ctx.locale : null, path)
+        ? canonicalForRequest(origin, path, {
+        multilingual,
+        locale: ctx.locale,
+        languages: localeCodesOf(ctx.settings),
+      })
         : result.canonical;
 
     const nodes: JsonLdNode[] = result.jsonLd

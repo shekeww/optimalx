@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTwilight } from '@salla.sa/twilight-theme-engine';
-import { useCartContext } from '@salla.sa/twilight-theme-engine/contexts';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { CountPill } from './Header/MainBar';
+import { useCartCount } from '../commerce/useCartCount';
 import { openMobileDrawer } from './Header/Header';
 
 /**
@@ -44,7 +44,10 @@ export function BottomTabBar() {
   const { t } = useTranslation();
   const { settings } = useTheme();
   const { location } = useTwilight();
-  const cart = useCartContext();
+  // The SDK-backed count, not `useCartContext`: the engine never mounts the
+  // cart provider, so the context reads null on every route (commerce
+  // useCartCount). `null` means "not known yet" and renders an empty pill.
+  const cartCount = useCartCount();
   const hidden = useBodyHasClass(HIDING_BODY_CLASSES);
 
   const enabled = (settings as Record<string, unknown> | undefined)?.show_bottom_tabbar !== false;
@@ -107,7 +110,7 @@ export function BottomTabBar() {
           >
             <span className="ox-tab__icon">
               <i className="sicon-shopping-bag" aria-hidden="true" />
-              <CountPill count={cart?.cart?.count ?? 0} />
+              <CountPill count={cartCount ?? 0} />
             </span>
             <span className="ox-tab__label">{t('ox.header.cart')}</span>
           </Link>

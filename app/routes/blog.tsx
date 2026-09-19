@@ -1,27 +1,35 @@
-// @auto-generated
+import { Suspense } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Blog } from '@salla.sa/twilight-theme-engine/routes/blog';
 import type { BlogPageProps } from '@salla.sa/twilight-theme-engine/routes/blog';
 import { BlogSkeleton } from '@salla.sa/twilight-theme-engine/skeleton';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
+import { commerceHeadExtend } from '../components/commerce/head';
 
 /**
- * Blog route configuration.
- * Loads page data via loader and renders the Blog component.
+ * The guides index (DIRECTION 6.13). The engine page is wrapped and kept: its
+ * slider, its card grid, its pagination and its category nav all stay, and
+ * B6 adds the page header through the `blog:start` hook and restyles the rest
+ * through `_b6-commerce.scss`.
+ *
+ * Head: the C12 canonical correction and `index, follow`. No JSON-LD: a blog
+ * index is not an ItemList of products, and the engine `Breadcrumb` emits the
+ * one BreadcrumbList (C11).
  */
 export const Route = createFileRoute('/{-$locale}/blog')({
   loader: ({ params }): Promise<BlogPageProps> => Blog.loader({ locale: params.locale }),
-  head: withHead(Blog),
+  head: withHead(Blog, commerceHeadExtend()),
   pendingComponent: () => <BlogSkeleton />,
   component: BlogComponent,
 });
 
-/**
- * Blog page component.
- * Uses Route.useLoaderData() to access the data loaded by the route loader,
- * following React best practices for data fetching in route components.
- */
 function BlogComponent() {
   const data: BlogPageProps = Route.useLoaderData();
-  return <Blog.Component {...data} />;
+  return (
+    <div className="ox-blog">
+      <Suspense fallback={<BlogSkeleton />}>
+        <Blog.Component {...data} />
+      </Suspense>
+    </div>
+  );
 }

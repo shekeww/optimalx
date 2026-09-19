@@ -42,6 +42,40 @@ export function canonicalFor(
   return currentUrl(origin, locale, path.replace(/[?#].*$/, ''));
 }
 
+/** The store's language codes, from the engine settings payload. */
+export function localeCodesOf(settings: unknown): string[] {
+  const languages = (settings as { languages?: Array<{ code?: unknown }> } | undefined)?.languages;
+  if (!Array.isArray(languages)) return [];
+  return languages
+    .map((language) => language?.code)
+    .filter((code): code is string => typeof code === 'string' && code.length > 0);
+}
+
+/**
+ * Canonical for a request path (a route that reads `ctx.location.pathname`).
+ *
+ * The served path already carries `/{locale}` when the visitor is on a
+ * prefixed URL, and a single-language store redirects `/ar/x` to `/x`. Echoing
+ * the raw pathname would therefore point the canonical at a redirect on a
+ * single-language store, which is the defect C12 exists to fix. The prefix is
+ * stripped first and `canonicalFor` puts it back only when the store is
+ * multilingual, so every route (product, listing, page) resolves the same URL.
+ */
+export function canonicalForRequest(
+  origin: string,
+  path: string,
+  options: { multilingual: boolean; locale?: string | null; languages?: readonly string[] }
+): string {
+  const languages =
+    options.languages && options.languages.length > 0
+      ? options.languages
+      : options.locale
+        ? [options.locale]
+        : [];
+  const bare = languages.length > 0 ? stripLocale(path, languages) : path;
+  return canonicalFor(origin, options.multilingual ? options.locale : null, bare);
+}
+
 /** Value for the head `robots` field (`<meta name="robots">`). */
 export function robots(noindex: boolean): string {
   return noindex ? 'noindex, follow' : 'index, follow';

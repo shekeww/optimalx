@@ -1,1 +1,1094 @@
-// B6 commerce styles (cart, thank-you, account, wishlist, brands, blog); owned by B6.
+// ---------------------------------------------------------------------------
+// B6 commerce: cart, thank-you, guides, policies, account, modal, drawer and
+// toast (DIRECTION 5.5, 5.6, 6.9, 6.10, 6.13, 6.18). Owned by B6.
+//
+// Engine selector contract. The cart, account and blog pages are the engine's
+// own React components and they carry NO `s-*` classes: what looks like one
+// ("s-center" inside "items-center") is a Tailwind substring. The stable
+// hooks these rules pin to, all read from the engine dist on 2026-09-19, are:
+//   .cart-item, .btn--delete, .item-total, .item-regular-price,
+//   .item-original-price                    (CartItem-UOVSSW5O.js)
+//   .cart-submit-wrap, .coupon-text, .progress-bg, .shipping-item,
+//   #free-shipping, #cart-submit, [data-cart-total]
+//                                           (CartSummary-4V3L56U7.js)
+//   .profile-header, .sidebar, .avatar-wrap (CustomerLayout-PLJTAXCP.js)
+//   .blog-category__title, .post-entry, .post-entry__title, .blog-slider
+//                                           (BlogPage-OZTHYA3G.js)
+//   .content--single-page, .content-entry   (PageSingle-FHHC5QDA.js)
+//   .no-content-placeholder                 (04-components/no-content-placeholder)
+//   .s-add-product-toast*, .s-modal-*, .s-drawer-* (CDN web components)
+// Every one of them is scoped under a wrapper this batch owns, except the
+// four web-component families, which the engine renders into <body>.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// 1. Cart page frame (DIRECTION 6.9)
+// ---------------------------------------------------------------------------
+.ox-cart {
+  display: block;
+
+  .container {
+    max-inline-size: var(--ox-container);
+  }
+
+  // Two columns from 1024: rows 7 of 12, summary 5 of 12 sticky at the
+  // header offset. The engine writes the split as `lg:w-[calc(100%-384px)]`
+  // and `lg:w-96`, which is a fixed 384 column; the grid below replaces it.
+  @media (min-width: 1024px) {
+    .main-content {
+      inline-size: auto;
+      flex: 1 1 0;
+      min-inline-size: 0;
+    }
+  }
+}
+
+.ox-cart--empty {
+  min-block-size: 360px;
+  padding-block: var(--ox-12);
+}
+
+// Cart row (DIRECTION 5.5 CartRow): 112 on mobile as two lines, 96 on desktop
+// in one. The engine's card chrome (shadow, 20/28 padding) is removed; rows
+// are separated by a rule, as everywhere else in the theme.
+.ox-cart .cart-item {
+  position: relative;
+  background: var(--ox-surface);
+  border: 0;
+  border-block-end: 1px solid var(--ox-bd);
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  padding: var(--ox-4) 0;
+  min-block-size: 112px;
+
+  @media (min-width: 1024px) {
+    min-block-size: 96px;
+  }
+
+  &:last-child {
+    border-block-end: 0;
+  }
+
+  img {
+    inline-size: 80px;
+    block-size: 80px;
+    background: var(--ox-plate);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-1);
+    object-fit: contain;
+  }
+
+  a {
+    color: var(--ox-fg);
+    font-weight: 600;
+  }
+
+  .item-total {
+    font-weight: 700;
+    color: var(--ox-fg);
+  }
+
+  // Red is never a price colour in this theme (DIRECTION 2.5).
+  .item-regular-price,
+  .item-original-price {
+    color: var(--ox-fg-3);
+  }
+
+  .free-ribbon {
+    background: var(--ox-go);
+    box-shadow: none;
+  }
+
+  .btn--delete {
+    min-inline-size: 44px;
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ox-fg-3);
+    border-radius: var(--ox-r-1);
+
+    &:hover {
+      color: var(--ox-stop);
+      background: var(--ox-plate);
+    }
+
+    &:focus-visible {
+      outline: var(--ox-focus-ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .s-quantity-input-container {
+    min-block-size: 40px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. Cart summary (DIRECTION 5.5 CartSummary)
+// ---------------------------------------------------------------------------
+.ox-cart {
+  // The engine gives the summary column and each of its panels a shadow and a
+  // 20/28 padding box. One card, one border, no shadow.
+  .sticky > div,
+  .sticky > form {
+    box-shadow: none;
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+    padding: var(--ox-5, 20px);
+    margin-block-end: var(--ox-4);
+  }
+
+  @media (min-width: 1024px) {
+    .sticky {
+      inline-size: 360px;
+      flex: none;
+      // Below the sticky header (72 bar + 48 nav) plus the rhythm step.
+      inset-block-start: calc(var(--ox-h-bar) + var(--ox-h-nav) + var(--ox-4));
+    }
+  }
+
+  // The engine paints its own free-shipping panel from the same API field the
+  // CartTrust bar reads. One bar per page: ours carries the pickup
+  // alternative and the design's track, so the engine's panel is dropped.
+  #free-shipping {
+    display: none;
+  }
+
+  .coupon-text,
+  .shipping-item {
+    color: var(--ox-fg-2);
+  }
+
+  [data-cart-total] {
+    font-weight: 700;
+    color: var(--ox-fg);
+  }
+
+  .cart-submit-wrap {
+    margin-block-start: var(--ox-4);
+
+    salla-button,
+    #cart-submit {
+      inline-size: 100%;
+    }
+  }
+
+  // The checkout button is repeated in the fixed bar below 1024, so the
+  // in-column one only needs to exist there for keyboard order; it stays
+  // visible (a duplicate control is not a defect) but the bar carries the
+  // total, which is why the bar is the primary at that width.
+  input.form-input,
+  .form-input {
+    block-size: 44px;
+    border-color: var(--ox-bd-2);
+    border-radius: var(--ox-r-1);
+    background: var(--ox-surface);
+    color: var(--ox-fg);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. Free-shipping bar and trust lines (CartTrust, cart:items.end)
+// ---------------------------------------------------------------------------
+.ox-cart-trust {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  padding-block: var(--ox-6) 0;
+}
+
+.ox-ship {
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  padding: var(--ox-4);
+
+  &__line {
+    display: flex;
+    align-items: center;
+    gap: var(--ox-2);
+    margin: 0 0 var(--ox-3);
+    color: var(--ox-fg);
+
+    .ox-icon {
+      flex: none;
+      color: var(--ox-fg-2);
+    }
+  }
+
+  &__track {
+    block-size: 6px;
+    border-radius: var(--ox-r-pill);
+    background: var(--ox-plate-2);
+    overflow: hidden;
+  }
+
+  // The fill snaps to its new width: DIRECTION 7.1 lists the free-shipping
+  // fill under "not animated, by decision".
+  &__fill {
+    display: block;
+    block-size: 100%;
+    background: var(--ox-accent);
+    border-radius: var(--ox-r-pill);
+  }
+
+  &.is-reached {
+    .ox-ship__line .ox-icon {
+      color: var(--ox-go);
+    }
+
+    .ox-ship__fill {
+      background: var(--ox-go);
+    }
+  }
+
+  &__pickup {
+    margin: var(--ox-3) 0 0;
+    color: var(--ox-fg-2);
+  }
+}
+
+.ox-cart-trust__marks {
+  display: flex;
+  align-items: center;
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  padding: var(--ox-3);
+  min-block-size: 56px;
+
+  salla-payments {
+    inline-size: 100%;
+  }
+}
+
+.ox-cart-trust__marks-box {
+  inline-size: 100%;
+  block-size: 32px;
+}
+
+.ox-cart-trust__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ox-fg-3);
+}
+
+// ---------------------------------------------------------------------------
+// 4. Mobile checkout bar (DIRECTION 6.9 row 4, 7.1 "StickyBar and mobile cart
+//    checkout bar"). It replaces the tab bar rather than stacking on it: the
+//    component sets `body.ox-sticky-bar`, which unmounts B1's `.ox-tabbar`.
+// ---------------------------------------------------------------------------
+.ox-checkout-bar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--ox-z-sticky);
+  background: var(--ox-surface);
+  border-block-start: 1px solid var(--ox-bd);
+  box-shadow: var(--ox-shadow-1);
+  padding-block-end: env(safe-area-inset-bottom);
+  transform: translateY(100%);
+  animation: ox-checkout-bar-in var(--dur-slow) var(--ease-out) forwards;
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ox-4);
+    block-size: var(--ox-h-sticky);
+    padding-inline: var(--ox-gutter);
+    max-inline-size: var(--ox-container);
+    margin-inline: auto;
+  }
+
+  &__total {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  &__label {
+    color: var(--ox-fg-3);
+  }
+
+  &__btn {
+    flex: 1 1 auto;
+    max-inline-size: 60%;
+  }
+}
+
+@keyframes ox-checkout-bar-in {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+// The cart page owns the bottom of the viewport while the bar is up.
+body.ox-sticky-bar .ox-cart {
+  padding-block-end: var(--ox-h-sticky);
+}
+
+// ---------------------------------------------------------------------------
+// 5. Thank-you (DIRECTION 6.10)
+// ---------------------------------------------------------------------------
+.ox-thankyou {
+  // The engine paints a 208 primary-orange band behind the header and a wave
+  // svg under it. The band stays (it is the store's brand colour and the one
+  // celebratory moment in the flow); the card below it takes our chrome.
+  .container {
+    max-inline-size: var(--ox-container-narrow);
+  }
+
+  .thankyou-block,
+  .bg-white {
+    box-shadow: none;
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+    background: var(--ox-surface);
+  }
+
+  &__pending {
+    min-block-size: 480px;
+
+    @media (min-width: 1024px) {
+      min-block-size: 420px;
+    }
+  }
+}
+
+.ox-thankyou__blocks {
+  max-inline-size: var(--ox-container-narrow);
+  margin-inline: auto;
+  padding-inline: var(--ox-gutter);
+  padding-block-end: var(--ox-16);
+}
+
+.ox-ty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+
+  &__card {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+    padding: var(--ox-6);
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--ox-2);
+      margin: 0 0 var(--ox-2);
+    }
+
+    .ox-icon {
+      color: var(--ox-accent);
+    }
+  }
+
+  &__intro {
+    color: var(--ox-fg-2);
+    margin: 0 0 var(--ox-4);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ox-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ox-3);
+    }
+  }
+
+  &__num {
+    flex: none;
+    inline-size: 24px;
+    block-size: 24px;
+    border-radius: var(--ox-r-pill);
+    background: var(--ox-plate);
+    color: var(--ox-fg);
+    font-weight: 700;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__lines {
+    margin: var(--ox-4) 0 0;
+    padding: var(--ox-4);
+    list-style: none;
+    background: var(--ox-plate);
+    border-radius: var(--ox-r-1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ox-2);
+  }
+
+  &__storage {
+    margin: var(--ox-4) 0 0;
+    color: var(--ox-fg-3);
+  }
+
+  &__address {
+    color: var(--ox-fg-2);
+  }
+
+  &__out {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ox-3);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Guides index (DIRECTION 6.13 Index)
+// ---------------------------------------------------------------------------
+.ox-blog {
+  // One h1 per page. The engine renders its own from the SDK string, either
+  // visible (`.blog-category__title`, no slides) or screen-reader only (with
+  // slides); ours comes from the `blog:start` hook with the spec's wording.
+  .blog-category__title,
+  h1.sr-only {
+    display: none;
+  }
+
+  .container {
+    max-inline-size: var(--ox-container);
+  }
+
+  // The category nav is a desktop-only sidebar in the engine. It becomes the
+  // chip row of DIRECTION 6.13 row 3 on mobile and keeps its column above.
+  nav[aria-label='Sidebar'] {
+    display: block;
+
+    > h2 {
+      color: var(--ox-fg-2);
+      font-size: 13px;
+    }
+
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ox-2);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li a {
+      display: inline-flex;
+      align-items: center;
+      min-block-size: 36px;
+      padding-inline: var(--ox-3);
+      border: 1px solid var(--ox-bd-2);
+      border-radius: var(--ox-r-pill);
+      background: var(--ox-surface);
+      color: var(--ox-fg);
+      font-size: 15px;
+      font-weight: 600;
+
+      &:hover {
+        border-color: var(--ox-fg-3);
+      }
+    }
+
+    li.text-primary a {
+      background: var(--ox-fg);
+      border-color: var(--ox-fg);
+      color: var(--ox-paper);
+    }
+
+    @media (min-width: 1024px) {
+      ul {
+        flex-direction: column;
+        flex-wrap: nowrap;
+      }
+
+      li a {
+        inline-size: 100%;
+      }
+    }
+  }
+
+  // Guide cards: the plate, the rule, no shadow and no lift.
+  .post-entry {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+    box-shadow: none;
+    transition: none;
+
+    &:hover {
+      box-shadow: none;
+      border-color: var(--ox-bd-2);
+    }
+  }
+
+  .post-entry__image {
+    background: var(--ox-plate);
+  }
+
+  .post-entry__title a {
+    color: var(--ox-fg);
+  }
+
+  .blog-slider {
+    border-radius: var(--ox-r-2);
+  }
+}
+
+.ox-blog-head {
+  padding-block: var(--ox-6) var(--ox-8);
+  max-inline-size: var(--ox-container-text);
+
+  h1 {
+    margin: 0 0 var(--ox-2);
+  }
+
+  &__intro {
+    margin: 0;
+    color: var(--ox-fg-2);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. Article (DIRECTION 6.13 Article)
+// ---------------------------------------------------------------------------
+.ox-article {
+  .container {
+    max-inline-size: var(--ox-container);
+  }
+
+  // The article column is a plain block in the engine. Turning it into a flex
+  // column is what lets the key-points panel, which the `blog:single.start`
+  // hook renders above the title, sit where the spec puts it: under the hero
+  // image and above the body. Every other child keeps source order because
+  // they share one order value.
+  .main-content.blog-category {
+    display: flex;
+    flex-direction: column;
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+
+    > * {
+      order: 3;
+    }
+
+    > h1 {
+      order: 0;
+      max-inline-size: var(--ox-container-text);
+    }
+
+    > h1 + div {
+      order: 1;
+      color: var(--ox-fg-3);
+    }
+
+    > img,
+    > figure {
+      order: 2;
+      background: var(--ox-plate);
+      border-radius: var(--ox-r-2);
+    }
+
+    > article {
+      order: 4;
+      max-inline-size: var(--ox-container-text);
+      color: var(--ox-fg);
+    }
+
+    > .ox-article-extras {
+      order: 5;
+    }
+  }
+
+  article {
+    font-size: 16px;
+    line-height: 1.9;
+
+    h2,
+    h3 {
+      color: var(--ox-fg);
+      font-weight: 700;
+      margin-block: var(--ox-8) var(--ox-3);
+    }
+
+    p {
+      margin-block-end: var(--ox-4);
+    }
+
+    img {
+      border-radius: var(--ox-r-2);
+      background: var(--ox-plate);
+    }
+  }
+
+  aside[aria-label='Sidebar'] {
+    > div {
+      background: var(--ox-surface);
+      border: 1px solid var(--ox-bd);
+      border-radius: var(--ox-r-2);
+      box-shadow: none;
+    }
+  }
+}
+
+.ox-keypoints {
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  padding: var(--ox-5, 20px);
+  margin-block: var(--ox-6);
+  max-inline-size: var(--ox-container-text);
+
+  &__title {
+    margin: 0 0 var(--ox-3);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ox-2);
+    margin: 0;
+    padding-inline-start: var(--ox-5, 20px);
+
+    li {
+      color: var(--ox-fg);
+    }
+  }
+}
+
+.ox-article-extras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-8);
+  margin-block-start: var(--ox-8);
+  max-inline-size: var(--ox-container-text);
+
+  &__note {
+    margin: 0;
+    padding: var(--ox-4);
+    border-inline-start: 2px solid var(--ox-bd-2);
+    color: var(--ox-fg-2);
+  }
+
+  &__share {
+    display: flex;
+    align-items: center;
+    gap: var(--ox-3);
+    min-block-size: 44px;
+  }
+
+  &__share-title {
+    margin: 0;
+    color: var(--ox-fg-3);
+  }
+
+  &__share-box {
+    block-size: 32px;
+    inline-size: 160px;
+  }
+
+  &__related h2 {
+    margin: 0 0 var(--ox-4);
+  }
+}
+
+.ox-guide-row {
+  display: grid;
+  gap: var(--ox-4);
+  grid-template-columns: 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. Static pages and the policy intro (DIRECTION 6.18)
+//
+// `display: contents` on the engine's own `.container` lifts the breadcrumb
+// and the page card into this flex column, so the intro, which is a sibling
+// after them in the DOM, can be ordered between the two. The container's own
+// width and gutters move here with it.
+// ---------------------------------------------------------------------------
+.ox-policy {
+  display: flex;
+  flex-direction: column;
+  max-inline-size: var(--ox-container);
+  margin-inline: auto;
+  padding-inline: var(--ox-gutter);
+
+  > .container {
+    display: contents;
+  }
+
+  > .container > nav {
+    order: 0;
+  }
+
+  > .container > div:has(> .content--single-page) {
+    order: 2;
+  }
+
+  &__intro {
+    order: 1;
+    max-inline-size: var(--ox-container-text);
+    background: var(--ox-plate);
+    border-radius: var(--ox-r-2);
+    padding: var(--ox-5, 20px);
+    margin-block: var(--ox-4) 0;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__tail {
+    margin-block-start: var(--ox-2);
+    color: var(--ox-fg-3);
+  }
+
+  &__pending {
+    min-block-size: 480px;
+  }
+
+  .content--single-page {
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+    max-inline-size: var(--ox-container-text);
+    inline-size: 100%;
+  }
+
+  .content-entry {
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--ox-fg);
+
+    h2,
+    h3 {
+      font-weight: 700;
+      margin-block: var(--ox-6) var(--ox-2);
+    }
+
+    p,
+    ul,
+    ol {
+      margin-block-end: var(--ox-4);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. Account (DIRECTION 5.5 AccountNav, 6.18). No route ownership: the engine
+//    `CustomerLayout` and `salla-user-menu` are styled where they stand, and
+//    the engine's own placeholder copy stays because those pages expose no
+//    hook slot to replace it with ours.
+// ---------------------------------------------------------------------------
+.profile-header.gradient-bg {
+  background-image: none;
+  background: var(--ox-graphite);
+
+  .breadcrumbs a,
+  .breadcrumbs span,
+  .breadcrumbs .arrow {
+    color: var(--ox-ink-2-on-dark);
+  }
+}
+
+nav.sidebar {
+  box-shadow: none;
+
+  @media (min-width: 1024px) {
+    inline-size: 240px;
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-2);
+  }
+
+  .avatar-wrap {
+    background: var(--ox-plate);
+    inline-size: 48px;
+    block-size: 48px;
+  }
+
+  // The menu is a CDN web component; these are the classes it renders.
+  .s-user-menu-item,
+  .s-user-menu-list a {
+    min-block-size: 44px;
+    display: flex;
+    align-items: center;
+    gap: var(--ox-2);
+    padding-inline: var(--ox-4);
+    color: var(--ox-fg);
+    border-radius: 0;
+
+    &:hover {
+      background: var(--ox-plate);
+    }
+  }
+
+  .s-user-menu-item.active,
+  .s-user-menu-list a.active {
+    background: var(--ox-plate);
+    border-inline-start: 2px solid var(--ox-accent);
+    font-weight: 600;
+  }
+}
+
+.main-content .no-content-placeholder,
+.no-content-placeholder {
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  box-shadow: none;
+  padding-block: var(--ox-12);
+  color: var(--ox-fg-2);
+
+  i {
+    color: var(--ox-fg-3);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10. Modal, drawer, toast and add-product toast (DIRECTION 5.6, 7.1).
+//     These are CDN web components appended to <body>, so the selectors are
+//     unscoped by necessity; each one is a class the component itself writes.
+// ---------------------------------------------------------------------------
+.s-modal-container {
+  // No backdrop-filter and no blur anywhere in this theme (DIRECTION 5.6).
+  background: rgba(23, 23, 26, 0.5);
+}
+
+.s-modal-body,
+.s-modal-content {
+  background: var(--ox-card);
+  border-radius: var(--ox-r-2);
+  box-shadow: var(--ox-shadow-3);
+  color: var(--ox-ink);
+}
+
+.s-modal-header {
+  min-block-size: 56px;
+  border-block-end: 1px solid var(--ox-line);
+
+  .s-modal-title {
+    font-weight: 700;
+    color: var(--ox-ink);
+  }
+
+  .s-modal-close {
+    min-inline-size: 44px;
+    min-block-size: 44px;
+    color: var(--ox-ink-3);
+  }
+}
+
+@media (max-width: 767px) {
+  // The panel becomes a bottom sheet: full width, a 12 top radius, 90vh cap.
+  .s-modal-body,
+  .s-modal-content {
+    border-start-start-radius: 12px;
+    border-start-end-radius: 12px;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    max-block-size: 90vh;
+  }
+}
+
+.s-drawer-body,
+.s-drawer-content {
+  background: var(--ox-card);
+  box-shadow: var(--ox-shadow-3);
+  color: var(--ox-ink);
+}
+
+.s-drawer-header {
+  min-block-size: 56px;
+  border-block-end: 1px solid var(--ox-line);
+}
+
+// The engine toaster and the theme's add-product toast share one box
+// (DIRECTION 5.6 Toast): 360 wide on desktop at the top end corner, full
+// width above the bottom bars on mobile.
+.s-add-product-toast {
+  background: var(--ox-card);
+  box-shadow: var(--ox-shadow-2);
+  border-radius: var(--ox-r-2);
+  gap: var(--ox-3);
+  padding: var(--ox-4);
+  color: var(--ox-ink);
+
+  &__progress {
+    background: var(--ox-plate-2);
+    block-size: 2px;
+  }
+
+  &__progress-bar {
+    background: var(--ox-go);
+  }
+
+  &__title {
+    color: var(--ox-ink);
+    font-weight: 700;
+  }
+
+  &__divider {
+    background: var(--ox-line);
+  }
+
+  &__image {
+    background: var(--ox-plate);
+    border-color: var(--ox-line);
+    border-radius: var(--ox-r-1);
+  }
+
+  &__name {
+    color: var(--ox-ink);
+
+    &:hover {
+      color: var(--ox-ink);
+      text-decoration: underline;
+    }
+  }
+
+  &__price {
+    color: var(--ox-ink);
+  }
+
+  // Sale prices are never red in this theme; the saving is the green figure.
+  &__price-sale {
+    color: var(--ox-ink);
+  }
+
+  &__price-original {
+    color: var(--ox-ink-3);
+  }
+
+  &__close {
+    min-inline-size: 44px;
+    min-block-size: 44px;
+  }
+
+  &__button {
+    border-radius: var(--ox-r-2);
+    min-block-size: 44px;
+    font-weight: 600;
+
+    &--primary {
+      background: var(--ox-accent);
+      color: var(--ox-on-accent);
+
+      &:hover {
+        background: var(--ox-accent-dark);
+        color: var(--ox-on-accent);
+      }
+    }
+
+    &--outline {
+      border-color: var(--ox-ink);
+      color: var(--ox-ink);
+
+      &:hover {
+        background: var(--ox-plate);
+      }
+    }
+  }
+
+  @media (max-width: 767px) {
+    // Above the tab bar, or above the sticky bar when one is up.
+    inset-block-start: auto;
+    inset-block-end: calc(var(--ox-h-tabbar) + var(--ox-2) + env(safe-area-inset-bottom));
+    inset-inline: var(--ox-4);
+    inline-size: auto;
+    border-radius: var(--ox-r-2);
+    transform: translateY(16px);
+
+    &.s-add-product-toast--visible {
+      transform: translateY(0);
+    }
+  }
+}
+
+body.ox-sticky-bar .s-add-product-toast {
+  @media (max-width: 767px) {
+    inset-block-end: calc(var(--ox-h-sticky) + var(--ox-2) + env(safe-area-inset-bottom));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Reduced motion (DIRECTION 7.1 reduced column)
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+  .ox-checkout-bar {
+    animation: none;
+    transform: none;
+  }
+
+  .s-add-product-toast {
+    transition-property: opacity;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 12. Route view transitions (C10, DIRECTION 7.3)
+//
+// `app/router.tsx` turns the router's view-transition option on; these are the
+// only rules that go with it. The root cross-fades and never translates: a
+// whole-viewport slide is the largest layer move a phone can be asked for.
+// The header and the tab bar are pinned so they do not fade with the root.
+// Two named groups, well under the four the spec allows.
+// ---------------------------------------------------------------------------
+::view-transition-old(root) {
+  animation-duration: var(--dur-fast);
+  animation-timing-function: var(--ease-in);
+}
+
+::view-transition-new(root) {
+  animation-duration: var(--dur-slow);
+  animation-timing-function: var(--ease-out);
+}
+
+.ox-header {
+  view-transition-name: ox-header;
+}
+
+.ox-tabbar {
+  view-transition-name: ox-tabbar;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // Only the root cross-fade remains; the named groups step aside so nothing
+  // morphs across the viewport.
+  .ox-header,
+  .ox-tabbar {
+    view-transition-name: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--dur-fast);
+  }
+}
