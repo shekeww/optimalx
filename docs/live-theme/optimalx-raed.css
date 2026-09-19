@@ -3455,3 +3455,49 @@ html,
 .ox-sh__desc{margin:var(--ox-2) 0 0;font-size:var(--ox-t-lead);line-height:1.6;color:var(--ox-fg-2)}
 .ox-icon{display:block;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:miter;stroke-miterlimit:4;stroke-linecap:square;color:var(--ox-fg)}
 .ox-icon .ox-icon__accent{fill:var(--ox-accent);stroke:none}
+
+/* ---------------------------------------------------------------------------
+ * Hero slide, corrections made against the live page.
+ *
+ * Raed marks the slide heading with `lg:text-title-size`, a utility its build
+ * never emitted, so the headline inherited body size and rendered at 16px. The
+ * size is set here rather than by patching Raed's class, so a future Raed build
+ * that does emit it cannot collide. The subline is clamped to two lines by the
+ * theme, which cuts the approved copy mid sentence, so it is given a third.
+ * The secondary action sits on a dark photograph but the hero is not marked as
+ * a dark band, so it was drawing dark ink on dark and read as an empty box.
+ * ------------------------------------------------------------------------ */
+body.theme-raed .s-block--hero-slider h2 {
+  font-size: clamp(28px, 4.4vw, 54px);
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-block-end: 12px;
+}
+
+body.theme-raed .s-block--hero-slider p.description {
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.7;
+  -webkit-line-clamp: 3;
+}
+
+/* The slide's text column is centred by the theme; the design reads from the
+   start edge, which also stops the two actions drifting apart. */
+body.theme-raed .s-block--hero-slider .home-slider__content > div {
+  text-align: start;
+}
+
+body.theme-raed .s-block--hero-slider .ox-hero__actions {
+  justify-content: flex-start;
+}
+
+body.theme-raed .s-block--hero-slider .ox-btn--secondary {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+}
+
+body.theme-raed .s-block--hero-slider .ox-btn--secondary:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
