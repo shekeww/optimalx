@@ -2791,3 +2791,18 @@ body.theme-raed .s-block--hero-slider .home-slider__content>div{text-align:start
 body.theme-raed .s-block--hero-slider .ox-hero__actions{justify-content:flex-start}
 body.theme-raed .s-block--hero-slider .ox-btn--secondary{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
 body.theme-raed .s-block--hero-slider .ox-btn--secondary:hover{border-color:#fff;background:rgba(255,255,255,.1)}
+
+/* ---------------------------------------------------------------------------
+ * Horizontal containment. Measured on the live phone viewport.
+ *
+ * Raed parks its off-canvas menu in the document at `left: 375px`, just beyond
+ * a phone viewport, and sets `overflow-x: hidden` on `body` only. The root
+ * element is left at `visible`, so the document still scrolled sideways: 483px
+ * of scroll width against a 375px viewport, which let the whole page slide
+ * under a thumb. Clipping the root closes it.
+ *
+ * `clip` rather than `hidden`: `hidden` on a scroll container silently kills
+ * `position: sticky` in its descendants, and the buy bar depends on it.
+ * ------------------------------------------------------------------------ */
+html{overflow-x:clip;max-width:100%}
+body.theme-raed{overflow-x:clip;max-width:100%}
