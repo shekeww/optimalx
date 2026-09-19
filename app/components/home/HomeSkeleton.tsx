@@ -164,22 +164,21 @@ export function FaqSkeleton() {
   );
 }
 
+/**
+ * The two optional blocks draw no placeholder.
+ *
+ * A skeleton is a promise that something is about to land there. Both of these
+ * render null until the merchant turns them on, so the promise was false: the
+ * pair put 588px of grey above the footer on a phone and then took it away on
+ * scroll. Drawing nothing is the honest placeholder for a block that may well
+ * be nothing, and it matches the 0 their rows now reserve.
+ */
 export function NewsletterSkeleton() {
-  return (
-    <BlockSkeleton path="ox-newsletter" className="ox-skel-news">
-      <SkeletonBar width="45%" />
-      <SkeletonBar width="65%" />
-      <SkeletonBlock height={48} />
-    </BlockSkeleton>
-  );
+  return null;
 }
 
 export function BannerSkeleton() {
-  return (
-    <BlockSkeleton path="ox-banner" className="ox-skel-banner">
-      <SkeletonBlock height="100%" />
-    </BlockSkeleton>
-  );
+  return null;
 }
 
 /**

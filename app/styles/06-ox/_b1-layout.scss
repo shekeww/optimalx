@@ -1049,7 +1049,10 @@ body.ox-has-tabbar {
   display: inline-flex;
   align-items: center;
   gap: var(--ox-2);
-  min-block-size: 40px;
+  // 44 on touch, where the footer list is the stacked accordion and the rows
+  // are far enough apart that full-size targets cannot overlap. The desktop
+  // grid below tightens this deliberately.
+  min-block-size: 44px;
   color: var(--ox-ink-3-on-dark);
   font-size: 14px;
   font-weight: 400;
@@ -1097,10 +1100,22 @@ body.ox-has-tabbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 18px;
-  min-block-size: 24px;
+  // The row was 24 tall with no size on the anchors themselves, so each social
+  // mark was an 18px tap target. The glyph still reads at 18; the anchor around
+  // it is a full target, and the gap is measured from the target box rather
+  // than the glyph so the marks keep their spacing.
+  gap: var(--ox-2);
+  margin-inline-start: calc(var(--ox-3) * -1);
   color: var(--ox-ink-2-on-dark);
   font-size: 18px;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 44px;
+    block-size: 44px;
+  }
 
   a:hover {
     color: var(--ox-ink-on-dark);
@@ -1253,7 +1268,13 @@ body.ox-has-tabbar {
   }
 
   .ox-footer__link {
-    min-block-size: 22px;
+    // The desktop footer is a five column grid of dense link lists driven by a
+    // mouse, and 44px rows would make it 176px tall per column. 28 with the 4px
+    // gap gives a 32px pitch, comfortably over the 24px floor WCAG 2.5.8 sets
+    // for a pointer target. ox-hit-area is deliberately NOT used here: stacked
+    // 44px regions this close together would overlap and a click would land on
+    // the neighbouring link.
+    min-block-size: 28px;
   }
 
   .ox-footer__col ul {

@@ -73,8 +73,16 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   'ox-guides': { mobile: 485, desktop: 556 },
   'ox-branch': { mobile: 212, desktop: 240 },
   'ox-faq': { mobile: 392, desktop: 424 },
-  'ox-newsletter': { mobile: 320, desktop: 300 },
-  'ox-banner': { mobile: 268, desktop: 240 },
+  // Both of these are off until the merchant turns them on: the newsletter
+  // behind the `show_newsletter` setting, the banner behind an uploaded image.
+  // Until then each renders null, so reserving their old 320 and 268 put 588px
+  // of grey placeholder above the footer on a phone and then collapsed it on
+  // scroll, which is the largest layout jump on the page. DIRECTION 6.2 already
+  // says the banner's row reserves 0 on both viewports; the map simply did not
+  // agree with it. A store that does turn one on takes a shift on that block
+  // instead, which is the smaller of the two costs and affects nobody today.
+  'ox-newsletter': { mobile: 0, desktop: 0 },
+  'ox-banner': { mobile: 0, desktop: 0 },
 };
 
 /** The two viewports the DIRECTION 6.2 heights are measured at. */
