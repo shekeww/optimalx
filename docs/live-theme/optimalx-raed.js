@@ -1,1987 +1,269 @@
 /*
  * optimalx-raed.js
  *
- * Purpose: the companion script to optimalx-raed.css. It runs before the
- * closing body tag on every page of the live storefront and does three things:
+ * The companion script to optimalx-raed.css. It runs before the closing body
+ * tag on every page of the live storefront and builds the parts of the
+ * OptimalX design that Salla's Raed theme has no block for.
  *
- *   1. checks whether the stylesheet is already in effect, and injects its own
- *      copy only when it is not;
- *   2. on a product page, reads the spec line the catalogue writes as the first
- *      paragraph of every description and renders it as chips plus the supply
- *      line above the buy button;
- *   3. gives the nutrition table its third column of plain-Arabic explanations
- *      and makes it scroll on a narrow screen with the first column pinned.
+ * What it does, by page:
  *
- * Where each file goes: optimalx-raed.css into the theme's custom CSS box, and
- * optimalx-raed.min.js (the same script, compacted to fit the paste limit) into
- * the custom JavaScript box. This readable file is the source the minified one
- * is built from; pasting it instead works, but it is larger than the field
- * allows on some Salla plans.
+ *   every page   a baseline stylesheet for the sections below, injected as the
+ *                FIRST child of <head> so the real stylesheet always wins, and
+ *                the icon sprite the sections reference;
+ *   home         the hero's two calls to action, the approved H1 line, the six
+ *                goal cards with the settle, the fourth trust item and its
+ *                "why OptimalX" panel, the services band with the three
+ *                channel cards, the branch block and the five-row FAQ;
+ *   product      the spec chips, the supply calculator, the nutrition table's
+ *                third column, the pre-purchase rows, the FAQ with the
+ *                mandatory price question, the trust row and the ask strip;
+ *   cart         the empty-cart body and its three ways out, and the trust row;
+ *   search       the zero-results panel.
+ *
+ * Where each file goes: optimalx-raed.min.css into the theme's custom CSS box,
+ * and optimalx-raed.min.js into the custom JavaScript box. This readable file
+ * is the source the minified one is built from.
  *
  * This file is a stopgap. It exists only until the OptimalX React theme passes
  * Salla review, at which point the script and the stylesheet are deleted rather
  * than maintained.
  *
+ * Rules this file keeps, without exception:
+ *
+ *   - Every feature runs inside its own try/catch. One failing cannot stop
+ *     another and cannot leave the page worse than it started.
+ *   - Every feature is idempotent. It marks what it built with data-optimalx
+ *     and does nothing on a second run.
+ *   - Every string of copy is approved copy, from locales/ar.json (the "ox."
+ *     namespace) or from docs/build/research/FINAL-content.md. Nothing is
+ *     written here that is not already written there.
+ *   - No claim is invented and no number is invented: no shipping threshold,
+ *     no payment method names, no reply-time promise, no "official
+ *     distributors", no popularity or bestseller claim, no health outcome, no
+ *     professional title.
+ *   - Anything that depends on a dashboard value the owner has not filled in
+ *     (branch hours, the WhatsApp number, the map link) renders nothing at
+ *     all. See SETTINGS below for how to fill them.
+ *   - Class names are the React theme's own (ox-goals, ox-goal__label,
+ *     ox-channel__cta and so on), so the stylesheet styles one vocabulary.
+ *   - Anchors are ids, data-testid attributes and component-id attributes,
+ *     never nth-child positions. A missing anchor means the feature does
+ *     nothing rather than guessing a place to put itself.
+ *
  * The parsing, the arithmetic and the glossary are ports of the theme's own
  * tested modules: app/components/product/lib/specLine.ts, supply.ts and
- * nutritionTable.ts, and app/content/glossary.ts with the Arabic strings from
- * locales/ar.json. Nothing here guesses: a field the label did not print stays
- * out, and a nutrient the glossary does not cover gets an empty cell.
+ * nutritionTable.ts, and app/content/glossary.ts.
  *
- * Every feature is wrapped in its own try/catch, so a failure in one cannot
- * stop the others and cannot leave the page worse than it started.
+ * The goal cards link to search URLs, not to categories: the store has no
+ * categories yet (categories_list returns an empty array), so each card goes
+ * to a query that was checked against the live storefront search and returns
+ * results, exactly as the home's own quick links do.
+ *
+ * SETTINGS. Anything gated reads from a plain object the owner may define
+ * ABOVE this script in the same custom JavaScript box:
+ *
+ *   window.OPTIMALX_SETTINGS = {
+ *     whatsapp: '9665XXXXXXXX',
+ *     mapUrl:   'https://maps.app.goo.gl/...',
+ *     hours:    [['الأحد إلى الخميس','16:00','23:00'], ['الجمعة','17:00','23:00']]
+ *   };
+ *
+ * A value left out, left empty, or still carrying a {PLACEHOLDER} renders
+ * nothing. That is deliberate: FINAL-content 5.3 forbids printing a default
+ * hours table, and a branch card with an empty field is worse than one without
+ * the line.
  */
 (function () {
   'use strict';
 
-  if (window.__optimalxRaedSkin) return;
-  window.__optimalxRaedSkin = { version: '1.0.0', injected: false, features: {} };
+  var VERSION = '2.0.0';
+  if (window.__optimalxRaedSkin && window.__optimalxRaedSkin.version === VERSION) return;
+  window.__optimalxRaedSkin = { version: VERSION, injected: false, features: {} };
 
-  var STYLE_ID = 'optimalx-raed-skin';
   var MARK = 'data-optimalx';
+  var BASE_ID = 'optimalx-raed-base';
+  var SPRITE_ID = 'optimalx-raed-sprite';
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var XLINKNS = 'http://www.w3.org/1999/xlink';
 
   /* ---------------------------------------------------------------------
-   * 0. A fallback copy of the stylesheet.
+   * 0. The baseline stylesheet.
    *
-   *    optimalx-raed.css belongs in the theme's custom CSS box, where it loads
-   *    with the page and paints on the first frame. The copy below is only
-   *    used when that box is empty or its content failed to apply: the script
-   *    asks the browser whether the stylesheet's own marker rule is in effect,
-   *    and injects this copy only when it is not.
+   *    This is NOT the skin. optimalx-raed.css is the skin and it lives in the
+   *    theme's custom CSS box. This is the floor under the sections this
+   *    script builds: the tokens they need and enough layout that they are
+   *    never unstyled markup. It is injected as the first child of <head>, so
+   *    the real stylesheet, which arrives later in the document, wins every
+   *    rule it cares to write.
    * ------------------------------------------------------------------- */
 
-  var CSS = `
-/*
- * optimalx-raed.css
- *
- * Purpose: put the OptimalX visual identity onto the live storefront while it
- * runs Salla's Raed theme. It restyles Raed's own markup (the s-* component
- * classes and the theme's block sections) with the OptimalX tokens: the paper
- * ground, white cards, the plate behind product imagery, graphite bands with a
- * single 22 degree wedge, orange reserved for interaction, Cairo at the
- * DIRECTION type scale, the three shadows and the two radii.
- *
- * This file is a stopgap. It exists only until the OptimalX React theme passes
- * Salla review and can be published as the store's own theme, at which point
- * this stylesheet and its companion script are deleted rather than maintained.
- *
- * Token values are copied verbatim from app/styles/tokens.css. The type scale
- * is the fluid scale of DIRECTION 3.1. The wedge polygons are DIRECTION 4.5.
- * Rules honoured here: colour never transitions, motion runs only on transform
- * and opacity through the duration and easing tokens, nothing animates on a
- * wedge, prefers-reduced-motion is respected, there is no blur, no
- * backdrop-filter and no will-change, control borders at rest use --ox-line-3,
- * and every touch target stays at 44px.
- *
- * Where this goes: the theme's custom CSS box, whole. Its companion script,
- * optimalx-raed.min.js, goes in the custom JavaScript box; it carries a copy of
- * this sheet and injects it only if this one did not arrive.
- *
- * Paired with: optimalx-raed.js (the readable source of that script), which
- * also adds the product page spec chips, the supply line and the nutrition
- * glossary column.
- */
-
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
-
-/* ===========================================================================
-   1. Tokens (app/styles/tokens.css, verbatim)
-   =========================================================================== */
-
-:root {
-  --font-main: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-ar: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-
-  --color-primary: #EE4D22;
-  --color-primary-dark: #C93D18;
-  --color-primary-light: #F38264;
-  --color-primary-reverse: #FFFFFF;
-  --color-primary-rgb: 238, 77, 34;
-
-  --ox-accent: var(--color-primary);
-  --ox-accent-dark: var(--color-primary-dark);
-  --ox-accent-light: var(--color-primary-light);
-  --ox-accent-rgb: var(--color-primary-rgb);
-  --ox-accent-soft: #FDEDE9;
-  --ox-on-accent: #17171A;
-
-  --ox-paper: #F7F7F8;
-  --ox-card: #FFFFFF;
-  --ox-plate: #F1F1F3;
-  --ox-plate-2: #E9E9EC;
-  --ox-graphite: #17171A;
-  --ox-graphite-2: #222226;
-  --ox-graphite-3: #2C2C32;
-
-  --ox-ink: #17171A;
-  --ox-ink-2: #5A5A61;
-  --ox-ink-3: #6F6F78;
-  --ox-ink-4: #9A9AA3;
-  --ox-ink-on-dark: #F7F7F8;
-  --ox-ink-2-on-dark: #B9B9C1;
-  --ox-ink-3-on-dark: #8C8C96;
-  --ox-line: #E6E6E9;
-  --ox-line-2: #D2D2D8;
-  --ox-line-3: #85858E;
-  --ox-line-on-dark: rgba(255, 255, 255, 0.12);
-
-  --ox-go: #0F7B4F;
-  --ox-go-soft: #E8F4EE;
-  --ox-note: #8A5E0E;
-  --ox-note-soft: #FBF2E0;
-  --ox-stop: #B3261E;
-  --ox-stop-soft: #FBEAE8;
-
-  --ox-bg: var(--ox-paper);
-  --ox-surface: var(--ox-card);
-  --ox-fg: var(--ox-ink);
-  --ox-fg-2: var(--ox-ink-2);
-  --ox-fg-3: var(--ox-ink-3);
-  --ox-bd: var(--ox-line);
-  --ox-bd-2: var(--ox-line-2);
-  --ox-focus: var(--ox-ink);
-
-  --ox-focus-ring: 2px solid var(--ox-focus);
-  --ox-shadow-1: 0 1px 3px rgba(23, 23, 26, 0.08);
-  --ox-shadow-2: 0 8px 24px rgba(23, 23, 26, 0.1);
-  --ox-shadow-3: 0 24px 48px rgba(23, 23, 26, 0.18);
-  --ox-r-1: 6px;
-  --ox-r-2: 8px;
-  --ox-r-pill: 9999px;
-
-  --ox-1: 4px;
-  --ox-2: 8px;
-  --ox-3: 12px;
-  --ox-4: 16px;
-  --ox-6: 24px;
-  --ox-8: 32px;
-  --ox-12: 48px;
-  --ox-16: 64px;
-  --ox-24: 96px;
-  --ox-gutter: 16px;
-  --ox-container: 1280px;
-  --ox-container-narrow: 880px;
-  --ox-container-text: 720px;
-  --ox-h-util: 36px;
-  --ox-h-bar: 56px;
-  --ox-h-nav: 48px;
-  --ox-h-tabbar: calc(56px + env(safe-area-inset-bottom, 0px));
-  --ox-h-sticky: 64px;
-  --ox-z-raised: 10;
-  --ox-z-sticky: 100;
-  --ox-z-overlay: 200;
-  --ox-z-modal: 300;
-  --ox-z-toast: 400;
-  --ox-z-skip: 500;
-
-  --dur-fast: 120ms;
-  --dur-confirm: 160ms;
-  --dur-base: 180ms;
-  --dur-slow: 280ms;
-  --ease-out: cubic-bezier(0.2, 0, 0, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --stagger-step: 40ms;
-  --direction-factor: 1;
-  --ox-angle: 22deg;
-  --ox-angle-tan: 0.4040;
-  --ox-band-h: 560px;
-  --ox-wedge-run: calc(var(--ox-band-h) * var(--ox-angle-tan));
-
-  /* Type roles, DIRECTION 3.1: fluid 390 to 1440, linear between. */
-  --ox-t-display: clamp(34px, 25.83px + 2.095vw, 56px);
-  --ox-t-h1: clamp(28px, 23.54px + 1.143vw, 40px);
-  --ox-t-h2: clamp(24px, 21.03px + 0.762vw, 32px);
-  --ox-t-h3: clamp(18px, 17.26px + 0.190vw, 20px);
-  --ox-t-lead: clamp(17px, 15.89px + 0.286vw, 20px);
-  --ox-t-body: clamp(15px, 14.63px + 0.095vw, 16px);
-  --ox-t-small: clamp(13px, 12.63px + 0.095vw, 14px);
-  --ox-t-micro: clamp(11.5px, 11.31px + 0.048vw, 12px);
-}
-
-[dir='rtl'] {
-  --direction-factor: -1;
-}
-
-@media (min-width: 640px) {
-  :root { --ox-gutter: 24px; }
-}
-
-@media (min-width: 1024px) {
-  :root { --ox-gutter: 32px; --ox-h-bar: 72px; }
-}
-
-/* A dark band re-declares the role tokens once. */
-.ox-band-dark {
-  --ox-bg: var(--ox-graphite);
-  --ox-surface: var(--ox-graphite-2);
-  --ox-fg: var(--ox-ink-on-dark);
-  --ox-fg-2: var(--ox-ink-2-on-dark);
-  --ox-fg-3: var(--ox-ink-3-on-dark);
-  --ox-bd: var(--ox-line-on-dark);
-  --ox-bd-2: var(--ox-line-on-dark);
-  --ox-focus: var(--ox-paper);
-  color: var(--ox-fg);
-  background-color: var(--ox-bg);
-}
-
-/* ===========================================================================
-   2. Ground and typography
-   =========================================================================== */
-
-html,
-body.theme-raed {
-  background-color: var(--ox-paper);
-  color: var(--ox-ink);
-  font-family: var(--font-main);
-  letter-spacing: 0;
-}
-
-body.theme-raed {
-  font-size: var(--ox-t-body);
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
-}
-
-body.theme-raed main,
-body.theme-raed .main-content,
-body.theme-raed #app {
-  background-color: transparent;
-}
-
-/* Arabic never carries tracking, and no heading is rotated. */
-body.theme-raed h1,
-body.theme-raed h2,
-body.theme-raed h3,
-body.theme-raed h4,
-body.theme-raed h5,
-body.theme-raed h6 {
-  letter-spacing: 0;
-  color: var(--ox-fg);
-  font-family: var(--font-main);
-}
-
-body.theme-raed h1 { font-size: var(--ox-t-h1); line-height: 1.2; font-weight: 700; }
-body.theme-raed h2 { font-size: var(--ox-t-h2); line-height: 1.25; font-weight: 700; }
-body.theme-raed h3 { font-size: var(--ox-t-h3); line-height: 1.4; font-weight: 700; }
-body.theme-raed h4 { font-size: var(--ox-t-body); line-height: 1.5; font-weight: 700; }
-
-body.theme-raed a {
-  color: inherit;
-  text-underline-offset: 0.15em;
-}
-
-/* The companion script's probe. It appends one element with this class, reads
-   --ox-skin back with getComputedStyle, and injects its own copy of this
-   stylesheet only when the value is missing. Do not delete this rule: without
-   it the script cannot tell that the stylesheet is already loaded and will
-   inject a second copy of it on every page. */
-.ox-skin-probe {
-  --ox-skin: 1;
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  pointer-events: none;
-}
-
-/* Focus is always visible and always the ink ring. */
-body.theme-raed a:focus-visible,
-body.theme-raed button:focus-visible,
-body.theme-raed input:focus-visible,
-body.theme-raed select:focus-visible,
-body.theme-raed textarea:focus-visible,
-body.theme-raed [tabindex]:focus-visible,
-body.theme-raed .s-button-element:focus-visible {
-  outline: var(--ox-focus-ring);
-  outline-offset: 2px;
-  border-radius: var(--ox-r-1);
-}
-
-/* Colour must never transition. Raed uses transition-all in several places;
-   this narrows every transition it starts to the two safe properties. */
-body.theme-raed *,
-body.theme-raed *::before,
-body.theme-raed *::after {
-  transition-property: transform, opacity;
-}
-
-/* Numerals are tabular wherever a price or a quantity is printed. */
-body.theme-raed .s-product-card-price,
-body.theme-raed .total-price,
-body.theme-raed .s-quantity-input-input,
-body.theme-raed .ox-num {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Raed's brand radius is 12; the OptimalX scale is 6 / 8 / pill. */
-body.theme-raed .s-product-card-entry,
-body.theme-raed .s-button-element,
-body.theme-raed .s-block--features__item {
-  border-radius: var(--ox-r-2);
-}
-
-/* ===========================================================================
-   3. Buttons
-   =========================================================================== */
-
-body.theme-raed .s-button-element {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--ox-2);
-  min-width: 44px;
-  min-height: 44px;
-  padding-inline: 20px;
-  border: 1px solid transparent;
-  border-radius: var(--ox-r-2);
-  font-family: var(--font-main);
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0;
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-  box-shadow: none;
-  transition: transform var(--dur-fast) var(--ease-in);
-  -webkit-tap-highlight-color: transparent;
-}
-
-body.theme-raed .s-button-element:active:not(:disabled):not([aria-disabled='true']) {
-  transform: translateY(1px);
-  transition-timing-function: var(--ease-out);
-}
-
-/* Primary: ink on orange. This is the only orange fill in the design, and it
-   is reserved for something you press. */
-body.theme-raed .s-button-primary,
-body.theme-raed .s-button-primary-outline,
-body.theme-raed .s-button-solid.s-button-primary,
-body.theme-raed salla-add-product-button .s-button-element,
-body.theme-raed .s-add-product-button-main,
-body.theme-raed .s-button-element.s-button-primary-solid {
-  background-color: var(--ox-accent);
-  border-color: var(--ox-accent);
-  color: var(--ox-on-accent);
-}
-
-body.theme-raed .s-button-primary:hover,
-body.theme-raed .s-button-primary-outline:hover,
-body.theme-raed salla-add-product-button .s-button-element:hover,
-body.theme-raed .s-add-product-button-main:hover {
-  background-color: var(--ox-accent-dark);
-  border-color: var(--ox-accent-dark);
-  color: var(--ox-on-accent);
-}
-
-body.theme-raed .s-button-primary .s-button-text,
-body.theme-raed .s-button-primary-outline .s-button-text,
-body.theme-raed salla-add-product-button .s-button-element .s-button-text,
-body.theme-raed .s-add-product-button-main .s-button-text {
-  color: var(--ox-on-accent);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-2);
-}
-
-/* Secondary and light outlines become the graphite-bordered secondary. */
-body.theme-raed .s-button-outline:not(.s-button-primary-outline),
-body.theme-raed .s-button-light-outline {
-  background-color: var(--ox-card);
-  border-color: var(--ox-line-3);
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-button-outline:not(.s-button-primary-outline):hover,
-body.theme-raed .s-button-light-outline:hover {
-  background-color: var(--ox-plate);
-  border-color: var(--ox-ink-3);
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-button-text-only,
-body.theme-raed .s-button-link {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-button-element:disabled,
-body.theme-raed .s-button-element[aria-disabled='true'],
-body.theme-raed .s-button-element.disabled {
-  background-color: var(--ox-plate-2);
-  border-color: var(--ox-plate-2);
-  color: var(--ox-ink-4);
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Icon-only buttons keep a 44 square hit area and a square-ish box. */
-body.theme-raed .s-button-icon {
-  padding-inline: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--ox-r-2);
-}
-
-body.theme-raed .ox-band-dark .s-button-outline:not(.s-button-primary-outline),
-body.theme-raed .ox-band-dark .s-button-light-outline {
-  background-color: transparent;
-  border-color: var(--ox-paper);
-  color: var(--ox-paper);
-}
-
-body.theme-raed .ox-band-dark .s-button-outline:not(.s-button-primary-outline):hover,
-body.theme-raed .ox-band-dark .s-button-light-outline:hover {
-  background-color: var(--ox-graphite-3);
-}
-
-/* ===========================================================================
-   4. Form controls
-   =========================================================================== */
-
-body.theme-raed input[type='text'],
-body.theme-raed input[type='email'],
-body.theme-raed input[type='tel'],
-body.theme-raed input[type='number'],
-body.theme-raed input[type='password'],
-body.theme-raed input[type='search'],
-body.theme-raed select,
-body.theme-raed textarea,
-body.theme-raed .s-form-control,
-body.theme-raed .form-input {
-  min-height: 48px;
-  padding-inline: var(--ox-4);
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-card);
-  color: var(--ox-fg);
-  font-family: var(--font-main);
-  font-size: var(--ox-t-body);
-  line-height: 1.7;
-  box-shadow: none;
-}
-
-body.theme-raed input::placeholder,
-body.theme-raed textarea::placeholder {
-  color: var(--ox-ink-4);
-}
-
-body.theme-raed textarea {
-  padding-block: var(--ox-3);
-  resize: vertical;
-}
-
-body.theme-raed input[type='checkbox'],
-body.theme-raed input[type='radio'] {
-  width: 20px;
-  height: 20px;
-  border: 1px solid var(--ox-line-3);
-  background-color: var(--ox-card);
-  accent-color: var(--ox-ink);
-}
-
-/* Quantity steppers: 44 tall with 44 square controls. */
-body.theme-raed .s-quantity-input-container {
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-card);
-  overflow: hidden;
-  min-height: 44px;
-}
-
-body.theme-raed .s-quantity-input-container button,
-body.theme-raed .s-quantity-input-button {
-  min-width: 44px;
-  min-height: 44px;
-  background-color: transparent;
-  color: var(--ox-fg);
-  border: 0;
-}
-
-body.theme-raed .s-quantity-input-input {
-  border: 0;
-  min-height: 44px;
-  text-align: center;
-  background-color: transparent;
-  color: var(--ox-fg);
-  font-weight: 700;
-}
-
-/* ===========================================================================
-   5. Product card
-   =========================================================================== */
-
-body.theme-raed .s-product-card-entry {
-  display: flex;
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  box-shadow: none;
-  overflow: hidden;
-  color: var(--ox-fg);
-}
-
-/* Hover changes only the border colour: it never lifts, scales or shadows. */
-body.theme-raed .s-product-card-entry:hover {
-  border-color: var(--ox-line-2);
-  box-shadow: none;
-  transform: none;
-}
-
-body.theme-raed .s-product-card-vertical {
-  flex-direction: column;
-}
-
-/* The plate behind the product photograph: a tonal square the packaging sits
-   inside, never touching the edge. */
-body.theme-raed .s-product-card-image {
-  position: relative;
-  background-color: var(--ox-plate);
-  border-radius: 0;
-  overflow: hidden;
-}
-
-body.theme-raed .s-product-card-vertical .s-product-card-image {
-  /* flex: none keeps the square: as a flex item the plate would otherwise take
-     whatever height the content column left over. height: auto and min-height 0
-     undo the theme's own height on this box, which would beat aspect-ratio. */
-  flex: none;
-  aspect-ratio: 1 / 1;
-  width: 100%;
-  height: auto;
-  min-height: 0;
-  max-height: none;
-  border-bottom: 1px solid var(--ox-line);
-}
-
-/* The link and the photograph fill the plate absolutely. A percentage height
-   inside an aspect-ratio box resolves to auto, which would let the source
-   image's own height decide the plate: this pins it instead. */
-body.theme-raed .s-product-card-image > a {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-
-body.theme-raed img.s-product-card-image-cover {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: var(--ox-3);
-  background-color: transparent;
-  border-radius: 0;
-  transform: none;
-}
-
-body.theme-raed .s-product-card-entry:hover img.s-product-card-image-cover {
-  transform: none;
-}
-
-body.theme-raed .s-product-card-horizontal .s-product-card-image {
-  flex: none;
-  width: 116px;
-  min-width: 116px;
-  height: auto;
-  align-self: stretch;
-  border-inline-end: 1px solid var(--ox-line);
-}
-
-@media (min-width: 640px) {
-  body.theme-raed .s-product-card-horizontal .s-product-card-image {
-    width: 148px;
-    min-width: 148px;
-  }
-}
-
-body.theme-raed .s-product-card-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  flex: 1 1 auto;
-  /* Without this the content column refuses to shrink and the card clips its
-     own add button on a horizontal layout. */
-  min-width: 0;
-  padding: var(--ox-3);
-  background-color: var(--ox-card);
-}
-
-@media (min-width: 640px) {
-  body.theme-raed .s-product-card-content { padding: var(--ox-4); }
-}
-
-body.theme-raed .s-product-card-content-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-1);
-}
-
-body.theme-raed h3.s-product-card-content-title {
-  margin: 0;
-  font-size: var(--ox-t-body);
-  font-weight: 700;
-  line-height: 1.45;
-  color: var(--ox-fg);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: calc(2 * 1.45em);
-}
-
-body.theme-raed h3.s-product-card-content-title a {
-  color: inherit;
-  text-decoration: none;
-}
-
-body.theme-raed h3.s-product-card-content-title a:hover {
-  color: var(--ox-accent-dark);
-}
-
-body.theme-raed p.s-product-card-content-subtitle {
-  margin: 0;
-  font-size: var(--ox-t-small);
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--ox-fg-3);
-  opacity: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-body.theme-raed .s-product-card-content-sub {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: var(--ox-2);
-  min-height: 32px;
-}
-
-body.theme-raed h4.s-product-card-price {
-  margin: 0;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25em;
-  unicode-bidi: isolate;
-  font-size: var(--ox-t-h3);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--ox-fg);
-  white-space: nowrap;
-}
-
-body.theme-raed h4.s-product-card-price .sicon-sar {
-  font-size: 0.8em;
-  line-height: 1;
-  color: inherit;
-}
-
-/* On a sale card Raed nests the new price (h4) and the old one (span) inside
-   one wrapper. The new price keeps the ink; only the old one is struck, and
-   neither is orange: orange belongs to the button. */
-body.theme-raed .s-product-card-sale-price {
-  display: inline-flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: var(--ox-2);
-}
-
-body.theme-raed .s-product-card-sale-price h4 {
-  margin: 0;
-  unicode-bidi: isolate;
-  font-size: var(--ox-t-h3);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--ox-fg);
-  white-space: nowrap;
-}
-
-body.theme-raed .s-product-card-sale-price h4 .sicon-sar {
-  font-size: 0.8em;
-}
-
-body.theme-raed .s-product-card-sale-price span,
-body.theme-raed .s-product-card-price-before,
-body.theme-raed .s-product-card-old-price {
-  unicode-bidi: isolate;
-  font-size: var(--ox-t-small);
-  font-weight: 400;
-  color: var(--ox-fg-3);
-  text-decoration: line-through;
-  white-space: nowrap;
-}
-
-body.theme-raed .s-product-card-content-footer {
-  margin-top: auto;
-  display: flex;
-  align-items: stretch;
-  gap: var(--ox-2);
-  padding-top: var(--ox-2);
-}
-
-body.theme-raed .s-product-card-content-footer salla-add-product-button {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-body.theme-raed .s-product-card-content-footer .s-button-element {
-  width: 100%;
-  min-height: 44px;
-  font-size: var(--ox-t-small);
-  padding-inline: var(--ox-3);
-}
-
-/* The wishlist control: a 44 square on the plate, at the end corner. */
-body.theme-raed .s-product-card-wishlist-btn.s-button-element,
-body.theme-raed .s-product-card-wishlist-btn .s-button-element {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  padding: 0;
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-2);
-  color: var(--ox-fg-2);
-  box-shadow: none;
-}
-
-body.theme-raed .s-product-card-wishlist-btn.s-button-element:hover,
-body.theme-raed .s-product-card-wishlist-btn .s-button-element:hover {
-  border-color: var(--ox-ink-3);
-  background-color: var(--ox-card);
-  color: var(--ox-accent);
-}
-
-body.theme-raed .s-product-card-image .s-product-card-wishlist-btn {
-  position: absolute;
-  top: var(--ox-2);
-  inset-inline-end: var(--ox-2);
-  z-index: var(--ox-z-raised);
-}
-
-body.theme-raed .s-product-card-wishlist-btn.is-added .s-button-element,
-body.theme-raed .s-product-card-wishlist-btn.s-wishlist-added .s-button-element {
-  color: var(--ox-accent);
-}
-
-/* Badges are never orange and never shadowed. */
-body.theme-raed .s-product-card-promotion-title,
-body.theme-raed .s-product-card-discount,
-body.theme-raed .s-product-card-out-of-stock {
-  display: inline-flex;
-  align-items: center;
-  height: 20px;
-  padding-inline: var(--ox-2);
-  border: 1px solid transparent;
-  border-radius: var(--ox-r-1);
-  font-size: var(--ox-t-micro);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0;
-  box-shadow: none;
-  background-color: var(--ox-graphite);
-  color: var(--ox-paper);
-}
-
-body.theme-raed .s-product-card-out-of-stock {
-  background-color: var(--ox-stop-soft);
-  color: var(--ox-stop);
-}
-
-body.theme-raed .s-product-card-discount {
-  background-color: var(--ox-go-soft);
-  color: var(--ox-go);
-}
-
-/* The grid the card sits in: 2-up on mobile, 3-up on tablet, 4-up on desktop
-   for the vertical card; one column fewer at every step for the wider
-   horizontal card. */
-body.theme-raed .s-products-list-wrapper {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ox-3);
-  align-items: stretch;
-}
-
-body.theme-raed .s-products-list-horizontal-cards {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-@media (min-width: 640px) {
-  body.theme-raed .s-products-list-wrapper {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--ox-4);
-  }
-  body.theme-raed .s-products-list-horizontal-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  body.theme-raed .s-products-list-wrapper {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  body.theme-raed .s-products-list-horizontal-cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-body.theme-raed .s-products-list-wrapper > * {
-  height: 100%;
-}
-
-/* ===========================================================================
-   6. Section headers and sliders
-   =========================================================================== */
-
-body.theme-raed .s-block__title,
-body.theme-raed .s-slider-block__title {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--ox-4);
-  margin-bottom: var(--ox-6);
-  padding-bottom: 0;
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  body.theme-raed .s-block__title,
-  body.theme-raed .s-slider-block__title {
-    margin-bottom: var(--ox-8);
-  }
-}
-
-body.theme-raed .s-block__title h2,
-body.theme-raed .s-slider-block__title h2,
-body.theme-raed .s-slider-block__title-text {
-  position: relative;
-  margin: 0;
-  font-size: var(--ox-t-h2);
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--ox-fg);
-}
-
-/* The eyebrow rule: a 24 by 2 accent mark above every section title. */
-body.theme-raed .s-block__title h2::before,
-body.theme-raed .s-slider-block__title h2::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 2px;
-  margin-bottom: var(--ox-3);
-  background-color: var(--ox-accent);
-}
-
-body.theme-raed .s-block__display-all,
-body.theme-raed .s-slider-block__title-all {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-1);
-  min-height: 44px;
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg);
-  text-decoration: none;
-  border-radius: var(--ox-r-1);
-  background-color: transparent;
-  border: 0;
-  padding-inline: 0;
-}
-
-body.theme-raed .s-block__display-all:hover,
-body.theme-raed .s-slider-block__title-all:hover {
-  color: var(--ox-accent-dark);
-}
-
-body.theme-raed .s-block__display-all i,
-body.theme-raed .s-slider-block__title-all i {
-  font-size: 16px;
-  transition: transform var(--dur-fast) var(--ease-in);
-}
-
-body.theme-raed .s-block__display-all:hover i,
-body.theme-raed .s-slider-block__title-all:hover i {
-  transform: translateX(calc(var(--direction-factor) * 2px));
-  transition-timing-function: var(--ease-out);
-}
-
-/* Slider arrows: 40 square cards with a line border, never orange. */
-body.theme-raed .s-slider-block__title-nav button,
-body.theme-raed .s-slider-nav-btn,
-body.theme-raed .swiper-button-next,
-body.theme-raed .swiper-button-prev {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--ox-r-2);
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line-3);
-  color: var(--ox-fg);
-  box-shadow: none;
-}
-
-body.theme-raed .s-slider-block__title-nav button:hover,
-body.theme-raed .s-slider-nav-btn:hover,
-body.theme-raed .swiper-button-next:hover,
-body.theme-raed .swiper-button-prev:hover {
-  border-color: var(--ox-ink-3);
-  background-color: var(--ox-plate);
-}
-
-body.theme-raed .swiper-pagination-bullet {
-  background-color: var(--ox-line-2);
-  opacity: 1;
-  border-radius: var(--ox-r-pill);
-}
-
-body.theme-raed .swiper-pagination-bullet-active {
-  background-color: var(--ox-accent);
-}
-
-/* ===========================================================================
-   7. Home blocks
-   =========================================================================== */
-
-body.theme-raed .s-block {
-  background-color: transparent;
-}
-
-body.theme-raed.index .s-block + .s-block {
-  margin-top: var(--ox-12);
-}
-
-@media (min-width: 1024px) {
-  body.theme-raed.index .s-block + .s-block {
-    margin-top: var(--ox-16);
-  }
-}
-
-/* 7.1 The hero band. Graphite ground, the photograph over it, and the single
-   orange wedge of the first screen at the top inline-end corner. Nothing here
-   animates: a wedge is a static paint-time clip. */
-body.theme-raed .s-block--hero-slider {
-  position: relative;
-  background-color: var(--ox-graphite);
-  margin-top: 0;
-}
-
-body.theme-raed .s-block--hero-slider::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  inset-inline-end: 0;
-  width: 64px;
-  height: 158px;
-  background-color: var(--ox-accent);
-  clip-path: polygon(0 0, 64px 0, 0 158px);
-  pointer-events: none;
-  z-index: var(--ox-z-raised);
-}
-
-[dir='ltr'] body.theme-raed .s-block--hero-slider::after {
-  clip-path: polygon(100% 0, calc(100% - 64px) 0, 100% 158px);
-}
-
-@media (min-width: 1024px) {
-  body.theme-raed .s-block--hero-slider::after {
-    width: 96px;
-    height: 238px;
-    clip-path: polygon(0 0, 96px 0, 0 238px);
-  }
-  [dir='ltr'] body.theme-raed .s-block--hero-slider::after {
-    clip-path: polygon(100% 0, calc(100% - 96px) 0, 100% 238px);
-  }
-}
-
-body.theme-raed .s-block--hero-slider .swiper-slide img,
-body.theme-raed .s-block--hero-slider .s-slider-slide img {
-  border-radius: 0;
-}
-
-/* 7.2 Category tiles: photo on plate, label strip under it. */
-body.theme-raed .s-block--categories .swiper-slide > a,
-body.theme-raed .s-block--categories .s-slider-slide > a,
-body.theme-raed .s-block--categories .main-links-item {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  overflow: hidden;
-  text-decoration: none;
-  color: var(--ox-fg);
-  box-shadow: none;
-}
-
-body.theme-raed .s-block--categories .swiper-slide > a:hover,
-body.theme-raed .s-block--categories .main-links-item:hover {
-  border-color: var(--ox-line-2);
-  box-shadow: none;
-  transform: none;
-}
-
-body.theme-raed .s-block--categories img {
-  background-color: var(--ox-plate);
-  object-fit: contain;
-  padding: var(--ox-3);
-  border-radius: 0;
-}
-
-body.theme-raed .s-block--categories .main-links-item i,
-body.theme-raed .s-block--categories .swiper-slide i {
-  color: var(--ox-accent);
-}
-
-body.theme-raed .s-block--categories h3,
-body.theme-raed .s-block--categories h2,
-body.theme-raed .s-block--categories .main-links-title {
-  font-size: var(--ox-t-body);
-  font-weight: 700;
-  color: var(--ox-fg);
-  letter-spacing: 0;
-}
-
-/* 7.3 The trust strip (Raed's features block). */
-body.theme-raed .s-block--features__item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ox-2);
-  padding: var(--ox-4);
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  box-shadow: none;
-  min-height: 72px;
-  text-align: start;
-}
-
-@media (min-width: 640px) {
-  body.theme-raed .s-block--features__item { padding: var(--ox-6); }
-}
-
-body.theme-raed .s-block--features__item:hover {
-  border-color: var(--ox-line-2);
-  box-shadow: none;
-  transform: none;
-}
-
-body.theme-raed .s-block--features__item .feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  margin: 0;
-  background-color: transparent;
-  border-radius: 0;
-  color: var(--ox-accent);
-}
-
-body.theme-raed .s-block--features__item .feature-icon i {
-  font-size: 28px;
-  color: var(--ox-accent);
-}
-
-body.theme-raed .s-block--features__item h2 {
-  margin: 0;
-  font-size: var(--ox-t-h3);
-  font-weight: 700;
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-block--features__item p {
-  margin: 0;
-  font-size: var(--ox-t-small);
-  line-height: 1.6;
-  color: var(--ox-fg-2);
-}
-
-/* 7.4 Tabbed product blocks: a tonal plate band, never a second dark stripe. */
-/* Both class names are matched on purpose: s-block--tabs-produtcs carries
-   Salla's own typo, so s-block-tabs is the one likely to survive a fix. */
-body.theme-raed .s-block--tabs-produtcs,
-body.theme-raed .s-block-tabs {
-  background-color: var(--ox-plate);
-  padding-block: var(--ox-12);
-}
-
-@media (min-width: 1024px) {
-  body.theme-raed .s-block--tabs-produtcs,
-  body.theme-raed .s-block-tabs { padding-block: var(--ox-16); }
-}
-
-/* Inside a plate band the card's own plate steps one tone down, so the card
-   still reads as a white object with a photograph on it rather than a hole. */
-body.theme-raed .s-block--tabs-produtcs .s-product-card-image,
-body.theme-raed .s-block-tabs .s-product-card-image,
-body.theme-raed .s-block--slider-with-bg .s-product-card-image {
-  background-color: var(--ox-plate-2);
-}
-
-body.theme-raed .s-block-tabs .tabs__head {
-  display: flex;
-  gap: var(--ox-2);
-  border-bottom: 1px solid var(--ox-line-2);
-  margin-bottom: var(--ox-6);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-body.theme-raed .s-block-tabs .tabs__head::-webkit-scrollbar { display: none; }
-
-body.theme-raed .s-block-tabs .tabs__head button,
-body.theme-raed .s-block-tabs .tabs__head a {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  min-height: 48px;
-  padding-inline: var(--ox-4);
-  background-color: transparent;
-  border: 0;
-  border-radius: 0;
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg-2);
-}
-
-body.theme-raed .s-block-tabs .tabs__head .is-active,
-body.theme-raed .s-block-tabs .tabs__head button.is-active {
-  color: var(--ox-fg);
-  background-color: transparent;
-  box-shadow: inset 0 -2px 0 0 var(--ox-ink);
-}
-
-/* 7.5 The slider-with-background block: the second dark band, with the one
-   graphite-2 wedge panel at its inline-end edge (DIRECTION 4.5 services band). */
-body.theme-raed .s-block--slider-with-bg .slider-bg {
-  position: relative;
-  background-color: var(--ox-graphite);
-  background-blend-mode: normal;
-  color: var(--ox-ink-on-dark);
-  isolation: isolate;
-}
-
-body.theme-raed .s-block--slider-with-bg .slider-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: rgba(23, 23, 26, 0.55);
-  pointer-events: none;
-  z-index: 0;
-}
-
-body.theme-raed .s-block--slider-with-bg .slider-bg::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  inset-inline-end: 0;
-  width: calc(34% + 194px);
-  background-color: var(--ox-graphite-2);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 194px) 100%, 0 100%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-[dir='ltr'] body.theme-raed .s-block--slider-with-bg .slider-bg::after {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 194px 100%);
-}
-
-@media (max-width: 1023px) {
-  body.theme-raed .s-block--slider-with-bg .slider-bg::after {
-    width: 80px;
-    bottom: auto;
-    height: 198px;
-    clip-path: polygon(0 0, 80px 0, 0 198px);
-  }
-  [dir='ltr'] body.theme-raed .s-block--slider-with-bg .slider-bg::after {
-    clip-path: polygon(100% 0, calc(100% - 80px) 0, 100% 198px);
-  }
-}
-
-body.theme-raed .s-block--slider-with-bg .slider-bg > * {
-  position: relative;
-  z-index: 1;
-}
-
-body.theme-raed .s-block--slider-with-bg .slider-bg h1,
-body.theme-raed .s-block--slider-with-bg .slider-bg h2,
-body.theme-raed .s-block--slider-with-bg .slider-bg h3 {
-  color: var(--ox-ink-on-dark);
-  font-size: var(--ox-t-h2);
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-body.theme-raed .s-block--slider-with-bg .slider-bg p {
-  color: var(--ox-ink-2-on-dark);
-  font-size: var(--ox-t-lead);
-  line-height: 1.6;
-}
-
-/* 7.6 Photos slider: no rounded corners on a full-bleed photo. */
-body.theme-raed .s-block--photos-slider img {
-  border-radius: var(--ox-r-2);
-}
-
-/* ===========================================================================
-   8. Header
-   =========================================================================== */
-
-body.theme-raed header.store-header {
-  background-color: var(--ox-card);
-  box-shadow: none;
-}
-
-/* The utility line is the one graphite strip at the top of every page. */
-body.theme-raed header.store-header .top-navbar {
-  background-color: var(--ox-graphite);
-  color: var(--ox-ink-on-dark);
-  border: 0;
-  min-height: var(--ox-h-util);
-  padding-block: var(--ox-1);
-  box-shadow: none;
-}
-
-body.theme-raed header.store-header .top-navbar a,
-body.theme-raed header.store-header .top-navbar span,
-body.theme-raed header.store-header .top-navbar p,
-body.theme-raed header.store-header .top-navbar i {
-  color: var(--ox-ink-2-on-dark);
-}
-
-body.theme-raed header.store-header .top-navbar a:hover {
-  color: var(--ox-ink-on-dark);
-  text-decoration: underline;
-}
-
-body.theme-raed .s-menu-topnav-list {
-  display: flex;
-  align-items: center;
-  gap: var(--ox-4);
-}
-
-body.theme-raed .s-menu-topnav-item {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--ox-h-util);
-  font-size: var(--ox-t-small);
-  font-weight: 400;
-  color: var(--ox-ink-2-on-dark);
-  text-decoration: none;
-}
-
-/* The search field inside the utility line reads as a control on dark, and it
-   is capped so it never swallows the whole line. */
-body.theme-raed header.store-header .top-navbar .header-search {
-  max-width: 480px;
-  margin-inline-start: auto;
-}
-
-body.theme-raed header.store-header .top-navbar .s-search-input-wrapper,
-body.theme-raed header.store-header .top-navbar input {
-  background-color: var(--ox-graphite-3);
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  color: var(--ox-ink-on-dark);
-  min-height: 36px;
-  box-shadow: none;
-}
-
-body.theme-raed header.store-header .top-navbar input::placeholder {
-  color: var(--ox-ink-3-on-dark);
-}
-
-/* The main bar: a white card with one line rule and shadow-1. */
-body.theme-raed header.store-header .main-nav-container {
-  background-color: var(--ox-card);
-  border-bottom: 1px solid var(--ox-line);
-  box-shadow: var(--ox-shadow-1);
-}
-
-body.theme-raed header.store-header .main-nav-container .inner {
-  background-color: var(--ox-card);
-}
-
-body.theme-raed header.store-header .main-nav-container .container > div {
-  min-height: var(--ox-h-bar);
-}
-
-body.theme-raed header.store-header .mobile-menu-btn,
-body.theme-raed header.store-header .main-nav-container button,
-body.theme-raed header.store-header .main-nav-container .s-cart-summary-wrapper > * {
-  color: var(--ox-fg);
-}
-
-body.theme-raed header.store-header nav a,
-body.theme-raed header.store-header .main-menu a {
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg);
-  letter-spacing: 0;
-}
-
-body.theme-raed header.store-header nav a:hover,
-body.theme-raed header.store-header .main-menu a:hover {
-  color: var(--ox-accent-dark);
-}
-
-/* Counter pills are the one other orange fill, and they carry ink. */
-body.theme-raed .s-cart-summary-count,
-body.theme-raed .s-count,
-body.theme-raed header.store-header .badge {
-  background-color: var(--ox-accent);
-  color: var(--ox-on-accent);
-  font-size: var(--ox-t-micro);
-  font-weight: 700;
-  border-radius: var(--ox-r-pill);
-}
-
-/* ===========================================================================
-   9. Footer
-   =========================================================================== */
-
-body.theme-raed footer.store-footer {
-  --ox-bg: var(--ox-graphite);
-  --ox-surface: var(--ox-graphite-2);
-  --ox-fg: var(--ox-ink-on-dark);
-  --ox-fg-2: var(--ox-ink-2-on-dark);
-  --ox-fg-3: var(--ox-ink-3-on-dark);
-  --ox-bd: var(--ox-line-on-dark);
-  background-color: var(--ox-graphite);
-  color: var(--ox-ink-on-dark);
-  border-top: 0;
-}
-
-body.theme-raed footer.store-footer .store-footer__inner {
-  background-color: transparent;
-  padding-block: var(--ox-12);
-  border-bottom: 1px solid var(--ox-line-on-dark);
-}
-
-@media (min-width: 1024px) {
-  body.theme-raed footer.store-footer .store-footer__inner {
-    padding-block: var(--ox-16);
-  }
-}
-
-body.theme-raed footer.store-footer h2,
-body.theme-raed footer.store-footer h3,
-body.theme-raed footer.store-footer h4,
-body.theme-raed footer.store-footer .footer-title {
-  color: var(--ox-ink-on-dark);
-  font-size: var(--ox-t-small);
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
-body.theme-raed footer.store-footer a,
-body.theme-raed footer.store-footer p,
-body.theme-raed footer.store-footer li,
-body.theme-raed footer.store-footer span {
-  color: var(--ox-ink-2-on-dark);
-  font-size: var(--ox-t-small);
-}
-
-body.theme-raed footer.store-footer a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 40px;
-  text-decoration: none;
-}
-
-body.theme-raed footer.store-footer a:hover {
-  color: var(--ox-ink-on-dark);
-  text-decoration: underline;
-}
-
-/* Payment and trust marks keep their own colours on a paper plate. */
-body.theme-raed footer.store-footer .s-payments-list li,
-body.theme-raed footer.store-footer .s-payments-list img {
-  background-color: var(--ox-paper);
-  border-radius: var(--ox-r-1);
-}
-
-body.theme-raed footer.store-footer .s-payments-list li {
-  min-height: 32px;
-  padding: var(--ox-1) var(--ox-2);
-  border: 0;
-}
-
-/* ===========================================================================
-   10. Product page
-   =========================================================================== */
-
-body.theme-raed .container--breadcrumbs {
-  padding-block: var(--ox-4);
-}
-
-body.theme-raed .container--breadcrumbs a,
-body.theme-raed .container--breadcrumbs span,
-body.theme-raed .s-breadcrumb a,
-body.theme-raed .s-breadcrumb span {
-  font-size: var(--ox-t-small);
-  color: var(--ox-fg-3);
-}
-
-body.theme-raed .container--breadcrumbs a:hover {
-  color: var(--ox-accent-dark);
-}
-
-body.theme-raed .container--product-details {
-  background-color: transparent;
-}
-
-body.theme-raed.product-single h1,
-body.theme-raed .product-entry__title {
-  font-size: var(--ox-t-h1);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--ox-fg);
-  letter-spacing: 0;
-}
-
-body.theme-raed h2.product-entry__sub-title {
-  font-size: var(--ox-t-lead);
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--ox-fg-2);
-  letter-spacing: 0;
-  margin-block: var(--ox-2) var(--ox-4);
-}
-
-/* The gallery plate: the packaging sits inside a tonal square. */
-body.theme-raed .s-slider-nav-inner img,
-body.theme-raed .product-single .swiper-slide img,
-body.theme-raed .slider-single img,
-body.theme-raed .product__gallery img {
-  background-color: var(--ox-plate);
-  border-radius: var(--ox-r-2);
-  object-fit: contain;
-  padding: var(--ox-6);
-}
-
-body.theme-raed .s-slider-nav-thumbs img,
-body.theme-raed .product__thumbs img {
-  padding: var(--ox-2);
-  border-radius: var(--ox-r-1);
-}
-
-/* The buy column price. */
-body.theme-raed .product-entry .total-price,
-body.theme-raed .product-single .total-price,
-body.theme-raed h2.total-price {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25em;
-  unicode-bidi: isolate;
-  font-size: var(--ox-t-h2);
-  font-weight: 700;
-  color: var(--ox-fg);
-  letter-spacing: 0;
-}
-
-body.theme-raed .product-entry .before-price,
-body.theme-raed .product-single .before-price {
-  font-size: var(--ox-t-small);
-  font-weight: 400;
-  color: var(--ox-fg-3);
-  text-decoration: line-through;
-}
-
-body.theme-raed form.product-form {
-  display: block;
-}
-
-body.theme-raed form.product-form .s-button-element,
-body.theme-raed .s-add-product-button-main {
-  min-height: 48px;
-  font-size: var(--ox-t-body);
-}
-
-/* Product options: pills and swatches, never orange until they are chosen. */
-body.theme-raed salla-product-options .s-product-options-option-label,
-body.theme-raed .s-product-options-option-label {
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-product-options-option-item,
-body.theme-raed .s-product-options-single-option label {
-  min-height: 44px;
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-card);
-  color: var(--ox-fg);
-  font-size: var(--ox-t-body);
-}
-
-body.theme-raed .s-product-options-option-item.s-product-options-selected,
-body.theme-raed .s-product-options-option-item[aria-checked='true'] {
-  border: 2px solid var(--ox-ink);
-  background-color: var(--ox-accent-soft);
-  color: var(--ox-fg);
-}
-
-/* The description: a text measure, and the spec line the script parses. */
-body.theme-raed div.product__description {
-  max-width: calc(var(--ox-container-text) + 2 * var(--ox-gutter));
-  font-size: var(--ox-t-body);
-  line-height: 1.7;
-  color: var(--ox-fg-2);
-}
-
-body.theme-raed div.product__description p {
-  margin-block: 0 var(--ox-3);
-}
-
-body.theme-raed div.product__description h2,
-body.theme-raed div.product__description h3 {
-  font-size: var(--ox-t-h3);
-  font-weight: 700;
-  color: var(--ox-fg);
-  margin-block: var(--ox-6) var(--ox-2);
-}
-
-/* The buy zone. Raed renders it as two stacked white sections inside the
-   product form; the pair is drawn here as one card. */
-body.theme-raed form.product-form > section:not(.sticky-product-bar) {
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-bottom: 0;
-  border-radius: var(--ox-r-2) var(--ox-r-2) 0 0;
-  padding: var(--ox-4);
-  color: var(--ox-fg);
-}
-
-body.theme-raed section.sticky-product-bar {
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: 0 0 var(--ox-r-2) var(--ox-r-2);
-  box-shadow: none;
-  padding: var(--ox-4);
-  color: var(--ox-fg);
-}
-
-/* When the theme pins the bar to the viewport it becomes the sticky buy bar:
-   64 tall, one top rule, shadow-1, above the page. */
-body.theme-raed section.sticky-product-bar.is-fixed,
-body.theme-raed section.sticky-product-bar.fixed {
-  border: 0;
-  border-top: 1px solid var(--ox-line);
-  border-radius: 0;
-  box-shadow: var(--ox-shadow-1);
-  min-height: var(--ox-h-sticky);
-  z-index: var(--ox-z-sticky);
-}
-
-body.theme-raed form.product-form .form-label,
-body.theme-raed form.product-form .form-label b {
-  font-size: var(--ox-t-small);
-  font-weight: 600;
-  color: var(--ox-fg-3);
-  letter-spacing: 0;
-}
-
-body.theme-raed section.sticky-product-bar img {
-  background-color: var(--ox-plate);
-  border-radius: var(--ox-r-1);
-  object-fit: contain;
-}
-
-body.theme-raed .sticky-product-bar__quantity .s-quantity-input-container {
-  min-height: 44px;
-}
-
-body.theme-raed .sticky-product-bar__btn .s-button-element {
-  min-height: 48px;
-  background-color: var(--ox-accent);
-  border-color: var(--ox-accent);
-  color: var(--ox-on-accent);
-}
-
-/* ===========================================================================
-   11. Listing, search and filters
-   =========================================================================== */
-
-body.theme-raed .s-filters-wrapper,
-body.theme-raed .filters-rail,
-body.theme-raed salla-filters {
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-filters-group-title,
-body.theme-raed .s-filters-wrapper h3 {
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-filters-option,
-body.theme-raed .s-filters-wrapper label {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  gap: var(--ox-3);
-  font-size: var(--ox-t-body);
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-sort-select,
-body.theme-raed .s-listing-sort select {
-  min-height: 44px;
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-card);
-  color: var(--ox-fg);
-}
-
-body.theme-raed .s-pagination a,
-body.theme-raed .s-pagination span {
-  min-width: 44px;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--ox-r-1);
-  border: 1px solid var(--ox-line-3);
-  background-color: var(--ox-card);
-  color: var(--ox-fg);
-  font-weight: 600;
-}
-
-body.theme-raed .s-pagination .is-active,
-body.theme-raed .s-pagination .active {
-  background-color: var(--ox-ink);
-  border-color: var(--ox-ink);
-  color: var(--ox-paper);
-}
-
-/* ===========================================================================
-   12. Cart
-   =========================================================================== */
-
-body.theme-raed .s-cart-summary,
-body.theme-raed .cart-summary,
-body.theme-raed .cart-total,
-body.theme-raed .s-cart-totals {
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  box-shadow: none;
-  color: var(--ox-fg);
-}
-
-body.theme-raed .cart-item,
-body.theme-raed .s-cart-item,
-body.theme-raed .cart-items > li {
-  background-color: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  box-shadow: none;
-}
-
-body.theme-raed .cart-item img,
-body.theme-raed .s-cart-item img {
-  background-color: var(--ox-plate);
-  border-radius: var(--ox-r-1);
-  object-fit: contain;
-}
-
-body.theme-raed .cart-item h3,
-body.theme-raed .s-cart-item h3 {
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg);
-}
-
-/* ===========================================================================
-   13. The parts the script adds (PDP spec chips, supply line, nutrition)
-   =========================================================================== */
-
-.ox-injected {
-  font-family: var(--font-main);
-  color: var(--ox-fg);
-  letter-spacing: 0;
-}
-
-.ox-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ox-2);
-  margin-block: var(--ox-3);
-  padding: 0;
-  list-style: none;
-}
-
-.ox-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-1);
-  max-width: 100%;
-  height: 32px;
-  padding-inline: var(--ox-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-plate);
-  color: var(--ox-fg);
-  font-size: var(--ox-t-small);
-  font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.ox-chip__label {
-  font-weight: 400;
-  color: var(--ox-fg-3);
-}
-
-.ox-chip__value {
-  font-weight: 600;
-  color: var(--ox-fg);
-  unicode-bidi: isolate;
-}
-
-/* The supply calculator: a plate panel that describes the package. */
-.ox-supply {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-3);
-  margin-block: var(--ox-4);
-  padding: var(--ox-4);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-plate);
-  color: var(--ox-fg);
-}
-
-.ox-supply__label {
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  color: var(--ox-fg);
-  margin: 0;
-}
-
-.ox-supply__row {
-  display: flex;
-  align-items: center;
-  gap: var(--ox-3);
-  flex-wrap: wrap;
-}
-
-.ox-supply__stepper {
-  display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-card);
-  overflow: hidden;
-}
-
-.ox-supply__btn {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  background-color: transparent;
-  color: var(--ox-fg);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-in);
-}
-
-.ox-supply__btn:active:not(:disabled) {
-  transform: translateY(1px);
-  transition-timing-function: var(--ease-out);
-}
-
-.ox-supply__btn:disabled {
-  color: var(--ox-ink-4);
-  cursor: not-allowed;
-}
-
-.ox-supply__btn:focus-visible {
-  outline: var(--ox-focus-ring);
-  outline-offset: -2px;
-}
-
-.ox-supply__value {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 44px;
-  font-size: var(--ox-t-body);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--ox-fg);
-  border-inline: 1px solid var(--ox-line);
-}
-
-.ox-supply__result {
-  margin: 0;
-  font-size: var(--ox-t-body);
-  font-weight: 600;
-  line-height: 1.6;
-  color: var(--ox-fg);
-  transition: opacity var(--dur-fast) var(--ease-out);
-}
-
-.ox-supply__result .ox-num {
-  font-variant-numeric: tabular-nums;
-  unicode-bidi: isolate;
-}
-
-.ox-supply__unit {
-  font-size: var(--ox-t-body);
-  color: var(--ox-fg-2);
-}
-
-.ox-supply__note,
-.ox-table__note {
-  margin: 0;
-  font-size: var(--ox-t-small);
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--ox-fg-3);
-}
-
-/* The nutrition table: header row on plate-2, rules on line-2, the first
-   column pinned while the table scrolls on a narrow screen. */
-.ox-table-wrap {
-  position: relative;
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-block: var(--ox-4);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-2);
-  background-color: var(--ox-card);
-}
-
-.ox-table-wrap > table {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: collapse;
-  border-spacing: 0;
-  font-size: var(--ox-t-body);
-  line-height: 1.7;
-  letter-spacing: 0;
-  color: var(--ox-fg);
-  background-color: var(--ox-card);
-  margin: 0;
-}
-
-.ox-table-wrap > table th,
-.ox-table-wrap > table td {
-  padding-inline: var(--ox-3);
-  text-align: start;
-  vertical-align: middle;
-  border-bottom: 1px solid var(--ox-line-2);
-}
-
-.ox-table-wrap > table thead th {
-  height: 44px;
-  background-color: var(--ox-plate-2);
-  font-size: var(--ox-t-small);
-  font-weight: 600;
-  color: var(--ox-fg-2);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-
-.ox-table-wrap > table tbody td,
-.ox-table-wrap > table tbody th {
-  min-height: 48px;
-  height: 48px;
-}
-
-.ox-table-wrap > table tbody tr:last-child th,
-.ox-table-wrap > table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.ox-table-wrap > table thead th:first-child,
-.ox-table-wrap > table tbody th:first-child,
-.ox-table-wrap > table tbody td:first-child {
-  position: sticky;
-  inset-inline-start: 0;
-  background-color: var(--ox-card);
-  font-weight: 600;
-  z-index: 1;
-}
-
-.ox-table-wrap > table thead th:first-child {
-  background-color: var(--ox-plate-2);
-  z-index: 3;
-}
-
-.ox-table__meaning {
-  color: var(--ox-fg-2);
-  font-size: var(--ox-t-small);
-  line-height: 1.6;
-  white-space: normal;
-}
-
-@media (min-width: 768px) {
-  .ox-table__meaning { width: 45%; }
-}
-
-.ox-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* The original spec paragraph stays in the document and stops being painted,
-   so nothing is lost if the script is removed. */
-.ox-source-hidden {
-  display: none;
-}
-
-/* ===========================================================================
-   14. Reduced motion
-   =========================================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  body.theme-raed *,
-  body.theme-raed *::before,
-  body.theme-raed *::after {
-    transition-duration: 0.01ms;
-    animation-duration: 0.01ms;
-    animation-iteration-count: 1;
-  }
-
-  body.theme-raed .s-button-element:active,
-  .ox-supply__btn:active {
-    transform: none;
-  }
-}
+  var BASE = `
+:root{
+--ox-accent:#EE4D22;--ox-accent-dark:#C93D18;--ox-accent-soft:#FDEDE9;--ox-on-accent:#17171A;
+--ox-paper:#F7F7F8;--ox-card:#FFFFFF;--ox-plate:#F1F1F3;--ox-plate-2:#E9E9EC;
+--ox-graphite:#17171A;--ox-graphite-2:#222226;--ox-graphite-3:#2C2C32;
+--ox-ink:#17171A;--ox-ink-2:#5A5A61;--ox-ink-3:#6F6F78;--ox-ink-4:#9A9AA3;
+--ox-ink-on-dark:#F7F7F8;--ox-ink-2-on-dark:#B9B9C1;--ox-ink-3-on-dark:#8C8C96;
+--ox-line:#E6E6E9;--ox-line-2:#D2D2D8;--ox-line-3:#85858E;--ox-line-on-dark:rgba(255,255,255,.12);
+--ox-bg:var(--ox-paper);--ox-surface:var(--ox-card);--ox-fg:var(--ox-ink);--ox-fg-2:var(--ox-ink-2);--ox-fg-3:var(--ox-ink-3);--ox-bd:var(--ox-line);--ox-focus:var(--ox-ink);
+--ox-shadow-1:0 1px 3px rgba(23,23,26,.08);--ox-r-1:6px;--ox-r-2:8px;--ox-r-pill:9999px;
+--ox-1:4px;--ox-2:8px;--ox-3:12px;--ox-4:16px;--ox-6:24px;--ox-8:32px;--ox-12:48px;--ox-16:64px;
+--ox-gutter:16px;--ox-container:1280px;
+--dur-base:180ms;--dur-fast:120ms;--ease-out:cubic-bezier(.2,0,0,1);--ease-in:cubic-bezier(.4,0,1,1);--stagger-step:40ms;
+--ox-t-h2:clamp(24px,21.03px + .762vw,32px);--ox-t-h3:clamp(18px,17.26px + .19vw,20px);
+--ox-t-lead:clamp(17px,15.89px + .286vw,20px);--ox-t-body:clamp(15px,14.63px + .095vw,16px);
+--ox-t-small:clamp(13px,12.63px + .095vw,14px);--ox-t-micro:clamp(11.5px,11.31px + .048vw,12px);
+}
+@media (min-width:640px){:root{--ox-gutter:24px}}
+@media (min-width:1024px){:root{--ox-gutter:32px}}
+@media (min-width:640px){.ox-goals__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1024px){.ox-goals__grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--ox-6)}}
+@media (min-width:1024px){.ox-goal{min-block-size:160px;padding:20px}}
+@media (prefers-reduced-motion:reduce){.ox-goals__grid .ox-goal{opacity:1;animation:none}}
+@media (min-width:768px){.ox-trust__panelinner{grid-template-columns:repeat(2,minmax(0,1fr));padding:var(--ox-6);gap:var(--ox-6)}}
+.ox-trust__row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ox-3);margin:var(--ox-6) 0 0;padding:0;list-style:none}
+@media (min-width:768px){.ox-trust__row{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ox-trust__item{display:flex;gap:var(--ox-3);align-items:flex-start;padding:var(--ox-3);background-color:var(--ox-card);border:1px solid var(--ox-line);border-radius:var(--ox-r-2)}
+.ox-trust__item .ox-icon{color:var(--ox-accent)}
+.ox-trust__text{display:block;min-width:0}
+.ox-trust__line{display:block;margin:2px 0 0;font-size:var(--ox-t-small);line-height:1.5;color:var(--ox-fg-2)}
+.ox-services{position:relative;overflow:hidden;padding-block:var(--ox-12);background-color:var(--ox-graphite)}
+@media (min-width:1024px){.ox-services{padding-block:var(--ox-16)}}
+.ox-services__wedge{position:absolute;top:0;inset-inline-end:0;width:80px;height:198px;background-color:var(--ox-accent);clip-path:polygon(0 0,80px 0,0 198px);pointer-events:none}
+[dir="ltr"] .ox-services__wedge{clip-path:polygon(100% 0,calc(100% - 80px) 0,100% 198px)}
+@media (min-width:1024px){.ox-services__wedge{width:96px;height:238px;clip-path:polygon(0 0,96px 0,0 238px)}[dir="ltr"] .ox-services__wedge{clip-path:polygon(100% 0,calc(100% - 96px) 0,100% 238px)}}
+.ox-services__inner{position:relative;z-index:1}
+.ox-channels{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ox-4);margin:0;padding:0;list-style:none}
+@media (min-width:1024px){.ox-channels{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--ox-6)}}
+.ox-channel{display:flex;flex-direction:column;gap:var(--ox-2);height:100%;padding:var(--ox-4);background-color:var(--ox-graphite-2);border:1px solid var(--ox-line-on-dark);border-radius:var(--ox-r-2)}
+@media (min-width:640px){.ox-channel{padding:var(--ox-6)}}
+.ox-channel__head{display:flex;align-items:center;gap:var(--ox-3);flex-wrap:wrap}
+.ox-channel__head .ox-icon{color:var(--ox-ink-on-dark)}
+.ox-channel__title{margin:0;font-size:var(--ox-t-h3);font-weight:700;color:var(--ox-ink-on-dark)}
+.ox-channel__free{display:inline-flex;align-items:center;height:20px;padding-inline:var(--ox-2);border-radius:var(--ox-r-1);background-color:var(--ox-accent);color:var(--ox-on-accent);font-size:var(--ox-t-micro);font-weight:700;line-height:1}
+.ox-channel__meta{margin:0;font-size:var(--ox-t-small);color:var(--ox-ink-3-on-dark)}
+.ox-channel__desc{margin:0;font-size:var(--ox-t-small);line-height:1.7;color:var(--ox-ink-2-on-dark)}
+.ox-channel__cta{margin-top:auto;align-self:flex-start}
+.ox-services__note{margin:var(--ox-6) 0 0;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-ink-3-on-dark)}
+.ox-services__cols{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ox-6);margin-top:var(--ox-8);padding-top:var(--ox-8);border-top:1px solid var(--ox-line-on-dark)}
+@media (min-width:1024px){.ox-services__cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ox-16)}}
+.ox-services h3{margin:0 0 var(--ox-3);font-size:var(--ox-t-h3);font-weight:700;color:var(--ox-ink-on-dark)}
+.ox-scope{display:grid;gap:var(--ox-2);margin:0;padding:0;list-style:none}
+.ox-scope li{display:flex;gap:var(--ox-2);font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-ink-2-on-dark)}
+.ox-scope li::before{content:"";flex:none;width:6px;height:6px;margin-top:.55em;background-color:var(--ox-accent)}
+.ox-steps{display:grid;gap:var(--ox-4);margin:0;padding:0;list-style:none;counter-reset:ox-step}
+.ox-steps li{counter-increment:ox-step;display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--ox-3);align-items:start}
+.ox-steps li::before{content:counter(ox-step);display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--ox-line-on-dark);border-radius:var(--ox-r-pill);font-size:var(--ox-t-small);font-weight:700;color:var(--ox-ink-on-dark);font-variant-numeric:tabular-nums}
+.ox-steps b{display:block;font-size:var(--ox-t-body);font-weight:700;color:var(--ox-ink-on-dark)}
+.ox-steps span{display:block;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-ink-2-on-dark)}
+.ox-branch__card{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ox-6);padding:var(--ox-4);background-color:var(--ox-card);border:1px solid var(--ox-line);border-radius:var(--ox-r-2)}
+@media (min-width:768px){.ox-branch__card{grid-template-columns:5fr 7fr;padding:var(--ox-6);gap:var(--ox-8)}}
+.ox-branch__address{margin:0 0 var(--ox-2);font-size:var(--ox-t-lead);font-weight:700;line-height:1.5;color:var(--ox-fg)}
+.ox-branch__pickup{margin:0;font-size:var(--ox-t-small);color:var(--ox-fg-2)}
+.ox-branch__actions{display:flex;flex-wrap:wrap;gap:var(--ox-3);margin-top:var(--ox-4)}
+.ox-branch__do{display:grid;gap:var(--ox-3);margin:0;padding:0;list-style:none}
+.ox-branch__do b{display:block;font-size:var(--ox-t-body);font-weight:700;color:var(--ox-fg)}
+.ox-branch__do span{display:block;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-fg-2)}
+.ox-branch h3{margin:0 0 var(--ox-3);font-size:var(--ox-t-h3);font-weight:700;color:var(--ox-fg)}
+.ox-hours{margin-top:var(--ox-4)}
+.ox-hours__table{width:100%;border-collapse:collapse;font-size:var(--ox-t-small)}
+.ox-hours__table th,.ox-hours__table td{padding:var(--ox-2) var(--ox-3);border-bottom:1px solid var(--ox-line);text-align:start;color:var(--ox-fg-2)}
+.ox-hours__table th{color:var(--ox-fg);font-weight:600}
+.ox-hours__note{margin:var(--ox-2) 0 0;font-size:var(--ox-t-small);color:var(--ox-fg-3)}
+.ox-acc{border-top:1px solid var(--ox-line)}
+.ox-acc__row{border-bottom:1px solid var(--ox-line)}
+.ox-acc__heading{margin:0;font-size:inherit;font-weight:inherit}
+.ox-acc__trigger{display:flex;align-items:center;justify-content:space-between;gap:var(--ox-3);width:100%;min-height:56px;padding:var(--ox-3) 0;background:none;border:0;color:var(--ox-fg);font-family:inherit;font-size:var(--ox-t-body);font-weight:700;line-height:1.5;text-align:start;cursor:pointer}
+.ox-acc__chevron{flex:none;transition:transform var(--dur-fast) var(--ease-out)}
+.ox-acc__trigger[aria-expanded="true"] .ox-acc__chevron{transform:rotate(180deg)}
+.ox-acc__panel[hidden]{display:none}
+.ox-acc__body{padding:0 0 var(--ox-4)}
+.ox-acc__body p{margin:0;font-size:var(--ox-t-body);line-height:1.8;color:var(--ox-fg-2)}
+.ox-acc__static{padding:var(--ox-3) 0 var(--ox-4)}
+.ox-acc__title{margin:0 0 var(--ox-1);font-size:var(--ox-t-body);font-weight:700;color:var(--ox-fg)}
+.ox-empty__body{margin:var(--ox-2) 0 var(--ox-4);font-size:var(--ox-t-body);line-height:1.7;color:var(--ox-fg-2)}
+.ox-empty__ways{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--ox-3)}
+.ox-zero{margin-top:var(--ox-6);padding:var(--ox-6) var(--ox-4);background-color:var(--ox-card);border:1px solid var(--ox-line);border-radius:var(--ox-r-2)}
+@media (min-width:640px){.ox-zero{padding:var(--ox-8)}}
+.ox-zero__title{margin:0;font-size:var(--ox-t-h3);font-weight:700;color:var(--ox-fg)}
+.ox-zero__hint{margin:var(--ox-2) 0 var(--ox-4);font-size:var(--ox-t-body);line-height:1.7;color:var(--ox-fg-2)}
+.ox-zero__label{margin:0 0 var(--ox-2);font-size:var(--ox-t-small);font-weight:600;color:var(--ox-fg-3)}
+.ox-chip-row{display:flex;flex-wrap:wrap;gap:var(--ox-2);margin:0;padding:0;list-style:none}
+.ox-chip{display:inline-flex;align-items:center;gap:var(--ox-1);min-height:36px;padding-inline:var(--ox-3);background-color:var(--ox-plate);border:1px solid var(--ox-line);border-radius:var(--ox-r-pill);font-size:var(--ox-t-small);color:var(--ox-fg);text-decoration:none}
+a.ox-chip:hover{border-color:var(--ox-line-3);color:var(--ox-fg);text-decoration:none}
+.ox-chip__label{color:var(--ox-fg-3)}
+.ox-chip__value{font-weight:600}
+.ox-zero__links{display:flex;flex-wrap:wrap;gap:var(--ox-4);margin-top:var(--ox-4)}
+.ox-zero__ask{margin:var(--ox-4) 0 0;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-fg-2)}
+.ox-ask{display:flex;flex-wrap:wrap;align-items:center;gap:var(--ox-3);margin-top:var(--ox-6);padding:var(--ox-4);background-color:var(--ox-plate);border-radius:var(--ox-r-2)}
+.ox-ask__text{flex:1 1 220px;min-width:0;margin:0;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-fg-2)}
+.ox-ask__text b{display:block;font-size:var(--ox-t-body);color:var(--ox-fg)}
+.ox-pdp-extra{margin-top:var(--ox-8)}
+.ox-pdp-extra>section+section{margin-top:var(--ox-8)}
+.ox-note{margin:var(--ox-3) 0 0;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-fg-3)}
+
+.ox-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--ox-2);min-height:48px;min-width:44px;padding-inline:20px;border:1px solid var(--ox-accent);border-radius:var(--ox-r-2);background-color:var(--ox-accent);color:var(--ox-on-accent);font-family:inherit;font-size:var(--ox-t-body);font-weight:600;line-height:1;text-decoration:none;cursor:pointer;transition:transform var(--dur-fast) var(--ease-in)}
+.ox-btn:hover{background-color:var(--ox-accent-dark);border-color:var(--ox-accent-dark);color:var(--ox-on-accent);text-decoration:none}
+.ox-btn:active{transform:translateY(1px)}
+.ox-btn--secondary{background-color:transparent;border-color:var(--ox-line-3);color:var(--ox-fg)}
+.ox-btn--secondary:hover{background-color:transparent;border-color:var(--ox-fg);color:var(--ox-fg)}
+.ox-band-dark .ox-btn--secondary{border-color:var(--ox-paper);color:var(--ox-paper)}
+.ox-btn--ghost{background:none;border-color:transparent;color:var(--ox-fg);text-decoration:underline;text-underline-offset:.2em;padding-inline:0;min-height:44px}
+.ox-btn--ghost:hover{background:none;border-color:transparent;color:var(--ox-accent-dark)}
+.ox-injected a:focus-visible,.ox-injected button:focus-visible{outline:2px solid var(--ox-focus);outline-offset:2px;border-radius:var(--ox-r-1)}
+.ox-hero__actions{display:flex;flex-wrap:wrap;gap:var(--ox-3);justify-content:center;margin-top:var(--ox-4)}
+.ox-goals__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ox-4);margin:0;padding:0;list-style:none}
+.ox-goals__grid>li{display:flex}
+.ox-goal{display:flex;flex-direction:column;justify-content:space-between;gap:var(--ox-2);flex:1 1 auto;min-block-size:128px;padding:var(--ox-4);background-color:var(--ox-card);border:1px solid var(--ox-line);border-radius:var(--ox-r-2);color:var(--ox-fg);text-decoration:none}
+.ox-goal:hover{border-color:var(--ox-line-2);color:var(--ox-fg);text-decoration:none}
+.ox-goal:active{background-color:var(--ox-plate)}
+.ox-goal__body{display:block}
+.ox-goal__label{display:block;font-size:var(--ox-t-h3);font-weight:700;line-height:1.4;color:var(--ox-fg)}
+.ox-goal__line{display:block;font-size:var(--ox-t-small);line-height:1.5;color:var(--ox-fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes ox-goal-settle{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ox-goals__grid[data-settle="pending"] .ox-goal{opacity:0}
+.ox-goals__grid[data-settle="running"] .ox-goal{animation:ox-goal-settle var(--dur-base) var(--ease-out) both;animation-delay:calc(var(--stagger-step) * var(--i,0))}
+.ox-trust__btn{display:inline-flex;align-items:center;gap:var(--ox-2);min-height:44px;margin-top:var(--ox-4);padding-inline:0;background:none;border:0;color:var(--ox-fg);font-family:inherit;font-size:var(--ox-t-small);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
+.ox-trust__panel[hidden]{display:none}
+.ox-trust__panelinner{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ox-4);margin-top:var(--ox-4);padding:var(--ox-4);background-color:var(--ox-card);border:1px solid var(--ox-line);border-radius:var(--ox-r-2)}
+.ox-trust__title{margin:0 0 var(--ox-1);font-size:var(--ox-t-body);font-weight:700;color:var(--ox-fg)}
+.ox-trust__def{margin:0;font-size:var(--ox-t-small);line-height:1.6;color:var(--ox-fg-2)}
+`;
+
+  /* The ground layer. Added to the baseline only when the skin stylesheet is
+     missing, so the page is still the OptimalX paper rather than Raed's teal. */
+  var GROUND = `
+html,body{background-color:var(--ox-paper);color:var(--ox-ink)}
+body{font-family:'Cairo',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:var(--ox-t-body);line-height:1.7;letter-spacing:0}
+body h1,body h2,body h3,body h4{letter-spacing:0;color:var(--ox-ink)}
 `;
 
   /* ---------------------------------------------------------------------
-   * 1. Copy. Every string is the one the theme ships in locales/ar.json.
+   * 1. The icon sprite (DIRECTION 8.7), trimmed to the thirteen symbols the
+   *    sections below reference. Geometry copied verbatim from
+   *    public/assets/icons/ox-sprite.svg.
+   * ------------------------------------------------------------------- */
+
+  var SPRITE = '<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" focusable="false" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-miterlimit="4" stroke-linecap="square">'
+    + '<symbol id="ox-goal-energy" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z"/><path class="ox-icon__accent" d="M13.5 6l-5.5 7.5h3.4L10.5 18l5.5-7.5h-3.4z"/></symbol>'
+    + '<symbol id="ox-goal-general-health" viewBox="0 0 24 24"><path d="M4.5 19.5c0-7.5 5-13 15-13 0 8.5-5.5 14-15 13z"/><path d="M6.5 17.5l8-8"/><path class="ox-icon__accent" d="M11.5 10.5l2.6 2.6-2.6 2.6-2.6-2.6z"/></symbol>'
+    + '<symbol id="ox-goal-performance" viewBox="0 0 24 24"><path d="M2.5 12h19"/><path d="M5.5 7.5h2.5v9h-2.5z"/><path d="M16 7.5h2.5v9h-2.5z"/><path class="ox-icon__accent" d="M9.5 9h2v6h-2z"/></symbol>'
+    + '<symbol id="ox-goal-recovery" viewBox="0 0 24 24"><path d="M19.5 13.8A8.6 8.6 0 0 1 9.2 4.5a8.6 8.6 0 1 0 10.3 9.3z"/><path class="ox-icon__accent" d="M11.5 12a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z"/></symbol>'
+    + '<symbol id="ox-goal-hair-skin" viewBox="0 0 24 24"><path d="M7.5 3.5c4 4.5 0 8.5 3.5 12.5"/><path d="M13 3.5c3.5 4.5-.5 8.5 3 12.5"/><path class="ox-icon__accent" d="M9.5 16.5h3v4h-3z"/></symbol>'
+    + '<symbol id="ox-goal-ideal-weight" viewBox="0 0 24 24"><path d="M12 8.5v11"/><path d="M8.5 19.5h7"/><path d="M4.5 8.5h15"/><path d="M2.5 8.5l2.5 5.5 2.5-5.5"/><path d="M16.5 8.5l2.5 5.5 2.5-5.5"/><path class="ox-icon__accent" d="M12 6.6a1.9 1.9 0 1 1 0 3.8 1.9 1.9 0 0 1 0-3.8z"/></symbol>'
+    + '<symbol id="ox-authentic" viewBox="0 0 24 24"><path d="M12 3.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13z"/><path d="M8.5 15.5L7.5 21l4.5-2.2 4.5 2.2-1-5.5"/><path class="ox-icon__accent" d="M12 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/></symbol>'
+    + '<symbol id="ox-shipping" viewBox="0 0 24 24"><path d="M2.5 6.5h19v13h-19z"/><path d="M2.5 11.5h19"/><path class="ox-icon__accent" d="M10.5 6.5h3v13h-3z"/></symbol>'
+    + '<symbol id="ox-secure-payment" viewBox="0 0 24 24"><path d="M4.5 10.5h15v9h-15z"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path class="ox-icon__accent" d="M12 13a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></symbol>'
+    + '<symbol id="ox-help" viewBox="0 0 24 24"><path d="M3.5 3.5h17v17h-17z"/><path d="M9.5 9.2a2.6 2.6 0 1 1 3.4 2.5v1.8"/><path class="ox-icon__accent" d="M11.1 15h2v2h-2z"/></symbol>'
+    + '<symbol id="ox-written-question" viewBox="0 0 24 24"><path d="M4.5 2.5h9l4.5 4.5v6"/><path d="M4.5 2.5v19h7"/><path d="M8 9.5h5M8 13h4"/><path class="ox-icon__accent" d="M19 12.5l2.5 2.5-7 7-3.5 1 1-3.5z"/></symbol>'
+    + '<symbol id="ox-video-consult" viewBox="0 0 24 24"><path d="M2.5 6.5h12v11h-12z"/><path d="M14.5 12l7-4v11l-7-4z"/><path class="ox-icon__accent" d="M8.5 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/></symbol>'
+    + '<symbol id="ox-branch-visit" viewBox="0 0 24 24"><path d="M4.5 9.5h15v11h-15z"/><path d="M2.5 4.5h19l-2 5h-15z"/><path class="ox-icon__accent" d="M10 13h4v7.5h-4z"/></symbol>'
+    + '</svg>';
+
+  /* ---------------------------------------------------------------------
+   * 2. Copy. Every string below already exists in locales/ar.json under the
+   *    "ox." namespace or in docs/build/research/FINAL-content.md. Nothing is
+   *    written here for the first time.
    * ------------------------------------------------------------------- */
 
   var T = {
@@ -2002,6 +284,172 @@ body.theme-raed .s-cart-item h3 {
     nutritionMeaning: 'ماذا يعني الرقم',
     labelDataNote: 'الأرقام منقولة من ملصق المنتج، وليست توصية لأي شخص بعينه.'
   };
+
+  /* Home, section and trust copy: FINAL-content 1.1, 1.3, 1.4, 1.5. */
+  var H = {
+    h1: 'اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية',
+    ctaPrimary: 'تسوق حسب هدفك',
+    ctaSecondary: 'اسأل قبل أن تشتري',
+    goalsTitle: 'تسوق حسب هدفك',
+    goalsIntro: 'ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط.',
+    whyTitle: 'لماذا اوبتيمال اكس',
+    trustPayment: 'دفع آمن',
+    trustPaymentLine: 'طرق الدفع المتاحة تظهر عند إتمام الطلب',
+    trustAuthentic: 'منتجات أصلية',
+    trustAuthenticLine: 'صلاحية واضحة على كل منتج',
+    trustShipping: 'شحن من المدينة المنورة',
+    trustShippingLine: 'إلى كل مدينة في السعودية',
+    trustHelp: 'مساعدة في الاختيار',
+    trustHelpLine: 'رد مجاني',
+    vat: 'الأسعار شاملة ضريبة القيمة المضافة'
+  };
+
+  /* FINAL-content 1.5, the four items behind the trust strip's panel. */
+  var WHY = [
+    ['نشرح قبل أن نبيع', 'كل منتج يحمل عدد حصصه وحجم الحصة وتاريخ صلاحيته. وجدول الحقائق الغذائية فيه عمود ثالث يقول ما يعنيه كل رقم.'],
+    ['تشكيلة مختارة لا مخزن ضخم', 'نختار منتجات نعرفها ونستطيع شرحها. لا نضيف منتجا لأنه رائج فقط.'],
+    ['نقول ما هو خارج عملنا', 'لا نشخص ولا نعد بنتيجة. نساعدك على اختيار مكمل يناسب هدفك، وهذا كل ما نفعله.'],
+    ['متجر جديد من المدينة المنورة', 'بدأنا في الخالدية بفرع واحد وفريق من شخصين. نشحن إلى كل السعودية، ونجيب على أسئلتك بأنفسنا.']
+  ];
+
+  /* Services: FINAL-content 4.1 to 4.4. The paid channel carries no price and
+     no credit line, because FINAL-content 4.3 gates both on a coupon that does
+     not exist in the dashboard. The written channel carries no reply time. */
+  var SV = {
+    title: 'اسأل قبل أن تشتري',
+    intro: 'سؤال مكتوب مجاني، أو استشارة مرئية، أو زيارة للفرع في المدينة المنورة.',
+    free: 'مجاني',
+    footer: 'الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.',
+    scopeTitle: 'ما الذي نساعدك فيه',
+    scope: [
+      'اختيار المنتج المناسب لهدفك وميزانيتك',
+      'الفرق بين منتجين أو نوعين',
+      'طريقة الاستخدام والجرعة المطبوعة على الملصق',
+      'التوقيت مع التمرين ومع الوجبات',
+      'قراءة جدول الحقائق الغذائية والمكونات',
+      'الحفظ والصلاحية',
+      'الطلب والشحن والاستلام من الفرع'
+    ],
+    medical: 'للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.',
+    howTitle: 'كيف تبدأ',
+    how: [
+      ['اختر القناة', 'مكتوب، أو مرئي، أو في الفرع. الكتابة أسرع لمعظم الأسئلة.'],
+      ['أخبرنا عن هدفك', 'نموذج قصير: هدفك، وتمرينك، وما تستخدمه الآن، وسؤالك. لا نسأل عن أي شيء طبي.'],
+      ['يصلك الرد أو التأكيد', 'على بريدك. وفي المكالمة تصلك القائمة المكتوبة بعدها.']
+    ]
+  };
+
+  /* The three service products as they exist on the store today (OX-044,
+     OX-045, OX-046). Paths only, so the script is domain agnostic. */
+  var P_WRITTEN = '/%D8%B3%D8%A4%D8%A7%D9%84-%D9%85%D9%83%D8%AA%D9%88%D8%A8-%D9%85%D8%AC%D8%A7%D9%86%D9%8A%D8%8C-%D8%B1%D8%AF-%D8%AE%D9%84%D8%A7%D9%84-24-%D8%B3%D8%A7%D8%B9%D8%A9-%D8%B9%D9%85%D9%84-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p487045117';
+  var P_VIDEO = '/%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D9%85%D8%B1%D8%A6%D9%8A%D8%A9-20-%D8%AF%D9%82%D9%8A%D9%82%D8%A9-%D9%84%D8%A7%D8%AE%D8%AA%D9%8A%D8%A7%D8%B1-%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p2000960449';
+  var P_VISIT = '/%D8%B2%D9%8A%D8%A7%D8%B1%D8%A9-%D9%81%D8%B1%D8%B9-%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9-%D8%A7%D9%84%D9%85%D9%86%D9%88%D8%B1%D8%A9-%D8%AD%D8%AC%D8%B2-%D9%85%D8%AC%D8%A7%D9%86%D9%8A-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p1051830221';
+
+  /* Channel: icon, title, free badge, meta line, description, CTA, href. */
+  var CHANNELS = [
+    ['written-question', 'سؤال مكتوب', true, 'من كل مدن السعودية.',
+      'اكتب سؤالك عن اختيار منتج أو طريقة استخدامه، ويرد عليك فريق المتجر كتابة على بريدك. بلا موعد، ومن كل مدن السعودية.',
+      'أرسل سؤالك مجانا', P_WRITTEN],
+    ['video-consult', 'استشارة مرئية 20 دقيقة', false, 'مواعيد محدودة كل يوم. عبر Google Meet أو واتساب.',
+      'مكالمة مرئية مع فريق المتجر نراجع فيها هدفك وجدول تمرينك وميزانيتك، وتخرج منها بقائمة مكتوبة بترتيب الأولوية.',
+      'احجز موعدا', P_VIDEO],
+    ['branch-visit', 'زيارة الفرع', true, 'الخالدية، المدينة المنورة. الحجز اختياري.',
+      'تعال إلى فرع الخالدية في المدينة المنورة، قارن الأحجام والنكهات، واسأل فريق الفرع، أو استلم طلبك الإلكتروني. الحجز اختياري ويضمن أن يكون أحدنا متفرغا لك.',
+      'احجز زيارة أو تعال مباشرة', P_VISIT]
+  ];
+
+  /* Branch: FINAL-content 1.4 Branch, 5.1 and 5.2. Everything that needs a
+     dashboard value the owner has not filled stays out. */
+  var BR = {
+    title: 'فرعنا في المدينة المنورة',
+    intro: 'الخالدية، شارع جبار بن صخر. استلم طلبك أو اسأل فريق الفرع.',
+    address: 'حي الخالدية، شارع جبار بن صخر، المدينة المنورة',
+    pickup: 'استلام مجاني من الفرع.',
+    doTitle: 'ما يمكنك فعله في الفرع',
+    hoursTitle: 'ساعات العمل',
+    hoursDay: 'اليوم',
+    hoursFrom: 'من',
+    hoursTo: 'إلى',
+    hoursNote: 'نغلق وقت الصلاة ونعود بعدها.',
+    whatsapp: 'راسلنا على واتساب',
+    whatsappPrefill: 'السلام عليكم، عندي سؤال عن فرع الخالدية.',
+    map: 'الموقع على الخريطة',
+    doList: [
+      ['استلام طلبك الإلكتروني', 'اختر الاستلام من الفرع عند إتمام الطلب، ويصلك تنبيه عندما يكون جاهزا.'],
+      ['مقارنة الأحجام والنكهات', 'العبوات أمامك على الرف، فقارن وزن السكوب وعدد الحصص بنفسك.'],
+      ['الشراء والدفع في الفرع', 'بطرق الدفع المتاحة في الفرع، بالأسعار نفسها المعروضة في المتجر.'],
+      ['سؤال فريق الفرع', 'عن الاختيار وطريقة الاستخدام وقراءة الملصق. لا نقدم استشارة صحية.'],
+      ['حجز وقت للزيارة', 'اختياري. يضمن أن يكون أحدنا متفرغا لك وطلبك جاهزا.']
+    ]
+  };
+
+  /* The five home rows of app/content/faq.ts, the price item first. */
+  var FAQ_TITLE = 'أسئلة شائعة';
+  var PRICE_Q = 'لماذا قد تجد سعرا أقل في مكان آخر؟';
+  var PRICE_A = 'السعر المعروض على الصفحة هو السعر النهائي الذي تدفعه. ومعه نكتب عدد الحصص وحجم الحصة، فاقسم السعر على عدد الحصص لتعرف تكلفة الحصة الواحدة، فهي المقارنة الصحيحة بين عبوتين. العبوات تختلف في وزن السكوب وفي عدد الحصص، فالعبوة الأقل سعرا قد تكون الأعلى تكلفة في الحصة. وإن كان الفرق على المنتج نفسه، فقارن الحجم والنكهة وتاريخ الصلاحية قبل أن تقارن الرقم وحده.';
+
+  var HOME_FAQ = [
+    ['faq-price', PRICE_Q, PRICE_A],
+    ['faq-beginner', 'ما أهم مكملات الجيم للمبتدئ؟',
+      'واي بروتين إذا كان طعامك لا يغطي احتياجك من البروتين، وكرياتين مونوهيدرات بجرعة يومية ثابتة. هذان يكفيان في الأشهر الأولى. ما قبل التمرين والأحماض الأمينية إضافات لاحقة، وليست شرطا للبداية. الأهم من كل مكمل هو النوم والطعام والانتظام في التمرين.'],
+    ['faq-protein-dose', 'كم سكوب بروتين في اليوم؟',
+      'يعطي السكوب الواحد عادة 20 إلى 25 غراما من البروتين، ويكفي معظم المتدربين سكوب إلى سكوبين يوميا لتكملة ما يأتي من الطعام. الأهم إجمالي البروتين خلال اليوم من الطعام والمكمل معا. الملصق يحدد وزن السكوب لكل منتج، ونعرضه في صفحة المنتج.'],
+    ['faq-creatine-timing', 'متى آخذ الكرياتين: قبل التمرين أم بعده؟',
+      'لا يوجد فرق حاسم بين الوقتين. الأهم هو الانتظام على جرعة يومية ثابتة، في أيام التمرين وأيام الراحة على حد سواء. من يفضل تحديد وقت يأخذه بعد التمرين مع وجبة تحتوي على كربوهيدرات.'],
+    ['faq-protein-safe', 'هل البروتين باودر مضر؟',
+      'مسحوق البروتين مكمل غذائي مصدره الحليب أو النبات، ويستخدمه الأشخاص الأصحاء لتكملة احتياج البروتين اليومي ضمن طعام متوازن. لا يغني عن الوجبات ولا يعوض نقص النوم. من لديه حالة صحية يستشير مختصا قبل استخدام أي مكمل، ونحن لا نجيب عن هذه الأسئلة كتابة.']
+  ];
+
+  /* The product page's pre-purchase rows (DIRECTION 5.4). The third is locked
+     open: a medical note is never a control the shopper has to find. */
+  var PDP = {
+    beforeTitle: 'قبل أن تشتري',
+    allergensQ: 'مسببات الحساسية',
+    allergensA: 'مسببات الحساسية المذكورة على الملصق مكتوبة في كل منتج تحت عنوان تنبيه، مثل الحليب أو الصويا أو القمح أو المكسرات. التركيبة قد تتغير بين دفعة وأخرى، والملصق على العبوة هو المرجع الأخير، فاقرأه قبل أول استخدام. وإن كان سؤالك عن مكون بعينه فأرسله لنا قبل الشراء.',
+    storageQ: 'التخزين',
+    storageA: 'احفظ العبوة مغلقة في مكان بارد وجاف بعيدا عن الشمس، وخاصة في الصيف.',
+    warningQ: 'تنبيه',
+    medical: 'للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.'
+  };
+
+  /* Empty states, FINAL-content 6.5. The cart body drops the sentence that
+     carries a free-shipping threshold: that figure is bound to a dashboard
+     rule and is never printed here. */
+  var EMPTY = {
+    cartBody: 'ابدأ من هدفك، أو تصفح حسب النوع.',
+    cartAsk: 'لا تعرف من أين تبدأ؟ أرسل سؤالا مجانيا',
+    zeroPrefix: 'لم نجد نتائج لكلمة',
+    zeroHint: 'جرب اسما آخر، أو الاسم بالإنجليزية مثل whey أو creatine، أو تحقق من الإملاء.',
+    popular: 'جرب البحث عن',
+    browseGoals: 'تصفح حسب الهدف',
+    browseTypes: 'تصفح حسب النوع',
+    ask: 'لم تجد ما تبحث عنه؟ اكتب لنا اسم المنتج ونخبرك إن كنا نوفره.'
+  };
+
+  var CART = {
+    trustAuthentic: 'منتجات أصلية بتعريف واضح وصلاحية على كل منتج.',
+    trustShipping: 'الشحن من المدينة المنورة إلى كل مدن السعودية.',
+    pickup: 'أو استلم مجانا من فرع الخالدية.'
+  };
+
+  /* The six goals of app/content/goals.ts, in that order: slug, label
+     (ox.goal.name_*), the first sub-need title the card prints as its one
+     line, and the search query the card routes to. Categories do not exist on
+     the store yet, so each query was checked against the live storefront
+     search and returns results. */
+  var GOALS = [
+    ['goal-energy', 'الطاقة', 'طاقة وتركيز قبل الحصة', 'امينو'],
+    ['goal-general-health', 'الصحة العامة', 'فيتامينات يومية بجرعة معقولة', 'فيتامين'],
+    ['goal-performance', 'الأداء', 'بروتين يومي بعد التمرين', 'بروتين'],
+    ['goal-recovery', 'التعافي', 'بروتين سريع بعد التمرين', 'واي'],
+    ['goal-hair-skin', 'الشعر والبشرة', 'كولاجين يومي في المشروب', 'كولاجين'],
+    ['goal-ideal-weight', 'الوزن المثالي', 'سعرات وبروتين في حصة واحدة', 'جينر']
+  ];
+
+  /* The zero-results chips of FINAL-content 6.5, minus any the live storefront
+     search answers with nothing. The list is fixed until real search data
+     exists, and it is never labelled as popular or best selling. */
+  var ZERO_CHIPS = ['واي بروتين', 'كرياتين', 'فيتامين د3', 'كولاجين'];
 
   /* The supplement glossary: term, search aliases and the one-sentence plain
      Arabic definition, lifted from app/content/glossary.ts and locales/ar.json. */
@@ -2050,13 +498,210 @@ body.theme-raed .s-cart-item h3 {
   };
 
   /* ---------------------------------------------------------------------
-   * 2. Is the stylesheet already in effect?
+   * 3. Settings, and the gate that keeps unfilled values off the page.
+   * ------------------------------------------------------------------- */
+
+  function settings() {
+    try {
+      var raw = window.OPTIMALX_SETTINGS;
+      return raw && typeof raw === 'object' ? raw : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  /* Returns the value only when the owner has actually filled it in. A string
+     that is empty, or that still carries a {PLACEHOLDER}, counts as unfilled. */
+  function setting(name) {
+    var value = settings()[name];
+    if (value === undefined || value === null) return null;
+    if (typeof value === 'string') {
+      var trimmed = value.trim();
+      if (trimmed.length === 0) return null;
+      if (trimmed.indexOf('{') >= 0) return null;
+      return trimmed;
+    }
+    if (Object.prototype.toString.call(value) === '[object Array]') {
+      return value.length > 0 ? value : null;
+    }
+    return value;
+  }
+
+  /* ---------------------------------------------------------------------
+   * 4. Small DOM helpers.
+   * ------------------------------------------------------------------- */
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.appendChild(document.createTextNode(String(text)));
+    return node;
+  }
+
+  function link(href, className, text) {
+    var node = el('a', className, text);
+    node.setAttribute('href', href);
+    return node;
+  }
+
+  function fill(template, token, value) {
+    return template.split('{{' + token + '}}').join(String(value));
+  }
+
+  function icon(name, size) {
+    var px = size || 24;
+    var svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('class', 'ox-icon ox-icon--' + px);
+    svg.setAttribute('width', String(px));
+    svg.setAttribute('height', String(px));
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    var use = document.createElementNS(SVGNS, 'use');
+    use.setAttribute('href', '#ox-' + name);
+    use.setAttributeNS(XLINKNS, 'xlink:href', '#ox-' + name);
+    svg.appendChild(use);
+    return svg;
+  }
+
+  /* A page-level section. Raed's own .s-block class comes along so the block
+     rhythm of the stylesheet applies to it like any other home block. */
+  function section(id, className) {
+    var node = el('section', 's-block ox-injected ' + className);
+    node.id = id;
+    node.setAttribute(MARK, id);
+    return node;
+  }
+
+  function container(parent, className) {
+    var box = el('div', className ? 'ox-container ' + className : 'ox-container');
+    parent.appendChild(box);
+    return box;
+  }
+
+  /* SectionHeader (DIRECTION 5.2): the accent rule, the title, one line. */
+  function header(title, descriptor, level) {
+    var head = el('header', 'ox-sh');
+    head.appendChild(el(level || 'h2', 'ox-sh__title', title));
+    if (descriptor) head.appendChild(el('p', 'ox-sh__desc', descriptor));
+    return head;
+  }
+
+  function built(name) {
+    return document.querySelector('[' + MARK + '="' + name + '"]') !== null;
+  }
+
+  function searchUrl(query) {
+    return '/search?q=' + encodeURIComponent(query);
+  }
+
+  var accSeq = 0;
+
+  /* The accordion behind every FAQ and the pre-purchase rows. A locked row has
+     no control at all: DIRECTION 9.2 forbids a disabled control, so the medical
+     line renders as a heading with its text always visible. */
+  function accordion(items, openFirst) {
+    var root = el('div', 'ox-acc');
+    for (var i = 0; i < items.length; i += 1) {
+      var item = items[i];
+      if (item.locked) {
+        var stat = el('div', 'ox-acc__row ox-acc__static');
+        if (item.id) stat.id = item.id;
+        stat.appendChild(el('h3', 'ox-acc__title', item.q));
+        var statBody = el('div', 'ox-acc__body');
+        statBody.appendChild(el('p', null, item.a));
+        stat.appendChild(statBody);
+        root.appendChild(stat);
+        continue;
+      }
+      accSeq += 1;
+      var triggerId = 'ox-acc-t' + accSeq;
+      var panelId = 'ox-acc-p' + accSeq;
+      var open = openFirst === true && i === 0;
+
+      var row = el('div', 'ox-acc__row');
+      if (item.id) row.id = item.id;
+
+      var heading = el('h3', 'ox-acc__heading');
+      var trigger = el('button', 'ox-acc__trigger');
+      trigger.type = 'button';
+      trigger.id = triggerId;
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      trigger.setAttribute('aria-controls', panelId);
+      trigger.appendChild(el('span', 'ox-acc__title', item.q));
+      var chevron = el('i', 'sicon-keyboard_arrow_down ox-acc__chevron');
+      chevron.setAttribute('aria-hidden', 'true');
+      trigger.appendChild(chevron);
+      heading.appendChild(trigger);
+      row.appendChild(heading);
+
+      var panel = el('div', 'ox-acc__panel');
+      panel.id = panelId;
+      panel.setAttribute('role', 'region');
+      panel.setAttribute('aria-labelledby', triggerId);
+      panel.setAttribute('data-open', open ? 'true' : 'false');
+      if (!open) panel.hidden = true;
+      var body = el('div', 'ox-acc__body');
+      body.appendChild(el('p', null, item.a));
+      panel.appendChild(body);
+      row.appendChild(panel);
+
+      bindAccordion(root, trigger, panel);
+      root.appendChild(row);
+    }
+    return root;
+  }
+
+  /* One row open at a time, which is what the React Accordion does by default. */
+  function bindAccordion(root, trigger, panel) {
+    trigger.addEventListener('click', function () {
+      var wasOpen = trigger.getAttribute('aria-expanded') === 'true';
+      var triggers = root.querySelectorAll('.ox-acc__trigger');
+      for (var i = 0; i < triggers.length; i += 1) {
+        var other = triggers[i];
+        other.setAttribute('aria-expanded', 'false');
+        var otherPanel = document.getElementById(other.getAttribute('aria-controls'));
+        if (otherPanel) {
+          otherPanel.hidden = true;
+          otherPanel.setAttribute('data-open', 'false');
+        }
+      }
+      if (!wasOpen) {
+        trigger.setAttribute('aria-expanded', 'true');
+        panel.hidden = false;
+        panel.setAttribute('data-open', 'true');
+      }
+    });
+  }
+
+  /* The four trust items of FINAL-content 1.3, as a compact row. Used on the
+     product page and in the cart, where the home's own strip does not reach. */
+  function trustRow() {
+    var list = el('ul', 'ox-trust__row');
+    var items = [
+      ['authentic', H.trustAuthentic, H.trustAuthenticLine],
+      ['shipping', H.trustShipping, H.trustShippingLine],
+      ['secure-payment', H.trustPayment, H.trustPaymentLine],
+      ['help', H.trustHelp, H.trustHelpLine]
+    ];
+    for (var i = 0; i < items.length; i += 1) {
+      var li = el('li', 'ox-trust__item');
+      li.appendChild(icon(items[i][0], 24));
+      var text = el('span', 'ox-trust__text');
+      text.appendChild(el('b', 'ox-trust__title', items[i][1]));
+      text.appendChild(el('span', 'ox-trust__line', items[i][2]));
+      li.appendChild(text);
+      list.appendChild(li);
+    }
+    return list;
+  }
+
+  /* ---------------------------------------------------------------------
+   * 5. The stylesheet: is the skin already in effect, and the two injections.
    *
    *    The question is asked of the browser, not of the document's markup: a
    *    probe element carrying the stylesheet's own class is measured with
-   *    getComputedStyle and thrown away. That answers correctly however the
-   *    stylesheet arrived, through the theme's custom CSS box, through a link,
-   *    or through an earlier run of this script.
+   *    getComputedStyle and thrown away.
    * ------------------------------------------------------------------- */
 
   function stylesheetIsApplied() {
@@ -2077,23 +722,59 @@ body.theme-raed .s-cart-item h3 {
     return applied;
   }
 
-  /* Injects the fallback copy. Guarded twice: by the window flag at the top of
-     the file and by the element id, so a second execution does nothing. */
-  function injectStyle() {
-    if (stylesheetIsApplied()) return 'already-applied';
-    if (document.getElementById(STYLE_ID)) return 'already-injected';
-    var style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.setAttribute(MARK, 'stylesheet');
-    style.appendChild(document.createTextNode(CSS));
+  /* The baseline goes in FIRST, at the top of head, so every rule the real
+     stylesheet writes beats it on document order. The ground layer is added to
+     it only when the real stylesheet is not there at all. */
+  function injectBase() {
+    if (document.getElementById(BASE_ID)) return 'already-injected';
     var host = document.head || document.documentElement;
     if (!host) return 'no-host';
-    host.appendChild(style);
-    return 'injected-fallback';
+    var applied = stylesheetIsApplied();
+    var css = applied ? BASE : BASE + GROUND;
+    var style = document.createElement('style');
+    style.id = BASE_ID;
+    style.setAttribute(MARK, 'baseline');
+    style.appendChild(document.createTextNode(css));
+    host.insertBefore(style, host.firstChild);
+    window.__optimalxRaedSkin.injected = true;
+    return applied ? 'baseline' : 'baseline+ground';
+  }
+
+  function injectSprite() {
+    if (document.getElementById(SPRITE_ID)) return 'already-injected';
+    var host = document.body || document.documentElement;
+    if (!host) return 'no-host';
+    var box = el('div');
+    box.id = SPRITE_ID;
+    box.setAttribute('aria-hidden', 'true');
+    box.setAttribute(MARK, 'sprite');
+    box.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    box.innerHTML = SPRITE;
+    host.insertBefore(box, host.firstChild);
+    return 'injected';
   }
 
   /* ---------------------------------------------------------------------
-   * 3. The spec line parser (port of app/components/product/lib/specLine.ts).
+   * 6. Which page is this?
+   *
+   *    Raed writes the route onto the body as a class. These read that class
+   *    rather than the URL, so a store on another domain or another language
+   *    prefix still answers correctly.
+   * ------------------------------------------------------------------- */
+
+  function bodyHas(name) {
+    var body = document.body;
+    if (!body || !body.className) return false;
+    return (' ' + body.className + ' ').indexOf(' ' + name + ' ') >= 0;
+  }
+
+  function isHome() { return bodyHas('index'); }
+  function isProduct() { return bodyHas('product-single'); }
+  function isCart() { return bodyHas('cart'); }
+  function isSearch() { return bodyHas('product-index-search'); }
+
+  /* ---------------------------------------------------------------------
+   * 7. The spec line parser (port of app/components/product/lib/specLine.ts).
    *    No regular expressions: string scanning only.
    * ------------------------------------------------------------------- */
 
@@ -2175,7 +856,7 @@ body.theme-raed .s-cart-item h3 {
   }
 
   /* ---------------------------------------------------------------------
-   * 4. The supply arithmetic (port of app/components/product/lib/supply.ts).
+   * 8. The supply arithmetic (port of app/components/product/lib/supply.ts).
    *    It describes the package, never a person.
    * ------------------------------------------------------------------- */
 
@@ -2212,22 +893,7 @@ body.theme-raed .s-cart-item h3 {
   }
 
   /* ---------------------------------------------------------------------
-   * 5. Small DOM helpers.
-   * ------------------------------------------------------------------- */
-
-  function el(tag, className, text) {
-    var node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text !== undefined && text !== null) node.appendChild(document.createTextNode(String(text)));
-    return node;
-  }
-
-  function fill(template, token, value) {
-    return template.split('{{' + token + '}}').join(String(value));
-  }
-
-  /* ---------------------------------------------------------------------
-   * 6. The spec chips and the supply calculator.
+   * 9. The spec chips and the supply calculator.
    * ------------------------------------------------------------------- */
 
   function chip(label, value) {
@@ -2270,8 +936,7 @@ body.theme-raed .s-cart-item h3 {
     var panel = el('div', 'ox-supply ox-injected');
     panel.setAttribute(MARK, 'supply');
 
-    var title = el('p', 'ox-supply__label', T.supplyTitle);
-    panel.appendChild(title);
+    panel.appendChild(el('p', 'ox-supply__label', T.supplyTitle));
 
     var row = el('div', 'ox-supply__row');
 
@@ -2296,8 +961,7 @@ body.theme-raed .s-cart-item h3 {
     result.setAttribute('aria-live', 'polite');
     panel.appendChild(result);
 
-    var note = el('p', 'ox-supply__note ox-chip__label', T.supplyNote);
-    panel.appendChild(note);
+    panel.appendChild(el('p', 'ox-supply__note ox-chip__label', T.supplyNote));
 
     function render() {
       var estimate = estimateSupply(spec.servings, dose, new Date());
@@ -2341,7 +1005,7 @@ body.theme-raed .s-cart-item h3 {
   }
 
   function renderSpecBlock() {
-    if (document.body.className.indexOf('product-single') < 0) return 'skipped';
+    if (!isProduct()) return 'skipped';
     var description = document.querySelector('.product__description');
     if (!description) return 'no-description';
     var paragraph = description.querySelector('p');
@@ -2351,7 +1015,7 @@ body.theme-raed .s-cart-item h3 {
 
     var anchor = buyZoneAnchor();
     if (!anchor || !anchor.parentNode) return 'no-anchor';
-    if (document.querySelector('[' + MARK + '="spec-chips"]')) return 'already-rendered';
+    if (built('spec-chips')) return 'already-rendered';
 
     var host = el('div', 'ox-injected');
     host.setAttribute(MARK, 'spec-block');
@@ -2370,13 +1034,26 @@ body.theme-raed .s-cart-item h3 {
   }
 
   /* ---------------------------------------------------------------------
-   * 7. The nutrition table: the third column and the narrow-screen scroller.
+   * 10. The nutrition table: the third column and the narrow-screen scroller.
    * ------------------------------------------------------------------- */
 
   var ARABIC_COMMA = String.fromCharCode(0x060c);
 
   function normaliseTerm(input) {
-    return String(input).trim().toLowerCase().split(/\s+/).join(' ');
+    var source = String(input).trim().toLowerCase();
+    var out = '';
+    var gap = false;
+    for (var i = 0; i < source.length; i += 1) {
+      var ch = source.charAt(i);
+      if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' || ch === '\f') {
+        gap = true;
+        continue;
+      }
+      if (gap && out.length > 0) out += ' ';
+      gap = false;
+      out += ch;
+    }
+    return out;
   }
 
   function glossaryForLabel(label) {
@@ -2409,7 +1086,7 @@ body.theme-raed .s-cart-item h3 {
   }
 
   function enhanceNutritionTable() {
-    if (document.body.className.indexOf('product-single') < 0) return 'skipped';
+    if (!isProduct()) return 'skipped';
     var description = document.querySelector('.product__description');
     if (!description) return 'no-description';
     var table = description.querySelector('table');
@@ -2500,30 +1177,694 @@ body.theme-raed .s-cart-item h3 {
   }
 
   /* ---------------------------------------------------------------------
-   * 8. Run. Each feature is isolated: one throwing must not stop the others.
+   * 11. Home: the H1 line and the hero's two calls to action.
+   *
+   *     Raed's home prints the store name as a visually hidden H1. It is
+   *     rewritten rather than joined, so the page keeps exactly one H1 and it
+   *     is the approved keyword line of FINAL-content 1.1.
+   * ------------------------------------------------------------------- */
+
+  function renderHomeH1() {
+    if (!isHome()) return 'skipped';
+    var h1 = document.querySelector('main h1') || document.querySelector('h1.sr-only');
+    if (!h1) return 'no-h1';
+    if (h1.getAttribute(MARK) === 'home-h1') return 'already-rendered';
+    var current = h1.textContent ? h1.textContent.trim() : '';
+    /* Only the store-name placeholder is replaced. A real page heading, or a
+       line the owner has already written, is left exactly as it is. */
+    if (current.length !== 0 && current !== 'Optimal X' && current !== 'اوبتيمال اكس') return 'not-the-placeholder';
+    h1.textContent = H.h1;
+    h1.setAttribute(MARK, 'home-h1');
+    return 'rendered';
+  }
+
+  function renderHeroActions() {
+    if (!isHome()) return 'skipped';
+    if (built('hero-actions')) return 'already-rendered';
+    var hero = document.querySelector('[data-testid="store-home-slider"]');
+    if (!hero) return 'no-hero';
+    var slot = hero.querySelector('.home-slider__content > div') || hero.querySelector('.home-slider__content');
+    if (!slot) return 'no-slot';
+
+    var actions = el('div', 'ox-hero__actions ox-injected');
+    actions.setAttribute(MARK, 'hero-actions');
+    actions.appendChild(link('#ox-goals', 'ox-btn', H.ctaPrimary));
+    actions.appendChild(link('#ox-services', 'ox-btn ox-btn--secondary', H.ctaSecondary));
+    slot.appendChild(actions);
+    return 'rendered';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 12. Home: the six goal cards, and the one entrance animation.
+   * ------------------------------------------------------------------- */
+
+  function renderGoals() {
+    if (!isHome()) return 'skipped';
+    if (built('ox-goals')) return 'already-rendered';
+    var hero = document.querySelector('[data-testid="store-home-slider"]');
+    if (!hero || !hero.parentNode) return 'no-anchor';
+
+    var block = section('ox-goals', 'ox-goals');
+    var box = container(block);
+    box.appendChild(header(H.goalsTitle, H.goalsIntro));
+
+    var grid = el('ul', 'ox-goals__grid');
+    for (var i = 0; i < GOALS.length; i += 1) {
+      var goal = GOALS[i];
+      var li = el('li');
+      var card = link(searchUrl(goal[3]), 'ox-goal');
+      card.setAttribute('data-goal', goal[0]);
+      card.style.setProperty('--i', String(i));
+      card.appendChild(icon(goal[0], 32));
+      var body = el('span', 'ox-goal__body');
+      body.appendChild(el('span', 'ox-goal__label', goal[1]));
+      body.appendChild(el('span', 'ox-goal__line', goal[2]));
+      card.appendChild(body);
+      li.appendChild(card);
+      grid.appendChild(li);
+    }
+    box.appendChild(grid);
+
+    hero.parentNode.insertBefore(block, hero.nextSibling);
+    return 'rendered';
+  }
+
+  /* DIRECTION 7.2. The one entrance animation on the site: the six cards run
+     once, when the grid is 30 per cent in view, each delayed by its DOM index
+     times --stagger-step. Under reduced motion the cards are simply present. */
+  function armSettle() {
+    var grid = document.querySelector('.ox-goals__grid');
+    if (!grid) return 'no-grid';
+    if (grid.getAttribute('data-settle')) return 'already-armed';
+
+    var reduced = false;
+    try {
+      reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    } catch (error) {
+      reduced = false;
+    }
+    if (reduced || typeof window.IntersectionObserver !== 'function') {
+      grid.setAttribute('data-settle', 'off');
+      return 'off';
+    }
+
+    grid.setAttribute('data-settle', 'pending');
+    var fired = false;
+    function run() {
+      if (fired) return;
+      fired = true;
+      grid.setAttribute('data-settle', 'running');
+    }
+    var observer = new window.IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i += 1) {
+        if (entries[i].isIntersecting) {
+          run();
+          observer.disconnect();
+          return;
+        }
+      }
+    }, { threshold: 0.3 });
+    observer.observe(grid);
+
+    /* A failsafe. If the observer never reports, the cards must not be left at
+       opacity 0 for the life of the page. */
+    window.setTimeout(function () {
+      if (!fired) {
+        run();
+        observer.disconnect();
+      }
+    }, 2500);
+    return 'armed';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 13. Home: the fourth trust item, and the panel behind the strip.
+   *
+   *     Salla's features block is hard capped at exactly three items, so the
+   *     fourth of FINAL-content 1.3 is added here, in the theme's own markup
+   *     so it is indistinguishable from the three beside it.
+   * ------------------------------------------------------------------- */
+
+  function renderTrustStrip() {
+    if (!isHome()) return 'skipped';
+    var strip = document.querySelector('[data-testid="store-home-features"]');
+    if (!strip) return 'no-strip';
+    var grid = strip.querySelector('.grid') || strip.firstElementChild;
+    if (!grid) return 'no-grid';
+
+    var state = [];
+
+    if (!built('trust-payment')) {
+      var items = grid.querySelectorAll('.s-block--features__item');
+      var last = items.length ? items[items.length - 1] : null;
+      var item = el('div', 's-block--features__item ox-injected');
+      item.setAttribute(MARK, 'trust-payment');
+      var iconBox = el('div', 'feature-icon');
+      iconBox.appendChild(icon('secure-payment', 28));
+      item.appendChild(iconBox);
+      item.appendChild(el('h2', null, H.trustPayment));
+      item.appendChild(el('p', null, H.trustPaymentLine));
+      /* Third of the four in FINAL-content 1.3, so it goes before the last one
+         rather than at the end of the row. */
+      if (last) grid.insertBefore(item, last); else grid.appendChild(item);
+      state.push('item');
+    }
+
+    if (!built('trust-panel')) {
+      var wrap = el('div', 'ox-trust ox-injected');
+      wrap.setAttribute(MARK, 'trust-panel');
+
+      var panelId = 'ox-trust-panel';
+      var button = el('button', 'ox-trust__btn', H.whyTitle);
+      button.type = 'button';
+      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-controls', panelId);
+      var chevron = el('i', 'sicon-keyboard_arrow_down');
+      chevron.setAttribute('aria-hidden', 'true');
+      button.appendChild(chevron);
+
+      var panel = el('div', 'ox-trust__panel');
+      panel.id = panelId;
+      panel.hidden = true;
+      panel.setAttribute('data-open', 'false');
+      var inner = el('div', 'ox-trust__panelinner');
+      for (var i = 0; i < WHY.length; i += 1) {
+        var cell = el('div');
+        cell.appendChild(el('h3', 'ox-trust__title', WHY[i][0]));
+        cell.appendChild(el('p', 'ox-trust__def', WHY[i][1]));
+        inner.appendChild(cell);
+      }
+      panel.appendChild(inner);
+
+      bindTrustPanel(button, panel);
+
+      wrap.appendChild(button);
+      wrap.appendChild(panel);
+      strip.appendChild(wrap);
+      state.push('panel');
+    }
+
+    return state.length ? 'rendered:' + state.join('+') : 'already-rendered';
+  }
+
+  function bindTrustPanel(button, panel) {
+    button.addEventListener('click', function () {
+      var open = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', open ? 'false' : 'true');
+      panel.hidden = open;
+      panel.setAttribute('data-open', open ? 'false' : 'true');
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+   * 14. Home: the services band.
+   *
+   *     The store's whole differentiator, and invisible until now: the three
+   *     service products exist in the catalogue with nothing linking to them.
+   *     The paid channel prints neither a price nor the credit line, because
+   *     FINAL-content 4.3 gates both on a coupon the dashboard does not have.
+   * ------------------------------------------------------------------- */
+
+  function servicesSection() {
+    var block = section('ox-services', 'ox-services ox-band-dark');
+    var wedge = el('div', 'ox-services__wedge');
+    wedge.setAttribute('aria-hidden', 'true');
+    block.appendChild(wedge);
+
+    var box = container(block, 'ox-services__inner');
+    box.appendChild(header(SV.title, SV.intro));
+
+    var list = el('ul', 'ox-channels');
+    for (var i = 0; i < CHANNELS.length; i += 1) {
+      var ch = CHANNELS[i];
+      var li = el('li', 'ox-channel');
+
+      var head = el('div', 'ox-channel__head');
+      head.appendChild(icon(ch[0], 24));
+      head.appendChild(el('h3', 'ox-channel__title', ch[1]));
+      if (ch[2]) head.appendChild(el('span', 'ox-channel__free', SV.free));
+      li.appendChild(head);
+
+      li.appendChild(el('p', 'ox-channel__meta', ch[3]));
+      li.appendChild(el('p', 'ox-channel__desc', ch[4]));
+      li.appendChild(link(ch[6], 'ox-btn ox-channel__cta', ch[5]));
+      list.appendChild(li);
+    }
+    box.appendChild(list);
+    box.appendChild(el('p', 'ox-services__note', SV.footer));
+
+    var cols = el('div', 'ox-services__cols');
+
+    var scopeCol = el('div');
+    scopeCol.appendChild(el('h3', null, SV.scopeTitle));
+    var scope = el('ul', 'ox-scope');
+    for (var s = 0; s < SV.scope.length; s += 1) {
+      scope.appendChild(el('li', null, SV.scope[s]));
+    }
+    scopeCol.appendChild(scope);
+    scopeCol.appendChild(el('p', 'ox-services__note', SV.medical));
+    cols.appendChild(scopeCol);
+
+    var howCol = el('div');
+    howCol.appendChild(el('h3', null, SV.howTitle));
+    var steps = el('ol', 'ox-steps');
+    for (var h = 0; h < SV.how.length; h += 1) {
+      var step = el('li');
+      step.appendChild(el('b', null, SV.how[h][0]));
+      step.appendChild(el('span', null, SV.how[h][1]));
+      steps.appendChild(step);
+    }
+    howCol.appendChild(steps);
+    cols.appendChild(howCol);
+
+    box.appendChild(cols);
+    return block;
+  }
+
+  function renderServices() {
+    if (!isHome()) return 'skipped';
+    if (built('ox-services')) return 'already-rendered';
+    /* The dark band Raed already renders on this home. The services section
+       goes immediately before it, so the two dark bands read as one region
+       rather than sandwiching a light block between them. */
+    var anchor = document.querySelector('[component-id="303875307"]')
+      || document.querySelector('.s-block--slider-with-bg')
+      || document.querySelector('[data-testid="store-home-photos-slider"]');
+    if (!anchor || !anchor.parentNode) return 'no-anchor';
+    anchor.parentNode.insertBefore(servicesSection(), anchor);
+    return 'rendered';
+  }
+
+  /* That same dark band ships an empty heading and an empty paragraph, because
+     the merchant fields behind them are empty strings. An empty heading is a
+     real defect in the outline, so it is hidden. Nothing is deleted: fill the
+     fields in the dashboard and this stops applying. */
+  function hideEmptyBandTitle() {
+    if (!isHome()) return 'skipped';
+    var band = document.querySelector('[component-id="303875307"] .slider-bg');
+    if (!band) return 'no-band';
+    var headings = band.querySelectorAll('h1, h2, h3');
+    var hidden = 0;
+    for (var i = 0; i < headings.length; i += 1) {
+      var heading = headings[i];
+      if (heading.textContent && heading.textContent.trim().length > 0) continue;
+      if (heading.getAttribute(MARK) === 'empty-band-title') continue;
+      var wrapper = heading.parentNode;
+      if (wrapper && wrapper.textContent && wrapper.textContent.trim().length === 0 && wrapper.nodeType === 1) {
+        wrapper.hidden = true;
+        wrapper.setAttribute(MARK, 'empty-band-title');
+      }
+      heading.hidden = true;
+      heading.setAttribute(MARK, 'empty-band-title');
+      hidden += 1;
+    }
+    return hidden ? 'hidden:' + hidden : 'nothing-empty';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 15. Home: the branch.
+   *
+   *     Free pickup from Al Khalidiyah is the store's only shipping advantage
+   *     and no shopper can discover it today. The address is public and
+   *     approved (FINAL-content 5.1). The hours table, the WhatsApp button and
+   *     the map link each render only when the owner has filled that setting:
+   *     FINAL-content 5.3 forbids printing a default-hours table.
+   * ------------------------------------------------------------------- */
+
+  function hoursTable(hours) {
+    var box = el('div', 'ox-hours');
+    box.appendChild(el('h3', 'ox-hours__title', BR.hoursTitle));
+    var table = el('table', 'ox-hours__table');
+    var thead = el('thead');
+    var headRow = el('tr');
+    headRow.appendChild(el('th', null, BR.hoursDay));
+    headRow.appendChild(el('th', null, BR.hoursFrom));
+    headRow.appendChild(el('th', null, BR.hoursTo));
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+    var tbody = el('tbody');
+    var rows = 0;
+    for (var r = 0; r < hours.length; r += 1) {
+      var entry = hours[r];
+      if (!entry || entry.length < 3) continue;
+      var tr = el('tr');
+      tr.appendChild(el('th', null, entry[0]));
+      tr.appendChild(el('td', null, entry[1]));
+      tr.appendChild(el('td', null, entry[2]));
+      tbody.appendChild(tr);
+      rows += 1;
+    }
+    if (rows === 0) return null;
+    table.appendChild(tbody);
+    box.appendChild(table);
+    box.appendChild(el('p', 'ox-hours__note', BR.hoursNote));
+    return box;
+  }
+
+  function branchSection() {
+    var block = section('ox-branch', 'ox-branch');
+    var box = container(block);
+    box.appendChild(header(BR.title, BR.intro));
+
+    var card = el('div', 'ox-branch__card');
+
+    var left = el('div');
+    left.appendChild(el('p', 'ox-branch__address', BR.address));
+    left.appendChild(el('p', 'ox-branch__pickup', BR.pickup));
+
+    var hours = setting('hours');
+    if (hours) {
+      var table = hoursTable(hours);
+      if (table) left.appendChild(table);
+    }
+
+    var actions = el('div', 'ox-branch__actions');
+    var whatsapp = setting('whatsapp');
+    if (whatsapp) {
+      var digits = String(whatsapp).split('+').join('').split(' ').join('').split('-').join('');
+      var wa = link('https://wa.me/' + digits + '?text=' + encodeURIComponent(BR.whatsappPrefill), 'ox-btn', BR.whatsapp);
+      wa.setAttribute('rel', 'noopener');
+      actions.appendChild(wa);
+    }
+    var mapUrl = setting('mapUrl');
+    if (mapUrl) {
+      var map = link(mapUrl, 'ox-btn ox-btn--secondary', BR.map);
+      map.setAttribute('rel', 'noopener');
+      map.setAttribute('target', '_blank');
+      actions.appendChild(map);
+    }
+    /* The visit booking is a real product on the store, so this route out is
+       available even with every setting empty. */
+    actions.appendChild(link(P_VISIT, 'ox-btn ox-btn--secondary', CHANNELS[2][5]));
+    left.appendChild(actions);
+    card.appendChild(left);
+
+    var right = el('div');
+    right.appendChild(el('h3', null, BR.doTitle));
+    var list = el('ul', 'ox-branch__do');
+    for (var i = 0; i < BR.doList.length; i += 1) {
+      var li = el('li');
+      li.appendChild(el('b', null, BR.doList[i][0]));
+      li.appendChild(el('span', null, BR.doList[i][1]));
+      list.appendChild(li);
+    }
+    right.appendChild(list);
+    card.appendChild(right);
+
+    box.appendChild(card);
+    return block;
+  }
+
+  function renderBranch() {
+    if (!isHome()) return 'skipped';
+    if (built('ox-branch')) return 'already-rendered';
+    var main = document.getElementById('main-content');
+    if (!main) return 'no-main';
+    main.appendChild(branchSection());
+    return 'rendered';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 16. Home: the five-row FAQ, the price question first.
+   * ------------------------------------------------------------------- */
+
+  function renderHomeFaq() {
+    if (!isHome()) return 'skipped';
+    if (built('ox-faq')) return 'already-rendered';
+    var main = document.getElementById('main-content');
+    if (!main) return 'no-main';
+
+    var block = section('ox-faq', 'ox-faq');
+    var box = container(block);
+    box.appendChild(header(FAQ_TITLE));
+
+    var items = [];
+    for (var i = 0; i < HOME_FAQ.length; i += 1) {
+      items.push({ id: HOME_FAQ[i][0], q: HOME_FAQ[i][1], a: HOME_FAQ[i][2] });
+    }
+    box.appendChild(accordion(items, true));
+    main.appendChild(block);
+    return 'rendered';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 17. Product page: the pre-purchase rows, the FAQ, the trust row and the
+   *     ask strip. All four go in one wrapper above the reviews, the only
+   *     full-width anchor the template gives between the buy zone and the
+   *     related products.
+   * ------------------------------------------------------------------- */
+
+  function askStrip() {
+    var strip = el('div', 'ox-ask ox-injected');
+    var text = el('p', 'ox-ask__text');
+    text.appendChild(el('b', null, SV.title));
+    text.appendChild(document.createTextNode(SV.intro));
+    strip.appendChild(text);
+    strip.appendChild(link(P_WRITTEN, 'ox-btn', CHANNELS[0][5]));
+    strip.appendChild(link(P_VIDEO, 'ox-btn ox-btn--secondary', CHANNELS[1][5]));
+    return strip;
+  }
+
+  function renderProductExtras() {
+    if (!isProduct()) return 'skipped';
+    if (built('ox-pdp-extra')) return 'already-rendered';
+    var anchor = document.querySelector('.s-blocks-wrapper.s-before-reviews')
+      || document.querySelector('salla-comments')
+      || document.querySelector('.s-blocks-wrapper.s-before-related');
+    if (!anchor || !anchor.parentNode) return 'no-anchor';
+
+    var wrap = el('div', 'ox-pdp-extra ox-injected');
+    wrap.setAttribute(MARK, 'ox-pdp-extra');
+
+    var info = el('section', 'ox-info');
+    info.id = 'ox-before-you-buy';
+    var infoBox = container(info);
+    infoBox.appendChild(header(PDP.beforeTitle, null, 'h2'));
+    infoBox.appendChild(accordion([
+      { id: 'pdp-allergens', q: PDP.allergensQ, a: PDP.allergensA },
+      { id: 'pdp-storage', q: PDP.storageQ, a: PDP.storageA },
+      { id: 'pdp-warning', q: PDP.warningQ, a: PDP.medical, locked: true }
+    ], true));
+    wrap.appendChild(info);
+
+    /* The FAQ carries the one item DIRECTION 5.4 makes mandatory. The rest of
+       a product's FAQ comes from its category, and the store has no categories
+       yet, so nothing else is guessed into it. */
+    var faq = el('section', 'ox-faq');
+    faq.id = 'ox-pdp-faq';
+    var faqBox = container(faq);
+    faqBox.appendChild(header(FAQ_TITLE, null, 'h2'));
+    faqBox.appendChild(accordion([{ id: 'faq-price', q: PRICE_Q, a: PRICE_A }], true));
+    faqBox.appendChild(askStrip());
+    wrap.appendChild(faq);
+
+    var trust = el('section', 'ox-trust');
+    var trustBox = container(trust);
+    trustBox.appendChild(trustRow());
+    trustBox.appendChild(el('p', 'ox-note', H.vat));
+    wrap.appendChild(trust);
+
+    anchor.parentNode.insertBefore(wrap, anchor);
+    return 'rendered';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 18. Cart: the empty state's body and its three ways out, and the trust
+   *     row under whatever the cart holds.
+   *
+   *     The approved body line in FINAL-content 6.5 ends with a free-shipping
+   *     threshold. That figure is bound to a dashboard rule, so the sentence
+   *     carrying it is dropped rather than printed with a number.
+   * ------------------------------------------------------------------- */
+
+  function renderCartEmpty() {
+    if (!isCart()) return 'skipped';
+    var placeholder = document.querySelector('[data-testid="store-cart-empty"]');
+    if (!placeholder) return 'not-empty';
+    if (placeholder.getAttribute(MARK) === 'cart-empty') return 'already-rendered';
+    placeholder.setAttribute(MARK, 'cart-empty');
+    placeholder.className = placeholder.className + ' ox-empty ox-injected';
+
+    var back = placeholder.querySelector('a');
+
+    var body = el('p', 'ox-empty__body', EMPTY.cartBody);
+    if (back) placeholder.insertBefore(body, back); else placeholder.appendChild(body);
+
+    var ways = el('div', 'ox-empty__ways');
+    ways.appendChild(link('/#ox-goals', 'ox-btn', H.ctaPrimary));
+    ways.appendChild(link('/#store-home-main-links', 'ox-btn ox-btn--secondary', EMPTY.browseTypes));
+    if (back) placeholder.insertBefore(ways, back); else placeholder.appendChild(ways);
+
+    var ask = el('p', 'ox-note');
+    ask.appendChild(link(P_WRITTEN, 'ox-btn ox-btn--ghost', EMPTY.cartAsk));
+    placeholder.appendChild(ask);
+    return 'rendered';
+  }
+
+  function renderCartTrust() {
+    if (!isCart()) return 'skipped';
+    if (built('cart-trust')) return 'already-rendered';
+    var main = document.querySelector('#main-content .container');
+    if (!main) return 'no-anchor';
+    var block = el('section', 'ox-trust ox-injected');
+    block.setAttribute(MARK, 'cart-trust');
+    block.appendChild(trustRow());
+    var lines = CART.trustAuthentic + ' ' + CART.trustShipping + ' ' + CART.pickup + ' ' + H.vat + '.';
+    block.appendChild(el('p', 'ox-note', lines));
+    main.appendChild(block);
+    return 'rendered';
+  }
+
+  /* ---------------------------------------------------------------------
+   * 19. Search: the zero-results panel.
+   *
+   *     The results list renders on the client, so the decision waits for it.
+   *     The panel is added only when the list has rendered and holds no cards,
+   *     and it is removed again if cards arrive late.
+   * ------------------------------------------------------------------- */
+
+  function queryFromUrl() {
+    try {
+      var search = window.location.search || '';
+      if (search.charAt(0) === '?') search = search.slice(1);
+      var parts = search.split('&');
+      for (var i = 0; i < parts.length; i += 1) {
+        var pair = parts[i].split('=');
+        if (pair[0] === 'q' && pair.length > 1) {
+          return decodeURIComponent(pair.slice(1).join('=').split('+').join(' '));
+        }
+      }
+    } catch (error) {
+      return '';
+    }
+    return '';
+  }
+
+  function zeroPanel() {
+    var panel = el('section', 'ox-zero ox-injected');
+    panel.setAttribute(MARK, 'ox-zero');
+
+    var query = queryFromUrl();
+    var quote = String.fromCharCode(34);
+    var title = query ? EMPTY.zeroPrefix + ' ' + quote + query + quote : EMPTY.zeroPrefix;
+    panel.appendChild(el('h2', 'ox-zero__title', title));
+    panel.appendChild(el('p', 'ox-zero__hint', EMPTY.zeroHint));
+
+    panel.appendChild(el('p', 'ox-zero__label', EMPTY.popular));
+    var chips = el('ul', 'ox-chip-row');
+    for (var i = 0; i < ZERO_CHIPS.length; i += 1) {
+      var li = el('li');
+      li.appendChild(link(searchUrl(ZERO_CHIPS[i]), 'ox-chip', ZERO_CHIPS[i]));
+      chips.appendChild(li);
+    }
+    panel.appendChild(chips);
+
+    var links = el('div', 'ox-zero__links');
+    links.appendChild(link('/#ox-goals', 'ox-btn ox-btn--ghost', EMPTY.browseGoals));
+    links.appendChild(link('/#store-home-main-links', 'ox-btn ox-btn--ghost', EMPTY.browseTypes));
+    panel.appendChild(links);
+
+    var ask = el('p', 'ox-zero__ask');
+    ask.appendChild(link(P_WRITTEN, 'ox-btn ox-btn--ghost', EMPTY.ask));
+    panel.appendChild(ask);
+    return panel;
+  }
+
+  function searchList() {
+    return document.querySelector('salla-products-list[data-testid="store-products-list"]')
+      || document.querySelector('salla-products-list');
+  }
+
+  function syncZeroResults() {
+    var list = searchList();
+    if (!list) return 'no-list';
+    var cards = list.querySelectorAll('.s-product-card-entry, .s-product-card');
+    var existing = document.querySelector('[' + MARK + '="ox-zero"]');
+
+    if (cards.length > 0) {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      return 'has-results';
+    }
+    /* The list has not painted anything yet, so say nothing rather than claim
+       there are no results. */
+    if (!list.children || list.children.length === 0) return 'waiting';
+    if (existing) return 'already-rendered';
+    var host = list.parentNode;
+    if (!host) return 'no-anchor';
+    if (host.parentNode) {
+      host.parentNode.insertBefore(zeroPanel(), host.nextSibling);
+    } else {
+      host.appendChild(zeroPanel());
+    }
+    return 'rendered';
+  }
+
+  function renderZeroResults() {
+    if (!isSearch()) return 'skipped';
+    var list = searchList();
+    if (!list) return 'no-list';
+    var state = syncZeroResults();
+
+    if (typeof window.MutationObserver === 'function') {
+      var observer = new window.MutationObserver(function () {
+        try {
+          syncZeroResults();
+        } catch (error) {
+          observer.disconnect();
+        }
+      });
+      observer.observe(list, { childList: true, subtree: true });
+      /* Bounded: the list has either painted or failed well inside this, and a
+         permanent observer on a product list is a cost with no buyer. */
+      window.setTimeout(function () {
+        observer.disconnect();
+      }, 12000);
+    }
+    return state;
+  }
+
+  /* ---------------------------------------------------------------------
+   * 20. Run. Each feature is isolated: one throwing must not stop the others.
    * ------------------------------------------------------------------- */
 
   function record(name, value) {
     window.__optimalxRaedSkin.features[name] = value;
   }
 
-  try {
-    record('style', injectStyle());
-    window.__optimalxRaedSkin.injected = true;
-  } catch (error) {
-    record('style', 'failed: ' + (error && error.message));
+  function guard(name, fn) {
+    try {
+      record(name, fn());
+    } catch (error) {
+      record(name, 'failed: ' + (error && error.message ? error.message : 'unknown'));
+    }
   }
 
+  guard('style', injectBase);
+
   function runPageFeatures() {
-    try {
-      record('specBlock', renderSpecBlock());
-    } catch (error) {
-      record('specBlock', 'failed: ' + (error && error.message));
-    }
-    try {
-      record('nutrition', enhanceNutritionTable());
-    } catch (error) {
-      record('nutrition', 'failed: ' + (error && error.message));
+    guard('sprite', injectSprite);
+    guard('specBlock', renderSpecBlock);
+    guard('nutrition', enhanceNutritionTable);
+    guard('homeH1', renderHomeH1);
+    guard('heroActions', renderHeroActions);
+    guard('goals', renderGoals);
+    guard('settle', armSettle);
+    guard('trustStrip', renderTrustStrip);
+    guard('services', renderServices);
+    guard('bandTitle', hideEmptyBandTitle);
+    guard('branch', renderBranch);
+    guard('homeFaq', renderHomeFaq);
+    guard('productExtras', renderProductExtras);
+    guard('cartEmpty', renderCartEmpty);
+    guard('cartTrust', renderCartTrust);
+    guard('zeroResults', renderZeroResults);
+
+    /* The cart repaints itself when the last item is removed, so its empty
+       state can appear after this pass. One bounded re-check covers it. */
+    if (isCart()) {
+      window.setTimeout(function () {
+        guard('cartEmptyLate', renderCartEmpty);
+      }, 1200);
     }
   }
 

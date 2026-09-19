@@ -1,32 +1,45 @@
 /*
  * optimalx-raed.css
  *
- * Purpose: put the OptimalX visual identity onto the live storefront while it
- * runs Salla's Raed theme. It restyles Raed's own markup (the s-* component
- * classes and the theme's block sections) with the OptimalX tokens: the paper
- * ground, white cards, the plate behind product imagery, graphite bands with a
- * single 22 degree wedge, orange reserved for interaction, Cairo at the
- * DIRECTION type scale, the three shadows and the two radii.
+ * Purpose: put the OptimalX design on the live storefront while it runs Salla's
+ * Raed theme, at the fidelity DIRECTION.md specifies rather than as a restyle.
+ * It rebuilds Raed's own markup (the s-* component classes, the theme's block
+ * sections and the mmenu drawer) into the OptimalX system: the paper ground,
+ * white cards, the plate behind every product photograph, graphite bands each
+ * carrying exactly one 22 degree wedge, orange spent only on things a thumb can
+ * press, Cairo on the DIRECTION 3.1 fluid scale, three shadows, two radii.
  *
  * This file is a stopgap. It exists only until the OptimalX React theme passes
  * Salla review and can be published as the store's own theme, at which point
  * this stylesheet and its companion script are deleted rather than maintained.
  *
- * Token values are copied verbatim from app/styles/tokens.css. The type scale
- * is the fluid scale of DIRECTION 3.1. The wedge polygons are DIRECTION 4.5.
- * Rules honoured here: colour never transitions, motion runs only on transform
- * and opacity through the duration and easing tokens, nothing animates on a
- * wedge, prefers-reduced-motion is respected, there is no blur, no
- * backdrop-filter and no will-change, control borders at rest use --ox-line-3,
- * and every touch target stays at 44px.
+ * Token values are copied verbatim from app/styles/tokens.css. Rules honoured
+ * here: colour never transitions, motion runs only on transform and opacity
+ * through the duration and easing tokens, nothing animates on a wedge (A9),
+ * prefers-reduced-motion is respected, there is no blur, no backdrop-filter and
+ * no will-change, control borders at rest use --ox-line-3 (A1, A2), every touch
+ * target stays at 44px, and an eyebrow renders only where it states a fact the
+ * heading lacks (A4), which is why no section title carries a decorative rule.
  *
  * Where this goes: the theme's custom CSS box, whole. Its companion script,
  * optimalx-raed.min.js, goes in the custom JavaScript box; it carries a copy of
  * this sheet and injects it only if this one did not arrive.
  *
- * Paired with: optimalx-raed.js (the readable source of that script), which
- * also adds the product page spec chips, the supply line and the nutrition
- * glossary column.
+ * Contract with the companion script (optimalx-raed.js). The script owns the
+ * markup; this sheet owns its appearance. Names it may use:
+ *   .ox-js on <html> or <body>   enables the entrance reveals below. Without it
+ *                               every revealed element stays visible, so a
+ *                               script failure can never blank a section.
+ *   .ox-reveal / .is-in          the reveal pair; .is-in is set on intersection.
+ *   .ox-goals .ox-services .ox-branch .ox-faq .ox-trust .ox-guides
+ *   .ox-newsletter               injected home sections, styled below with the
+ *                               parts .__head .__eyebrow .__title .__lead
+ *                               .__grid .__card .__icon .__name .__line
+ *                               .__actions .__photo .__panel .__row .__item
+ *                               .__label .__value .__q .__a .__wedge .__link
+ *   .ox-chip .ox-supply .ox-table-wrap   the product page pieces.
+ *   .is-bumped                   on a cart count, plays the confirm bump once.
+ *   .ox-skel-live                on a skeleton root in view, plays the pulse.
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
@@ -144,6 +157,11 @@
   --ox-t-body: clamp(15px, 14.63px + 0.095vw, 16px);
   --ox-t-small: clamp(13px, 12.63px + 0.095vw, 14px);
   --ox-t-micro: clamp(11.5px, 11.31px + 0.048vw, 12px);
+
+  /* The rhythm of DIRECTION 4.2, resolved per breakpoint so one name can carry
+     the gap between sections and a second name the three 96px breaths. */
+  --ox-rhythm: var(--ox-12);
+  --ox-breath: 0px;
 }
 
 [dir='rtl'] {
@@ -155,11 +173,20 @@
 }
 
 @media (min-width: 1024px) {
-  :root { --ox-gutter: 32px; --ox-h-bar: 72px; }
+  :root {
+    --ox-gutter: 32px;
+    --ox-h-bar: 72px;
+    --ox-rhythm: var(--ox-16);
+    --ox-breath: var(--ox-8);
+  }
 }
 
-/* A dark band re-declares the role tokens once. */
-.ox-band-dark {
+/* A dark band re-declares the role tokens once, and every component inside it
+   adapts without a variant class. */
+.ox-band-dark,
+.theme-raed .s-block--slider-with-bg .slider-bg,
+.theme-raed .ox-services,
+.theme-raed footer.store-footer {
   --ox-bg: var(--ox-graphite);
   --ox-surface: var(--ox-graphite-2);
   --ox-fg: var(--ox-ink-on-dark);
@@ -173,47 +200,49 @@
 }
 
 /* ===========================================================================
-   2. Ground and typography
+   2. Ground, typography and the accessibility primitives
    =========================================================================== */
 
 html,
-body.theme-raed {
+.theme-raed {
   background-color: var(--ox-paper);
   color: var(--ox-ink);
   font-family: var(--font-main);
   letter-spacing: 0;
 }
 
-body.theme-raed {
+html {
+  /* Anchor scrolls are native (DIRECTION 7.1); the padding keeps a target from
+     landing under the sticky header. */
+  scroll-behavior: smooth;
+  scroll-padding-block-start: 96px;
+}
+
+.theme-raed {
   font-size: var(--ox-t-body);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
-body.theme-raed main,
-body.theme-raed .main-content,
-body.theme-raed #app {
+.theme-raed main,
+.theme-raed .main-content,
+.theme-raed #app {
   background-color: transparent;
 }
 
 /* Arabic never carries tracking, and no heading is rotated. */
-body.theme-raed h1,
-body.theme-raed h2,
-body.theme-raed h3,
-body.theme-raed h4,
-body.theme-raed h5,
-body.theme-raed h6 {
+.theme-raed :is(h1,h2,h3,h4,h5,h6){
   letter-spacing: 0;
   color: var(--ox-fg);
   font-family: var(--font-main);
 }
 
-body.theme-raed h1 { font-size: var(--ox-t-h1); line-height: 1.2; font-weight: 700; }
-body.theme-raed h2 { font-size: var(--ox-t-h2); line-height: 1.25; font-weight: 700; }
-body.theme-raed h3 { font-size: var(--ox-t-h3); line-height: 1.4; font-weight: 700; }
-body.theme-raed h4 { font-size: var(--ox-t-body); line-height: 1.5; font-weight: 700; }
+.theme-raed h1 { font-size: var(--ox-t-h1); line-height: 1.2; font-weight: 700; }
+.theme-raed h2 { font-size: var(--ox-t-h2); line-height: 1.25; font-weight: 700; }
+.theme-raed h3 { font-size: var(--ox-t-h3); line-height: 1.4; font-weight: 700; }
+.theme-raed h4 { font-size: var(--ox-t-body); line-height: 1.5; font-weight: 700; }
 
-body.theme-raed a {
+.theme-raed a {
   color: inherit;
   text-underline-offset: 0.15em;
 }
@@ -233,47 +262,143 @@ body.theme-raed a {
   pointer-events: none;
 }
 
-/* Focus is always visible and always the ink ring. */
-body.theme-raed a:focus-visible,
-body.theme-raed button:focus-visible,
-body.theme-raed input:focus-visible,
-body.theme-raed select:focus-visible,
-body.theme-raed textarea:focus-visible,
-body.theme-raed [tabindex]:focus-visible,
-body.theme-raed .s-button-element:focus-visible {
+/* Focus is always visible and always the ink ring (the paper ring on a band). */
+.theme-raed a:focus-visible,
+.theme-raed button:focus-visible,
+.theme-raed input:focus-visible,
+.theme-raed select:focus-visible,
+.theme-raed textarea:focus-visible,
+.theme-raed summary:focus-visible,
+.theme-raed [tabindex]:focus-visible,
+.theme-raed .s-button-element:focus-visible {
   outline: var(--ox-focus-ring);
   outline-offset: 2px;
   border-radius: var(--ox-r-1);
 }
 
 /* Colour must never transition. Raed uses transition-all in several places;
-   this narrows every transition it starts to the two safe properties. */
-body.theme-raed *,
-body.theme-raed *::before,
-body.theme-raed *::after {
+   this narrows every transition it starts to the two compositor-safe
+   properties. Rules further down that need a third property restate it. */
+.theme-raed *,
+.theme-raed *::before,
+.theme-raed *::after {
   transition-property: transform, opacity;
 }
 
 /* Numerals are tabular wherever a price or a quantity is printed. */
-body.theme-raed .s-product-card-price,
-body.theme-raed .total-price,
-body.theme-raed .s-quantity-input-input,
-body.theme-raed .ox-num {
+.theme-raed :is(.s-product-card-price,.s-product-card-sale-price,.total-price,.s-quantity-input-input,.s-cart-summary-total,.ox-num){
   font-variant-numeric: tabular-nums;
 }
 
 /* Raed's brand radius is 12; the OptimalX scale is 6 / 8 / pill. */
-body.theme-raed .s-product-card-entry,
-body.theme-raed .s-button-element,
-body.theme-raed .s-block--features__item {
+.theme-raed :is(.s-product-card-entry,.s-button-element,.s-block--features__item,.slide--cat-entry,.banner-entry,.rounded-md){
   border-radius: var(--ox-r-2);
 }
 
+/* Visually hidden text is the clip pattern everywhere, never an offset. */
+.ox-visually-hidden,
+.ox-sr-only,
+.theme-raed .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The skip link: hidden until focus, then a primary control at the start edge
+   above everything. The script inserts it as body's first child. */
+.ox-skip-link {
+  position: absolute;
+  inset-block-start: -200px;
+  inset-inline-start: var(--ox-2);
+  z-index: var(--ox-z-skip);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--ox-4);
+  border-radius: var(--ox-r-2);
+  background-color: var(--ox-graphite);
+  color: var(--ox-paper);
+  font-size: var(--ox-t-body);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ox-skip-link:focus,
+.ox-skip-link:focus-visible {
+  inset-block-start: var(--ox-2);
+  outline: 2px solid var(--ox-paper);
+  outline-offset: 2px;
+}
+
+/* A prose measure for any long-form copy the script writes. */
 /* ===========================================================================
-   3. Buttons
+   3. Motion primitives
    =========================================================================== */
 
-body.theme-raed .s-button-element {
+/* The reveal. It is inert until the script marks the document with .ox-js, so
+   a script that never runs leaves every section plainly visible. */
+.ox-js .ox-reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+
+.ox-js .ox-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* The goal-grid settle is the one entrance on the site and the only consumer of
+   --stagger-step (DIRECTION 7.2). The delay is per DOM index, so in Arabic the
+   wave starts at the top-right card; the translate is vertical, so no direction
+   factor is involved. */
+.ox-js .ox-goals__grid > .ox-reveal:nth-child(1) { transition-delay: 0ms; }
+.ox-js .ox-goals__grid > .ox-reveal:nth-child(2) { transition-delay: var(--stagger-step); }
+.ox-js .ox-goals__grid > .ox-reveal:nth-child(3) { transition-delay: calc(var(--stagger-step) * 2); }
+.ox-js .ox-goals__grid > .ox-reveal:nth-child(4) { transition-delay: calc(var(--stagger-step) * 3); }
+.ox-js .ox-goals__grid > .ox-reveal:nth-child(5) { transition-delay: calc(var(--stagger-step) * 4); }
+.ox-js .ox-goals__grid > .ox-reveal:nth-child(6) { transition-delay: calc(var(--stagger-step) * 5); }
+
+@keyframes ox-bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ox-rise {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes ox-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* A9: no wedge element may carry a transition or an animation of any kind. */
+.theme-raed .s-block--hero-slider::after,
+.theme-raed .s-block--hero-slider .swiper-slide::after,
+.theme-raed .s-block--hero-slider .overlay-bg,
+.theme-raed .s-block--slider-with-bg .slider-bg::after,
+.theme-raed .ox-services::after,
+.theme-raed .ox-branch__photo {
+  transition: none;
+  animation: none;
+}
+
+/* ===========================================================================
+   4. Buttons
+   =========================================================================== */
+
+.theme-raed :is(.s-button-element,.btn){
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -296,68 +421,75 @@ body.theme-raed .s-button-element {
   -webkit-tap-highlight-color: transparent;
 }
 
-body.theme-raed .s-button-element:active:not(:disabled):not([aria-disabled='true']) {
+.theme-raed .s-button-element:active:not(:disabled):not([aria-disabled='true']),
+.theme-raed .btn:active:not(:disabled) {
   transform: translateY(1px);
   transition-timing-function: var(--ease-out);
 }
 
-/* Primary: ink on orange. This is the only orange fill in the design, and it
-   is reserved for something you press. */
-body.theme-raed .s-button-primary,
-body.theme-raed .s-button-primary-outline,
-body.theme-raed .s-button-solid.s-button-primary,
-body.theme-raed salla-add-product-button .s-button-element,
-body.theme-raed .s-add-product-button-main,
-body.theme-raed .s-button-element.s-button-primary-solid {
+/* Primary: ink on orange, 4.87:1. This is the only orange fill in the design,
+   and it is reserved for something you press. Raed hands the cart button the
+   *-outline names, so those resolve to the primary fill here too. */
+.theme-raed .s-button-primary,
+.theme-raed .s-button-primary-outline,
+.theme-raed .s-button-solid.s-button-primary,
+.theme-raed salla-add-product-button .s-button-element,
+.theme-raed .s-add-product-button-main,
+.theme-raed .s-button-element.s-button-primary-solid,
+.theme-raed .btn--primary,
+.theme-raed .btn--outline-primary {
   background-color: var(--ox-accent);
   border-color: var(--ox-accent);
   color: var(--ox-on-accent);
 }
 
-body.theme-raed .s-button-primary:hover,
-body.theme-raed .s-button-primary-outline:hover,
-body.theme-raed salla-add-product-button .s-button-element:hover,
-body.theme-raed .s-add-product-button-main:hover {
+.theme-raed .s-button-primary:hover,
+.theme-raed .s-button-primary-outline:hover,
+.theme-raed salla-add-product-button .s-button-element:hover,
+.theme-raed .s-add-product-button-main:hover,
+.theme-raed .btn--primary:hover,
+.theme-raed .btn--outline-primary:hover {
   background-color: var(--ox-accent-dark);
   border-color: var(--ox-accent-dark);
   color: var(--ox-on-accent);
 }
 
-body.theme-raed .s-button-primary .s-button-text,
-body.theme-raed .s-button-primary-outline .s-button-text,
-body.theme-raed salla-add-product-button .s-button-element .s-button-text,
-body.theme-raed .s-add-product-button-main .s-button-text {
+.theme-raed .s-button-primary .s-button-text,
+.theme-raed .s-button-primary-outline .s-button-text,
+.theme-raed salla-add-product-button .s-button-element .s-button-text,
+.theme-raed .s-add-product-button-main .s-button-text {
   color: var(--ox-on-accent);
   display: inline-flex;
   align-items: center;
   gap: var(--ox-2);
 }
 
-/* Secondary and light outlines become the graphite-bordered secondary. */
-body.theme-raed .s-button-outline:not(.s-button-primary-outline),
-body.theme-raed .s-button-light-outline {
+/* Secondary: the surface with an ink-weight boundary (A2). */
+.theme-raed .s-button-outline:not(.s-button-primary-outline),
+.theme-raed .s-button-light-outline,
+.theme-raed .s-button-gray-outline,
+.theme-raed .btn--outline:not(.btn--outline-primary) {
   background-color: var(--ox-card);
   border-color: var(--ox-line-3);
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-button-outline:not(.s-button-primary-outline):hover,
-body.theme-raed .s-button-light-outline:hover {
+.theme-raed .s-button-outline:not(.s-button-primary-outline):hover,
+.theme-raed .s-button-light-outline:hover,
+.theme-raed .s-button-gray-outline:hover,
+.theme-raed .btn--outline:not(.btn--outline-primary):hover {
   background-color: var(--ox-plate);
   border-color: var(--ox-ink-3);
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-button-text-only,
-body.theme-raed .s-button-link {
+.theme-raed :is(.s-button-text-only,.s-button-link,.btn--text){
   background-color: transparent;
   border-color: transparent;
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-button-element:disabled,
-body.theme-raed .s-button-element[aria-disabled='true'],
-body.theme-raed .s-button-element.disabled {
+.theme-raed :is(.s-button-element:disabled,.s-button-element[aria-disabled='true'],.s-button-element.disabled,.btn:disabled){
   background-color: var(--ox-plate-2);
   border-color: var(--ox-plate-2);
   color: var(--ox-ink-4);
@@ -366,41 +498,62 @@ body.theme-raed .s-button-element.disabled {
 }
 
 /* Icon-only buttons keep a 44 square hit area and a square-ish box. */
-body.theme-raed .s-button-icon {
+.theme-raed :is(.s-button-icon,.btn--icon){
   padding-inline: 0;
   width: 44px;
   height: 44px;
+  min-width: 44px;
   border-radius: var(--ox-r-2);
 }
 
-body.theme-raed .ox-band-dark .s-button-outline:not(.s-button-primary-outline),
-body.theme-raed .ox-band-dark .s-button-light-outline {
+.theme-raed :is(.s-button-wide,.btn--block){
+  width: 100%;
+}
+
+/* Raed draws page actions as pills; the OptimalX scale has one button radius. */
+.theme-raed .btn--rounded-full {
+  border-radius: var(--ox-r-2);
+}
+
+/* The engine's own loader is a control state, not a content loader, so it is
+   the one exception to the no-spinner rule; it only has to carry the label
+   colour and not resize the button. */
+.theme-raed .s-button-loader,
+.theme-raed .s-button-loader-center .s-button-text {
+  color: inherit;
+}
+
+/* On a dark band the secondary becomes a paper outline. */
+.theme-raed :is(.ox-band-dark .s-button-outline:not(.s-button-primary-outline),.ox-services .s-button-outline:not(.s-button-primary-outline)){
   background-color: transparent;
   border-color: var(--ox-paper);
   color: var(--ox-paper);
 }
 
-body.theme-raed .ox-band-dark .s-button-outline:not(.s-button-primary-outline):hover,
-body.theme-raed .ox-band-dark .s-button-light-outline:hover {
+.theme-raed :is(.ox-band-dark .s-button-outline:not(.s-button-primary-outline):hover,.ox-services .s-button-outline:not(.s-button-primary-outline):hover){
   background-color: var(--ox-graphite-3);
+  border-color: var(--ox-paper);
+  color: var(--ox-paper);
 }
 
 /* ===========================================================================
-   4. Form controls
+   5. Form controls
    =========================================================================== */
 
-body.theme-raed input[type='text'],
-body.theme-raed input[type='email'],
-body.theme-raed input[type='tel'],
-body.theme-raed input[type='number'],
-body.theme-raed input[type='password'],
-body.theme-raed input[type='search'],
-body.theme-raed select,
-body.theme-raed textarea,
-body.theme-raed .s-form-control,
-body.theme-raed .form-input {
+.theme-raed input[type='text'],
+.theme-raed input[type='email'],
+.theme-raed input[type='tel'],
+.theme-raed input[type='number'],
+.theme-raed input[type='password'],
+.theme-raed input[type='search'],
+.theme-raed select,
+.theme-raed textarea,
+.theme-raed .s-form-control,
+.theme-raed .form-input {
   min-height: 48px;
   padding-inline: var(--ox-4);
+  /* A1 and A2: --ox-line-2 measures 1.6:1 on white and fails 1.4.11 as the sole
+     boundary of a control, so every control boundary is --ox-line-3. */
   border: 1px solid var(--ox-line-3);
   border-radius: var(--ox-r-1);
   background-color: var(--ox-card);
@@ -411,27 +564,59 @@ body.theme-raed .form-input {
   box-shadow: none;
 }
 
-body.theme-raed input::placeholder,
-body.theme-raed textarea::placeholder {
+.theme-raed :is(input:hover:not(:disabled),select:hover:not(:disabled),textarea:hover:not(:disabled)){
+  border-color: var(--ox-ink-3);
+}
+
+.theme-raed :is(input:focus-visible,select:focus-visible,textarea:focus-visible){
+  /* On a field the ring replaces the border colour rather than sitting outside
+     it, so a row of fields does not grow when one is focused. */
+  outline-offset: 0;
+  border-color: var(--ox-focus);
+}
+
+.theme-raed :is(input,textarea)::placeholder{
   color: var(--ox-ink-4);
 }
 
-body.theme-raed textarea {
+.theme-raed :is(input:disabled,select:disabled,textarea:disabled){
+  background-color: var(--ox-plate);
+  color: var(--ox-ink-4);
+}
+
+.theme-raed input[aria-invalid='true'] {
+  border-color: var(--ox-stop);
+}
+
+.theme-raed textarea {
   padding-block: var(--ox-3);
   resize: vertical;
 }
 
-body.theme-raed input[type='checkbox'],
-body.theme-raed input[type='radio'] {
+/* Latin-value fields read strictly left to right while their label stays RTL. */
+.theme-raed :is(input[type='email'],input[type='tel'],input[type='url'],.s-price-range-number-input input){
+  direction: ltr;
+  text-align: start;
+}
+
+.theme-raed :is(input[type='checkbox'],input[type='radio']){
   width: 20px;
   height: 20px;
   border: 1px solid var(--ox-line-3);
   background-color: var(--ox-card);
+  /* Ink rather than orange: a filter rail with ten checked boxes stays calm. */
   accent-color: var(--ox-ink);
 }
 
+.theme-raed label {
+  font-size: var(--ox-t-small);
+  font-weight: 600;
+  color: var(--ox-fg);
+  letter-spacing: 0;
+}
+
 /* Quantity steppers: 44 tall with 44 square controls. */
-body.theme-raed .s-quantity-input-container {
+.theme-raed .s-quantity-input-container {
   border: 1px solid var(--ox-line-3);
   border-radius: var(--ox-r-1);
   background-color: var(--ox-card);
@@ -439,8 +624,10 @@ body.theme-raed .s-quantity-input-container {
   min-height: 44px;
 }
 
-body.theme-raed .s-quantity-input-container button,
-body.theme-raed .s-quantity-input-button {
+.theme-raed .s-quantity-input-container button,
+.theme-raed .s-quantity-input-button,
+.theme-raed .s-quantity-input-decrease-button,
+.theme-raed .s-quantity-input-increase-button {
   min-width: 44px;
   min-height: 44px;
   background-color: transparent;
@@ -448,7 +635,7 @@ body.theme-raed .s-quantity-input-button {
   border: 0;
 }
 
-body.theme-raed .s-quantity-input-input {
+.theme-raed .s-quantity-input-input {
   border: 0;
   min-height: 44px;
   text-align: center;
@@ -458,40 +645,45 @@ body.theme-raed .s-quantity-input-input {
 }
 
 /* ===========================================================================
-   5. Product card
+   6. Product card (DIRECTION 5.3)
    =========================================================================== */
 
-body.theme-raed .s-product-card-entry {
+.theme-raed .s-product-card-entry {
   display: flex;
+  position: relative;
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
   box-shadow: none;
-  overflow: hidden;
+  /* Not overflow: hidden. A clipped card eats the focus ring of the title link
+     and of the wishlist button (9.4); the plate rounds its own corners instead
+     and the contained image cannot reach them. */
+  overflow: visible;
   color: var(--ox-fg);
 }
 
 /* Hover changes only the border colour: it never lifts, scales or shadows. */
-body.theme-raed .s-product-card-entry:hover {
+.theme-raed .s-product-card-entry:hover {
   border-color: var(--ox-line-2);
   box-shadow: none;
   transform: none;
 }
 
-body.theme-raed .s-product-card-vertical {
+.theme-raed .s-product-card-vertical {
   flex-direction: column;
 }
 
 /* The plate behind the product photograph: a tonal square the packaging sits
    inside, never touching the edge. */
-body.theme-raed .s-product-card-image {
+.theme-raed .s-product-card-image {
   position: relative;
   background-color: var(--ox-plate);
-  border-radius: 0;
-  overflow: hidden;
+  border-start-start-radius: var(--ox-r-2);
+  border-start-end-radius: var(--ox-r-2);
+  overflow: visible;
 }
 
-body.theme-raed .s-product-card-vertical .s-product-card-image {
+.theme-raed .s-product-card-vertical .s-product-card-image {
   /* flex: none keeps the square: as a flex item the plate would otherwise take
      whatever height the content column left over. height: auto and min-height 0
      undo the theme's own height on this box, which would beat aspect-ratio. */
@@ -507,13 +699,14 @@ body.theme-raed .s-product-card-vertical .s-product-card-image {
 /* The link and the photograph fill the plate absolutely. A percentage height
    inside an aspect-ratio box resolves to auto, which would let the source
    image's own height decide the plate: this pins it instead. */
-body.theme-raed .s-product-card-image > a {
+.theme-raed .s-product-card-image > a {
   position: absolute;
   inset: 0;
   display: block;
+  border-radius: inherit;
 }
 
-body.theme-raed img.s-product-card-image-cover {
+.theme-raed img.s-product-card-image-cover {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -525,27 +718,11 @@ body.theme-raed img.s-product-card-image-cover {
   transform: none;
 }
 
-body.theme-raed .s-product-card-entry:hover img.s-product-card-image-cover {
+.theme-raed .s-product-card-entry:hover img.s-product-card-image-cover {
   transform: none;
 }
 
-body.theme-raed .s-product-card-horizontal .s-product-card-image {
-  flex: none;
-  width: 116px;
-  min-width: 116px;
-  height: auto;
-  align-self: stretch;
-  border-inline-end: 1px solid var(--ox-line);
-}
-
-@media (min-width: 640px) {
-  body.theme-raed .s-product-card-horizontal .s-product-card-image {
-    width: 148px;
-    min-width: 148px;
-  }
-}
-
-body.theme-raed .s-product-card-content {
+.theme-raed .s-product-card-content {
   display: flex;
   flex-direction: column;
   gap: var(--ox-2);
@@ -555,19 +732,22 @@ body.theme-raed .s-product-card-content {
   min-width: 0;
   padding: var(--ox-3);
   background-color: var(--ox-card);
+  border-radius: 0 0 var(--ox-r-2) var(--ox-r-2);
 }
 
 @media (min-width: 640px) {
-  body.theme-raed .s-product-card-content { padding: var(--ox-4); }
+  .theme-raed .s-product-card-content { padding: var(--ox-4); }
 }
 
-body.theme-raed .s-product-card-content-main {
+/* The slots are fixed so that every card in a row is the same height and every
+   price sits on the same baseline (DIRECTION 4.4). */
+.theme-raed .s-product-card-content-main {
   display: flex;
   flex-direction: column;
   gap: var(--ox-1);
 }
 
-body.theme-raed h3.s-product-card-content-title {
+.theme-raed h3.s-product-card-content-title {
   margin: 0;
   font-size: var(--ox-t-body);
   font-weight: 700;
@@ -580,16 +760,16 @@ body.theme-raed h3.s-product-card-content-title {
   min-height: calc(2 * 1.45em);
 }
 
-body.theme-raed h3.s-product-card-content-title a {
+.theme-raed h3.s-product-card-content-title a {
   color: inherit;
   text-decoration: none;
 }
 
-body.theme-raed h3.s-product-card-content-title a:hover {
+.theme-raed h3.s-product-card-content-title a:hover {
   color: var(--ox-accent-dark);
 }
 
-body.theme-raed p.s-product-card-content-subtitle {
+.theme-raed p.s-product-card-content-subtitle {
   margin: 0;
   font-size: var(--ox-t-small);
   font-weight: 400;
@@ -600,9 +780,25 @@ body.theme-raed p.s-product-card-content-subtitle {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: calc(2 * 1.6em);
 }
 
-body.theme-raed .s-product-card-content-sub {
+/* The spec chip row on a card is 24 tall and keeps its height when empty. */
+.theme-raed .s-product-card-content .ox-chip-row {
+  margin-block: 0;
+  min-height: 24px;
+  gap: var(--ox-1);
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.theme-raed .s-product-card-content .ox-chip {
+  height: 24px;
+  padding-inline: var(--ox-2);
+  font-size: var(--ox-t-micro);
+}
+
+.theme-raed .s-product-card-content-sub {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -610,7 +806,7 @@ body.theme-raed .s-product-card-content-sub {
   min-height: 32px;
 }
 
-body.theme-raed h4.s-product-card-price {
+.theme-raed h4.s-product-card-price {
   margin: 0;
   display: inline-flex;
   align-items: baseline;
@@ -623,7 +819,7 @@ body.theme-raed h4.s-product-card-price {
   white-space: nowrap;
 }
 
-body.theme-raed h4.s-product-card-price .sicon-sar {
+.theme-raed h4.s-product-card-price .sicon-sar {
   font-size: 0.8em;
   line-height: 1;
   color: inherit;
@@ -631,15 +827,15 @@ body.theme-raed h4.s-product-card-price .sicon-sar {
 
 /* On a sale card Raed nests the new price (h4) and the old one (span) inside
    one wrapper. The new price keeps the ink; only the old one is struck, and
-   neither is orange: orange belongs to the button. */
-body.theme-raed .s-product-card-sale-price {
+   neither is orange: orange belongs to the button. Red never touches a price. */
+.theme-raed .s-product-card-sale-price {
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: var(--ox-2);
 }
 
-body.theme-raed .s-product-card-sale-price h4 {
+.theme-raed .s-product-card-sale-price h4 {
   margin: 0;
   unicode-bidi: isolate;
   font-size: var(--ox-t-h3);
@@ -649,13 +845,13 @@ body.theme-raed .s-product-card-sale-price h4 {
   white-space: nowrap;
 }
 
-body.theme-raed .s-product-card-sale-price h4 .sicon-sar {
+.theme-raed .s-product-card-sale-price h4 .sicon-sar {
   font-size: 0.8em;
 }
 
-body.theme-raed .s-product-card-sale-price span,
-body.theme-raed .s-product-card-price-before,
-body.theme-raed .s-product-card-old-price {
+.theme-raed .s-product-card-sale-price span,
+.theme-raed .s-product-card-price-before,
+.theme-raed .s-product-card-old-price {
   unicode-bidi: isolate;
   font-size: var(--ox-t-small);
   font-weight: 400;
@@ -664,7 +860,8 @@ body.theme-raed .s-product-card-old-price {
   white-space: nowrap;
 }
 
-body.theme-raed .s-product-card-content-footer {
+
+.theme-raed .s-product-card-content-footer {
   margin-top: auto;
   display: flex;
   align-items: stretch;
@@ -672,12 +869,14 @@ body.theme-raed .s-product-card-content-footer {
   padding-top: var(--ox-2);
 }
 
-body.theme-raed .s-product-card-content-footer salla-add-product-button {
+.theme-raed .s-product-card-content-footer salla-add-product-button,
+.theme-raed .s-product-card-content-footer salla-add-product-button > div {
   flex: 1 1 auto;
   min-width: 0;
+  width: 100%;
 }
 
-body.theme-raed .s-product-card-content-footer .s-button-element {
+.theme-raed .s-product-card-content-footer .s-button-element {
   width: 100%;
   min-height: 44px;
   font-size: var(--ox-t-small);
@@ -685,8 +884,7 @@ body.theme-raed .s-product-card-content-footer .s-button-element {
 }
 
 /* The wishlist control: a 44 square on the plate, at the end corner. */
-body.theme-raed .s-product-card-wishlist-btn.s-button-element,
-body.theme-raed .s-product-card-wishlist-btn .s-button-element {
+.theme-raed :is(.s-product-card-wishlist-btn.s-button-element,.s-product-card-wishlist-btn .s-button-element){
   width: 44px;
   height: 44px;
   min-width: 44px;
@@ -698,29 +896,34 @@ body.theme-raed .s-product-card-wishlist-btn .s-button-element {
   box-shadow: none;
 }
 
-body.theme-raed .s-product-card-wishlist-btn.s-button-element:hover,
-body.theme-raed .s-product-card-wishlist-btn .s-button-element:hover {
+.theme-raed :is(.s-product-card-wishlist-btn.s-button-element:hover,.s-product-card-wishlist-btn .s-button-element:hover){
   border-color: var(--ox-ink-3);
   background-color: var(--ox-card);
   color: var(--ox-accent);
 }
 
-body.theme-raed .s-product-card-image .s-product-card-wishlist-btn {
+.theme-raed .s-product-card-image .s-product-card-wishlist-btn,
+.theme-raed .s-product-card-image > salla-button {
   position: absolute;
   top: var(--ox-2);
   inset-inline-end: var(--ox-2);
   z-index: var(--ox-z-raised);
 }
 
-body.theme-raed .s-product-card-wishlist-btn.is-added .s-button-element,
-body.theme-raed .s-product-card-wishlist-btn.s-wishlist-added .s-button-element {
+.theme-raed .s-product-card-wishlist-btn.is-added .s-button-element,
+.theme-raed .s-product-card-wishlist-btn.s-wishlist-added .s-button-element,
+.theme-raed .s-product-card-wishlist-added .s-button-element {
   color: var(--ox-accent);
+  background-color: var(--ox-accent-soft);
 }
 
-/* Badges are never orange and never shadowed. */
-body.theme-raed .s-product-card-promotion-title,
-body.theme-raed .s-product-card-discount,
-body.theme-raed .s-product-card-out-of-stock {
+/* The wishlist heart is the one icon that confirms itself with a scale. */
+.theme-raed :is(.s-product-card-wishlist-btn.is-added .sicon-heart,.btn--wishlist.is-added .sicon-heart){
+  animation: ox-bump var(--dur-confirm) var(--ease-out);
+}
+
+/* Badges are never orange, never shadowed, and stack at the start corner. */
+.theme-raed :is(.s-product-card-promotion-title,.s-product-card-discount,.s-product-card-out-of-stock,.s-product-card-out-badge,.badge,.tag){
   display: inline-flex;
   align-items: center;
   height: 20px;
@@ -736,59 +939,54 @@ body.theme-raed .s-product-card-out-of-stock {
   color: var(--ox-paper);
 }
 
-body.theme-raed .s-product-card-out-of-stock {
+.theme-raed :is(.s-product-card-out-of-stock,.s-product-card-out-badge,.badge--red){
   background-color: var(--ox-stop-soft);
   color: var(--ox-stop);
 }
 
-body.theme-raed .s-product-card-discount {
+.theme-raed :is(.s-product-card-discount,.ox-badge--go){
   background-color: var(--ox-go-soft);
   color: var(--ox-go);
 }
 
+
+
 /* The grid the card sits in: 2-up on mobile, 3-up on tablet, 4-up on desktop
    for the vertical card; one column fewer at every step for the wider
    horizontal card. */
-body.theme-raed .s-products-list-wrapper {
+.theme-raed .s-products-list-wrapper {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ox-3);
   align-items: stretch;
 }
 
-body.theme-raed .s-products-list-horizontal-cards {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 @media (min-width: 640px) {
-  body.theme-raed .s-products-list-wrapper {
+  .theme-raed .s-products-list-wrapper {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--ox-4);
-  }
-  body.theme-raed .s-products-list-horizontal-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  body.theme-raed .s-products-list-wrapper {
+  .theme-raed .s-products-list-wrapper {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  body.theme-raed .s-products-list-horizontal-cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-body.theme-raed .s-products-list-wrapper > * {
+.theme-raed .s-products-list-wrapper > * {
   height: 100%;
 }
 
 /* ===========================================================================
-   6. Section headers and sliders
+   7. Section headers, rhythm and sliders (DIRECTION 5.2, 4.2)
    =========================================================================== */
 
-body.theme-raed .s-block__title,
-body.theme-raed .s-slider-block__title {
+/* A4 removed the decorative eyebrow: an eyebrow renders only where it states a
+   fact the heading lacks, so a section title is the heading alone and the
+   24 by 2 accent rule is omitted with it. The energy comes from the scale jump
+   between the h2 and the body, and from the rhythm, not from a mark. */
+.theme-raed :is(.s-block__title,.s-slider-block__title){
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -799,15 +997,15 @@ body.theme-raed .s-slider-block__title {
 }
 
 @media (min-width: 1024px) {
-  body.theme-raed .s-block__title,
-  body.theme-raed .s-slider-block__title {
+  .theme-raed :is(.s-block__title,.s-slider-block__title){
     margin-bottom: var(--ox-8);
   }
 }
 
-body.theme-raed .s-block__title h2,
-body.theme-raed .s-slider-block__title h2,
-body.theme-raed .s-slider-block__title-text {
+.theme-raed .s-block__title h2,
+.theme-raed .s-slider-block__title h2,
+.theme-raed .s-slider-block__title-text,
+.theme-raed .s-slider-block__title-right h2 {
   position: relative;
   margin: 0;
   font-size: var(--ox-t-h2);
@@ -816,23 +1014,30 @@ body.theme-raed .s-slider-block__title-text {
   color: var(--ox-fg);
 }
 
-/* The eyebrow rule: a 24 by 2 accent mark above every section title. */
-body.theme-raed .s-block__title h2::before,
-body.theme-raed .s-slider-block__title h2::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 2px;
-  margin-bottom: var(--ox-3);
-  background-color: var(--ox-accent);
+/* The descriptor under a section title: one line, never a paragraph. */
+.theme-raed :is(.s-block__title p,.s-slider-block__title p){
+  margin: var(--ox-2) 0 0;
+  padding: 0;
+  font-size: var(--ox-t-lead);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ox-fg-2);
 }
 
-body.theme-raed .s-block__display-all,
-body.theme-raed .s-slider-block__title-all {
+.theme-raed .s-block__title .right-side,
+.theme-raed .s-slider-block__title-right {
+  min-width: 0;
+  padding: 0;
+}
+
+/* The "view all" affordance: a label on the title baseline with a chevron that
+   moves two pixels along the reading direction on hover. */
+.theme-raed :is(.s-block__display-all,.s-slider-block__title-all,.ox-viewall){
   display: inline-flex;
   align-items: center;
   gap: var(--ox-1);
   min-height: 44px;
+  flex: none;
   font-size: var(--ox-t-body);
   font-weight: 600;
   color: var(--ox-fg);
@@ -841,30 +1046,50 @@ body.theme-raed .s-slider-block__title-all {
   background-color: transparent;
   border: 0;
   padding-inline: 0;
+  opacity: 1;
 }
 
-body.theme-raed .s-block__display-all:hover,
-body.theme-raed .s-slider-block__title-all:hover {
+.theme-raed :is(.s-block__display-all:hover,.s-slider-block__title-all:hover,.ox-viewall:hover){
   color: var(--ox-accent-dark);
 }
 
-body.theme-raed .s-block__display-all i,
-body.theme-raed .s-slider-block__title-all i {
+.theme-raed :is(.s-block__display-all i,.s-slider-block__title-all i,.ox-viewall i){
   font-size: 16px;
   transition: transform var(--dur-fast) var(--ease-in);
 }
 
-body.theme-raed .s-block__display-all:hover i,
-body.theme-raed .s-slider-block__title-all:hover i {
+.theme-raed :is(.s-block__display-all:hover i,.s-slider-block__title-all:hover i,.ox-viewall:hover i){
   transform: translateX(calc(var(--direction-factor) * 2px));
   transition-timing-function: var(--ease-out);
 }
 
-/* Slider arrows: 40 square cards with a line border, never orange. */
-body.theme-raed .s-slider-block__title-nav button,
-body.theme-raed .s-slider-nav-btn,
-body.theme-raed .swiper-button-next,
-body.theme-raed .swiper-button-prev {
+/* The eyebrow, where one is earned: the 24 by 2 accent rule then a small label.
+   It is only ever written by the script on a block whose heading is missing a
+   fact the eyebrow supplies. */
+.theme-raed .ox-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0 0 var(--ox-3);
+  font-size: var(--ox-t-small);
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--ox-fg-3);
+}
+
+.theme-raed .ox-eyebrow::before {
+  content: '';
+  flex: none;
+  width: 24px;
+  height: 2px;
+  background-color: var(--ox-accent);
+}
+
+/* Slider arrows: 44 square cards with a control boundary, never orange. */
+.theme-raed .s-slider-block__title-nav button,
+.theme-raed .s-slider-nav-arrow,
+.theme-raed .s-slider-prev,
+.theme-raed .s-slider-next {
   width: 44px;
   height: 44px;
   border-radius: var(--ox-r-2);
@@ -874,52 +1099,131 @@ body.theme-raed .swiper-button-prev {
   box-shadow: none;
 }
 
-body.theme-raed .s-slider-block__title-nav button:hover,
-body.theme-raed .s-slider-nav-btn:hover,
-body.theme-raed .swiper-button-next:hover,
-body.theme-raed .swiper-button-prev:hover {
+.theme-raed .s-slider-nav-arrow:hover:not(:disabled) {
   border-color: var(--ox-ink-3);
   background-color: var(--ox-plate);
 }
 
-body.theme-raed .swiper-pagination-bullet {
+.theme-raed :is(.s-slider-nav-arrow:disabled,.s-slider-nav-arrow.swiper-button-disabled){
+  border-color: var(--ox-line);
+  color: var(--ox-ink-4);
+  background-color: var(--ox-card);
+}
+
+.theme-raed .swiper-pagination-bullet {
   background-color: var(--ox-line-2);
   opacity: 1;
   border-radius: var(--ox-r-pill);
 }
 
-body.theme-raed .swiper-pagination-bullet-active {
+.theme-raed .swiper-pagination-bullet-active {
   background-color: var(--ox-accent);
 }
 
+/* Every horizontal scroller owns its own overflow, so an absolute descendant
+   belongs to the scroller and never widens the document (section 10.6). */
+.theme-raed :is(.s-slider-container,.s-slider-wrapper,.s-products-slider-wrapper,.ox-scroller,.tabs__head){
+  position: relative;
+}
+
 /* ===========================================================================
-   7. Home blocks
+   8. Home blocks
    =========================================================================== */
 
-body.theme-raed .s-block {
-  background-color: transparent;
+/* The composition of DIRECTION 6.2. Raed hands the home its blocks in the order
+   the dashboard stores them; ordering the flex column puts the trust strip back
+   on the first screen with the hero and gives the injected sections their
+   designed slots. Anything not named here keeps DOM order at 5, so a block the
+   merchant adds later lands where it was put rather than at the top. */
+.theme-raed.index main#main-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-rhythm);
 }
 
-body.theme-raed.index .s-block + .s-block {
-  margin-top: var(--ox-12);
+/* An empty hook would otherwise take a gap of its own on both sides. */
+.theme-raed.index main#main-content > salla-hook:empty,
+.theme-raed.index main#main-content > .s-blocks-wrapper:empty {
+  display: none;
 }
 
+.theme-raed.index main#main-content > * {
+  order: 5;
+  margin-top: 0;
+}
+
+.theme-raed.index main#main-content > [data-testid='store-home-slider'] { order: 1; }
+.theme-raed.index main#main-content > .ox-trust { order: 2; }
+.theme-raed.index main#main-content > [data-testid='store-home-features'] { order: 3; }
+.theme-raed.index main#main-content > .ox-goals { order: 4; }
+.theme-raed.index main#main-content > .ox-services { order: 6; }
+.theme-raed.index main#main-content > .ox-branch { order: 8; }
+.theme-raed.index main#main-content > .ox-faq { order: 9; }
+
+/* The trust strip belongs to the first screen, so it sits at zero gap under the
+   hero; the negative margin cancels exactly one gap. */
+.theme-raed.index main#main-content > :is(.ox-trust,[data-testid='store-home-features']){
+  margin-block-start: calc(var(--ox-rhythm) * -1);
+  padding-block-start: var(--ox-6);
+}
+
+/* The three 96px breaths that make the dark bands read as chapters rather than
+   stripes. They are a desktop rule; on mobile every gap is 48. */
 @media (min-width: 1024px) {
-  body.theme-raed.index .s-block + .s-block {
-    margin-top: var(--ox-16);
+  .theme-raed.index main#main-content > :is(.ox-services,.ox-branch,[data-testid='store-home-slider-products-header']){
+    margin-block: var(--ox-breath);
   }
 }
 
-/* 7.1 The hero band. Graphite ground, the photograph over it, and the single
-   orange wedge of the first screen at the top inline-end corner. Nothing here
-   animates: a wedge is a static paint-time clip. */
-body.theme-raed .s-block--hero-slider {
+.theme-raed .s-block {
+  background-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+ * 8.1 The hero band (DIRECTION 5.2 OxHero, 4.5 row 1 and 2).
+ *
+ * Desktop and tablet: the graphite band carries the photograph as a panel at
+ * the inline-end side with the 22 degree edge, and the orange stroke runs along
+ * that edge as a 12px parallelogram. The two polygons share the edge, so they
+ * count as the one wedge the screen is allowed. Mobile: the photograph is full
+ * bleed behind a linear gradient (never a blur) and the wedge becomes the
+ * corner. Nothing here animates.
+ * ------------------------------------------------------------------------ */
+.theme-raed .s-block--hero-slider {
   position: relative;
+  overflow: hidden;
   background-color: var(--ox-graphite);
   margin-top: 0;
 }
 
-body.theme-raed .s-block--hero-slider::after {
+.theme-raed .s-block--hero-slider .swiper-slide {
+  position: relative;
+  min-height: 500px;
+  background-color: var(--ox-graphite);
+}
+
+/* The photograph. Absolute and inset-0 from the theme; the panel geometry and
+   the polygon are set per breakpoint below. */
+.theme-raed .s-block--hero-slider .overlay-bg {
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+/* Mobile legibility: a gradient from transparent at 40% of the height to the
+   graphite ground, so the headline sits on a real colour rather than on a blur
+   that costs a backdrop root. */
+.theme-raed .s-block--hero-slider .swiper-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: linear-gradient(to bottom, rgba(23, 23, 26, 0) 40%, var(--ox-graphite) 100%);
+  pointer-events: none;
+}
+
+/* The mobile corner wedge, 64 by 158 at the top inline-end corner. */
+.theme-raed .s-block--hero-slider::after {
   content: '';
   position: absolute;
   top: 0;
@@ -932,149 +1236,365 @@ body.theme-raed .s-block--hero-slider::after {
   z-index: var(--ox-z-raised);
 }
 
-[dir='ltr'] body.theme-raed .s-block--hero-slider::after {
+[dir='ltr'] .theme-raed .s-block--hero-slider::after {
   clip-path: polygon(100% 0, calc(100% - 64px) 0, 100% 158px);
 }
 
-@media (min-width: 1024px) {
-  body.theme-raed .s-block--hero-slider::after {
-    width: 96px;
-    height: 238px;
-    clip-path: polygon(0 0, 96px 0, 0 238px);
+.theme-raed .s-block--hero-slider .home-slider__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-block: var(--ox-6) var(--ox-6);
+}
+
+/* The text column. Selected structurally: the theme gives it nothing but
+   utilities, and a utility is not a hook this sheet is allowed to use. */
+.theme-raed .s-block--hero-slider .home-slider__content > div {
+  width: 100%;
+  max-width: none;
+  text-align: start;
+  color: var(--ox-ink-on-dark);
+}
+
+.theme-raed .s-block--hero-slider .home-slider__content :is(h1,h2){
+  margin: 0 0 var(--ox-3);
+  font-size: var(--ox-t-display);
+  font-weight: 800;
+  /* 1.15, not the 1.05 of the first boards: Cairo clips its descenders and the
+     lam-alef ligature below that. */
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--ox-ink-on-dark);
+}
+
+.theme-raed .s-block--hero-slider .home-slider__content p,
+.theme-raed .s-block--hero-slider .home-slider__content .description {
+  margin: 0;
+  font-size: var(--ox-t-lead);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ox-ink-2-on-dark);
+  opacity: 1;
+}
+
+/* The hero button row, when the script writes one. */
+.theme-raed .s-block--hero-slider .ox-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+  margin-top: var(--ox-6);
+}
+
+.theme-raed .s-block--hero-slider .ox-hero__actions :is(.s-button-element,.btn){
+  min-height: 48px;
+}
+
+@media (min-width: 768px) {
+  /* Tablet: band 520, photo panel 52%, run 210 with the stroke at 222. */
+  .theme-raed .s-block--hero-slider .swiper-slide {
+    min-height: 520px;
   }
-  [dir='ltr'] body.theme-raed .s-block--hero-slider::after {
-    clip-path: polygon(100% 0, calc(100% - 96px) 0, 100% 238px);
+  .theme-raed .s-block--hero-slider .swiper-slide::before,
+  .theme-raed .s-block--hero-slider::after {
+    display: none;
+  }
+  .theme-raed .s-block--hero-slider .overlay-bg {
+    inset-inline-start: auto;
+    width: 52%;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, calc(100% - 222px) 100%, 0 100%);
+  }
+  [dir='ltr'] .theme-raed .s-block--hero-slider .overlay-bg {
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 222px 100%);
+  }
+  .theme-raed .s-block--hero-slider .swiper-slide::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: auto;
+    width: 52%;
+    z-index: 1;
+    background-color: var(--ox-accent);
+    clip-path: polygon(calc(100% - 12px) 0, 100% 0, calc(100% - 210px) 100%, calc(100% - 222px) 100%);
+    pointer-events: none;
+  }
+  [dir='ltr'] .theme-raed .s-block--hero-slider .swiper-slide::after {
+    clip-path: polygon(0 0, 12px 0, 222px 100%, 210px 100%);
+  }
+  .theme-raed .s-block--hero-slider .home-slider__content {
+    align-items: center;
+    padding-block: var(--ox-12);
+  }
+  .theme-raed .s-block--hero-slider .home-slider__content > div {
+    width: 44%;
   }
 }
 
-body.theme-raed .s-block--hero-slider .swiper-slide img,
-body.theme-raed .s-block--hero-slider .s-slider-slide img {
+@media (min-width: 1024px) {
+  /* Desktop: band 560, photo panel 58%, run 226 with the stroke at 238. */
+  .theme-raed .s-block--hero-slider .swiper-slide {
+    min-height: 560px;
+  }
+  .theme-raed .s-block--hero-slider .overlay-bg {
+    width: 58%;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, calc(100% - 238px) 100%, 0 100%);
+  }
+  [dir='ltr'] .theme-raed .s-block--hero-slider .overlay-bg {
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 238px 100%);
+  }
+  .theme-raed .s-block--hero-slider .swiper-slide::after {
+    width: 58%;
+    clip-path: polygon(calc(100% - 12px) 0, 100% 0, calc(100% - 226px) 100%, calc(100% - 238px) 100%);
+  }
+  [dir='ltr'] .theme-raed .s-block--hero-slider .swiper-slide::after {
+    clip-path: polygon(0 0, 12px 0, 238px 100%, 226px 100%);
+  }
+  .theme-raed .s-block--hero-slider .home-slider__content {
+    padding-block: var(--ox-16);
+  }
+  .theme-raed .s-block--hero-slider .home-slider__content > div {
+    /* Columns 1 to 5 of the 12, at the start side. */
+    width: 41.666%;
+  }
+}
+
+.theme-raed .s-block--hero-slider :is(.swiper-slide img,.s-slider-slide img){
   border-radius: 0;
 }
 
-/* 7.2 Category tiles: photo on plate, label strip under it. */
-body.theme-raed .s-block--categories .swiper-slide > a,
-body.theme-raed .s-block--categories .s-slider-slide > a,
-body.theme-raed .s-block--categories .main-links-item {
+/* ---------------------------------------------------------------------------
+ * 8.2 Category tiles (DIRECTION 5.2 CategoryTile).
+ *
+ * Raed draws these as a centred icon card. The OptimalX tile is a plate with
+ * the subject on it and a label strip under it, so the icon becomes the plate's
+ * content and the heading becomes the strip.
+ * ------------------------------------------------------------------------ */
+.theme-raed .slide--cat-entry {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  height: auto;
+  padding: 0;
+  overflow: hidden;
+  text-align: start;
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
-  overflow: hidden;
-  text-decoration: none;
   color: var(--ox-fg);
+  text-decoration: none;
   box-shadow: none;
 }
 
-body.theme-raed .s-block--categories .swiper-slide > a:hover,
-body.theme-raed .s-block--categories .main-links-item:hover {
+.theme-raed .slide--cat-entry:hover {
   border-color: var(--ox-line-2);
   box-shadow: none;
   transform: none;
+  color: var(--ox-fg);
 }
 
-body.theme-raed .s-block--categories img {
+.theme-raed .slide--cat-entry i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  font-size: 40px;
   background-color: var(--ox-plate);
-  object-fit: contain;
-  padding: var(--ox-3);
-  border-radius: 0;
-}
-
-body.theme-raed .s-block--categories .main-links-item i,
-body.theme-raed .s-block--categories .swiper-slide i {
   color: var(--ox-accent);
+  border-bottom: 1px solid var(--ox-line);
 }
 
-body.theme-raed .s-block--categories h3,
-body.theme-raed .s-block--categories h2,
-body.theme-raed .s-block--categories .main-links-title {
+.theme-raed .slide--cat-entry :is(h2,h3){
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  margin: 0;
+  padding-inline: var(--ox-3);
   font-size: var(--ox-t-body);
   font-weight: 700;
-  color: var(--ox-fg);
+  line-height: 1.4;
   letter-spacing: 0;
+  color: var(--ox-fg);
 }
 
-/* 7.3 The trust strip (Raed's features block). */
-body.theme-raed .s-block--features__item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ox-2);
+/* ---------------------------------------------------------------------------
+ * 8.3 The trust strip (Raed's features block, DIRECTION 5.2 OxTrustStrip).
+ *
+ * Raed centres the item under a 64px orange disc. The OptimalX item is a row:
+ * a 24 icon at the start, a title and a six-word line, all start-aligned, so
+ * four of them scan as one strip rather than as three posters.
+ * ------------------------------------------------------------------------ */
+.theme-raed .s-block--features__item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--ox-1) var(--ox-3);
   padding: var(--ox-4);
+  min-height: 72px;
+  text-align: start;
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
   box-shadow: none;
-  min-height: 72px;
-  text-align: start;
+  cursor: default;
 }
 
 @media (min-width: 640px) {
-  body.theme-raed .s-block--features__item { padding: var(--ox-6); }
+  .theme-raed .s-block--features__item { padding: var(--ox-6); }
 }
 
-body.theme-raed .s-block--features__item:hover {
+.theme-raed .s-block--features__item:hover {
   border-color: var(--ox-line-2);
   box-shadow: none;
   transform: none;
 }
 
-body.theme-raed .s-block--features__item .feature-icon {
+.theme-raed .s-block--features__item .feature-icon {
+  grid-column: 1;
+  grid-row: 1 / 3;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
   padding: 0;
   margin: 0;
+  overflow: visible;
   background-color: transparent;
   border-radius: 0;
   color: var(--ox-accent);
 }
 
-body.theme-raed .s-block--features__item .feature-icon i {
-  font-size: 28px;
+.theme-raed .s-block--features__item .feature-icon i {
+  font-size: 24px;
+  line-height: 1;
   color: var(--ox-accent);
 }
 
-body.theme-raed .s-block--features__item h2 {
+/* Raed slides the icon on hover; movement here would be decoration. */
+.theme-raed .s-block--features__item:hover .feature-icon i {
+  animation: none;
+  transform: none;
+}
+
+.theme-raed .s-block--features__item :is(h2,h3){
+  grid-column: 2;
+  grid-row: 1;
   margin: 0;
-  font-size: var(--ox-t-h3);
+  font-size: var(--ox-t-body);
   font-weight: 700;
+  line-height: 1.4;
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-block--features__item p {
+.theme-raed .s-block--features__item p {
+  grid-column: 2;
+  grid-row: 2;
   margin: 0;
   font-size: var(--ox-t-small);
   line-height: 1.6;
   color: var(--ox-fg-2);
 }
 
-/* 7.4 Tabbed product blocks: a tonal plate band, never a second dark stripe. */
-/* Both class names are matched on purpose: s-block--tabs-produtcs carries
-   Salla's own typo, so s-block-tabs is the one likely to survive a fix. */
-body.theme-raed .s-block--tabs-produtcs,
-body.theme-raed .s-block-tabs {
+/* ---------------------------------------------------------------------------
+ * 8.4 The banner row.
+ *
+ * Raed hides the banner's own title until the pointer is over it, which puts
+ * information behind a hover and fails on touch. The text is restored to rest,
+ * the black wash becomes a bottom gradient so the photograph stays a
+ * photograph, and the dashed box around the title is dropped.
+ * ------------------------------------------------------------------------ */
+.theme-raed .banner-entry {
+  border-radius: var(--ox-r-2);
+  background-color: var(--ox-plate);
+  overflow: hidden;
+}
+
+.theme-raed .banner-entry.has-overlay::after,
+.theme-raed .banner-entry.has-overlay:hover::after {
+  background-color: transparent;
+  background-image: linear-gradient(to top, rgba(23, 23, 26, 0.84) 0%, rgba(23, 23, 26, 0.3) 55%, rgba(23, 23, 26, 0.06) 100%);
+}
+
+.theme-raed .banner-entry article {
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: var(--ox-4);
+  text-align: start;
+}
+
+.theme-raed .banner-entry h3,
+.theme-raed .banner-entry p,
+.theme-raed .banner-entry:hover h3,
+.theme-raed .banner-entry:hover p {
+  opacity: 1;
+  transform: none;
+}
+
+.theme-raed .banner-entry h3,
+.theme-raed .banner__title {
+  display: block;
+  padding: 0;
+  margin: 0 0 var(--ox-1);
+  border: 0;
+  font-size: var(--ox-t-h3);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ox-paper);
+}
+
+.theme-raed .banner-entry p,
+.theme-raed .banner__description {
+  margin: 0;
+  font-size: var(--ox-t-small);
+  line-height: 1.6;
+  color: var(--ox-ink-2-on-dark);
+  opacity: 1;
+}
+
+.theme-raed .banner-entry h3.text-with-border {
+  border: 0;
+}
+
+/* Raed's full-width banner paints two rotated orange and white slabs behind the
+   copy. The design allows one angle per screen and it is the wedge, so the
+   slabs are removed rather than restyled. */
+.theme-raed .full-banner-entry::before,
+.theme-raed .full-banner-entry::after {
+  display: none;
+}
+
+.theme-raed .full-banner-entry {
+  background-attachment: scroll;
+  background-color: var(--ox-graphite);
+  border-radius: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * 8.5 The tabbed product band: a tonal plate band, never a second dark stripe.
+ * Both class names are matched on purpose: s-block--tabs-produtcs carries
+ * Salla's own typo, so s-block-tabs is the one likely to survive a fix.
+ * ------------------------------------------------------------------------ */
+.theme-raed :is(.s-block--tabs-produtcs,.s-block-tabs){
   background-color: var(--ox-plate);
   padding-block: var(--ox-12);
 }
 
 @media (min-width: 1024px) {
-  body.theme-raed .s-block--tabs-produtcs,
-  body.theme-raed .s-block-tabs { padding-block: var(--ox-16); }
+  .theme-raed :is(.s-block--tabs-produtcs,.s-block-tabs){ padding-block: var(--ox-16); }
 }
 
 /* Inside a plate band the card's own plate steps one tone down, so the card
    still reads as a white object with a photograph on it rather than a hole. */
-body.theme-raed .s-block--tabs-produtcs .s-product-card-image,
-body.theme-raed .s-block-tabs .s-product-card-image,
-body.theme-raed .s-block--slider-with-bg .s-product-card-image {
+.theme-raed :is(.s-block--tabs-produtcs .s-product-card-image,.s-block-tabs .s-product-card-image,.s-block--slider-with-bg .s-product-card-image){
   background-color: var(--ox-plate-2);
 }
 
-body.theme-raed .s-block-tabs .tabs__head {
+.theme-raed .s-block-tabs .tabs__head {
   display: flex;
   gap: var(--ox-2);
   border-bottom: 1px solid var(--ox-line-2);
@@ -1083,10 +1603,9 @@ body.theme-raed .s-block-tabs .tabs__head {
   scrollbar-width: none;
 }
 
-body.theme-raed .s-block-tabs .tabs__head::-webkit-scrollbar { display: none; }
+.theme-raed .s-block-tabs .tabs__head::-webkit-scrollbar { display: none; }
 
-body.theme-raed .s-block-tabs .tabs__head button,
-body.theme-raed .s-block-tabs .tabs__head a {
+.theme-raed .s-block-tabs .tabs__head :is(button,a){
   position: relative;
   flex: none;
   display: inline-flex;
@@ -1101,24 +1620,27 @@ body.theme-raed .s-block-tabs .tabs__head a {
   color: var(--ox-fg-2);
 }
 
-body.theme-raed .s-block-tabs .tabs__head .is-active,
-body.theme-raed .s-block-tabs .tabs__head button.is-active {
+.theme-raed .s-block-tabs .tabs__head .is-active,
+.theme-raed .s-block-tabs .tabs__head button.is-active {
   color: var(--ox-fg);
   background-color: transparent;
+  /* The indicator is a 2px ink rule under the active tab. inset box-shadow
+     rather than a border so the tab's own height never changes. */
   box-shadow: inset 0 -2px 0 0 var(--ox-ink);
 }
 
-/* 7.5 The slider-with-background block: the second dark band, with the one
-   graphite-2 wedge panel at its inline-end edge (DIRECTION 4.5 services band). */
-body.theme-raed .s-block--slider-with-bg .slider-bg {
+/* ---------------------------------------------------------------------------
+ * 8.6 The slider-with-background block: the second graphite band, carrying the
+ * one graphite-2 wedge panel at its inline-end edge (DIRECTION 4.5, services
+ * band row: 480 tall, run 194 on desktop, an 80 by 198 corner below 1024).
+ * ------------------------------------------------------------------------ */
+.theme-raed .s-block--slider-with-bg .slider-bg {
   position: relative;
-  background-color: var(--ox-graphite);
   background-blend-mode: normal;
-  color: var(--ox-ink-on-dark);
   isolation: isolate;
 }
 
-body.theme-raed .s-block--slider-with-bg .slider-bg::before {
+.theme-raed .s-block--slider-with-bg .slider-bg::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1127,7 +1649,7 @@ body.theme-raed .s-block--slider-with-bg .slider-bg::before {
   z-index: 0;
 }
 
-body.theme-raed .s-block--slider-with-bg .slider-bg::after {
+.theme-raed .s-block--slider-with-bg .slider-bg::after {
   content: '';
   position: absolute;
   top: 0;
@@ -1140,59 +1662,520 @@ body.theme-raed .s-block--slider-with-bg .slider-bg::after {
   z-index: 0;
 }
 
-[dir='ltr'] body.theme-raed .s-block--slider-with-bg .slider-bg::after {
+[dir='ltr'] .theme-raed .s-block--slider-with-bg .slider-bg::after {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 194px 100%);
 }
 
 @media (max-width: 1023px) {
-  body.theme-raed .s-block--slider-with-bg .slider-bg::after {
+  .theme-raed .s-block--slider-with-bg .slider-bg::after {
     width: 80px;
     bottom: auto;
     height: 198px;
     clip-path: polygon(0 0, 80px 0, 0 198px);
   }
-  [dir='ltr'] body.theme-raed .s-block--slider-with-bg .slider-bg::after {
+  [dir='ltr'] .theme-raed .s-block--slider-with-bg .slider-bg::after {
     clip-path: polygon(100% 0, calc(100% - 80px) 0, 100% 198px);
   }
 }
 
-body.theme-raed .s-block--slider-with-bg .slider-bg > * {
+.theme-raed .s-block--slider-with-bg .slider-bg > * {
   position: relative;
   z-index: 1;
 }
+/* ===========================================================================
+   9. The OptimalX sections the script injects (DIRECTION 5.2, 6.2)
+   =========================================================================== */
 
-body.theme-raed .s-block--slider-with-bg .slider-bg h1,
-body.theme-raed .s-block--slider-with-bg .slider-bg h2,
-body.theme-raed .s-block--slider-with-bg .slider-bg h3 {
-  color: var(--ox-ink-on-dark);
+/* The shared shell. The section roots are listed once and every part is matched
+   by the suffix the script gives it, scoped inside that list, so the sheet does
+   not have to name each section's parts one by one. */
+.theme-raed :is(.ox-goals, .ox-services, .ox-branch, .ox-faq, .ox-trust) {
+  font-family: var(--font-main);
+  color: var(--ox-fg);
+}
+
+.theme-raed :is(.ox-goals, .ox-services, .ox-branch, .ox-faq, .ox-trust) [class*='__inner'] {
+  width: 100%;
+  max-width: var(--ox-container);
+  margin-inline: auto;
+  padding-inline: var(--ox-gutter);
+}
+
+.theme-raed :is(.ox-goals, .ox-services, .ox-branch, .ox-faq, .ox-trust) [class*='__head'] {
+  margin-bottom: var(--ox-6);
+}
+
+.theme-raed :is(.ox-goals, .ox-services, .ox-branch, .ox-faq, .ox-trust) [class*='__title'] {
+  margin: 0;
   font-size: var(--ox-t-h2);
   font-weight: 700;
   line-height: 1.25;
 }
 
-body.theme-raed .s-block--slider-with-bg .slider-bg p {
-  color: var(--ox-ink-2-on-dark);
+.theme-raed :is(.ox-goals, .ox-services, .ox-branch, .ox-faq, .ox-trust) [class*='__lead'] {
+  margin: var(--ox-2) 0 0;
   font-size: var(--ox-t-lead);
+  font-weight: 400;
   line-height: 1.6;
+  color: var(--ox-fg-2);
 }
 
-/* 7.6 Photos slider: no rounded corners on a full-bleed photo. */
-body.theme-raed .s-block--photos-slider img {
+@media (min-width: 1024px) {
+  .theme-raed :is(.ox-goals, .ox-services, .ox-branch, .ox-faq, .ox-trust) [class*='__head'] {
+    margin-bottom: var(--ox-8);
+  }
+}
+
+/* 9.1 Goals. Six cards, 2-up on mobile, 3-up on tablet, 6-up on desktop, at the
+   fixed heights of 4.4 so a row never has a taller neighbour. This grid is the
+   one consumer of the settle in section 3. */
+.theme-raed .ox-goals__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .theme-raed .ox-goals__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-goals__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.theme-raed .ox-goals__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  min-height: 128px;
+  padding: var(--ox-4);
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+  text-decoration: none;
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-goals__card {
+    min-height: 160px;
+    padding: 20px;
+  }
+}
+
+.theme-raed .ox-goals__card:hover {
+  border-color: var(--ox-line-2);
+}
+
+.theme-raed .ox-goals__icon {
+  font-size: 32px;
+  line-height: 1;
+  color: var(--ox-accent);
+}
+
+.theme-raed .ox-goals__name {
+  margin: 0;
+  font-size: var(--ox-t-h3);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ox-fg);
+}
+
+.theme-raed .ox-goals__line {
+  margin: 0;
+  font-size: var(--ox-t-small);
+  line-height: 1.6;
+  color: var(--ox-fg-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 9.2 Services. A graphite band with one 22 degree tonal wedge at the end edge
+   and three channel cards on the band's own surface. */
+.theme-raed .ox-services {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--ox-12);
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-services {
+    min-height: 480px;
+    padding-block: var(--ox-16);
+  }
+}
+
+.theme-raed .ox-services::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: 80px;
+  height: 198px;
+  background-color: var(--ox-graphite-2);
+  clip-path: polygon(0 0, 80px 0, 0 198px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[dir='ltr'] .theme-raed .ox-services::after {
+  clip-path: polygon(100% 0, calc(100% - 80px) 0, 100% 198px);
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-services::after {
+    bottom: 0;
+    height: auto;
+    width: calc(34% + 194px);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 194px) 100%, 0 100%);
+  }
+  [dir='ltr'] .theme-raed .ox-services::after {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 194px 100%);
+  }
+}
+
+.theme-raed .ox-services__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-raed .ox-services__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ox-4);
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .theme-raed .ox-services__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.theme-raed .ox-services__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  height: 100%;
+  padding: 20px;
+  background-color: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-services__card { padding: var(--ox-6); }
+}
+
+.theme-raed .ox-services__card:hover {
+  background-color: var(--ox-graphite-3);
+}
+
+.theme-raed .ox-services__icon {
+  font-size: 32px;
+  line-height: 1;
+  color: var(--ox-accent);
+}
+
+.theme-raed .ox-services__name {
+  margin: 0;
+  font-size: var(--ox-t-h3);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ox-fg);
+}
+
+.theme-raed .ox-services__line {
+  margin: 0;
+  font-size: var(--ox-t-body);
+  line-height: 1.7;
+  color: var(--ox-fg-2);
+}
+
+.theme-raed .ox-services__price {
+  margin: 0;
+  font-size: var(--ox-t-h3);
+  font-weight: 700;
+  color: var(--ox-fg);
+  unicode-bidi: isolate;
+}
+
+/* The call to action is pinned to the bottom so three cards of unequal copy
+   still line their buttons up. */
+.theme-raed .ox-services__actions {
+  margin-top: auto;
+  padding-top: var(--ox-3);
+  width: 100%;
+}
+
+.theme-raed .ox-services__actions :is(.s-button-element,.btn){
+  width: 100%;
+  min-height: 48px;
+}
+
+/* 9.3 Branch. A 7/5 split on desktop with the angled inner edge on the photo,
+   and the photo over a paper corner cut on mobile. */
+.theme-raed .ox-branch__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ox-6);
+  align-items: stretch;
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-branch__inner {
+    grid-template-columns: 7fr 5fr;
+    gap: var(--ox-8);
+  }
+}
+
+.theme-raed .ox-branch__photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background-color: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
+}
+
+.theme-raed .ox-branch__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* The corner cut is paper, so on mobile the photograph reads as cut by the page
+   rather than tinted. */
+.theme-raed .ox-branch__photo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: 64px;
+  height: 158px;
+  background-color: var(--ox-paper);
+  clip-path: polygon(0 0, 64px 0, 0 158px);
+  pointer-events: none;
+}
+
+[dir='ltr'] .theme-raed .ox-branch__photo::after {
+  clip-path: polygon(100% 0, calc(100% - 64px) 0, 100% 158px);
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-branch__photo {
+    aspect-ratio: auto;
+    min-height: 480px;
+    border-radius: 0;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 194px) 100%, 0 100%);
+  }
+  [dir='ltr'] .theme-raed .ox-branch__photo {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 194px 100%);
+  }
+  .theme-raed .ox-branch__photo::after { display: none; }
+}
+
+.theme-raed .ox-branch__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  padding: var(--ox-4);
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
 }
 
+@media (min-width: 1024px) {
+  .theme-raed .ox-branch__panel { padding: var(--ox-6); }
+}
+
+.theme-raed .ox-branch__address {
+  margin: 0;
+  font-size: var(--ox-t-body);
+  line-height: 1.7;
+  color: var(--ox-fg-2);
+}
+
+.theme-raed .ox-branch__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+  margin-top: var(--ox-2);
+}
+
+.theme-raed .ox-branch__actions :is(.s-button-element,.btn){
+  min-height: 48px;
+}
+
+/* 9.4 The hours table, and every other table on the theme: rules rather than
+   stripes, a plate header, numbers aligned by column. */
+.theme-raed .ox-hours {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ox-t-body);
+}
+
+.theme-raed .ox-hours :is(th,td){
+  padding: var(--ox-2) var(--ox-3);
+  text-align: start;
+  border-bottom: 1px solid var(--ox-line-2);
+}
+
+.theme-raed .ox-hours tr:last-child :is(th,td){
+  border-bottom: 0;
+}
+
+/* 9.5 Trust grid. Four items, 2 by 2, each an icon with a title and a line. */
+.theme-raed .ox-trust__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .ox-trust__grid { gap: var(--ox-4); }
+}
+
+.theme-raed .ox-trust__item {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--ox-1) var(--ox-2);
+  min-height: 56px;
+}
+
+.theme-raed .ox-trust__icon {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  font-size: 20px;
+  line-height: 1.4;
+  color: var(--ox-accent);
+}
+
+.theme-raed .ox-trust__name {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font-size: var(--ox-t-small);
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--ox-fg);
+}
+
+.theme-raed .ox-trust__line {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  font-size: var(--ox-t-small);
+  line-height: 1.6;
+  color: var(--ox-fg-2);
+}
+
+/* 9.6 FAQ. Rows at 56, one open at a time, the panel animated by its wrapper's
+   track rather than by height. grid-template-rows is the one property outside
+   transform and opacity the design allows, and only here (DIRECTION 7.1). */
+.theme-raed .ox-faq__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ox-line);
+}
+
+.theme-raed .ox-faq__item {
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.theme-raed .ox-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--ox-2) 0;
+  background: transparent;
+  border: 0;
+  text-align: start;
+  font-size: var(--ox-t-body);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ox-fg);
+  cursor: pointer;
+}
+
+.theme-raed .ox-faq__q::after {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-inline-start: auto;
+  border: 2px solid currentColor;
+  border-block-start: 0;
+  border-inline-start: 0;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.theme-raed .ox-faq__q[aria-expanded='true']::after {
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+
+.theme-raed .ox-faq__a {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-base) var(--ease-out);
+  transition-property: grid-template-rows;
+}
+
+.theme-raed .ox-faq__item.is-open .ox-faq__a {
+  grid-template-rows: 1fr;
+}
+
+.theme-raed .ox-faq__a > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.theme-raed .ox-faq__body {
+  padding-block: 0 var(--ox-4);
+  margin: 0;
+  font-size: var(--ox-t-body);
+  line-height: 1.7;
+  color: var(--ox-fg-2);
+}
+
 /* ===========================================================================
-   8. Header
+   10. Header, navigation and the mobile drawer
    =========================================================================== */
 
-body.theme-raed header.store-header {
+.theme-raed header.store-header {
   background-color: var(--ox-card);
   box-shadow: none;
 }
 
 /* The utility line is the one graphite strip at the top of every page. */
-body.theme-raed header.store-header .top-navbar {
+.theme-raed header.store-header .top-navbar {
   background-color: var(--ox-graphite);
+  background-image: none;
   color: var(--ox-ink-on-dark);
   border: 0;
   min-height: var(--ox-h-util);
@@ -1200,25 +2183,22 @@ body.theme-raed header.store-header .top-navbar {
   box-shadow: none;
 }
 
-body.theme-raed header.store-header .top-navbar a,
-body.theme-raed header.store-header .top-navbar span,
-body.theme-raed header.store-header .top-navbar p,
-body.theme-raed header.store-header .top-navbar i {
+.theme-raed header.store-header .top-navbar :is(a,span,p,i){
   color: var(--ox-ink-2-on-dark);
 }
 
-body.theme-raed header.store-header .top-navbar a:hover {
+.theme-raed header.store-header .top-navbar a:hover {
   color: var(--ox-ink-on-dark);
   text-decoration: underline;
 }
 
-body.theme-raed .s-menu-topnav-list {
+.theme-raed .s-menu-topnav-list {
   display: flex;
   align-items: center;
   gap: var(--ox-4);
 }
 
-body.theme-raed .s-menu-topnav-item {
+.theme-raed .s-menu-topnav-item {
   display: inline-flex;
   align-items: center;
   min-height: var(--ox-h-util);
@@ -1230,13 +2210,12 @@ body.theme-raed .s-menu-topnav-item {
 
 /* The search field inside the utility line reads as a control on dark, and it
    is capped so it never swallows the whole line. */
-body.theme-raed header.store-header .top-navbar .header-search {
+.theme-raed header.store-header .top-navbar .header-search {
   max-width: 480px;
   margin-inline-start: auto;
 }
 
-body.theme-raed header.store-header .top-navbar .s-search-input-wrapper,
-body.theme-raed header.store-header .top-navbar input {
+.theme-raed header.store-header .top-navbar :is(.s-search-input,.s-search-input-wrapper){
   background-color: var(--ox-graphite-3);
   border: 1px solid var(--ox-line-3);
   border-radius: var(--ox-r-1);
@@ -1245,48 +2224,109 @@ body.theme-raed header.store-header .top-navbar input {
   box-shadow: none;
 }
 
-body.theme-raed header.store-header .top-navbar input::placeholder {
+.theme-raed header.store-header .top-navbar .s-search-input:hover {
+  background-color: var(--ox-graphite-3);
+  border-color: var(--ox-ink-3-on-dark);
+}
+
+.theme-raed header.store-header .top-navbar input::placeholder,
+.theme-raed header.store-header .top-navbar .s-search-placeholder-trigger {
   color: var(--ox-ink-3-on-dark);
 }
 
 /* The main bar: a white card with one line rule and shadow-1. */
-body.theme-raed header.store-header .main-nav-container {
+.theme-raed header.store-header .main-nav-container {
   background-color: var(--ox-card);
   border-bottom: 1px solid var(--ox-line);
   box-shadow: var(--ox-shadow-1);
 }
 
-body.theme-raed header.store-header .main-nav-container .inner {
+.theme-raed header.store-header .main-nav-container .inner {
   background-color: var(--ox-card);
 }
 
-body.theme-raed header.store-header .main-nav-container .container > div {
+.theme-raed header.store-header .main-nav-container .container > div {
   min-height: var(--ox-h-bar);
 }
 
-body.theme-raed header.store-header .mobile-menu-btn,
-body.theme-raed header.store-header .main-nav-container button,
-body.theme-raed header.store-header .main-nav-container .s-cart-summary-wrapper > * {
+.theme-raed header.store-header .navbar-brand img {
+  max-height: 44px;
+  max-width: 132px;
+  width: auto;
+}
+
+.theme-raed header.store-header .mobile-menu-btn,
+.theme-raed header.store-header .mburger i,
+.theme-raed header.store-header .main-nav-container button,
+.theme-raed header.store-header .main-nav-container .s-cart-summary-wrapper > * {
   color: var(--ox-fg);
 }
 
-body.theme-raed header.store-header nav a,
-body.theme-raed header.store-header .main-menu a {
+.theme-raed header.store-header .mburger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* The category row. Items at 15 / 600 with the active route carrying a 2px
+   accent underline the width of its label. */
+.theme-raed .main-menu > li > a,
+.theme-raed .main-menu li.root-level > a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ox-h-nav);
+  padding-block: var(--ox-3);
+  padding-inline: var(--ox-4);
   font-size: var(--ox-t-body);
   font-weight: 600;
   color: var(--ox-fg);
   letter-spacing: 0;
 }
 
-body.theme-raed header.store-header nav a:hover,
-body.theme-raed header.store-header .main-menu a:hover {
+.theme-raed .main-menu > li > a:hover,
+.theme-raed .main-menu > .has-children:hover > a {
   color: var(--ox-accent-dark);
+  text-decoration: none;
+}
+
+.theme-raed .main-menu > :is(li.is-active > a,li[aria-current='page'] > a)::after{
+  content: '';
+  position: absolute;
+  inset-inline: var(--ox-4);
+  bottom: 0;
+  height: 2px;
+  background-color: var(--ox-accent);
+}
+
+/* The dropdown panel: a floating surface on the card ground, shadow-2, rows 44. */
+.theme-raed .main-menu .sub-menu {
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-2);
+  box-shadow: var(--ox-shadow-2);
+  padding-block: var(--ox-2);
+}
+
+.theme-raed .main-menu .sub-menu li > a {
+  min-height: 44px;
+  padding-inline: var(--ox-4);
+  font-size: var(--ox-t-body);
+  font-weight: 400;
+  color: var(--ox-fg);
+}
+
+.theme-raed .main-menu :is(.sub-menu li > a:hover,.has-children li a:hover){
+  background-color: var(--ox-accent-soft);
+  color: var(--ox-fg);
 }
 
 /* Counter pills are the one other orange fill, and they carry ink. */
-body.theme-raed .s-cart-summary-count,
-body.theme-raed .s-count,
-body.theme-raed header.store-header .badge {
+.theme-raed .s-cart-summary-count,
+.theme-raed .s-count,
+.theme-raed header.store-header .badge {
   background-color: var(--ox-accent);
   color: var(--ox-on-accent);
   font-size: var(--ox-t-micro);
@@ -1294,103 +2334,182 @@ body.theme-raed header.store-header .badge {
   border-radius: var(--ox-r-pill);
 }
 
+/* The confirm bump: the script adds .is-bumped when the count changes. */
+.theme-raed .s-cart-summary-count.is-bumped {
+  animation: ox-bump var(--dur-confirm) var(--ease-out);
+}
+
+/* The mobile drawer. The backdrop is flat rgba, with no blur and no filter, and
+   the panel is a card at the start edge with shadow-3. */
+.theme-raed .mm-ocd--open {
+  background: rgba(23, 23, 26, 0.5);
+}
+
+.theme-raed .mm-ocd__content {
+  background-color: var(--ox-card);
+  max-width: 360px;
+  box-shadow: var(--ox-shadow-3);
+}
+
+.theme-raed .mm-spn,
+.theme-raed .mm-spn.mm-spn--light {
+  background-color: var(--ox-card);
+  color: var(--ox-fg);
+  font-family: var(--font-main);
+}
+
+.theme-raed .mm-spn li > :is(a,span){
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--ox-4);
+  font-size: var(--ox-t-body);
+  font-weight: 600;
+  color: var(--ox-fg);
+}
+
 /* ===========================================================================
-   9. Footer
+   11. Footer
    =========================================================================== */
 
-body.theme-raed footer.store-footer {
-  --ox-bg: var(--ox-graphite);
-  --ox-surface: var(--ox-graphite-2);
-  --ox-fg: var(--ox-ink-on-dark);
-  --ox-fg-2: var(--ox-ink-2-on-dark);
-  --ox-fg-3: var(--ox-ink-3-on-dark);
-  --ox-bd: var(--ox-line-on-dark);
+.theme-raed footer.store-footer {
   background-color: var(--ox-graphite);
   color: var(--ox-ink-on-dark);
   border-top: 0;
-}
-
-body.theme-raed footer.store-footer .store-footer__inner {
-  background-color: transparent;
-  padding-block: var(--ox-12);
-  border-bottom: 1px solid var(--ox-line-on-dark);
+  margin-top: var(--ox-16);
 }
 
 @media (min-width: 1024px) {
-  body.theme-raed footer.store-footer .store-footer__inner {
+  .theme-raed footer.store-footer { margin-top: var(--ox-24); }
+}
+
+.theme-raed footer.store-footer .store-footer__inner {
+  background-color: transparent;
+  padding-block: var(--ox-12);
+  border-bottom: 1px solid var(--ox-line-on-dark);
+  border-style: solid;
+}
+
+@media (min-width: 1024px) {
+  .theme-raed footer.store-footer .store-footer__inner {
     padding-block: var(--ox-16);
   }
 }
 
-body.theme-raed footer.store-footer h2,
-body.theme-raed footer.store-footer h3,
-body.theme-raed footer.store-footer h4,
-body.theme-raed footer.store-footer .footer-title {
+.theme-raed footer.store-footer h2,
+.theme-raed footer.store-footer h3,
+.theme-raed footer.store-footer h4,
+.theme-raed footer.store-footer .footer-title {
   color: var(--ox-ink-on-dark);
   font-size: var(--ox-t-small);
   font-weight: 600;
   letter-spacing: 0;
+  margin-bottom: var(--ox-3);
 }
 
-body.theme-raed footer.store-footer a,
-body.theme-raed footer.store-footer p,
-body.theme-raed footer.store-footer li,
-body.theme-raed footer.store-footer span {
+.theme-raed footer.store-footer a,
+.theme-raed footer.store-footer p,
+.theme-raed footer.store-footer li,
+.theme-raed footer.store-footer span,
+.theme-raed footer.store-footer .copyright-text {
   color: var(--ox-ink-2-on-dark);
   font-size: var(--ox-t-small);
 }
 
-body.theme-raed footer.store-footer a {
+.theme-raed footer.store-footer a {
   display: inline-flex;
   align-items: center;
   min-height: 40px;
   text-decoration: none;
+  opacity: 1;
 }
 
-body.theme-raed footer.store-footer a:hover {
+.theme-raed footer.store-footer a:hover {
   color: var(--ox-ink-on-dark);
   text-decoration: underline;
+  opacity: 1;
+}
+
+.theme-raed footer.store-footer .s-menu-footer-item a {
+  min-height: 40px;
+}
+
+/* Social marks: a 44 hit area around a 32 drawn circle on the line colour. */
+.theme-raed footer.store-footer :is(.s-social-link,.social-link){
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ox-r-pill);
+  border: 1px solid var(--ox-line-on-dark);
+  color: var(--ox-ink-on-dark);
+}
+
+.theme-raed footer.store-footer :is(.s-social-link:hover,.social-link:hover){
+  border-color: var(--ox-paper);
+  opacity: 1;
 }
 
 /* Payment and trust marks keep their own colours on a paper plate. */
-body.theme-raed footer.store-footer .s-payments-list li,
-body.theme-raed footer.store-footer .s-payments-list img {
+.theme-raed footer.store-footer .s-payments-list li,
+.theme-raed footer.store-footer .s-payments-list-item,
+.theme-raed footer.store-footer .s-payments-list img,
+.theme-raed footer.store-footer .s-trust-badges-image {
   background-color: var(--ox-paper);
   border-radius: var(--ox-r-1);
 }
 
-body.theme-raed footer.store-footer .s-payments-list li {
+.theme-raed footer.store-footer .s-payments-list li,
+.theme-raed footer.store-footer .s-payments-list-item {
   min-height: 32px;
   padding: var(--ox-1) var(--ox-2);
   border: 0;
 }
 
 /* ===========================================================================
-   10. Product page
+   12. Product page (DIRECTION 5.4, 6.5)
    =========================================================================== */
 
-body.theme-raed .container--breadcrumbs {
+.theme-raed .container--breadcrumbs {
   padding-block: var(--ox-4);
 }
 
-body.theme-raed .container--breadcrumbs a,
-body.theme-raed .container--breadcrumbs span,
-body.theme-raed .s-breadcrumb a,
-body.theme-raed .s-breadcrumb span {
-  font-size: var(--ox-t-small);
-  color: var(--ox-fg-3);
+.theme-raed .s-breadcrumb-wrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--ox-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: relative;
 }
 
-body.theme-raed .container--breadcrumbs a:hover {
+.theme-raed .s-breadcrumb-wrapper::-webkit-scrollbar { display: none; }
+
+.theme-raed .s-breadcrumb-item,
+.theme-raed .container--breadcrumbs a,
+.theme-raed .container--breadcrumbs span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  font-size: var(--ox-t-small);
+  color: var(--ox-fg-3);
+  white-space: nowrap;
+}
+
+.theme-raed :is(.s-breadcrumb-item a:hover,.container--breadcrumbs a:hover){
   color: var(--ox-accent-dark);
 }
 
-body.theme-raed .container--product-details {
+.theme-raed .s-breadcrumb-arrow {
+  color: var(--ox-ink-4);
+  font-size: 16px;
+}
+
+.theme-raed .container--product-details {
   background-color: transparent;
 }
 
-body.theme-raed.product-single h1,
-body.theme-raed .product-entry__title {
+.theme-raed.product-single h1,
+.theme-raed .product-entry__title {
   font-size: var(--ox-t-h1);
   font-weight: 700;
   line-height: 1.2;
@@ -1398,7 +2517,7 @@ body.theme-raed .product-entry__title {
   letter-spacing: 0;
 }
 
-body.theme-raed h2.product-entry__sub-title {
+.theme-raed h2.product-entry__sub-title {
   font-size: var(--ox-t-lead);
   font-weight: 400;
   line-height: 1.6;
@@ -1408,26 +2527,61 @@ body.theme-raed h2.product-entry__sub-title {
 }
 
 /* The gallery plate: the packaging sits inside a tonal square. */
-body.theme-raed .s-slider-nav-inner img,
-body.theme-raed .product-single .swiper-slide img,
-body.theme-raed .slider-single img,
-body.theme-raed .product__gallery img {
+.theme-raed :is(.details-slider .swiper-slide,.image-slider .swiper-slide){
+  background-color: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
+}
+
+.theme-raed .s-slider-nav-inner img,
+.theme-raed .details-slider .swiper-slide img,
+.theme-raed .slider-single img,
+.theme-raed .product__gallery img {
   background-color: var(--ox-plate);
   border-radius: var(--ox-r-2);
   object-fit: contain;
   padding: var(--ox-6);
 }
 
-body.theme-raed .s-slider-nav-thumbs img,
-body.theme-raed .product__thumbs img {
+.theme-raed .s-slider-nav-thumbs img,
+.theme-raed .thumbs-slider .swiper-slide img,
+.theme-raed .product__thumbs img {
   padding: var(--ox-2);
   border-radius: var(--ox-r-1);
 }
 
-/* The buy column price. */
-body.theme-raed .product-entry .total-price,
-body.theme-raed .product-single .total-price,
-body.theme-raed h2.total-price {
+/* The selected thumb carries an ink boundary, not an orange one. */
+.theme-raed :is(.thumbs-slider .swiper-slide-thumb-active img,.s-slider-nav-thumbs .is-active img){
+  outline: 2px solid var(--ox-ink);
+  outline-offset: -2px;
+}
+
+/* The gallery's wishlist button sits at the end corner as a 44 square. */
+.theme-raed .details-slider salla-button.btn--wishlist {
+  inset-block-end: var(--ox-4);
+  inset-inline-end: var(--ox-4);
+  z-index: var(--ox-z-raised);
+}
+
+.theme-raed .btn--wishlist .s-button-element {
+  width: 44px;
+  height: 44px;
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg-2);
+}
+
+.theme-raed .btn--wishlist .s-button-element:hover {
+  border-color: var(--ox-ink-3);
+  color: var(--ox-accent);
+}
+
+/* The buy column price. The saving is green, the was-price is struck meta, and
+   nothing on a price is ever red. */
+.theme-raed .product-entry .total-price,
+.theme-raed .product-single .total-price,
+.theme-raed h2.total-price {
   display: inline-flex;
   align-items: baseline;
   gap: 0.25em;
@@ -1438,34 +2592,49 @@ body.theme-raed h2.total-price {
   letter-spacing: 0;
 }
 
-body.theme-raed .product-entry .before-price,
-body.theme-raed .product-single .before-price {
+.theme-raed .total-price .sicon-sar { font-size: 0.8em; }
+
+.theme-raed :is(.product-entry .before-price,.product-single .before-price){
   font-size: var(--ox-t-small);
   font-weight: 400;
   color: var(--ox-fg-3);
   text-decoration: line-through;
 }
 
-body.theme-raed form.product-form {
+.theme-raed .out-of-stock {
+  color: var(--ox-stop);
+  opacity: 1;
+  font-weight: 600;
+}
+
+.theme-raed form.product-form {
   display: block;
 }
 
-body.theme-raed form.product-form .s-button-element,
-body.theme-raed .s-add-product-button-main {
+.theme-raed form.product-form .s-button-element,
+.theme-raed .s-add-product-button-main {
   min-height: 48px;
   font-size: var(--ox-t-body);
 }
 
+/* The installment widgets get a fixed slot so their late arrival cannot push
+   the buy button down the page. */
+.theme-raed salla-installment {
+  display: block;
+  min-height: 48px;
+}
+
 /* Product options: pills and swatches, never orange until they are chosen. */
-body.theme-raed salla-product-options .s-product-options-option-label,
-body.theme-raed .s-product-options-option-label {
+.theme-raed salla-product-options .s-product-options-option-label,
+.theme-raed .s-product-options-option-label,
+.theme-raed .s-product-options-option > label {
   font-size: var(--ox-t-body);
   font-weight: 600;
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-product-options-option-item,
-body.theme-raed .s-product-options-single-option label {
+.theme-raed .s-product-options-option-item,
+.theme-raed .s-product-options-single-option label {
   min-height: 44px;
   border: 1px solid var(--ox-line-3);
   border-radius: var(--ox-r-1);
@@ -1474,27 +2643,29 @@ body.theme-raed .s-product-options-single-option label {
   font-size: var(--ox-t-body);
 }
 
-body.theme-raed .s-product-options-option-item.s-product-options-selected,
-body.theme-raed .s-product-options-option-item[aria-checked='true'] {
+.theme-raed .s-product-options-option-item:hover {
+  border-color: var(--ox-ink-3);
+}
+
+.theme-raed :is(.s-product-options-option-item.s-product-options-selected,.s-product-options-option-item[aria-checked='true']){
   border: 2px solid var(--ox-ink);
   background-color: var(--ox-accent-soft);
   color: var(--ox-fg);
 }
 
 /* The description: a text measure, and the spec line the script parses. */
-body.theme-raed div.product__description {
+.theme-raed div.product__description {
   max-width: calc(var(--ox-container-text) + 2 * var(--ox-gutter));
   font-size: var(--ox-t-body);
   line-height: 1.7;
   color: var(--ox-fg-2);
 }
 
-body.theme-raed div.product__description p {
+.theme-raed div.product__description p {
   margin-block: 0 var(--ox-3);
 }
 
-body.theme-raed div.product__description h2,
-body.theme-raed div.product__description h3 {
+.theme-raed div.product__description :is(h2,h3){
   font-size: var(--ox-t-h3);
   font-weight: 700;
   color: var(--ox-fg);
@@ -1502,8 +2673,9 @@ body.theme-raed div.product__description h3 {
 }
 
 /* The buy zone. Raed renders it as two stacked white sections inside the
-   product form; the pair is drawn here as one card. */
-body.theme-raed form.product-form > section:not(.sticky-product-bar) {
+   product form; the pair is drawn here as one card, so price, quantity and the
+   add button read as one group rather than as two panels. */
+.theme-raed form.product-form > section:not(.sticky-product-bar) {
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-bottom: 0;
@@ -1512,7 +2684,7 @@ body.theme-raed form.product-form > section:not(.sticky-product-bar) {
   color: var(--ox-fg);
 }
 
-body.theme-raed section.sticky-product-bar {
+.theme-raed section.sticky-product-bar {
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: 0 0 var(--ox-r-2) var(--ox-r-2);
@@ -1522,64 +2694,112 @@ body.theme-raed section.sticky-product-bar {
 }
 
 /* When the theme pins the bar to the viewport it becomes the sticky buy bar:
-   64 tall, one top rule, shadow-1, above the page. */
-body.theme-raed section.sticky-product-bar.is-fixed,
-body.theme-raed section.sticky-product-bar.fixed {
+   64 tall, one top rule, shadow-1, above the page, arriving with a slide the
+   first time it appears. */
+.theme-raed :is(section.sticky-product-bar.is-fixed,section.sticky-product-bar.fixed){
   border: 0;
   border-top: 1px solid var(--ox-line);
   border-radius: 0;
   box-shadow: var(--ox-shadow-1);
   min-height: var(--ox-h-sticky);
   z-index: var(--ox-z-sticky);
+  animation: ox-rise var(--dur-slow) var(--ease-out);
 }
 
-body.theme-raed form.product-form .form-label,
-body.theme-raed form.product-form .form-label b {
+.theme-raed form.product-form .form-label,
+.theme-raed form.product-form .form-label b {
   font-size: var(--ox-t-small);
   font-weight: 600;
   color: var(--ox-fg-3);
   letter-spacing: 0;
 }
 
-body.theme-raed section.sticky-product-bar img {
+.theme-raed section.sticky-product-bar img {
   background-color: var(--ox-plate);
   border-radius: var(--ox-r-1);
   object-fit: contain;
 }
 
-body.theme-raed .sticky-product-bar__quantity .s-quantity-input-container {
+.theme-raed .sticky-product-bar__quantity .s-quantity-input-container {
   min-height: 44px;
 }
 
-body.theme-raed .sticky-product-bar__btn .s-button-element {
+.theme-raed .sticky-product-bar__btn .s-button-element {
   min-height: 48px;
   background-color: var(--ox-accent);
   border-color: var(--ox-accent);
   color: var(--ox-on-accent);
 }
 
+/* Reviews. A card row each, with the rating summary above them. */
+.theme-raed .s-comments-container {
+  background-color: transparent;
+}
+
+.theme-raed .s-comments-container li,
+.theme-raed .s-comments-item {
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-2);
+  padding: var(--ox-4);
+  margin-bottom: var(--ox-3);
+}
+
+
 /* ===========================================================================
-   11. Listing, search and filters
+   13. Listing, search, filters and pagination
    =========================================================================== */
 
-body.theme-raed .s-filters-wrapper,
-body.theme-raed .filters-rail,
-body.theme-raed salla-filters {
+.theme-raed .container--products-list {
+  padding-block-start: var(--ox-6);
+}
+
+@media (min-width: 1024px) {
+  .theme-raed .container--products-list {
+    padding-block-start: var(--ox-16);
+  }
+}
+
+.theme-raed #page-main-title {
+  font-size: var(--ox-t-h1);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ox-fg);
+}
+
+.theme-raed .s-filters-wrapper,
+.theme-raed .filters-rail,
+.theme-raed salla-filters {
+  display: block;
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
   color: var(--ox-fg);
+  padding: var(--ox-4);
 }
 
-body.theme-raed .s-filters-group-title,
-body.theme-raed .s-filters-wrapper h3 {
+@media (min-width: 1024px) {
+  .theme-raed .s-filters-wrapper,
+  .theme-raed salla-filters {
+    position: sticky;
+    top: calc(var(--ox-h-bar) + var(--ox-4));
+    z-index: var(--ox-z-raised);
+    width: 280px;
+    max-height: calc(100vh - var(--ox-h-bar) - var(--ox-8));
+    overflow-y: auto;
+  }
+}
+
+.theme-raed .s-filters-group-title,
+.theme-raed .s-filters-wrapper h3 {
   font-size: var(--ox-t-body);
   font-weight: 600;
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-filters-option,
-body.theme-raed .s-filters-wrapper label {
+.theme-raed .s-filters-option,
+.theme-raed .s-filters-wrapper label,
+.theme-raed .s-checkbox {
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -1588,76 +2808,344 @@ body.theme-raed .s-filters-wrapper label {
   color: var(--ox-fg);
 }
 
-body.theme-raed .s-sort-select,
-body.theme-raed .s-listing-sort select {
+.theme-raed .s-price-range-number-input input {
   min-height: 44px;
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-1);
-  background-color: var(--ox-card);
-  color: var(--ox-fg);
 }
 
-body.theme-raed .s-pagination a,
-body.theme-raed .s-pagination span {
-  min-width: 44px;
-  min-height: 44px;
+/* Applied-filter chips: 36 tall pills that carry an ink fill when selected. */
+.theme-raed .ox-chip--filter,
+.theme-raed .dropdown__trigger.filter,
+.theme-raed .dropdown-toggler.cat-filter .dropdown__trigger {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border-radius: var(--ox-r-1);
+  gap: var(--ox-2);
+  min-height: 36px;
+  padding-inline: var(--ox-3);
   border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-pill);
   background-color: var(--ox-card);
   color: var(--ox-fg);
+  font-size: var(--ox-t-body);
   font-weight: 600;
 }
 
-body.theme-raed .s-pagination .is-active,
-body.theme-raed .s-pagination .active {
+.theme-raed .ox-chip--filter.is-selected,
+.theme-raed .dropdown__trigger.filter.is-active {
   background-color: var(--ox-ink);
   border-color: var(--ox-ink);
   color: var(--ox-paper);
 }
 
+.theme-raed .s-sort-select,
+.theme-raed .s-listing-sort select {
+  min-height: 44px;
+  border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-1);
+  background-color: var(--ox-card);
+  color: var(--ox-fg);
+}
+
+/* Load more. A progress line and a secondary button, never an auto-load, so the
+   footer stays reachable and the page URL stays stable. */
+.theme-raed .s-infinite-scroll-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ox-3);
+  margin-block-start: var(--ox-12);
+}
+
+.theme-raed .s-infinite-scroll-btn {
+  min-height: 48px;
+  padding-inline: var(--ox-6);
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+  font-size: var(--ox-t-body);
+  font-weight: 600;
+}
+
+.theme-raed .s-infinite-scroll-btn:hover {
+  background-color: var(--ox-plate);
+  border-color: var(--ox-ink-3);
+}
+
+.theme-raed :is(.s-infinite-scroll-status,.s-infinite-scroll-last){
+  font-size: var(--ox-t-small);
+  color: var(--ox-fg-3);
+}
+
+/* Search. The panel is a floating surface; its rows are 56 with a 40 thumb on
+   the plate, so a result reads the way a card does. */
+.theme-raed .s-search-modal .s-modal-body,
+.theme-raed .s-search-panel {
+  background-color: var(--ox-card);
+  border-radius: var(--ox-r-2);
+}
+
+.theme-raed .s-search-input-wrapper {
+  border: 1px solid var(--ox-line-3);
+  border-radius: var(--ox-r-1);
+  background-color: var(--ox-card);
+  min-height: 48px;
+}
+
+.theme-raed .s-search-input {
+  min-height: 46px;
+  border: 0;
+  background-color: transparent;
+  font-size: var(--ox-t-body);
+  color: var(--ox-fg);
+}
+
+
+.theme-raed .s-search-results {
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-2);
+  box-shadow: var(--ox-shadow-2);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
 /* ===========================================================================
-   12. Cart
+   14. Cart, account and the states
    =========================================================================== */
 
-body.theme-raed .s-cart-summary,
-body.theme-raed .cart-summary,
-body.theme-raed .cart-total,
-body.theme-raed .s-cart-totals {
+.theme-raed :is(.s-cart-summary,.cart-summary,.cart-total,.s-cart-totals){
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
   box-shadow: none;
   color: var(--ox-fg);
+  padding: 20px;
 }
 
-body.theme-raed .cart-item,
-body.theme-raed .s-cart-item,
-body.theme-raed .cart-items > li {
+@media (min-width: 1024px) {
+  .theme-raed :is(.cart-summary,.s-cart-summary){
+    position: sticky;
+    top: calc(var(--ox-h-bar) + var(--ox-4));
+  }
+}
+
+.theme-raed .cart-item,
+.theme-raed .s-cart-item,
+.theme-raed .cart-items > li {
   background-color: var(--ox-card);
   border: 1px solid var(--ox-line);
   border-radius: var(--ox-r-2);
   box-shadow: none;
+  padding: var(--ox-3);
 }
 
-body.theme-raed .cart-item img,
-body.theme-raed .s-cart-item img {
+.theme-raed .cart-item img,
+.theme-raed .s-cart-item img,
+.theme-raed .cart-thumb img,
+.theme-raed .cart-thumb {
   background-color: var(--ox-plate);
   border-radius: var(--ox-r-1);
   object-fit: contain;
 }
 
-body.theme-raed .cart-item h3,
-body.theme-raed .s-cart-item h3 {
+.theme-raed :is(.cart-item h3,.s-cart-item h3){
   font-size: var(--ox-t-body);
   font-weight: 600;
   color: var(--ox-fg);
 }
 
+/* The totals ledger: labels at the start, amounts at the end, rules rather than
+   fills, and the grand total at h3 weight. */
+.theme-raed .cart-total ul li,
+.theme-raed .s-cart-totals li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  font-size: var(--ox-t-body);
+  color: var(--ox-fg-2);
+}
+
+.theme-raed .cart-total ul li:last-child,
+.theme-raed .s-cart-totals li:last-child {
+  border-top: 1px solid var(--ox-line);
+  margin-top: var(--ox-2);
+  padding-top: var(--ox-3);
+  font-size: var(--ox-t-h3);
+  font-weight: 700;
+  color: var(--ox-fg);
+}
+
+.theme-raed .cart-submit-wrap {
+  background-color: var(--ox-card);
+  border-top: 1px solid var(--ox-line);
+  box-shadow: var(--ox-shadow-1);
+  z-index: var(--ox-z-sticky);
+}
+
+.theme-raed button.btn--coupon {
+  height: 48px;
+  min-height: 48px;
+  border-radius: var(--ox-r-1);
+}
+
+/* The account area. The active row carries the plate fill as well as the start
+   border, so colour is never the only cue. */
+.theme-raed .profile-header {
+  background-color: var(--ox-graphite);
+  background-image: none;
+  color: var(--ox-ink-on-dark);
+}
+
+.theme-raed .profile-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-height: 44px;
+  padding-inline: var(--ox-3);
+  border-radius: var(--ox-r-1);
+  font-size: var(--ox-t-body);
+  color: var(--ox-fg);
+  text-decoration: none;
+}
+
+.theme-raed .profile-menu a:hover {
+  background-color: var(--ox-plate);
+}
+
+.theme-raed .profile-menu a.is-active {
+  background-color: var(--ox-plate);
+  border-inline-start: 2px solid var(--ox-accent);
+  font-weight: 600;
+}
+
+/* Empty states. The mark at 48 is the only orange decoration outside a button
+   and the hero stroke; the route out is a real primary action. */
+.theme-raed :is(.no-content-placeholder,.s-placeholder-wrapper){
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ox-3);
+  max-width: 420px;
+  margin-inline: auto;
+  padding-block: var(--ox-12);
+  color: var(--ox-fg);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .theme-raed :is(.no-content-placeholder,.s-placeholder-wrapper){ padding-block: var(--ox-16); }
+}
+
+.theme-raed .no-content-placeholder .icon,
+.theme-raed .s-placeholder-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0;
+  font-size: 40px;
+  background-color: var(--ox-plate);
+  color: var(--ox-accent);
+  border-radius: var(--ox-r-pill);
+}
+
+.theme-raed .no-content-placeholder p,
+.theme-raed .s-placeholder-title {
+  margin: 0;
+  font-size: var(--ox-t-h3);
+  font-weight: 700;
+  color: var(--ox-fg);
+}
+
+.theme-raed .s-placeholder-description {
+  margin: 0;
+  font-size: var(--ox-t-body);
+  color: var(--ox-fg-2);
+}
+
+/* Modals and sheets. Flat backdrop, no blur, no filter: the budget for backdrop
+   roots on this theme is zero, not thirty. */
+.theme-raed .s-modal-overlay {
+  background-color: rgba(23, 23, 26, 0.5);
+  backdrop-filter: none;
+}
+
+.theme-raed .s-modal-body {
+  background-color: var(--ox-card);
+  border-radius: var(--ox-r-2);
+  box-shadow: var(--ox-shadow-3);
+  color: var(--ox-fg);
+}
+
+@media (max-width: 639px) {
+  /* On a phone a modal is a bottom sheet: full width, a 12px top radius, and
+     never taller than 90vh. */
+  .theme-raed .s-modal-body {
+    border-radius: 12px 12px 0 0;
+    max-height: 90vh;
+  }
+}
+
+.theme-raed .s-modal-close {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg-2);
+  background: transparent;
+}
+
+.theme-raed .s-modal-close:hover {
+  background-color: var(--ox-plate);
+  color: var(--ox-fg);
+}
+
+/* The add-to-cart toast. One toast at a time, a card at the end corner, a green
+   tick and a green progress rail, out faster than in. */
+.theme-raed .s-add-product-toast {
+  background-color: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-r-2);
+  box-shadow: var(--ox-shadow-2);
+  color: var(--ox-fg);
+  z-index: var(--ox-z-toast);
+  width: min(360px, calc(100vw - 2 * var(--ox-4)));
+  overflow: hidden;
+}
+
+.theme-raed .s-add-product-toast__title {
+  font-size: var(--ox-t-body);
+  font-weight: 600;
+  color: var(--ox-fg);
+}
+
+.theme-raed .s-add-product-toast__icon {
+  color: var(--ox-go);
+}
+
+.theme-raed .s-add-product-toast__progress {
+  height: 3px;
+  background-color: var(--ox-plate-2);
+}
+
+.theme-raed .s-add-product-toast__progress-bar {
+  background-color: var(--ox-go);
+}
+
+/* Skeletons. A7: block rectangles are static plate-2; the pulse runs only on the
+   one skeleton root the script marks as in view, which keeps the pulsing area
+   on any route under two megabytes at 3x. */
+.theme-raed :is(.s-skeleton-item,.ox-skel){
+  background-color: var(--ox-plate-2);
+  border-radius: var(--ox-r-1);
+  animation: none;
+  opacity: 1;
+}
+
+.theme-raed .ox-skel-live :is(.s-skeleton-item,.ox-skel){
+  animation: ox-pulse 1.2s var(--ease-in-out) infinite;
+}
+
 /* ===========================================================================
-   13. The parts the script adds (PDP spec chips, supply line, nutrition)
+   15. The parts the script adds (PDP spec chips, supply line, nutrition)
    =========================================================================== */
 
 .ox-injected {
@@ -1702,7 +3190,8 @@ body.theme-raed .s-cart-item h3 {
   unicode-bidi: isolate;
 }
 
-/* The supply calculator: a plate panel that describes the package. */
+/* The supply calculator: a plate panel that describes the package. The copy
+   rule it serves is that the line describes the package, never a person. */
 .ox-supply {
   display: flex;
   flex-direction: column;
@@ -1792,11 +3281,6 @@ body.theme-raed .s-cart-item h3 {
   unicode-bidi: isolate;
 }
 
-.ox-supply__unit {
-  font-size: var(--ox-t-body);
-  color: var(--ox-fg-2);
-}
-
 .ox-supply__note,
 .ox-table__note {
   margin: 0;
@@ -1832,8 +3316,7 @@ body.theme-raed .s-cart-item h3 {
   margin: 0;
 }
 
-.ox-table-wrap > table th,
-.ox-table-wrap > table td {
+.ox-table-wrap > table :is(th,td){
   padding-inline: var(--ox-3);
   text-align: start;
   vertical-align: middle;
@@ -1851,20 +3334,16 @@ body.theme-raed .s-cart-item h3 {
   z-index: 2;
 }
 
-.ox-table-wrap > table tbody td,
-.ox-table-wrap > table tbody th {
+.ox-table-wrap > table tbody :is(td,th){
   min-height: 48px;
   height: 48px;
 }
 
-.ox-table-wrap > table tbody tr:last-child th,
-.ox-table-wrap > table tbody tr:last-child td {
+.ox-table-wrap > table tbody tr:last-child :is(th,td){
   border-bottom: 0;
 }
 
-.ox-table-wrap > table thead th:first-child,
-.ox-table-wrap > table tbody th:first-child,
-.ox-table-wrap > table tbody td:first-child {
+.ox-table-wrap > table :is(thead th:first-child,tbody th:first-child,tbody td:first-child){
   position: sticky;
   inset-inline-start: 0;
   background-color: var(--ox-card);
@@ -1877,6 +3356,8 @@ body.theme-raed .s-cart-item h3 {
   z-index: 3;
 }
 
+/* The third column is the honesty device: it explains each number in plain
+   Arabic and is a real column, never a tooltip. */
 .ox-table__meaning {
   color: var(--ox-fg-2);
   font-size: var(--ox-t-small);
@@ -1888,18 +3369,6 @@ body.theme-raed .s-cart-item h3 {
   .ox-table__meaning { width: 45%; }
 }
 
-.ox-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
 
 /* The original spec paragraph stays in the document and stops being painted,
    so nothing is lost if the script is removed. */
@@ -1908,21 +3377,37 @@ body.theme-raed .s-cart-item h3 {
 }
 
 /* ===========================================================================
-   14. Reduced motion
+   16. Reduced motion and horizontal containment
    =========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  body.theme-raed *,
-  body.theme-raed *::before,
-  body.theme-raed *::after {
+  html { scroll-behavior: auto; }
+
+  .theme-raed *,
+  .theme-raed *::before,
+  .theme-raed *::after {
     transition-duration: 0.01ms;
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
   }
 
-  body.theme-raed .s-button-element:active,
+  .theme-raed .s-button-element:active,
   .ox-supply__btn:active {
     transform: none;
+  }
+
+  /* The cards are simply present, with no delay and no settle. */
+  .ox-js .ox-reveal,
+  .ox-js .ox-goals__grid > .ox-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0ms;
+  }
+
+  .theme-raed .ox-skel-live :is(.s-skeleton-item,.ox-skel){
+    animation: none;
+    opacity: 0.8;
   }
 }
 
@@ -1937,13 +3422,36 @@ body.theme-raed .s-cart-item h3 {
  * and the header depends on it.
  * ------------------------------------------------------------------------ */
 html,
-body.theme-raed {
+.theme-raed {
   overflow-x: clip;
   max-width: 100%;
 }
 
 /* The header's leading group is allowed to shrink so the row cannot push the
  * document wider than the screen it is drawn on. */
-body.theme-raed header.store-header .container > * {
+.theme-raed header.store-header .container > * {
   min-width: 0;
 }
+
+
+/* ---------------------------------------------------------------------------
+ * Injected-section baseline, relocated from the script.
+ *
+ * These rules style sections the script builds. They lived inside the script
+ * as a fallback, but the script had outgrown its 65535 character box while the
+ * stylesheet still had room, so they were moved here. The script keeps only the
+ * design tokens, which is the minimum that guarantees a built section is never
+ * unstyled if this stylesheet fails to load.
+ * ------------------------------------------------------------------------ */
+.ox-band-dark{--ox-bg:var(--ox-graphite);--ox-surface:var(--ox-graphite-2);--ox-fg:var(--ox-ink-on-dark);--ox-fg-2:var(--ox-ink-2-on-dark);--ox-fg-3:var(--ox-ink-3-on-dark);--ox-bd:var(--ox-line-on-dark);--ox-focus:var(--ox-paper);color:var(--ox-fg);background-color:var(--ox-bg)}
+.ox-injected{box-sizing:border-box}
+.ox-injected *,.ox-injected *::before,.ox-injected *::after{box-sizing:border-box}
+.ox-container{width:100%;max-width:var(--ox-container);margin-inline:auto;padding-inline:var(--ox-gutter)}
+.ox-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.ox-source-hidden{display:none}
+.ox-sh{margin:0 0 var(--ox-6)}
+.ox-sh__title{position:relative;margin:0;font-size:var(--ox-t-h2);font-weight:700;line-height:1.25;color:var(--ox-fg);letter-spacing:0}
+.ox-sh__title::before{content:"";display:block;width:24px;height:2px;margin-bottom:var(--ox-3);background-color:var(--ox-accent)}
+.ox-sh__desc{margin:var(--ox-2) 0 0;font-size:var(--ox-t-lead);line-height:1.6;color:var(--ox-fg-2)}
+.ox-icon{display:block;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:miter;stroke-miterlimit:4;stroke-linecap:square;color:var(--ox-fg)}
+.ox-icon .ox-icon__accent{fill:var(--ox-accent);stroke:none}
