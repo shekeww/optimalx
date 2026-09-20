@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Breadcrumb, Link } from '@salla.sa/twilight-theme-engine/common';
+import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
@@ -14,6 +14,7 @@ import { parseBranchHours } from '../../content/branch';
 import { channelById } from '../../content/services';
 import { isPendingCopy } from './copy';
 import { settingText } from '../product/lib/claims';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 interface ChannelRow {
   id: string;
@@ -107,7 +108,7 @@ export function ContactPage() {
 
   return (
     <div className="ox-page ox-page--contact">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <header className="ox-page-head">
         <h1 className="ox-page-head__title ox-h1">{t('ox.pages.contact.h1')}</h1>

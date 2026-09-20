@@ -1,4 +1,4 @@
-import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
+
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { OxBranch } from '../blocks/OxBranch';
@@ -10,6 +10,7 @@ import { BranchMap } from './BranchMap';
 import { ContactRow } from './ContactRow';
 import { resolveFaq, type FaqRowKeys } from './faq';
 import { PickupSteps } from './PickupSteps';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /** The three branch rows (FINAL-content 5.7), by content key. */
 export const BRANCH_FAQ: FaqRowKeys[] = BRANCH.faq.map((row, index) => ({
@@ -55,7 +56,7 @@ export function BranchPage({ now }: BranchPageProps) {
 
   return (
     <div className="ox-page ox-page--branch">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <header className="ox-page-head">
         <h1 className="ox-page-head__title ox-h1">{t(BRANCH.h1Key)}</h1>

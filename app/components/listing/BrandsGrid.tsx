@@ -1,9 +1,10 @@
-import { Breadcrumb, Image, Link } from '@salla.sa/twilight-theme-engine/common';
+import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { BrandsPageProps } from '@salla.sa/twilight-theme-engine/routes/brands';
 import { Bdi } from '../common/Bdi';
 import { Button } from '../common/Button';
 import { EmptyState } from '../common/EmptyState';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /**
  * The brands index (DIRECTION 6.14): a page header and one grid of tiles, 2-up
@@ -34,7 +35,7 @@ export function BrandsGrid({ page, brands }: BrandsPageProps) {
     <div className="ox-brands">
       <div className="ox-listing__band">
         <div className="ox-container ox-listing__band-inner">
-          <Breadcrumb page={page} className="ox-crumbs" />
+          <OxBreadcrumb page={page} className="ox-crumbs" />
           <header className="ox-brands__head">
             <h1 className="ox-h1">{page.title || t('ox.nav.brands')}</h1>
             <p className="ox-body ox-brands__intro">{t('ox.brands.intro')}</p>

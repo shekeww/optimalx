@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Breadcrumb, RenderWhenVisible } from '@salla.sa/twilight-theme-engine/common';
+import { RenderWhenVisible } from '@salla.sa/twilight-theme-engine/common';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks/HookSlot';
 import { useTwilight } from '@salla.sa/twilight-theme-engine';
 import { useProduct } from '@salla.sa/twilight-theme-engine/hooks/useProduct';
@@ -40,6 +40,7 @@ import { categorySlugOf, pdpFaqItems, prePurchaseRows } from './lib/faq';
 import { statCells } from './lib/stats';
 import { LABEL_EXPIRY, LABEL_FORM, LABEL_SERVINGS, LABEL_SERVING_SIZE } from './lib/specLine';
 import { bundleMembers, hasSupplyCalculator, isShippable, variantOf } from './lib/variant';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /**
  * The OptimalX product page: our composition over the engine's product
@@ -131,7 +132,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
             from search with no idea what else the store sells. The trail is
             the cheapest orientation on the page and it is already the page's
             one BreadcrumbList JSON-LD (PLAN-final C11). */}
-        <Breadcrumb page={page} className="ox-crumbs ox-pdp__crumbs" />
+        <OxBreadcrumb page={page} className="ox-crumbs ox-pdp__crumbs" />
         <HookSlot name="product:start" context={hookContext} />
 
         <div className="ox-pdp__top" id={'product-' + product.id}>

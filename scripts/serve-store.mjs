@@ -52,6 +52,32 @@ function load(name, fallback) {
   return JSON.parse(readFileSync(path, 'utf8'));
 }
 
+/**
+ * The PLATFORM string bundle the engine reads, which is NOT the same thing as
+ * the theme's own `locales/`.
+ *
+ * Salla serves `js/translations.json` from its CDN and the engine looks up its
+ * own chrome there: the breadcrumb's home label, account titles, and similar.
+ * This snapshot used to answer it with `{}` on the note that "locales/ covers
+ * these keys", which is true of every `ox.*` key and false of every `common.*`
+ * one. The visible result was a product page whose breadcrumb read
+ * "common.titles.home", raw, including inside the BreadcrumbList microdata.
+ *
+ * The theme already defines those strings, so the honest fixture is to serve
+ * them rather than nothing. Read from `locales/ar.json` at boot instead of a
+ * checked-in copy, so the bundle can never drift from the dictionary.
+ */
+function platformStrings() {
+  const file = join(ROOT, 'locales', 'ar.json');
+  if (!existsSync(file)) return {};
+  const all = JSON.parse(readFileSync(file, 'utf8'));
+  const out = {};
+  for (const [key, value] of Object.entries(all)) {
+    if (!key.startsWith('ox.')) out[key] = value;
+  }
+  return out;
+}
+
 const snapshot = {
   settings: load('store-settings.json', { status: 200, success: true, data: null }),
   products: load('products.json', []),
@@ -61,7 +87,7 @@ const snapshot = {
   menus: load('menus.json', { header: [], footer: [] }),
   home: load('home-components.json', []),
   apps: load('apps.json', { snippets: [], settings: { apps: {} } }),
-  translations: load('translations.json', {}),
+  translations: platformStrings(),
   meta: load('meta.json', {}),
 };
 
@@ -235,7 +261,7 @@ function route(pathname, url) {
 
   // Salla's CDN translation bundle, proxied through the same origin.
   if (p === 'js/translations.json' || p === 'translations') {
-    return { body: snapshot.translations, raw: true, note: 'empty — locales/ covers these keys' };
+    return { body: snapshot.translations, raw: true, note: 'platform strings, derived from locales/ar.json' };
   }
 
   return { body: empty(), note: 'UNKNOWN PATH — empty envelope (200)', unknown: true };

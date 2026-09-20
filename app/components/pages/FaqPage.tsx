@@ -1,5 +1,5 @@
 import { useId, useMemo, useState } from 'react';
-import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
+
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
@@ -13,6 +13,7 @@ import { FAQ_PAGE_GROUPS } from '../../content/faq';
 import { SERVICE_PHOTOS } from '../../content/services';
 import { ContactRow } from './ContactRow';
 import { resolveFaq, type ResolvedFaqRow } from './faq';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 interface ResolvedGroup {
   id: string;
@@ -75,7 +76,7 @@ export function FaqPage({ title }: FaqPageProps) {
 
   return (
     <div className="ox-page ox-page--faq">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <Band
         id="ox-faq-band"

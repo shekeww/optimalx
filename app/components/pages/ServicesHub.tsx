@@ -1,4 +1,4 @@
-import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
+
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
@@ -23,6 +23,7 @@ import { ScopePanel } from './ScopePanel';
 import { ServiceCompare } from './ServiceCompare';
 import { ServiceSection } from './ServiceSection';
 import { ContactRow } from './ContactRow';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /** The four hub rows (FINAL-content 4; the answers restate nothing new). */
 export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
@@ -82,7 +83,7 @@ export function ServicesHub() {
 
   return (
     <div className="ox-page ox-page--services">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <Band
         id="ox-hub-band"

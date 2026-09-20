@@ -1,4 +1,4 @@
-import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
+
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
@@ -16,6 +16,7 @@ import {
   ABOUT_WHY,
 } from '../../content/about';
 import { SERVICE_PHOTOS } from '../../content/services';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /**
  * `/about` (DIRECTION 6.15, FINAL-content 6.1).
@@ -64,7 +65,7 @@ export function AboutPage() {
 
   return (
     <div className="ox-page ox-page--about">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <Band
         id="ox-about-band"

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useLocation, useRouter } from '@tanstack/react-router';
-import { Breadcrumb, RenderWhenVisible } from '@salla.sa/twilight-theme-engine/common';
+import { RenderWhenVisible } from '@salla.sa/twilight-theme-engine/common';
 import { Testimonials } from '@salla.sa/twilight-theme-engine/home';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks/HookSlot';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
@@ -32,6 +32,7 @@ import { ListingToolbar } from './ListingToolbar';
 import { useNextPage } from './useNextPage';
 import { ZeroResults } from './ZeroResults';
 import type { ListingPageProps } from './types';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 const GRID_ID = 'listing-grid';
 const GRID_TITLE_ID = 'listing-grid-title';
@@ -138,7 +139,7 @@ export function ListingPage(props: ListingPageProps) {
     showFilters && !isZero ? { count: filterCount, onOpen: () => setFiltersOpen(true) } : null;
   const chips = goal ? null : <ChildChips categories={entity?.sub_categories} slug={slug} />;
 
-  const crumbs = <Breadcrumb page={page} className="ox-crumbs" />;
+  const crumbs = <OxBreadcrumb page={page} className="ox-crumbs" />;
 
   const grid = (
     <>

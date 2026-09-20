@@ -109,8 +109,12 @@ describe('OxServices', () => {
     // Off by default: the dashboard control is labelled "Band image" and it
     // still does what it says, but the shipped design is three cards on the
     // page ground and the theme supplies no default for it.
-    expect(off.container.querySelector('.ox-services__photo')).toBeNull();
-    expect(off.container.querySelector('.ox-services--banded')).toBeNull();
+    // The band is ON by default now, on the approved reference frame, so the
+    // no-field render is banded rather than bare. It used to be opt-in and was
+    // therefore never on, which left the section as three cards on the page
+    // ground while the design is a photographic band with the cards on it.
+    expect(off.container.querySelector('.ox-services__photo')).not.toBeNull();
+    expect(off.container.querySelector('.ox-services--banded')).not.toBeNull();
     off.unmount();
 
     const { container } = renderWithProviders(

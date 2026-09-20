@@ -65,7 +65,9 @@
           "mada",
           "credit_card",
           "stc_pay",
-          "apple_pay"
+          "apple_pay",
+          "tabby",
+          "tamara"
         ],
         "arabic_numbers_enabled": false,
         "content_copyright": false,

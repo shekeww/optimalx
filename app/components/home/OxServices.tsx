@@ -42,13 +42,20 @@ function settingValue(settings: unknown, key: string): string {
   return typeof value === 'string' ? value.trim() : typeof value === 'number' ? String(value) : '';
 }
 
+/** The reference band behind the advisory row (image brief section 9). */
+export const DEFAULT_SERVICES_BAND = '/assets/images/services-band.jpg';
+
 export function OxServices({ data }: OxBlockProps) {
   const { t } = useTranslation();
   const { settings } = useTheme();
   const rowRef = useSectionReveal<HTMLDivElement>();
 
   const title = fieldText(data, 'title') || t('ox.home.plans_title');
-  const band = fieldText(data, 'image');
+  // The band is ON by default now, on the owner's reference frame. It used to
+  // be opt-in and therefore never on, so the section rendered as three cards
+  // on the page ground while the approved design is a photographic band with
+  // the cards lifted onto it. A merchant who uploads their own still wins.
+  const band = fieldText(data, 'image') || DEFAULT_SERVICES_BAND;
   const replyHours = settingValue(settings, SERVICES_HUB.replyTimeSetting);
 
   return (

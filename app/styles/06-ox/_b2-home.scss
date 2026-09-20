@@ -216,12 +216,31 @@
 // From 640 only. At phone widths the split leaves neither half usable, so the
 // photograph stays full bleed there and the scrim below carries the type.
 @media (min-width: 640px) {
-  .ox-hero__photo {
-    clip-path: polygon(0 0, 58% 0, 44% 100%, 0 100%);
+  // THE PHOTO ELEMENT IS SIZED TO THE VISIBLE REGION, not to the whole band.
+  //
+  // This is why the frames read as "zoomed in". The img used to stretch across
+  // the full band and get clipped afterwards, so `object-fit: cover` was
+  // fitting a photograph into a 1425x560 box, a ratio of 2.54, and discarding
+  // about 43 per cent of its height before the clip even ran. Sizing the box
+  // to the 60 per cent the diagonal shows makes the target ratio about 1.53,
+  // close to the frames themselves, so cover now trims a few per cent instead
+  // of half the picture.
+  //
+  // The polygon is restated against this box rather than the band: the band's
+  // 58% and 44% become 58/60 and 44/60 of the element.
+  .ox-hero__photo,
+  .ox-hero__scrim {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    inline-size: 60%;
+    clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
   }
 
-  [dir='ltr'] .ox-hero__photo {
-    clip-path: polygon(42% 0, 100% 0, 100% 100%, 56% 100%);
+  [dir='ltr'] .ox-hero__photo,
+  [dir='ltr'] .ox-hero__scrim {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
   }
 }
 
@@ -363,14 +382,93 @@
 }
 
 @media (min-width: 640px) {
-  // GONE at split widths. Once the copy moved onto solid graphite the scrim
-  // had no job left, and it was the thing making the photograph look muddy:
-  // the owner's reference shows the shot clean and undimmed, and the whole
-  // point of the split is that the photograph is finally visible.
+  // REDUCED, not removed. The copy sits on solid graphite here so the scrim
+  // no longer carries legibility, but taking it away entirely left the
+  // photograph sitting brighter than the near-black chrome above it and the
+  // band stopped reading as one block. This is a light vignette: enough to
+  // seat the frame in the band, not enough to flatten it.
   .ox-hero__scrim {
-    display: none;
+    // FLAT and HALF. It was a vertical vignette, dark at the top and floor and
+    // nearly clear through the middle, which read as a band of shadow lying
+    // across the photograph rather than as part of it. An even wash over the
+    // whole frame seats the picture in the band without drawing a shape of its
+    // own, and at roughly half the old strength the shakers keep their colour.
+    background: rgba(14, 16, 20, 0.18);
   }
 
+}
+
+// THE PHONE HERO IS STACKED, not a shrunken split.
+//
+// It used to be the desktop composition scaled down: the photograph full bleed
+// behind everything with the headline, the subline and the buttons printed on
+// top of it. At 390 that put white type over a row of bottles, so the heading
+// sat across a shaker, the subline crossed a second one, and the primary
+// button covered a third. Nothing was comfortably legible and the secondary
+// action fell off the fold.
+//
+// So the phone gets the same IDEA in a shape that fits it: the photograph is a
+// band across the top, cut on the diagonal along its floor so the brand
+// geometry survives, and the copy sits underneath on the solid ground where it
+// can be read. No text is ever over the picture, both actions are visible, and
+// the band still reads as this store's hero rather than a generic stack.
+@media (max-width: 639px) {
+  .ox-hero {
+    display: block;
+    min-block-size: 0;
+    align-items: stretch;
+  }
+
+  // The panel stops being the whole band and becomes the picture's own box.
+  .ox-hero__panel {
+    position: relative;
+    block-size: 300px;
+  }
+
+  .ox-hero__photo,
+  .ox-hero__scrim {
+    inset: 0;
+    inline-size: 100%;
+    // The cut runs along the floor of the band, leaning the same way as every
+    // other wedge in the theme.
+    clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-hero__photo,
+  [dir='ltr'] .ox-hero__scrim {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 88%);
+  }
+
+  .ox-hero__inner {
+    position: relative;
+    z-index: 2;
+    padding-block: var(--ox-6) var(--ox-8);
+    background: var(--ox-graphite);
+  }
+
+  .ox-hero__text {
+    max-inline-size: none;
+    gap: var(--ox-3);
+  }
+
+  // The actions row keeps its single phone call to action: the rule further
+  // down that hides the outline pill below 640 is a deliberate, documented
+  // decision (the second button goes to the same place the services row and
+  // the trust strip already offer). This block used to try to re-show it,
+  // which was dead code anyway, since that rule has equal specificity and
+  // comes later.
+  .ox-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ox-3);
+  }
+
+  // The dots move onto the solid ground, where they are visible against
+  // something other than the photograph.
+  .ox-hero__dots {
+    inset-block-end: auto;
+    inset-block-start: 272px;
+  }
 }
 
 // The edge only exists where there is a diagonal to draw it on. Written as a

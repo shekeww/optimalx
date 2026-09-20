@@ -435,9 +435,18 @@ export const GOAL_PHOTOS: Record<string, string> = {
   'goal-energy': '/assets/images/band-cardio.webp',
   'goal-general-health': '/assets/images/nutrition-band.jpg',
   'goal-recovery': '/assets/images/athlete-band.jpg',
-  // `goal-ideal-weight` and `goal-hair-skin` have no frame yet and are
-  // deliberately absent: the card is designed to be finished on its own dark
-  // ground, so the row still reads as one set of six.
+  // Both cropped from the owner's own files on 2026-09-20, so the row is six
+  // photographs rather than four and two holes.
+  //
+  // `goal-ideal-weight` is the left of the athlete banner, taken above its
+  // floor and inside its right edge on purpose: that file carries burnt-in
+  // Arabic ("طاقة أعلى لأداء أفضل") and a strip of claim icons, and an outcome
+  // claim is still a claim when it is pixels rather than copy.
+  'goal-ideal-weight': '/assets/images/goal-ideal-weight.webp',
+  // Whole food behind the hair, skin and nails row. This goal's catalogue is
+  // collagen and biotin, and food is what the store's own advice points at
+  // alongside them; a photograph of vegetables asserts nothing.
+  'goal-hair-skin': '/assets/images/goal-hair-skin.webp',
 };
 
 /** The card photograph for a goal, or undefined when the brief names none. */

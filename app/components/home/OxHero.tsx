@@ -61,9 +61,15 @@ export const DEFAULT_HERO_MOBILE = '/assets/images/hero-shakers-mobile.webp';
 export const DEFAULT_HERO_SLIDES = [
   DEFAULT_HERO,
   '/assets/images/hero-home.jpg',
-  '/assets/images/athlete-band.jpg',
-  '/assets/images/nutrition-band.jpg',
+  '/assets/images/hero-athlete.webp',
 ];
+// `athlete-band.jpg` (539x569) and `nutrition-band.jpg` (784x568) used to be
+// here and are not any more. The photo half is about 826x560 at 1440, so both
+// were being scaled UP into it: that is what "too zoomed in and very low
+// quality" was. Every frame here is now at least 1600 wide, and each is
+// cropped near the region's own 1.47 ratio so `object-fit: cover` throws away
+// as little of the subject as possible. Both small files are still used at the
+// sizes they are good for, behind goal cards.
 
 /** How long a frame holds before it slides. */
 export const SLIDE_MS = 5500;

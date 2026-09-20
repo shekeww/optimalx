@@ -388,6 +388,17 @@ a.ox-util__trust-link {
 // SDK keeps current, so it is dressed as our pill instead of duplicated.
 .ox-cart {
   position: relative;
+  // The cart is a Salla web component and brought its own box: it measured
+  // 73x64 beside a 44x44 wishlist, and its glyph sat 20px above the other two
+  // icons' centre line. The row is three icons and they have to share one
+  // baseline, so the host element is pinned to the same square as the rest and
+  // its inner wrapper centres inside it.
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  flex: none;
 
   .s-cart-summary-wrapper {
     display: inline-flex;
