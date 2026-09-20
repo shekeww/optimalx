@@ -17,6 +17,15 @@ export default defineConfig(async () => ({
       filename: 'dist/stats.html',
     }),
   ],
+  // Offline preview switch, read once at config load and substituted as a
+  // literal so it survives every environment — including the workerd SSR
+  // runner, where `process.env` is empty. `app/dev/offline-api.ts` turns a
+  // non-empty base into a redirect of every api.salla.dev request; both are
+  // empty strings on a normal `pnpm dev`, which leaves the shim inert.
+  define: {
+    __OX_OFFLINE_API_BASE__: JSON.stringify(process.env.VITE_API_URL ?? ''),
+    __OX_BLOCK_SALLA_API__: JSON.stringify(process.env.VITE_BLOCK_SALLA_API ?? ''),
+  },
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './'),

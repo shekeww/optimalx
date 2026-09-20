@@ -133,6 +133,10 @@ try {
 console.log(`[preview] snapshot API ready at ${API_BASE}/store/v1`);
 start('[vite]', process.execPath, [join(ROOT, 'node_modules', 'vite', 'bin', 'vite.js'), 'dev', '--port', String(DEV_PORT), '--strictPort'], {
   VITE_API_URL: API_BASE,
+  // Belt and braces: if the redirect ever fails to install, a call to
+  // api.salla.dev fails locally and loudly instead of re-arming the
+  // Cloudflare mitigation on this connection.
+  VITE_BLOCK_SALLA_API: '1',
 });
 console.log(`[preview] theme → http://localhost:${DEV_PORT}/`);
 console.log('[preview] cart and checkout do NOT work in this mode; see docs/build/offline-preview.md');
