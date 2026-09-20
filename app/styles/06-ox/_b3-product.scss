@@ -201,7 +201,7 @@
 }
 
 .ox-card-product__add {
-  inline-size: 100%;
+  inline-size: 90%; // matches _b4-listing; the card CTA is 90% of its slot
 }
 
 // `.ox-card-product__add-icon` is gone. The card's cart glyph used to be an
@@ -1263,6 +1263,47 @@
     border-radius: 0;
     padding-inline: 38px;
     @include ox-angled(52px);
+  }
+
+  // THE UN-UPGRADED STATE, exactly as the product card handles it, and for the
+  // same measured reason: `salla-add-product-button` only becomes a button when
+  // Salla's SDK registers the custom element, and when it does not the host
+  // sits there as an unstyled inline box with a bare label — no fill, no shape,
+  // no glyph. That is what "the colour of the buttons on the product page
+  // changed" looks like: not a colour that moved, a button that never arrived.
+  //
+  // So the HOST carries the hero's primary face itself and hands it over the
+  // instant the real element appears. Same mixin, same fill, same 19px floor,
+  // same 22 degrees — the product page's one call to action is the hero's CTA
+  // in both states rather than only in the lucky one.
+  .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ox-2);
+    inline-size: 100%;
+    min-block-size: 52px;
+    block-size: 52px;
+    @include ox-primary-face;
+    font-family: inherit;
+    font-size: 19px;
+    line-height: var(--ox-lh-flat);
+    white-space: nowrap;
+    border-radius: 0;
+    padding-inline: 38px;
+    cursor: pointer;
+    @include ox-angled(52px);
+
+    // The same drawn cart the upgraded button uses, off the same token.
+    &::before {
+      content: '';
+      flex: none;
+      inline-size: 18px;
+      block-size: 18px;
+      background: currentColor;
+      -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+      mask: var(--ox-cart-glyph) center / contain no-repeat;
+    }
   }
 
   // The cart glyph the approved image draws before the label. The product

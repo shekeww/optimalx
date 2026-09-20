@@ -233,10 +233,20 @@
   // sits LOWER in this file than this block, so setting the scrim's inset here
   // was silently undone. The photograph's base rule is above this one, which
   // is the only reason it worked and the scrim did not.
+  // THE STRAP MOVES TOWARD THE READING START. The split was at 60% of the band,
+  // which left the photograph finishing well short of centre and a wide empty
+  // stretch of graphite behind the copy. At 68% the diagonal crosses nearer the
+  // middle, the photograph has room to be a photograph, and the copy column is
+  // still 32% — enough for a headline at this measure, since the copy is
+  // centred in its own half rather than filling it.
+  //
+  // The clip percentages are of the PHOTO's own box, not the band's, so they
+  // hold their angle as the box widens: the 23.4 point difference between the
+  // top and bottom edge is the 22 degrees, and both numbers shift together.
   .ox-hero__photo {
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: 60%;
+    inline-size: 68%;
     clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
   }
 
@@ -1357,7 +1367,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 @media (min-width: 1280px) {
   .ox-goals__grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: var(--ox-5);
+    gap: var(--ox-6);
   }
 
   .ox-goal {
@@ -1368,7 +1378,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   // the face, and at 400 that same padding leaves the type floating. It keeps
   // the copy anchored to the foot where the eye lands after the picture.
   .ox-goal__body {
-    padding: var(--ox-5);
+    padding: var(--ox-6);
   }
 
   .ox-goal__label {
@@ -2104,7 +2114,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 // a border around nothing.
 .ox-trust__rating {
   display: inline-flex;
-  margin-block-end: var(--ox-5, 20px);
+  margin-block-end: 20px;
 }
 
 .ox-trust .ox-trust__rating {
