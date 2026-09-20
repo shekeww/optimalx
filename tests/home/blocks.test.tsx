@@ -62,7 +62,7 @@ describe('OxFaq', () => {
     const rows = container.querySelectorAll('.ox-acc__row');
     expect(rows).toHaveLength(HOME_FAQ.length);
     expect(rows[0].id).toBe(PRICE_FAQ.id);
-    expect(rows[0].textContent).toContain('لماذا قد تجد سعرا أقل في مكان آخر؟');
+    expect(rows[0].textContent).toContain('كيف تختار أوبتيمال إكس المنتجات التي تناسبني؟');
   });
 
   it('puts the rows in a panel, which is the unit for structured content', () => {

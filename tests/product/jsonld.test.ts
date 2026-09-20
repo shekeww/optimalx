@@ -62,7 +62,7 @@ function makeProduct(overrides: Partial<ProductType> = {}): ProductType {
 }
 
 const FAQ_ROWS = [
-  { question: 'لماذا قد تجد سعرا أقل في مكان آخر؟', answer: 'نشتري كميات صغيرة ونعرض سعرا واحدا.' },
+  { question: 'كيف تختار أوبتيمال إكس المنتجات التي تناسبني؟', answer: 'نشتري كميات صغيرة ونعرض سعرا واحدا.' },
 ];
 
 /**

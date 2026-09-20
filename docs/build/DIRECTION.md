@@ -411,7 +411,7 @@ Three defaults apply everywhere and are not repeated: card hover changes only th
 
 **Reviews** (SallaComments type product). Anatomy: SectionHeader ("التقييمات"), a summary row (average 700 at h2 size, SallaRatingStars 20, count, a "قيم المنتج" secondary button), then the engine's comments list restyled: each review a --ox-card row with the reviewer name 600, date small --ox-fg-3, stars 14, text body, the verified-purchase mark in --ox-go. Sizes: rows 16 padding, 12 gap. States: empty ("لا توجد تقييمات بعد. كن أول من يقيم." with the button); loading skeleton of three rows; the write form uses our input specs. RTL: stars run right to left (the engine handles the fill direction). Wraps: SallaComments, SallaRatingStars, the engine rating modal.
 
-**Faq** (SallaAccordion styled). Anatomy: SectionHeader ("أسئلة شائعة"), rows as in PrePurchaseInfo; the mandatory item "لماذا قد تجد سعرا أقل في مكان آخر؟" is always present on the PDP and the home FAQ. Sizes: as above. States: one open at a time; deep links (#faq-N) open the matching row. Wraps: SallaAccordion; the FAQPage JSON-LD is emitted from the same data.
+**Faq** (SallaAccordion styled). Anatomy: SectionHeader ("أسئلة شائعة"), rows as in PrePurchaseInfo; the mandatory item "كيف تختار أوبتيمال إكس المنتجات التي تناسبني؟" is always present on the PDP and the home FAQ. Sizes: as above. States: one open at a time; deep links (#faq-N) open the matching row. Wraps: SallaAccordion; the FAQPage JSON-LD is emitted from the same data.
 
 **Alternatives** (product/BelowFold). Anatomy: SectionHeader ("بدائل مشابهة") and a products slider of the same category and form. Wraps: SallaProductsSlider with source related, our card.
 
