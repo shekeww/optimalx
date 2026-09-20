@@ -1247,8 +1247,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  flex: 1 1 124px;
-  max-inline-size: 140px;
+  // Narrower than it was (124/140). The add button beside it is angled now
+  // and an angled 44px button spends 18px of run at each end, so 36px of its
+  // width is slant rather than label. The stepper is three glyphs and a
+  // number; it can afford the space and the button cannot.
+  flex: 0 1 104px;
+  max-inline-size: 104px;
   min-block-size: 44px;
   background: var(--ox-card);
   border: 1px solid var(--ox-bd-2);
@@ -1320,27 +1324,63 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-card-product__add .s-button-element,
 .ox-card-product__add.s-button-element {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   inline-size: 100%;
   min-block-size: 44px;
-  padding-inline: var(--ox-2);
-  background: var(--ox-card);
-  border: 1px solid var(--ox-accent);
-  border-radius: var(--ox-r-2);
+  block-size: 44px;
+  // The run at each end, so the label clears the slant.
+  padding-inline: 20px;
+  // ANGLED, like every other call to action in this identity. The clip eats a
+  // border, so the outline is painted the way `.ox-btn--secondary` paints
+  // its own: the element IS the edge colour and an inset pseudo carries the
+  // fill, both wearing the same clip.
+  background: var(--ox-accent);
+  border: 0;
+  border-radius: 0;
   color: var(--ox-accent-dark);
   font-family: inherit;
   font-size: var(--ox-t-small);
   font-weight: var(--ox-w-ui);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
+  @include ox-angled(44px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    background: var(--ox-card);
+    clip-path: inherit;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
-.ox-card-product__add .s-button-element:hover,
-.ox-card-product__add.s-button-element:hover {
+// Salla puts the glyph AND the label inside one `.s-button-text` span and
+// leaves it `display: block`, so the two flowed as inline content and wrapped:
+// the cart icon sat on its own line above the words and the button grew to
+// 56px. One row, one gap, one line.
+.ox-card-product__add .s-button-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  white-space: nowrap;
+}
+
+.ox-card-product__add .s-button-element:hover::before,
+.ox-card-product__add.s-button-element:hover::before {
   background: var(--ox-accent-soft);
 }
+
+
 
 .ox-card-product__add .s-button-element:focus-visible,
 .ox-card-product__add.s-button-element:focus-visible {
@@ -1371,6 +1411,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-size: var(--ox-t-small);
   background: var(--ox-accent-dark);
   border-color: var(--ox-accent-dark);
+  // The brand's shape. A solid fill needs no pseudo: the clip cuts it
+  // directly, and at full card width the 18px run at each end costs little.
+  border-radius: 0;
+  block-size: 44px;
+  padding-inline: 24px;
+  @include ox-angled(44px);
 
   &:hover {
     background: var(--ox-accent-deep);
@@ -1388,13 +1434,32 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // Only the phone cell steps down. From 640 the cell is wide enough for the
 // contract's own size, which is what keeps white on #F54915 judged at the 3:1
 // floor rather than a smaller type's.
-// The label is body size everywhere now, so the phone only needs the tighter
-// gutter: at 390 the two-across cell leaves about 139px of button.
+// At 390 the two-across cell leaves about 139px of button, and an angled 44px
+// button spends 36 of that on its run, so roughly 103 is left for the label.
+// The cart glyph and its gap cost 24 of those and carry no meaning the words
+// do not already carry, so the glyph goes and the label stays whole. The
+// shape, which is the brand, is what survives.
 @media (max-width: 639px) {
   .ox-card-product__buy,
   .ox-card-product__buy--native .s-button-element,
   .ox-card-product__buy--native.s-button-element {
     padding-inline: var(--ox-3);
+  }
+
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element {
+    padding-inline: var(--ox-3);
+  }
+
+  .ox-card-product__add-icon {
+    display: none;
+  }
+
+  // The stepper gives back more still: below 640 the row wraps anyway, so it
+  // does not need to hold a share of one line.
+  .ox-card-product__qty {
+    flex: 0 1 96px;
+    max-inline-size: 96px;
   }
 }
 
@@ -1419,13 +1484,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding-inline: 20px;
   background: var(--ox-accent-dark);
   border: 1px solid var(--ox-accent-dark);
-  border-radius: var(--ox-r-2);
   color: var(--ox-on-accent);
   font-family: inherit;
-  font-size: 19px;
+  // Was still 19px. This block restates the whole contract rather than
+  // inheriting it, so it did not follow when the Link variant was stepped
+  // down; the two would have differed the day quick buy is switched on.
+  font-size: var(--ox-t-small);
   font-weight: var(--ox-w-title);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
+  border-radius: 0;
+  block-size: 44px;
+  @include ox-angled(44px);
 }
 
 .ox-card-product__buy--native .s-button-element:hover,
