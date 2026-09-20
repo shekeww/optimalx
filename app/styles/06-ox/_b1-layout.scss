@@ -376,7 +376,7 @@ a.ox-util__trust-link {
   }
 }
 
-.ox-cart__icon {
+.ox-cartbtn__icon {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -386,17 +386,48 @@ a.ox-util__trust-link {
 // `salla-cart-summary` renders its own count and a running total beside the
 // icon. The total has no place in a 44px control, and the count is the one the
 // SDK keeps current, so it is dressed as our pill instead of duplicated.
-.ox-cart {
+// The account control, made to match the two icons beside it.
+//
+// `salla-user-menu` renders its signed-out state as `--avatar-only`, which
+// Salla draws as a 40px pill with a hairline border. Next to a bare bag and a
+// bare heart that read as a ringed avatar with nothing in it, which is what
+// "the profile icon appears broken" was: not a missing glyph, an inconsistent
+// one. The ring goes and the glyph sizes to the other two.
+.ox-iconbtn .s-user-menu-login-btn,
+.ox-iconbtn.s-user-menu-login-btn {
+  inline-size: 44px;
+  block-size: 44px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+}
+
+.ox-iconbtn .s-user-menu-login-btn svg {
+  inline-size: 22px;
+  block-size: 22px;
+}
+
+// NOT `.ox-cart`. That name belongs to the CART PAGE's frame in
+// _b6-commerce.scss, which is imported after this file and sets
+// `display: block`, so it won on source order and this icon kept measuring
+// 73x64 beside a 44x44 wishlist with its glyph 20px above the others' centre
+// line. Two unrelated components cannot share a class name; renaming is the
+// fix, because raising specificity here would only move the collision.
+.ox-cartbtn {
   position: relative;
-  // The cart is a Salla web component and brought its own box: it measured
-  // 73x64 beside a 44x44 wishlist, and its glyph sat 20px above the other two
-  // icons' centre line. The row is three icons and they have to share one
-  // baseline, so the host element is pinned to the same square as the rest and
-  // its inner wrapper centres inside it.
+  // The cart is a Salla web component and brings its own box. The row is three
+  // icons and they have to share one baseline, so the host is pinned to the
+  // same square as the rest and its inner wrapper centres inside it.
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  // All three axes pinned. `inline-size` alone was not enough: the host
+  // resolved its own min-inline-size from its content and measured 73 wide
+  // against a 44 wishlist, which left an uneven gap in a row of three icons.
   inline-size: 44px;
+  min-inline-size: 44px;
+  max-inline-size: 44px;
   block-size: 44px;
   flex: none;
 

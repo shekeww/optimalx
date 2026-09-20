@@ -113,8 +113,8 @@ export function MainBar() {
         </Suspense>
 
         <Suspense fallback={null}>
-          <SallaCartSummary className="ox-iconbtn ox-cart">
-            <span slot="icon" className="ox-cart__icon">
+          <SallaCartSummary className="ox-iconbtn ox-cartbtn">
+            <span slot="icon" className="ox-cartbtn__icon">
               <i className="sicon-shopping-bag" aria-hidden="true" />
             </span>
           </SallaCartSummary>

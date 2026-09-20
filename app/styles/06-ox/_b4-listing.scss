@@ -1363,7 +1363,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-card-product__buy {
   position: relative;
   z-index: 2;
-  font-size: var(--ox-t-body);
+  // Down to the SAME step as the outline button beside it. It went 19 to 16
+  // first, which was already past the ten per cent asked for, and still read
+  // large against a 14px sibling in a 306px card. The two now match and the
+  // hierarchy is carried by weight and fill instead of size: 700 on a solid
+  // accent against 600 on an outline.
+  font-size: var(--ox-t-small);
   background: var(--ox-accent-dark);
   border-color: var(--ox-accent-dark);
 
