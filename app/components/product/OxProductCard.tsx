@@ -435,8 +435,15 @@ function AddButton({ product, quantity }: { product: Product; quantity: number |
             own line, unstyled — which is exactly how the icon "disappeared"
             from the button. The product page's add button already draws its
             glyph this way for the same reason, off the same `--ox-cart-glyph`
-            token, so the two are one technique rather than two. */}
-        {label}
+            token, so the two are one technique rather than two.
+
+            The span is not decoration. Until Salla's SDK registers the custom
+            element the host IS the button, and the painted-outline treatment
+            needs its fill on `::before` — which paints over a bare text node,
+            because an anonymous flex item cannot be given a stacking order. An
+            element child can. When the component does upgrade it rebuilds from
+            the text content, so the label survives the wrapper either way. */}
+        <span className="ox-card-product__add-label">{label}</span>
       </SallaAddProductButtonCore>
     </WebComponentBoundary>
   );

@@ -1426,6 +1426,81 @@ nav.breadcrumbs .s-breadcrumb-item button {
   mask: var(--ox-cart-glyph) center / contain no-repeat;
 }
 
+// ---------------------------------------------------------------------------
+// THE UN-UPGRADED STATE, which is a real state and not a loading flicker.
+//
+// `salla-add-product-button` only becomes a button when Salla's SDK registers
+// the custom element. Measured on the home grid with the page complete: eight
+// hosts, zero skeletons, `customElements.get('salla-add-product-button')` FALSE
+// and every host still `HTMLElement` with no shadow root and a single text
+// node. So the element sat there as an unstyled inline box reading `أضف للسلة`
+// with no edge, no shape and no glyph — which is exactly what the owner was
+// looking at, and no amount of styling `.s-button-element` could reach it
+// because that element did not exist.
+//
+// The host therefore carries the secondary face ITSELF, and hands it over the
+// moment the real button appears. `:not(:has(.s-button-element))` is the whole
+// mechanism: while the component is un-upgraded the host is the button, and as
+// soon as Salla renders its own `.s-button-element` inside, this block stops
+// matching and the rules above take over. No double frame in either state, and
+// no flash of unstyled control on a slow SDK.
+//
+// The painted outline needs `::before` for its fill, so the glyph goes on
+// `::after` with `order: -1`, which puts it ahead of the anonymous text item in
+// the flex row. Same mask, same token, same inline placement as the upgraded
+// state.
+// ---------------------------------------------------------------------------
+.ox-card-product__add:not(:has(.s-button-element)) {
+  @include ox-secondary-face(var(--ox-fg), var(--ox-card));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  block-size: 44px;
+  padding-inline: 20px;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  cursor: pointer;
+  @include ox-angled(44px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    background: var(--ox-card);
+    clip-path: inherit;
+  }
+
+  &::after {
+    content: '';
+    order: -1;
+    position: relative;
+    z-index: 1;
+    flex: none;
+    inline-size: 18px;
+    block-size: 18px;
+    background: currentColor;
+    -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+    mask: var(--ox-cart-glyph) center / contain no-repeat;
+  }
+
+  // Above the fill, for the same reason the mixin lifts its own children.
+  .ox-card-product__add-label {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// When the component DOES upgrade it rebuilds from the text content and this
+// wrapper stops existing, so the rule above is scoped to the fallback only and
+// nothing here has to be undone.
+
 
 
 .ox-card-product__add .s-button-element:focus-visible,
@@ -1585,13 +1660,57 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // Wrapping is never the answer, because only the cards that carry a stepper
 // would grow and the row would come out uneven (468 against 416, measured on
 // the product page's rail).
-@container oxcard (max-width: 292px) {
+// 240, NOT 292, and the difference is what `container-type: inline-size`
+// actually measures. It queries the container's CONTENT box, not its border
+// box. The card is 306 wide on the home grid with 16px of padding each side,
+// so the query sees 274 — and a 292 threshold fired there and took the stepper
+// off a card that had room for it. Measured: cardOuterW 306, padding 16/16,
+// cardContentW 274, qty display none.
+//
+// The two cases this has to separate, in content-box terms: the home and
+// listing grids at 274, which keep the stepper, and the product page's related
+// rail at roughly 219, which cannot hold one. 240 sits between them.
+@container oxcard (max-width: 240px) {
   .ox-card-product__qty {
     display: none;
   }
 
+  .ox-card-product__add,
   .ox-card-product__add .s-button-element,
   .ox-card-product__add.s-button-element {
     padding-inline: 12px;
+  }
+}
+
+// THE TWO-ACROSS PHONE CELL, where the sums stop being comfortable and start
+// being exact. At 390 the grid gives a card 173 and its row 141, and the
+// button wants 36 of run + 24 of padding + 18 of glyph + 8 of gap + about 70
+// of label at 14px: 156, which is 15 more than exists.
+//
+// Four things could give and three of them are the wrong ones. The 44px target
+// is the last thing to trade on a phone. The label's size is fixed by the
+// owner. The glyph is what makes the control readable at a glance in a grid,
+// and dropping it here is what the owner asked to have undone. So the padding
+// and the gap give, and the glyph comes down two pixels: 36 + 12 + 16 + 4 + 70
+// is 138 in a 141 row. Three pixels spare, measured, not assumed.
+//
+// If a longer label ever needs more than this, the cell is the thing to change
+// — one across on a phone, as the big Saudi storefronts do — not the glyph.
+@container oxcard (max-width: 160px) {
+  .ox-card-product__add,
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element {
+    padding-inline: 6px;
+  }
+
+  .ox-card-product__add .s-button-text,
+  .ox-card-product__add:not(:has(.s-button-element)) {
+    gap: 4px;
+  }
+
+  .ox-card-product__add .s-button-text::before,
+  .ox-card-product__add:not(:has(.s-button-element))::after {
+    inline-size: 16px;
+    block-size: 16px;
   }
 }
