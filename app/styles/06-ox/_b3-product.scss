@@ -1254,15 +1254,42 @@
   // place on the site with room to spare for it. The clip removes the border
   // on the cut edges, which costs nothing on a filled button, and the run is
   // 21px at 52 tall, so the padding carries it plus breathing room.
+  // THE BUY ZONE IS A PAIR NOW, and the pair is the hero's pair. The hero sets
+  // a primary and a secondary CTA side by side; the product card carries the
+  // same two; this page carried only one, so a shopper who had already decided
+  // had to add, find the cart, and then check out, while the grid two clicks
+  // earlier offered them buy-now directly.
+  //
+  // ADD TO CART IS THE SECONDARY. It is the safe, reversible action and it
+  // reads as the outline, exactly as it does on the card. The painted-stroke
+  // treatment is the same one `ox-btn--secondary` uses, because the clip
+  // removes a real border: the element is the edge colour and an inset pseudo
+  // carries the fill. `--ox-card` is passed as the fill so it reads as a
+  // stroke with nothing behind it on this page's white ground.
   .sticky-product-bar salla-add-product-button .s-button-element,
   .sticky-product-bar__btn.s-button-element {
     inline-size: 100%;
     min-block-size: 52px;
-    @include ox-primary-face;
+    @include ox-secondary-face(var(--ox-fg), var(--ox-card));
     font-size: 19px;
+    font-weight: var(--ox-w-title);
     border-radius: 0;
     padding-inline: 38px;
     @include ox-angled(52px);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      z-index: 0;
+      background: var(--ox-card);
+      clip-path: inherit;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
   }
 
   // THE UN-UPGRADED STATE, exactly as the product card handles it, and for the
@@ -1284,7 +1311,8 @@
     inline-size: 100%;
     min-block-size: 52px;
     block-size: 52px;
-    @include ox-primary-face;
+    @include ox-secondary-face(var(--ox-fg), var(--ox-card));
+    font-weight: var(--ox-w-title);
     font-family: inherit;
     font-size: 19px;
     line-height: var(--ox-lh-flat);
@@ -1294,9 +1322,32 @@
     cursor: pointer;
     @include ox-angled(52px);
 
-    // The same drawn cart the upgraded button uses, off the same token.
+    // The painted outline's FILL, at z-index -1 rather than 0, and that sign is
+    // the whole rule. The clip removes a real border, so the edge is the
+    // element's own background and this inset pseudo is the inside — but the
+    // label here is a BARE TEXT NODE from the engine's form, not an element,
+    // so it cannot be lifted above the fill the way `ox-secondary-face` lifts
+    // its children with `> *`. In painting order a negative-z-index child lands
+    // after the parent's background and BEFORE the parent's inline content, so
+    // this covers the stroke and the label still reads over it. At z-index 0 it
+    // painted over the text instead, and the button rendered as an empty box.
     &::before {
       content: '';
+      position: absolute;
+      inset: 1px;
+      z-index: -1;
+      background: var(--ox-card);
+      clip-path: inherit;
+    }
+
+    // The cart glyph goes on `::after` with `order: -1`, because `::before` is
+    // spoken for by the fill above. Same trick, same reason, as the product
+    // card's un-upgraded state.
+    &::after {
+      content: '';
+      order: -1;
+      position: relative;
+      z-index: 1;
       flex: none;
       inline-size: 18px;
       block-size: 18px;
@@ -2738,5 +2789,69 @@ label.ox-fbt__row {
 
   .ox-sticky {
     transform: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The buy zone's second action: buy now (BuyActions.tsx)
+//
+// THE PRIMARY HALF OF A PAIR. The engine's form owns the stepper and the add
+// button, and the add button is the SECONDARY above; this is the accent. The
+// two together are the hero's own pair — one filled call to action and one
+// painted outline, on the same 22 degrees — so the product page, the card and
+// the first screen all speak with the same two buttons.
+//
+// It is a proxy rather than a second cart path: the component clicks the
+// form's own `salla-add-product-button` and only navigates once that button
+// reports success, so Salla keeps owning the quantity, the options, the
+// validation and the toast (CLAUDE.md: cart logic stays Salla's).
+//
+// 19px is the floor for white on `--ox-accent`, not a preference: the pairing
+// measures 3.59:1, which clears the contrast floor only as large text, and
+// large text means 14pt bold — 18.67px. This button has the room, so unlike
+// the card's CTA it keeps the legal size.
+// ---------------------------------------------------------------------------
+.ox-buy__actions {
+  display: flex;
+  margin-block-start: var(--ox-3);
+}
+
+.ox-buy__now {
+  @include ox-focus(2px);
+  @include ox-primary-face;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  block-size: 52px;
+  padding-inline: 38px;
+  border: 0;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 19px;
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  cursor: pointer;
+  @include ox-angled(52px);
+}
+
+.ox-buy__now-icon {
+  flex: none;
+}
+
+// The phone gives the pair less room, so both come down together and the run
+// follows the height. They stay the same size as each other: a pair that
+// disagrees about its own scale stops reading as a pair.
+@media (max-width: 639px) {
+  .ox-buy__now {
+    block-size: 48px;
+    padding-inline: 26px;
+    @include ox-angled(48px);
+  }
+
+  .ox-buy .sticky-product-bar salla-add-product-button .s-button-element,
+  .ox-buy .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
+    padding-inline: 26px;
   }
 }

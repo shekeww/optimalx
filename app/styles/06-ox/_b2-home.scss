@@ -233,20 +233,14 @@
   // sits LOWER in this file than this block, so setting the scrim's inset here
   // was silently undone. The photograph's base rule is above this one, which
   // is the only reason it worked and the scrim did not.
-  // THE STRAP MOVES TOWARD THE READING START. The split was at 60% of the band,
-  // which left the photograph finishing well short of centre and a wide empty
-  // stretch of graphite behind the copy. At 68% the diagonal crosses nearer the
-  // middle, the photograph has room to be a photograph, and the copy column is
-  // still 32% — enough for a headline at this measure, since the copy is
-  // centred in its own half rather than filling it.
-  //
-  // The clip percentages are of the PHOTO's own box, not the band's, so they
-  // hold their angle as the box widens: the 23.4 point difference between the
-  // top and bottom edge is the 22 degrees, and both numbers shift together.
+  // 60%, BACK WHERE IT WAS. This width is the boundary between the photograph
+  // and the graphite, so widening it to 68% shrank the black shape rather than
+  // moving the orange strap — the strap is `.ox-hero__edge`, a separate bar,
+  // and it did not move at all. Reverted: the black extends to the left again.
   .ox-hero__photo {
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: 68%;
+    inline-size: 60%;
     clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
   }
 
@@ -292,11 +286,21 @@
 // The accent edge along the diagonal: the reference's one bright line on the
 // first screen. Drawn as a skewed bar rather than a border, because a clipped
 // element cannot carry one.
+// 51%, PUSHED RIGHT FROM 42%. `inset-inline-end` is measured from the reading
+// END, which in RTL is the left edge, so a LARGER number moves this bar toward
+// the right.
+//
+// 51 is not a taste call, it is where the seam is. The photograph is 60% of the
+// band and its clip runs from 96.7% to 73.3% of its own box, so at a 1427 band
+// the cut falls between 828 at the top and 627 at the bottom — a centre of
+// about 727, which is 51% of the band. At 42% the bar was sitting 120px inside
+// the photograph, drawing a bright line across the athlete instead of along the
+// edge it exists to mark.
 .ox-hero__edge {
   position: absolute;
   z-index: 2;
   inset-block: -12%;
-  inset-inline-end: 42%;
+  inset-inline-end: 51%;
   inline-size: 10px;
   background: var(--ox-accent);
   transform: skewX(var(--ox-skew));
@@ -305,7 +309,7 @@
 
 [dir='ltr'] .ox-hero__edge {
   inset-inline-end: auto;
-  inset-inline-start: 42%;
+  inset-inline-start: 51%;
 }
 
 .ox-hero__dots {

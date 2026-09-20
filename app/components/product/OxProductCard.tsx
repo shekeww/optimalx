@@ -10,6 +10,7 @@ import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
 import { PdpIcon } from './PdpIcon';
+import { VariantChips, cardOption, defaultValueId } from './VariantChips';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
 import { specField, unitBearingWeight, PACK_SIZE_LABELS } from './lib/stats';
@@ -258,8 +259,20 @@ export const OxProductCard = memo(function OxProductCard({
 function BuyControls({ product, outOfStock }: { product: Product; outOfStock: boolean }) {
   const { t } = useTranslation();
   const max = maxQuantity(product);
-  const showsStepper = allowsQuantity(product) && !outOfStock;
   const [quantity, setQuantity] = useState(1);
+
+  // THE CARD CHOOSES THE VARIANT NOW, when the product has exactly one simple
+  // option. Before this, a product with options showed "اختر الخيارات" and the
+  // add button opened Salla's chooser — which never appeared on a grid, so the
+  // control read as broken. The shaker's four colours are the whole case today.
+  const option = outOfStock ? null : cardOption(product);
+  const [valueId, setValueId] = useState<number | string | null>(() =>
+    option ? defaultValueId(option) : null
+  );
+
+  // The stepper is suppressed on a product with options ONLY while the card
+  // cannot choose them. Once it can, quantity is meaningful again.
+  const showsStepper = (allowsQuantity(product) || Boolean(option)) && !outOfStock;
 
   const decrease = useCallback(() => setQuantity((n) => Math.max(1, n - 1)), []);
   const increase = useCallback(
@@ -267,7 +280,23 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
     [max]
   );
 
-  return (
+  // THE SUBMIT PATH IS SALLA'S OWN. `salla.form.onSubmit('cart.addItem', …)`
+  // builds `new FormData(form)` and POSTs it to the same endpoint the product
+  // page posts to, so the hidden id, the chosen `options[…]` and the quantity
+  // travel exactly as they do there. Nothing here touches the cart itself.
+  //
+  // `quantity` is not optional decoration: without a `quantity` field the SDK
+  // switches to the quick-add endpoint, which is the options-less path and
+  // silently drops the chosen variant. `e.nativeEvent` is passed rather than
+  // the React event because React's synthetic submit carries no `submitter`,
+  // and without it Salla never starts the button's own loading state.
+  const onSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const salla = (window as unknown as { salla?: { form?: { onSubmit?: (a: string, b: Event) => void } } }).salla;
+    salla?.form?.onSubmit?.('cart.addItem', e.nativeEvent);
+  }, []);
+
+  const controls = (
     <>
       <div className="ox-card-product__action">
         {showsStepper ? (
@@ -296,11 +325,41 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
           </div>
         ) : null}
         <div className="ox-card-product__add-slot">
-          <AddButton product={product} quantity={showsStepper ? quantity : null} />
+          <AddButton
+            product={product}
+            quantity={showsStepper ? quantity : null}
+            submit={Boolean(option)}
+          />
         </div>
       </div>
       {outOfStock ? null : <BuyNow product={product} />}
     </>
+  );
+
+  // No option to choose: the card stays exactly as it was, with no form around
+  // it. A form that wraps nothing chooseable is markup for its own sake.
+  if (!option) return controls;
+
+  return (
+    <form
+      className="ox-card-product__form"
+      method="post"
+      encType="multipart/form-data"
+      onSubmit={onSubmit}
+    >
+      {/* Salla reads the product from the form, not from the button. */}
+      <input type="hidden" name="id" value={String(product.id)} />
+      <VariantChips
+        option={option}
+        uid={`oxcard-${product.id}`}
+        value={valueId}
+        onChange={setValueId}
+      />
+      {/* The stepper above is a React control, so the number it holds has to be
+          put into the form as a field of its own for FormData to see it. */}
+      <input type="hidden" name="quantity" value={String(showsStepper ? quantity : 1)} />
+      {controls}
+    </form>
   );
 }
 
@@ -393,10 +452,23 @@ function quickBuyAmount(product: Pick<Product, 'base_currency_price'>): number |
  * on screen, so every product that has no stepper keeps exactly the request it
  * sent before this rebuild.
  */
-function AddButton({ product, quantity }: { product: Product; quantity: number | null }) {
+function AddButton({
+  product,
+  quantity,
+  submit = false,
+}: {
+  product: Product;
+  quantity: number | null;
+  /** True when the card carries its own chooser, so this submits the form. */
+  submit?: boolean;
+}) {
   const { t } = useTranslation();
+  // "اختر الخيارات" is the right label ONLY while the card cannot choose. Once
+  // the chips are on the card the shopper has already chosen, so the button
+  // says what it now actually does.
   const label =
-    product.add_to_cart_label ?? t(product.has_options ? 'ox.card.choose_options' : 'ox.card.add');
+    product.add_to_cart_label ??
+    t(product.has_options && !submit ? 'ox.card.choose_options' : 'ox.card.add');
   return (
     // CORE, NOT THE DEFERRED EXPORT, and this is what made the button vanish.
     //
@@ -426,6 +498,11 @@ function AddButton({ product, quantity }: { product: Product; quantity: number |
         fill="outline"
         loaderPosition="center"
         className="ox-card-product__add"
+        // `type="submit"` makes the component render a real submit button and
+        // return early from its own click handler, so the FORM adds the
+        // product — with the chosen option in the payload — instead of the
+        // component adding it optionless.
+        {...(submit ? { type: 'submit' as const } : {})}
         {...(quantity !== null ? { quantity } : {})}
       >
         {/* THE LABEL ONLY. The cart glyph is drawn in CSS as a mask on

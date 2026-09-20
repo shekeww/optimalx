@@ -20,6 +20,7 @@ import { SpecChips, SpecFacts } from './BuyZone/SpecChips';
 import { SupplyCalculator } from './BuyZone/SupplyCalculator';
 import { DeliveryPromise } from './BuyZone/DeliveryPromise';
 import { BuyForm } from './BuyZone/BuyForm';
+import { BuyActions } from './BuyZone/BuyActions';
 import { TrustGrid } from './BuyZone/TrustGrid';
 import { StickyBar } from './BuyZone/StickyBar';
 import { BrandBand } from './BelowFold/BrandBand';
@@ -197,6 +198,13 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                 ) : null
               }
             />
+
+            {/* The other half of the pair. The engine's form owns the stepper
+                and the add button; this adds the buy-now beneath them and
+                proxies that same button, so the quantity and options the
+                shopper chose are what reaches the cart. A service is booked
+                rather than bought, so it gets no buy-now. */}
+            {isService ? null : <BuyActions product={product} anchorRef={buyZoneRef} />}
 
             <HookSlot name="product:single.form.end" context={hookContext} />
 

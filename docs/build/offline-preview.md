@@ -89,7 +89,7 @@ were considered:
 | --- | --- |
 | Store identity | Optimal X, id `1888890798`, `optimalx.com.sa`, SAR, description, logo |
 | Registration | commercial registration `7054552703`, **no tax number** (the store genuinely has none) |
-| Branch | one branch, Al-Khalidiyah, Medina, `+966581565351`, its real working hours |
+| Branch | one branch, Al-Khalidiyah, Medina, `+966553524524`, its real working hours |
 | Brand | `#EE4D22`, Cairo, the Instagram link (the only social account filled in) |
 | Catalogue | all **47** products — real names, Arabic descriptions, prices in SAR, SKUs, weights, stock, product types (36 product, 4 food, 4 service, 1 codes, 1 digital, 1 group) |
 | Images | the real `cdn.salla.sa` URLs. 41 products have images; **6 have none** (OX-042…047) and render the placeholder, as they do live |

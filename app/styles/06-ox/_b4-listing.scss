@@ -1743,3 +1743,85 @@ nav.breadcrumbs .s-breadcrumb-item button {
     block-size: 16px;
   }
 }
+
+// ---------------------------------------------------------------------------
+// The card's variant chooser (VariantChips.tsx)
+//
+// A shopper picks the flavour or the colour on the card and adds THAT one,
+// without opening the product page. The chips carry Salla's own field names —
+// `options[<option_id>]` with the value id as the value — so the form's POST is
+// byte-for-byte the product page's. The styling is ours; the contract is not.
+//
+// One row, scrollable rather than wrapping: a second row of chips would make
+// one card taller than its neighbours and the grid ragged, which is the defect
+// the action row above spent three rounds fixing. Four colours at 390 is the
+// real case and it fits; more than that scrolls.
+// ---------------------------------------------------------------------------
+.ox-card-product__form {
+  display: contents;
+}
+
+.ox-card-product__variants {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: var(--ox-1);
+  margin: 0 0 var(--ox-2);
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.ox-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 28px;
+  padding-inline: 10px;
+  border: 1px solid var(--ox-bd-2);
+  border-radius: var(--ox-r-2);
+  background: var(--ox-card);
+  color: var(--ox-fg-2);
+  font-size: 12px;
+  font-weight: var(--ox-w-ui);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+// The input is the control; the chip is its face. It stays in the accessibility
+// tree and keyboard order — `opacity: 0` with a real box, never `display: none`,
+// which would take the radio group off the keyboard entirely.
+.ox-chip__input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ox-chip:has(.ox-chip__input:checked) {
+  border-color: var(--ox-fg);
+  background: var(--ox-fg);
+  color: var(--ox-on-accent);
+}
+
+// Focus lands on the invisible input, so the ring is drawn on the chip.
+.ox-chip:has(.ox-chip__input:focus-visible) {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+// A narrow card gives the chips the card's full row and lets them scroll.
+@container oxcard (max-width: 240px) {
+  .ox-chip {
+    padding-inline: 8px;
+    font-size: 11.5px;
+  }
+}
