@@ -1293,6 +1293,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: flex;
   flex: 1 1 132px;
   min-inline-size: 0;
+
+  // The custom element host sizes to its own content unless it is told not
+  // to, and `inline-size: 100%` on the button INSIDE it then resolves against
+  // that shrunken host rather than against the slot. Measured before this:
+  // a 272px slot holding a 92px button on the product with options, and a
+  // 136px slot holding a 111px button on every other card. So the row had a
+  // hole in it on one card and a 25px shortfall on all the rest.
+  > * {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    inline-size: 100%;
+  }
 }
 
 // The add button, outlined. Three elements deep: the slot, the web component,
@@ -1336,13 +1348,29 @@ nav.breadcrumbs .s-breadcrumb-item button {
   outline-offset: 2px;
 }
 
-// The solid CTA. As a LINK it takes the shared `.ox-btn--primary.ox-btn--block`
-// contract unchanged, including its 19/700 label: white on #F54915 measures
-// 3.58:1, so the type has to stay large enough to be judged at the 3:1 floor.
-// The only thing added here is the raise above the card's stretched title link.
+// The solid CTA, at CARD scale rather than page scale.
+//
+// The primitive sets 19/700 for a reason: white on `--ox-accent` measures
+// 3.58:1, which clears the 3:1 floor only as LARGE text, so at page size the
+// label cannot shrink without failing. Inside a 306px card that 19px label
+// dwarfed everything around it, including the outline button beside it at 14.
+//
+// So the card takes the label down to body size and DARKENS THE FILL to keep
+// the pairing legal: white on `--ox-accent-dark` is 4.96:1, which clears the
+// 4.5:1 floor for normal text with room to spare. It is the same accent
+// family, one step down, and the hover goes deeper still rather than lighter.
+// The page's own primary buttons are untouched.
 .ox-card-product__buy {
   position: relative;
   z-index: 2;
+  font-size: var(--ox-t-body);
+  background: var(--ox-accent-dark);
+  border-color: var(--ox-accent-dark);
+
+  &:hover {
+    background: var(--ox-accent-deep);
+    border-color: var(--ox-accent-deep);
+  }
 }
 
 // At 390 the grid is two across, which leaves roughly 139px of button inside
@@ -1355,11 +1383,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // Only the phone cell steps down. From 640 the cell is wide enough for the
 // contract's own size, which is what keeps white on #F54915 judged at the 3:1
 // floor rather than a smaller type's.
+// The label is body size everywhere now, so the phone only needs the tighter
+// gutter: at 390 the two-across cell leaves about 139px of button.
 @media (max-width: 639px) {
   .ox-card-product__buy,
   .ox-card-product__buy--native .s-button-element,
   .ox-card-product__buy--native.s-button-element {
-    font-size: var(--ox-t-small);
     padding-inline: var(--ox-3);
   }
 }
@@ -1383,8 +1412,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
   inline-size: 100%;
   min-block-size: 44px;
   padding-inline: 20px;
-  background: var(--ox-accent);
-  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent-dark);
+  border: 1px solid var(--ox-accent-dark);
   border-radius: var(--ox-r-2);
   color: var(--ox-on-accent);
   font-family: inherit;

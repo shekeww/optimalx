@@ -188,6 +188,12 @@
      copy, with less headroom than it had on the cream. */
   --ox-accent: #F54915;
   --ox-accent-dark: #D03709;
+  /* The deep step, for a solid accent button whose label is set at body size
+     rather than the primitive's 19px. White on --ox-accent is 3.58:1, which
+     only clears the 3:1 floor as LARGE text, so a smaller label needs a
+     darker fill: --ox-accent-dark gives 4.96:1 and this gives 6.90:1, which
+     is the hover state for it. */
+  --ox-accent-deep: #A82D07;
   --ox-accent-light: #F98A6B;
   --ox-accent-rgb: 245, 73, 21;
   --ox-accent-soft: #FDEEE8;

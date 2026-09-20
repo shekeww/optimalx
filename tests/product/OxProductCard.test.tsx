@@ -128,8 +128,10 @@ describe('OxProductCard', () => {
     for (const cls of [
       '.ox-card-product__name',
       '.ox-card-product__chips',
-      '.ox-card-product__rating',
       '.ox-card-product__price',
+      // The savings line reserves its height whether or not this product has
+      // a saving, because a row mixes discounted and undiscounted products
+      // and the buttons have to stay on one baseline.
       '.ox-card-product__saving',
       '.ox-card-product__action',
     ]) {
@@ -137,10 +139,21 @@ describe('OxProductCard', () => {
     }
   });
 
-  it('draws the rating row empty at count 0 and never invents stars', () => {
+  it('collapses the rating row entirely rather than reserving an empty one', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
-    expect(container.querySelector('.ox-card-product__rating')?.textContent).toBe('');
+    // The row used to render as an empty 20px box. That is the right call for
+    // the savings line, where a row genuinely mixes products with and without
+    // one; it is the wrong call here, because NO product on this store has a
+    // rating, so every card in every row carried the same hole between its
+    // meta line and its price.
+    expect(container.querySelector('.ox-card-product__rating')).toBeNull();
     expect(screen.queryByTestId('rating-stars')).toBeNull();
+  });
+
+  it('draws the rating row when a product genuinely carries one', () => {
+    const rated = { ...makeProduct(), rating: { stars: 4.5, count: 12 } };
+    const { container } = renderWithProviders(<OxProductCard product={rated as never} />);
+    expect(container.querySelector('.ox-card-product__rating')).not.toBeNull();
   });
 
   it('shows the stars only when the store has real reviews', () => {
@@ -190,12 +203,14 @@ describe('OxProductCard', () => {
     expect(line).not.toContain('Optimum Nutrition');
   });
 
-  it('keeps the rating row reserved and empty on a store with no reviews (B28)', () => {
+  it('invents no stars on a store with no reviews (B28)', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
-    const slot = container.querySelector('.ox-card-product__rating');
-    expect(slot).not.toBeNull();
-    expect(slot?.textContent).toBe('');
+    // The gate that matters is still here and unchanged: no stars, no count,
+    // nothing invented. What changed is that the empty BOX no longer reserves
+    // its 20px, because it is empty on every card at once and so reserves a
+    // hole rather than a baseline.
     expect(container.querySelector('.ox-rating')).toBeNull();
+    expect(container.querySelector('.ox-card-product__rating')).toBeNull();
   });
 
   it('badges only from real product flags: out of stock and a real saving', () => {

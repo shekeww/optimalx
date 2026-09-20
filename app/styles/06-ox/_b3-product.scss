@@ -327,6 +327,8 @@
 
 .ox-gallery--empty {
   aspect-ratio: 1 / 1;
+  // Keeps the stepped surface: with no photograph there is nothing to supply
+  // the white, so a plate on the page ground would be an invisible hole.
   background: var(--ox-plate);
   border-radius: var(--ox-r-4, 16px);
 }
@@ -343,7 +345,14 @@
   aspect-ratio: 1 / 1;
   padding: var(--ox-6);
   overflow: hidden;
-  background: var(--ox-plate);
+  // THE PAGE'S OWN GROUND, not a step off it. This was `--ox-plate` (#F1F1F0)
+  // against a #FFFFFF page, which put a grey frame around product photographs
+  // that are themselves shot on white: the picture read as a white square
+  // floating inside a grey square, and the seam between the two was the most
+  // visible edge in the fold. On the page ground the photograph and its
+  // surface are one surface, which is what the reference does. The wedge band
+  // and the accent bar still draw, so the plate keeps its brand geometry.
+  background: var(--ox-bg);
   border-radius: var(--ox-r-4, 16px);
 }
 

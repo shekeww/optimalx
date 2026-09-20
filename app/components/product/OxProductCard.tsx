@@ -200,13 +200,24 @@ export const OxProductCard = memo(function OxProductCard({
         <p className="ox-card-product__chips">
           {facts.length > 0 ? <Bdi lang={null}>{facts.join(DIVIDER)}</Bdi> : null}
         </p>
-        <div className="ox-card-product__rating">
-          <RatingRow
-            stars={product.rating?.stars ?? 0}
-            count={product.rating?.count ?? 0}
-            size={12}
-          />
-        </div>
+        {/* The WRAPPER is conditional too, not just its contents.
+            `RatingRow` already renders null below a real review count, but the
+            box around it kept `min-block-size: 20px`, so every card on this
+            store carried 20px of empty row plus its 8px gap: 28px of hole
+            between the meta line and the price, on all 47 products, for a
+            rating none of them has. The savings line below DOES reserve its
+            space on purpose, because some products in a row have a saving and
+            some do not and the buttons have to stay on one baseline. Nothing
+            is gained by reserving a row that is empty on every card at once. */}
+        {(product.rating?.count ?? 0) > 0 ? (
+          <div className="ox-card-product__rating">
+            <RatingRow
+              stars={product.rating?.stars ?? 0}
+              count={product.rating?.count ?? 0}
+              size={12}
+            />
+          </div>
+        ) : null}
         <div className="ox-card-product__price">
           <Price amount={price} size="card" currency={product.currency} />
           {product.is_on_sale ? (
