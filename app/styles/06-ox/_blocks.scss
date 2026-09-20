@@ -61,7 +61,7 @@
 
 .ox-branch__eyebrow {
   color: var(--ox-fg-3);
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   margin: 0;
 }
 
@@ -165,7 +165,7 @@
   padding-inline: var(--ox-2);
   border-radius: var(--ox-r-pill);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
 
   &.is-open {
     color: var(--ox-go);
@@ -182,13 +182,13 @@
   inline-size: 100%;
 
   th[scope='row'] {
-    font-weight: 400;
+    font-weight: var(--ox-w-read);
     text-align: start;
   }
 
   tr.is-today th[scope='row'],
   tr.is-today td {
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
   }
 }
 
@@ -196,7 +196,7 @@
   margin-inline-start: var(--ox-2);
   color: var(--ox-fg-3);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
 }
 
 .ox-hours__note {
@@ -245,7 +245,7 @@
 }
 
 .ox-channel__free {
-  font-weight: 700;
+  font-weight: var(--ox-w-figure);
 }
 
 .ox-channel__cta {
@@ -321,7 +321,7 @@
 .ox-guide__label,
 .ox-guide__meta {
   color: var(--ox-fg-3);
-  font-weight: 600;
+  font-weight: var(--ox-w-quiet);
 }
 
 .ox-guide__title {
@@ -393,7 +393,7 @@
   gap: var(--ox-2);
   margin: 0;
   color: var(--ox-go);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   // The one cross-fade DIRECTION 7.1 grants this block.
   animation: ox-newsletter-in var(--dur-base) var(--ease-in-out);
 }

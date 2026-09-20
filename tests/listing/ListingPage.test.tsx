@@ -26,8 +26,9 @@ const storeSettings: Record<string, unknown> = {
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
 );
+const location = { pathname: '/whey-protein/c1', searchStr: '' };
 vi.mock('@tanstack/react-router', () => ({
-  useLocation: () => ({ pathname: '/whey-protein/c1', searchStr: '' }),
+  useLocation: () => location,
   useRouter: () => ({ history: { push: historyPush } }),
 }));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
@@ -89,6 +90,8 @@ vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
 }));
 
 const { ListingPage } = await import('../../app/components/listing/ListingPage');
+const { createT } = await import('../helpers/i18n');
+const t = createT('ar');
 
 const ORIGIN = 'https://optimalx.com.sa';
 
@@ -120,6 +123,7 @@ beforeEach(() => {
   historyPush.mockClear();
   storeSettings.product = { filters: true };
   storeSettings.category = { testimonial_enabled: false };
+  location.searchStr = '';
 });
 
 describe('ListingPage, category variant', () => {
@@ -201,6 +205,38 @@ describe('ListingPage, category variant', () => {
     expect(toolbar?.querySelector('.ox-listing__sort select')).not.toBeNull();
     // The toolbar is the last thing before the results, inside the grid anchor.
     expect(container.querySelector('#listing-grid .ox-listing__toolbar')).not.toBeNull();
+  });
+
+  it('answers how long the list is above the grid, not under it', () => {
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="protein" />);
+    const line = container.querySelector('.ox-listing__toolbar .ox-listing__progress');
+    expect(line?.textContent).toBe(t('ox.listing.showing', { count: 2 }));
+    // The honest loaded count, still with no invented total, and exactly one
+    // of it on the page.
+    expect(container.querySelectorAll('.ox-listing__progress')).toHaveLength(1);
+    expect(
+      container.querySelector('.ox-listing__results .ox-listing__progress')
+    ).toBeNull();
+  });
+
+  it('shows how many facets the URL is filtered by, and nothing at none', () => {
+    const { container: none } = renderWithProviders(
+      <ListingPage {...data()} slug="whey-protein" />
+    );
+    const plain = none.querySelector('.ox-listing__filters-trigger');
+    expect(plain).not.toBeNull();
+    expect(plain?.querySelector('.ox-listing__filters-count')).toBeNull();
+    expect(plain?.classList.contains('is-active')).toBe(false);
+
+    location.searchStr = '?sort=ourSuggest&brands[]=7&price_from=50&price_to=300';
+    const { container: filtered } = renderWithProviders(
+      <ListingPage {...data()} slug="whey-protein" />
+    );
+    const trigger = filtered.querySelector('.ox-listing__filters-trigger');
+    expect(trigger?.querySelector('.ox-listing__filters-count')?.textContent).toBe('2');
+    expect(trigger?.classList.contains('is-active')).toBe(true);
+    // The bare number is hidden from the assistive tree; a sentence is not.
+    expect(trigger?.textContent).toContain(t('ox.filter.applied', { count: 2 }));
   });
 
   it('navigates with ?sort= and drops the page cursor, as the engine does', () => {

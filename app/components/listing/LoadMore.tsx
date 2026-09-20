@@ -9,7 +9,7 @@ export interface LoadMoreProps {
 }
 
 /**
- * The load-more block (DIRECTION 5.3 LoadMore, 6.3 block 6).
+ * The loaded-count line (DIRECTION 5.3 LoadMore, 6.3 block 6).
  *
  * The button itself belongs to `ItemsList`, which renders it inside its own
  * root (components-react native/items-list/ItemsList.js: the
@@ -21,6 +21,12 @@ export interface LoadMoreProps {
  * The line says only what is loaded. DIRECTION's "عرض 24 من 96" needs a total
  * the products API does not return, and a total is never invented
  * (PLAN-final B4, claims gate).
+ *
+ * **It is rendered in the toolbar now, above the grid, not under it.** Under
+ * the grid it answered "how long is this list" only after the shopper had
+ * scrolled the whole thing; every retail reference answers before the first
+ * card. Nothing about the sentence changed and it is still a live region, so
+ * loading another page still announces the new count.
  */
 export function LoadMore({ loadedCount, hasMore, className }: LoadMoreProps) {
   const { t } = useTranslation();

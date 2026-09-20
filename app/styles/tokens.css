@@ -22,8 +22,128 @@
      undefined makes --font-main invalid on every Arabic page and drops body
      text back to the browser default. Arabic is the primary locale here, so
      that failure would be the normal case, not the edge case. */
-  --font-main: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-ar: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* 'Cairo VF' is our self-hosted variable file and must come first: the
+     engine also loads a static Google Cairo from the dashboard, and leading
+     with the shared name would let that resolve 400 and 700 while ours served
+     the rest. Plain 'Cairo' stays as the fallback. See 01-settings/fonts.scss. */
+  --font-main: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ar: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ---------- Ours: the Cairo weight ladder ----------
+     Cairo is self-hosted and genuinely variable, wght 200 to 1000, split by
+     unicode-range across three files (app/styles/01-settings/fonts.scss). Every
+     step below is therefore a true instance: nothing is synthesised, and no
+     step costs a request the page was not already making.
+
+     Seven steps, one job each. The rule that resolves the collision the theme
+     shipped with, where 600 was used 52 times and 700 48 times and neither had
+     a definition:
+
+         600 is what you press. 700 is what you read as a name.
+
+     When an element is both - an active tab, a card title inside an anchor, a
+     footer heading that doubles as the mobile accordion toggle - the name wins
+     and it takes 700. A control never carries 700 at rest.
+
+     Reversed type loses apparent weight, so the two lightest steps are not
+     available on a dark band: .ox-band-dark below re-points --ox-w-open at
+     Read and --ox-w-read at Quiet, and every component inside it follows
+     without a variant class. Interface and above do not move, because at 600
+     the stroke is thick enough that the optical loss does not read. */
+  --ox-w-open: 350;
+  --ox-w-read: 400;
+  --ox-w-quiet: 500;
+  --ox-w-ui: 600;
+  --ox-w-title: 700;
+  --ox-w-stmt: 800;
+  --ox-w-figure: 900;
+
+  /* ---------- Ours: the size ladder ----------
+     Nine steps, 390 to 1440, linear between. The pairing of a size with a
+     weight step is the role; the roles are the .ox-* classes in
+     06-ox/_primitives.scss, and tailwind.config.cjs resolves text-display
+     through text-micro to these same tokens so a utility and a class cannot
+     drift apart.
+
+     `title` is the step the design used everywhere and the scale never named:
+     17 rising to 18, the panel and card heading. Before this it was written
+     as bare pixels in three files. */
+  --ox-t-display: clamp(34px, 25.83px + 2.095vw, 56px);
+  --ox-t-h1: clamp(28px, 23.54px + 1.143vw, 40px);
+  --ox-t-h2: clamp(24px, 21.03px + 0.762vw, 32px);
+  --ox-t-h3: clamp(18px, 17.26px + 0.190vw, 20px);
+  --ox-t-title: clamp(17px, 16.63px + 0.095vw, 18px);
+  --ox-t-lead: clamp(17px, 15.89px + 0.286vw, 20px);
+  --ox-t-body: clamp(15px, 14.63px + 0.095vw, 16px);
+  --ox-t-small: clamp(13px, 12.63px + 0.095vw, 14px);
+  --ox-t-micro: clamp(11.5px, 11.31px + 0.048vw, 12px);
+
+  /* ---------- Ours: Arabic line-height floors ----------
+     Measured from public/assets/fonts/cairo-arabic.woff2, 1000 units per em:
+
+       tall form    alef, lam, kaf, tah                      +717
+       body height  heh, medial meem, medial seen, dal       +500
+       descender    yeh -430, meem -332, ain and hah -318,
+                    nun, lam and seen -248
+
+     One Arabic line can therefore put ink from -430 to +717, which is 1.147em.
+     Latin in the same face reaches only 0.937em (cap 702 down to -235), so a
+     line-height chosen for Arabic always serves Latin and never the reverse:
+     there is one set of floors here, not two.
+
+     1.147 is the height at which two stacked Arabic lines touch. --ox-lh-tight
+     adds three per cent of air to it and is the hard floor for anything that
+     can hold Arabic. The theme shipped display at 1.15, which is 0.2px of
+     clearance at 56px, and h1 at 1.20, which is none.
+
+     line-height: 1 is legal in exactly one case: content guaranteed to be
+     Western numerals. Latin digits top at 671 and drop to -10, 0.681em, so
+     they clear a 1em box with room to spare. That is --ox-lh-num, and a count
+     bubble or a step numeral is the only thing allowed to use it. */
+  --ox-lh-tight: 1.18;
+  --ox-lh-head: 1.25;
+  --ox-lh-snug: 1.4;
+  --ox-lh-caption: 1.5;
+  --ox-lh-lead: 1.6;
+  --ox-lh-body: 1.7;
+  --ox-lh-prose: 1.9;
+  --ox-lh-flat: 1.2;
+  --ox-lh-num: 1;
+
+  /* ---------- Ours: Latin set inside Arabic ----------
+     Measured from the same files. Cairo's Latin x-height is 500 units and its
+     Arabic body height is also 500. The two scripts are already optically
+     matched at the same pixel size, so MIXED-CASE Latin inside Arabic copy -
+     the product subtitle, a supplier brand written as Optimum Nutrition, a
+     unit string - needs no size correction at all. Do not add one.
+
+     Uppercase Latin is the exception, and the reason is mass rather than
+     height. Every glyph in an all-caps run stands at the cap height, 691,
+     against an Arabic ribbon that is mostly 500 with occasional strokes at
+     717, so the run reads as a solid block. --ox-latin-caps-size brings the
+     cap to 636 units, which sits between the Arabic body and the Arabic alef.
+     It applies only to caps set INSIDE Arabic: a Latin line of its own, in
+     its own lang and dir, has no Arabic beside it to match and keeps its
+     size. .ox-latin-caps and .ox-latin-track are those two cases.
+
+     Tracking exists only here. Arabic is a joined script and letter-spacing
+     breaks the joins into loose glyphs, so Arabic is never tracked. Because
+     the only role that can track also sets text-transform: uppercase, it is
+     structurally impossible to track Arabic through this system.
+
+     Latin digits are deliberately NOT reduced. They top at 660 to 671 against
+     the Arabic 500, so they stand taller than the copy around them, and that
+     is doing a job: in this store the numerals are the scannable content.
+     They are aligned rather than shrunk, with tabular-nums on .ox-num. */
+  --ox-latin-caps-size: 0.92em;
+  --ox-latin-track: 0.08em;
+
+  /* Arabic is never tracked, and this is where that is enforced. It is one
+     declaration rather than one per component because letter-spacing
+     inherits: everything is 0 until .ox-latin-caps or .ox-latin-track opts a
+     run of uppercase Latin out of it, and neither of those can reach Arabic
+     because both set the uppercase transform themselves. */
+  letter-spacing: 0;
 
   /* Brand.
      #F54915 is the weighted mean of 15,854 saturated orange pixels sampled
@@ -34,7 +154,7 @@
      changing it is an owner action, and until it happens Salla's own native
      components render in the old orange. See the note on --ox-accent. */
   --color-primary: #F54915;
-  --color-primary-dark: #D33A0C;
+  --color-primary-dark: #D03709;
 
   /* Derived from --color-primary.
      --color-primary-light is the fill mixed 30% toward white.
@@ -60,7 +180,7 @@
      --ox-accent-dark, which is 4.59:1 on paper and so clears AA for body
      copy, with less headroom than it had on the cream. */
   --ox-accent: #F54915;
-  --ox-accent-dark: #D33A0C;
+  --ox-accent-dark: #D03709;
   --ox-accent-light: #F98A6B;
   --ox-accent-rgb: 245, 73, 21;
   --ox-accent-soft: #FDEEE8;
@@ -85,11 +205,24 @@
 
      This is a deliberate departure from the target image's ground. Nothing
      else in the image changes. */
-  --ox-paper: #FAFAF9;
+  /* The page and the card are the SAME white, by owner decision: a card is
+     told from the page by its hairline, not by a change of value. This is the
+     iHerb model, where the body is white and cards are white with a border,
+     and it is why --ox-edge matters more here than in a design that leans on
+     tonal steps.
+
+     Two greys survive and they are not decoration:
+       --ox-fill  the banded strips that break the page into sections
+       --ox-plate the ground behind product photography, which has to be a
+                  step down from the card or a cut-out product floats on
+                  nothing and a grid of mixed supplier shots stops reading as
+                  one store.
+     Do not flatten those two to white as well; the plate is load-bearing. */
+  --ox-paper: #FFFFFF;
   --ox-card: #FFFFFF;
   --ox-fill: #F4F4F3;
-  --ox-plate: #F2F2F1;
-  --ox-plate-2: #E9E9E8;
+  --ox-plate: #F1F1F0;
+  --ox-plate-2: #E6E6E5;
   --ox-input: #FFFFFF;
   --ox-input-bd: #E6E6E5;
   --ox-graphite: #0E1014;
@@ -111,7 +244,7 @@
   --ox-ink: #12171E;
   --ox-ink-2: #3A4046;
   --ox-ink-3: #5C6063;
-  --ox-ink-4: #6E7274;
+  --ox-ink-4: #6D7173;
   --ox-ink-on-dark: #F7F4EE;
   --ox-ink-2-on-dark: #B7B6B2;
   --ox-ink-3-on-dark: #8A8D8E;
@@ -224,6 +357,17 @@
   --direction-factor: -1;
 }
 
+/* Some engines do not inherit letter-spacing into a form control, which is
+   why the theme used to repeat `letter-spacing: 0` at fifteen call sites.
+   One rule covers every control, ours and Salla's, rather than the ones
+   somebody remembered. */
+button,
+input,
+select,
+textarea {
+  letter-spacing: inherit;
+}
+
 @media (min-width: 640px) {
   :root {
     --ox-gutter: 24px;
@@ -241,6 +385,13 @@
 /* A dark band re-declares the role tokens once; every component inside it
    adapts without a variant class. */
 .ox-band-dark {
+  /* Reversed type reads lighter than the same weight on paper, so the two
+     lightest steps are withdrawn here: a lead becomes Read and body copy
+     becomes Quiet. Nothing above Interface moves. A dark component that is
+     not a band (the utility bar, the header, the brand band) repeats these
+     two lines in its own block. */
+  --ox-w-open: 400;
+  --ox-w-read: 500;
   --ox-bg: var(--ox-graphite);
   --ox-surface: var(--ox-graphite-2);
   --ox-fg: var(--ox-ink-on-dark);

@@ -105,6 +105,23 @@ describe('MobileDrawer', () => {
     await waitFor(() => expect(document.body.classList.contains('menu-opened')).toBe(false));
   });
 
+  it('publishes the same site map the bar does, with the advisory once', async () => {
+    const { unmount } = renderWithProviders(<Harness initialOpen />);
+    const drawer = await screen.findByTestId('ox-mobile-drawer');
+    const labels = Array.from(drawer.querySelectorAll('.ox-drawer__list > li > a')).map(
+      (node) => node.textContent
+    );
+    // It used to be typed into the drawer's own page list and left off the
+    // desktop bar entirely, which gave the store two different site maps.
+    // It comes from `HEADER_NAV` now, so it is on both and duplicated on
+    // neither.
+    expect(labels.filter((label) => label === 'اسأل قبل أن تشتري')).toHaveLength(1);
+    expect(labels).toContain('الأدلة');
+    expect(labels).toContain('فرع المدينة المنورة');
+    expect(labels).toContain('اتصل بنا');
+    unmount();
+  });
+
   it('shows a contact row only for the numbers the store actually has', async () => {
     const first = renderWithProviders(<Harness initialOpen />);
     const bare = await screen.findByTestId('ox-mobile-drawer');

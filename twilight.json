@@ -314,7 +314,7 @@
       "format": "switch",
       "label": "إظهار قائمة الأهداف في الرأس",
       "icon": "sicon-toggle-off",
-      "value": true,
+      "value": false,
       "description": null
     },
     {
@@ -644,37 +644,6 @@
       "fields": []
     },
     {
-      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d104",
-      "title": {
-        "ar": "تصفح حسب النوع",
-        "en": "Browse by type"
-      },
-      "icon": "sicon-fabric-swatch",
-      "path": "home.ox-categories",
-      "is_default": true,
-      "fields": [
-        {
-          "id": "categories",
-          "key": "b2f1d000-0000-4000-8000-000000000015",
-          "type": "items",
-          "format": "dropdown-list",
-          "label": "التصنيفات",
-          "label_en": "Categories",
-          "description": "اختر 4 أو 8 أو 12 تصنيفا ليكتمل كل صف؛ اتركه فارغا لعرض أنواع المتجر",
-          "icon": "sicon-keyboard_arrow_down",
-          "source": "categories",
-          "multichoice": true,
-          "searchable": true,
-          "options": [],
-          "selected": [],
-          "value": [],
-          "required": false,
-          "minLength": 4,
-          "maxLength": 12
-        }
-      ]
-    },
-    {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d105",
       "title": {
         "ar": "أحدث المنتجات",
@@ -716,6 +685,37 @@
           "required": false,
           "minLength": 1,
           "maxLength": 8
+        }
+      ]
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d104",
+      "title": {
+        "ar": "تصفح حسب النوع",
+        "en": "Browse by type"
+      },
+      "icon": "sicon-fabric-swatch",
+      "path": "home.ox-categories",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "categories",
+          "key": "b2f1d000-0000-4000-8000-000000000015",
+          "type": "items",
+          "format": "dropdown-list",
+          "label": "التصنيفات",
+          "label_en": "Categories",
+          "description": "اختر 4 أو 8 أو 12 تصنيفا ليكتمل كل صف؛ اتركه فارغا لعرض أنواع المتجر",
+          "icon": "sicon-keyboard_arrow_down",
+          "source": "categories",
+          "multichoice": true,
+          "searchable": true,
+          "options": [],
+          "selected": [],
+          "value": [],
+          "required": false,
+          "minLength": 4,
+          "maxLength": 12
         }
       ]
     },

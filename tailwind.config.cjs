@@ -92,7 +92,7 @@ module.exports = {
         // read as a scale to anyone new, and they were not one.
         //
         // The brand radius. `rounded` resolves here, and the content globs above
-        // scan the engine's dist as well as app/ — so this one value styles our
+        // scan the engine's dist as well as app/, so this one value styles our
         // markup AND Salla's own components (s-product-card, s-button-element).
         // 274 call sites at the time of writing: 78 in app/, 196 in the engine.
         // 8px rather than the scaffold's 16px: it reads considered instead of
@@ -102,6 +102,21 @@ module.exports = {
         sm: '6px',
         full: '9999px',
       },
+      // The Cairo weight ladder. Seven steps, one job each; the definitions
+      // and the 600-versus-700 rule live on the tokens in app/styles/tokens.css
+      // so that .ox-band-dark can withdraw the two lightest steps without a
+      // variant utility. These names extend Tailwind's own scale rather than
+      // replacing it: `font-bold` still resolves, because layers 02 to 04 are
+      // the Salla scaffold and are not ours to rewrite.
+      fontWeight: {
+        open: 'var(--ox-w-open)',
+        read: 'var(--ox-w-read)',
+        quiet: 'var(--ox-w-quiet)',
+        ui: 'var(--ox-w-ui)',
+        title: 'var(--ox-w-title)',
+        stmt: 'var(--ox-w-stmt)',
+        figure: 'var(--ox-w-figure)',
+      },
       fontSize: {
         'icon-lg': '33px',
         xxs: '10px',
@@ -109,15 +124,25 @@ module.exports = {
         'title-size': '42px',
         '22px': '22px',
         // Fluid type scale, 390 to 1440, linear between (DIRECTION 3.1).
-        // Line-heights are Arabic-safe: display never below 1.15, headings 1.2+.
-        display: ['clamp(34px, 25.83px + 2.095vw, 56px)', { lineHeight: '1.15' }],
-        h1: ['clamp(28px, 23.54px + 1.143vw, 40px)', { lineHeight: '1.2' }],
-        h2: ['clamp(24px, 21.03px + 0.762vw, 32px)', { lineHeight: '1.25' }],
-        h3: ['clamp(18px, 17.26px + 0.190vw, 20px)', { lineHeight: '1.4' }],
-        lead: ['clamp(17px, 15.89px + 0.286vw, 20px)', { lineHeight: '1.6' }],
-        body: ['clamp(15px, 14.63px + 0.095vw, 16px)', { lineHeight: '1.7' }],
-        small: ['clamp(13px, 12.63px + 0.095vw, 14px)', { lineHeight: '1.6' }],
-        micro: ['clamp(11.5px, 11.31px + 0.048vw, 12px)', { lineHeight: '1.5' }],
+        //
+        // The line-heights are the measured Arabic floors, not estimates. One
+        // Arabic line in Cairo spans 1.147em of ink (alef +717 to yeh -430,
+        // measured off cairo-arabic.woff2), so display at the shipped 1.15 had
+        // 0.2px of clearance at 56px and h1 at 1.20 had none at all. Both now
+        // carry the --ox-lh-* floors. Everything from h2 down was already
+        // above the floor and is unchanged.
+        display: ['var(--ox-t-display)', { lineHeight: 'var(--ox-lh-tight)' }],
+        h1: ['var(--ox-t-h1)', { lineHeight: 'var(--ox-lh-head)' }],
+        h2: ['var(--ox-t-h2)', { lineHeight: 'var(--ox-lh-head)' }],
+        h3: ['var(--ox-t-h3)', { lineHeight: 'var(--ox-lh-snug)' }],
+        // The panel and card heading step. It was the one size the design used
+        // (17 rising to 18 at 1024) that the scale did not name, which is why
+        // panel titles were written as bare pixels in three files.
+        title: ['var(--ox-t-title)', { lineHeight: 'var(--ox-lh-snug)' }],
+        lead: ['var(--ox-t-lead)', { lineHeight: 'var(--ox-lh-lead)' }],
+        body: ['var(--ox-t-body)', { lineHeight: 'var(--ox-lh-body)' }],
+        small: ['var(--ox-t-small)', { lineHeight: 'var(--ox-lh-lead)' }],
+        micro: ['var(--ox-t-micro)', { lineHeight: 'var(--ox-lh-caption)' }],
       },
       lineHeight: {
         12: '3rem',

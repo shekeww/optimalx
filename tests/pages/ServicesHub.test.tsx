@@ -96,6 +96,53 @@ describe('ServicesHub', () => {
     expect(within(scope).getAllByRole('listitem')).toHaveLength(7);
   });
 
+  it('compares the five services on one grid, above the five sections', async () => {
+    const { container } = renderWithProviders(<ServicesHub />);
+    const table = screen.getByTestId('ox-service-compare');
+    // One column per service, and a column header that is a link into the
+    // section, so the comparison is also the way in.
+    const columns = table.querySelectorAll('th[scope="col"]');
+    expect(columns).toHaveLength(5);
+    expect(columns[0].querySelector('a')?.getAttribute('href')).toBe('#written-question');
+
+    // The same four questions asked of every service: the difference between
+    // two services is one row of reading rather than two sections.
+    const rowHeads = Array.from(table.querySelectorAll('th[scope="row"]')).map(
+      (node) => node.textContent
+    );
+    expect(rowHeads).toEqual([
+      t('ox.services.compare_how'),
+      t('ox.services.stat_price'),
+      t('ox.services.output_title'),
+      t('ox.services.stat_change'),
+    ]);
+
+    // Nothing is invented to fill a cell: nutrition-plans has no product of
+    // its own and no change policy, so those two cells are empty.
+    const priceCells = table.querySelectorAll('[data-compare-row="price"] .ox-compare__cell');
+    expect(priceCells[4].textContent).toBe('');
+    const changeCells = table.querySelectorAll('[data-compare-row="change"] .ox-compare__cell');
+    expect(changeCells[4].textContent).toBe('');
+
+    // It sits before the five full sections, which is where the "which one"
+    // question is actually asked.
+    const order = Array.from(
+      container.querySelectorAll('[data-testid="ox-service-compare"], .ox-services-list')
+    ).map((node) => node.className.indexOf('ox-services-list') >= 0);
+    expect(order).toEqual([false, true]);
+  });
+
+  it('never prices a service in copy: the cells come from the live products', async () => {
+    renderWithProviders(<ServicesHub />);
+    const table = screen.getByTestId('ox-service-compare');
+    // The mocked API answers 0 for every product, so the four that have one
+    // show the shared free label and none of them shows a typed number.
+    const cells = table.querySelectorAll('[data-compare-row="price"] .ox-compare__cell');
+    const free = await screen.findAllByText(t('ox.common.free'));
+    expect(free.length).toBeGreaterThan(0);
+    expect(cells).toHaveLength(5);
+  });
+
   it('asks the four FAQ rows and never leaves a placeholder in one', () => {
     renderWithProviders(<ServicesHub />);
     expect(screen.getByText(t('ox.services.faq_1_q'))).toBeTruthy();

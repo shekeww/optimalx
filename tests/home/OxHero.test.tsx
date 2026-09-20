@@ -49,13 +49,46 @@ afterEach(() => {
 });
 
 describe('OxHero', () => {
-  it('makes the keyword eyebrow the page h1 and the headline a paragraph (DIRECTION 5.2, C19)', () => {
+  it('makes the headline the page h1, in two lines with the closing word in accent', () => {
     const { container } = renderWithProviders(<OxHero data={data()} />);
     const heading = container.querySelectorAll('h1');
+    // Exactly one, and it is the statement the reference draws. The keyword
+    // line is no longer an eyebrow above it: the reference has none, it read
+    // as a line of meta over the headline, and it stays the engine head's
+    // title plus the route's fallback h1 when the hero block is deleted.
     expect(heading).toHaveLength(1);
-    expect(heading[0].textContent).toBe('اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية');
-    expect(container.querySelector('.ox-hero__headline')?.tagName).toBe('P');
-    expect(container.querySelector('.ox-hero__headline')?.textContent).toBe('ما هدفك اليوم؟');
+    expect(heading[0].classList.contains('ox-hero__headline')).toBe(true);
+    expect(container.querySelector('.ox-hero__eyebrow')).toBeNull();
+    const lines = container.querySelectorAll('.ox-hero__line');
+    expect(lines).toHaveLength(2);
+    expect(lines[0].textContent).toBe('مكملات رياضية، تغذية');
+    expect(container.querySelector('.ox-hero__accent')?.textContent).toBe('هدفك.');
+  });
+
+  it('sets the Latin lockup under the headline, and steps aside for a merchant subline', () => {
+    const plain = renderWithProviders(<OxHero data={data()} />);
+    expect(plain.container.querySelector('.ox-hero__latin')?.textContent).toBe(
+      'Performance Nutrition & Training'
+    );
+    plain.unmount();
+
+    const { container } = renderWithProviders(<OxHero data={data({ subline: 'سطر التاجر' })} />);
+    expect(container.querySelector('.ox-hero__latin')).toBeNull();
+    expect(container.querySelector('.ox-hero__sub')?.textContent).toBe('سطر التاجر');
+  });
+
+  it('carries the wedge pair at the band edge and nothing else orange', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    expect(container.querySelectorAll('.ox-band__wedge')).toHaveLength(2);
+    expect(container.querySelectorAll('.ox-hero__wedge--wide')).toHaveLength(1);
+    expect(container.querySelectorAll('.ox-hero__wedge--thin')).toHaveLength(1);
+  });
+
+  it('gives the primary action the brand parallelogram and the secondary the pill', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    const links = container.querySelectorAll('.ox-hero__actions a');
+    expect(links[0].classList.contains('ox-cta-wedge')).toBe(true);
+    expect(links[1].classList.contains('ox-cta-pill')).toBe(true);
   });
 
   it('ships its own photograph, so the first screen is finished with nothing configured', () => {
@@ -84,7 +117,9 @@ describe('OxHero', () => {
     );
     const img = screen.getByRole('presentation', { hidden: true }) as HTMLImageElement;
     expect(img.getAttribute('data-priority')).toBe('true');
-    expect(img.getAttribute('width')).toBe('835');
+    // Full bleed now, not a 58 per cent wedge panel: the frame is one
+    // cinematic image with its subject right of centre.
+    expect(img.getAttribute('width')).toBe('1440');
     expect(img.getAttribute('height')).toBe('560');
     expect(img.getAttribute('data-mobile-src')).toBe('https://cdn.example/m.jpg');
     expect(img.getAttribute('alt')).toBe('');
@@ -103,6 +138,8 @@ describe('OxHero', () => {
       <OxHero data={data({ headline: 'عنوان التاجر', primary_url: '/offers' })} />
     );
     expect(container.querySelector('.ox-hero__headline')?.textContent).toBe('عنوان التاجر');
+    // A merchant headline is one string, so it takes no accent word.
+    expect(container.querySelector('.ox-hero__accent')).toBeNull();
     expect(container.querySelector('.ox-hero__actions a')?.getAttribute('href')).toBe('/offers');
   });
 

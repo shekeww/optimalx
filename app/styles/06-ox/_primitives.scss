@@ -37,6 +37,31 @@ $ox-angle-tan: 0.404;
   }
 }
 
+// The angled call to action: a parallelogram on the same 22 degrees as every
+// other angled edge in the identity, leaning top-inline-end to
+// bottom-inline-start so it matches the wedge and the hero split.
+//
+// clip-path rather than transform: skewX. A skew would slant the label with
+// the box and would need a counter-skewed inner wrapper, which is markup we
+// cannot add inside Salla's own button web components. A clip cuts the shape
+// and leaves the type upright, and it works on an element we do not own.
+//
+// The cost is that a clip removes the border on the cut edges, so the outline
+// variant cannot use `border`. It paints the outline as a filled clipped box
+// with a second clipped box inset on top, which is what --secondary does
+// below.
+//
+// $h is the button's block-size, because the run is a function of the height:
+// at 22 degrees a 48px button runs 19px, and the label needs that much extra
+// inline padding at each end to clear the slant.
+@mixin ox-angled($h) {
+  $run: ox-run($h);
+  clip-path: polygon(#{$run} 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
+  [dir='ltr'] & {
+    clip-path: polygon(0 0, calc(100% - #{$run}) 0, 100% 100%, #{$run} 100%);
+  }
+}
+
 // The home hero pair: the photo polygon shifted by the stroke width so the
 // orange stroke is not covered, and the stroke itself (a 12px parallelogram
 // along the shared edge). Apply `ox-wedge-photo-stroked` to .ox-hero__photo
@@ -132,45 +157,121 @@ $ox-angle-tan: 0.404;
   inline-size: min(var(--ox-container-text), 100% - 2 * var(--ox-gutter));
 }
 
-// Fluid type roles (DIRECTION 3.1). Arabic letter-spacing is always 0.
-.ox-display { @apply text-display font-extrabold; }
-.ox-h1 { @apply text-h1 font-bold; }
-.ox-h2 { @apply text-h2 font-bold; }
-.ox-h3 { @apply text-h3 font-bold; }
-.ox-lead { @apply text-lead font-normal; }
-.ox-body { @apply text-body font-normal; }
-.ox-small { @apply text-small; }
-.ox-micro { @apply text-micro font-bold; }
+// ---------------------------------------------------------------------------
+// 2b. Type roles (DIRECTION 3.1; the ladder and its measurements are on the
+//     tokens in app/styles/tokens.css)
+// ---------------------------------------------------------------------------
+// Each class below is one size paired with one step of the weight ladder.
+// Nothing in the theme sets a size, a weight, a line-height or a tracking
+// value without naming the role it is playing: these classes where markup can
+// carry a class, the --ox-w-* and --ox-lh-* tokens where it cannot.
+//
+// The momentum the ladder is for reads down this list: Statement (800) at the
+// top of a page, then Open (350) for the sentence under it, then Read (400)
+// for the copy. A heavy line, a light line, a dense line. Where the page is
+// deliberately calm - a spec panel, a nutrition table, a footer link column,
+// a long article - every row holds one step and the contrast is switched off
+// on purpose, because a reference table is scanned rather than performed.
+
+// Statement. The page's own voice. One per screen region, never a control.
+.ox-display { @apply text-display font-stmt; }
+.ox-h1 { @apply text-h1 font-stmt; }
+
+// Title. Anything that names a block of content.
+.ox-h2 { @apply text-h2 font-title; }
+.ox-h3 { @apply text-h3 font-title; }
+.ox-title { @apply text-title font-title; }
+
+// Open, Read, Quiet. The reading steps.
+.ox-lead { @apply text-lead font-open; }
+.ox-body { @apply text-body font-read; }
+.ox-small { @apply text-small font-read; }
+.ox-caption { @apply text-small font-quiet; }
+
+// Interface. A word you press.
+.ox-label { @apply text-small font-ui; }
+
+// Eyebrow. The small line that names the section above its heading. Title
+// weight, because it is a name; Quiet is for the brand line above a product
+// title, which attributes rather than names and must lose to the title.
+.ox-micro { @apply text-micro font-title; }
+.ox-eyebrow { @apply text-micro font-title; }
+
 .ox-display,
 .ox-h1,
 .ox-h2,
 .ox-h3,
+.ox-title,
 .ox-lead,
 .ox-body,
 .ox-small,
-.ox-micro {
-  letter-spacing: 0;
+.ox-caption,
+.ox-label,
+.ox-micro,
+.ox-eyebrow {
   color: var(--ox-fg);
+}
+// The two roles that step back from the body colour rather than the body
+// weight: a caption and an eyebrow are secondary by tone as well as by step.
+.ox-caption,
+.ox-eyebrow {
+  color: var(--ox-fg-3);
 }
 // Retuned to the approved design (the image reads 30/800/38 for a page title
 // and 15/400/24 for body). These land after the @apply above, so they win.
 @media (min-width: 1024px) {
   .ox-h1 {
     font-size: 30px;
-    font-weight: 800;
     line-height: 38px;
   }
   .ox-body {
     font-size: 15px;
-    font-weight: 400;
     line-height: 24px;
   }
 }
 
-// The only tracked runs in the system: uppercase Latin set inside Arabic copy.
-// Arabic itself is always letter-spacing 0.
+// Figure. A number that is the point, and the only step above Statement. The
+// unit that travels with it drops to Quiet: a heavy figure against a light
+// unit is what makes a price read as a price rather than as a heading.
+.ox-figure {
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-tight);
+  font-variant-numeric: tabular-nums;
+}
+.ox-figure__unit {
+  font-weight: var(--ox-w-quiet);
+}
+
+// Latin set inside Arabic copy. Two roles, and the difference between them is
+// the whole rule (tokens.css carries the measurements).
+//
+// .ox-latin is mixed case - a supplier brand written as Optimum Nutrition, a
+// product subtitle, a unit string. Cairo's Latin x-height and its Arabic body
+// height are both 500 units, so this sets no size at all. It exists so the
+// run can be marked, and so nobody "corrects" a difference that is not there.
+.ox-latin {
+  font-size: 1em;
+  letter-spacing: 0;
+  text-transform: none;
+}
+// The two tracked roles, and the only tracking in the theme. Both set the
+// uppercase transform themselves, so tracking cannot reach Arabic through
+// either of them. The difference between them is where the run sits:
+//
+//   .ox-latin-caps   uppercase Latin INSIDE an Arabic run - a supplier brand
+//                    inside a sentence, a unit after a figure. It takes the
+//                    size correction, because its neighbours are Arabic at
+//                    the 500 body height and its caps stand at 691.
+//   .ox-latin-track  uppercase Latin on a line of its OWN, in its own lang
+//                    and dir - the footer strapline, a brand line above a
+//                    product title. Nothing Arabic is beside it to match, so
+//                    it keeps its size and takes the tracking only.
+.ox-latin-caps {
+  font-size: var(--ox-latin-caps-size);
+}
+.ox-latin-caps,
 .ox-latin-track {
-  letter-spacing: 0.08em;
+  letter-spacing: var(--ox-latin-track);
   text-transform: uppercase;
 }
 
@@ -239,10 +340,9 @@ $ox-angle-tan: 0.404;
   border: 1px solid transparent;
   border-radius: var(--ox-r-2);
   font-family: inherit;
-  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0;
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -252,9 +352,26 @@ $ox-angle-tan: 0.404;
   transition: transform var(--dur-fast) var(--ease-in);
   -webkit-tap-highlight-color: transparent;
 
-  &--s40 { block-size: 40px; padding-inline: 16px; }
-  &--s44 { block-size: 44px; padding-inline: 20px; }
-  &--s48 { block-size: 48px; padding-inline: 24px; }
+  // The angle is the identity, so it is on by default for every sized CTA.
+  // The inline padding carries the run at each end (16px of breathing room
+  // plus the slant) so the label never sits on the cut.
+  &--s40 { block-size: 40px; padding-inline: 32px; @include ox-angled(40px); }
+  &--s44 { block-size: 44px; padding-inline: 34px; @include ox-angled(44px); }
+  &--s48 { block-size: 48px; padding-inline: 36px; @include ox-angled(48px); }
+
+  // Opt-out, for the three cases where the parallelogram is wrong rather than
+  // merely different. Each one is a deliberate exception, not an oversight:
+  //   - an icon-only control, where a slanted square reads as a mistake and
+  //     the cut corners eat the 44px target;
+  //   - a control inside a bordered group (the quantity stepper), where the
+  //     cut would separate the button from the box it belongs to;
+  //   - a full-width button inside a padded card, where the cut ends leave
+  //     triangles of card showing at both edges. The approved references draw
+  //     every full-width add-to-cart square, which is why --block is square.
+  &--square,
+  &--block {
+    clip-path: none;
+  }
   &--block { inline-size: 100%; }
 
   &:active:not([aria-disabled='true']):not(:disabled) {
@@ -270,15 +387,44 @@ $ox-angle-tan: 0.404;
     border-color: var(--ox-accent);
     color: var(--ox-on-accent);
     font-size: 19px;
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
     &:hover { background: var(--ox-accent-dark); border-color: var(--ox-accent-dark); }
     &:active { background: var(--ox-accent-dark); }
   }
+  // The clip removes the border on the cut edges, so the outline is painted:
+  // the element itself is the edge colour and ::before is the fill, inset by
+  // the border width and carrying the same clip. `border-color` is kept for
+  // the --square and --block cases, which still have a real border.
   &--secondary {
-    background: var(--ox-surface);
+    position: relative;
+    background: var(--ox-fg);
     border-color: var(--ox-fg);
     color: var(--ox-fg);
-    &:hover { background: var(--ox-plate); }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      z-index: 0;
+      background: var(--ox-surface);
+      clip-path: inherit;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    &:hover::before { background: var(--ox-plate); }
+  }
+
+  // Square and block keep the ordinary bordered treatment: with no clip there
+  // is nothing for the painted edge to solve, and the pseudo-element would
+  // just sit under a real border.
+  &--secondary.ox-btn--square,
+  &--secondary.ox-btn--block {
+    background: var(--ox-surface);
+    &::before { display: none; }
   }
   &--ghost {
     background: transparent;
@@ -384,7 +530,7 @@ $ox-angle-tan: 0.404;
   gap: var(--ox-2);
   &__label {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: var(--ox-w-ui);
     color: var(--ox-fg);
   }
   &__help,
@@ -393,7 +539,7 @@ $ox-angle-tan: 0.404;
     align-items: center;
     gap: var(--ox-1);
     font-size: 13px;
-    line-height: 1.6;
+    line-height: var(--ox-lh-lead);
     color: var(--ox-fg-3);
   }
   &__error { color: var(--ox-stop); }
@@ -411,8 +557,8 @@ $ox-angle-tan: 0.404;
   background: var(--ox-card);
   color: var(--ox-fg);
   font-family: inherit;
-  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-  line-height: 1.7;
+  font-size: var(--ox-t-body);
+  line-height: var(--ox-lh-body);
   &::placeholder { color: var(--ox-ink-4); }
   &:hover { border-color: var(--ox-ink-3); }
   &:focus-visible {
@@ -468,7 +614,7 @@ $ox-angle-tan: 0.404;
   min-block-size: 44px;
   cursor: pointer;
   color: var(--ox-fg);
-  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+  font-size: var(--ox-t-body);
   &__count {
     margin-inline-start: auto;
     font-size: 13px;
@@ -532,10 +678,9 @@ $ox-angle-tan: 0.404;
   align-items: center;
   gap: var(--ox-1);
   max-inline-size: 100%;
-  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
   white-space: nowrap;
   color: var(--ox-fg);
 
@@ -561,7 +706,7 @@ $ox-angle-tan: 0.404;
     border: 1px solid var(--ox-line-3);
     border-radius: var(--ox-r-pill);
     background: var(--ox-card);
-    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+    font-size: var(--ox-t-body);
     font-family: inherit;
     cursor: pointer;
     &:hover { border-color: var(--ox-ink-3); }
@@ -622,10 +767,9 @@ $ox-angle-tan: 0.404;
   padding-inline: var(--ox-2);
   border: 1px solid transparent;
   border-radius: var(--ox-r-1);
-  font-size: clamp(11.5px, 11.31px + 0.048vw, 12px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-flat);
   white-space: nowrap;
   // Never orange, never a shadow (orange is for pressable things).
   &--popular { background: var(--ox-graphite); color: var(--ox-paper); }
@@ -645,32 +789,48 @@ $ox-angle-tan: 0.404;
 // ---------------------------------------------------------------------------
 // 7. SectionHeader (DIRECTION 5.2, A4)
 // ---------------------------------------------------------------------------
+// The section header is centred, and it carries no sub-line.
+//
+// The descriptor under every heading was a second voice explaining what the
+// heading had already said, on a page whose job is to move a shopper down it.
+// Removing it and centring what remains gives each section one clear entry
+// point instead of a paragraph to read past.
+//
+// The layout is a centred stack with the action pinned to the inline end
+// rather than a grid column, because a column would push the title off centre
+// by exactly the action's width, and only on the sections that have one. The
+// title therefore reserves the action's space on both sides at desktop.
 .ox-sh {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    'eyebrow eyebrow'
-    'title actions'
-    'desc desc'
-    'link link';
-  column-gap: var(--ox-4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   row-gap: var(--ox-2);
   margin-block-end: var(--ox-6);
   color: var(--ox-fg);
+  text-align: center;
+
   @media (min-width: 1024px) {
-    grid-template-areas:
-      'eyebrow eyebrow'
-      'title actions'
-      'desc link';
     margin-block-end: var(--ox-8);
   }
+
+  &__actions,
+  &__link {
+    @media (min-width: 640px) {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-end: 0;
+      transform: translateY(-50%);
+    }
+  }
+
   &__eyebrow {
-    grid-area: eyebrow;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--ox-2);
-    font-size: clamp(13px, 12.63px + 0.095vw, 14px);
-    font-weight: 600;
+    font-size: var(--ox-t-small);
+    font-weight: var(--ox-w-title);
     color: var(--ox-fg-3);
     &::before {
       content: '';
@@ -681,9 +841,7 @@ $ox-angle-tan: 0.404;
     }
   }
   &__title {
-    grid-area: title;
     margin: 0;
-    letter-spacing: 0;
   }
   &__actions {
     grid-area: actions;
@@ -692,22 +850,14 @@ $ox-angle-tan: 0.404;
     gap: var(--ox-2);
     @media (min-width: 1024px) { display: flex; }
   }
-  &__desc {
-    grid-area: desc;
-    margin: 0;
-    color: var(--ox-fg-2);
-    letter-spacing: 0;
-  }
   &__link {
     @include ox-focus(2px);
-    grid-area: link;
-    justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: var(--ox-1);
     min-block-size: 44px;
-    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-    font-weight: 600;
+    font-size: var(--ox-t-body);
+    font-weight: var(--ox-w-ui);
     text-decoration: none;
     color: var(--ox-fg);
     border-radius: var(--ox-r-1);
@@ -737,23 +887,36 @@ $ox-angle-tan: 0.404;
   display: inline-flex;
   align-items: baseline;
   gap: 0.25em;
-  font-weight: 700;
-  letter-spacing: 0;
+  font-weight: var(--ox-w-figure);
+  font-variant-numeric: tabular-nums;
   color: var(--ox-fg);
   white-space: nowrap;
   // The written riyal mark Price.tsx puts in place of the engine's icon
   // glyph, plus the glyph itself for any node the theme did not render.
+  //
+  // The mark drops to Quiet: a heavy figure against a light unit is what
+  // makes a price read as a price rather than as a heading, and it is the
+  // clearest place in the theme to see the ladder working. line-height: 1 is
+  // safe on it although the mark is Arabic, because ر.س has no tall form:
+  // its ink runs 500 down to -248, 0.748em inside a 1em box.
   .ox-price__mark,
   .sicon-sar {
     font-size: 0.85em;
-    line-height: 1;
+    font-weight: var(--ox-w-quiet);
+    line-height: var(--ox-lh-num);
   }
-  &--h2 { @apply text-h2; font-weight: 700; }
-  &--h3 { @apply text-h3; font-weight: 700; }
-  &--small { @apply text-small; font-weight: 600; }
+  // Size modifiers only: the weight is the base Figure step and does not
+  // change with the size. The one exception is --small, where Cairo's digits
+  // start to close their counters at 900 below 14px, so a small price steps
+  // down to Title.
+  &--h2 { @apply text-h2; }
+  &--h3 { @apply text-h3; }
+  &--small { @apply text-small; font-weight: var(--ox-w-title); }
   &--was {
     @apply text-small;
-    font-weight: 400;
+    // A strike costs a run its apparent weight, so Quiet here reads as the
+    // Read step does everywhere else.
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-fg-3);
     text-decoration: line-through;
   }
@@ -837,10 +1000,9 @@ $ox-angle-tan: 0.404;
     background: transparent;
     border: 0;
     font-family: inherit;
-    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-    font-weight: 600;
-    line-height: 1.5;
-    letter-spacing: 0;
+    font-size: var(--ox-t-body);
+    font-weight: var(--ox-w-ui);
+    line-height: var(--ox-lh-caption);
     text-align: start;
     color: var(--ox-fg);
     cursor: pointer;
@@ -875,7 +1037,6 @@ $ox-angle-tan: 0.404;
     padding-block: var(--ox-1) var(--ox-4);
     color: var(--ox-fg-2);
     @apply text-body;
-    letter-spacing: 0;
     p { margin: 0 0 var(--ox-3); }
     p:last-child { margin-block-end: 0; }
   }
@@ -886,8 +1047,8 @@ $ox-angle-tan: 0.404;
       display: flex;
       align-items: center;
       min-block-size: 32px;
-      font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-      font-weight: 600;
+      font-size: var(--ox-t-body);
+      font-weight: var(--ox-w-title);
       color: var(--ox-fg);
     }
   }
@@ -920,9 +1081,12 @@ $ox-angle-tan: 0.404;
     background: transparent;
     border: 0;
     font-family: inherit;
-    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-    font-weight: 600;
-    letter-spacing: 0;
+    font-size: var(--ox-t-body);
+    // The one control that sits below Interface at rest. A tab strip is read
+    // as a list of section names before any of it is pressed, and the step
+    // from Quiet to Title on selection is what makes the current tab legible
+    // without the accent indicator: colour is never the only signal.
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-fg-2);
     cursor: pointer;
     white-space: nowrap;
@@ -941,6 +1105,7 @@ $ox-angle-tan: 0.404;
   }
   .s-tabs-header-item.s-tabs-active,
   &__tab[aria-selected='true'] {
+    font-weight: var(--ox-w-title);
     color: var(--ox-fg);
     &::after { transform: scaleX(1); }
   }
@@ -974,7 +1139,7 @@ $ox-angle-tan: 0.404;
     border-radius: var(--ox-r-1);
     background: var(--ox-tooltip-bg);
     color: var(--ox-tooltip-fg);
-    font-size: clamp(13px, 12.63px + 0.095vw, 14px);
+    font-size: var(--ox-t-small);
     line-height: 32px;
     box-shadow: none;
     transition: opacity var(--dur-fast) var(--ease-out);
@@ -1012,7 +1177,6 @@ $ox-angle-tan: 0.404;
   border-collapse: collapse;
   border-spacing: 0;
   @apply text-body;
-  letter-spacing: 0;
   color: var(--ox-fg);
   caption {
     caption-side: top;
@@ -1032,7 +1196,7 @@ $ox-angle-tan: 0.404;
     block-size: 44px;
     background: var(--ox-plate-2);
     @apply text-small;
-    font-weight: 600;
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-fg-2);
   }
   tbody td,
@@ -1040,7 +1204,7 @@ $ox-angle-tan: 0.404;
     block-size: 48px;
   }
   tbody th {
-    font-weight: 600;
+    font-weight: var(--ox-w-title);
   }
   .ox-table__num {
     text-align: end;

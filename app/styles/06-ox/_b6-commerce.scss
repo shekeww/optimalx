@@ -170,7 +170,7 @@
 
   a {
     color: var(--ox-fg);
-    font-weight: 600;
+    font-weight: var(--ox-w-title);
     text-decoration: none;
 
     &:hover {
@@ -187,7 +187,7 @@
   .item-total,
   [class~='text-primary'] {
     color: var(--ox-fg);
-    font-weight: 700;
+    font-weight: var(--ox-w-figure);
   }
 
   .item-price {
@@ -290,8 +290,8 @@
   [class~='sticky'] h2 {
     margin: 0 0 var(--ox-4);
     font-size: 17px;
-    font-weight: 700;
-    line-height: 1.4;
+    font-weight: var(--ox-w-title);
+    line-height: var(--ox-lh-snug);
     color: var(--ox-fg);
   }
 
@@ -308,7 +308,7 @@
   #total-discount b,
   #tax-amount {
     color: var(--ox-fg);
-    font-weight: 600;
+    font-weight: var(--ox-w-quiet);
     font-variant-numeric: tabular-nums;
   }
 
@@ -319,7 +319,7 @@
 
   // The grand total is the one price on this page, and a price is orange.
   [data-cart-total] {
-    font-weight: 800;
+    font-weight: var(--ox-w-figure);
     font-size: 22px;
     color: var(--ox-accent);
     font-variant-numeric: tabular-nums;
@@ -497,7 +497,7 @@
   &__total {
     display: flex;
     flex-direction: column;
-    line-height: 1.2;
+    line-height: var(--ox-lh-flat);
 
     .ox-price {
       color: var(--ox-accent);
@@ -657,7 +657,7 @@ body.ox-sticky-bar .ox-cart {
     border-radius: var(--ox-r-pill);
     background: var(--ox-plate);
     color: var(--ox-fg);
-    font-weight: 700;
+    font-weight: var(--ox-w-figure);
     font-size: 13px;
     display: inline-flex;
     align-items: center;
@@ -739,7 +739,7 @@ body.ox-sticky-bar .ox-cart {
       background: var(--ox-surface);
       color: var(--ox-fg);
       font-size: 15px;
-      font-weight: 600;
+      font-weight: var(--ox-w-read);
 
       &:hover {
         border-color: var(--ox-fg-3);
@@ -859,12 +859,12 @@ body.ox-sticky-bar .ox-cart {
 
   article {
     font-size: 16px;
-    line-height: 1.9;
+    line-height: var(--ox-lh-prose);
 
     h2,
     h3 {
       color: var(--ox-fg);
-      font-weight: 700;
+      font-weight: var(--ox-w-title);
       margin-block: var(--ox-8) var(--ox-3);
     }
 
@@ -1017,12 +1017,12 @@ body.ox-sticky-bar .ox-cart {
 
   .content-entry {
     font-size: 16px;
-    line-height: 1.9;
+    line-height: var(--ox-lh-prose);
     color: var(--ox-fg);
 
     h2,
     h3 {
-      font-weight: 700;
+      font-weight: var(--ox-w-title);
       margin-block: var(--ox-6) var(--ox-2);
     }
 
@@ -1211,8 +1211,8 @@ body.ox-account {
     min-block-size: 48px;
     padding-inline: var(--ox-3);
     color: var(--ox-fg-2);
-    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-    font-weight: 600;
+    font-size: var(--ox-t-body);
+    font-weight: var(--ox-w-ui);
     text-decoration: none;
 
     &:hover {
@@ -1334,7 +1334,7 @@ body.ox-account {
     padding-inline: var(--ox-3);
     text-align: start;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-fg-3);
   }
 
@@ -1371,7 +1371,7 @@ body.ox-account {
   }
 
   .s-orders-reference-id {
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
     font-variant-numeric: tabular-nums;
     unicode-bidi: isolate;
   }
@@ -1388,7 +1388,7 @@ body.ox-account {
     border-radius: var(--ox-r-1);
     background: var(--ox-plate);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
   }
 
   .s-orders-status-rated {
@@ -1489,7 +1489,7 @@ body.ox-account {
 
   .ox-wishlist h3 a {
     color: var(--ox-fg);
-    font-weight: 600;
+    font-weight: var(--ox-w-title);
   }
 
   // Never red, and never a struck price in a colour of its own.
@@ -1516,7 +1516,7 @@ body.ox-account {
     border-radius: var(--ox-r-4, 16px);
     padding: var(--ox-4);
     font-size: 22px;
-    font-weight: 800;
+    font-weight: var(--ox-w-figure);
     color: var(--ox-fg);
   }
 
@@ -1526,7 +1526,7 @@ body.ox-account {
 
   .ox-wallet [class~='font-normal'] {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-fg-3);
   }
 
@@ -1535,7 +1535,7 @@ body.ox-account {
     padding-inline: var(--ox-3);
     text-align: start;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-fg-3);
   }
 
@@ -1746,7 +1746,7 @@ body.ox-account {
 
   h1 {
     font-size: clamp(24px, 21px + 1.2vw, 30px);
-    font-weight: 800;
+    font-weight: var(--ox-w-stmt);
     color: var(--ox-fg);
   }
 
@@ -1782,7 +1782,7 @@ body.ox-account {
   border-block-end: 1px solid var(--ox-line);
 
   .s-modal-title {
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
     color: var(--ox-ink);
   }
 
@@ -1840,7 +1840,7 @@ body.ox-account {
 
   &__title {
     color: var(--ox-ink);
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
   }
 
   &__divider {
@@ -1883,7 +1883,7 @@ body.ox-account {
   &__button {
     border-radius: var(--ox-r-2);
     min-block-size: 44px;
-    font-weight: 600;
+    font-weight: var(--ox-w-ui);
 
     &--primary {
       background: var(--ox-accent);

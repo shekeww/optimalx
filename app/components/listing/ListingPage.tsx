@@ -20,6 +20,7 @@ import { GoalIntro } from './GoalLanding/GoalIntro';
 import { Explainer } from './GoalLanding/Explainer';
 import { NeedHelp } from './GoalLanding/NeedHelp';
 import { SubNeeds } from './GoalLanding/SubNeeds';
+import { appliedFilterCount } from './appliedFilters';
 import { ListEnd, LoadMore } from './LoadMore';
 import { ProductGrid } from './ProductGrid';
 import { RelatedGuides } from './RelatedGuides';
@@ -127,7 +128,14 @@ export function ListingPage(props: ListingPageProps) {
   ) : null;
 
   const toolbarSort = options.length > 0 && !isZero ? { value: sort, options, onChange: onSortChange } : null;
-  const toolbarFilters = showFilters && !isZero ? { count: 0, onOpen: () => setFiltersOpen(true) } : null;
+  // The trigger's count is the number of facets the URL constrains by, read
+  // off the address bar rather than out of the widget: `salla-filters`
+  // navigates to the filtered URL and the loader re-runs on it, so the query
+  // string is the applied state (see `appliedFilters.ts`). It was a literal
+  // zero, so the trigger could never say the list was filtered.
+  const filterCount = appliedFilterCount(location.searchStr);
+  const toolbarFilters =
+    showFilters && !isZero ? { count: filterCount, onOpen: () => setFiltersOpen(true) } : null;
   const chips = goal ? null : <ChildChips categories={entity?.sub_categories} slug={slug} />;
 
   const crumbs = <Breadcrumb page={page} className="ox-crumbs" />;
@@ -167,7 +175,6 @@ export function ListingPage(props: ListingPageProps) {
         }
         t={t}
       />
-      <LoadMore loadedCount={loadedCount} hasMore={hasMore} />
       <HookSlot name="product:list.items.end" />
     </>
   );
@@ -223,7 +230,16 @@ export function ListingPage(props: ListingPageProps) {
               {goal ? (
                 <ListingHeader title={t('ox.goal.grid_title')} as="h2" titleId={GRID_TITLE_ID} />
               ) : null}
-              <ListingToolbar chips={chips} sort={toolbarSort} filters={toolbarFilters} />
+              <ListingToolbar
+                chips={chips}
+                sort={toolbarSort}
+                filters={toolbarFilters}
+                count={
+                  loadedCount > 0 ? (
+                    <LoadMore loadedCount={loadedCount} hasMore={hasMore} />
+                  ) : null
+                }
+              />
             </div>
 
             <div className={`ox-listing__results${showFilters ? ' has-rail' : ''}`}>

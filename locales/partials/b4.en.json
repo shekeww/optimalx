@@ -36,6 +36,7 @@
   "ox.filter.clear": "Clear filters",
   "ox.filter.apply": "Show results",
   "ox.filter.results_count": "{{count}} products",
+  "ox.filter.applied": "{{count}} filters applied",
   "ox.filter.brand": "Brand",
   "ox.filter.flavor": "Flavour",
   "ox.filter.size": "Size",

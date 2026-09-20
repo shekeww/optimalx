@@ -20,6 +20,7 @@ import { resolveFaq, type FaqRowKeys } from './faq';
 import { HowItWorks } from './HowItWorks';
 import { PageAnchors } from './PageAnchors';
 import { ScopePanel } from './ScopePanel';
+import { ServiceCompare } from './ServiceCompare';
 import { ServiceSection } from './ServiceSection';
 import { ContactRow } from './ContactRow';
 
@@ -36,8 +37,9 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  *
  * Composition, top to bottom: breadcrumb, the dark band carrying the page's
  * only h1 and its one primary action, the intro in the text measure, the three
- * channel cards as the quick chooser, the scope panel, the anchor strip, the
- * five service sections, the three steps, the FAQ and a contact row.
+ * channel cards as the quick chooser, the five services side by side in one
+ * comparison grid, the scope panel, the anchor strip, the five service
+ * sections, the three steps, the FAQ and a contact row.
  *
  * ## Two structural decisions worth the reader's time
  *
@@ -124,6 +126,12 @@ export function ServicesHub() {
           ))}
         </div>
       </section>
+
+      {/* Between the three channel cards and the five full sections: the
+          visitor has just seen the three ways in, and the next question is
+          which of the five services answers theirs. Answering it after the
+          five sections would be answering it too late. */}
+      <ServiceCompare className="ox-hub__compare" />
 
       <ScopePanel className="ox-hub__scope" />
 

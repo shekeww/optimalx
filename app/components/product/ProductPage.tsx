@@ -8,6 +8,9 @@ import { useGtm } from '@salla.sa/twilight-theme-engine/hooks/useGtm';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { ProductPageProps } from '@salla.sa/twilight-theme-engine/routes/product';
 import { SallaOffer } from '@salla.sa/twilight-components-react/offer';
+import { Button } from '../common/Button';
+import { AddAlso } from './BuyZone/AddAlso';
+import { ExpiryLine } from './BuyZone/ExpiryLine';
 import { PdpGallery } from './BuyZone/PdpGallery';
 import { PdpTitleBlock } from './BuyZone/PdpTitleBlock';
 import { PdpPriceBlock } from './BuyZone/PdpPriceBlock';
@@ -122,12 +125,13 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
   return (
     <div className={'ox-pdp ox-pdp--' + variant} key={product.id}>
       <div className="ox-container">
-        {/* Present for its BreadcrumbList JSON-LD and for a screen reader, out
-            of the visual flow: the design has no breadcrumb row, and
-            display:none would take it out of the accessibility tree too. */}
-        <div className="ox-sr-only">
-          <Breadcrumb page={page} />
-        </div>
+        {/* Visible, not `ox-sr-only`. It was hidden on the reading that the
+            approved image draws no breadcrumb row; the image is one frame of
+            one product, and most people who reach a product page arrive on it
+            from search with no idea what else the store sells. The trail is
+            the cheapest orientation on the page and it is already the page's
+            one BreadcrumbList JSON-LD (PLAN-final C11). */}
+        <Breadcrumb page={page} className="ox-crumbs ox-pdp__crumbs" />
         <HookSlot name="product:start" context={hookContext} />
 
         <div className="ox-pdp__top" id={'product-' + product.id}>
@@ -159,6 +163,12 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                   language={locale}
                   payments={payments}
                 />
+                {/* Digital goods and gift codes carry their expiry in the
+                    chip row inside the form instead, so this would be the
+                    same fact twice on those two compositions. */}
+                {isDigital || isGiftCard ? null : (
+                  <ExpiryLine expiry={parts.specLine?.expiry} />
+                )}
               </>
             )}
 
@@ -210,6 +220,16 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
         </div>
 
         <SallaOffer />
+
+        {/* The cross-sell slot: directly under the buy zone, which is where
+            the shopper has just read the price. It renders nothing unless
+            the merchant has linked related products or assigned a category,
+            so it never repeats the bottom rail. */}
+        {isService ? null : (
+          <RenderWhenVisible>
+            <AddAlso productId={product.id} categoryId={product.category?.id ?? null} />
+          </RenderWhenVisible>
+        )}
       </div>
 
       {isService ? null : (
@@ -253,15 +273,35 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
       {showsReviews ? (
         <RenderWhenVisible>
           <div className="ox-container ox-pdp__reviews" id="ox-reviews">
-            {reviewCount > 0 ? (
-              /* The React wrapper types `type` as the components package's
-                 CommentType enum, which is not a direct dependency here; the
-                 custom element takes the same string and is what the engine
-                 renders. */
-              <salla-comments key={commentsKey} item-id={product.id} type="product" />
-            ) : (
-              <p className="ox-pdp__no-reviews">{t('ox.pdp.no_reviews')}</p>
+            {/* At zero reviews the honest sentence stays, and an action goes
+                under it. It was a full stop: the page said there are no
+                reviews and offered nothing instead. It cannot offer a "rate
+                this product" button, because Salla collects a rating after a
+                delivered order and the store has none; what it can offer is
+                the thing this store actually sells beside the box, which is
+                the advice. That is also the only place a product page linked
+                to the advisory at all. */}
+            {reviewCount > 0 ? null : (
+              <div className="ox-pdp__no-reviews" data-testid="ox-pdp-no-reviews">
+                <p className="ox-pdp__no-reviews-line">{t('ox.pdp.no_reviews')}</p>
+                <p className="ox-pdp__no-reviews-line">{t('ox.pdp.no_reviews_ask')}</p>
+                <Button to="/services" variant="secondary" size={44}>
+                  {t('ox.nav.services')}
+                </Button>
+              </div>
             )}
+            {/* Mounted at zero too, which is what lets the first review be
+                left at all: the element renders nothing for a visitor who
+                cannot review (measured on the live store, 0px tall), and the
+                native form for a customer who can. Gating it on
+                `reviewCount > 0` made the first review unreachable from the
+                page.
+
+                The React wrapper types `type` as the components package's
+                CommentType enum, which is not a direct dependency here; the
+                custom element takes the same string and is what the engine
+                renders. */}
+            <salla-comments key={commentsKey} item-id={product.id} type="product" />
           </div>
         </RenderWhenVisible>
       ) : null}

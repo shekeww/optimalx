@@ -1,0 +1,195 @@
+{
+  "status": 200,
+  "success": true,
+  "data": {
+    "store": {
+      "id": 1888890798,
+      "name": "Optimal X",
+      "username": "",
+      "description": "اوبتيمال اكس للمنتجات الصحية.",
+      "logo": "https://cdn.files.salla.network/other/1888890798/b3103753-832d-406d-8977-d1b5a44fccef-original.webp",
+      "url": "https://optimalx.com.sa",
+      "icon": "https://cdn.files.salla.network/other/1888890798/b3103753-832d-406d-8977-d1b5a44fccef-original.webp",
+      "favicon": "https://cdn.files.salla.network/other/1888890798/b3103753-832d-406d-8977-d1b5a44fccef-original.webp",
+      "about": "اوبتيمال اكس للمنتجات الصحية.",
+      "meta": {
+        "title": "Optimal X",
+        "description": "اوبتيمال اكس للمنتجات الصحية."
+      },
+      "country": "SA",
+      "store_country": "SA",
+      "is_merchant": false,
+      "scope": null,
+      "apps": {},
+      "contacts": {
+        "phone": "+966581565351",
+        "mobile": "+966581565351",
+        "whatsapp": "+966581565351"
+      },
+      "social": {
+        "instagram": "https://www.instagram.com/optimal.x"
+      },
+      "settings": {
+        "auth": {
+          "email_allowed": true,
+          "mobile_allowed": true,
+          "is_email_required": false,
+          "force_login": false
+        },
+        "cart": {
+          "apply_coupon_enabled": true
+        },
+        "product": {
+          "total_sold_enabled": 0,
+          "manual_quantity": false,
+          "fit_type": "contain",
+          "related_products_enabled": true,
+          "filters": true,
+          "show_comments": false,
+          "user_can_comment": false,
+          "show_price_as_dash": false,
+          "notify_options_availability": true,
+          "show_special_offers": true,
+          "show_more": true,
+          "availability_notify": {
+            "email": true,
+            "sms": false,
+            "mobile": false,
+            "whatsapp": false
+          }
+        },
+        "category": {
+          "testimonial_enabled": false
+        },
+        "payments": [
+          "mada",
+          "credit_card",
+          "stc_pay",
+          "apple_pay"
+        ],
+        "arabic_numbers_enabled": false,
+        "content_copyright": false,
+        "use_sar_symbol": true,
+        "is_multilingual": false,
+        "currencies_enabled": false,
+        "rating_enabled": false,
+        "blog": {
+          "is_enabled": false,
+          "allow_likes_and_comments": false
+        },
+        "is_loyalty_enabled": false,
+        "is_salla_gateway": true,
+        "tax": {
+          "number": null,
+          "certificate": null,
+          "taxable_prices_enabled": false
+        },
+        "certificate": null,
+        "made_in_ksa": false,
+        "commercial_number": "7054552703",
+        "freelance_number": null,
+        "ticketing_system_enabled": false
+      }
+    },
+    "theme": {
+      "name": "optimalx",
+      "profile": {
+        "id": 0,
+        "name": null
+      },
+      "mode": "preview",
+      "is_rtl": true,
+      "color": {
+        "primary": "#EE4D22",
+        "text": "#000000",
+        "is_dark": false,
+        "reverse_primary": "#ffffff",
+        "reverse_text": "#ffffff"
+      },
+      "font": {
+        "name": "Cairo",
+        "family_name": "Cairo",
+        "url": "https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap",
+        "type": "google"
+      },
+      "customization": {
+        "css": null,
+        "js": null
+      },
+      "side_menu_enabled": false,
+      "twilight": {
+        "version": null
+      },
+      "isDark": false,
+      "components": [],
+      "settings": {
+        "show_tags": true,
+        "imageZoom": false,
+        "store_color": "#EE4D22",
+        "is_custom_js": false,
+        "homepage_type": "default",
+        "footer_is_dark": false,
+        "topnav_is_dark": false,
+        "use_sar_symbol": true,
+        "important_links": true,
+        "store_font_type": "google",
+        "header_is_sticky": false,
+        "header_layout": "default",
+        "footer_layout": "columns",
+        "default_font_name": "Cairo",
+        "sticky_add_to_cart": true,
+        "is_more_button_enabled": true,
+        "slider_background_size": "contain",
+        "vertical_fixed_products": true,
+        "squar_photo_bg_image_size": "contain",
+        "is_breadcrumbs_enabled": true,
+        "enable_add_product_toast": true,
+        "enable_more_menu": true
+      }
+    },
+    "languages": {
+      "ar": {
+        "name": "العربية",
+        "code": "ar",
+        "url": "https://assets.salla.sa/images/flags/ar.svg",
+        "is_rtl": true,
+        "country_code": "SA"
+      }
+    },
+    "currencies": {
+      "SAR": {
+        "code": "SAR",
+        "name": "SAR",
+        "symbol": "SAR",
+        "amount": 1,
+        "country_code": "SA"
+      }
+    },
+    "external_services": {},
+    "headers": {
+      "S-Ray": 50,
+      "s-version-id": 0,
+      "s-scope-id": 0,
+      "s-scope-type": ""
+    },
+    "login": {
+      "url": "https://optimalx.com.sa/login",
+      "turnstile_site_key": "",
+      "turnstile": {
+        "key": "",
+        "level": ""
+      },
+      "social": {
+        "google": false,
+        "facebook": false,
+        "apple": false,
+        "x": false
+      }
+    },
+    "affiliate": {
+      "utm_url": "",
+      "cta_enabled": false
+    },
+    "policy_url": "https://optimalx.com.sa/page/privacy-policy"
+  }
+}

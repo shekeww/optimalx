@@ -42,7 +42,6 @@ export function SubNeeds({ needs, title, intro, anchor, headingId }: SubNeedsPro
       <SectionHeader
         as="h2"
         title={title ?? t('ox.goal.subneeds_title')}
-        descriptor={intro}
         titleId={id}
       />
       <ul className="ox-subneeds__row">

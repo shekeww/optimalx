@@ -60,4 +60,5 @@
 <symbol id="ox-shaker-straw" viewBox="0 0 24 24" stroke-width="1.5"><path d="M5.5 5.5h13v3h-13z"/><path d="M7 8.5h10l-1.1 12H8.1z"/><path d="M14 5.5 17 1.5"/></symbol>
 <symbol id="ox-star" viewBox="0 0 24 24" stroke-width="1.5"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></symbol>
 <symbol id="ox-star-half" viewBox="0 0 24 24" stroke-width="1.5"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/><path fill="currentColor" stroke="none" d="M12 4.6v12.7l-4.6 2.4.9-5.1L4.6 10.9l5.1-.7z"/></symbol>
+<symbol id="ox-mark" viewBox="0 0 24 24"><path d="M15.406 0 L21.91 0.086 L16.414 9.098 L19.123 9.185 L19.586 9.444 L23.304 15.768 L23.923 16.896 L23.844 16.982 L17.342 16.896 L13.625 10.656 L9.523 10.57 L9.29 10.31 L9.134 9.965 L9.29 9.617 L14.942 0.259 Z M0 6.931 L6.425 6.931 L9.134 11.522 L9.523 11.957 L13.394 11.957 L13.704 12.13 L14.244 13.082 L14.167 13.517 L13.471 14.729 L7.896 23.914 L1.006 23.914 L7.044 13.776 L4.258 13.69 L3.871 13.517 Z" fill="currentColor"/></symbol>
 </svg>

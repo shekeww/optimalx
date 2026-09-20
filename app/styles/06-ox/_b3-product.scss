@@ -119,7 +119,7 @@
   min-block-size: 18px;
   margin: 0;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--ox-w-quiet);
   line-height: 18px;
   color: var(--ox-fg-3);
 }
@@ -132,8 +132,8 @@
   margin: 0;
   overflow: hidden;
   font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
   color: var(--ox-fg);
 }
 
@@ -166,7 +166,7 @@
   margin: 0;
   overflow: hidden;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   line-height: 18px;
   color: var(--ox-ink-4);
   white-space: nowrap;
@@ -243,7 +243,15 @@
   scroll-margin-block-start: 60px;
 }
 
+// The zero-review state is a block now, not one sentence: the honest line,
+// the line that offers the advisory instead, and the action. The action is a
+// real 44 target inside the plate, so the panel has to lay its children out
+// rather than just set a type size.
 .ox-pdp__no-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-3);
   margin: 0;
   padding: var(--ox-6);
   font-size: 15px;
@@ -251,6 +259,10 @@
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
   border-radius: var(--ox-r-4, 16px);
+}
+
+.ox-pdp__no-reviews-line {
+  margin: 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -391,7 +403,7 @@
   padding-inline: 14px;
   margin: 0;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   line-height: 28px;
   color: var(--ox-ink-on-dark);
   background: var(--ox-pill-dark, #14181f);
@@ -435,7 +447,7 @@
   min-block-size: 40px;
   padding-inline: var(--ox-2);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
   background: none;
   border: 0;
@@ -601,11 +613,11 @@
   min-block-size: 20px;
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   line-height: 20px;
   color: var(--ox-fg-2);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--ox-latin-track);
 }
 
 .ox-pdp__brand-link {
@@ -616,17 +628,16 @@
 .ox-pdp__h1 {
   margin: 0;
   font-size: clamp(28px, 1.25rem + 1.6vw, 42px);
-  font-weight: 800;
-  line-height: 1.22;
-  letter-spacing: 0;
+  font-weight: var(--ox-w-stmt);
+  line-height: var(--ox-lh-head);
   color: var(--ox-fg);
 }
 
 .ox-pdp__subtitle {
   margin: 0;
   font-size: 18px;
-  font-weight: 500;
-  line-height: 1.5;
+  font-weight: var(--ox-w-open);
+  line-height: var(--ox-lh-caption);
   color: var(--ox-fg-2);
 }
 
@@ -637,6 +648,7 @@
   margin-block-start: var(--ox-2);
   overflow: hidden;
   font-size: 15px;
+  font-weight: var(--ox-w-read);
   line-height: 24px;
   color: var(--ox-fg-3);
 }
@@ -674,7 +686,7 @@
 
 .ox-rating__value {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: var(--ox-w-figure);
   color: var(--ox-fg);
 }
 
@@ -709,15 +721,15 @@
   align-items: baseline;
   gap: 12px;
   font-size: 36px;
-  font-weight: 800;
-  line-height: 1.1;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-tight);
   color: var(--ox-accent);
 
   .ox-price__mark,
   i,
   .sicon-sar {
     font-size: 0.55em;
-    font-weight: 700;
+    font-weight: var(--ox-w-quiet);
     color: inherit;
   }
 }
@@ -727,15 +739,15 @@
   align-items: baseline;
   gap: 6px;
   font-size: 20px;
-  font-weight: 800;
-  line-height: 1.2;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-flat);
   color: var(--ox-fg);
 
   .ox-price__mark,
   i,
   .sicon-sar {
     font-size: 0.6em;
-    font-weight: 700;
+    font-weight: var(--ox-w-quiet);
     color: var(--ox-accent);
   }
 }
@@ -755,11 +767,6 @@
 }
 
 .ox-pdp__tax,
-.ox-pdp__per-serving {
-  margin: 0;
-  font-size: 14px;
-  color: var(--ox-ink-4);
-}
 
 // Reserved so the widget's late load cannot move the buy button. The slot
 // itself only exists when the store has a split-payment gateway
@@ -816,8 +823,8 @@
 .ox-stats__value {
   margin: 0;
   font-size: 22px;
-  font-weight: 800;
-  line-height: 1.1;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-tight);
   color: var(--ox-fg);
 }
 
@@ -830,7 +837,7 @@
   flex-direction: column;
   margin: 0;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   line-height: 16px;
   color: var(--ox-ink-4);
 }
@@ -889,13 +896,14 @@
 
 .ox-facts__label {
   font-size: 13px;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-fg-3);
 }
 
 .ox-facts__value {
   margin: 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
   text-align: end;
 }
@@ -915,7 +923,7 @@
 .ox-supply__title {
   margin: 0;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
 }
 
@@ -928,6 +936,7 @@
 
 .ox-supply__label {
   font-size: 15px;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-fg-2);
 }
 
@@ -963,7 +972,7 @@
 .ox-supply__value {
   min-inline-size: 32px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--ox-w-figure);
   text-align: center;
 }
 
@@ -974,6 +983,7 @@
   min-block-size: 24px;
   margin: 0;
   font-size: 15px;
+  font-weight: var(--ox-w-read);
 }
 
 .ox-supply__runout {
@@ -983,6 +993,7 @@
 .ox-supply__note {
   margin: 0;
   font-size: 12px;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-fg-3);
 }
 
@@ -1063,7 +1074,7 @@
   padding-inline: var(--ox-4);
   margin: 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   color: var(--ox-verify, #14514c);
   background: var(--ox-fill, #f3eee8);
   border-radius: var(--ox-r-3, 12px);
@@ -1091,7 +1102,7 @@
   margin-inline-start: auto;
   white-space: nowrap;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
 }
 
@@ -1302,7 +1313,7 @@ body.is-sticky-product-bar.product-single {
 .ox-trust-grid__title {
   margin: 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
 }
 
@@ -1314,6 +1325,7 @@ body.is-sticky-product-bar.product-single {
 .ox-trust-grid__line {
   margin: 0;
   font-size: 13px;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
 }
 
@@ -1401,6 +1413,10 @@ body.is-sticky-product-bar.product-single {
 // 12. The dark brand band (design regions 28 to 33)
 // ---------------------------------------------------------------------------
 .ox-bband {
+  // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
+  // lightest weight steps, because reversed type reads lighter (tokens.css).
+  --ox-w-open: 400; // Read
+  --ox-w-read: 500; // Quiet
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1473,16 +1489,16 @@ body.is-sticky-product-bar.product-single {
   flex-direction: column;
   margin: 0;
   font-size: clamp(24px, 1.1rem + 1.2vw, 30px);
-  font-weight: 800;
-  line-height: 1.3;
-  letter-spacing: 0;
+  font-weight: var(--ox-w-stmt);
+  line-height: var(--ox-lh-head);
   color: var(--ox-ink-on-dark);
 }
 
 .ox-bband__sub {
   margin: 0;
   font-size: 16px;
-  line-height: 1.6;
+  font-weight: var(--ox-w-read);
+  line-height: var(--ox-lh-lead);
   color: var(--ox-ink-2-on-dark);
 }
 
@@ -1531,14 +1547,15 @@ body.is-sticky-product-bar.product-single {
 
 .ox-bband__badge-ar {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   color: var(--ox-ink-on-dark);
 }
 
 .ox-bband__badge-latin {
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: var(--ox-w-quiet);
+  text-transform: uppercase;
+  letter-spacing: var(--ox-latin-track);
   color: var(--ox-ink-3-on-dark);
 }
 
@@ -1678,13 +1695,13 @@ body.is-sticky-product-bar.product-single {
   align-items: center;
   min-block-size: 44px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
   text-decoration: none;
   white-space: nowrap;
 
   &.is-active {
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
     color: var(--ox-fg);
   }
 
@@ -1750,8 +1767,8 @@ body.is-sticky-product-bar.product-single {
 .ox-panel__title {
   margin: 0;
   font-size: 17px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
   color: var(--ox-fg);
 }
 
@@ -1799,14 +1816,14 @@ body.is-sticky-product-bar.product-single {
 .ox-details__key {
   flex: 0 0 auto;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
 }
 
 .ox-details__value {
   margin: 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
   text-align: end;
 }
@@ -1848,15 +1865,15 @@ body.is-sticky-product-bar.product-single {
 .ox-howto__num {
   display: block;
   font-size: 16px;
-  font-weight: 800;
-  line-height: 1.4;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-snug);
   color: var(--ox-accent);
 }
 
 .ox-howto__lead {
   margin: 0;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   line-height: 22px;
   color: var(--ox-fg);
 }
@@ -1907,7 +1924,7 @@ body.is-sticky-product-bar.product-single {
   display: block;
   margin: 0;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
   text-align: end;
 }
@@ -1925,7 +1942,7 @@ body.is-sticky-product-bar.product-single {
   thead th {
     block-size: 40px;
     background: none;
-    font-weight: 500;
+    font-weight: var(--ox-w-quiet);
   }
 
   th,
@@ -1950,7 +1967,7 @@ body.is-sticky-product-bar.product-single {
 .ox-nutrition__name {
   display: block;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   line-height: 22px;
   color: var(--ox-fg);
 }
@@ -1959,7 +1976,7 @@ body.is-sticky-product-bar.product-single {
   display: block;
   margin-block-start: 2px;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: var(--ox-w-read);
   line-height: 18px;
   color: var(--ox-fg-3);
   text-wrap: pretty;
@@ -1972,7 +1989,7 @@ body.is-sticky-product-bar.product-single {
   min-block-size: 44px;
   margin-block-start: var(--ox-2);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--ox-w-ui);
   color: var(--ox-accent);
   background: none;
   border: 0;
@@ -2018,7 +2035,7 @@ body.is-sticky-product-bar.product-single {
 
 .ox-prose {
   font-size: 15px;
-  line-height: 1.8;
+  line-height: var(--ox-lh-prose);
   color: var(--ox-fg-2);
 
   p {
@@ -2029,7 +2046,7 @@ body.is-sticky-product-bar.product-single {
   h3,
   h4 {
     margin-block: var(--ox-6) var(--ox-3);
-    font-weight: 700;
+    font-weight: var(--ox-w-title);
     color: var(--ox-fg);
   }
 
@@ -2052,14 +2069,14 @@ body.is-sticky-product-bar.product-single {
   margin: 0;
   padding-inline-start: var(--ox-6);
   font-size: 15px;
-  line-height: 1.7;
+  line-height: var(--ox-lh-body);
   color: var(--ox-fg-2);
 }
 
 .ox-prepurchase__medical {
   margin: 0;
   font-size: 15px;
-  line-height: 1.7;
+  line-height: var(--ox-lh-body);
   color: var(--ox-fg);
 }
 
@@ -2090,7 +2107,7 @@ body.is-sticky-product-bar.product-single {
   flex: 1 1 auto;
   margin: 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
 }
 
 .ox-bundle__qty {
@@ -2120,7 +2137,7 @@ body.is-sticky-product-bar.product-single {
 .ox-related__title {
   margin: 0;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
 }
 
@@ -2223,7 +2240,7 @@ body.is-sticky-product-bar.product-single {
 
 .ox-service__free {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--ox-w-figure);
   color: var(--ox-go);
 }
 
@@ -2239,14 +2256,98 @@ body.is-sticky-product-bar.product-single {
   padding: var(--ox-3) var(--ox-4);
   margin: 0;
   font-size: 15px;
-  line-height: 1.7;
+  line-height: var(--ox-lh-body);
   color: var(--ox-fg);
   background: var(--ox-plate);
   border-radius: var(--ox-r-3, 12px);
 }
 
 // ---------------------------------------------------------------------------
-// 18. Reduced motion (DIRECTION 7, the global contract)
+// 18. Orientation and the two additions above the fold
+// ---------------------------------------------------------------------------
+// The breadcrumb is visible on this page now. `.ox-crumbs` in _b4-listing.scss
+// already carries the whole trail (the scroller, the hairline separators, the
+// link colours); all this adds is the page's own spacing, so the trail sits
+// under the chrome without opening a gap above the gallery.
+.ox-pdp__crumbs {
+  padding-block: var(--ox-2) var(--ox-3);
+}
+
+// The expiry fact, under the price. A line, not a badge: a badge is the
+// warning treatment and this is the reassurance, so it reads at the quiet
+// weight the delivery row reads at.
+.ox-pdp__expiry {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  font-size: 14px;
+  line-height: var(--ox-lh-lead);
+  color: var(--ox-fg-2);
+}
+
+.ox-pdp__expiry-icon {
+  flex: none;
+  color: var(--ox-fg-3);
+}
+
+// The cross-sell strip under the buy zone. Separated from it by a rule
+// rather than by a section gap, so it reads as part of the same decision
+// rather than as the start of the page's second half. It renders only with
+// products in hand, so this box never exists empty.
+.ox-add-also {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  margin-block-start: var(--ox-6);
+  padding-block-start: var(--ox-6);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-add-also__title {
+  margin: 0;
+}
+
+// Three cards do not need a carousel. Below 640 they are a native snap row,
+// which is the same gesture the page's other strips answer to; from 640 the
+// three sit on one line. Nothing runs per frame in either state.
+.ox-add-also__items {
+  display: flex;
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > li {
+    flex: 0 0 46%;
+    min-inline-size: 0;
+    scroll-snap-align: start;
+  }
+}
+
+@media (min-width: 640px) {
+  .ox-add-also__items {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-4);
+    overflow: visible;
+
+    > li {
+      flex: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 19. Reduced motion (DIRECTION 7, the global contract)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
   .ox-card-product,

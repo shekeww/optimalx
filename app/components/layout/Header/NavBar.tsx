@@ -25,40 +25,75 @@ interface NavLinkItem {
  * Pure so the arithmetic is testable without a layout engine: the component
  * feeds it measured widths. Returns `items.length` when everything fits, in
  * which case no overflow control is rendered at all.
+ *
+ * **`gap` is the row's own column gap and it is not optional in practice.**
+ * The list is a 32px-gap flex row, so five items do not cost the sum of five
+ * widths, they cost that plus four gaps, and leaving the gaps out of the sum
+ * overstates what fits by 128px. Measured on the live store at 1440: the row
+ * reported four items and a "المزيد" control as fitting a 510px nav, and the
+ * control was laid out at x=552 against a nav starting at x=691, which is to
+ * say underneath the search pill. Every gap is counted here now: the ones
+ * between the items that stay, and the one before the overflow control.
  */
-export function fitCount(itemWidths: number[], containerWidth: number, moreWidth: number): number {
+export function fitCount(
+  itemWidths: number[],
+  containerWidth: number,
+  moreWidth: number,
+  gap = 0
+): number {
   let total = 0;
   for (const width of itemWidths) total += width;
+  total += gap * Math.max(0, itemWidths.length - 1);
   if (total <= containerWidth) return itemWidths.length;
 
-  const budget = containerWidth - moreWidth;
+  const budget = containerWidth - moreWidth - gap;
   let used = 0;
   let count = 0;
   for (const width of itemWidths) {
-    if (used + width > budget) break;
-    used += width;
+    const next = used + width + (count > 0 ? gap : 0);
+    if (next > budget) break;
+    used = next;
     count += 1;
   }
   return count;
 }
 
+/** The row's column gap in pixels, or 0 where the engine reports none. */
+function columnGapOf(node: HTMLElement): number {
+  if (typeof getComputedStyle !== 'function') return 0;
+  const value = parseFloat(getComputedStyle(node).columnGap);
+  return Number.isFinite(value) ? value : 0;
+}
+
 /**
  * The desktop navigation, inside the main bar rather than in a row of its own.
  *
- * The approved design carries five items on one 88px bar: the nav row the
+ * The approved design carries its items on one 88px bar: the nav row the
  * theme used to render below it is gone, which is why `--ox-h-nav` no longer
  * exists. The item set is the fixed map in `content/nav.ts`, not the dashboard
  * menu: the merchant's categories still supply the destinations wherever one
  * matches by slug, but the labels and their order are the brand's.
  *
- * The goals mega panel is off unless the merchant switches `show_goal_nav` on.
- * It was on by default while the nav had a row to itself; on the design's
- * five-item bar a sixth item is one more than the design carries, so the
- * merchant opts in.
+ * **The goals mega panel stays behind `show_goal_nav`, and the reason is
+ * arithmetic, not taste.** The axis deserves a place on the bar and the
+ * advisory deserves one more; at 1440 the bar cannot carry both. Measured on
+ * the live store: the main bar's inner box is 1296, the logo takes 112, the
+ * icon row 217 and the three 48px gaps 144, which leaves 823 to share
+ * between the nav and the search pill. The goals item alone is 128 plus its
+ * 32px gap. With it on, the advisory needs the nav to reach 631, which would
+ * leave the search 192 and no longer a search. With it off, four items
+ * including the advisory fit and the pill keeps 280.
+ *
+ * So the merchant opts in, and turning it on costs the two items that then
+ * move into the overflow, not the advisory, which sits fourth for exactly
+ * that reason. The goal axis is not lost either way: the drawer carries a
+ * goals group below 1024 and the home page leads with the goal cards.
  *
  * Items that would overflow the bar move into a "المزيد" dropdown, recomputed
- * with a ResizeObserver, which is what keeps the five items on one line
- * between 1024 and 1280 without wrapping the search pill.
+ * with a ResizeObserver, which is what keeps the row on one line between
+ * 1024 and 1280 without wrapping the search pill. The goals item is measured
+ * out of the budget first and never moves into the overflow: it is the panel,
+ * not a link, and a mega panel hanging off a dropdown is not a control.
  */
 export function NavBar() {
   const { t } = useTranslation();
@@ -94,19 +129,27 @@ export function NavBar() {
   const measure = useCallback(() => {
     const list = listRef.current;
     if (!list) return;
-    const row = list.getBoundingClientRect().width;
+    // The nav, not the list. The list is the box that overflows when the
+    // count is wrong, so measuring it asks "how wide did my mistake make
+    // me" instead of "how much room do I have": on the live store it read
+    // 620 inside a 501 nav and kept a fifth item that did not fit.
+    const host = list.parentElement ?? list;
+    const row = host.getBoundingClientRect().width;
     if (!row) return;
+    const gap = columnGapOf(list);
     // The goals item never moves into the overflow, so its width comes off the
-    // budget before anything is measured against it.
+    // budget before anything is measured against it, and so does the gap that
+    // sits between it and the first item that can move.
     const fixed = list.querySelector<HTMLElement>('[data-nav-fixed]');
-    const container = row - (fixed?.getBoundingClientRect().width ?? 0);
+    const fixedWidth = fixed?.getBoundingClientRect().width ?? 0;
+    const container = row - (fixedWidth > 0 ? fixedWidth + gap : 0);
     const rendered = Array.from(list.querySelectorAll<HTMLElement>('[data-nav-item]'));
     if (rendered.length >= countRef.current) {
       widths.current = rendered.map((node) => node.getBoundingClientRect().width);
     }
     if (widths.current.length === 0) return;
     const moreWidth = moreRef.current?.getBoundingClientRect().width ?? 96;
-    setVisible(fitCount(widths.current, container, moreWidth));
+    setVisible(fitCount(widths.current, container, moreWidth, gap));
   }, []);
 
   countRef.current = links.length;
@@ -124,9 +167,19 @@ export function NavBar() {
 
   useEffect(() => {
     measure();
-    if (typeof ResizeObserver === 'undefined' || !listRef.current) return;
+    const list = listRef.current;
+    if (typeof ResizeObserver === 'undefined' || !list) return;
     const observer = new ResizeObserver(measure);
-    observer.observe(listRef.current);
+    // Both boxes, and both for a different reason. The nav is the budget and
+    // it changes with the viewport. The list is the content and it changes
+    // when the Arabic web font swaps in, which widens every item by a few
+    // pixels without moving the nav by one: observing the nav alone left the
+    // first paint's count standing until the next resize, which on the live
+    // store meant all six items rendered and the last one painted across the
+    // search pill.
+    const host = list.parentElement;
+    if (host) observer.observe(host);
+    observer.observe(list);
     return () => observer.disconnect();
   }, [measure, links.length]);
 

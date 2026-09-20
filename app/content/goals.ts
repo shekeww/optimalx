@@ -385,3 +385,57 @@ export function goalSkus(goal: GoalContent): string[] {
   const all = [...goal.skus, ...(goal.groups ?? []).flatMap((group) => group.skus)];
   return [...new Set(all)];
 }
+
+/**
+ * The photograph behind each goal card on the home page.
+ *
+ * The paths are the ones `docs/build/image-brief.md` sections 3 to 8 name, so
+ * the owner's generated frames drop straight in with no code change. None of
+ * them exists yet; a goal whose file is absent renders the card's flat dark
+ * ground instead, which is why the card is designed to be finished without a
+ * photograph (`GoalCard`, `_b2-home.scss` section 4).
+ *
+ * The brief's six frames were written against the reference image's goal set,
+ * which partitions the same catalogue differently from ours: it splits weight
+ * into gain and cut, and it has no hair, skin and nails goal at all. The six
+ * are therefore matched to our six by subject, and one pairing is a compromise
+ * worth naming: `goal-lean.jpg` is the brief's only frame of a woman training
+ * and it carries `goal-hair-skin`, whose catalogue skews the same way. If the
+ * owner would rather have a dedicated frame for it, the brief needs a
+ * seventeenth entry and only this line changes.
+ */
+export const GOAL_PHOTOS: Record<string, string> = {
+  'goal-performance': '/assets/images/goal-muscle.jpg',
+  'goal-energy': '/assets/images/goal-strength.jpg',
+  'goal-ideal-weight': '/assets/images/goal-weight.jpg',
+  'goal-recovery': '/assets/images/goal-recovery.jpg',
+  'goal-general-health': '/assets/images/goal-daily.jpg',
+  'goal-hair-skin': '/assets/images/goal-lean.jpg',
+};
+
+/** The card photograph for a goal, or undefined when the brief names none. */
+export function goalPhoto(slug: string): string | undefined {
+  return GOAL_PHOTOS[slug];
+}
+
+/**
+ * The second line on a goal card, as a locale key.
+ *
+ * The card used to borrow the goal's first sub-need heading, and one of the
+ * six read "energy and focus before the session", which is an effect. The
+ * claims source is explicit that a goal card names a CATEGORY OF PRODUCT and
+ * never a promised result, so the line is now a list of the product types the
+ * goal actually routes to. It is also the more useful line: a shopper
+ * scanning six cards wants to know what is behind each one.
+ *
+ * The sub-need headings stay exactly as they are on the goal landing pages,
+ * where they sit under a paragraph that frames them.
+ */
+export const GOAL_CARD_LINES: Record<string, string> = {
+  'goal-performance': 'ox.home.goal_line_performance',
+  'goal-recovery': 'ox.home.goal_line_recovery',
+  'goal-energy': 'ox.home.goal_line_energy',
+  'goal-ideal-weight': 'ox.home.goal_line_ideal_weight',
+  'goal-general-health': 'ox.home.goal_line_general_health',
+  'goal-hair-skin': 'ox.home.goal_line_hair_skin',
+};

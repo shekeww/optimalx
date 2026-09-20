@@ -47,6 +47,18 @@ vi.mock('@salla.sa/twilight-theme-engine/routes/home', () => ({
   },
 }));
 
+// The route renders the floating contact affordance, which reads the theme
+// settings and the store record to decide whether it exists at all.
+const themeSettings: Record<string, unknown> = {};
+
+vi.mock('@salla.sa/twilight-theme-engine/hooks/useTheme', () => ({
+  useTheme: () => ({ color: {}, font: undefined, settings: themeSettings, isRTL: true }),
+}));
+
+vi.mock('@salla.sa/twilight-theme-engine/hooks/useStore', () => ({
+  useStore: () => ({ contacts: {} }),
+}));
+
 vi.mock('@salla.sa/twilight-theme-engine/tanstack', () => ({
   withHead:
     (
@@ -64,6 +76,11 @@ const HomeComponent = routeModule.Route.component as React.ComponentType;
 
 function setLoader(next: Partial<LoaderData>) {
   loaderData = { locale: 'ar', components: [], page: { slug: 'index' }, ...next };
+}
+
+function setSettings(next: Record<string, unknown>) {
+  for (const key of Object.keys(themeSettings)) delete themeSettings[key];
+  Object.assign(themeSettings, next);
 }
 
 describe('home route composition', () => {
@@ -98,6 +115,29 @@ describe('the one h1 rule (C19)', () => {
     expect(heading).not.toBeNull();
     expect(heading?.className).toContain('ox-sr-only');
     expect(heading?.textContent).toBe('اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية');
+  });
+});
+
+describe('the floating contact affordance', () => {
+  it('is absent until the store publishes a number', () => {
+    setSettings({});
+    setLoader({ components: [] });
+    const { queryByTestId } = renderWithProviders(<HomeComponent />);
+    // No number configured is not a missing feature: it is the correct
+    // render for a store that has not set one, and the same gate the utility
+    // bar's contact affordance uses.
+    expect(queryByTestId('ox-whatsapp-float')).toBeNull();
+  });
+
+  it('opens wa.me on the configured number, in a new tab', () => {
+    setSettings({ whatsapp_number: '+966 50 123 4567' });
+    setLoader({ components: [] });
+    renderWithProviders(<HomeComponent />);
+    const button = screen.getByTestId('ox-whatsapp-float');
+    expect(button.getAttribute('href')).toBe('https://wa.me/966501234567');
+    expect(button.getAttribute('rel')).toBe('noopener noreferrer');
+    // Icon only, so the accessible name is on the control.
+    expect(button.getAttribute('aria-label')).toBe('راسلنا على واتساب');
   });
 });
 

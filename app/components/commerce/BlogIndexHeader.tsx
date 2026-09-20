@@ -19,7 +19,6 @@ export function BlogIndexHeader() {
       <SectionHeader
         as="h1"
         title={t('ox.blog.index_title')}
-        descriptor={t('ox.blog.index_intro')}
       />
     </div>
   );

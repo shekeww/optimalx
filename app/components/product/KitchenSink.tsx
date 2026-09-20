@@ -5,6 +5,7 @@ import { OxProductCard } from './OxProductCard';
 import { SpecChips } from './BuyZone/SpecChips';
 import { SupplyCalculator } from './BuyZone/SupplyCalculator';
 import { DeliveryPromise } from './BuyZone/DeliveryPromise';
+import { ExpiryLine } from './BuyZone/ExpiryLine';
 import { TrustGrid } from './BuyZone/TrustGrid';
 import { StickyBar } from './BuyZone/StickyBar';
 import { PdpTitleBlock } from './BuyZone/PdpTitleBlock';
@@ -170,6 +171,13 @@ export function KitchenSink() {
         <SpecChips spec={parseSpecLine('<p>نص عادي.</p>')} />
         <SupplyCalculator servings={null} />
         <DeliveryPromise settings={withThreshold} currency="SAR" shippable={false} />
+      </Panel>
+
+      <Panel title="ExpiryLine: far date states the fact, near date defers to the badge">{/* ox-allow: latin-sentence */}
+        <ExpiryLine expiry="2029-03" />
+        <p>Nothing below: inside six months, and no printed expiry.</p>{/* ox-allow: latin-sentence */}
+        <ExpiryLine expiry="2026-11" />
+        <ExpiryLine expiry={null} />
       </Panel>
 
       <Panel title="TrustGrid: physical and digital">{/* ox-allow: latin-sentence */}

@@ -4,7 +4,7 @@ import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { digitsOnly } from '../../blocks/href';
-import { HEADER_NAV } from '../../../content/nav';
+import { HEADER_NAV, SECONDARY_NAV } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
 import { resolveNavHref } from '../navLinks';
@@ -96,8 +96,8 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const phone = digitsOnly(store?.contacts?.phone || store?.contacts?.mobile || '');
   const promise = settingValue(settings, 'delivery_promise_line');
 
-  // The five header items collapse in here below 1024, above the standing
-  // pages. An item with no destination is dropped, exactly as on the bar.
+  // The header items collapse in here below 1024, above the standing pages.
+  // An item with no destination is dropped, exactly as on the bar.
   const primary: Array<{ key: string; label: string; to: string }> = [];
   for (const entry of HEADER_NAV) {
     const label = t(entry.labelKey);
@@ -105,12 +105,15 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
     if (to) primary.push({ key: entry.key, label, to });
   }
 
-  const pages = [
-    { key: 'services', label: t('ox.nav.services'), to: '/services' },
-    { key: 'guides', label: t('ox.nav.guides'), to: '/blog' },
-    { key: 'branch', label: t('ox.nav.branch'), to: '/branch' },
-    { key: 'contact', label: t('ox.nav.contact'), to: '/contact' },
-  ];
+  // The standing pages the bar does not carry. The advisory used to be typed
+  // here and nowhere else, which is what made the drawer and the bar two
+  // different site maps; it is in `HEADER_NAV` now and reaches this list
+  // through `primary` above.
+  const pages = SECONDARY_NAV.map((entry) => ({
+    key: entry.key,
+    label: t(entry.labelKey),
+    to: entry.to ?? '/',
+  }));
 
   // Wishlist and account leave the mobile bar, which carries the cart, and
   // arrive here as their own group.

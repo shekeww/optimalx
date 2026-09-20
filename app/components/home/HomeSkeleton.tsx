@@ -59,7 +59,7 @@ export function GoalsSkeleton() {
   return (
     <BlockSkeleton path="ox-goals" className="ox-skel-grid ox-skel-grid--goals">
       {rows(6).map((index) => (
-        <SkeletonBlock key={index} height="100%" />
+        <SkeletonBlock key={index} height="100%" className="ox-skel-dark" />
       ))}
     </BlockSkeleton>
   );
@@ -110,18 +110,18 @@ export function BrandsSkeleton() {
 }
 
 /**
- * The services band is dark, so its placeholder is too: a light grey box where
- * a near-black band is about to land is a flash, not a placeholder. The root
- * carries `.ox-band-dark`, which is what re-points the skeleton's own fills at
- * the graphite step.
+ * The advisory row is three dark cards on the light ground now, not a dark
+ * band, so the placeholder is a heading bar on the page ground with three
+ * dark blocks under it. A near-black rectangle where a light section is about
+ * to land is a flash, and so is the reverse.
  */
 export function ServicesSkeleton() {
   return (
-    <BlockSkeleton path="ox-services" className="ox-skel-services ox-band-dark">
+    <BlockSkeleton path="ox-services" className="ox-skel-services">
       <SkeletonBar width="30%" />
       <div className="ox-skel-grid ox-skel-grid--channels">
         {rows(3).map((index) => (
-          <SkeletonBlock key={index} height="100%" />
+          <SkeletonBlock key={index} height="100%" className="ox-skel-dark" />
         ))}
       </div>
     </BlockSkeleton>

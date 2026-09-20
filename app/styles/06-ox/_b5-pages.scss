@@ -80,7 +80,7 @@
   background: var(--ox-card);
   color: var(--ox-fg);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   font-variant-numeric: tabular-nums;
   text-decoration: none;
 
@@ -193,7 +193,7 @@
 
 .ox-stats__free {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: var(--ox-w-figure);
   color: var(--ox-verify);
 }
 
@@ -260,6 +260,129 @@
 
 .ox-channels--one {
   max-inline-size: 420px;
+}
+
+// ---------------------------------------------------------------------------
+// 4b. The service comparison grid
+// ---------------------------------------------------------------------------
+// One question per row, one service per column, the same four questions
+// asked of all five. It is a real table because the relationship between a
+// column and a row has to reach the accessibility tree, and because a grid
+// of divs would not keep a row on one baseline across five columns of
+// unequal text.
+//
+// Below the width where five columns fit it scrolls sideways, natively, with
+// snap points on the columns and the question column pinned at the inline
+// start: the one column a reader needs while the rest move. No JavaScript
+// runs per frame, and nothing here animates.
+.ox-compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+}
+
+.ox-compare__scroller {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: thin;
+}
+
+// `separate`, not `collapse`: a collapsed table hands its borders to the
+// table itself, and a sticky cell then scrolls out from under its own rule.
+// Every rule below is drawn on the cell, so the pinned column keeps its.
+.ox-compare__table {
+  inline-size: 100%;
+  min-inline-size: 640px;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: start;
+}
+
+// Pinned with the row heads under it, one layer above them, so the header
+// row and the question column stay a corner rather than coming apart.
+.ox-compare__corner {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 2;
+  inline-size: 132px;
+  min-inline-size: 132px;
+  background: var(--ox-paper);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__head {
+  min-inline-size: 168px;
+  padding: var(--ox-3);
+  vertical-align: bottom;
+  text-align: start;
+  scroll-snap-align: start;
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__link {
+  @include ox-focus(2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  min-block-size: 44px;
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-tight);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+}
+
+.ox-compare__icon {
+  color: var(--ox-fg-3);
+}
+
+// Pinned while the columns scroll under it. It carries the page ground so
+// the cells passing beneath it are covered rather than showing through.
+.ox-compare__rowhead {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  inline-size: 132px;
+  min-inline-size: 132px;
+  padding: var(--ox-3);
+  vertical-align: top;
+  text-align: start;
+  font-size: 13px;
+  font-weight: var(--ox-w-quiet);
+  color: var(--ox-fg-3);
+  background: var(--ox-paper);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__cell {
+  padding: var(--ox-3);
+  vertical-align: top;
+  scroll-snap-align: start;
+  font-size: 14px;
+  line-height: var(--ox-lh-lead);
+  color: var(--ox-fg-2);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__table tbody tr:last-child .ox-compare__cell,
+.ox-compare__table tbody tr:last-child .ox-compare__rowhead {
+  border-block-end: 0;
+}
+
+.ox-compare__free {
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-verify, #14514c);
+}
+
+@media (min-width: 1024px) {
+  .ox-compare__table {
+    min-inline-size: 0;
+  }
 }
 
 // The limit-of-our-work line. Set on the page ground with a rule at the
@@ -433,15 +556,15 @@
   grid-row: span 2;
   align-self: start;
   font-size: 28px;
-  font-weight: 800;
-  line-height: 1;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-num);
   color: var(--ox-accent);
 }
 
 .ox-how__step-title {
   margin: 0;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
 }
 
@@ -469,7 +592,7 @@
   background: var(--ox-card);
   color: var(--ox-fg-2);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: var(--ox-w-figure);
 }
 
 .ox-pickup__late {
@@ -556,7 +679,7 @@
   gap: var(--ox-2);
   margin: 0;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
 }
 
 .ox-branch-do__tick {
@@ -670,7 +793,7 @@
 .ox-contact__value {
   margin: 0;
   font-size: 17px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
 
   a {
     color: var(--ox-fg);
@@ -713,7 +836,7 @@
   align-items: center;
   align-self: flex-start;
   min-block-size: 44px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   color: var(--ox-fg);
 }
 
@@ -735,7 +858,7 @@
     align-items: center;
     min-block-size: 44px;
     color: var(--ox-fg);
-    font-weight: 600;
+    font-weight: var(--ox-w-ui);
   }
 }
 
@@ -839,7 +962,7 @@
 
 .ox-converter__result-label {
   color: var(--ox-fg-3);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
 }
 
 .ox-converter__invalid {

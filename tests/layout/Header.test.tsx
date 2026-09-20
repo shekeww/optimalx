@@ -4,13 +4,22 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 
 const themeSettings: Record<string, unknown> = {};
-const twilight: Record<string, unknown> = { routeId: '/{-$locale}/', location: { pathname: '/' } };
+const twilight: Record<string, unknown> = { routeId: 'index', location: { pathname: '/' } };
+const leafRouteId = { current: '/{-$locale}/' };
 const menuItems: Array<{ id: number; title: string; url: string }> = [];
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
 );
 vi.mock('@salla.sa/twilight-theme-engine', () => ({ useTwilight: () => twilight }));
+// The engine's routeId is empty in a browser, so the header also reads the
+// router's own leaf id; the mock answers with whatever the test set.
+vi.mock('@tanstack/react-router', () => ({
+  useRouterState: (options?: { select?: (state: unknown) => unknown }) => {
+    const state = { matches: [{ routeId: leafRouteId.current }] };
+    return options?.select ? options.select(state) : state;
+  },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({
   HookSlot: ({ name }: { name: string }) => <div data-hook-slot={name} />,
 }));
@@ -73,7 +82,8 @@ function stubResizeObserver(): { fire: () => void } {
 
 beforeEach(() => {
   menuItems.length = 0;
-  twilight.routeId = '/{-$locale}/';
+  twilight.routeId = 'index';
+  leafRouteId.current = '/{-$locale}/';
   twilight.location = { pathname: '/' };
   document.documentElement.style.removeProperty('--ox-header-h');
 });
@@ -127,13 +137,31 @@ describe('Header', () => {
 
   it('adds the mobile search row only on the routes that carry one', () => {
     setSettings({});
-    const home = renderWithProviders(<Header />);
-    expect(home.container.querySelector('.ox-mobilebar__search')).toBeNull();
-    home.unmount();
+    // The ids are the engine's semantic ones, which is the fix: the set was
+    // written in the router's spelling, so no entry ever matched and the row
+    // never rendered anywhere. The home and product pages are in it now too.
+    for (const routeId of ['index', 'product.single', 'product.index', 'product.index.search']) {
+      twilight.routeId = routeId;
+      const view = renderWithProviders(<Header />);
+      expect(view.container.querySelector('.ox-mobilebar__search'), routeId).not.toBeNull();
+      view.unmount();
+    }
 
-    twilight.routeId = '/{-$locale}/search';
-    const search = renderWithProviders(<Header />);
-    expect(search.container.querySelector('.ox-mobilebar__search')).not.toBeNull();
+    // And the router's own leaf id carries the client pass on its own, which
+    // is the pass that was dropping the row: the engine reports an empty
+    // routeId in a browser.
+    twilight.routeId = '';
+    for (const leaf of ['/{-$locale}/', '/{-$locale}/$slug/p{$id}', '/{-$locale}/$slug/c{$id}']) {
+      leafRouteId.current = leaf;
+      const view = renderWithProviders(<Header />);
+      expect(view.container.querySelector('.ox-mobilebar__search'), leaf).not.toBeNull();
+      view.unmount();
+    }
+
+    // A page in neither spelling has no row.
+    leafRouteId.current = '/{-$locale}/about';
+    const about = renderWithProviders(<Header />);
+    expect(about.container.querySelector('.ox-mobilebar__search')).toBeNull();
   });
 
   it('opens the drawer on the menu button and removes it from the DOM on close', async () => {
@@ -197,12 +225,19 @@ describe('Header', () => {
   });
 
   it('drops the goals item when show_goal_nav is off, and by default', () => {
+    // It stays opt-in because the bar cannot carry it and the advisory at
+    // 1440 (the measurement is in NavBar's docblock), and the advisory is
+    // the higher-ranked of the two.
     for (const settings of [{ show_goal_nav: false }, {}]) {
       setSettings(settings);
       const view = renderWithProviders(<Header />);
       expect(screen.queryByTestId('ox-nav-goals')).toBeNull();
       view.unmount();
     }
+
+    setSettings({ show_goal_nav: true });
+    renderWithProviders(<Header />);
+    expect(screen.queryByTestId('ox-nav-goals')).not.toBeNull();
   });
 
   it('carries the utility strip whether or not its two outer zones have content', () => {
@@ -235,12 +270,14 @@ describe('Header', () => {
 
   it('collapses the search pill to a glyph on a route with no search row', () => {
     setSettings({});
-    const home = renderWithProviders(<Header />);
-    expect(home.container.querySelector('.ox-search--collapsed')).not.toBeNull();
-    expect(home.container.querySelector('.ox-mobilebar__search')).toBeNull();
-    home.unmount();
+    twilight.routeId = 'page-single';
+    leafRouteId.current = '/{-$locale}/about';
+    const about = renderWithProviders(<Header />);
+    expect(about.container.querySelector('.ox-search--collapsed')).not.toBeNull();
+    expect(about.container.querySelector('.ox-mobilebar__search')).toBeNull();
+    about.unmount();
 
-    twilight.routeId = '/{-$locale}/search';
+    twilight.routeId = 'product.index.search';
     const search = renderWithProviders(<Header />);
     expect(search.container.querySelector('.ox-mobilebar__search')).not.toBeNull();
     expect(search.container.querySelector('.ox-search--collapsed')).toBeNull();

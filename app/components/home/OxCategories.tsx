@@ -8,6 +8,7 @@ import { matchesSlug } from '../layout/Header/useHeaderMenu';
 import { CATEGORIES, ROOT_CATEGORY_SLUGS } from '../../content/categories';
 import type { OxIconName } from '../common/Icon';
 import { CategoryTile } from './CategoryTile';
+import { useSectionReveal } from './useSectionReveal';
 import { fieldList, rowText, type OxBlockProps } from './defaults';
 
 /**
@@ -19,8 +20,14 @@ import { fieldList, rowText, type OxBlockProps } from './defaults';
  * slugs from the content map, resolved against the live category list by slug
  * and falling back to a search for the label (PLAN-final C15).
  *
- * Eight tiles by default so every row is full at 2-up and 4-up (6.2 row 4); the
- * merchant field accepts 4, 8 or 12 for the same reason.
+ * Eight tiles, in one row at 1024 and up and two rows of four below it, which
+ * is what the reference draws on both panes (homepage-spec section 3). The
+ * merchant field is clamped to 4, 8 or 12 so a row is never left half empty.
+ *
+ * The tiles carry no imagery: `CategoryTile` draws the sprite glyph and the
+ * name, so the API's `image` is deliberately not read here any more. Eight
+ * supplier packshots at eight crops was the single thing that stopped this row
+ * reading as one set.
  */
 
 export const DEFAULT_TILE_COUNT = 8;
@@ -29,9 +36,7 @@ interface Tile {
   key: string;
   label: string;
   to: string;
-  image?: string;
   icon: OxIconName;
-  count?: number;
 }
 
 function fullRowCount(requested: number): number {
@@ -42,6 +47,7 @@ function fullRowCount(requested: number): number {
 
 export function OxCategories({ data }: OxBlockProps) {
   const { t } = useTranslation();
+  const gridRef = useSectionReveal<HTMLUListElement>();
   const selected = fieldList(data, 'categories');
   const { data: live } = useQuery({ ...category.queries.list(), enabled: selected.length === 0 });
 
@@ -57,7 +63,6 @@ export function OxCategories({ data }: OxBlockProps) {
             key: `${label}-${index}`,
             label,
             to: url || `/search?q=${encodeURIComponent(label)}`,
-            image: rowText(row, 'image') || undefined,
             icon: content?.icon ?? 'protein',
           } satisfies Tile;
         })
@@ -74,9 +79,7 @@ export function OxCategories({ data }: OxBlockProps) {
         key: slug,
         label: match?.name ?? label,
         to: match?.url ?? `/search?q=${encodeURIComponent(label)}`,
-        image: match?.image ?? undefined,
         icon: content?.icon ?? 'protein',
-        ...(typeof match?.products_count === 'number' ? { count: match.products_count } : {}),
       } satisfies Tile;
     });
   }, [selected, live, t]);
@@ -88,18 +91,11 @@ export function OxCategories({ data }: OxBlockProps) {
       <div className="ox-container">
         <SectionHeader
           title={t('ox.home.categories_title')}
-          descriptor={t('ox.home.categories_intro')}
         />
-        <ul className="ox-cats__grid">
-          {tiles.map((tile) => (
-            <li key={tile.key}>
-              <CategoryTile
-                label={tile.label}
-                to={tile.to}
-                {...(tile.image ? { image: tile.image } : {})}
-                icon={tile.icon}
-                {...(tile.count !== undefined ? { count: tile.count } : {})}
-              />
+        <ul className="ox-cats__grid ox-reveal" ref={gridRef}>
+          {tiles.map((tile, index) => (
+            <li key={tile.key} style={{ ['--i' as string]: String(index) }}>
+              <CategoryTile label={tile.label} to={tile.to} icon={tile.icon} />
             </li>
           ))}
         </ul>

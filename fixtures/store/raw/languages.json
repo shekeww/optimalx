@@ -1,0 +1,1 @@
+{"status":200,"success":true,"data":[{"name":"العربية","iso_code":"ar","status":"enabled","is_default":true,"auto_translate":false,"sort_order":0},{"name":"English","iso_code":"en","status":"disabled","is_default":false,"auto_translate":false,"sort_order":0}],"enabled_iso_codes":["ar"]}

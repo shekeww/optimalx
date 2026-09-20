@@ -3,16 +3,18 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
-import { SERVICE_CHANNELS } from '../../app/content/services';
+import { HOME_PLANS } from '../../app/content/services';
 
 /**
- * The home's one dark band (DIRECTION 6.2 row 7).
+ * The advisory row, `برامج وخطط التغذية` (homepage-spec section 7).
  *
- * Three things are asserted because three things go wrong here: the band has
- * to carry the band contract (photograph, wedge, lockup) or it is a stripe; it
- * has to spend exactly one wedge motif on the screen; and it must not imply an
- * expert. The store has no certified staff, so the band shows no portrait and
- * names no title (claims source section 3).
+ * Three things are asserted because three things go wrong here. The row has
+ * to be three real cards on the page rather than three cards decorating one
+ * band photograph, which is what made this section read as an afterthought.
+ * Each card has to be finished before its frame is shot, because none of the
+ * three has been. And none of it may imply an expert: the store has no
+ * certified staff, so there is no portrait and no professional title
+ * (claims source section 3).
  */
 
 const themeSettings: Record<string, unknown> = {};
@@ -35,7 +37,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Image: ({ alt, src }: { alt: string; src?: string }) => React.createElement('img', { alt, src }),
 }));
 
-const { OxServices, DEFAULT_SERVICES_PHOTO } = await import('../../app/components/home/OxServices');
+const { OxServices } = await import('../../app/components/home/OxServices');
 
 function setSettings(next: Record<string, unknown>) {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
@@ -52,47 +54,76 @@ function data(extra: Record<string, unknown> = {}): OxBlockData {
 }
 
 describe('OxServices', () => {
-  it('carries the band contract: a photograph, the wedge and the lockup', () => {
+  it('renders one dark card per programme, each a whole-card link', () => {
     setSettings({});
     const { container } = renderWithProviders(<OxServices data={data()} />);
-    const band = screen.getByTestId('ox-services');
+    const cards = screen.getAllByTestId('ox-plan-card');
+    expect(cards).toHaveLength(HOME_PLANS.length);
+    expect(cards.map((card) => card.getAttribute('data-plan'))).toEqual(
+      HOME_PLANS.map((plan) => plan.id)
+    );
+    for (const card of cards) expect(card.getAttribute('href')).toBeTruthy();
+    // One link per card, nothing interactive nested inside it.
+    expect(container.querySelectorAll('.ox-plan button')).toHaveLength(0);
+    expect(container.querySelectorAll('.ox-plan a')).toHaveLength(0);
+  });
 
-    const photo = band.querySelector('.ox-services__photo') as HTMLImageElement;
-    expect(photo.getAttribute('src')).toBe(DEFAULT_SERVICES_PHOTO);
-    // Decorative: the band says nothing the copy does not already say.
+  it('is finished before the frames are shot', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<OxServices data={data()} />);
+    // The scrim and the slash are painted by the card, not by the image, so
+    // a card whose photograph 404s is still a dark card with an accent
+    // corner rather than a hole.
+    expect(container.querySelectorAll('.ox-plan__scrim')).toHaveLength(HOME_PLANS.length);
+    expect(container.querySelectorAll('.ox-plan__slash')).toHaveLength(HOME_PLANS.length);
+    const sources = screen
+      .getAllByTestId('ox-plan-card')
+      .map((card) => card.querySelector('img')?.getAttribute('src'));
+    for (const src of sources) expect(src).toMatch(/^\/assets\/images\/plan-[a-z]+\.jpg$/);
+    // Decorative: every card's title already says what it is.
+    for (const card of screen.getAllByTestId('ox-plan-card')) {
+      expect(card.querySelector('img')?.getAttribute('alt')).toBe('');
+      expect(card.querySelector('img')?.getAttribute('loading')).toBe('lazy');
+    }
+  });
+
+  it('routes out to the services page, where the channels it does not show live', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<OxServices data={data()} />);
+    // The free written question and the branch visit are not programmes, so
+    // they are not cards here. The header's route-out is what keeps them one
+    // click from the home page.
+    expect(container.querySelector('.ox-sh__link')?.getAttribute('href')).toBe('/services');
+  });
+
+  it('puts the section back on a band only when the merchant fills that field', () => {
+    setSettings({});
+    const off = renderWithProviders(<OxServices data={data()} />);
+    // Off by default: the dashboard control is labelled "Band image" and it
+    // still does what it says, but the shipped design is three cards on the
+    // page ground and the theme supplies no default for it.
+    expect(off.container.querySelector('.ox-services__photo')).toBeNull();
+    expect(off.container.querySelector('.ox-services--banded')).toBeNull();
+    off.unmount();
+
+    const { container } = renderWithProviders(
+      <OxServices data={data({ image: 'https://cdn.example/band.jpg' })} />
+    );
+    const photo = container.querySelector('.ox-services__photo') as HTMLImageElement;
+    expect(photo.getAttribute('src')).toBe('https://cdn.example/band.jpg');
     expect(photo.getAttribute('alt')).toBe('');
     expect(photo.getAttribute('loading')).toBe('lazy');
-
-    expect(band.querySelector('.ox-services__scrim')).not.toBeNull();
-    expect(container.querySelector('.ox-services__lockup [data-testid="ox-wordmark"]')).not.toBeNull();
+    expect(container.querySelector('.ox-services__scrim')).not.toBeNull();
+    expect(container.querySelector('.ox-services--banded')).not.toBeNull();
   });
 
-  it('spends one wedge motif and no more (DIRECTION 4.5)', () => {
+  it('prefers the merchant heading over the locale copy', () => {
     setSettings({});
-    const { container } = renderWithProviders(<OxServices data={data()} />);
-    // The pair of bars share one edge and read as one mark, which is why they
-    // are the screen's whole wedge budget.
-    expect(container.querySelectorAll('.ox-band__wedge')).toHaveLength(2);
-    expect(container.querySelectorAll('.ox-band__wedge--wide')).toHaveLength(1);
-    expect(container.querySelectorAll('.ox-band__wedge--thin')).toHaveLength(1);
-  });
-
-  it('takes the merchant photograph when the dashboard carries one', () => {
-    setSettings({});
-    renderWithProviders(<OxServices data={data({ image: 'https://cdn.example/band.jpg' })} />);
-    expect(
-      screen.getByTestId('ox-services').querySelector('.ox-services__photo')?.getAttribute('src')
-    ).toBe('https://cdn.example/band.jpg');
-  });
-
-  it('renders one card per channel and no portrait beside any of them', () => {
-    setSettings({});
-    const { container } = renderWithProviders(<OxServices data={data()} />);
-    expect(screen.getAllByTestId('ox-channel-card')).toHaveLength(SERVICE_CHANNELS.length);
-    // The only images in the band are the decorative photograph and the mark:
-    // a face beside an advice heading would imply an expert the store has not
-    // got.
-    expect(container.querySelectorAll('.ox-channels img')).toHaveLength(0);
+    const { container } = renderWithProviders(
+      <OxServices data={data({ title: 'عنوان التاجر', intro: 'مقدمة التاجر' })} />
+    );
+    expect(container.querySelector('.ox-sh__title')?.textContent).toBe('عنوان التاجر');
+    expect(container.querySelector('.ox-sh__desc')?.textContent).toBe('مقدمة التاجر');
   });
 
   it('states no reply time until the owner has set one', () => {
@@ -106,7 +137,7 @@ describe('OxServices', () => {
     expect(screen.getByTestId('ox-services-reply').textContent).toContain('24');
   });
 
-  it('names no professional title anywhere in the band', () => {
+  it('names no professional title anywhere in the row', () => {
     setSettings({ reply_sla_hours: 24 });
     const { container } = renderWithProviders(<OxServices data={data()} />);
     const text = container.textContent ?? '';

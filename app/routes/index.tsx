@@ -4,6 +4,7 @@ import type { HomeLoaderData } from '@salla.sa/twilight-theme-engine/routes/home
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { DefaultHome } from '../components/home/DefaultHome';
+import { OxWhatsApp } from '../components/home/OxWhatsApp';
 import { HomeSkeleton } from '../components/home/HomeSkeleton';
 import { hasHeroBlock, hasOxBlock } from '../components/home/defaults';
 import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
@@ -23,7 +24,10 @@ import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
  * DIRECTION 6.2 blocks otherwise (C2). A merchant may delete the hero block, so
  * the h1 rule (C19, DIRECTION 9.2) is enforced here: without an `ox-hero` in
  * the composition the route renders the keyword line as a visually hidden h1,
- * which keeps exactly one h1 on the page in every configuration.
+ * which keeps exactly one h1 on the page in every configuration. With a hero
+ * the h1 is the hero's own headline; the keyword line stays the engine head's
+ * title and this fallback, and is no longer drawn as an eyebrow above the
+ * statement, which the reference does not have.
  */
 export const Route = createFileRoute('/{-$locale}/')({
   loader: ({ params }): Promise<HomeLoaderData> => Home.loader({ locale: params.locale }),
@@ -61,6 +65,12 @@ function HomeComponent() {
     <>
       {heroPresent ? null : <h1 className="ox-sr-only">{t('ox.home.h1')}</h1>}
       {configured ? <Home.Component {...data} /> : <DefaultHome locale={data.locale} />}
+      {/* The floating contact affordance the reference draws above the
+          footer. It is gated on a configured WhatsApp number and renders
+          nothing without one. It lives on the route rather than in the
+          layout because the layout is another batch's file; promoting it to
+          every page is a one line move whenever the owner wants that. */}
+      <OxWhatsApp />
     </>
   );
 }

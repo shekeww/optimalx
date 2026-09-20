@@ -211,7 +211,7 @@ export function KitchenSink() {
         title="SectionHeader"
         note="The eyebrow renders only when it states a fact the heading lacks (amendment A4)."
       >
-        <SectionHeader title="تسوق حسب هدفك" descriptor="ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط." />
+        <SectionHeader title="تسوق حسب هدفك" />
         <div style={{ marginBlockStart: 24 }}>
           <SectionHeader
             as="h3"

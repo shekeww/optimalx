@@ -1,5 +1,5 @@
 /**
- * The chrome's navigation map: the five header items and the three footer link
+ * The chrome's navigation map: the header items and the three footer link
  * columns the approved design shows.
  *
  * Structure and locale keys only, no copy. Nothing here is a URL the store has
@@ -37,18 +37,50 @@ export interface FooterColumn {
 }
 
 /**
- * The header row, in the design's order (reading from the RTL start):
- * products, supplements, protein, meal plans, the brand page.
+ * The header row, in order from the RTL start: products, supplements,
+ * protein, the advisory, meal plans, the brand page.
  *
  * `المنتجات` points at the store's own full listing rather than a category,
  * so it is the one item that is always live.
+ *
+ * **The advisory sits on the bar, not only in the drawer.** It was in the
+ * mobile drawer's page list and nowhere on the desktop chrome, which gave the
+ * store two different site maps with the thing that distinguishes it from a
+ * supplement catalogue on the smaller of the two. A desktop visitor could
+ * reach `/services` from one home block and one footer link.
+ *
+ * **Its position in this array is the whole fix, not its presence.** Six
+ * items plus the goals panel do not fit the bar: measured on the live store
+ * at 1440, the nav is given 500px, the goals item takes 128 of it and the
+ * overflow control 58, which leaves 314 for six labels that measure 507
+ * together. `NavBar` moves the TRAILING items into "المزيد", so an advisory
+ * typed last would be the first thing hidden, at the commonest desktop
+ * width, which is where it was invisible to begin with. Fourth keeps it on
+ * the bar beside the three shopping pillars and sends meal plans and the
+ * brand page into the dropdown instead; both of those are in the footer too,
+ * and neither is what this store is for.
  */
 export const HEADER_NAV: NavEntry[] = [
   { key: 'products', labelKey: 'ox.nav.products', slug: 'products', to: '/latest-products' },
   { key: 'supplements', labelKey: 'ox.nav.supplements', slug: 'supplements' },
   { key: 'protein', labelKey: 'ox.nav.protein', slug: 'protein' },
+  { key: 'services', labelKey: 'ox.nav.services', to: '/services' },
   { key: 'meal-plans', labelKey: 'ox.nav.meal_plans', slug: 'meal-plans' },
   { key: 'about-brand', labelKey: 'ox.nav.about_brand', to: '/about' },
+];
+
+/**
+ * The standing pages the mobile drawer lists under the header items.
+ *
+ * It is what is left of the drawer's own page list once the advisory moved on
+ * to `HEADER_NAV`: the drawer renders `HEADER_NAV` first and this after it, so
+ * the two surfaces now publish one site map rather than two. Nothing is in
+ * both lists, and an item added to either one reaches both surfaces.
+ */
+export const SECONDARY_NAV: NavEntry[] = [
+  { key: 'guides', labelKey: 'ox.nav.guides', to: '/blog' },
+  { key: 'branch', labelKey: 'ox.nav.branch', to: '/branch' },
+  { key: 'contact', labelKey: 'ox.nav.contact', to: '/contact' },
 ];
 
 export const FOOTER_COLUMNS: FooterColumn[] = [

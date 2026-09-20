@@ -33,8 +33,8 @@ nav.breadcrumbs {
   display: block;
   inline-size: 100%;
   padding-block: var(--ox-3);
-  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
-  line-height: 1.6;
+  font-size: var(--ox-t-small);
+  line-height: var(--ox-lh-lead);
   color: var(--ox-fg-3);
 }
 
@@ -85,7 +85,7 @@ nav.breadcrumbs .s-breadcrumb-item a {
 .ox-crumbs .s-breadcrumb-item[aria-current='page'],
 nav.breadcrumbs .s-breadcrumb-item[aria-current='page'] {
   color: var(--ox-fg);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
 }
 
 // The engine ships a 32px viewBox chevron with no size attributes of its own.
@@ -279,7 +279,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--ox-3);
+  flex-wrap: wrap;
+  gap: var(--ox-2) var(--ox-3);
   flex: none;
   min-block-size: 44px;
 }
@@ -300,8 +301,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
   border-radius: var(--ox-r-pill);
   background: var(--ox-ink);
   color: var(--ox-paper);
-  font-size: clamp(11.5px, 11.31px + 0.048vw, 12px);
-  font-weight: 700;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-figure);
 }
 
 .ox-listing__sort {
@@ -321,8 +322,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-listing__sort-label {
   display: none;
-  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
-  font-weight: 600;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
   color: var(--ox-fg-3);
   white-space: nowrap;
 }
@@ -350,6 +351,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
     display: none;
   }
   .ox-listing__controls {
+    flex-wrap: nowrap;
+    min-block-size: 64px;
+  }
+  .ox-listing__count {
+    flex: 1 1 auto;
     min-block-size: 64px;
   }
 }
@@ -403,8 +409,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-filters__title {
   margin: 0;
-  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-  font-weight: 700;
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg);
 }
 
@@ -418,7 +424,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-filters salla-filters {
   display: block;
   color: var(--ox-fg);
-  font-size: clamp(15px, 14.63px + 0.095vw, 16px);
+  font-size: var(--ox-t-body);
 }
 
 @media (min-width: 1024px) {
@@ -551,8 +557,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
     background: var(--ox-surface);
     color: var(--ox-fg);
     font-family: inherit;
-    font-size: clamp(15px, 14.63px + 0.095vw, 16px);
-    font-weight: 600;
+    font-size: var(--ox-t-body);
+    font-weight: var(--ox-w-ui);
   }
 
   salla-button::part(button):hover,
@@ -570,11 +576,24 @@ nav.breadcrumbs .s-breadcrumb-item button {
   color: var(--ox-fg-3);
 }
 
+// The loaded count moved into the toolbar, above the grid, so it no longer
+// centres itself under a column of cards: it reads as the first thing in the
+// control row, at the same size as the sort label beside it.
 .ox-listing__progress {
   margin: 0;
-  padding-block-start: var(--ox-4);
   color: var(--ox-fg-3);
-  text-align: center;
+  text-align: start;
+  white-space: nowrap;
+}
+
+// Below 1024 it takes the whole first line of the control row, so the count,
+// the filter trigger and the sort select are never three things fighting over
+// 390px; from 1024 it sits at the row's inline start beside them.
+.ox-listing__count {
+  display: flex;
+  align-items: center;
+  flex: 1 0 100%;
+  min-inline-size: 0;
 }
 
 .s-items-list-loading,
@@ -644,7 +663,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-zero__label {
   color: var(--ox-fg-3);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
 }
 
 .ox-zero__chips {
@@ -734,7 +753,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-goal-hero__eyebrow {
   margin: 0;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg-2);
 }
 
@@ -889,7 +908,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   gap: var(--ox-1);
   margin-block-start: auto;
   padding-block-start: var(--ox-3);
-  font-weight: 700;
+  font-weight: var(--ox-w-ui);
   color: var(--ox-fg);
 }
 
@@ -1050,7 +1069,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-brand-tile__name {
   display: block;
   min-block-size: 40px;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   text-align: center;
 }
 

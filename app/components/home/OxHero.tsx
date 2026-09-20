@@ -7,32 +7,42 @@ import { useReducedMotion } from '../common/hooks/useReducedMotion';
 import { fieldText, type OxBlockProps } from './defaults';
 
 /**
- * The home hero (DIRECTION 5.2 OxHero, 4.5 hero polygons, 6.2 row 1, 8.1).
+ * The home hero, built to the owner's reference (homepage-spec section 1).
  *
- * The eyebrow is the page's h1 (C19 and DIRECTION 9.2): the keyword line has to
- * exist and be visible, and sitting above the display line keeps it from
- * reading as a keyword stuffed into a heading. The display line below it is a
- * paragraph, not a second heading.
+ * The band is one full-bleed dark photograph, not a wedge panel beside a
+ * column: the reference's subject stands right of centre and the whole left
+ * half of the frame is deliberately empty, which is what the copy sits on.
+ * `docs/build/image-brief.md` section 1 writes that composition into the
+ * prompt, so the layout and the photograph are one decision.
  *
- * The photo panel and the orange stroke carry the 22 degree cut from the
- * `ox-wedge-*` mixins; on mobile the photo is full bleed behind a linear
- * gradient (never a blur, render budget rule 2) with the corner wedge at the
- * top end. Nothing here animates (amendment A9).
+ * **Why this band reasons in physical sides.** Everywhere else in the theme a
+ * side is logical, because a side belongs to the reading direction. Here it
+ * belongs to the photograph: the quiet pixels are on the left of the file in
+ * every locale, so the copy is on the left in every locale and the wedge pair
+ * is at the left edge in every locale. The text inside the block is still
+ * logically aligned (`start`, so right in Arabic and left in English), which
+ * is what the reference shows. The flip is written as a `[dir='ltr']`
+ * override, the same shape the wedge mixins use, so no physical property is
+ * spelled out.
  *
- * The image is the LCP element: `priority` makes it eager with
- * `fetchpriority="high"` and `decoding="sync"`, and the explicit width and
- * height plus the band's own reserved height keep CLS at zero.
+ * The headline is the page's h1 and it is three parts: two lines and a closing
+ * word in the accent. It is the only accent-coloured type on the first screen.
+ * `ox.home.h1`, the keyword line, is no longer drawn as an eyebrow above it
+ * (the reference has none and it read as a line of meta above the statement);
+ * it stays the route's fallback h1 for a composition with no hero block, and
+ * the engine head still carries it as the title.
  *
- * The theme ships its own photograph, so the first screen is finished on a
- * store that has configured nothing. That is the render the design is checked
- * in, because it is what a visitor sees today. A merchant upload replaces it
- * and goes through the engine `Image` so the CDN resizes it; ours is a plain
- * `<picture>` because a theme asset has no CDN to resize it.
+ * Nothing here animates in. The photograph is the LCP element: `priority`
+ * makes it eager with `fetchpriority="high"` and `decoding="sync"`, the
+ * explicit width and height plus the band's reserved height keep CLS at zero,
+ * and a reveal on the first screen would delay exactly the pixels that are
+ * being measured.
  */
 
 /**
- * The shipped hero. Two crops, because the desktop panel is a 3:2 wedge at the
- * inline end and the mobile band is a 3:4 full bleed behind the copy.
+ * The shipped hero. Two crops, because the desktop frame is a wide cinematic
+ * band and the phone frame is a vertical one with its subject in the lower two
+ * thirds (image brief sections 1 and 2).
  */
 export const DEFAULT_HERO = '/assets/images/hero-home.jpg';
 export const DEFAULT_HERO_MOBILE = '/assets/images/hero-home-mobile.jpg';
@@ -67,9 +77,8 @@ export function OxHero({ data }: OxBlockProps) {
   const image = fieldText(data, 'image');
   const mobileImage = fieldText(data, 'mobile_image');
   const videoUrl = fieldText(data, 'video_url');
-  const eyebrow = fieldText(data, 'eyebrow') || t('ox.home.h1');
-  const headline = fieldText(data, 'headline') || t('ox.home.hero_headline');
-  const subline = fieldText(data, 'subline') || t('ox.home.hero_subline');
+  const headline = fieldText(data, 'headline');
+  const subline = fieldText(data, 'subline');
   const primaryLabel = fieldText(data, 'primary_label') || t('ox.home.hero_cta_primary');
   const primaryUrl = fieldText(data, 'primary_url') || '#ox-goals';
   const secondaryLabel = fieldText(data, 'secondary_label') || t('ox.home.hero_cta_secondary');
@@ -100,10 +109,10 @@ export function OxHero({ data }: OxBlockProps) {
               src={image}
               {...(mobileImage ? { mobileSrc: mobileImage } : {})}
               alt=""
-              width={835}
+              width={1440}
               height={560}
-              srcSetWidths={[390, 780, 835, 1670]}
-              sizes="(min-width: 1024px) 58vw, 100vw"
+              srcSetWidths={[390, 780, 1440, 2560]}
+              sizes="100vw"
               objectFit="cover"
               priority={data.priority !== false}
               className="ox-hero__img"
@@ -140,8 +149,15 @@ export function OxHero({ data }: OxBlockProps) {
             />
           ) : null}
         </div>
-        <span className="ox-hero__stroke" aria-hidden="true" />
-        <span className="ox-hero__corner" aria-hidden="true" />
+        {/* One flat gradient over the whole frame, never a blur (render budget
+            rule 2). It is what keeps white type legible on a photograph the
+            store has not shot yet as well as on the one it has. */}
+        <span className="ox-hero__scrim" aria-hidden="true" />
+        {/* The wedge pair at the band's left edge: the reference's one piece of
+            brand geometry on the first screen, and the whole wedge budget for
+            it (DIRECTION 4.5, amendment A9: neither bar ever moves). */}
+        <span className="ox-band__wedge ox-hero__wedge ox-hero__wedge--wide" aria-hidden="true" />
+        <span className="ox-band__wedge ox-hero__wedge ox-hero__wedge--thin" aria-hidden="true" />
         {showVideo ? (
           <button
             type="button"
@@ -150,24 +166,52 @@ export function OxHero({ data }: OxBlockProps) {
             aria-label={playing ? t('ox.home.hero_video_pause') : t('ox.home.hero_video_play')}
             data-testid="ox-hero-video-toggle"
           >
-            <i
-              className={playing ? 'sicon-pause' : 'sicon-play'}
-              aria-hidden="true"
-            />
+            <i className={playing ? 'sicon-pause' : 'sicon-play'} aria-hidden="true" />
           </button>
         ) : null}
       </div>
 
       <div className="ox-hero__inner ox-container">
         <div className="ox-hero__text">
-          <h1 className="ox-hero__eyebrow ox-small">{eyebrow}</h1>
-          <p className="ox-hero__headline ox-display">{headline}</p>
-          <p className="ox-hero__sub ox-lead">{subline}</p>
+          <h1 className="ox-hero__headline ox-display">
+            {headline ? (
+              headline
+            ) : (
+              <>
+                <span className="ox-hero__line">{t('ox.home.hero_line_1')}</span>{' '}
+                <span className="ox-hero__line">
+                  {t('ox.home.hero_line_2')}{' '}
+                  <span className="ox-hero__accent">{t('ox.home.hero_accent')}</span>
+                </span>
+              </>
+            )}
+          </h1>
+          {/* The reference sets a light Latin line under the headline. A
+              merchant subline replaces it, because a store that writes its own
+              second line means it rather than the lockup. */}
+          {subline ? (
+            <p className="ox-hero__sub ox-lead">{subline}</p>
+          ) : (
+            <p className="ox-hero__latin ox-latin">{t('ox.home.hero_latin')}</p>
+          )}
           <div className="ox-hero__actions">
-            <Button {...linkProps(primaryUrl)} variant="primary" size={48}>
+            <Button
+              {...linkProps(primaryUrl)}
+              variant="primary"
+              size={48}
+              className="ox-cta-wedge"
+              iconEnd={
+                <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+              }
+            >
               {primaryLabel}
             </Button>
-            <Button {...linkProps(secondaryUrl)} variant="secondary" size={48}>
+            <Button
+              {...linkProps(secondaryUrl)}
+              variant="secondary"
+              size={48}
+              className="ox-cta-pill"
+            >
               {secondaryLabel}
             </Button>
           </div>

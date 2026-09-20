@@ -3,6 +3,7 @@ import { HowItWorks } from './HowItWorks';
 import { ScopePanel } from './ScopePanel';
 import { PickupSteps } from './PickupSteps';
 import { ContactRow } from './ContactRow';
+import { ServiceCompare } from './ServiceCompare';
 import { ServiceSection } from './ServiceSection';
 import { UnitConverter } from './UnitConverter';
 import { UNIT_IDS, convert } from './convert';
@@ -39,6 +40,9 @@ export default function KitchenSink() {
 
       <h3>About facts (the strip that replaced three invented statistics)</h3>
       <p>{ABOUT_FACTS.map((fact) => fact.id).join(' ')}</p>
+
+      <h3>ServiceCompare (five columns, four rows, empty cells where there is no fact)</h3>
+      <ServiceCompare />
 
       <h3>ServiceSection, product backed</h3>
       {withProduct ? <ServiceSection page={withProduct} /> : null}

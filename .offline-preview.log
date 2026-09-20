@@ -1,0 +1,1135 @@
+[store-api] [store-api] listening on http://127.0.0.1:5178/store/v1
+[store-api] [store-api] snapshot: 47 products, 0 categories, 0 brands, generated 2026-09-20T01:33:41.573Z
+[store-api] [store-api] api.salla.dev is never contacted by this process.
+[store-api] [store-api] 200 GET /store/v1/store/settings — real store settings (3674B)
+[vite] [33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+[vite]   - `__dirname` (vite.config.ts:22:25). Use `import.meta.dirname` instead
+[vite] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[vite] [twilight-react:tanstack] Loaded 6 custom route(s) from routes.ts
+[vite] (node:45708) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+[vite] (Use `node --trace-deprecation ...` to show where the warning was created)
+[vite] [twilight-react:tanstack] Loaded 6 custom route(s) from routes.ts
+[vite] [2mDefault inspector port 9229 not available, using 9230 instead
+[vite] [22m
+[vite] 
+[vite]   [32m[1mVITE[22m v8.2.2[39m  [2mready in [0m[1m86255[22m[2m[0m ms[22m
+[vite] 
+[vite]   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3210[22m/[39m
+[vite] [2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[vite]   [32m➜[39m  [1mDebug[22m:   [2m[33mhttp://localhost:[1m3210[22m[2m/__debug[39m[22m
+[vite] 
+[vite] The Cloudflare Vite plugin detected this dev session is running in an AI agent.
+[vite] The Local Explorer API is available at http://localhost:3210/cdn-cgi/local/explorer/api
+[vite] Useful routes:
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api/local/workers - local Workers and bindings
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api/storage/kv/namespaces - KV namespaces
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api/d1/database - D1 databases
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api/r2/buckets - R2 buckets
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api/workers/durable_objects/namespaces - Durable Object namespaces
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api/workflows - Workflows
+[vite]   POST http://localhost:3210/cdn-cgi/local/explorer/api/local/observability/query - run a read-only SQL query (SELECT/WITH only) over captured request traces and console logs. Tables: spans, logs (read attributes via json(attributes)). Example:
+[vite]     curl -X POST http://localhost:3210/cdn-cgi/local/explorer/api/local/observability/query -H 'Content-Type: application/json' -d '{"sql":"SELECT service, name, outcome, duration_ms FROM spans WHERE parent_id IS NULL LIMIT 20"}'
+[vite] If the routes above don't cover what you need, fetch the full OpenAPI schema (large - use only as a last resort):
+[vite]   GET http://localhost:3210/cdn-cgi/local/explorer/api - OpenAPI schema
+[vite] 
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0ae8d597b3-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:55 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0ae8d597b3"',
+[vite]       'set-cookie' => '__cf_bm=d6zhPVWimAo5p8_67Tr_7PkFdYdvJv9Vy.61OsXVNhM-1789868335.8299828-1.0.1.1-XqfBwfCBHHnFt_ed2YjAOMsKmDIwdhemi.Y3K1wsxsZ7buxvK9yXVM7spXe6_FlAVPsOOmevINsofwwgoF6C_fabnF5JEHFlmbILbWJSDk6fngnAHgTRJ4QHtxWr83DD; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:55 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0b3a9f88ed-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:55 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0b3a9f88ed"',
+[vite]       'set-cookie' => '__cf_bm=xoe7p2tUQeY47BJzj6k07jOGjD3knpFI706u0d8UtJQ-1789868335.874073-1.0.1.1-EYMfFen0KTibExs2kQt.H5nRQSsRK3ny8HRZ_8llEbcympQx5VzJ9P3nPRL1UK2LYcgOWEybJOpTozhmIRBWIz4fR0w4cubQcD.9gWJEKyorNXTGw3MSa7O3XAgPerlH; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:55 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0b3e1b8ada-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:55 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0b3e1b8ada"',
+[vite]       'set-cookie' => '__cf_bm=uGVlV1RQxz32ex6inQdMM_tCdbmayU6ZWXZa8ejxpHs-1789868335.8750432-1.0.1.1-5hICNrFw9Bu3Vi7AXivisakM2GxPnH0jgW8Ng2nxGC5lVDj6C1f4rBZDhQO0hwHE_LGDKD7gLmE2aKgcf62Vk4gh_vwWpv91k0SWd.4BNkkm6BxUQlwZs64QShvddbet; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:55 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0b88278a03-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:55 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0b88278a03"',
+[vite]       'set-cookie' => '__cf_bm=8TC0.LzEHsdtrv4868czthDwOitwo3ubLXpIOLl9JXU-1789868335.9285352-1.0.1.1-KqZr395ztIAszF5GHs38su.nNVyipZ3m6IrHeH3NCE2l1FzLzOpRND3MuVFAT1W4gx9.UjzWMXQ52TicH1lmOzMbk9dU7A.2KOe8nRPlUlkOgUlQ4yanNQs7mWuE6P38; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:55 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0b9e0ac611-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:55 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0b9e0ac611"',
+[vite]       'set-cookie' => '__cf_bm=zdbgNj49v0MytTtjL4sM91DtxYn5lmInRHMBVJvVcio-1789868335.9350424-1.0.1.1-PdNLPn6C6WD2N8hy27aABEIcLdxclhy6JCSDetP3PYhcdODXAr1cvrl2tNtMj7N1hmlA6Ucu4Pl0LTf8Dk1jkZK_T7GGnY1I.XznO0NzZux74E5mRYJV5PMo2IgIC3K_; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:55 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0b9efe4e0f-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:55 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0b9efe4e0f"',
+[vite]       'set-cookie' => '__cf_bm=iDjIawmY5QpjsaA0eYhjyL.Pq5vKRMSFDq8VJQJMIT4-1789868335.936206-1.0.1.1-PAmll9EW1AsxhJlz08f9n_Gx8fwoFmRXS3NP9N7Sd0TSi2Dha5C2tp7ccuelRsqf0rdn.Z1dIkgXlKNjkFpWnmYwsG8KViuOVmNdn6VgL4ipNW1HMTqRqohPHK_q18LQ; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:55 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d0cbfc6e238-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:56 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d0cbfc6e238"',
+[vite]       'set-cookie' => '__cf_bm=pTtB15U6HaQ2MWAARYznugoPBlfJGhnRmm_1N0Smnts-1789868336.116929-1.0.1.1-.njQPo2qUP856pRO3gkexRYu1ai7tv_ItfNlc4M74GqKCXjJ89cMhliVqOCA8VUBfSIUPf2.6gkBL3B594khH5Rtjo7.sRDB_l182TnUB7LcxSZhzvyQa.PP4y8VBmXX; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:56 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d167bd0c84f-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:38:57 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d167bd0c84f"',
+[vite]       'set-cookie' => '__cf_bm=fSc8ubpo5UJg4cIi4HqsBo74EGs8Gvxt9N1znh3.QCQ-1789868337.6762147-1.0.1.1-V1xBQ08s9LSu3fNsgCMS9Gbg3pnCRQdNyGi9Tze32UN24KDbgtMvYMzwGou.rtNCRW_sv8Rq7NMVpNEc5v7foM9YiU8Qiw7vUOAn5v0KuI6YAzTvAB4_yPqAD94To_4g; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:08:57 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] [store.settings] Failed: HTTPError: Request failed with status code 429 Too Many Requests: GET https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings
+[vite]     at function_ (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:157:39)
+[vite]     at C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:195:24
+[vite]     at Promise.result.<computed> [as json] (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/ky@2.1.0/node_modules/ky/distribution/core/Ky.js:219:34)
+[vite]     at Object.settings (C:/Users/Ahmed/OneDrive/Desktop/optimalx/node_modules/.pnpm/@salla.sa+twilight-theme-en_c3cd9c099c8c4c71b5353d842e4aee2e/node_modules/@salla.sa/twilight-theme-engine/dist/chunk-WMSOSA74.js:38:20) {
+[vite]   response: Response {
+[vite]     status: 429,
+[vite]     statusText: 'Too Many Requests',
+[vite]     headers: Headers(26) {
+[vite]       'accept-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'access-control-allow-headers' => '*',
+[vite]       'access-control-allow-methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+[vite]       'access-control-allow-origin' => '*',
+[vite]       'access-control-max-age' => '86400',
+[vite]       'alt-svc' => 'h3=":443"; ma=86400',
+[vite]       'cf-mitigated' => 'challenge',
+[vite]       'cf-ray' => 'a3dd1d391f69f9b5-MRS',
+[vite]       'connection' => 'close',
+[vite]       'content-length' => '474094',
+[vite]       'content-type' => 'text/html; charset=UTF-8',
+[vite]       'critical-ch' => 'Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA',
+[vite]       'cross-origin-embedder-policy' => 'require-corp',
+[vite]       'cross-origin-opener-policy' => 'same-origin',
+[vite]       'cross-origin-resource-policy' => 'same-origin',
+[vite]       'date' => 'Sun, 20 Sep 2026 01:39:03 GMT',
+[vite]       'origin-agent-cluster' => '?1',
+[vite]       'permissions-policy' => 'accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*',
+[vite]       'referrer-policy' => 'same-origin',
+[vite]       'server' => 'cloudflare',
+[vite]       'server-timing' => 'chlray;desc="a3dd1d391f69f9b5"',
+[vite]       'set-cookie' => '__cf_bm=EluITptKds4LodYWCvgbkmLdSLaNyNbKgCm_FygAqkc-1789868343.214533-1.0.1.1-0IXruUI_Ts7kSfAsd0v_XT5NKxUJVY2wvTVA6IFxZjlKSmVcLdBSXXt4q2Yxj.jbqc3XIlVxnDDG626l2nVjuOmk_0xiXNuDpXElKjjdwKq5PB3iPe_ftRp2gzwXlHYy; HttpOnly; Secure; Path=/; Domain=salla.dev; Expires=Sun, 20 Sep 2026 02:09:03 GMT',
+[vite]       'strict-transport-security' => 'max-age=15552000; includeSubDomains; preload',
+[vite]       'x-content-type-options' => 'nosniff',
+[vite]       'x-frame-options' => 'SAMEORIGIN',
+[vite]       'x-robots-tag' => 'noindex, nofollow, noarchive , nocache',
+[vite]       [immutable]: true
+[vite]     },
+[vite]     ok: false,
+[vite]     redirected: false,
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     webSocket: null,
+[vite]     cf: undefined,
+[vite]     type: 'default',
+[vite]     body: ReadableStream { locked: true, [state]: 'closed', [supportsBYOB]: true, [length]: 0n },
+[vite]     bodyUsed: true
+[vite]   },
+[vite]   request: Request {
+[vite]     method: 'GET',
+[vite]     url: 'https://api.salla.dev/store/v1/store/settings?include[]=store&include[]=settings&include[]=theme&include[]=theme_settings&include[]=external_services&include[]=currencies&include[]=languages&include[]=payments&include[]=product_widgets&include[]=rating&include[]=ratings',
+[vite]     headers: Headers(11) {
+[vite]       'accept' => 'application/json',
+[vite]       'accept-language' => 'ar',
+[vite]       's-app-os' => 'browser',
+[vite]       's-app-version' => '2.14.363',
+[vite]       's-cf-proxy-whitelist-id' => '019a2f78-a64c-7edb-proxy-whitelist-id-9a3a-17afda90f03a',
+[vite]       's-ray' => '50',
+[vite]       's-source' => 'twilight',
+[vite]       's-store-api-version' => 'swoole',
+[vite]       's-theme-type' => 'react',
+[vite]       'store-identifier' => '1888890798',
+[vite]       'x-requested-with' => 'XMLHttpRequest',
+[vite]       [immutable]: false
+[vite]     },
+[vite]     redirect: 'follow',
+[vite]     fetcher: null,
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null },
+[vite]     cf: undefined,
+[vite]     integrity: '',
+[vite]     keepalive: false,
+[vite]     cache: undefined,
+[vite]     body: null,
+[vite]     bodyUsed: false
+[vite]   },
+[vite]   options: {
+[vite]     prefix: 'https://api.salla.dev/store/v1',
+[vite]     headers: Headers(1) { 'store-identifier' => '1888890798', [immutable]: false },
+[vite]     method: 'GET',
+[vite]     retry: {
+[vite]       limit: 2,
+[vite]       methods: [Array],
+[vite]       statusCodes: [Array],
+[vite]       afterStatusCodes: [Array],
+[vite]       maxRetryAfter: Infinity,
+[vite]       backoffLimit: Infinity,
+[vite]       delay: [Function: delay],
+[vite]       jitter: undefined,
+[vite]       retryOnTimeout: false
+[vite]     },
+[vite]     context: {},
+[vite]     signal: AbortSignal { aborted: false, reason: undefined, onabort: null }
+[vite]   },
+[vite]   data: '<!DOCTYPE html>\n' +
+[vite]     '<html lang="ar" dir="rtl">\n' +
+[vite]     '\n' +
+[vite]     '<head>\n' +
+[vite]     '  <meta charset="UTF-8" id="html-dir" dir="rtl" lang="ar">\n' +
+[vite]     '  <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+[vite]     '  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n' +
+[vite]     '  <meta name=robots content="noindex,nofollow">\n' +
+[vite]     '  <!-- Theme and PWA Meta Tags -->\n' +
+[vite]     '  <meta name="theme-color" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-navbutton-color" content="#37a495">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-status-bar-style" content="#37a495">\n' +
+[vite]     '  <meta name="msapplication-TileColor" content="#ffffff">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Favicon and Apple Touch Icons -->\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <link rel="apple-touch-icon-precomposed" href="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '  <meta name="msapplication-TileImage" content="https://cdn.salla.network/images/logo/logo-square.png">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Additional PWA Meta Tags -->\n' +
+[vite]     '  <meta name="application-name" content="Salla">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-title" content="Salla">\n' +
+[vite]     '  <meta name="mobile-web-app-capable" content="yes">\n' +
+[vite]     '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+[vite]     '\n' +
+[vite]     '  <!-- Tailwind CSS v3.4.0 CDN -->\n' +
+[vite]     '  <script>(()=>{var Zb=Object.create;var Oi=Object.defineProperty;var ew=Object.getOwnPropertyDescriptor;var tw=Object.getOwnPropertyNames;var rw=Object.getPrototypeOf,iw=Object.prototype.hasOwnProperty;var Qu=r=>Oi(r,"__esModule",{value:!0});var Ju=r=>{if(typeof require!="undefined")return require(r);throw new Error(\'Dynamic require of "\'+r+\'" is not supported\')};var S=(r,e)=>()=>(r&&(e=r(r=0)),e);var x=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),_e=(r,e)=>{Qu(r);for(var t in e)Oi(r,t,{get:e[t],enumerable:!0})},nw=(r,e,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of tw(e))!iw.call(r,i)&&i!=="default"&&Oi(r,i,{get:()=>e[i],enumerable:!(t=ew(e,i))||t.enumerable});return r},J=r=>nw(Qu(Oi(r!=null?Zb(rw(r)):{},"default",r&&r.__esModule&&"default"in r?{get:()=>r.default,enumerable:!0}:{value:r,enumerable:!0})),r);var h,l=S(()=>{h={platform:"",env:{},versions:{node:"14.17.6"}}});var sw,re,Ve=S(()=>{l();sw=0,re={readFileSync:r=>self[r]||"",statSync:()=>({mtimeMs:sw++}),promises:{readFile:r=>Promise.resolve(self[r]||"")}}});var xs=x((oE,Ku)=>{l();"use strict";var Xu=class{constructor(e={}){if(!(e.maxSize&&e.maxSize>0))throw new TypeError("`maxSize` must be a number greater than 0");if(typeof e.maxAge=="number"&&e.maxAge===0)throw new TypeError("`maxAge` must be a number greater than 0");this.maxSize=e.maxSize,this.maxAge=e.maxAge||1/0,this.onEviction=e.onEviction,this.cache=new Map,this.oldCache=new Map,this._size=0}_emitEvictions(e){if(typeof this.onEviction=="function")for(let[t,i]of e)this.onEviction(t,i.value)}_deleteIfExpired(e,t){return typeof t.expiry=="number"&&t.expiry<=Date.now()?(typeof this.onEviction=="function"&&this.onEviction(e,t.value),this.delete(e)):!1}_getOrDeleteIfExpired(e,t){if(this._deleteIfExpired(e,t)===!1)return t.value}_getItemValue(e,t){return t.expiry?this._getOrDeleteIfExpired(e,t):t.value}_peek(e,t){let i=t.get(e);return this._getItemValue(e,i)}_set(e,t){this.cache.set(e,t),this._size++,this._size>=this.maxSize&&(this._size=0,this._emitEvictions(this.oldCache),this.oldCache=this.cache,this.cache=new Map)}_moveToRecent(e,t){this.oldCache.delete(e),this._set(e,t)}*_entriesAscending(){for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield e)}for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield e)}}get(e){if(this.cache.has(e)){let t=this.cache.get(e);return this._getItemValue(e,t)}if(this.oldCache.has(e)){let t=this.oldCache.get(e);if(this._deleteIfExpired(e,t)===!1)return this._moveToRecent(e,t),t.value}}set(e,t,{maxAge:i=this.maxAge===1/0?void 0:Date.now()+this.maxAge}={}){this.cache.has(e)?this.cache.set(e,{value:t,maxAge:i}):this._set(e,{value:t,expiry:i})}has(e){return this.cache.has(e)?!this._deleteIfExpired(e,this.cache.get(e)):this.oldCache.has(e)?!this._deleteIfExpired(e,this.oldCache.get(e)):!1}peek(e){if(this.cache.has(e))return this._peek(e,this.cache);if(this.oldCache.has(e))return this._peek(e,this.oldCache)}delete(e){let t=this.cache.delete(e);return t&&this._size--,this.oldCache.delete(e)||t}clear(){this.cache.clear(),this.oldCache.clear(),this._size=0}resize(e){if(!(e&&e>0))throw new TypeError("`maxSize` must be a number greater than 0");let t=[...this._entriesAscending()],i=t.length-e;i<0?(this.cache=new Map(t),this.oldCache=new Map,this._size=t.length):(i>0&&this._emitEvictions(t.slice(0,i)),this.oldCache=new Map(t.slice(i)),this.cache=new Map,this._size=0),this.maxSize=e}*keys(){for(let[e]of this)yield e}*values(){for(let[,e]of this)yield e}*[Symbol.iterator](){for(let e of this.cache){let[t,i]=e;this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}for(let e of this.oldCache){let[t,i]=e;this.cache.has(t)||this._deleteIfExpired(t,i)===!1&&(yield[t,i.value])}}*entriesDescending(){let e=[...this.cache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}e=[...this.oldCache];for(let t=e.length-1;t>=0;--t){let i=e[t],[n,s]=i;this.cache.has(n)||this._deleteIfExpired(n,s)===!1&&(yield[n,s.value])}}*entriesAscending(){for(let[e,t]of this._entriesAscending())yield[e,t.value]}get size(){if(!this._size)return this.oldCache.size;let e=0;for(let t of this.oldCache.keys())this.cache.has(t)||e++;return Math.min(this._size+e,this.maxSize)}};Ku.exports=Xu});var Zu,ef=S(()=>{l();Zu=r=>r&&r._hash});function _i(r){return Zu(r,{ignoreUnknown:!0})}var tf=S(()=>{l();ef()});function et(r){if(r=`${r}`,r==="0")return"0";if(/^[+-]?(\\d+|\\d*\\.\\d+)(e[+-]?\\d+)?(%|\\w+)?$/.test(r))return r.replace(/^[+-]?/,t=>t==="-"?"":"-");let e=["var","calc","min","max","clamp"];for(let t of e)if(r.includes(`${t}(`))return`calc(${r} * -1)`}var Ei=S(()=>{l()});var rf,nf=S(()=>{l();rf=["preflight","container","accessibility","pointerEvents","visibility","position","inset","isolation","zIndex","order","gridColumn","gridColumnStart","gridColumnEnd","gridRow","gridRowStart","gridRowEnd","float","clear","margin","boxSizing","lineClamp","display","aspectRatio","size","height","maxHeight","minHeight","width","minWidth","maxWidth","flex","flexShrink","flexGrow","flexBasis","tableLayout","captionSide","borderCollapse","borderSpacing","transformOrigin","translate","rotate","skew","scale","transform","animation","cursor","touchAction","userSelect","resize","scrollSnapType","scrollSnapAlign","scrollSnapStop","scrollMargin","scrollPadding","listStylePosition","listStyleType","listStyleImage","appearance","columns","breakBefore","breakInside","breakAfter","gridAutoColumns","gridAutoFlow","gridAutoRows","gridTemplateColumns","gridTemplateRows","flexDirection","flexWrap","placeContent","placeItems","alignContent","alignItems","justifyContent","justifyItems","gap","space","divideWidth","divideStyle","divideColor","divideOpacity","placeSelf","alignSelf","justifySelf","overflow","overscrollBehavior","scrollBehavior","textOverflow","hyphens","whitespace","textWrap","wordBreak","borderRadius","borderWidth","borderStyle","borderColor","borderOpacity","backgroundColor","backgroundOpacity","backgroundImage","gradientColorStops","boxDecorationBreak","backgroundSize","backgroundAttachment","backgroundClip","backgroundPosition","backgroundRepeat","backgroundOrigin","fill","stroke","strokeWidth","objectFit","objectPosition","padding","textAlign","textIndent","verticalAlign","fontFamily","fontSize","fontWeight","textTransform","fontStyle","fontVariantNumeric","lineHeight","letterSpacing","textColor","textOpacity","textDecoration","textDecorationColor","textDecorationStyle","textDecorationThickness","textUnderlineOffset","fontSmoothing","placeholderColor","placeholderOpacity","caretColor","accentColor","opacity","backgroundBlendMode","mixBlendMode","boxShadow","boxShadowColor","outlineStyle","outlineWidth","outlineOffset","outlineColor","ringWidth","ringColor","ringOpacity","ringOffsetWidth","ringOffsetColor","blur","brightness","contrast","dropShadow","grayscale","hueRotate","invert","saturate","sepia","filter","backdropBlur","backdropBrightness","backdropContrast","backdropGrayscale","backdropHueRotate","backdropInvert","backdropOpacity","backdropSaturate","backdropSepia","backdropFilter","transitionProperty","transitionDelay","transitionDuration","transitionTimingFunction","willChange","content","forcedColorAdjust"]});function sf(r,e){return r===void 0?e:Array.isArray(r)?r:[...new Set(e.filter(i=>r!==!1&&r[i]!==!1).concat(Object.keys(r).filter(i=>r[i]!==!1)))]}var af=S(()=>{l()});var of={};_e(of,{default:()=>K});var K,Tt=S(()=>{l();K=new Proxy({},{get:()=>String})});function vs(r,e,t){typeof h!="undefined"&&h.env.JEST_WORKER_ID||t&&lf.has(t)||(t&&lf.add(t),console.warn(""),e.forEach(i=>console.warn(r,"-",i)))}function ks(r){return K.dim(r)}var lf,M,Ee=S(()=>{l();Tt();lf=new Set;M={info(r,e){vs(K.bold(K.cyan("info")),...Array.isArray(r)?[r]:[e,r])},warn(r,e){["content-problems"].includes(r)||vs(K.bold(K.yellow("warn")),...Array.isArray(r)?[r]:[e,r])},risk(r,e){vs(K.bold(K.magenta("risk")),...Array.isArray(r)?[r]:[e,r])}}});function mr({version:r,from:e,to:t}){M.warn(`${e}-color-renamed`,[`As of Tailwind CSS ${r}, \\`${e}\\` has been renamed to \\`${t}\\`.`,"Update your configuration file to silence this warning."])}var uf,ff=S(()=>{l();Ee();uf={inherit:"inherit",current:"currentColor",transparent:"transparent",black:"#000",white:"#fff",slate:{50:"#f8fafc",100:"#f1f5f9",200:"#e2e8f0",300:"#cbd5e1",400:"#94a3b8",500:"#64748b",600:"#475569",700:"#334155",800:"#1e293b",900:"#0f172a",950:"#0206'... 463889 more characters
+[vite] }
+[vite] The Workers runtime crashed unexpectedly and is being restarted (crash #1). Any additional runtime output above may indicate the cause.
+
+[preview] stopped

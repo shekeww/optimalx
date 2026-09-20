@@ -1,0 +1,48 @@
+import { useState } from 'react';
+
+export interface BandPhotoProps {
+  /** A theme asset path from `docs/build/image-brief.md`. */
+  src: string;
+  className?: string;
+}
+
+/**
+ * A decorative photograph layered behind a dark card, which disappears rather
+ * than breaking when the file is not there yet.
+ *
+ * Only six of the sixteen frames the image brief lists have been shot. Every
+ * component that names one of the other ten points at a URL that 404s today,
+ * and a 404 on a sized `<img>` is not nothing: Chrome paints its broken-image
+ * glyph in the corner of the box even when `alt` is empty. Ten of those, one
+ * per dark card, is the single worst thing this page could ship.
+ *
+ * So the element is invisible until it says it loaded, and it takes itself
+ * out of the tree the moment it says it failed. The important half of that is
+ * the first one, because it needs no JavaScript to be correct: the server's
+ * HTML paints nothing, the card's own dark ground shows through, and a
+ * visitor with scripting off sees the design's intended state rather than a
+ * degraded one. There is no transition on the reveal; a photograph fading in
+ * under a heading is motion nobody asked for.
+ *
+ * `loading="lazy"` rather than a CSS background, which would be simpler and
+ * would also never break: these sit below the fold, and six goal frames plus
+ * three plan frames fetched eagerly is most of the page's weight spent on
+ * decoration.
+ */
+export function BandPhoto({ src, className }: BandPhotoProps) {
+  const [state, setState] = useState<'pending' | 'ready' | 'failed'>('pending');
+  if (state === 'failed') return null;
+  return (
+    <img
+      className={className}
+      src={src}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      {...(state === 'ready' ? { 'data-ready': 'true' } : {})}
+      onLoad={() => setState('ready')}
+      onError={() => setState('failed')}
+      data-testid="ox-band-photo"
+    />
+  );
+}

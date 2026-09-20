@@ -171,9 +171,21 @@ export const OxProductCard = memo(function OxProductCard({
  * The engine's add button: it owns the whole cart path (options modal, quick
  * buy, notify-me when the status is out-and-notify). We only size and colour
  * it. Never reimplement cart logic (BUILD.md, CLAUDE.md).
+ *
+ * **The label tells the shopper which tap opens a chooser.** A product with
+ * variants does not go into the cart on the tap: Salla's own button opens the
+ * options modal instead, and a card that says "أضف إلى السلة" on both kinds
+ * of product makes that modal a surprise. `has_options` comes straight from
+ * the list payload, not from a second request (checked on the live catalogue
+ * 2026-09-20: of the first twenty products it is true on exactly one, the
+ * shaker, which is the one with colours), so the signal costs nothing and
+ * takes no extra row on the card. A merchant who has typed their own
+ * `add_to_cart_label` still wins: theirs is the more specific instruction.
  */
 function AddButton({ product }: { product: Product }) {
   const { t } = useTranslation();
+  const label =
+    product.add_to_cart_label ?? t(product.has_options ? 'ox.card.choose_options' : 'ox.card.add');
   return (
     <SallaAddProductButton
       productId={product.id}
@@ -185,7 +197,7 @@ function AddButton({ product }: { product: Product }) {
       className="ox-card-product__add"
     >
       <PdpIcon name="cart" size={16} className="ox-card-product__add-icon" />
-      {product.add_to_cart_label ?? t('ox.card.add')}
+      {label}
     </SallaAddProductButton>
   );
 }

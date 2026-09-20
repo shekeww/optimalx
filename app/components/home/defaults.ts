@@ -19,13 +19,27 @@ import type { HomeComponentData } from '@salla.sa/twilight-theme-engine/types';
  * fallback; a merchant who does not gets the launch copy.
  */
 
-/** Registry paths, in DIRECTION 6.2 order. The `home.` prefix is stripped by the loader. */
+/**
+ * Registry paths, in DIRECTION 6.2 order. The `home.` prefix is stripped by
+ * the loader.
+ *
+ * One departure from 6.2, and it is measured rather than felt: the category
+ * tiles used to sit between the goals and the products, which put the first
+ * price on the page 2,152px down a phone on the heights this file recorded
+ * before the homepage rebuild, and still several hundred pixels below the
+ * fold after it. A visitor decided whether to stay without ever seeing what
+ * the store charges for anything. The goals block stays high, because goal is
+ * the axis this store is organised around; the category row is the block that
+ * moves, to directly under the products it leads into. `twilight.json`
+ * carries the same order and `tests/home/defaults.test.ts` asserts the two
+ * agree.
+ */
 export const HOME_BLOCK_PATHS = [
   'ox-hero',
   'ox-trust-strip',
   'ox-goals',
-  'ox-categories',
   'ox-products',
+  'ox-categories',
   'ox-brands',
   'ox-services',
   'ox-guides',
@@ -40,39 +54,44 @@ export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
 /**
  * Reserved heights, at 390 and at 1440.
  *
- * DIRECTION 6.2 sketched these before the blocks existed. Both columns are
- * now MEASURED off the rendered page, desktop at a 1425 viewport and mobile at
- * a 375 one, with the mobile figure adjusted for the slightly wider 390 column
- * the table is defined at. The reserved box is only a pre-mount `min-height` that the
- * lazy shell releases once the block mounts, so a number that does not match
- * the built block is a one-off jump at exactly the moment the shopper is
- * reading. Five rows moved, and each for a reason worth writing down:
+ * Both columns are MEASURED off the rendered page, desktop at a 1425 viewport
+ * and mobile at a 375 one. The reserved box is only a pre-mount `min-height`
+ * that the lazy shell releases once the block mounts, so a number that does
+ * not match the built block is a one-off jump at exactly the moment the
+ * shopper is reading.
  *
- * - `ox-trust-strip` grew: the cells are the shared statistic strip now, so
- *   the caption sits under a centred glyph instead of beside it, and on a
- *   phone both caption lines wrap inside a 179px cell.
- * - `ox-services` grew a lot: 6.2 assumed a 220px channel card, and a real one
- *   with its meta line, its three-line description, its price and its button
- *   is half as tall again. The band also carries the lockup now.
- * - `ox-branch` shrank a lot: the storefront photograph is gated and the theme
- *   ships none, so the block renders the flat card. The 810 / 480 that the
- *   table reserved for a photo panel was mostly empty box.
- * - `ox-categories` and `ox-faq` moved by a few pixels, to what they measure.
+ * The homepage rebuild moved five of them, and each is worth writing down:
+ *
+ * - `ox-trust-strip` shrank: the cells are a glyph beside two lines now, not
+ *   a glyph above them, and on a phone the row is one line of a sideways
+ *   scroller rather than a two by two grid.
+ * - `ox-categories` shrank a long way: the tile is a glyph over a name, with
+ *   no 4:3 image plate under it, and the row is eight across on a desktop
+ *   and two rows of four on a phone.
+ * - `ox-goals` grew: the cards are dark photographic cards with a title, a
+ *   line and an action, not 128px icon tiles.
+ * - `ox-services` shrank a long way: it is three cards on the page ground
+ *   now, not three channel cards inside a 704px band.
+ * - `ox-faq` grew: the block carries the secondary rail beside the accordion,
+ *   which is a column of its own on a desktop and a second stack on a phone.
+ *   The number reserves for the rail HAVING products, because the live store
+ *   has 47 of them; a catalogue with none collapses the rail instead, which
+ *   is the smaller and rarer jump.
  *
  * Re-measure these whenever a block's composition changes. A guess here is
  * indistinguishable from a bug to the person reading the page.
  */
 export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop: number }> = {
-  'ox-hero': { mobile: 500, desktop: 560 },
-  'ox-trust-strip': { mobile: 208, desktop: 88 },
-  'ox-goals': { mobile: 512, desktop: 280 },
-  'ox-categories': { mobile: 932, desktop: 668 },
+  'ox-hero': { mobile: 480, desktop: 560 },
+  'ox-trust-strip': { mobile: 65, desktop: 77 },
+  'ox-goals': { mobile: 633, desktop: 310 },
   'ox-products': { mobile: 508, desktop: 630 },
+  'ox-categories': { mobile: 348, desktop: 244 },
   'ox-brands': { mobile: 64, desktop: 80 },
-  'ox-services': { mobile: 1416, desktop: 704 },
+  'ox-services': { mobile: 866, desktop: 402 },
   'ox-guides': { mobile: 485, desktop: 556 },
   'ox-branch': { mobile: 212, desktop: 240 },
-  'ox-faq': { mobile: 392, desktop: 424 },
+  'ox-faq': { mobile: 1080, desktop: 630 },
   // Both of these are off until the merchant turns them on: the newsletter
   // behind the `show_newsletter` setting, the banner behind an uploaded image.
   // Until then each renders null, so reserving their old 320 and 268 put 588px

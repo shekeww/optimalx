@@ -37,7 +37,9 @@ const realRect = Element.prototype.getBoundingClientRect;
 function stubWidths({ row, item, fixed, more }: { row: number; item: number; fixed: number; more: number }) {
   Element.prototype.getBoundingClientRect = function rect(this: Element) {
     let width = 0;
-    if (this.classList.contains('ox-nav__list')) width = row;
+    // The component measures the nav, not the list: the list is the box that
+    // overflows when the count is wrong.
+    if (this.classList.contains('ox-nav') || this.classList.contains('ox-nav__list')) width = row;
     else if (this.hasAttribute('data-nav-fixed')) width = fixed;
     else if (this.hasAttribute('data-nav-item')) width = item;
     else if (this.classList.contains('ox-nav__item--more')) width = more;
@@ -77,6 +79,20 @@ describe('fitCount', () => {
   it('can end up with nothing visible on an impossibly narrow row', () => {
     expect(fitCount([150], 100, 96)).toBe(0);
   });
+
+  it('counts the row gap, which is what the overflow was overlapping the search with', () => {
+    // Three 100s fit 400 with no gaps, and do not fit it with 32px ones:
+    // 300 plus two gaps is 364, which fits, but 400 is the whole row and the
+    // measurement that ignored the gaps is what put the control under the
+    // search pill on the live store.
+    expect(fitCount([100, 100, 100], 400, 96, 32)).toBe(3);
+    // Four of them measure 400 alone and 496 with the gaps, so the row
+    // overflows and the budget becomes 400 - 96 for the control - 32 for the
+    // gap before it, which is 272: one at 100, two at 232, three at 364.
+    expect(fitCount([100, 100, 100, 100], 400, 96, 32)).toBe(2);
+    // The same four with no gaps fit exactly, and no control is needed.
+    expect(fitCount([100, 100, 100, 100], 400, 96, 0)).toBe(4);
+  });
 });
 
 describe('slug matching', () => {
@@ -94,20 +110,26 @@ describe('slug matching', () => {
 });
 
 describe('NavBar', () => {
-  it('carries the design\'s five items, in its order', async () => {
+  it('carries the design\'s six items, in order, with the advisory among them', async () => {
     stubWidths({ row: 2000, item: 100, fixed: 120, more: 96 });
     renderWithProviders(<NavBar />);
     await waitFor(() => expect(screen.getByText('المنتجات')).toBeTruthy());
     const labels = Array.from(document.querySelectorAll('[data-nav-item] a')).map(
       (node) => node.textContent
     );
+    // The advisory was in the mobile drawer and nowhere on the desktop bar,
+    // which gave the store two site maps with its differentiator on the
+    // smaller of the two. Fourth, not last, because the overflow control
+    // takes the trailing items and last is where it would be hidden again.
     expect(labels).toEqual([
       'المنتجات',
       'المكملات',
       'البروتين',
+      'اسأل قبل أن تشتري',
       'الخطط الغذائية',
       'عن اوبتيمال اكس',
     ]);
+    expect(screen.getByText('اسأل قبل أن تشتري').getAttribute('href')).toBe('/services');
     await waitFor(() => expect(screen.queryByTestId('ox-nav-more')).toBeNull());
   });
 
@@ -136,7 +158,7 @@ describe('NavBar', () => {
     expect(more.getAttribute('aria-expanded')).toBe('false');
 
     // The goals item is off by default, so the whole 400 is the budget; minus
-    // the control leaves 304, which fits two 150 wide items out of the five.
+    // the control that leaves 304, which fits two 150 wide items of the six.
     const shown = document.querySelectorAll('[data-nav-item]');
     expect(shown.length).toBe(2);
   });

@@ -185,6 +185,30 @@ describe('OxProductCard', () => {
     expect(button.getAttribute('data-product-id')).toBe('1996831868');
   });
 
+  it('says the tap opens a chooser when the product has variants', () => {
+    // A card with options does not go into the cart on the tap: Salla's own
+    // button opens the options modal, and the same label on both kinds of
+    // product made that modal a surprise.
+    const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.add'));
+    plain.unmount();
+
+    const withOptions = renderWithProviders(
+      <OxProductCard product={makeProduct({ has_options: true })} />
+    );
+    expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.choose_options'));
+    withOptions.unmount();
+
+    // A merchant who typed their own label still wins: theirs is the more
+    // specific instruction.
+    renderWithProviders(
+      <OxProductCard
+        product={makeProduct({ has_options: true, add_to_cart_label: 'اطلب الآن' })}
+      />
+    );
+    expect(screen.getByTestId('add-button').textContent).toContain('اطلب الآن');
+  });
+
   it('toggles the wishlist through the engine hook', () => {
     renderWithProviders(<OxProductCard product={makeProduct()} />);
     screen.getByLabelText(t('ox.a11y.wishlist_toggle')).click();

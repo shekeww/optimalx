@@ -36,6 +36,7 @@
   "ox.filter.clear": "مسح التصفية",
   "ox.filter.apply": "عرض النتائج",
   "ox.filter.results_count": "{{count}} منتج",
+  "ox.filter.applied": "{{count}} تصفية مطبقة",
   "ox.filter.brand": "العلامة",
   "ox.filter.flavor": "النكهة",
   "ox.filter.size": "الحجم",

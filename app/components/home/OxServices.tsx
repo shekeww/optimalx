@@ -1,34 +1,40 @@
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SectionHeader } from '../common/SectionHeader';
-import { Wordmark } from '../common/Wordmark';
-import { ChannelCard } from '../blocks/ChannelCard';
-import { SERVICE_CHANNELS, SERVICES_HUB } from '../../content/services';
+import { PlanCard } from './PlanCard';
+import { HOME_PLANS, SERVICES_HUB } from '../../content/services';
+import { useSectionReveal } from './useSectionReveal';
 import { fieldText, type OxBlockProps } from './defaults';
 
 /**
- * The services band (DIRECTION 5.2 OxServices, 6.2 row 7, FINAL-content 1.4
- * and 4.3). This is the home page's one dark band and its one wedge.
+ * The advisory row, `برامج وخطط التغذية` (homepage-spec section 7).
  *
- * It is built to the approved image's band contract rather than to DIRECTION's
- * earlier tonal-panel sketch, because the image is the identity and it is
- * explicit about what a band is: a photograph under a gradient, the wedge at
- * the brand's 22 degrees, a statement, and the lockup. A flat graphite
- * rectangle with three cards on it is a stripe, not a chapter, and the whole
- * point of this section is to break the page.
+ * This block used to be the home page's one dark band: a photograph under a
+ * gradient with the three "ask before you buy" channels sitting on it. The
+ * reference puts something different here and it is the better call for this
+ * business. Three dark cards on the light ground, one per programme, read as
+ * three things the store offers; three cards floating on a photograph read as
+ * one decorated stripe, and the advisory half of the business then reads as
+ * an afterthought attached to the shop rather than half of what is for sale.
  *
- * The photograph shows a counter and the products on it. It shows no face, by
- * rule: the store has no certified staff and a portrait beside an advice
- * heading would imply one (PLAN-final 5.1, claims source section 3).
+ * The three are the ones `docs/build/image-brief.md` sections 9 to 11 name
+ * and `HOME_PLANS` holds: nutrition plans, training, and the video
+ * consultation. The two channels that are not programmes, the free written
+ * question and the branch visit, stay on `/services`, which the section
+ * header's route-out link points at, and the free written question is also
+ * the trust strip's fourth cell. Neither leaves the page.
  *
- * Claims gates: the reply-time line renders only when `reply_sla_hours` is set
- * and interpolates it; the 50 riyal consultation credit is the
- * `consultation_credit_note` setting rendered verbatim inside the card, and
- * neither sentence exists in the markup when its setting is empty.
+ * The manifest's `image` field is labelled "Band image" in the dashboard, and
+ * it still does what it says: setting it puts the section back on a dark
+ * photographic band, with the three cards lifted a step so they read on it.
+ * It is off unless the merchant fills it, because a dashboard control that
+ * changes nothing is worse than one that is not there. The theme ships no
+ * default for it: the design the reference draws is the cards on the page.
+ *
+ * Claims gate, unchanged: the reply-time sentence renders only when
+ * `reply_sla_hours` is set and interpolates it. Nothing here promises a
+ * result, a timeframe or an outcome, and no card names a professional title.
  */
-
-/** Decorative. The band says nothing the copy does not already say. */
-export const DEFAULT_SERVICES_PHOTO = '/assets/images/services-band.jpg';
 
 function settingValue(settings: unknown, key: string): string {
   if (!settings || typeof settings !== 'object') return '';
@@ -39,46 +45,42 @@ function settingValue(settings: unknown, key: string): string {
 export function OxServices({ data }: OxBlockProps) {
   const { t } = useTranslation();
   const { settings } = useTheme();
+  const rowRef = useSectionReveal<HTMLDivElement>();
 
-  const title = fieldText(data, 'title') || t('ox.home.services_title');
-  const intro = fieldText(data, 'intro') || t('ox.home.services_intro');
-  const photo = fieldText(data, 'image') || DEFAULT_SERVICES_PHOTO;
+  const title = fieldText(data, 'title') || t('ox.home.plans_title');
+  const intro = fieldText(data, 'intro') || t('ox.home.plans_intro');
+  const band = fieldText(data, 'image');
   const replyHours = settingValue(settings, SERVICES_HUB.replyTimeSetting);
 
   return (
-    <section className="ox-services ox-band-dark" data-testid="ox-services">
-      <img className="ox-services__photo" src={photo} alt="" loading="lazy" decoding="async" />
-      <span className="ox-services__scrim" aria-hidden="true" />
-      <span className="ox-band__wedge ox-band__wedge--wide" aria-hidden="true" />
-      <span className="ox-band__wedge ox-band__wedge--thin" aria-hidden="true" />
-
+    <section
+      className={['ox-services', band ? 'ox-services--banded ox-band-dark' : null]
+        .filter(Boolean)
+        .join(' ')}
+      data-testid="ox-services"
+    >
+      {band ? (
+        <>
+          <img className="ox-services__photo" src={band} alt="" loading="lazy" decoding="async" />
+          <span className="ox-services__scrim" aria-hidden="true" />
+        </>
+      ) : null}
       <div className="ox-container ox-services__inner">
-        <SectionHeader
-          eyebrow={t('ox.home.services_eyebrow')}
-          title={title}
-          descriptor={intro}
-          viewAll={{ to: '/services' }}
-        />
-        <div className="ox-channels">
-          {SERVICE_CHANNELS.map((channel) => (
-            <ChannelCard channel={channel} key={channel.id} />
+        <SectionHeader title={title} viewAll={{ to: '/services' }} />
+        <div className="ox-plans ox-reveal" ref={rowRef}>
+          {HOME_PLANS.map((plan, index) => (
+            <PlanCard plan={plan} key={plan.id} index={index} />
           ))}
         </div>
-        <div className="ox-services__foot">
-          <div className="ox-services__notes">
-            {replyHours ? (
-              <p className="ox-services__reply ox-small" data-testid="ox-services-reply">
-                {t('ox.home.services_reply', { hours: replyHours })}
-              </p>
-            ) : null}
-            <p className="ox-services__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
-          </div>
-          {/* The owner's mark, the same asset the product page's band carries.
-              It is what makes the band read as the brand speaking rather than
-              as one more section. */}
-          <p className="ox-services__lockup">
-            <Wordmark width={148} variant="full" tone="dark" />
-          </p>
+        <div className="ox-services__notes">
+          {replyHours ? (
+            <p className="ox-services__reply ox-small" data-testid="ox-services-reply">
+              {t('ox.home.services_reply', { hours: replyHours })}
+            </p>
+          ) : null}
+          {/* The limit-of-our-work line. It renders on every advisory surface
+              and it is the reason none of the copy above has to hedge. */}
+          <p className="ox-services__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
         </div>
       </div>
     </section>

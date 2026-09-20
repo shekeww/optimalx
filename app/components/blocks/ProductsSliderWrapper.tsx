@@ -33,7 +33,6 @@ export interface ProductsSliderWrapperProps {
   /** Rendered as a SectionHeader above the rail when given. */
   title?: ReactNode;
   eyebrow?: ReactNode;
-  descriptor?: ReactNode;
   viewAll?: { to: string; label?: ReactNode };
   /** Distinct per block: the web component keys its Swiper instance off it. */
   sliderId: string;
@@ -65,7 +64,6 @@ export function ProductsSliderWrapper({
   sort,
   title,
   eyebrow,
-  descriptor,
   viewAll,
   sliderId,
   skeleton,
@@ -112,7 +110,7 @@ export function ProductsSliderWrapper({
   return (
     <div className={['ox-rail', className].filter(Boolean).join(' ')} data-testid="ox-products-slider">
       {title ? (
-        <SectionHeader title={title} eyebrow={eyebrow} descriptor={descriptor} viewAll={viewAll} />
+        <SectionHeader title={title} eyebrow={eyebrow} viewAll={viewAll} />
       ) : null}
       <SallaProductsSlider<Product>
         loader={loader}

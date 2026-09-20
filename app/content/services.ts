@@ -312,3 +312,60 @@ export function servicePageBySlug(slug: string | undefined): ServicePage | undef
 
 /** Every anchor the hub publishes, in order. */
 export const SERVICE_PAGE_SLUGS: string[] = SERVICE_PAGES.map((page) => page.slug);
+
+// ---------------------------------------------------------------------------
+// The home page's advisory row (reference section 7, `برامج وخطط التغذية`)
+// ---------------------------------------------------------------------------
+
+/**
+ * The three cards the home page gives to the advisory half of the business.
+ *
+ * The reference draws three plan cards here and `docs/build/image-brief.md`
+ * sections 9 to 11 name exactly three photographs for this row: nutrition
+ * plans, training plans and the consultation. Those three are what this map
+ * holds, each pointing at the surface that already sells it.
+ *
+ * The two entry channels that are not plans, the free written question and the
+ * branch visit, stay on `/services`, which the section header links to. They
+ * are also the trust strip's fourth cell, so neither disappears from the page.
+ *
+ * Every card is finished without its photograph: none of the three files
+ * exists yet and `PlanCard` renders the flat dark ground until they do.
+ */
+export interface HomePlan {
+  id: string;
+  /** Anchor or product route the whole card links to. */
+  to: string;
+  icon: OxIconName;
+  titleKey: string;
+  lineKey: string;
+  /** The brief's exact path, so a generated frame needs no code change. */
+  photo: string;
+}
+
+export const HOME_PLANS: HomePlan[] = [
+  {
+    id: 'nutrition',
+    to: '/services#nutrition-plans',
+    icon: 'plan',
+    titleKey: 'ox.home.plan_nutrition_title',
+    lineKey: 'ox.home.plan_nutrition_line',
+    photo: '/assets/images/plan-nutrition.jpg',
+  },
+  {
+    id: 'training',
+    to: pathForSku('OX-047') ?? '/services#personal-training',
+    icon: 'form',
+    titleKey: 'ox.home.plan_training_title',
+    lineKey: 'ox.home.plan_training_line',
+    photo: '/assets/images/plan-training.jpg',
+  },
+  {
+    id: 'advisory',
+    to: pathForSku('OX-045') ?? '/services#video-consultation',
+    icon: 'video-consult',
+    titleKey: 'ox.home.plan_advisory_title',
+    lineKey: 'ox.home.plan_advisory_line',
+    photo: '/assets/images/plan-advisory.jpg',
+  },
+];

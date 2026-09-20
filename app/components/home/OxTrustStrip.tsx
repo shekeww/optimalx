@@ -12,14 +12,18 @@ const SallaPayments = lazy(() =>
  * The trust strip under the hero (DIRECTION 5.2 OxTrustStrip, 6.2 row 2,
  * FINAL-content 1.3 and 1.5).
  *
- * It is drawn as the design system's statistic strip: equal cells separated by
- * hairlines with no fill, no border and no shadow, a glyph where the product
- * page puts a figure, and a two line caption under it. The approved image uses
- * that same strip to carry product facts; the home page uses it to carry the
- * store's four promises, which is what "applying the system" means: the same
- * part, different content. `.ox-stats` is declared once in the product
- * stylesheet and consumed here unchanged, so two rows of facts on two pages can
- * never drift apart.
+ * Four cells on the light ground divided by hairlines, each a glyph beside a
+ * bold line and a lighter one. No fill, no border around the row, no shadow:
+ * the separation is the hairline and nothing else, which is how every surface
+ * in this design is separated.
+ *
+ * **It is no longer `.ox-stats`.** The product page's statistic strip and this
+ * row were one class until the phone layouts parted: the reference's phone
+ * pane scrolls these four sideways under the hero, while a product page's
+ * facts stay a two by two grid. Forcing one class to be both meant the home
+ * page overriding half of the product page's rules inside a width query, which
+ * is how a shared part rots. They share the design (equal cells, hairlines, a
+ * glyph, a two line caption) and each owns its own box.
  *
  * Four items, one definition panel, one item open at a time. Two claims gates
  * live here (PLAN-final 5.1):
@@ -112,21 +116,21 @@ export function OxTrustStrip({ data }: OxBlockProps) {
   return (
     <section className="ox-trust" aria-label={t('ox.home.trust_region')} data-testid="ox-trust-strip">
       <div className="ox-container">
-        <ul className="ox-stats ox-trust__row" data-count={items.length}>
+        <ul className="ox-trust__row" data-count={items.length}>
           {items.map((item) => {
             const expandable = Boolean(item.definition) || Boolean(item.marks);
             const isOpen = open === item.id;
             const body = (
               <>
-                <Icon name={item.icon} size={24} className="ox-trust__icon" />
-                <span className="ox-stats__label ox-trust__text">
+                <Icon name={item.icon} size={26} className="ox-trust__icon" />
+                <span className="ox-trust__text">
                   <span className="ox-trust__title">{item.title}</span>
                   <span className="ox-trust__line">{item.line}</span>
                 </span>
               </>
             );
             return (
-              <li className="ox-stats__cell ox-trust__item" key={item.id}>
+              <li className="ox-trust__item" key={item.id}>
                 {expandable ? (
                   <button
                     type="button"

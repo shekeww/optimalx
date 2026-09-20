@@ -40,7 +40,6 @@ export function OxGuides({ data }: OxBlockProps) {
       <div className="ox-container">
         <SectionHeader
           title={title}
-          descriptor={t('ox.home.guides_intro')}
           viewAll={{ to: '/blog' }}
         />
         <ul className="ox-guides">

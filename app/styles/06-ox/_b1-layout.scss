@@ -9,6 +9,29 @@
 // and a change of value.
 
 // ---------------------------------------------------------------------------
+// 0. The page ground
+//
+// The inherited Salla sheet sets `body { background-color: #fff }` through a
+// Tailwind base rule, and nothing in this layer replaced it, so `--ox-paper`
+// was defined and never painted. A white page under white panels collapses
+// the one separation the whole design runs on: surfaces are told apart by a
+// step in value plus a hairline, never by a shadow, and with both surfaces at
+// #FFF there is no step to read.
+//
+// The ground is set on `.app-inner` rather than on `body` so the dark bands
+// that bleed full width still paint over it, and so a route that wants its
+// own ground can override one wrapper instead of fighting the document.
+// `body` is set too, for the overscroll area above and below the page.
+// ---------------------------------------------------------------------------
+body {
+  background-color: var(--ox-bg);
+}
+
+.app-inner {
+  background: var(--ox-bg);
+}
+
+// ---------------------------------------------------------------------------
 // 1. Skip link
 // ---------------------------------------------------------------------------
 .ox-skip {
@@ -39,7 +62,7 @@
     background: var(--ox-graphite);
     border-radius: var(--ox-r-2);
     color: var(--ox-paper);
-    font-weight: 600;
+    font-weight: var(--ox-w-ui);
     outline: 2px solid var(--ox-paper);
     outline-offset: 2px;
   }
@@ -85,12 +108,16 @@
 .ox-announce__text {
   margin: 0;
   font-size: 13px;
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: var(--ox-w-read);
+  line-height: var(--ox-lh-snug);
   text-align: center;
 }
 
 .ox-utility {
+  // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
+  // lightest weight steps, because reversed type reads lighter (tokens.css).
+  --ox-w-open: 400; // Read
+  --ox-w-read: 500; // Quiet
   display: none;
   background: var(--ox-band-util);
   // Barely there on purpose: the strip and the bar are one block, and this
@@ -120,7 +147,7 @@
   min-block-size: 32px;
   color: var(--ox-ink-2-on-dark);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   text-decoration: none;
 
   &:hover {
@@ -153,7 +180,7 @@
   gap: var(--ox-2);
   color: var(--ox-ink-3-on-dark);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   white-space: nowrap;
   text-decoration: none;
 }
@@ -180,7 +207,7 @@ a.ox-util__trust-link {
   color: var(--ox-ink-2-on-dark);
   font: inherit;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   cursor: pointer;
 
   &:hover {
@@ -258,6 +285,10 @@ a.ox-util__trust-link {
 // 4. Main bar, lockup, icon buttons, counts
 // ---------------------------------------------------------------------------
 .ox-mainbar {
+  // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
+  // lightest weight steps, because reversed type reads lighter (tokens.css).
+  --ox-w-open: 400; // Read
+  --ox-w-read: 500; // Quiet
   background: var(--ox-band-header);
 }
 
@@ -306,9 +337,15 @@ a.ox-util__trust-link {
   }
 }
 
+// 320, not 399. The pill was given a third of the bar and the nav row was
+// left whatever fell off the end, which is why its overflow control was
+// being laid out underneath the pill. 320 is still a field a brand name
+// types into comfortably, and it frees the 79px the row needed. Below the
+// width where even that fits, the pill gives up another 80 before anything
+// else moves.
 .ox-mainbar__search {
-  flex: 0 1 399px;
-  min-inline-size: 0;
+  flex: 0 1 320px;
+  min-inline-size: 240px;
   margin-inline-start: auto;
 }
 
@@ -379,8 +416,8 @@ a.ox-util__trust-link {
     border-radius: var(--ox-r-pill);
     color: var(--ox-on-accent);
     font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
+    font-weight: var(--ox-w-figure);
+    line-height: var(--ox-lh-num);
   }
 
   // Zero is not news: `useCartCountPill` marks the component's own count
@@ -406,8 +443,8 @@ a.ox-util__trust-link {
   border-radius: var(--ox-r-pill);
   color: var(--ox-on-accent);
   font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-num);
   animation: ox-count-bump var(--dur-confirm) var(--ease-out);
 }
 
@@ -464,12 +501,12 @@ a.ox-util__trust-link {
     border-radius: var(--ox-r-pill);
     color: var(--ox-ink-on-dark);
     font-size: 14px;
-    font-weight: 400;
+    font-weight: var(--ox-w-read);
     line-height: 40px;
 
     &::placeholder {
       color: var(--ox-ink-3-on-dark);
-      font-weight: 400;
+      font-weight: var(--ox-w-read);
       opacity: 1;
     }
 
@@ -514,8 +551,15 @@ a.ox-util__trust-link {
 // ---------------------------------------------------------------------------
 // 6. Nav, inside the main bar
 // ---------------------------------------------------------------------------
+// `flex: 1 1 0`, and the zero basis is the whole point: the nav takes the
+// row's leftover rather than asking for what its content happens to measure
+// this frame. With an `auto` basis the box sized itself to whatever the
+// overflow calculation had just decided to render, that width fed straight
+// back into the next calculation, and the two chased each other between
+// three items and four.
 .ox-nav {
   display: none;
+  flex: 1 1 0;
   min-inline-size: 0;
 }
 
@@ -523,6 +567,8 @@ a.ox-util__trust-link {
   display: flex;
   align-items: center;
   gap: var(--ox-8);
+  flex: 1 1 auto;
+  min-inline-size: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -547,8 +593,7 @@ a.ox-util__trust-link {
   color: #c9c7c3;
   font: inherit;
   font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0;
+  font-weight: var(--ox-w-ui);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -667,7 +712,7 @@ a.ox-util__trust-link {
 .ox-mega__heading {
   margin: 0 0 var(--ox-2);
   color: var(--ox-ink-4);
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
 }
 
 .ox-mega__link {
@@ -812,7 +857,7 @@ a.ox-util__trust-link {
   color: var(--ox-ink);
   font: inherit;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   text-align: start;
   text-decoration: none;
   cursor: pointer;
@@ -825,13 +870,13 @@ a.ox-util__trust-link {
 
 .ox-drawer__row--sub {
   justify-content: flex-start;
-  font-weight: 400;
+  font-weight: var(--ox-w-quiet);
 }
 
 .ox-drawer__row--child {
   justify-content: flex-start;
   padding-inline-start: calc(var(--ox-4) + var(--ox-4));
-  font-weight: 400;
+  font-weight: var(--ox-w-read);
 }
 
 // Wishlist and account leave the mobile bar and arrive here as their own
@@ -896,7 +941,7 @@ a.ox-util__trust-link {
   gap: var(--ox-2);
   min-block-size: 44px;
   color: var(--ox-ink);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   text-decoration: none;
 
   &:focus-visible {
@@ -963,7 +1008,7 @@ a.ox-util__trust-link {
 
 .ox-tab__label {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
   color: var(--ox-ink-3);
 }
 
@@ -1017,7 +1062,7 @@ body.ox-has-tabbar {
   margin: 0;
   color: var(--ox-ink-on-dark);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
 }
 
 .ox-footer__toggle {
@@ -1027,7 +1072,7 @@ body.ox-has-tabbar {
   color: inherit;
   font: inherit;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--ox-w-title);
   text-align: start;
   cursor: pointer;
 
@@ -1055,7 +1100,7 @@ body.ox-has-tabbar {
   min-block-size: 44px;
   color: var(--ox-ink-3-on-dark);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: var(--ox-w-read);
   text-decoration: none;
 
   &:hover {
@@ -1081,12 +1126,13 @@ body.ox-has-tabbar {
   margin: 0;
   color: var(--ox-ink-2-on-dark);
   font-size: 14px;
-  line-height: 1.6;
+  font-weight: var(--ox-w-read);
+  line-height: var(--ox-lh-lead);
 }
 
 .ox-footer__tagline-2 em {
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   color: var(--ox-mint);
 }
 
@@ -1136,7 +1182,7 @@ body.ox-has-tabbar {
     gap: var(--ox-2);
     color: var(--ox-ink-2-on-dark);
     font-size: 13px;
-    line-height: 1.5;
+    line-height: var(--ox-lh-caption);
   }
 }
 
@@ -1175,11 +1221,7 @@ body.ox-has-tabbar {
   margin: 0;
   color: var(--ox-ink-on-dark);
   font-size: 14px;
-  font-weight: 700;
-
-  .ox-latin-track {
-    letter-spacing: 0.04em;
-  }
+  font-weight: var(--ox-w-title);
 
   .ox-icon {
     color: var(--ox-accent);
@@ -1239,8 +1281,15 @@ body.ox-has-tabbar {
     display: none;
   }
 
+  // `flex`, not `block`: a block box contributes its containing block's width
+  // as its flex basis, not its content's, so the nav never asked the row for
+  // the width its items actually need and the search pill kept its full 399
+  // while the item row was cut to three. As a flex box its basis is the
+  // list's own max-content, the row overflows honestly, and the two shrink
+  // against each other until the search hits its 280 floor.
   .ox-nav {
-    display: block;
+    display: flex;
+    align-items: center;
   }
 
   .ox-tabbar {
