@@ -204,13 +204,11 @@
   inline-size: 100%;
 }
 
-.ox-card-product__add-icon {
-  // `flex: none` because the label row is a flex container now: as a flex item
-  // the svg was shrinking to 10px against its own 20px width attribute, so the
-  // glyph looked undersized next to its label. The margin is gone with it; the
-  // row's own gap carries the spacing and the two together were doubling it.
-  flex: none;
-}
+// `.ox-card-product__add-icon` is gone. The card's cart glyph used to be an
+// `<svg>` child of `salla-add-product-button`, and the component discards
+// element children when it upgrades, so the icon rendered outside the label row
+// and unstyled. It is a mask on `.s-button-text::before` now, in _b4-listing,
+// off the same `--ox-cart-glyph` token the product page's button uses.
 
 .ox-card-product.is-out .ox-card-product__plate {
   opacity: 0.72;
@@ -1462,8 +1460,8 @@ body.is-sticky-product-bar.product-single {
 .ox-bband {
   // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
   // lightest weight steps, because reversed type reads lighter (tokens.css).
-  --ox-w-open: 450; // Read
-  --ox-w-read: 500; // Quiet
+  --ox-w-open: 550; // Read
+  --ox-w-read: 600; // Quiet
   position: relative;
   display: flex;
   flex-direction: column;

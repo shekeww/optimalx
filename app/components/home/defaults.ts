@@ -102,7 +102,10 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
   // a layout shift in the least forgivable direction: everything a shopper was
   // reading jumps upward under them.
-  'ox-goals': { mobile: 678, desktop: 332 },
+  // Desktop was 332 when the goal door was 260 tall. The door is 400 from 1280
+  // now, so this follows it: reserving the old number would hand the block a
+  // 140px jump on mount, which is the layout shift this table exists to stop.
+  'ox-goals': { mobile: 678, desktop: 472 },
   // The largest single error in the old table, and in the opposite direction.
   // The rail became an eight-card grid and the reservation never followed, so
   // this block UNDER-reserved by 410px and jumped down on mount.

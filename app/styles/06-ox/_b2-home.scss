@@ -1342,16 +1342,44 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // Six across only from 1280, where the container is wide enough that a cell is
-// about 203 and a 260 card reads as a door. This rule used to sit at 1024 with
+// about 203 and the card reads as a door. This rule used to sit at 1024 with
 // a 190px card, which made the row SHORTER on a wider screen: the measured
 // 203x190 that the owner called compressed, twice.
+//
+// THE DOORS ARE TALL NOW, and that is the point of the section rather than a
+// preference. "تسوق حسب هدفك" is how this store expects to be navigated — the
+// shopper does not arrive knowing they want creatine, they arrive knowing they
+// want to recover — so the goal row is the primary way into the catalogue and
+// it was being given less height than a product card. At 203 wide a 260 card is
+// a landscape tile that reads as a banner strip; a 400 card is a portrait door
+// that reads as a place to go, and the photography behind it finally has room
+// to be a photograph rather than a texture.
 @media (min-width: 1280px) {
   .ox-goals__grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--ox-5);
   }
 
   .ox-goal {
-    min-block-size: 260px;
+    min-block-size: 400px;
+  }
+
+  // The plate grows with the card: at 260 the body sat on roughly a third of
+  // the face, and at 400 that same padding leaves the type floating. It keeps
+  // the copy anchored to the foot where the eye lands after the picture.
+  .ox-goal__body {
+    padding: var(--ox-5);
+  }
+
+  .ox-goal__label {
+    font-size: 19px;
+  }
+}
+
+// From 1536 the container stops growing but the section can still breathe.
+@media (min-width: 1536px) {
+  .ox-goal {
+    min-block-size: 440px;
   }
 }
 

@@ -116,8 +116,8 @@ body {
 .ox-utility {
   // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
   // lightest weight steps, because reversed type reads lighter (tokens.css).
-  --ox-w-open: 450; // Read
-  --ox-w-read: 500; // Quiet
+  --ox-w-open: 550; // Read
+  --ox-w-read: 600; // Quiet
   display: none;
   background: var(--ox-band-util);
   // Barely there on purpose: the strip and the bar are one block, and this
@@ -287,8 +287,8 @@ a.ox-util__trust-link {
 .ox-mainbar {
   // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
   // lightest weight steps, because reversed type reads lighter (tokens.css).
-  --ox-w-open: 450; // Read
-  --ox-w-read: 500; // Quiet
+  --ox-w-open: 550; // Read
+  --ox-w-read: 600; // Quiet
   background: var(--ox-band-header);
 }
 

@@ -1397,6 +1397,35 @@ nav.breadcrumbs .s-breadcrumb-item button {
   white-space: nowrap;
 }
 
+// THE CART GLYPH, DRAWN RATHER THAN SLOTTED, and on the same line as the words.
+//
+// It used to be a `<PdpIcon>` child of the web component. That works right up
+// until the component upgrades, at which point it keeps the slotted TEXT and
+// drops element children: the svg ended up outside the label row, stacked above
+// it, with none of the button's styling on it. This is a mask on the label's
+// own `::before` instead, so it is part of the flex row by construction and
+// nothing the component does to its children can move it.
+//
+// The same `--ox-cart-glyph` the product page's add button uses, at the same
+// stroke — one definition of the cart in the whole theme. `inline-size` and
+// `block-size` are pinned because a mask has no intrinsic size, and `flex: none`
+// stops it being squeezed when the label is long.
+//
+// It stays at EVERY width. The glyph is what makes the button readable as
+// add-to-cart at a glance in a grid, so when a narrow card runs out of room the
+// stepper is what goes (see the container query below), never this.
+.ox-card-product__add .s-button-text::before {
+  content: '';
+  flex: none;
+  inline-size: 18px;
+  block-size: 18px;
+  background: currentColor;
+  // Both spellings: Safari only dropped the prefix at 17.4 and autoprefixer is
+  // not configured to add it for the mask shorthand.
+  -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+  mask: var(--ox-cart-glyph) center / contain no-repeat;
+}
+
 
 
 .ox-card-product__add .s-button-element:focus-visible,

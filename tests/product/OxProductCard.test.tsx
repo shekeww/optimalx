@@ -34,21 +34,28 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 // carry behaviour, so a test can prove the card hands the cart path over
 // rather than reimplementing it. The quick-buy instance gets its own testid
 // because a card can render both.
+// Both exports render the same stand-in. The card uses the CORE one, because
+// the deferred export only mounts the custom element after an
+// IntersectionObserver hit and was leaving a skeleton in the slot forever on
+// the live grid; the deferred name stays mocked because other components under
+// test still import it.
+const addButtonStub = ({ children, ...rest }: Record<string, unknown>) => (
+  <button
+    type="button"
+    data-testid={rest.quickBuy ? 'quick-buy-button' : 'add-button'}
+    data-product-id={String(rest.productId)}
+    data-quantity={rest.quantity === undefined ? 'unset' : String(rest.quantity)}
+    data-fill={String(rest.fill ?? '')}
+    data-amount={rest.amount === undefined ? 'unset' : String(rest.amount)}
+    data-required-shipping={rest.requiredShipping ? 'yes' : 'no'}
+    className={String(rest.className ?? '')}
+  >
+    {children as React.ReactNode}
+  </button>
+);
 vi.mock('@salla.sa/twilight-components-react/add-product-button', () => ({
-  SallaAddProductButton: ({ children, ...rest }: Record<string, unknown>) => (
-    <button
-      type="button"
-      data-testid={rest.quickBuy ? 'quick-buy-button' : 'add-button'}
-      data-product-id={String(rest.productId)}
-      data-quantity={rest.quantity === undefined ? 'unset' : String(rest.quantity)}
-      data-fill={String(rest.fill ?? '')}
-      data-amount={rest.amount === undefined ? 'unset' : String(rest.amount)}
-      data-required-shipping={rest.requiredShipping ? 'yes' : 'no'}
-      className={String(rest.className ?? '')}
-    >
-      {children as React.ReactNode}
-    </button>
-  ),
+  SallaAddProductButton: addButtonStub,
+  SallaAddProductButtonCore: addButtonStub,
 }));
 vi.mock('@salla.sa/twilight-components-react/button', () => ({
   SallaButton: ({ children, ariaLabel, onClick, className }: Record<string, unknown>) => (

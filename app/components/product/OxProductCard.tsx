@@ -4,7 +4,8 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import type { ProductCardProps } from '@salla.sa/twilight-theme-engine/product';
-import { SallaAddProductButton } from '@salla.sa/twilight-components-react/add-product-button';
+import { SallaAddProductButtonCore } from '@salla.sa/twilight-components-react/add-product-button';
+import { WebComponentBoundary } from '../common/WebComponentBoundary';
 import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
@@ -328,22 +329,28 @@ function BuyNow({ product }: { product: Product }) {
   const label = t('ox.card.buy_now');
 
   if (product.can_quick_buy === true) {
+    // Core for the same reason as the add button above: the deferred export's
+    // observer left a skeleton where the control should be. This branch does
+    // not render on the catalogue today, since `can_quick_buy` is false on
+    // every product, but it must not carry the defect the day it is switched on.
     return (
-      <SallaAddProductButton
-        productId={product.id}
-        productType={product.type}
-        productStatus={product.status}
-        quickBuy
-        amount={quickBuyAmount(product)}
-        width="wide"
-        fill="solid"
-        loaderPosition="center"
-        className="ox-card-product__buy ox-card-product__buy--native"
-        {...(product.is_require_shipping ? { requiredShipping: true } : {})}
-      >
-        <BoltGlyph />
-        {label}
-      </SallaAddProductButton>
+      <WebComponentBoundary label={`card quickbuy ${product.id}`}>
+        <SallaAddProductButtonCore
+          productId={product.id}
+          productType={product.type}
+          productStatus={product.status}
+          quickBuy
+          amount={quickBuyAmount(product)}
+          width="wide"
+          fill="solid"
+          loaderPosition="center"
+          className="ox-card-product__buy ox-card-product__buy--native"
+          {...(product.is_require_shipping ? { requiredShipping: true } : {})}
+        >
+          <BoltGlyph />
+          {label}
+        </SallaAddProductButtonCore>
+      </WebComponentBoundary>
     );
   }
 
@@ -391,19 +398,47 @@ function AddButton({ product, quantity }: { product: Product; quantity: number |
   const label =
     product.add_to_cart_label ?? t(product.has_options ? 'ox.card.choose_options' : 'ox.card.add');
   return (
-    <SallaAddProductButton
-      productId={product.id}
-      productType={product.type}
-      productStatus={product.status}
-      width="wide"
-      fill="outline"
-      loaderPosition="center"
-      className="ox-card-product__add"
-      {...(quantity !== null ? { quantity } : {})}
-    >
-      <PdpIcon name="cart" size={20} className="ox-card-product__add-icon" />
-      {label}
-    </SallaAddProductButton>
+    // CORE, NOT THE DEFERRED EXPORT, and this is what made the button vanish.
+    //
+    // `SallaAddProductButton` is wrapped in the package's `HydrationBoundary`:
+    // it renders a `s-skeleton-button` placeholder and only mounts the real
+    // custom element once an IntersectionObserver fires. Measured on the home
+    // grid: four cards scrolled fully into view, `readyState` complete, and the
+    // slot still held the skeleton — zero `salla-add-product-button` hosts and
+    // zero `.s-button-element` on the page. So every rule this theme writes for
+    // the add button was styling an element that never existed, which is why
+    // the outline treatment and the inline cart glyph looked "reverted": the
+    // CSS was intact and its target was missing.
+    //
+    // The core export mounts immediately and removes the dependency on that
+    // observer. An add-to-cart button is not a below-the-fold nicety that can
+    // afford to wait for an observer that may never fire; `FrequentlyBought`
+    // reached for the same export for the same reason.
+    //
+    // Core has no error boundary of its own and the package does not export the
+    // one its deferred exports get, so it brings ours.
+    <WebComponentBoundary label={`card add ${product.id}`}>
+      <SallaAddProductButtonCore
+        productId={product.id}
+        productType={product.type}
+        productStatus={product.status}
+        width="wide"
+        fill="outline"
+        loaderPosition="center"
+        className="ox-card-product__add"
+        {...(quantity !== null ? { quantity } : {})}
+      >
+        {/* THE LABEL ONLY. The cart glyph is drawn in CSS as a mask on
+            `.s-button-text::before`, not passed as a child, because this
+            component keeps the slotted TEXT and discards element children when
+            it upgrades: an `<svg>` child rendered outside the label row, on its
+            own line, unstyled — which is exactly how the icon "disappeared"
+            from the button. The product page's add button already draws its
+            glyph this way for the same reason, off the same `--ox-cart-glyph`
+            token, so the two are one technique rather than two. */}
+        {label}
+      </SallaAddProductButtonCore>
+    </WebComponentBoundary>
   );
 }
 

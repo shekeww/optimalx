@@ -43,11 +43,24 @@ import { fieldText, type OxBlockProps } from './defaults';
  * band and the phone frame is a vertical one with its subject in the lower two
  * thirds (image brief sections 1 and 2).
  */
-// The store's own branded shakers, which is what the owner's reference hero
-// shows and the only frame here that carries the mark. It leads because it is
-// also the LCP element: the first thing a visitor sees should say whose shop
-// this is, and the frames that follow are texture.
-export const DEFAULT_HERO = '/assets/images/hero-shakers.webp';
+// THE CREATINE FRAME, the owner's own commercial: their branded shaker beside
+// the product, shot in a gym, with the mark on both the vest and the bottle. It
+// leads because it is the LCP element and the first thing a visitor sees should
+// say whose shop this is; the frames that follow are texture.
+//
+// IT IS USED AS PHOTOGRAPHY, NOT AS ARTWORK, and that is a real trade rather
+// than an oversight. The file carries an Arabic headline and four benefit rows
+// burnt into its right third. The split hero gives the photo half 856x560 at
+// 1440 and the source is 1915x821, so `object-fit: cover` scales to the height
+// and throws away 225px from each side: the burnt-in type sits outside the
+// visible window and never renders. Measured, not assumed.
+//
+// The upside is that nothing collides — the hero lays its own headline in the
+// OTHER half (copy starts at x=847, the photo ends at x=856) so there is no
+// second headline in the same corner. The cost is that the artwork's message is
+// lost. A frame whose type must be read belongs in a full-bleed band, where the
+// whole composition survives, not in this hero's photo half.
+export const DEFAULT_HERO = '/assets/images/hero-creatine.webp';
 export const DEFAULT_HERO_MOBILE = '/assets/images/hero-shakers-mobile.webp';
 
 /**
@@ -60,6 +73,7 @@ export const DEFAULT_HERO_MOBILE = '/assets/images/hero-shakers-mobile.webp';
  */
 export const DEFAULT_HERO_SLIDES = [
   DEFAULT_HERO,
+  '/assets/images/hero-shakers.webp',
   '/assets/images/hero-home.jpg',
   '/assets/images/hero-athlete.webp',
 ];

@@ -51,15 +51,22 @@
      without a variant class. With the floor at 400 that makes 450 the
      lightest weight any reversed copy ever takes. Interface and above do not move, because at 600
      the stroke is thick enough that the optical loss does not read. */
-  /* THE FLOOR IS 400, raised from 350 on 2026-09-20.
-     Arabic needs more stroke than Latin at the same optical size: 350 Cairo
-     set at lead size read as thin rather than open, and thin is the opposite
-     of what this brand is. The owner asked for a minimum weight that is easy
-     to read and carries the bold, energetic identity, so the two lightest
-     steps each move up one notch and the scale keeps all seven levels. */
-  --ox-w-open: 400;
-  --ox-w-read: 450;
-  --ox-w-quiet: 500;
+  /* THE FLOOR IS 500, raised twice on 2026-09-20: 350 -> 400, then 400 -> 500.
+     Arabic needs more stroke than Latin at the same optical size, and Cairo is
+     a low-contrast face, so a weight that looks open in Latin reads as thin in
+     Arabic at body size. 400 was still thin on the owner's screens — the
+     paragraph copy on the services comparison table was the case that settled
+     it — and thin is the opposite of what this brand is.
+
+     BODY COPY IS NOW 500 AND READING COPY 550, which is the smallest pair that
+     carries the identity at lead size without tipping into the weight the UI
+     steps own. The scale keeps all seven levels and the gaps above are
+     unchanged, so nothing that was a control becomes a name: Interface is
+     still 600, Title still 700. What compresses is the bottom of the scale,
+     which is exactly where the complaint was. */
+  --ox-w-open: 500;
+  --ox-w-read: 550;
+  --ox-w-quiet: 550;
   --ox-w-ui: 600;
   --ox-w-title: 700;
   --ox-w-stmt: 800;
@@ -407,9 +414,10 @@ textarea {
      lightest steps are withdrawn here: a lead becomes Read and body copy
      becomes Quiet. Nothing above Interface moves. A dark component that is
      not a band (the utility bar, the header, the brand band) repeats these
-     two lines in its own block. */
-  --ox-w-open: 450;
-  --ox-w-read: 500;
+     two lines in its own block. These follow the floor up: with body copy at
+     500 on paper, reversed body copy is 550 and a reversed lead is 600. */
+  --ox-w-open: 550;
+  --ox-w-read: 600;
   --ox-bg: var(--ox-graphite);
   --ox-surface: var(--ox-graphite-2);
   --ox-fg: var(--ox-ink-on-dark);
