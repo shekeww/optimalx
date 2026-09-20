@@ -49,32 +49,40 @@ afterEach(() => {
 });
 
 describe('OxHero', () => {
-  it('makes the headline the page h1, in two lines with the closing word in accent', () => {
+  it('asks the reference question as the page h1, over a one line eyebrow', () => {
     const { container } = renderWithProviders(<OxHero data={data()} />);
     const heading = container.querySelectorAll('h1');
-    // Exactly one, and it is the statement the reference draws. The keyword
-    // line is no longer an eyebrow above it: the reference has none, it read
-    // as a line of meta over the headline, and it stays the engine head's
-    // title plus the route's fallback h1 when the hero block is deleted.
+    // The owner's reference hero is a QUESTION, not a statement broken over
+    // two lines with an accented closing word. That earlier lockup is gone,
+    // and with it `.ox-hero__line` and `.ox-hero__accent`. The eyebrow is back
+    // because the reference draws one: who the shop is, before it asks.
     expect(heading).toHaveLength(1);
     expect(heading[0].classList.contains('ox-hero__headline')).toBe(true);
-    expect(container.querySelector('.ox-hero__eyebrow')).toBeNull();
-    const lines = container.querySelectorAll('.ox-hero__line');
-    expect(lines).toHaveLength(2);
-    expect(lines[0].textContent).toBe('مكملات رياضية، تغذية');
-    expect(container.querySelector('.ox-hero__accent')?.textContent).toBe('هدفك.');
+    expect(heading[0].textContent).toBe('ما هدفك اليوم؟');
+    expect(container.querySelectorAll('.ox-hero__line')).toHaveLength(0);
+    const eyebrow = container.querySelector('.ox-hero__eyebrow');
+    expect(eyebrow?.textContent).toContain('اوبتيمال اكس');
   });
 
-  it('sets the Latin lockup under the headline, and steps aside for a merchant subline', () => {
+  it('sets the subline under the headline, and steps aside for a merchant one', () => {
     const plain = renderWithProviders(<OxHero data={data()} />);
-    expect(plain.container.querySelector('.ox-hero__latin')?.textContent).toBe(
-      'Performance Nutrition & Training'
+    expect(plain.container.querySelector('.ox-hero__sub')?.textContent).toContain(
+      'المدينة المنورة'
     );
     plain.unmount();
 
     const { container } = renderWithProviders(<OxHero data={data({ subline: 'سطر التاجر' })} />);
-    expect(container.querySelector('.ox-hero__latin')).toBeNull();
     expect(container.querySelector('.ox-hero__sub')?.textContent).toBe('سطر التاجر');
+  });
+
+  it('slides the frames on a track rather than crossfading them', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    const track = container.querySelector('.ox-hero__track');
+    // One transform for the whole row, and the server renders it at frame 0,
+    // so the hero is correct before hydration and with scripting off.
+    expect(track).not.toBeNull();
+    expect((track as HTMLElement).style.getPropertyValue('--ox-hero-i')).toBe('0');
+    expect(track?.children.length).toBeGreaterThan(1);
   });
 
   it('carries the wedge pair at the band edge and nothing else orange', () => {

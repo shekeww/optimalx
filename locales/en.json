@@ -1345,5 +1345,12 @@
   "ox.home.cert.informed_ar": "Batch tested for banned substances",
   "ox.home.cert.halal_ar": "Certificate held by the manufacturer",
   "ox.home.cert.nongmo_ar": "Declared on the manufacturer label",
-  "ox.home.cert.disclaimer_ar": "This product is not intended to diagnose, treat, cure, or prevent any disease."
+  "ox.home.cert.disclaimer_ar": "This product is not intended to diagnose, treat, cure, or prevent any disease.",
+  "ox.home.hero_eyebrow": "Optimal X: a store for authentic sports and nutrition supplements",
+  "ox.content.goals.energy.card": "Energy and focus",
+  "ox.content.goals.general_health.card": "General health",
+  "ox.content.goals.performance.card": "Performance and building",
+  "ox.content.goals.recovery.card": "Recovery after training",
+  "ox.content.goals.hair_skin.card": "Hair, skin and nails",
+  "ox.content.goals.ideal_weight.card": "Ideal weight"
 }

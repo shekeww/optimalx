@@ -43,20 +43,29 @@ import { fieldText, type OxBlockProps } from './defaults';
  * band and the phone frame is a vertical one with its subject in the lower two
  * thirds (image brief sections 1 and 2).
  */
-export const DEFAULT_HERO = '/assets/images/hero-home.jpg';
-export const DEFAULT_HERO_MOBILE = '/assets/images/hero-home-mobile.jpg';
+// The store's own branded shakers, which is what the owner's reference hero
+// shows and the only frame here that carries the mark. It leads because it is
+// also the LCP element: the first thing a visitor sees should say whose shop
+// this is, and the frames that follow are texture.
+export const DEFAULT_HERO = '/assets/images/hero-shakers.webp';
+export const DEFAULT_HERO_MOBILE = '/assets/images/hero-shakers-mobile.webp';
 
 /**
  * The frames the photo half cycles through when the merchant has not set its
  * own. Only the store's own photography, never a supplier's packaging shot.
+ *
+ * Order matters and is not arbitrary: the branded frame is first because the
+ * split shows the photograph undimmed now, so a dark frame leaves that half of
+ * the band looking empty rather than photographic.
  */
 export const DEFAULT_HERO_SLIDES = [
   DEFAULT_HERO,
+  '/assets/images/hero-home.jpg',
   '/assets/images/athlete-band.jpg',
   '/assets/images/nutrition-band.jpg',
 ];
 
-/** How long a frame holds before the crossfade. */
+/** How long a frame holds before it slides. */
 export const SLIDE_MS = 5500;
 
 /** An internal route goes through the engine Link; an anchor or an absolute URL does not. */
@@ -93,6 +102,7 @@ export function OxHero({ data }: OxBlockProps) {
   const videoUrl = fieldText(data, 'video_url');
   const headline = fieldText(data, 'headline');
   const subline = fieldText(data, 'subline');
+  const eyebrow = fieldText(data, 'eyebrow');
   const primaryLabel = fieldText(data, 'primary_label') || t('ox.home.hero_cta_primary');
   const primaryUrl = fieldText(data, 'primary_url') || '#ox-goals';
   const secondaryLabel = fieldText(data, 'secondary_label') || t('ox.home.hero_cta_secondary');
@@ -151,6 +161,19 @@ export function OxHero({ data }: OxBlockProps) {
       >
         <div className="ox-hero__photo" data-slides={slides.length}>
           {/*
+            A TRACK, not a crossfade. The frames sit side by side and the whole
+            row slides, which is the motion the owner asked for and is one
+            compositor transform rather than N opacity animations. The track is
+            forced to `ltr` because these are photographs: their order is not
+            reading order, and letting it flip with the document would make the
+            slide run backwards in Arabic.
+
+            `--ox-hero-i` is the only thing React changes, so the server's HTML
+            already shows frame 0 at translate 0 and the hero is complete with
+            scripting off.
+          */}
+          <div className="ox-hero__track" style={{ ['--ox-hero-i' as string]: String(slide) }}>
+          {/*
             Every frame is in the server's HTML with only the first visible,
             so the hero paints before any script runs and nothing shifts when
             one does. The first is eager and high priority because it is the
@@ -184,6 +207,7 @@ export function OxHero({ data }: OxBlockProps) {
               </picture>
             );
           })}
+          </div>
           {showVideo ? (
             <video
               ref={videoRef}
@@ -224,6 +248,9 @@ export function OxHero({ data }: OxBlockProps) {
             rule 2). It is what keeps white type legible on a photograph the
             store has not shot yet as well as on the one it has. */}
         <span className="ox-hero__scrim" aria-hidden="true" />
+        {/* The bright line on the diagonal, the reference's one accent on the
+            first screen. Like the wedges it never animates (A9). */}
+        <span className="ox-hero__edge" aria-hidden="true" />
         {/* The wedge pair at the band's left edge: the reference's one piece of
             brand geometry on the first screen, and the whole wedge budget for
             it (DIRECTION 4.5, amendment A9: neither bar ever moves). */}
@@ -244,27 +271,16 @@ export function OxHero({ data }: OxBlockProps) {
 
       <div className="ox-hero__inner ox-container">
         <div className="ox-hero__text">
+          {/* The eyebrow the reference sets above the headline: who this shop
+              is, in one line, before the question is asked. */}
+          <p className="ox-hero__eyebrow">{eyebrow || t('ox.home.hero_eyebrow')}</p>
           <h1 className="ox-hero__headline ox-display">
-            {headline ? (
-              headline
-            ) : (
-              <>
-                <span className="ox-hero__line">{t('ox.home.hero_line_1')}</span>{' '}
-                <span className="ox-hero__line">
-                  {t('ox.home.hero_line_2')}{' '}
-                  <span className="ox-hero__accent">{t('ox.home.hero_accent')}</span>
-                </span>
-              </>
-            )}
+            {headline || t('ox.home.hero_headline')}
           </h1>
           {/* The reference sets a light Latin line under the headline. A
               merchant subline replaces it, because a store that writes its own
               second line means it rather than the lockup. */}
-          {subline ? (
-            <p className="ox-hero__sub ox-lead">{subline}</p>
-          ) : (
-            <p className="ox-hero__latin ox-latin">{t('ox.home.hero_latin')}</p>
-          )}
+          <p className="ox-hero__sub ox-lead">{subline || t('ox.home.hero_subline')}</p>
           <div className="ox-hero__actions">
             <Button
               {...linkProps(primaryUrl)}

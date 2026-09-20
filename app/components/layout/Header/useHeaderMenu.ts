@@ -80,11 +80,16 @@ export function useHeaderMenu(): HeaderMenu {
       const match = all.find(
         (item) => typeof item.url === 'string' && matchesSlug(item.url, goal.slug)
       );
-      const label = match?.title ?? t(goal.h1Key);
+      // Two strings, deliberately. The SHORT one is what a card shows; the
+      // FULL one is what an unresolved goal searches for, because "الطاقة"
+      // alone is a poor query against a supplement catalogue and "مكملات
+      // الطاقة" is a good one. A merchant-created category overrides both.
+      const label = match?.title ?? t(goal.cardKey);
+      const query = match?.title ?? t(goal.h1Key);
       return {
         slug: goal.slug,
         label,
-        to: match?.url ?? `/search?q=${encodeURIComponent(label)}`,
+        to: match?.url ?? `/search?q=${encodeURIComponent(query)}`,
         resolved: Boolean(match),
         icon: goal.icon,
       };

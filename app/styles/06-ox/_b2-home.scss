@@ -204,16 +204,51 @@
   block-size: 100%;
 }
 
-// The photo half is a stack of frames, one visible at a time. Opacity only,
-// which is a compositor property, so the crossfade costs nothing on the main
-// thread while a visitor is reading the panel beside it. The frames are all
-// in the server's HTML, so the hero is complete before any script runs.
-.ox-hero__frame {
+// THE SPLIT. The photograph occupies one half behind a hard diagonal and the
+// copy sits on solid graphite on the other, which is the owner's approved
+// reference. It replaced a full-bleed photograph under a heavy scrim: that
+// version had to darken the whole frame to keep white type legible, so the
+// photograph was never actually seen. Here it is not covered at all.
+//
+// The diagonal is wider at the top, matching the reference, and it is a
+// physical polygon with a `[dir='ltr']` mirror rather than a logical one,
+// because `clip-path` takes no logical values.
+// From 640 only. At phone widths the split leaves neither half usable, so the
+// photograph stays full bleed there and the scrim below carries the type.
+@media (min-width: 640px) {
+  .ox-hero__photo {
+    clip-path: polygon(0 0, 58% 0, 44% 100%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-hero__photo {
+    clip-path: polygon(42% 0, 100% 0, 100% 100%, 56% 100%);
+  }
+}
+
+// A TRACK, not a stack. The frames sit in a row and the row slides, which is
+// one compositor transform for the whole carousel instead of an opacity
+// animation per frame. Forced to `ltr`: these are photographs, their order is
+// not reading order, and inheriting the document's RTL would run the slide
+// backwards in Arabic.
+.ox-hero__track {
   position: absolute;
   inset: 0;
+  direction: ltr;
+  display: flex;
+  inline-size: 100%;
+  block-size: 100%;
+  // Long and eased out, because this band is the first thing a visitor sees
+  // and a quick slide reads as a glitch rather than as motion.
+  transition: transform 1100ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: translateX(calc(var(--ox-hero-i, 0) * -100%));
+}
+
+.ox-hero__frame {
+  position: relative;
+  flex: 0 0 100%;
+  inline-size: 100%;
+  block-size: 100%;
   display: block;
-  opacity: 0;
-  transition: opacity 900ms var(--ease-out);
 }
 
 .ox-hero__frame > .ox-hero__img {
@@ -222,10 +257,23 @@
   object-fit: cover;
 }
 
-// The server marks the first frame active, so the hero is correct before
-// hydration and with scripting off entirely; React then moves the attribute.
-.ox-hero__frame[data-active] {
-  opacity: 1;
+// The accent edge along the diagonal: the reference's one bright line on the
+// first screen. Drawn as a skewed bar rather than a border, because a clipped
+// element cannot carry one.
+.ox-hero__edge {
+  position: absolute;
+  z-index: 2;
+  inset-block: -12%;
+  inset-inline-end: 42%;
+  inline-size: 10px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+[dir='ltr'] .ox-hero__edge {
+  inset-inline-end: auto;
+  inset-inline-start: 42%;
 }
 
 .ox-hero__dots {
@@ -261,7 +309,7 @@
 
 // A visitor who asked for less motion gets the first frame and no crossfade.
 @media (prefers-reduced-motion: reduce) {
-  .ox-hero__frame {
+  .ox-hero__track {
     transition: none;
   }
 }
@@ -287,13 +335,52 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
+
+  // Only a vignette now. The copy sits on the solid panel, so this no longer
+  // carries legibility and no longer has to flatten the photograph to do it.
   background: linear-gradient(
     to bottom,
-    rgba(14, 16, 20, 0.95) 0%,
-    rgba(14, 16, 20, 0.88) 30%,
-    rgba(14, 16, 20, 0.5) 58%,
-    rgba(14, 16, 20, 0.88) 100%
+    rgba(14, 16, 20, 0.34) 0%,
+    rgba(14, 16, 20, 0.08) 38%,
+    rgba(14, 16, 20, 0.12) 70%,
+    rgba(14, 16, 20, 0.52) 100%
   );
+}
+
+// On a phone the scrim is the only thing making white type legible over a
+// photograph, so it stays heavy there and only lightens once the split takes
+// over and the copy moves onto solid graphite.
+@media (max-width: 639px) {
+  .ox-hero__scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(14, 16, 20, 0.94) 0%,
+      rgba(14, 16, 20, 0.86) 34%,
+      rgba(14, 16, 20, 0.6) 62%,
+      rgba(14, 16, 20, 0.9) 100%
+    );
+  }
+}
+
+@media (min-width: 640px) {
+  // GONE at split widths. Once the copy moved onto solid graphite the scrim
+  // had no job left, and it was the thing making the photograph look muddy:
+  // the owner's reference shows the shot clean and undimmed, and the whole
+  // point of the split is that the photograph is finally visible.
+  .ox-hero__scrim {
+    display: none;
+  }
+
+}
+
+// The edge only exists where there is a diagonal to draw it on. Written as a
+// max-width rule rather than a base `display: none` plus a min-width override,
+// because the two rules have equal specificity and the later one wins: the
+// base was hiding it at every width.
+@media (max-width: 639px) {
+  .ox-hero__edge {
+    display: none;
+  }
 }
 
 // The wedge pair at the band's left edge.
@@ -389,6 +476,20 @@
   text-align: start;
 }
 
+.ox-hero__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgb(255 255 255 / 0.72);
+}
+
+@media (min-width: 1024px) {
+  .ox-hero__eyebrow {
+    font-size: 15px;
+  }
+}
+
 .ox-hero__headline {
   margin: 0;
   color: var(--ox-ink-on-dark);
@@ -467,13 +568,12 @@
     );
   }
 
-  // The copy block goes to the physical left of the measure: `flex-end` is
-  // the left in RTL, `flex-start` is the left in LTR.
+  // The copy sits opposite the photograph. The clip mirrors with the document,
+  // so the copy is at the logical START in both directions: the right in
+  // Arabic, the left in English, which is the reference and is also where each
+  // language begins reading. This used to be pinned to the physical left in
+  // both, which put Arabic copy on the side the eye reaches last.
   .ox-hero__inner {
-    justify-content: flex-end;
-  }
-
-  [dir='ltr'] .ox-hero__inner {
     justify-content: flex-start;
   }
 
@@ -2114,6 +2214,10 @@ button.ox-trust__btn:hover .ox-trust__title {
   font-size: 20px;
   font-weight: 700;
   line-height: 1.25;
+  // Stated, not inherited. The card sets `color: var(--ox-paper)` on itself,
+  // but a global heading rule has higher specificity on the heading element
+  // and was painting these near-black on a near-black photograph.
+  color: var(--ox-paper);
 }
 
 .ox-pcard__line {

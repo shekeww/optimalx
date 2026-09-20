@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 export interface BandPhotoProps {
   /** A theme asset path from `docs/build/image-brief.md`. */
@@ -39,9 +39,38 @@ export interface BandPhotoProps {
  */
 export function BandPhoto({ src, className, width, height }: BandPhotoProps) {
   const [state, setState] = useState<'pending' | 'ready' | 'failed'>('pending');
+  const ref = useRef<HTMLImageElement>(null);
+
+  /**
+   * THE RACE THIS CLOSES, which shipped and made every band photograph
+   * invisible.
+   *
+   * The reveal hung on the `load` event alone. These images are in the
+   * server's HTML, so the browser frequently finishes decoding one BEFORE
+   * React hydrates and attaches the handler. The event has already fired by
+   * then, nothing re-fires it, `data-ready` is never written, and the
+   * stylesheet holds the frame at `opacity: 0` forever. Measured on the
+   * running page 2026-09-20: all four goal frames reported `complete: true`
+   * with a real `naturalWidth`, and all four were invisible. The cards looked
+   * like flat dark rectangles and read as a design choice.
+   *
+   * So the mount asks the element what already happened instead of waiting to
+   * be told. `naturalWidth` is the part that matters: a `complete` image that
+   * FAILED also reports complete, and only a decoded one has intrinsic pixels.
+   */
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node || !node.complete) return;
+    setState(node.naturalWidth > 0 ? 'ready' : 'failed');
+  }, [src]);
+
+  const onLoad = useCallback(() => setState('ready'), []);
+  const onError = useCallback(() => setState('failed'), []);
+
   if (state === 'failed') return null;
   return (
     <img
+      ref={ref}
       className={className}
       src={src}
       alt=""
@@ -50,8 +79,8 @@ export function BandPhoto({ src, className, width, height }: BandPhotoProps) {
       {...(width !== undefined ? { width } : {})}
       {...(height !== undefined ? { height } : {})}
       {...(state === 'ready' ? { 'data-ready': 'true' } : {})}
-      onLoad={() => setState('ready')}
-      onError={() => setState('failed')}
+      onLoad={onLoad}
+      onError={onError}
       data-testid="ox-band-photo"
     />
   );

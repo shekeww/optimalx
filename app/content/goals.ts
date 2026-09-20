@@ -48,6 +48,16 @@ export interface GoalContent {
   /** Sprite symbol (DIRECTION 8.7). */
   icon: OxIconName;
   h1Key: string;
+  /**
+   * The SHORT label, for the goal card and the header menu.
+   *
+   * Every `h1Key` opens with "مكملات", which is right on a page whose whole
+   * subject is supplements and wrong on a row of six cards inside a supplement
+   * shop, where the word is on every tile and carries nothing. The owner asked
+   * for it gone from the cards. The h1 keeps it, because that heading is read
+   * on its own in a search result where the category is not obvious.
+   */
+  cardKey: string;
   /** Meta title; the head helper appends nothing to it. */
   titleKey: string;
   introKey: string;
@@ -73,6 +83,7 @@ export const GOALS: GoalContent[] = [
     slug: 'goal-energy',
     icon: 'goal-energy',
     h1Key: `${KEY}.energy.h1`,
+    cardKey: `${KEY}.energy.card`,
     titleKey: `${KEY}.energy.title`,
     introKey: `${KEY}.energy.intro`,
     subNeeds: [
@@ -106,6 +117,7 @@ export const GOALS: GoalContent[] = [
     slug: 'goal-general-health',
     icon: 'goal-general-health',
     h1Key: `${KEY}.general_health.h1`,
+    cardKey: `${KEY}.general_health.card`,
     titleKey: `${KEY}.general_health.title`,
     introKey: `${KEY}.general_health.intro`,
     subNeeds: [
@@ -154,6 +166,7 @@ export const GOALS: GoalContent[] = [
     slug: 'goal-performance',
     icon: 'goal-performance',
     h1Key: `${KEY}.performance.h1`,
+    cardKey: `${KEY}.performance.card`,
     titleKey: `${KEY}.performance.title`,
     introKey: `${KEY}.performance.intro`,
     explainer: {
@@ -204,6 +217,7 @@ export const GOALS: GoalContent[] = [
     slug: 'goal-recovery',
     icon: 'goal-recovery',
     h1Key: `${KEY}.recovery.h1`,
+    cardKey: `${KEY}.recovery.card`,
     titleKey: `${KEY}.recovery.title`,
     introKey: `${KEY}.recovery.intro`,
     subNeeds: [
@@ -251,6 +265,7 @@ export const GOALS: GoalContent[] = [
     slug: 'goal-hair-skin',
     icon: 'goal-hair-skin',
     h1Key: `${KEY}.hair_skin.h1`,
+    cardKey: `${KEY}.hair_skin.card`,
     titleKey: `${KEY}.hair_skin.title`,
     introKey: `${KEY}.hair_skin.intro`,
     subNeeds: [
@@ -283,6 +298,7 @@ export const GOALS: GoalContent[] = [
     slug: 'goal-ideal-weight',
     icon: 'goal-ideal-weight',
     h1Key: `${KEY}.ideal_weight.h1`,
+    cardKey: `${KEY}.ideal_weight.card`,
     titleKey: `${KEY}.ideal_weight.title`,
     introKey: `${KEY}.ideal_weight.intro`,
     // One URL, two anchored directions. The goal name never stands alone as an

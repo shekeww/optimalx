@@ -1345,5 +1345,12 @@
   "ox.home.cert.informed_ar": "فحص دفعات للمواد المحظورة",
   "ox.home.cert.halal_ar": "الشهادة لدى الشركة المصنعة",
   "ox.home.cert.nongmo_ar": "مذكور على ملصق الشركة المصنعة",
-  "ox.home.cert.disclaimer_ar": "هذا المنتج غير مخصص لتشخيص أي مرض أو علاجه أو الوقاية منه."
+  "ox.home.cert.disclaimer_ar": "هذا المنتج غير مخصص لتشخيص أي مرض أو علاجه أو الوقاية منه.",
+  "ox.home.hero_eyebrow": "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية",
+  "ox.content.goals.energy.card": "الطاقة والتركيز",
+  "ox.content.goals.general_health.card": "الصحة العامة",
+  "ox.content.goals.performance.card": "الأداء وبناء العضلات",
+  "ox.content.goals.recovery.card": "التعافي بعد التمرين",
+  "ox.content.goals.hair_skin.card": "الشعر والبشرة والأظافر",
+  "ox.content.goals.ideal_weight.card": "الوزن المثالي"
 }
