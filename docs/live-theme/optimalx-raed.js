@@ -775,12 +775,20 @@
    *    wins every rule it cares to write.
    * ------------------------------------------------------------------ */
 
+  /* THESE MUST MATCH optimalx-raed.css, and they did not.
+     This block is the fallback the built parts need if the stylesheet ever
+     fails to arrive, so it carries its own copy of the tokens — and that copy
+     was left on the first target's warm cream and its #EE4D22 orange after the
+     stylesheet moved to the logo's #F54915 on a neutral ground. The stylesheet
+     wins in practice (it is `html:root` against this `:root`), so the clash
+     was invisible while both loaded, which is exactly how it survived. Keep
+     the two in step by hand; nothing checks it. */
   var BASE = `
 :root{
---ox-accent:#EE4D22;--ox-verify:#14514C;--ox-paper:#F9F5EE;--ox-plate:#F1E9E1;--ox-card:#FBF8F3;
---ox-ink:#17171A;--ox-ink-2:#5A5A61;--ox-ink-3:#6F6F78;--ox-ink-4:#9A9AA3;
---ox-ink-on-dark:#F7F4EE;--ox-ink-2-on-dark:#B9B9C1;--ox-ink-3-on-dark:#8A8D8E;
---ox-line:#EFEBE4;--ox-line-2:#EEEBE3;--ox-dark:#0E1117;--ox-r:16px;
+--ox-accent:#F54915;--ox-verify:#14514C;--ox-paper:#FFFFFF;--ox-plate:#F1F1F0;--ox-card:#FFFFFF;
+--ox-ink:#12171E;--ox-ink-2:#3A4046;--ox-ink-3:#5C6063;--ox-ink-4:#6E7274;
+--ox-ink-on-dark:#F7F4EE;--ox-ink-2-on-dark:#B7B6B2;--ox-ink-3-on-dark:#8A8D8E;
+--ox-line:#ECECEB;--ox-line-2:#E4E4E3;--ox-dark:#0E1117;--ox-r:16px;
 --ox-dur:180ms;--ox-ease:cubic-bezier(.4,0,.2,1);
 }
 .ox-i{flex:none;}

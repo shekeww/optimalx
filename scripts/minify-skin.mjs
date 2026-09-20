@@ -19,6 +19,14 @@ const DIR = 'docs/live-theme';
 
 /** Strip JS comments and collapse whitespace, leaving strings and regexes alone. */
 function minifyJs(src) {
+  // LF, always. The source files are checked out with CRLF on Windows, and the
+  // stylesheet this script carries inside a template literal keeps whatever
+  // line endings it was read with — so the artifact differed from the same
+  // artifact built anywhere else, byte for byte, while being identical CSS.
+  // That is harmless to a browser and fatal to a read-back check: it reports a
+  // mismatch on every publish and there is no way to tell that one from a real
+  // one. Normalising here makes the comparison mean something.
+  src = src.replace(/\r\n/g, '\n');
   let out = '';
   let i = 0;
   const n = src.length;
@@ -108,17 +116,53 @@ function minifyJs(src) {
   return out.trim();
 }
 
-/** Strip CSS comments and collapse whitespace. */
+/**
+ * Strip CSS comments and collapse whitespace.
+ *
+ * THE COLON IS HANDLED SEPARATELY, and this is the whole reason this function
+ * is not three lines. Collapsing whitespace on BOTH sides of `:` also eats the
+ * DESCENDANT COMBINATOR in front of a pseudo-class, so
+ *
+ *     .theme-raed :is(h1,h2,h3)      an h1 inside .theme-raed
+ *
+ * silently became
+ *
+ *     .theme-raed:is(h1,h2,h3)       an element that is BOTH
+ *
+ * which matches nothing, because `.theme-raed` is on <body>. Fifteen selectors
+ * in this stylesheet are written that way and every one of them was being
+ * dropped on the floor: the minified skin was a different stylesheet from the
+ * source it was generated from, and nothing said so.
+ *
+ * So `{};,>~+` collapse on both sides, which is safe — none of them can be a
+ * combinator that a preceding space is carrying meaning for — and `:` collapses
+ * only AFTER itself. The cost is that `color : red` keeps one space; the source
+ * does not write declarations that way, and correctness is worth the byte.
+ */
 function minifyCss(src) {
   let s = src.replace(/\/\*[\s\S]*?\*\//g, '');
   s = s.replace(/\s+/g, ' ');
-  s = s.replace(/\s*([{}:;,>~+])\s*/g, '$1');
+  s = s.replace(/\s*([{};,>~+])\s*/g, '$1');
+  s = s.replace(/:\s+/g, ':');
   s = s.replace(/;}/g, '}');
   return s.trim();
 }
 
+/**
+ * A selector this minifier must not change the meaning of.
+ *
+ * ` :` is a DESCENDANT COMBINATOR followed by a pseudo-class, and losing the
+ * space turns it into a compound selector that matches something else — or, as
+ * happened here, nothing at all. This counts them on both sides and refuses to
+ * write a file where the count moved. It is the specific regression that got
+ * past review once, so it is the one with a guard on it.
+ */
+function countDescendantPseudo(css) {
+  return (css.match(/[\w)\]] :(?:is|where|not|has|hover|focus|first|last|nth)/g) ?? []).length;
+}
+
 const jobs = [
-  { from: 'optimalx-raed.css', to: 'optimalx-raed.min.css', fn: minifyCss },
+  { from: 'optimalx-raed.css', to: 'optimalx-raed.min.css', fn: minifyCss, guard: countDescendantPseudo },
   { from: 'optimalx-raed.js', to: 'optimalx-raed.min.js', fn: minifyJs },
 ];
 
@@ -126,6 +170,17 @@ let over = false;
 for (const job of jobs) {
   const src = readFileSync(`${DIR}/${job.from}`, 'utf8');
   const min = job.fn(src);
+  if (job.guard) {
+    const before = job.guard(src.replace(/\/\*[\s\S]*?\*\//g, ''));
+    const after = job.guard(min);
+    if (before !== after) {
+      console.error(
+        `\n${job.to}: REFUSED. ${before} descendant pseudo-class selectors in the source, ${after} in the output.\n` +
+          `Minifying changed what the stylesheet selects. Fix minifyCss before shipping this.\n`
+      );
+      process.exit(1);
+    }
+  }
   writeFileSync(`${DIR}/${job.to}`, min + '\n', 'utf8');
   const fits = min.length <= CAP;
   if (!fits) over = true;
