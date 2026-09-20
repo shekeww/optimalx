@@ -76,27 +76,29 @@ export const OxProductCard = memo(function OxProductCard({
   const expiryMonths = monthsUntilExpiry(spec?.expiry);
   const hoverImage = product.images?.find((image) => image.url && image.url !== product.image?.url);
 
-  // Two facts, never more: the design gives the line one row, and a third fact
-  // would push the title or the price out of its slot.
-  //
-  // The target's meta line is "category | serving count". This store has zero
-  // categories in Salla, so the lead falls back to the supplier brand, which
-  // is a fact the catalogue does carry and which the claims source permits by
-  // name. Neither is invented: with both absent the line shows the detail
-  // alone, and with nothing at all it is an empty reserved row.
-  const facts: string[] = [];
-  const lead = trimmedText(product.category?.name) ?? trimmedText(product.brand?.name);
-  if (lead) facts.push(lead);
-  // A list card carries no description, so the spec line is usually empty here
-  // and the catalogue `weight` is all there is. It is a bare number with no
-  // unit on this store, and a bare number on a card reads as a second price,
-  // so it renders only when the merchant typed the unit in with it.
-  if (typeof spec?.servings === 'number') facts.push(t('ox.card.servings', { n: spec.servings }));
-  else if (spec?.form) facts.push(spec.form);
-  else {
-    const packSize = specField(spec, PACK_SIZE_LABELS) ?? unitBearingWeight(product.weight);
-    if (packSize) facts.push(packSize);
-  }
+  /**
+   * THE MERCHANT'S OWN ONE LINE, not a serving count.
+   *
+   * The line used to read "8 حصة". The owner asked for something that earns
+   * its row on every product, and the catalogue answers the question: the
+   * lead this design wanted was "category | serving count", but the store has
+   * ZERO categories and ZERO brands in Salla, so the lead was always empty and
+   * the row was a scoop count and nothing else. A scoop count does not help
+   * anyone choose between two proteins.
+   *
+   * `subtitle` is set on all 47 products and is the merchant's own pitch for
+   * that specific product: what it is and why it is worth the price. It is
+   * already published on the product page, so surfacing it here asserts
+   * nothing new; it is the only per-product line in the catalogue that is both
+   * universal and persuasive.
+   *
+   * The options that would normally sit here are all closed: per-serving
+   * pricing is banned outright by the spec, ratings and review counts and
+   * bestseller flags have no data and are banned, stock is "in stock" on all
+   * 47 so it discriminates nothing, brand and category are empty, and a
+   * delivery promise needs a carrier agreement the store does not have.
+   */
+  const pitch = trimmedText(product.subtitle);
 
   const classes = [
     'ox-card-product',
@@ -197,9 +199,7 @@ export const OxProductCard = memo(function OxProductCard({
             <Bdi>{product.name}</Bdi>
           </Link>
         </h3>
-        <p className="ox-card-product__chips">
-          {facts.length > 0 ? <Bdi lang={null}>{facts.join(DIVIDER)}</Bdi> : null}
-        </p>
+        <p className="ox-card-product__chips">{pitch ? <Bdi>{pitch}</Bdi> : null}</p>
         {/* The WRAPPER is conditional too, not just its contents.
             `RatingRow` already renders null below a real review count, but the
             box around it kept `min-block-size: 20px`, so every card on this

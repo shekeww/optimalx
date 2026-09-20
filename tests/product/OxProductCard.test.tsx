@@ -165,42 +165,31 @@ describe('OxProductCard', () => {
     expect(screen.getByText(t('ox.pdp.rating_count', { count: 12 }))).toBeTruthy();
   });
 
-  it('renders the spec line off the label and leaves the row empty without one', () => {
-    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
-    const spec = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(spec).toContain(t('ox.card.servings', { n: 30 }));
-
-    // Without a spec label the line falls back to facts the catalogue really
-    // holds, and to nothing else: here that is the supplier brand alone.
-    const plain = renderWithProviders(
-      <OxProductCard product={makeProduct({ description: '<p>نص عادي.</p>' })} />
-    );
-    const brandOnly = plain.container.querySelector('.ox-card-product__chips');
-    expect(brandOnly?.textContent).toBe('Optimum Nutrition');
-    plain.unmount();
-
-    // The row keeps its height so a grid of mixed products shares one
-    // baseline, but with no category, no brand and no label it states nothing.
-    const bare = renderWithProviders(
-      <OxProductCard
-        product={makeProduct({ description: '<p>نص عادي.</p>', brand: undefined, weight: undefined })}
-      />
-    );
-    const empty = bare.container.querySelector('.ox-card-product__chips');
-    expect(empty).not.toBeNull();
-    expect(empty?.textContent).toBe('');
-  });
-
-  it('leads the meta line with the category where the store has one', () => {
+  it("carries the merchant's own line for the product, not a serving count", () => {
+    // The row used to read "30 حصة". A scoop count does not help anyone choose
+    // between two proteins, and the "category | servings" lead the design
+    // wanted was always half empty: this store has ZERO categories and ZERO
+    // brands in Salla, so the category never resolved and the brand fallback
+    // never resolved either. `subtitle` is set on all 47 products and is the
+    // merchant's own pitch for that specific one, already published on the
+    // product page, so surfacing it here asserts nothing new.
     const { container } = renderWithProviders(
-      <OxProductCard product={makeProduct({ category: { id: 7, name: 'مكمل بروتين' } })} />
+      <OxProductCard product={makeProduct({ subtitle: 'واي بروتين معزول بلا سكر مضاف' })} />
     );
     const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(line).toContain('مكمل بروتين');
-    expect(line).toContain(t('ox.card.servings', { n: 30 }));
-    // Two facts, never three: the brand does not join a line that already has
-    // a category and a serving count.
-    expect(line).not.toContain('Optimum Nutrition');
+    expect(line).toBe('واي بروتين معزول بلا سكر مضاف');
+    expect(line).not.toContain(t('ox.card.servings', { n: 30 }));
+  });
+
+  it('keeps the row reserved and silent when the merchant wrote no line', () => {
+    // The height stays so a grid of mixed products shares one baseline, but
+    // nothing is invented to fill it.
+    const { container } = renderWithProviders(
+      <OxProductCard product={makeProduct({ subtitle: undefined })} />
+    );
+    const empty = container.querySelector('.ox-card-product__chips');
+    expect(empty).not.toBeNull();
+    expect(empty?.textContent).toBe('');
   });
 
   it('invents no stars on a store with no reviews (B28)', () => {

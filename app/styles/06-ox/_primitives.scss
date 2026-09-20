@@ -54,6 +54,71 @@ $ox-angle-tan: 0.404;
 // $h is the button's block-size, because the run is a function of the height:
 // at 22 degrees a 48px button runs 19px, and the label needs that much extra
 // inline padding at each end to clear the slant.
+// THE PRIMARY FACE: the site's solid call to action, and the one the hero's
+// "shop by your goal" draws. One definition, because it is now the global
+// primary treatment.
+//
+// `$fill` exists for one reason, and it is a contrast rule rather than a style
+// choice. White on `--ox-accent` measures 3.58:1, which clears the floor ONLY
+// as large text, so the 19/700 default is the smallest this fill may legally
+// carry. A button that needs a smaller label, such as the one inside a 306px
+// product card, passes `--ox-accent-dark` instead, where white is 4.96:1 and
+// legal at any size. The shape, the weight and the hover are shared either way.
+@mixin ox-primary-face($fill: var(--ox-accent), $hover: var(--ox-accent-dark)) {
+  background: #{$fill};
+  border-color: #{$fill};
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-w-title);
+
+  &:hover {
+    background: #{$hover};
+    border-color: #{$hover};
+  }
+
+  &:active {
+    background: #{$hover};
+  }
+}
+
+// THE SECONDARY FACE: the site's outline button, and the one the hero's "ask
+// before you buy" draws. One definition, because it is now the global
+// secondary treatment and three surfaces were each writing their own.
+//
+// The clip removes borders, so the outline is PAINTED: the element itself is
+// the edge colour and an inset pseudo carries the fill, both wearing the same
+// clip. HOVER MOVES THE STROKE, never the fill. Recolouring the pseudo
+// repaints the entire face and reads as a second shape sliding over a button
+// that already has an edge.
+//
+// `$fill` is what shows inside the stroke, so passing the surface the button
+// sits on is what makes it read as "no fill".
+@mixin ox-secondary-face($stroke: var(--ox-fg), $fill: var(--ox-surface)) {
+  position: relative;
+  background: #{$stroke};
+  border: 0;
+  border-color: #{$stroke};
+  color: #{$stroke};
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    background: #{$fill};
+    clip-path: inherit;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover {
+    background: var(--ox-accent);
+    border-color: var(--ox-accent);
+  }
+}
+
 @mixin ox-angled($h) {
   $run: ox-run($h);
   clip-path: polygon(#{$run} 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
@@ -383,46 +448,16 @@ $ox-angle-tan: 0.404;
   // 19/700: at the shipped 15/600 the white on accent measures under 4.5:1 for
   // the size and reads thin against the fill.
   &--primary {
-    background: var(--ox-accent);
-    border-color: var(--ox-accent);
-    color: var(--ox-on-accent);
+    @include ox-primary-face;
+    // 19px is the floor for this fill, not a preference: see the mixin.
     font-size: 19px;
-    font-weight: var(--ox-w-title);
-    &:hover { background: var(--ox-accent-dark); border-color: var(--ox-accent-dark); }
-    &:active { background: var(--ox-accent-dark); }
   }
   // The clip removes the border on the cut edges, so the outline is painted:
   // the element itself is the edge colour and ::before is the fill, inset by
   // the border width and carrying the same clip. `border-color` is kept for
   // the --square and --block cases, which still have a real border.
   &--secondary {
-    position: relative;
-    background: var(--ox-fg);
-    border-color: var(--ox-fg);
-    color: var(--ox-fg);
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 1px;
-      z-index: 0;
-      background: var(--ox-surface);
-      clip-path: inherit;
-    }
-
-    > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    // NO HOVER FILL. `::before` is the button's own fill, so recolouring it on
-    // hover repaints the entire face and reads as a second shape sliding over
-    // a button that already has a stroke. The feedback is the STROKE, which is
-    // the element itself: it takes the accent and nothing else moves.
-    &:hover {
-      background: var(--ox-accent);
-      border-color: var(--ox-accent);
-    }
+    @include ox-secondary-face;
   }
 
   // Square and block keep the ordinary bordered treatment: with no clip there

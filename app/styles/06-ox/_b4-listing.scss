@@ -1245,14 +1245,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-card-product__qty {
   display: inline-flex;
+  // LTR on purpose. The DOM order is decrease, value, increase, which under
+  // the document's RTL laid the control out as "+ 1 -" with the plus on the
+  // right. A stepper is a numeric control and numerals read left to right in
+  // Arabic as well, so it is pinned here and reads "- 1 +" in both languages.
+  direction: ltr;
   align-items: center;
   justify-content: space-between;
   // Narrower than it was (124/140). The add button beside it is angled now
   // and an angled 44px button spends 18px of run at each end, so 36px of its
   // width is slant rather than label. The stepper is three glyphs and a
   // number; it can afford the space and the button cannot.
-  flex: 0 1 92px;
-  max-inline-size: 92px;
+  flex: 0 1 100px;
+  max-inline-size: 100px;
   min-block-size: 44px;
   background: var(--ox-card);
   border: 1px solid var(--ox-bd-2);
@@ -1265,10 +1270,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
   align-items: center;
   justify-content: center;
   flex: none;
-  // 44 rather than the 40 the box would otherwise give: the stepper is a real
-  // control on a touch grid, and two 44 squares still fit the 124 flex base
-  // the row is sized from.
-  inline-size: 44px;
+  // The SQUARE is 36 and the TARGET is 44, via `ox-hit-area`, which extends the
+  // tappable box past the painted one. Two 44px squares plus the value needed
+  // 112px in a box the row could only spare 100 for, so the increase button
+  // was rendering outside its own container. Shrinking the paint rather than
+  // the target keeps the 44px guideline intact.
+  @include ox-hit-area;
+  inline-size: 36px;
   align-self: stretch;
   padding: 0;
   color: var(--ox-fg);
@@ -1337,20 +1345,16 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // border, so the outline is painted the way `.ox-btn--secondary` paints
   // its own: the element IS the edge colour and an inset pseudo carries the
   // fill, both wearing the same clip.
-  // EXACTLY THE HERO'S "ask before you buy": a stroke and no fill, in the
-  // same angled shape. The only change is the stroke's colour, dark instead of
-  // white, because this one sits on a white card rather than a dark band and a
-  // white stroke there would be invisible.
+  // THE GLOBAL SECONDARY FACE, the same mixin the hero's "ask before you buy"
+  // uses through `.ox-btn--secondary`. This button cannot take that class,
+  // because it is the `s-button-element` a Salla web component renders, so it
+  // takes the mixin instead: one definition, and the two can no longer drift.
   //
-  // The element IS the stroke in this treatment and `::before` is the fill, so
-  // "no fill" is the pseudo painted in the CARD's own colour: the card reads
-  // through the shape and only the 1px edge draws. A transparent pseudo would
-  // not do it, because then the element's own dark background would show
-  // through the whole face and the button would be solid.
-  background: var(--ox-fg);
-  border: 0;
+  // The fill is the CARD's colour rather than the surface, which is what makes
+  // it read as a stroke with nothing behind it, and the stroke is dark rather
+  // than the hero's white because this sits on a white card.
+  @include ox-secondary-face(var(--ox-fg), var(--ox-card));
   border-radius: 0;
-  color: var(--ox-fg);
   font-family: inherit;
   font-size: var(--ox-t-small);
   font-weight: var(--ox-w-ui);
@@ -1385,14 +1389,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   white-space: nowrap;
 }
 
-// Hover moves the STROKE, never the fill, which is the same behaviour the
-// hero's "ask before you buy" now has. Recolouring the fill repaints the whole
-// face and reads as a shape appearing over a button that already has an edge.
-.ox-card-product__add .s-button-element:hover,
-.ox-card-product__add.s-button-element:hover {
-  background: var(--ox-accent);
-}
-
 
 
 .ox-card-product__add .s-button-element:focus-visible,
@@ -1421,20 +1417,16 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // large against a 14px sibling in a 306px card. The two now match and the
   // hierarchy is carried by weight and fill instead of size: 700 on a solid
   // accent against 600 on an outline.
+  // THE GLOBAL PRIMARY FACE, the same mixin the hero's "shop by your goal"
+  // uses. The fill is the dark step rather than the accent because this label
+  // is body size and white on `--ox-accent` is legal only as large text; the
+  // shape, weight and hover are the shared contract.
+  @include ox-primary-face(var(--ox-accent-dark), var(--ox-accent-deep));
   font-size: var(--ox-t-small);
-  background: var(--ox-accent-dark);
-  border-color: var(--ox-accent-dark);
-  // The brand's shape. A solid fill needs no pseudo: the clip cuts it
-  // directly, and at full card width the 18px run at each end costs little.
   border-radius: 0;
   block-size: 44px;
   padding-inline: 24px;
   @include ox-angled(44px);
-
-  &:hover {
-    background: var(--ox-accent-deep);
-    border-color: var(--ox-accent-deep);
-  }
 }
 
 // At 390 the grid is two across, which leaves roughly 139px of button inside
