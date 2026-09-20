@@ -1363,5 +1363,6 @@
   "ox.pdp.bundle_price": "سعر الحزمة",
   "ox.pdp.bundle_discount": "خصم الحزمة",
   "ox.pdp.bundle_discount_percent": "خصم {{value}}%",
-  "ox.pdp.bundle_view": "اعرض الحزمة"
+  "ox.pdp.bundle_view": "اعرض الحزمة",
+  "ox.home.plans_tier_title": "أو اطلب خطة مبنية لك"
 }

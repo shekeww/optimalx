@@ -413,6 +413,15 @@ textarea {
   --ox-bd: var(--ox-line-on-dark);
   --ox-bd-2: var(--ox-line-on-dark);
   --ox-focus: var(--ox-paper);
+  /* THE PLATES, which this block forgot. A plate is one step off the ground,
+     and on a dark band that step is darker, not #F1F1F0. Leaving them light
+     meant `.ox-btn--secondary:hover::before` painted a near-white fill behind
+     white type: the hero's outline button turned into a white slab with white
+     text on it the moment a pointer touched it, which is what "appearing white
+     with white text when hovered" was. It was never an overlapping shape; it
+     was this pseudo, which is the element that draws the button's own fill. */
+  --ox-plate: var(--ox-graphite-3);
+  --ox-plate-2: var(--ox-graphite-2);
   color: var(--ox-fg);
   background: var(--ox-bg);
 }

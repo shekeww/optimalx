@@ -401,7 +401,7 @@ function AddButton({ product, quantity }: { product: Product; quantity: number |
       className="ox-card-product__add"
       {...(quantity !== null ? { quantity } : {})}
     >
-      <PdpIcon name="cart" size={16} className="ox-card-product__add-icon" />
+      <PdpIcon name="cart" size={20} className="ox-card-product__add-icon" />
       {label}
     </SallaAddProductButton>
   );

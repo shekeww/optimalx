@@ -2,7 +2,8 @@ import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SectionHeader } from '../common/SectionHeader';
 import { PlanCard } from './PlanCard';
-import { HOME_PLANS, SERVICES_HUB } from '../../content/services';
+import { ChannelCard } from '../blocks/ChannelCard';
+import { HOME_PLANS, SERVICES_HUB, SERVICE_CHANNELS } from '../../content/services';
 import { useSectionReveal } from './useSectionReveal';
 import { fieldText, type OxBlockProps } from './defaults';
 
@@ -73,10 +74,33 @@ export function OxServices({ data }: OxBlockProps) {
       ) : null}
       <div className="ox-container ox-services__inner">
         <SectionHeader title={title} viewAll={{ to: '/services' }} />
-        <div className="ox-plans ox-reveal" ref={rowRef}>
-          {HOME_PLANS.map((plan, index) => (
-            <PlanCard plan={plan} key={plan.id} index={index} />
-          ))}
+
+        {/* TWO TIERS, and the order is the point.
+            The channels are how a shopper ASKS: free or nearly so, no
+            commitment, and therefore the cheapest yes on the page. The plans
+            are what the asking LEADS TO, and they are paid. Putting the six in
+            one flat row would make them read as six equivalent things and lose
+            that, which is the confusion the brief exists to prevent. They are
+            not mirrored either: two identical rows is what makes a section
+            read as a template. They share the motif and differ in treatment. */}
+        <div className="ox-services__tier">
+          <h3 className="ox-services__tier-title">{t('ox.services.channels_title')}</h3>
+          <div className="ox-channels ox-services__channels">
+            {SERVICE_CHANNELS.map((channel) => (
+              <ChannelCard channel={channel} key={channel.id} />
+            ))}
+          </div>
+        </div>
+
+        <span className="ox-services__rule" aria-hidden="true" />
+
+        <div className="ox-services__tier">
+          <h3 className="ox-services__tier-title">{t('ox.home.plans_tier_title')}</h3>
+          <div className="ox-plans ox-reveal" ref={rowRef}>
+            {HOME_PLANS.map((plan, index) => (
+              <PlanCard plan={plan} key={plan.id} index={index} />
+            ))}
+          </div>
         </div>
         <div className="ox-services__notes">
           {replyHours ? (

@@ -197,7 +197,11 @@
 }
 
 .ox-card-product__add-icon {
-  margin-inline-end: 10px;
+  // `flex: none` because the label row is a flex container now: as a flex item
+  // the svg was shrinking to 10px against its own 20px width attribute, so the
+  // glyph looked undersized next to its label. The margin is gone with it; the
+  // row's own gap carries the spacing and the two together were doubling it.
+  flex: none;
 }
 
 .ox-card-product.is-out .ox-card-product__plate {

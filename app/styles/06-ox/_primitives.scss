@@ -415,7 +415,14 @@ $ox-angle-tan: 0.404;
       z-index: 1;
     }
 
-    &:hover::before { background: var(--ox-plate); }
+    // NO HOVER FILL. `::before` is the button's own fill, so recolouring it on
+    // hover repaints the entire face and reads as a second shape sliding over
+    // a button that already has a stroke. The feedback is the STROKE, which is
+    // the element itself: it takes the accent and nothing else moves.
+    &:hover {
+      background: var(--ox-accent);
+      border-color: var(--ox-accent);
+    }
   }
 
   // Square and block keep the ordinary bordered treatment: with no clip there
@@ -503,10 +510,17 @@ $ox-angle-tan: 0.404;
 }
 
 .ox-band-dark .ox-btn--secondary {
-  background: transparent;
+  // The element is the STROKE in the clipped treatment, so this is white here
+  // rather than transparent: transparent removed the outline the button is
+  // supposed to have. Hover moves the stroke to the accent and leaves the fill
+  // alone, so nothing appears over the button.
+  background: var(--ox-paper);
   border-color: var(--ox-paper);
   color: var(--ox-paper);
-  &:hover { background: var(--ox-graphite-3); }
+  &:hover {
+    background: var(--ox-accent);
+    border-color: var(--ox-accent);
+  }
 }
 .ox-band-dark .ox-btn--ghost:hover {
   background: var(--ox-graphite-3);

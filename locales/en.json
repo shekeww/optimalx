@@ -1363,5 +1363,6 @@
   "ox.pdp.bundle_price": "Bundle price",
   "ox.pdp.bundle_discount": "Bundle discount",
   "ox.pdp.bundle_discount_percent": "{{value}}% off",
-  "ox.pdp.bundle_view": "View bundle"
+  "ox.pdp.bundle_view": "View bundle",
+  "ox.home.plans_tier_title": "Or ask for a plan built for you"
 }

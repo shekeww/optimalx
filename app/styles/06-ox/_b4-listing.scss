@@ -1251,8 +1251,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // and an angled 44px button spends 18px of run at each end, so 36px of its
   // width is slant rather than label. The stepper is three glyphs and a
   // number; it can afford the space and the button cannot.
-  flex: 0 1 104px;
-  max-inline-size: 104px;
+  flex: 0 1 92px;
+  max-inline-size: 92px;
   min-block-size: 44px;
   background: var(--ox-card);
   border: 1px solid var(--ox-bd-2);
@@ -1337,10 +1337,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // border, so the outline is painted the way `.ox-btn--secondary` paints
   // its own: the element IS the edge colour and an inset pseudo carries the
   // fill, both wearing the same clip.
-  background: var(--ox-accent);
+  // THE DARK TREATMENT, read off the button in the owner's reference: a solid
+  // near-black parallelogram with light type, rather than the white-fill
+  // orange-outline it was. Against the accent "buy now" below it that gives
+  // the row a graphite-and-accent pairing, which is the brand's own, and a
+  // clearer primary than two orange-ish buttons stacked.
+  background: var(--ox-fg);
   border: 0;
   border-radius: 0;
-  color: var(--ox-accent-dark);
+  color: var(--ox-paper);
   font-family: inherit;
   font-size: var(--ox-t-small);
   font-weight: var(--ox-w-ui);
@@ -1353,7 +1358,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
     position: absolute;
     inset: 1px;
     z-index: 0;
-    background: var(--ox-card);
+    background: var(--ox-fg);
     clip-path: inherit;
   }
 
@@ -1375,9 +1380,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
   white-space: nowrap;
 }
 
-.ox-card-product__add .s-button-element:hover::before,
-.ox-card-product__add.s-button-element:hover::before {
-  background: var(--ox-accent-soft);
+// Hover moves the STROKE, never the fill, which is the same behaviour the
+// hero's "ask before you buy" now has. Recolouring the fill repaints the whole
+// face and reads as a shape appearing over a button that already has an edge.
+.ox-card-product__add .s-button-element:hover,
+.ox-card-product__add.s-button-element:hover {
+  background: var(--ox-accent);
 }
 
 

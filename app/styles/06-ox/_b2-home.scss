@@ -2547,3 +2547,94 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 .ox-certs__legal-ar,
 .ox-certs__legal-en { display: block; }
+
+// ---------------------------------------------------------------------------
+// 18. The advisory section, as two tiers
+//
+// It was one row of three plan cards on a photograph: 470px tall, three plain
+// 416x232 rounded rectangles, and nothing in it that a supplements shop could
+// not have bought from a template. It now carries the whole advisory offer,
+// which is the channel chooser that used to live only on /services plus the
+// plans it leads to, and it is given the room that needs.
+//
+// WHY TWO TIERS AND NOT SIX CARDS. The two rows answer different questions.
+// The channels are how a shopper ASKS: free or nearly so, no commitment, the
+// cheapest yes on the page, so they go first. The plans are what the asking
+// LEADS TO, and they are paid. Six cards in one row would read as six
+// equivalent things and lose that distinction, which is the confusion the
+// whole brief is written against.
+//
+// WHY NOT MIRRORED. Repeating one card shape twice is precisely what makes a
+// section feel like a template. The two tiers share the identity (the accent
+// slash, the angled call to action, the same dark ground) and differ in
+// treatment: a channel card is an upright brief with a price, a plan card is a
+// photographic door.
+//
+// WHY THE CARDS ARE NOT PARALLELOGRAMS. The angle belongs on the CTA, the
+// slash and the divider, where it is decoration. Clipping a card that holds a
+// paragraph cuts the corners off the paragraph, so the motif would cost the
+// section its readability to prove a point about itself.
+// ---------------------------------------------------------------------------
+.ox-services__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-8);
+}
+
+.ox-services__tier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+}
+
+.ox-services__tier-title {
+  margin: 0;
+  font-size: var(--ox-t-lead);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg);
+}
+
+// The divider between the tiers: the theme's own lean, drawn as a thin
+// parallelogram rather than a rule, so the break between "ask" and "get a
+// plan" carries the identity instead of a hairline.
+.ox-services__rule {
+  align-self: stretch;
+  block-size: 2px;
+  background: linear-gradient(
+    to left,
+    rgba(var(--ox-accent-rgb), 0) 0%,
+    rgba(var(--ox-accent-rgb), 0.55) 22%,
+    rgba(var(--ox-accent-rgb), 0.55) 78%,
+    rgba(var(--ox-accent-rgb), 0) 100%
+  );
+  transform: skewX(var(--ox-skew));
+}
+
+.ox-services__channels {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .ox-services__channels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-services__channels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // The plan cards grow with the section. At 232 they read as captions under
+  // the channel row rather than as the paid outcome it leads to.
+  .ox-services--banded .ox-plan {
+    min-block-size: 260px;
+  }
+}
+
+// The band needs the room the second tier asks for.
+@media (min-width: 1024px) {
+  .ox-services--banded {
+    padding-block: var(--ox-24);
+  }
+}

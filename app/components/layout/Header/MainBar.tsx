@@ -5,6 +5,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Logo } from './Logo';
 import { NavBar } from './NavBar';
 import { useCartCountPill } from './useCartCountPill';
+import { PdpIcon } from '../../product/PdpIcon';
 
 const SallaSearch = lazy(() =>
   import('@salla.sa/twilight-components-react/search').then((m) => ({ default: m.SallaSearch }))
@@ -115,7 +116,12 @@ export function MainBar() {
         <Suspense fallback={null}>
           <SallaCartSummary className="ox-iconbtn ox-cartbtn">
             <span slot="icon" className="ox-cartbtn__icon">
-              <i className="sicon-shopping-bag" aria-hidden="true" />
+              {/* DRAWN, not Salla's icon font. `sicon-shopping-bag` is not in
+                  the loaded face, so the browser fell through to an emoji font
+                  and painted a colour bag beside two currentColor strokes: the
+                  cart was amber where the heart and the account glyph were
+                  white. A drawn path cannot fall back. */}
+              <PdpIcon name="cart" size={22} />
             </span>
           </SallaCartSummary>
         </Suspense>
