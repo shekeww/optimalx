@@ -1337,15 +1337,20 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // border, so the outline is painted the way `.ox-btn--secondary` paints
   // its own: the element IS the edge colour and an inset pseudo carries the
   // fill, both wearing the same clip.
-  // THE DARK TREATMENT, read off the button in the owner's reference: a solid
-  // near-black parallelogram with light type, rather than the white-fill
-  // orange-outline it was. Against the accent "buy now" below it that gives
-  // the row a graphite-and-accent pairing, which is the brand's own, and a
-  // clearer primary than two orange-ish buttons stacked.
+  // EXACTLY THE HERO'S "ask before you buy": a stroke and no fill, in the
+  // same angled shape. The only change is the stroke's colour, dark instead of
+  // white, because this one sits on a white card rather than a dark band and a
+  // white stroke there would be invisible.
+  //
+  // The element IS the stroke in this treatment and `::before` is the fill, so
+  // "no fill" is the pseudo painted in the CARD's own colour: the card reads
+  // through the shape and only the 1px edge draws. A transparent pseudo would
+  // not do it, because then the element's own dark background would show
+  // through the whole face and the button would be solid.
   background: var(--ox-fg);
   border: 0;
   border-radius: 0;
-  color: var(--ox-paper);
+  color: var(--ox-fg);
   font-family: inherit;
   font-size: var(--ox-t-small);
   font-weight: var(--ox-w-ui);
@@ -1358,7 +1363,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
     position: absolute;
     inset: 1px;
     z-index: 0;
-    background: var(--ox-fg);
+    background: var(--ox-card);
     clip-path: inherit;
   }
 
