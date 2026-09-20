@@ -32,7 +32,7 @@ export function PlanCard({ plan, index = 0 }: PlanCardProps) {
       data-plan={plan.id}
       style={{ ['--i' as string]: String(index) }}
     >
-      <BandPhoto src={plan.photo} className="ox-plan__photo" />
+      {plan.photo ? <BandPhoto src={plan.photo} className="ox-plan__photo" /> : null}
       <span className="ox-plan__scrim" aria-hidden="true" />
       <span className="ox-plan__slash" aria-hidden="true" />
       <span className="ox-plan__body">

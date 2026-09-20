@@ -39,11 +39,24 @@ export const HOME_BLOCK_PATHS = [
   'ox-trust-strip',
   'ox-goals',
   'ox-products',
+  // The four blocks below were written, committed and never registered, so
+  // they had never rendered once, and the page they were written for never
+  // existed. They go in here at the rhythm homepage-scale-spec asks for:
+  // dense grid, then a full stop, then the connective tissue, then a second
+  // grid. The spec also lists the category row third, and that is the one
+  // instruction NOT followed: the departure recorded above is measured, the
+  // first price is currently 1,662px down (1.85 viewports), and lifting a
+  // 246px category block above the products would push it past two screens
+  // and undo the fix. Order serves the price, not the numbering.
+  'ox-poster',
+  'ox-posters',
+  'ox-products-secondary',
   'ox-categories',
   'ox-brands',
   'ox-services',
   'ox-guides',
   'ox-branch',
+  'ox-certifications',
   'ox-faq',
   'ox-newsletter',
   'ox-banner',
@@ -84,14 +97,35 @@ export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
 export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop: number }> = {
   'ox-hero': { mobile: 480, desktop: 560 },
   'ox-trust-strip': { mobile: 65, desktop: 77 },
-  'ox-goals': { mobile: 633, desktop: 310 },
-  'ox-products': { mobile: 508, desktop: 630 },
-  'ox-categories': { mobile: 348, desktop: 244 },
-  'ox-brands': { mobile: 64, desktop: 80 },
-  'ox-services': { mobile: 866, desktop: 402 },
-  'ox-guides': { mobile: 485, desktop: 556 },
-  'ox-branch': { mobile: 212, desktop: 240 },
-  'ox-faq': { mobile: 1080, desktop: 630 },
+  // Desktop numbers re-measured on 2026-09-20 off the running page (see
+  // scratchpad/measured-2026-09-20.md). The old table reserved 4990px against
+  // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
+  // a layout shift in the least forgivable direction: everything a shopper was
+  // reading jumps upward under them.
+  'ox-goals': { mobile: 633, desktop: 262 },
+  // The largest single error in the old table, and in the opposite direction.
+  // The rail became an eight-card grid and the reservation never followed, so
+  // this block UNDER-reserved by 410px and jumped down on mount.
+  'ox-products': { mobile: 508, desktop: 1040 },
+  'ox-categories': { mobile: 348, desktop: 246 },
+  // The campaign poster is gated on a real campaign and renders null until
+  // the merchant writes a headline, so it reserves nothing by default. A store
+  // running one takes the shift on that block instead, which is the smaller
+  // cost and affects nobody today.
+  'ox-poster': { mobile: 0, desktop: 0 },
+  'ox-posters': { mobile: 340, desktop: 380 },
+  'ox-products-secondary': { mobile: 508, desktop: 1040 },
+  // Both of these render nothing today and reserving for them was pure shift:
+  // the store has zero brands, and the guides block has no entries. Same
+  // reasoning as the newsletter and banner rows below.
+  'ox-brands': { mobile: 0, desktop: 0 },
+  'ox-services': { mobile: 866, desktop: 342 },
+  'ox-guides': { mobile: 0, desktop: 0 },
+  'ox-branch': { mobile: 212, desktop: 184 },
+  // No certification holds the per-product evidence a badge needs, so the
+  // resolver returns an empty list and the band renders null.
+  'ox-certifications': { mobile: 0, desktop: 0 },
+  'ox-faq': { mobile: 1080, desktop: 439 },
   // Both of these are off until the merchant turns them on: the newsletter
   // behind the `show_newsletter` setting, the banner behind an uploaded image.
   // Until then each renders null, so reserving their old 320 and 268 put 588px
@@ -162,6 +196,16 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   'ox-goals': {},
   'ox-categories': { categories: [] },
   'ox-products': { title: null, products: [] },
+  // The campaign poster's whole gate: no headline, no band.
+  'ox-poster': { headline: null, eyebrow: null, line: null, image: null, cta_label: null, cta_url: null },
+  // The carousel builds its cards from the catalogue and the goal menu, so it
+  // takes no merchant field.
+  'ox-posters': {},
+  'ox-products-secondary': { title: null },
+  // Each row is a badge id and the certificate reference that proves it. A row
+  // with no reference is not evidence and the resolver drops it, so an empty
+  // reference cannot turn a badge on.
+  'ox-certifications': { certifications: [] },
   'ox-brands': { brands: [] },
   'ox-services': { image: null, title: null },
   'ox-guides': { title: null },

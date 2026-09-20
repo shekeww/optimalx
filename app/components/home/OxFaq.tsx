@@ -60,7 +60,7 @@ export function OxFaq({ data }: OxBlockProps) {
     <section className="ox-faq" data-testid="ox-faq">
       <div className="ox-container ox-faq__row">
         <div className="ox-faq__col">
-          <SectionHeader title={t(FAQ_TITLE_KEY)} eyebrow={t('ox.home.faq_eyebrow')} />
+          <SectionHeader title={t(FAQ_TITLE_KEY)} />
           {/* The panel is the design system's unit for a block of structured
               content, and an FAQ is one. On the page ground the rows read as a
               loose list; inside the panel they read as a document. */}

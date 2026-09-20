@@ -2,6 +2,7 @@ import { Suspense, lazy, useId, useState } from 'react';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon, type OxIconName } from '../common/Icon';
+import { StoreRating } from '../common/StoreRating';
 import { fieldList, rowText, type OxBlockProps } from './defaults';
 
 const SallaPayments = lazy(() =>
@@ -116,6 +117,16 @@ export function OxTrustStrip({ data }: OxBlockProps) {
   return (
     <section className="ox-trust" aria-label={t('ox.home.trust_region')} data-testid="ox-trust-strip">
       <div className="ox-container">
+        {/*
+          The store's Google rating, directly under the hero and above the
+          four promises, because it is the one piece of outside evidence the
+          business owns and the four cells below it are all the store's own
+          word. It self-gates on `content/social-proof.ts`: without the
+          settings filled it renders nothing and the strip is exactly what it
+          was before.
+        */}
+        <StoreRating variant="rail" className="ox-trust__rating" />
+
         <ul className="ox-trust__row" data-count={items.length}>
           {items.map((item) => {
             const expandable = Boolean(item.definition) || Boolean(item.marks);

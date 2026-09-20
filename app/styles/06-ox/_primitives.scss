@@ -1320,3 +1320,97 @@ html,
 body {
   background-color: var(--ox-paper);
 }
+
+// ---------------------------------------------------------------------------
+// 16. Store rating (app/content/social-proof.ts, StoreRating.tsx)
+//
+// The shop's Google rating. It is a link, always, because the figure is only
+// worth anything if a sceptic can reach the source in one tap, so it is styled
+// as a quiet target rather than as decoration: no underline at rest, the whole
+// chip reacting on hover, and the accent spent on the filled stars alone.
+//
+// The star fill is the same clipped overlay the product rating row uses: the
+// filled row sits over the empty row and its width is the percentage, so a
+// 4.5 reads as half a star and never as a faint one.
+// ---------------------------------------------------------------------------
+.ox-gr {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-3);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover .ox-gr__label { text-decoration: underline; }
+  &:focus-visible { outline: 2px solid var(--ox-accent); outline-offset: 3px; }
+}
+
+.ox-gr__stars {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  color: var(--ox-bd-2);
+}
+
+.ox-gr__row {
+  display: inline-flex;
+  gap: 3px;
+
+  .ox-icon { fill: none; }
+}
+
+.ox-gr__row--fill {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: var(--ox-rating-fill, 0%);
+  overflow: hidden;
+  color: var(--ox-accent);
+  white-space: nowrap;
+
+  .ox-icon { fill: currentColor; }
+}
+
+.ox-gr__value {
+  font-weight: var(--ox-w-figure);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-gr__text {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ox-2);
+  min-inline-size: 0;
+}
+
+.ox-gr__count { color: var(--ox-ink-4); }
+
+.ox-gr__stamp {
+  color: var(--ox-ink-4);
+  white-space: nowrap;
+}
+
+// The full line: a section of its own, or the rail under the hero.
+.ox-gr--rail {
+  gap: var(--ox-4, 16px);
+
+  .ox-gr__value { font-size: 20px; }
+  .ox-gr__label { font-size: 15px; }
+  .ox-gr__count { font-size: 15px; }
+
+  // The date is the first thing to go when the line will not fit: the rating,
+  // its subject and its count all have to survive together or the figure stops
+  // being checkable.
+  @media (max-width: 560px) {
+    flex-wrap: wrap;
+    .ox-gr__stamp { flex-basis: 100%; }
+  }
+}
+
+// The chip: top bar, buy column, cart.
+.ox-gr--inline {
+  gap: var(--ox-2);
+  font-size: 13px;
+
+  .ox-gr__value { font-size: 13px; }
+  .ox-gr__text { gap: 4px; }
+}

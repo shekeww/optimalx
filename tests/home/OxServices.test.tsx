@@ -76,14 +76,21 @@ describe('OxServices', () => {
     // corner rather than a hole.
     expect(container.querySelectorAll('.ox-plan__scrim')).toHaveLength(HOME_PLANS.length);
     expect(container.querySelectorAll('.ox-plan__slash')).toHaveLength(HOME_PLANS.length);
-    const sources = screen
-      .getAllByTestId('ox-plan-card')
-      .map((card) => card.querySelector('img')?.getAttribute('src'));
-    for (const src of sources) expect(src).toMatch(/^\/assets\/images\/plan-[a-z]+\.jpg$/);
-    // Decorative: every card's title already says what it is.
+    // The card requests NOTHING until a frame exists. This assertion used to
+    // require an <img> with a `/assets/images/plan-*.jpg` src, which is how
+    // three requests that always came back 500 survived: the paths were in the
+    // map, the files were never shot, and `BandPhoto` hid the failure after
+    // the request had already gone out. A card with no photograph is the
+    // correct render today, and the scrim and slash above are what make it
+    // finished.
     for (const card of screen.getAllByTestId('ox-plan-card')) {
-      expect(card.querySelector('img')?.getAttribute('alt')).toBe('');
-      expect(card.querySelector('img')?.getAttribute('loading')).toBe('lazy');
+      const img = card.querySelector('img');
+      if (!img) continue;
+      // If a frame is ever added, it stays decorative and lazy, and its path
+      // has to resolve (tests/content/imagePaths.test.ts holds that part).
+      expect(img.getAttribute('src')).toMatch(/^\/assets\/images\//);
+      expect(img.getAttribute('alt')).toBe('');
+      expect(img.getAttribute('loading')).toBe('lazy');
     }
   });
 

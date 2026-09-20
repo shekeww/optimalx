@@ -1717,3 +1717,483 @@ button.ox-trust__btn:hover .ox-trust__title {
     padding: var(--ox-8);
   }
 }
+
+// The product grid placeholder (HomeSkeleton ProductsGridSkeleton). It takes
+// its columns from `.ox-grid-products` and only needs a cell height here.
+// That height tracks the card's image plate, which is 132 until 1024 and 184
+// above it (_b3-product 53, _b4-listing 498); the remainder is the card's
+// title, price and action, which do not change with the breakpoint.
+.ox-skel-pgrid {
+  --ox-skel-card: 380px;
+}
+
+@media (min-width: 1024px) {
+  .ox-skel-pgrid {
+    --ox-skel-card: 432px;
+  }
+}
+
+// The store rating above the trust cells (OxTrustStrip). Centred with the
+// headings, and separated from the cells by space alone, because the row
+// below is already divided by hairlines and a second rule here would read as
+// a border around nothing.
+.ox-trust__rating {
+  display: inline-flex;
+  margin-block-end: var(--ox-5, 20px);
+}
+
+.ox-trust .ox-trust__rating {
+  align-self: center;
+}
+
+// ---------------------------------------------------------------------------
+// 17. The three bands the retail-scale rebuild wrote and never styled
+//
+// OxPoster, OxPosters/PosterCard and CertificationBand were committed as
+// components with no CSS and no manifest entry, so they had never rendered
+// once. This section is their stylesheet. The numbers come from
+// homepage-scale-spec: a full-bleed band is at least 480 tall at 1280 and 560
+// from 1440, a carousel shows 1.3 to 1.5 of the next card at the trailing
+// edge, and a card that carries a photograph shows it behind the content at
+// 0.42 to 0.48 on the card's own dark ground.
+//
+// On full bleed: the `s-block` wrapper the engine emits is ALREADY the full
+// content width (1425 at a 1440 viewport, the 15 being the scrollbar). Only
+// `.ox-container` narrows to 1296 with 64 gutters. So a band does not need to
+// escape anything; it needs its photograph to span the block while only its
+// text sits in a container. That is what these rules do, and it is why none
+// of them reaches for the 100vw margin trick, which would have introduced a
+// horizontal scrollbar on every page that has one.
+// ---------------------------------------------------------------------------
+
+// 17.1 The campaign poster (homepage-scale-spec section 5)
+//
+// The loudest thing on the page after the hero. Absent by default: the block
+// renders null until the merchant writes a headline, so the rules below only
+// ever apply to a real campaign.
+.ox-poster {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  overflow: hidden;
+  min-block-size: 420px;
+  color: var(--ox-paper);
+  text-decoration: none;
+  background: var(--ox-graphite);
+}
+
+.ox-poster__img,
+.ox-poster__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ox-poster__img {
+  object-fit: cover;
+  // The band is a photograph first. It sits brighter than a card's backdrop
+  // because nothing is printed across its whole face, only down one side.
+  opacity: 0.72;
+}
+
+// Deepens toward the reading edge rather than the floor: the poster's text is
+// a column at the start edge, not a caption along the bottom.
+.ox-poster__scrim {
+  background: linear-gradient(
+    to left,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.72) 38%,
+    rgb(14 16 20 / 0.12) 78%
+  );
+}
+
+[dir='ltr'] .ox-poster__scrim {
+  background: linear-gradient(
+    to right,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.72) 38%,
+    rgb(14 16 20 / 0.12) 78%
+  );
+}
+
+.ox-poster__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-block-size: 420px;
+  padding-block: var(--ox-12);
+}
+
+.ox-poster__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-3);
+  max-inline-size: 520px;
+}
+
+.ox-poster__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ox-accent);
+  text-transform: uppercase;
+}
+
+.ox-poster__headline {
+  margin: 0;
+  font-size: clamp(30px, 2.4vw, 46px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+// The accent rule under the subline, drawn as its own element so it keeps its
+// width when the line wraps.
+.ox-poster__rule {
+  inline-size: 64px;
+  block-size: 3px;
+  background: var(--ox-accent);
+}
+
+.ox-poster__line {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.86);
+}
+
+.ox-poster__cta {
+  margin-block-start: var(--ox-2);
+}
+
+// The row of outline glyphs along the floor. Each is a fact, never a benefit.
+.ox-poster__glyphs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-6);
+  margin: var(--ox-8) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-poster__glyph {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.82);
+}
+
+.ox-poster__glyph-icon {
+  flex: none;
+  color: var(--ox-paper);
+}
+
+.ox-poster__glyph-label {
+  white-space: nowrap;
+}
+
+// The brand wedge, the same motif the hero and the advisory band carry.
+.ox-poster__wedge {
+  position: absolute;
+  z-index: 1;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+.ox-poster__wedge--wide {
+  inset-block-start: 0;
+  inset-inline-start: 40px;
+  inline-size: 18px;
+  block-size: 96px;
+}
+
+.ox-poster__wedge--thin {
+  inset-block-start: 0;
+  inset-inline-start: 68px;
+  inline-size: 7px;
+  block-size: 62px;
+  opacity: 0.7;
+}
+
+@media (min-width: 1280px) {
+  .ox-poster,
+  .ox-poster__inner {
+    min-block-size: 480px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .ox-poster,
+  .ox-poster__inner {
+    min-block-size: 560px;
+  }
+}
+
+@media (max-width: 639px) {
+  .ox-poster,
+  .ox-poster__inner {
+    min-block-size: 360px;
+  }
+  .ox-poster__text {
+    max-inline-size: none;
+  }
+  // Four glyphs in a wrapped row on a phone becomes two ragged lines; a
+  // single scrolling row keeps the floor of the band one line tall.
+  .ox-poster__glyphs {
+    gap: var(--ox-4);
+    margin-block-start: var(--ox-6);
+  }
+}
+
+// 17.2 The poster carousel (homepage-scale-spec section 7)
+//
+// Native scroll snap, no autoplay, no JavaScript per frame. The partial card
+// at the trailing edge is the whole point of the row: a scroller that ends
+// flush looks finished when it is not.
+.ox-posters__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78%;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0 0 var(--ox-2);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.ox-posters__slide {
+  scroll-snap-align: start;
+  min-inline-size: 0;
+}
+
+@media (min-width: 640px) {
+  // 1.4 cards of the next one showing, the middle of the spec's 1.3 to 1.5.
+  .ox-posters__track { grid-auto-columns: 46%; }
+}
+
+@media (min-width: 1024px) {
+  .ox-posters__track { grid-auto-columns: 31.5%; }
+}
+
+@media (min-width: 1280px) {
+  .ox-posters__track { grid-auto-columns: 27%; }
+}
+
+.ox-pcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  isolation: isolate;
+  overflow: hidden;
+  block-size: 300px;
+  padding: var(--ox-6);
+  border-radius: var(--ox-r-4);
+  background: var(--ox-graphite-2);
+  color: var(--ox-paper);
+  text-decoration: none;
+}
+
+.ox-pcard__photo,
+.ox-pcard__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+// The treatment the goal and plan cards already use: the frame sits low
+// enough that the card's own dark ground shows through, so a row of unrelated
+// photographs still reads as one set.
+.ox-pcard__photo {
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+.ox-pcard__photo[data-ready] { opacity: 0.46; }
+
+.ox-pcard__scrim {
+  background: linear-gradient(
+    to top,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.55) 46%,
+    rgb(14 16 20 / 0.15) 100%
+  );
+}
+
+.ox-pcard__top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  margin-block-end: auto;
+}
+
+.ox-pcard__icon { color: var(--ox-accent); }
+
+.ox-pcard__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+}
+
+.ox-pcard__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ox-accent);
+  text-transform: uppercase;
+}
+
+.ox-pcard__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ox-pcard__line {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.ox-pcard__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  margin-block-start: var(--ox-2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ox-paper);
+}
+
+.ox-pcard__cta-label { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-pcard__photo { transition: none; }
+}
+
+// 17.3 The certification band (certification-band-spec)
+//
+// The system's verification green, never the supplier's. Every badge is gated
+// on real per-product evidence, so with no data the band does not render at
+// all and none of this applies. It is a PRODUCT attribute shown for a product
+// that holds it, never a property of the shop.
+.ox-certs {
+  position: relative;
+  background: var(--ox-verify);
+  color: var(--ox-paper);
+}
+
+.ox-certs__inner {
+  display: grid;
+  gap: var(--ox-8);
+  padding-block: var(--ox-12);
+}
+
+.ox-certs__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  text-align: center;
+}
+
+.ox-certs__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgb(255 255 255 / 0.72);
+  text-transform: uppercase;
+}
+
+.ox-certs__title {
+  margin: 0;
+  color: var(--ox-paper);
+}
+
+.ox-certs__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Two by two, per the reference.
+@media (min-width: 640px) {
+  .ox-certs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.ox-certs__badge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  padding: var(--ox-4) var(--ox-6);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: var(--ox-r-3);
+}
+
+.ox-certs__name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ox-certs__en {
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.76);
+}
+
+.ox-certs__ar {
+  font-size: 14px;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.ox-certs__product {
+  display: flex;
+  justify-content: center;
+}
+
+.ox-certs__still {
+  inline-size: auto;
+  max-block-size: 220px;
+  object-fit: contain;
+}
+
+// The regulatory disclaimer at the foot. Quiet, but never omitted: it is the
+// sentence that keeps a row of badges from reading as a health claim.
+.ox-certs__legal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: 0;
+  padding-block-start: var(--ox-4);
+  border-block-start: 1px solid rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.7);
+  text-align: center;
+}
+
+.ox-certs__legal-ar,
+.ox-certs__legal-en { display: block; }

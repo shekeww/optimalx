@@ -390,10 +390,10 @@ export function goalSkus(goal: GoalContent): string[] {
  * The photograph behind each goal card on the home page.
  *
  * The paths are the ones `docs/build/image-brief.md` sections 3 to 8 name, so
- * the owner's generated frames drop straight in with no code change. None of
- * them exists yet; a goal whose file is absent renders the card's flat dark
- * ground instead, which is why the card is designed to be finished without a
- * photograph (`GoalCard`, `_b2-home.scss` section 4).
+ * the owner's generated frames drop straight in with no code change. Only
+ * four of them have been shot; a goal whose file is absent renders the card's
+ * flat dark ground instead, which is why the card is designed to be finished
+ * without a photograph (`GoalCard`, `_b2-home.scss` section 4).
  *
  * The brief's six frames were written against the reference image's goal set,
  * which partitions the same catalogue differently from ours: it splits weight

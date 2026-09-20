@@ -339,8 +339,19 @@ export interface HomePlan {
   icon: OxIconName;
   titleKey: string;
   lineKey: string;
-  /** The brief's exact path, so a generated frame needs no code change. */
-  photo: string;
+  /**
+   * The card photograph, present only when the file EXISTS in
+   * `public/assets/images`. Absent is the normal state today.
+   *
+   * The three frames `docs/build/image-brief.md` names for these cards have
+   * not been shot. While this field held their paths anyway, every home page
+   * load fired three requests that came back 500, silently, because
+   * `BandPhoto` swallows a broken image once it has already asked for it.
+   * That is the same defect `GOAL_PHOTOS` carried and had fixed; this map was
+   * missed. Only a path whose file is on disk belongs here, and
+   * `tests/content/imagePaths.test.ts` now enforces that for both maps.
+   */
+  photo?: string;
 }
 
 export const HOME_PLANS: HomePlan[] = [
@@ -350,7 +361,6 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'plan',
     titleKey: 'ox.home.plan_nutrition_title',
     lineKey: 'ox.home.plan_nutrition_line',
-    photo: '/assets/images/plan-nutrition.jpg',
   },
   {
     id: 'training',
@@ -358,7 +368,6 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'form',
     titleKey: 'ox.home.plan_training_title',
     lineKey: 'ox.home.plan_training_line',
-    photo: '/assets/images/plan-training.jpg',
   },
   {
     id: 'advisory',
@@ -366,6 +375,5 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'video-consult',
     titleKey: 'ox.home.plan_advisory_title',
     lineKey: 'ox.home.plan_advisory_line',
-    photo: '/assets/images/plan-advisory.jpg',
   },
 ];

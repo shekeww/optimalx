@@ -69,7 +69,7 @@ export function OxPosters(_props: OxBlockProps) {
   return (
     <section className="ox-posters" data-testid="ox-posters">
       <div className="ox-container">
-        <SectionHeader title={t('ox.home.posters_title')} eyebrow={t('ox.home.posters_eyebrow')} />
+        <SectionHeader title={t('ox.home.posters_title')} />
       </div>
       {/* The track sits outside the container so it can run off the trailing
           screen edge; its own start padding puts the first card on the

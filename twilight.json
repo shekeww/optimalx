@@ -410,6 +410,46 @@
       "icon": "sicon-toggle-off",
       "value": false,
       "description": "لا تفعله إلا بعد توثيق اتفاقيات التوزيع؛ بدونه تظهر عبارة منتجات أصلية"
+    },
+    {
+      "id": "google_place_url",
+      "type": "string",
+      "format": "text",
+      "label": "رابط نشاط المتجر على خرائط جوجل",
+      "label_en": "Google Maps listing URL",
+      "icon": "sicon-map-marker",
+      "value": "",
+      "description": "رابط النشاط العام. بدونه لا يظهر أي تقييم على الموقع مهما كانت بقية الحقول."
+    },
+    {
+      "id": "google_rating",
+      "type": "string",
+      "format": "text",
+      "label": "متوسط التقييم على خرائط جوجل",
+      "label_en": "Google rating",
+      "icon": "sicon-star",
+      "value": "",
+      "description": "الرقم كما يظهر في النشاط، مثل 5.0. انسخه ولا تقربه لأعلى."
+    },
+    {
+      "id": "google_review_count",
+      "type": "string",
+      "format": "text",
+      "label": "عدد التقييمات على خرائط جوجل",
+      "label_en": "Google review count",
+      "icon": "sicon-comments",
+      "value": "",
+      "description": "عدد التقييمات كما يظهر في النشاط، مثل 68. رقم صحيح فقط."
+    },
+    {
+      "id": "google_verified_at",
+      "type": "string",
+      "format": "text",
+      "label": "تاريخ مراجعة الرقمين",
+      "label_en": "Figures checked on",
+      "icon": "sicon-calendar",
+      "value": "",
+      "description": "بصيغة YYYY-MM-DD. يظهر بجانب التقييم حتى يعرف الزائر متى نقلت الأرقام. راجعها كل شهر."
     }
   ],
   "components": [
@@ -689,6 +729,137 @@
       ]
     },
     {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d201",
+      "title": {
+        "ar": "بوستر الحملة",
+        "en": "Campaign poster"
+      },
+      "icon": "sicon-image",
+      "path": "home.ox-poster",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "headline",
+          "key": "b2f1d000-0000-4000-8000-000000000201",
+          "type": "string",
+          "format": "text",
+          "label": "عنوان الحملة",
+          "label_en": "Campaign headline",
+          "description": null,
+          "placeholder": "اتركه فارغا لإخفاء البوستر بالكامل",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        },
+        {
+          "id": "eyebrow",
+          "key": "b2f1d000-0000-4000-8000-000000000202",
+          "type": "string",
+          "format": "text",
+          "label": "نص تمهيدي",
+          "label_en": "Eyebrow",
+          "description": null,
+          "placeholder": null,
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        },
+        {
+          "id": "line",
+          "key": "b2f1d000-0000-4000-8000-000000000203",
+          "type": "string",
+          "format": "textarea",
+          "label": "سطر وصفي",
+          "label_en": "Subline",
+          "description": null,
+          "placeholder": null,
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        },
+        {
+          "id": "image",
+          "key": "b2f1d000-0000-4000-8000-000000000204",
+          "type": "string",
+          "format": "image",
+          "label": "صورة البوستر",
+          "label_en": "Poster image",
+          "description": "يفضل عرض 2400 بكسل",
+          "icon": "sicon-image",
+          "value": null,
+          "required": false
+        },
+        {
+          "id": "cta_label",
+          "key": "b2f1d000-0000-4000-8000-000000000205",
+          "type": "string",
+          "format": "text",
+          "label": "نص الزر",
+          "label_en": "Button label",
+          "description": null,
+          "placeholder": null,
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        },
+        {
+          "id": "cta_url",
+          "key": "b2f1d000-0000-4000-8000-000000000206",
+          "type": "string",
+          "format": "text",
+          "label": "رابط الزر",
+          "label_en": "Button URL",
+          "description": null,
+          "placeholder": "/products",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d202",
+      "title": {
+        "ar": "شريط البوسترات",
+        "en": "Poster carousel"
+      },
+      "icon": "sicon-layout-carousel",
+      "path": "home.ox-posters",
+      "is_default": true,
+      "fields": []
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d203",
+      "title": {
+        "ar": "شبكة منتجات إضافية",
+        "en": "Second product grid"
+      },
+      "icon": "sicon-list-play",
+      "path": "home.ox-products-secondary",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "title",
+          "key": "b2f1d000-0000-4000-8000-000000000207",
+          "type": "string",
+          "format": "text",
+          "label": "العنوان",
+          "label_en": "Title",
+          "description": null,
+          "placeholder": "اتركه فارغا لاستخدام نص المتجر",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        }
+      ]
+    },
+    {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d104",
       "title": {
         "ar": "تصفح حسب النوع",
@@ -825,6 +996,60 @@
       "path": "home.ox-branch",
       "is_default": true,
       "fields": []
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d204",
+      "title": {
+        "ar": "شريط الشهادات",
+        "en": "Certification band"
+      },
+      "icon": "sicon-verified",
+      "path": "home.ox-certifications",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "certifications",
+          "key": "b2f1d000-0000-4000-8000-000000000208",
+          "type": "collection",
+          "format": "collection",
+          "label": "الشهادات",
+          "label_en": "Certifications",
+          "description": "كل صف شهادة ومرجعها؛ صف بلا مرجع لا يظهر",
+          "item_label": "شهادة",
+          "icon": "sicon-list-add",
+          "value": [],
+          "fields": [
+            {
+              "id": "certifications.id",
+              "key": "b2f1d000-0000-4000-8000-000000000209",
+              "type": "string",
+              "format": "text",
+              "label": "معرف الشهادة",
+              "label_en": "Certification id",
+              "description": null,
+              "placeholder": null,
+              "icon": "sicon-format-text-alt",
+              "value": null,
+              "multilanguage": true,
+              "required": false
+            },
+            {
+              "id": "certifications.reference",
+              "key": "b2f1d000-0000-4000-8000-000000000210",
+              "type": "string",
+              "format": "text",
+              "label": "رقم الشهادة أو مرجعها",
+              "label_en": "Certificate reference",
+              "description": null,
+              "placeholder": null,
+              "icon": "sicon-format-text-alt",
+              "value": null,
+              "multilanguage": true,
+              "required": false
+            }
+          ]
+        }
+      ]
     },
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d10a",

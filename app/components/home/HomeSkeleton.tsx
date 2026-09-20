@@ -99,14 +99,64 @@ export function ProductsSkeleton() {
   );
 }
 
-export function BrandsSkeleton() {
+/**
+ * The product GRID placeholder, for the two grid blocks (OxProducts and
+ * OxProductsSecondary). `ProductsSkeleton` above is the rail-era shape and is
+ * still correct for the blocks that kept a rail.
+ *
+ * It borrows `.ox-grid-products` rather than declaring its own columns, on
+ * purpose: the skeleton and the grid it stands in for have to break to two,
+ * three and four columns at the same widths, and the only way to guarantee
+ * that as the grid changes is to use the same rule. A skeleton one column out
+ * is a skeleton that reserves the wrong height and hands back the layout shift
+ * it exists to prevent.
+ */
+export function ProductsGridSkeleton({ count = 8 }: { count?: number } = {}) {
   return (
-    <BlockSkeleton path="ox-brands" className="ox-skel-strip">
-      {rows(8).map((index) => (
-        <SkeletonBlock key={index} height="100%" />
+    <div
+      className="ox-skel-pgrid ox-grid-products ox-grid-products--home"
+      aria-hidden="true"
+    >
+      {rows(count).map((index) => (
+        <SkeletonBlock key={index} height="var(--ox-skel-card)" />
       ))}
+    </div>
+  );
+}
+
+/**
+ * The three new bands.
+ *
+ * Two of them render `null`: the campaign poster is gated on a headline and
+ * the certification band on per-product evidence, and neither exists today,
+ * so reserving a box for them would be reserving a box for nothing. The same
+ * reasoning the newsletter and banner already follow.
+ */
+export function PosterSkeleton() {
+  return null;
+}
+
+export function CertificationsSkeleton() {
+  return null;
+}
+
+export function PostersSkeleton() {
+  return (
+    <BlockSkeleton path="ox-posters" className="ox-skel-posters">
+      <div className="ox-skel-rail">
+        {rows(4).map((index) => (
+          <SkeletonBlock key={index} height="100%" />
+        ))}
+      </div>
     </BlockSkeleton>
   );
+}
+
+export function BrandsSkeleton() {
+  // Null, not a placeholder: the store has zero brands, so `OxBrands` renders nothing today,
+  // and its row reserves 0. A skeleton here would promise content that
+  // never arrives and then collapse (tests/home/optionalBlocks.test.ts).
+  return null;
 }
 
 /**
@@ -129,13 +179,10 @@ export function ServicesSkeleton() {
 }
 
 export function GuidesSkeleton() {
-  return (
-    <BlockSkeleton path="ox-guides" className="ox-skel-grid ox-skel-grid--guides">
-      {rows(3).map((index) => (
-        <SkeletonBlock key={index} height="100%" />
-      ))}
-    </BlockSkeleton>
-  );
+  // Null, not a placeholder: there are no guide entries, so `OxGuides` renders nothing today,
+  // and its row reserves 0. A skeleton here would promise content that
+  // never arrives and then collapse (tests/home/optionalBlocks.test.ts).
+  return null;
 }
 
 /**
@@ -205,6 +252,10 @@ export const BLOCK_SKELETONS: Record<HomeBlockPath, () => ReactNode> = {
   'ox-products': ProductsSkeleton,
   'ox-brands': BrandsSkeleton,
   'ox-services': ServicesSkeleton,
+  'ox-poster': PosterSkeleton,
+  'ox-posters': PostersSkeleton,
+  'ox-products-secondary': ProductsGridSkeleton,
+  'ox-certifications': CertificationsSkeleton,
   'ox-guides': GuidesSkeleton,
   'ox-branch': BranchSkeleton,
   'ox-faq': FaqSkeleton,

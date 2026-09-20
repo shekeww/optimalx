@@ -98,7 +98,6 @@ export function OxCategories({ data }: OxBlockProps) {
       <div className="ox-container">
         <SectionHeader
           title={t('ox.home.categories_title')}
-          eyebrow={t('ox.home.categories_eyebrow')}
           viewAll={{ to: '/categories' }}
         />
         <ul className="ox-cats__grid ox-reveal" ref={gridRef}>

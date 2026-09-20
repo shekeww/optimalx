@@ -2,7 +2,9 @@ import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
-import { GOAL_SLUGS } from '../../app/content/goals';
+import fs from 'node:fs';
+import path from 'node:path';
+import { GOAL_SLUGS, GOAL_PHOTOS } from '../../app/content/goals';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
 
 /**
@@ -81,15 +83,29 @@ describe('OxGoals', () => {
     expect(container.querySelector('.ox-goal__slash')?.getAttribute('aria-hidden')).toBe('true');
   });
 
-  it('points each card at the frame the image brief names for its goal', () => {
+  it('only ever points a card at a frame that exists on disk', () => {
+    // This replaced an assertion that all six carried a photograph. They did
+    // not: ten of the image brief's sixteen frames were never shot, and a
+    // card pointing at a missing one fetched a 404 on every home page load,
+    // silently, because `BandPhoto` swallows a broken image. The invariant
+    // worth holding is not "six photographs" but "no path that 404s", so the
+    // test now reads the filesystem instead of counting.
+    for (const [slug, src] of Object.entries(GOAL_PHOTOS)) {
+      expect(GOAL_SLUGS, `${slug} is not a goal`).toContain(slug);
+      expect(src).toMatch(/^\/assets\/images\/[\w.-]+$/);
+      const file = path.join(process.cwd(), 'public', src.replace(/^\//, ''));
+      expect(fs.existsSync(file), `${slug} points at a missing file: ${src}`).toBe(true);
+    }
+
     renderWithProviders(<OxGoals data={data()} />);
     const cards = screen.getAllByTestId('ox-goal-card');
     const sources = cards.map((card) => card.querySelector('img')?.getAttribute('src'));
-    // Every one of the six resolves, and every path is under the brief's
-    // directory, so a generated frame drops in with no code change.
-    expect(sources.filter(Boolean)).toHaveLength(6);
-    for (const src of sources) expect(src).toMatch(/^\/assets\/images\/goal-[a-z]+\.jpg$/);
-    expect(new Set(sources).size).toBe(6);
+    const withPhoto = sources.filter(Boolean);
+    // Whatever the map holds is what renders, each frame used once, and the
+    // cards without one still render: the row is six either way.
+    expect(cards).toHaveLength(6);
+    expect(withPhoto).toHaveLength(Object.keys(GOAL_PHOTOS).length);
+    expect(new Set(withPhoto).size).toBe(withPhoto.length);
   });
 
   it('gives every card the small outline action, and never a nested control', () => {

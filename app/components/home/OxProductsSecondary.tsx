@@ -49,7 +49,6 @@ export function OxProductsSecondary({ data }: OxBlockProps) {
           sort="priceFromLowToTop"
           count={8}
           title={title}
-          eyebrow={t('ox.home.offers_eyebrow')}
           viewAll={{ to: '/latest-products' }}
           gridId="ox-home-offers"
           skeleton={<ProductsGridSkeleton />}

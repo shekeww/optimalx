@@ -69,7 +69,6 @@ export function OxProducts({ data }: OxBlockProps) {
           {...(resolved.sourceValue !== undefined ? { sourceValue: resolved.sourceValue } : {})}
           count={8}
           title={title}
-          eyebrow={t('ox.home.products_eyebrow')}
           viewAll={{ to: '/latest-products' }}
           gridId="ox-home-products"
           skeleton={<ProductsGridSkeleton />}
