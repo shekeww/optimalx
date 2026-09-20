@@ -267,3 +267,71 @@ already reference these names. Then check three things.
 - **The set together.** Put all twelve side by side. If one is warmer, flatter
   or softer than the rest, regenerate it rather than keeping it. One
   mismatched frame undoes the other eleven.
+
+
+---
+
+## The three booking cards: layout reference, and the images to generate
+
+The owner supplied a strip of three service cards and asked for each image to
+be cropped and used. **They cannot be.** Measured on the source, which is
+869x142 in total: each card's photograph occupies about 110px of width. A
+service card at a 1296 measure divided three ways is about 420 wide, so its
+photograph needs roughly 1000px to survive a 2x display. That is a nine-fold
+upscale of a blended, already-soft crop, and no sharpening invents detail that
+was never captured. Using them would ship three smears.
+
+What the strip IS, and it is worth more than the pixels: the layout.
+
+### The card construction, which is new and replaces the dark service card
+
+Each card is a LIGHT card, not a dark one, and the photograph is not a
+background behind the text. It bleeds in from the card's trailing edge,
+occupying roughly the last 40 per cent, and fades to the card's own white
+across a horizontal gradient so the text half stays clean. Content sits on the
+clean half: an outline glyph in a rounded tile at the top, then the service
+name, then two lines of body, then a text link with a leading arrow.
+
+This is the anti-template lesson again. The photograph is not boxed, not
+cropped to a rectangle with a border, and not dimmed behind type. It is part
+of the card's surface, and the gradient is what joins them.
+
+Three cards in a row, equal width, a hairline between the card and the page,
+no shadow.
+
+### The three images to generate
+
+House block and negative prompt as above. All three at **1400 x 900**,
+delivered at 2800 x 1800, saved as WebP into `public/assets/images`.
+
+**`service-branch.webp` - the branch visit**
+> The exterior of a small modern supplement shop at dusk, seen at a slight
+> angle from across the pavement, its interior warmly lit and visible through
+> full-height glass, dark cladding above the windows, a quiet city street with
+> no people in frame. The right two thirds of the image hold the shopfront and
+> the left third is open pavement and soft out-of-focus street, so the frame
+> can fade into a card. No signage, no lettering, no logos anywhere.
+
+**`service-video.webp` - the video consultation**
+> An open laptop on a clean desk photographed at a low three-quarter angle,
+> its screen turned away from camera so nothing on it is readable, beside a
+> notebook and a glass of water, in a calm room with soft daylight from one
+> side. Shallow depth of field. The subject sits to the right of frame and the
+> left third falls away into soft light. No text, no interface, no screen
+> content.
+
+**`service-written.webp` - the written question**
+> A hand holding a phone at a slight angle, photographed close, the screen
+> turned away so nothing on it is readable, with a blurred warm interior
+> behind. Calm and unhurried rather than urgent. The hand and phone sit to the
+> right of frame with the left third soft and open. No interface, no text, no
+> notification.
+
+Note the shared instruction in all three: **the subject sits to the right and
+the left third is open**, because the photograph has to fade into the card's
+text half. A centred subject cannot be used in this layout.
+
+Note also what is deliberately absent: no faces, no screens showing content,
+no clinical or medical staging. The claims source forbids presenting the
+advisory service as clinical practice, and a photograph of someone in a white
+coat at a screen would make that claim without a word being written.

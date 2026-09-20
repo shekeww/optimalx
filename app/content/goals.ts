@@ -405,12 +405,23 @@ export function goalSkus(goal: GoalContent): string[] {
  * seventeenth entry and only this line changes.
  */
 export const GOAL_PHOTOS: Record<string, string> = {
-  'goal-performance': '/assets/images/goal-muscle.jpg',
-  'goal-energy': '/assets/images/goal-strength.jpg',
-  'goal-ideal-weight': '/assets/images/goal-weight.jpg',
-  'goal-recovery': '/assets/images/goal-recovery.jpg',
-  'goal-general-health': '/assets/images/goal-daily.jpg',
-  'goal-hair-skin': '/assets/images/goal-lean.jpg',
+  // The four frames that EXIST. Ten of the brief's sixteen were never shot,
+  // and a goal pointing at one of them fetched a 404 on every home page load
+  // for a photograph that could never arrive. `BandPhoto` swallowed the
+  // broken image, so nothing looked wrong; the request went out all the same,
+  // six times, on the block that is the largest on the page. Only a path
+  // whose file is in `public/assets/images` belongs in this map.
+  //
+  // `goal-strength-w.webp` is the owner's own frame and the brief names it
+  // for a goal card. It is modest athletic wear, which this market requires,
+  // and it carries performance because that is what it shows.
+  'goal-performance': '/assets/images/goal-strength-w.webp',
+  'goal-energy': '/assets/images/band-cardio.webp',
+  'goal-general-health': '/assets/images/nutrition-band.jpg',
+  'goal-recovery': '/assets/images/athlete-band.jpg',
+  // `goal-ideal-weight` and `goal-hair-skin` have no frame yet and are
+  // deliberately absent: the card is designed to be finished on its own dark
+  // ground, so the row still reads as one set of six.
 };
 
 /** The card photograph for a goal, or undefined when the brief names none. */

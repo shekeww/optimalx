@@ -193,6 +193,16 @@ function route(pathname, url) {
       : { body: { status: 404, success: false, error: { message: 'Brand not found' } }, code: 404, note: 'store has ZERO brands' };
   }
 
+  /**
+   * Endpoints the SDK calls on every page whose honest answer here is
+   * nothing. Named so the log distinguishes them from a real gap.
+   */
+  if (seg[0] === 'advertisements') return { body: ok([]), note: 'no advertisements' };
+  if (seg[0] === 'blog') return { body: ok([]), note: 'blog not snapshotted' };
+  if (seg[0] === 'notifications') return { body: ok([]), note: 'no session, no notifications' };
+  if (seg[0] === 'wishlist') return { body: ok([]), note: 'no session, empty wishlist' };
+  if (seg[0] === 'pages') return { body: ok(null), note: 'pages not snapshotted' };
+
   if (p === 'apps/snippets') return { body: ok(snapshot.apps.snippets), note: 'no installed app snippets' };
   if (p === 'apps/snippets/settings') return { body: ok(snapshot.apps.settings), note: 'no app scopes' };
 

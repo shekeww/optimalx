@@ -1,21 +1,29 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import type { ProductsListParams, ProductsListSource } from '@salla.sa/twilight-theme-engine/api/product';
-import { ProductsSliderWrapper } from '../blocks/ProductsSliderWrapper';
-import { ProductsRailSkeleton } from './HomeSkeleton';
+import type {
+  ProductsListParams,
+  ProductsListSource,
+} from '@salla.sa/twilight-theme-engine/api/product';
+import { ProductsGridWrapper } from '../blocks/ProductsGridWrapper';
+import { ProductsGridSkeleton } from './HomeSkeleton';
 import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 
 /**
- * The product rail (DIRECTION 5.2 ProductsSliderWrapper, 6.2 row 5).
+ * The first product grid, `أحدث المنتجات` (homepage-scale-spec section 4).
  *
- * The title is "أحدث المنتجات" and the source is `latest`, because
- * FINAL-content 1.4 defers "الأكثر طلبا" until the store has real order data
- * and the rule is never to seed a bestseller list. A merchant who picks
- * products in the dashboard gets exactly those, in that order.
+ * **This is where a price first appears and it has to appear high.** A price
+ * high on the page is what tells a Saudi shopper this is a real shop and not
+ * a brochure, so this block sits directly under the category row, above the
+ * campaign poster and above the goal row. It is the second of the four
+ * questions the page answers in order: what do you sell.
  *
- * The rail itself is the shared P1b wrapper over the native
- * `SallaProductsSlider`, which renders the engine `ProductCard`, so the
- * `product:card` override installed by the product batch applies here with no
- * import of its own (PLAN-final C1).
+ * Four across at 1296, dense, eight cards. It was a rail until the rebuild
+ * and the rail was the wrong shape: it showed four of eight and hid the rest
+ * behind a drag, on the one block whose job is to look like a shop shelf.
+ *
+ * The source is `latest`, because FINAL-content 1.4 defers `الأكثر طلبا`
+ * until the store has real order data and the rule is never to seed a
+ * bestseller list. A merchant who picks products in the dashboard gets
+ * exactly those, in that order.
  */
 
 export interface ResolvedSource {
@@ -56,14 +64,15 @@ export function OxProducts({ data }: OxBlockProps) {
   return (
     <section className="ox-products" data-testid="ox-products">
       <div className="ox-container">
-        <ProductsSliderWrapper
+        <ProductsGridWrapper
           source={resolved.source}
           {...(resolved.sourceValue !== undefined ? { sourceValue: resolved.sourceValue } : {})}
-          perPage={8}
+          count={8}
           title={title}
+          eyebrow={t('ox.home.products_eyebrow')}
           viewAll={{ to: '/latest-products' }}
-          sliderId="ox-home-products"
-          skeleton={<ProductsRailSkeleton />}
+          gridId="ox-home-products"
+          skeleton={<ProductsGridSkeleton />}
         />
       </div>
     </section>

@@ -221,3 +221,44 @@ grep -ci "api.salla.dev" .offline-preview.log   # 0
 
 The snapshot API also prints a summary of every path it was asked for on
 shutdown.
+
+---
+
+## What this exposed (not caused by the offline mode)
+
+These are real gaps in the theme, found while getting the preview to render.
+None of them is introduced by the snapshot; all of them are visible live too.
+
+1. **Nine referenced images do not exist.** `app/content/goals.ts` points at
+   `/assets/images/goal-{muscle,strength,weight,recovery,daily,lean}.jpg` and
+   `app/content/services.ts` at `/assets/images/plan-{nutrition,training,advisory}.jpg`.
+   `public/assets/images/` holds only six files, none of them these, so the
+   goal cards and the plan cards render with six and three broken images. The
+   owner brief for them is `docs/build/image-brief.md`.
+
+2. **A missing image can turn into a product-detail request.** The product
+   route is `/{-$locale}/$slug/p{$id}`, and `/assets/images/plan-advisory.jpg`
+   matches it — `$slug` = `images`, `$id` = `lan-advisory.jpg`, because the
+   `p` of `plan` is the route's literal prefix. The loader then asks for
+   `products/lan-advisory.jpg/details`. Harmless while the request 404s into
+   a Not Found, but any theme asset under a path segment starting with `p`
+   is one missing file away from a bogus product lookup.
+
+3. **A two-segment ASCII product URL redirects once.** `/starter-pack/p<id>`
+   307s to `/starter-pack/ar/p<id>` before rendering. The real catalogue URLs
+   (Arabic slugs) resolve in one hop with no redirect, so this is latent
+   rather than live, but the optional-locale segment is matching a slug.
+
+4. **One unit test was already failing before this work.**
+   `tests/home/OxServices.test.tsx > prefers the merchant heading over the
+   locale copy` — the `.ox-sh__desc` node it asserts on no longer exists after
+   the section-header rework. 819 of 820 tests pass.
+
+## Notes on reading the preview
+
+- The product rails are lazy: the `ox-products` and `ox-faq` rails mount when
+  they scroll into view, so the home page fills in as you scroll rather than
+  all at once.
+- `.offline-preview.log` is gitignored. `fixtures/store/` is not — the
+  snapshot is meant to be committed so a teammate can run the preview without
+  MCP access.

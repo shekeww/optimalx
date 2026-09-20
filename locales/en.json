@@ -1306,5 +1306,7 @@
   "ox.pdp.no_reviews_ask": "Rather than wait for a review, ask us about this product before you buy it.",
   "ox.filter.applied": "{{count}} filters applied",
   "ox.services.compare_title": "Compare the services",
-  "ox.services.compare_how": "How it works"
+  "ox.services.compare_how": "How it works",
+  "ox.home.hero_slide_n": "Image {n}",
+  "ox.home.hero_slides_label": "Hero images"
 }

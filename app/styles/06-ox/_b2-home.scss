@@ -180,6 +180,68 @@
   block-size: 100%;
 }
 
+// The photo half is a stack of frames, one visible at a time. Opacity only,
+// which is a compositor property, so the crossfade costs nothing on the main
+// thread while a visitor is reading the panel beside it. The frames are all
+// in the server's HTML, so the hero is complete before any script runs.
+.ox-hero__frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+
+.ox-hero__frame > .ox-hero__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+// The server marks the first frame active, so the hero is correct before
+// hydration and with scripting off entirely; React then moves the attribute.
+.ox-hero__frame[data-active] {
+  opacity: 1;
+}
+
+.ox-hero__dots {
+  position: absolute;
+  z-index: 3;
+  inset-block-end: var(--ox-4);
+  inset-inline-start: var(--ox-4);
+  display: flex;
+  gap: var(--ox-2);
+}
+
+.ox-hero__dot {
+  @include ox-hit-area;
+  inline-size: 8px;
+  block-size: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ox-r-pill);
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out);
+
+  &[data-active] {
+    background: var(--ox-accent);
+    transform: scale(1.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ox-ink-on-dark);
+    outline-offset: 3px;
+  }
+}
+
+// A visitor who asked for less motion gets the first frame and no crossfade.
+@media (prefers-reduced-motion: reduce) {
+  .ox-hero__frame {
+    transition: none;
+  }
+}
+
 .ox-hero__img,
 .ox-hero__video {
   inline-size: 100%;

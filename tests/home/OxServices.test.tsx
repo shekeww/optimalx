@@ -117,13 +117,17 @@ describe('OxServices', () => {
     expect(container.querySelector('.ox-services--banded')).not.toBeNull();
   });
 
-  it('prefers the merchant heading over the locale copy', () => {
+  it('prefers the merchant heading over the locale copy; the intro field is gone', () => {
     setSettings({});
     const { container } = renderWithProviders(
       <OxServices data={data({ title: 'عنوان التاجر', intro: 'مقدمة التاجر' })} />
     );
     expect(container.querySelector('.ox-sh__title')?.textContent).toBe('عنوان التاجر');
-    expect(container.querySelector('.ox-sh__desc')?.textContent).toBe('مقدمة التاجر');
+    // Section headers carry no sub-line, so `intro` had nowhere to render.
+    // It is now out of twilight.json too, so the dashboard stops offering a
+    // field that does nothing. Data passed here is simply ignored, which is
+    // what this asserts: an old saved value cannot resurrect the sub-line.
+    expect(container.querySelector('.ox-sh__desc')).toBeNull();
   });
 
   it('states no reply time until the owner has set one', () => {

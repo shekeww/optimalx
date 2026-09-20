@@ -4,6 +4,14 @@ export interface BandPhotoProps {
   /** A theme asset path from `docs/build/image-brief.md`. */
   src: string;
   className?: string;
+  /**
+   * Intrinsic pixels of the file. Optional, because most callers lay the
+   * frame over a box the stylesheet has already sized; where they are known
+   * they are written, so a browser that has not applied the stylesheet yet
+   * still reserves the right ratio.
+   */
+  width?: number;
+  height?: number;
 }
 
 /**
@@ -29,7 +37,7 @@ export interface BandPhotoProps {
  * three plan frames fetched eagerly is most of the page's weight spent on
  * decoration.
  */
-export function BandPhoto({ src, className }: BandPhotoProps) {
+export function BandPhoto({ src, className, width, height }: BandPhotoProps) {
   const [state, setState] = useState<'pending' | 'ready' | 'failed'>('pending');
   if (state === 'failed') return null;
   return (
@@ -39,6 +47,8 @@ export function BandPhoto({ src, className }: BandPhotoProps) {
       alt=""
       loading="lazy"
       decoding="async"
+      {...(width !== undefined ? { width } : {})}
+      {...(height !== undefined ? { height } : {})}
       {...(state === 'ready' ? { 'data-ready': 'true' } : {})}
       onLoad={() => setState('ready')}
       onError={() => setState('failed')}

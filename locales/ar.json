@@ -1306,5 +1306,7 @@
   "ox.pdp.no_reviews_ask": "بدل انتظار تقييم، اسألنا عن هذا المنتج قبل أن تشتريه.",
   "ox.filter.applied": "{{count}} تصفية مطبقة",
   "ox.services.compare_title": "قارن بين الخدمات",
-  "ox.services.compare_how": "كيف تتم"
+  "ox.services.compare_how": "كيف تتم",
+  "ox.home.hero_slide_n": "الصورة {n}",
+  "ox.home.hero_slides_label": "صور الواجهة"
 }

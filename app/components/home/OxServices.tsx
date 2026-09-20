@@ -48,7 +48,6 @@ export function OxServices({ data }: OxBlockProps) {
   const rowRef = useSectionReveal<HTMLDivElement>();
 
   const title = fieldText(data, 'title') || t('ox.home.plans_title');
-  const intro = fieldText(data, 'intro') || t('ox.home.plans_intro');
   const band = fieldText(data, 'image');
   const replyHours = settingValue(settings, SERVICES_HUB.replyTimeSetting);
 

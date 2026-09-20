@@ -205,3 +205,34 @@ function install(): void {
 install();
 
 export {};
+
+/**
+ * The same redirect, as an inline `<script>` for the document head.
+ *
+ * WHY BOTH. This module is part of the client bundle, which is a deferred
+ * module at the END of the body. The Salla twilight SDK is a module in the
+ * HEAD, so it executes FIRST and would reach api.salla.dev from the page
+ * before the bundle ever ran — re-arming the very mitigation this exists to
+ * avoid. `app/routes/__root.tsx` renders this string as the first script in
+ * the document, ahead of everything. Both installs share one flag, so
+ * whichever lands first wins and the other is a no-op.
+ *
+ * Returns null when no base is configured, which is every normal run.
+ */
+export function offlineApiBootScript(): string | null {
+  const base = readBase();
+  const block = readBlock();
+  if (!base) return null;
+  return [
+    '(function(){',
+    `var B=${JSON.stringify(base)},BLOCK=${block ? 'true' : 'false'};`,
+    `if(window.${FLAG})return;window.${FLAG}=true;`,
+    'var H={"api.salla.dev":1,"cdn.salla.network":1};',
+    'function rw(h){try{var u=new URL(h,location.href);if(!H[u.hostname])return null;var b=new URL(B);u.protocol=b.protocol;u.host=b.host;return u.toString()}catch(e){return null}}',
+    'function bad(h){return BLOCK&&h.indexOf("//api.salla.dev")>-1}',
+    'var f=window.fetch;window.fetch=function(i,o){try{var s=(typeof i==="string"||i instanceof URL);var h=s?String(i):((i&&i.url)||"");var n=rw(h);if(n)return s?f(n,o):f(new Request(n,i),o);if(bad(h))return Promise.reject(new Error("[offline-api] BLOCKED "+h))}catch(e){}return f(i,o)};',
+    'var xo=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){var a=[].slice.call(arguments);var n=rw(String(u));if(n)a[1]=n;else if(bad(String(u)))throw new Error("[offline-api] BLOCKED "+u);return xo.apply(this,a)};',
+    'console.log("[offline-api] browser: api.salla.dev + cdn.salla.network -> "+B);',
+    '})();',
+  ].join('');
+}

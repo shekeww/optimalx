@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Image } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
 import { useMediaQuery } from '../common/hooks/useMediaQuery';
@@ -47,6 +46,19 @@ import { fieldText, type OxBlockProps } from './defaults';
 export const DEFAULT_HERO = '/assets/images/hero-home.jpg';
 export const DEFAULT_HERO_MOBILE = '/assets/images/hero-home-mobile.jpg';
 
+/**
+ * The frames the photo half cycles through when the merchant has not set its
+ * own. Only the store's own photography, never a supplier's packaging shot.
+ */
+export const DEFAULT_HERO_SLIDES = [
+  DEFAULT_HERO,
+  '/assets/images/athlete-band.jpg',
+  '/assets/images/nutrition-band.jpg',
+];
+
+/** How long a frame holds before the crossfade. */
+export const SLIDE_MS = 5500;
+
 /** An internal route goes through the engine Link; an anchor or an absolute URL does not. */
 function linkProps(url: string): { to: string } | { href: string } {
   if (url.startsWith('#') || url.startsWith('http://') || url.startsWith('https://')) {
@@ -75,6 +87,8 @@ export function OxHero({ data }: OxBlockProps) {
   const saveData = useSaveData();
 
   const image = fieldText(data, 'image');
+  const image2 = fieldText(data, 'image_2');
+  const image3 = fieldText(data, 'image_3');
   const mobileImage = fieldText(data, 'mobile_image');
   const videoUrl = fieldText(data, 'video_url');
   const headline = fieldText(data, 'headline');
@@ -87,6 +101,32 @@ export function OxHero({ data }: OxBlockProps) {
   // DIRECTION 5.2 and 8.1: the loop is a desktop enhancement over the still,
   // and never runs for a visitor who asked for less motion or less data.
   const showVideo = Boolean(videoUrl) && wide && !reduced && !saveData;
+
+  // The frames. A merchant who sets only `image` gets exactly what they set
+  // and no slideshow: one photograph is not a carousel, and rotating their
+  // single frame against two of ours would be us overriding their choice.
+  const merchantSlides = [image, image2, image3].filter(Boolean);
+  const slides = merchantSlides.length > 0 ? merchantSlides : DEFAULT_HERO_SLIDES;
+
+  // The portrait crop for the first frame: the merchant's if they set one,
+  // ours when the slideshow is running on the theme's own photography.
+  const mobileFirst = image ? mobileImage : merchantSlides.length > 0 ? '' : DEFAULT_HERO_MOBILE;
+
+  const [slide, setSlide] = useState(0);
+  const [held, setHeld] = useState(false);
+
+  // Autoplay is off entirely for a visitor who asked for less motion, for one
+  // who asked for less data, while the pointer or the keyboard is inside the
+  // panel, and whenever the video branch is showing. A single frame never
+  // animates. WCAG 2.2.2 wants auto-updating content to be stoppable: the
+  // dots stop it for good, and hover or focus pauses it meanwhile.
+  const animating = slides.length > 1 && !reduced && !saveData && !showVideo && !held;
+
+  useEffect(() => {
+    if (!animating) return;
+    const id = setInterval(() => setSlide((i) => (i + 1) % slides.length), SLIDE_MS);
+    return () => clearInterval(id);
+  }, [animating, slides.length]);
 
   function toggleVideo() {
     const node = videoRef.current;
@@ -102,38 +142,48 @@ export function OxHero({ data }: OxBlockProps) {
 
   return (
     <section className="ox-hero ox-band-dark" data-testid="ox-hero">
-      <div className="ox-hero__panel">
-        <div className="ox-hero__photo">
-          {image ? (
-            <Image
-              src={image}
-              {...(mobileImage ? { mobileSrc: mobileImage } : {})}
-              alt=""
-              width={1440}
-              height={560}
-              srcSetWidths={[390, 780, 1440, 2560]}
-              sizes="100vw"
-              objectFit="cover"
-              priority={data.priority !== false}
-              className="ox-hero__img"
-              noWrapper
-            />
-          ) : (
-            <picture>
-              <source media="(min-width: 640px)" srcSet={DEFAULT_HERO} />
-              <img
-                className="ox-hero__img"
-                src={DEFAULT_HERO_MOBILE}
-                alt=""
-                width={780}
-                height={1040}
-                decoding="sync"
-                loading="eager"
-                fetchPriority="high"
-                data-testid="ox-hero-default-photo"
-              />
-            </picture>
-          )}
+      <div
+        className="ox-hero__panel"
+        onMouseEnter={() => setHeld(true)}
+        onMouseLeave={() => setHeld(false)}
+        onFocusCapture={() => setHeld(true)}
+        onBlurCapture={() => setHeld(false)}
+      >
+        <div className="ox-hero__photo" data-slides={slides.length}>
+          {/*
+            Every frame is in the server's HTML with only the first visible,
+            so the hero paints before any script runs and nothing shifts when
+            one does. The first is eager and high priority because it is the
+            LCP element; the rest are lazy and must never compete with it.
+            The crossfade is opacity alone, which stays on the compositor.
+          */}
+          {slides.map((src, i) => {
+            // Art direction survives the slideshow. The first frame is the one
+            // a phone actually sees before anything rotates, so it keeps its
+            // portrait crop: a 1440x560 landscape letterboxed into a tall
+            // mobile band wastes most of the screen on empty floor. Later
+            // frames are landscape bands and are cropped by object-fit, which
+            // is fine because they are texture, not the subject.
+            const portrait = i === 0 ? mobileFirst : '';
+            const first = i === 0;
+            return (
+              <picture key={src} className="ox-hero__frame" data-active={i === slide ? '' : undefined}>
+                {portrait ? <source media="(min-width: 640px)" srcSet={src} /> : null}
+                <img
+                  className="ox-hero__img"
+                  src={portrait || src}
+                  alt=""
+                  width={portrait ? 780 : 1440}
+                  height={portrait ? 1040 : 560}
+                  decoding={first ? 'sync' : 'async'}
+                  loading={first ? 'eager' : 'lazy'}
+                  {...(first ? { fetchPriority: 'high' as const } : {})}
+                  {...(first && !image ? { 'data-testid': 'ox-hero-default-photo' } : {})}
+                  {...(first && image ? { 'data-priority': 'true', 'data-mobile-src': mobileImage } : {})}
+                />
+              </picture>
+            );
+          })}
           {showVideo ? (
             <video
               ref={videoRef}
@@ -147,6 +197,27 @@ export function OxHero({ data }: OxBlockProps) {
               aria-hidden="true"
               tabIndex={-1}
             />
+          ) : null}
+          {slides.length > 1 ? (
+            <div className="ox-hero__dots" role="group" aria-label={t('ox.home.hero_slides_label')}>
+              {slides.map((src, i) => (
+                <button
+                  key={src}
+                  type="button"
+                  className="ox-hero__dot"
+                  data-active={i === slide ? '' : undefined}
+                  aria-current={i === slide ? 'true' : undefined}
+                  // Choosing a frame ends the rotation for good, which is the
+                  // stop mechanism WCAG 2.2.2 asks of auto-updating content.
+                  onClick={() => {
+                    setSlide(i);
+                    setHeld(true);
+                  }}
+                >
+                  <span className="ox-sr-only">{t('ox.home.hero_slide_n', { n: i + 1 })}</span>
+                </button>
+              ))}
+            </div>
           ) : null}
         </div>
         {/* One flat gradient over the whole frame, never a blur (render budget

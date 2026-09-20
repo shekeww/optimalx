@@ -786,21 +786,6 @@
           "value": null,
           "multilanguage": true,
           "required": false
-        },
-        {
-          "id": "intro",
-          "key": "b2f1d000-0000-4000-8000-000000000020",
-          "type": "string",
-          "format": "textarea",
-          "label": "السطر التوضيحي",
-          "label_en": "Intro",
-          "description": null,
-          "placeholder": "اتركه فارغا لاستخدام نص المتجر",
-          "icon": "sicon-typography",
-          "value": null,
-          "multilanguage": true,
-          "required": false,
-          "maxLength": 256
         }
       ]
     },

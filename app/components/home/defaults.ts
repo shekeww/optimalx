@@ -163,7 +163,7 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   'ox-categories': { categories: [] },
   'ox-products': { title: null, products: [] },
   'ox-brands': { brands: [] },
-  'ox-services': { image: null, title: null, intro: null },
+  'ox-services': { image: null, title: null },
   'ox-guides': { title: null },
   'ox-branch': {},
   'ox-faq': { items: [] },

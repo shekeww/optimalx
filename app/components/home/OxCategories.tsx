@@ -24,6 +24,13 @@ import { fieldList, rowText, type OxBlockProps } from './defaults';
  * is what the reference draws on both panes (homepage-spec section 3). The
  * merchant field is clamped to 4, 8 or 12 so a row is never left half empty.
  *
+ * **At full measure, not as chips** (homepage-scale-spec section 3). The row
+ * used to draw eight 148 by 140 tiles with a 34px glyph, which read as eight
+ * small controls under a heading rather than as the page's first invitation
+ * to shop. The tile is now 168 tall at desktop with a 44px glyph, the row
+ * fills the 1296 measure, and the section is the first of the two answers to
+ * "what do you sell".
+ *
  * The tiles carry no imagery: `CategoryTile` draws the sprite glyph and the
  * name, so the API's `image` is deliberately not read here any more. Eight
  * supplier packshots at eight crops was the single thing that stopped this row
@@ -91,6 +98,8 @@ export function OxCategories({ data }: OxBlockProps) {
       <div className="ox-container">
         <SectionHeader
           title={t('ox.home.categories_title')}
+          eyebrow={t('ox.home.categories_eyebrow')}
+          viewAll={{ to: '/categories' }}
         />
         <ul className="ox-cats__grid ox-reveal" ref={gridRef}>
           {tiles.map((tile, index) => (
