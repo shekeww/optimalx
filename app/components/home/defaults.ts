@@ -205,7 +205,7 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   // Each row is a badge id and the certificate reference that proves it. A row
   // with no reference is not evidence and the resolver drops it, so an empty
   // reference cannot turn a badge on.
-  'ox-certifications': { certifications: [] },
+  'ox-certifications': { certifications: [], photo: null },
   'ox-brands': { brands: [] },
   'ox-services': { image: null, title: null },
   'ox-guides': { title: null },

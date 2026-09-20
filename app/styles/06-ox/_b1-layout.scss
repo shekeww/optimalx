@@ -116,7 +116,7 @@ body {
 .ox-utility {
   // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
   // lightest weight steps, because reversed type reads lighter (tokens.css).
-  --ox-w-open: 400; // Read
+  --ox-w-open: 450; // Read
   --ox-w-read: 500; // Quiet
   display: none;
   background: var(--ox-band-util);
@@ -287,7 +287,7 @@ a.ox-util__trust-link {
 .ox-mainbar {
   // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
   // lightest weight steps, because reversed type reads lighter (tokens.css).
-  --ox-w-open: 400; // Read
+  --ox-w-open: 450; // Read
   --ox-w-read: 500; // Quiet
   background: var(--ox-band-header);
 }

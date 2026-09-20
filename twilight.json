@@ -1048,6 +1048,18 @@
               "required": false
             }
           ]
+        },
+        {
+          "id": "photo",
+          "key": "b2f1d000-0000-4000-8000-000000000211",
+          "type": "string",
+          "format": "image",
+          "label": "صورة المنتج تحت الشهادات",
+          "label_en": "Product still under the certifications",
+          "description": "صورة المنتج الذي تخصه الشهادات المدخلة. اتركها فارغة فلا تظهر صورة.",
+          "icon": "sicon-image",
+          "value": null,
+          "required": false
         }
       ]
     },

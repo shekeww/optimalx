@@ -8,7 +8,7 @@ import { Button } from '../../common/Button';
 import { Price } from '../../common/Price';
 import { PdpIcon } from '../PdpIcon';
 import { effectivePrice } from '../lib/claims';
-import { useCatalogueProducts } from './FrequentlyBought';
+import { isAddable, useCatalogueProducts } from '../lib/catalogue';
 import { bundlesForProduct, idsForSkus, SHOW_SAMPLE_BUNDLES, type OxBundle } from '../../../content/bundles';
 import { idForSku } from '../../../content/salla-ids';
 
@@ -68,7 +68,11 @@ interface ResolvedBundle {
 
 function isSellable(item: Product | undefined): item is Product {
   if (!item) return false;
-  return !item.is_out_of_stock && item.status !== 'hidden';
+  // Was `!is_out_of_stock && status !== 'hidden'`, which let `'out'` and
+  // `'out-and-notify'` through: a head in either state rendered a price and a
+  // live add button. `isAddable` is the same predicate the product card and
+  // the completion row use, so all three agree about what "sellable" means.
+  return isAddable(item);
 }
 
 export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
@@ -101,6 +105,12 @@ export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
       const members = bundle.memberSkus
         .map(lookup)
         .filter((item): item is Product => item !== undefined);
+      // EVERY member, not merely two of them. `members.length < 2` let a four
+      // item bundle render with three plates and three priced rows beneath the
+      // four item price, which is a wrong total presented as a real offer, and
+      // it contradicted the header above: a bundle whose members do not all
+      // come back live is dropped rather than half-drawn.
+      if (members.length !== bundle.memberSkus.length) continue;
       if (members.length < 2) continue;
       out.push({ bundle, head, members });
     }

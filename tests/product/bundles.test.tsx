@@ -57,9 +57,18 @@ vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
   },
 }));
 vi.mock('@salla.sa/twilight-components-react/add-product-button', () => {
-  const Stub = ({ productId, children }: Record<string, unknown>) => (
+  const Stub = ({ productId, children, onSuccess }: Record<string, unknown>) => (
     <salla-add-product-button data-product={String(productId)}>
-      <button type="button" onClick={() => adds.push(Number(productId))}>
+      <button
+        type="button"
+        onClick={() => {
+          adds.push(Number(productId));
+          // The real component reports back, and the row's combined add waits
+          // for that before firing the next one. A stub that stayed silent
+          // would make every add sit out the queue's timeout.
+          (onSuccess as (() => void) | undefined)?.();
+        }}
+      >
         {children as React.ReactNode}
       </button>
     </salla-add-product-button>
@@ -244,7 +253,12 @@ describe('FrequentlyBought with the sample set', () => {
 
     fireEvent.click(screen.getByTestId('ox-fbt-add'));
 
-    expect(adds).toEqual([WHEY.id, PEANUT.id]);
+    // ONE AT A TIME, in row order. The adds used to all fire in a single
+    // synchronous loop, which started a cart request per product at once;
+    // Salla's cart is server-authoritative and each response rewrites it, so
+    // the last one home could drop an earlier item. Each now waits for its own
+    // button to report back, so the assertion has to wait too.
+    await waitFor(() => expect(adds).toEqual([WHEY.id, PEANUT.id]));
   });
 
   it('adds nothing while no row is ticked', async () => {

@@ -135,14 +135,18 @@ export function CertificationBand({ badges, photo }: CertificationBandProps) {
             );
           })}
         </ul>
+        {/* The wrapper centres; the image carries the size cap. These two class
+            names were the other way round, which put `display: flex` on the
+            img and `max-block-size` on the div, so a merchant upload had no
+            ceiling at all. */}
         {photo ? (
-          <div className="ox-certs__still">
+          <div className="ox-certs__product">
             <img
-              className="ox-certs__product"
+              className="ox-certs__still"
               src={photo.src}
               alt=""
-              width={photo.width}
-              height={photo.height}
+              {...(photo.width !== undefined ? { width: photo.width } : {})}
+              {...(photo.height !== undefined ? { height: photo.height } : {})}
               loading="lazy"
               decoding="async"
             />

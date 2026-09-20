@@ -1415,7 +1415,7 @@ body.is-sticky-product-bar.product-single {
 .ox-bband {
   // Dark, but not a .ox-band-dark: it repeats the two lines that withdraw the
   // lightest weight steps, because reversed type reads lighter (tokens.css).
-  --ox-w-open: 400; // Read
+  --ox-w-open: 450; // Read
   --ox-w-read: 500; // Quiet
   position: relative;
   display: flex;

@@ -1,6 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { product as productApi } from '@salla.sa/twilight-theme-engine/api/product';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SallaAddProductButtonCore } from '@salla.sa/twilight-components-react/add-product-button';
@@ -10,6 +8,8 @@ import { Button } from '../../common/Button';
 import { Price } from '../../common/Price';
 import { PdpIcon } from '../PdpIcon';
 import { effectivePrice } from '../lib/claims';
+import { isAddable, useCatalogueProducts } from '../lib/catalogue';
+import { WebComponentBoundary } from '../../common/WebComponentBoundary';
 import { companionsForProduct, idsForSkus, SHOW_SAMPLE_BUNDLES } from '../../../content/bundles';
 
 /**
@@ -97,44 +97,6 @@ export function fireSallaAdd(container: Element | null | undefined): boolean {
   return true;
 }
 
-/**
- * Live products for a list of catalogue ids, in the order asked for.
- *
- * One request for the whole set through the engine's own `selected` source,
- * which is the same source the curated home rails use. It lives here rather
- * than in a lib file because this batch owns two components and no lib file;
- * `Bundle.tsx` imports it from here.
- */
-export function useCatalogueProducts(ids: readonly number[]): Product[] {
-  const key = ids.join(',');
-  const { data } = useQuery({
-    queryKey: ['ox', 'bundle-products', key],
-    queryFn: async (): Promise<Product[]> => {
-      const result = await productApi.list({
-        source: 'selected',
-        sourceValue: [...ids],
-        perPage: Math.max(ids.length, 1),
-      });
-      return result.items;
-    },
-    enabled: ids.length > 0,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  return useMemo(() => {
-    if (!data || data.length === 0) return [];
-    const byId = new Map(data.map((item) => [String(item.id), item]));
-    const out: Product[] = [];
-    for (const id of ids) {
-      const found = byId.get(String(id));
-      if (found) out.push(found);
-    }
-    return out;
-    // `key` is the stable identity of `ids`; the array itself is rebuilt each render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, key]);
-}
-
 interface CompletionRow {
   id: number;
   name: string;
@@ -161,11 +123,24 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
   const { t } = useTranslation();
   const proxiesRef = useRef<HTMLDivElement | null>(null);
   const [unticked, setUnticked] = useState<ReadonlySet<number>>(() => new Set<number>());
+  const [busy, setBusy] = useState(false);
+  /** Resolves the promise `addTicked` is awaiting for a given proxy. */
+  const settlersRef = useRef<Map<number, () => void>>(new Map());
 
   const set = useMemo(
     () => companionsForProduct(product.id, { sample }),
     [product.id, sample]
   );
+
+  // `ProductPage` re-renders in place on a client-side move between products,
+  // so this component keeps its state. Without this, unticking a companion on
+  // one product left that companion unticked and out of the total on the next
+  // product that happens to share it, with the shopper never having touched it
+  // there.
+  useEffect(() => {
+    setUnticked(new Set<number>());
+    settlersRef.current.clear();
+  }, [product.id]);
   const companionIds = useMemo(
     () => (set ? idsForSkus(set.companionSkus) : []),
     [set]
@@ -174,11 +149,7 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
 
   const rows = useMemo<CompletionRow[]>(() => {
     const live = companions.filter(
-      (item) =>
-        String(item.id) !== String(product.id) &&
-        !item.is_out_of_stock &&
-        item.status !== 'out' &&
-        item.status !== 'hidden'
+      (item) => String(item.id) !== String(product.id) && isAddable(item)
     );
     if (live.length === 0) return [];
     const anchor: CompletionRow = {
@@ -190,7 +161,12 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
       price: effectivePrice(product),
       type: product.type,
       status: product.status,
-      addable: true,
+      // Was hard-coded `true`. On an out-of-stock product that meant the row
+      // ticked its own anchor, priced it into the total, and pointed the
+      // combined add at the buy zone, where Salla renders a NOTIFY-ME control
+      // in that state: the shopper was offered a restock alert dressed as an
+      // add to cart, with an unavailable item counted in the sum.
+      addable: isAddable(product) && product.has_options !== true,
       current: true,
     };
     return [
@@ -204,7 +180,7 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
         price: effectivePrice(item),
         type: item.type,
         status: item.status,
-        addable: item.has_options !== true,
+        addable: isAddable(item) && item.has_options !== true,
         current: false,
       })),
     ];
@@ -230,20 +206,70 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
   );
   const tickedCount = rows.filter((row) => ticked(row)).length;
 
-  const addTicked = useCallback(() => {
-    if (typeof document === 'undefined') return;
-    const proxies = proxiesRef.current;
-    for (const row of rows) {
-      if (!row.addable || unticked.has(row.id)) continue;
-      if (row.current) {
-        if (!fireSallaAdd(document.querySelector(BUY_ZONE_ADD_SELECTOR))) {
-          document.querySelector('.ox-buy')?.scrollIntoView({ block: 'center' });
+  /** Called by a proxy's own success or failure handler. */
+  const settle = useCallback((id: number) => {
+    const done = settlersRef.current.get(id);
+    if (!done) return;
+    settlersRef.current.delete(id);
+    done();
+  }, []);
+
+  /**
+   * A promise that resolves when the proxy for `id` reports either outcome, or
+   * when it has had long enough. The timeout matters: a proxy that never fires
+   * either handler must not strand the rest of the queue forever.
+   */
+  const awaitAdd = useCallback((id: number) => {
+    return new Promise<void>((resolve) => {
+      const timer = setTimeout(() => {
+        settlersRef.current.delete(id);
+        resolve();
+      }, 8000);
+      settlersRef.current.set(id, () => {
+        clearTimeout(timer);
+        resolve();
+      });
+    });
+  }, []);
+
+  /**
+   * ONE AT A TIME. This used to fire every ticked product in a single
+   * synchronous loop, which started N cart requests at once. Salla's cart is
+   * server-authoritative and each response rewrites the whole cart, so a later
+   * response could land on an earlier one and silently drop an item, and the
+   * shopper got a stack of toasts. Each add now waits for its own button to
+   * report back before the next one starts.
+   */
+  const addTicked = useCallback(async () => {
+    if (typeof document === 'undefined' || busy) return;
+    setBusy(true);
+    try {
+      const proxies = proxiesRef.current;
+      for (const row of rows) {
+        if (!row.addable || unticked.has(row.id)) continue;
+
+        if (row.current) {
+          // The buy zone's button belongs to the page, not to us, so its
+          // result cannot be observed from here. It is paced rather than
+          // awaited, and it goes first so the anchor is in the cart before
+          // anything that completes it.
+          if (!fireSallaAdd(document.querySelector(BUY_ZONE_ADD_SELECTOR))) {
+            document.querySelector('.ox-buy')?.scrollIntoView({ block: 'center' });
+          }
+          await new Promise((resolve) => setTimeout(resolve, 450));
+          continue;
         }
-        continue;
+
+        const pending = awaitAdd(row.id);
+        if (!fireSallaAdd(proxies?.querySelector(`[data-ox-fbt-proxy="${row.id}"]`))) {
+          settle(row.id);
+        }
+        await pending;
       }
-      fireSallaAdd(proxies?.querySelector(`[data-ox-fbt-proxy="${row.id}"]`));
+    } finally {
+      setBusy(false);
     }
-  }, [rows, unticked]);
+  }, [awaitAdd, busy, rows, settle, unticked]);
 
   if (!set || rows.length < 2) return null;
 
@@ -321,7 +347,7 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
           size={48}
           className="ox-fbt__add"
           onClick={addTicked}
-          ariaDisabled={tickedCount === 0}
+          ariaDisabled={tickedCount === 0 || busy}
           data-testid="ox-fbt-add"
         >
           {t('ox.pdp.fbt_add_selected')}
@@ -334,12 +360,18 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
           .filter((row) => !row.current && row.addable)
           .map((row) => (
             <span className="ox-fbt__proxy" data-ox-fbt-proxy={row.id} key={row.id}>
-              <SallaAddProductButtonCore
-                productId={row.id}
-                productType={row.type}
-                productStatus={row.status}
-                tabIndex={-1}
-              />
+              {/* Core has no error boundary of its own and the package does not
+                  export the one its deferred exports get, so it brings ours. */}
+              <WebComponentBoundary label={`fbt proxy ${row.id}`}>
+                <SallaAddProductButtonCore
+                  productId={row.id}
+                  productType={row.type}
+                  productStatus={row.status}
+                  tabIndex={-1}
+                  onSuccess={() => settle(row.id)}
+                  onFailed={() => settle(row.id)}
+                />
+              </WebComponentBoundary>
             </span>
           ))}
       </div>

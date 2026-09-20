@@ -2525,6 +2525,9 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 .ox-certs__still {
   inline-size: auto;
+  // Both axes. A merchant upload arrives with no width or height attribute,
+  // so capping only the block axis still let a wide file run past the band.
+  max-inline-size: 100%;
   max-block-size: 220px;
   object-fit: contain;
 }

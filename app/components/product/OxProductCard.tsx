@@ -441,7 +441,12 @@ function savingPercent(product: Pick<Product, 'discount_percentage'>): string | 
   const raw = trimmedText(product.discount_percentage);
   if (raw === null) return null;
   const numeric = Number(raw.replace('%', '').trim());
-  if (Number.isFinite(numeric) && numeric <= 0) return null;
+  // `Number.isFinite(NaN)` is false, so the old `isFinite(n) && n <= 0` guard
+  // skipped its own branch for anything unparseable and returned the raw
+  // string. An Arabic-Indic figure such as "٥١٪" (whose percent sign is not
+  // the ASCII one being stripped) was printed verbatim as the saving, and the
+  // savings line rendered with it, against this function's own contract above.
+  if (!Number.isFinite(numeric) || numeric <= 0) return null;
   return raw;
 }
 
@@ -459,9 +464,17 @@ function maxQuantity(product: Pick<Product, 'max_quantity'>): number | null {
  * and adds the two cases a card has to answer for itself: a donation, where
  * the axis is an amount rather than a count, and a product capped at one.
  */
-function allowsQuantity(product: Pick<Product, 'is_hidden_quantity' | 'type' | 'max_quantity'>) {
+function allowsQuantity(
+  product: Pick<Product, 'is_hidden_quantity' | 'type' | 'max_quantity' | 'has_options'>
+) {
   if (product.is_hidden_quantity === true) return false;
   if (product.type === 'booking' || product.type === 'donating') return false;
+  // A product with options does not go into the cart from the card: Salla's
+  // button opens its chooser instead, and that modal collects its own
+  // quantity. A stepper beside it is thrown away on every tap, and the one
+  // product in this catalogue with options is the shaker, which is also one of
+  // the most visible cards on the home page.
+  if (product.has_options === true) return false;
   const max = maxQuantity(product);
   return max === null || max > 1;
 }
