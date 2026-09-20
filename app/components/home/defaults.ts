@@ -102,30 +102,30 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
   // a layout shift in the least forgivable direction: everything a shopper was
   // reading jumps upward under them.
-  'ox-goals': { mobile: 633, desktop: 262 },
+  'ox-goals': { mobile: 678, desktop: 332 },
   // The largest single error in the old table, and in the opposite direction.
   // The rail became an eight-card grid and the reservation never followed, so
   // this block UNDER-reserved by 410px and jumped down on mount.
-  'ox-products': { mobile: 508, desktop: 1040 },
-  'ox-categories': { mobile: 348, desktop: 246 },
+  'ox-products': { mobile: 1759, desktop: 1040 },
+  'ox-categories': { mobile: 337, desktop: 228 },
   // The campaign poster is gated on a real campaign and renders null until
   // the merchant writes a headline, so it reserves nothing by default. A store
   // running one takes the shift on that block instead, which is the smaller
   // cost and affects nobody today.
   'ox-poster': { mobile: 0, desktop: 0 },
-  'ox-posters': { mobile: 340, desktop: 380 },
-  'ox-products-secondary': { mobile: 508, desktop: 1040 },
+  'ox-posters': { mobile: 362, desktop: 380 },
+  'ox-products-secondary': { mobile: 924, desktop: 1040 },
   // Both of these render nothing today and reserving for them was pure shift:
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the newsletter and banner rows below.
   'ox-brands': { mobile: 0, desktop: 0 },
-  'ox-services': { mobile: 866, desktop: 342 },
+  'ox-services': { mobile: 796, desktop: 342 },
   'ox-guides': { mobile: 0, desktop: 0 },
-  'ox-branch': { mobile: 212, desktop: 184 },
+  'ox-branch': { mobile: 268, desktop: 184 },
   // No certification holds the per-product evidence a badge needs, so the
   // resolver returns an empty list and the band renders null.
   'ox-certifications': { mobile: 0, desktop: 0 },
-  'ox-faq': { mobile: 1080, desktop: 439 },
+  'ox-faq': { mobile: 371, desktop: 439 },
   // Both of these are off until the merchant turns them on: the newsletter
   // behind the `show_newsletter` setting, the banner behind an uploaded image.
   // Until then each renders null, so reserving their old 320 and 268 put 588px

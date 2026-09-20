@@ -16,11 +16,20 @@
 // Every block is wrapped by the engine renderer in `.s-block.s-block--<path>`
 // with the reserved height from register.ts, so the gaps live on the wrapper
 // and the blocks themselves carry none.
+// THREE TIERS, and the point is that they are distinguishable. The page
+// measured 0/64/63/65/96/96/64 on 2026-09-20: two values pretending to be a
+// rhythm, which is part of why every section read as equally important.
+//
+// homepage-scale-spec states the rule: "A full-bleed band needs no margin
+// above or below, because its own edges are the separation. A grid after a
+// band needs 64. Two quiet sections in a row need 96, so they do not merge."
 .s-block--ox-hero,
 .s-block--ox-trust-strip,
 .s-block--ox-goals,
 .s-block--ox-categories,
 .s-block--ox-products,
+.s-block--ox-posters,
+.s-block--ox-products-secondary,
 .s-block--ox-brands,
 .s-block--ox-services,
 .s-block--ox-guides,
@@ -37,21 +46,36 @@
   margin-block-start: 0;
 }
 
+// TIER 1, none. A full-bleed band supplies its own separation, at every width,
+// and a margin above it would open a strip of page ground over a photograph
+// that is meant to butt against what precedes it. Both are gated and render
+// nothing today, so this rule is what they meet when they first appear.
+.s-block--ox-poster,
+.s-block--ox-certifications {
+  margin-block-start: 0;
+}
+
 @media (min-width: 1024px) {
+  // TIER 2, 64. The shopping flow: the goal row, the two grids and the
+  // carousel between them. These belong to one another and read as a
+  // sequence, so they sit closer than a chapter break.
   .s-block--ox-goals,
-  .s-block--ox-categories,
   .s-block--ox-products,
-  .s-block--ox-brands,
-  .s-block--ox-faq,
-  .s-block--ox-banner {
+  .s-block--ox-posters,
+  .s-block--ox-products-secondary {
     margin-block-start: var(--ox-16);
   }
 
-  // The breaths that make the dark rows read as chapters (DIRECTION 4.2).
+  // TIER 3, 96. The quiet sections, which merge into one another without it
+  // (DIRECTION 4.2), and the dark rows that need to read as chapters.
+  .s-block--ox-categories,
+  .s-block--ox-brands,
   .s-block--ox-services,
   .s-block--ox-guides,
   .s-block--ox-branch,
-  .s-block--ox-newsletter {
+  .s-block--ox-faq,
+  .s-block--ox-newsletter,
+  .s-block--ox-banner {
     margin-block-start: var(--ox-24);
   }
 }
@@ -779,7 +803,10 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 
   .ox-tile {
-    min-block-size: 124px;
+    // 124 shrank the tile at the width where there is most room for it, the
+    // same inversion the goal card had. homepage-scale-spec asks for at least
+    // 150 with a 44px glyph, which the component already draws.
+    min-block-size: 156px;
   }
 
   .ox-tile__icon {
@@ -820,7 +847,11 @@ button.ox-trust__btn:hover .ox-trust__title {
   isolation: isolate;
   display: block;
   block-size: 100%;
-  min-block-size: 168px;
+  // 168 was the compressed value the owner objected to. homepage-scale-spec
+  // asks for 260 at desktop; the phone and tablet steps below climb to it
+  // rather than jumping, and the card is a door rather than a chip at every
+  // width.
+  min-block-size: 200px;
   overflow: hidden;
   border-radius: var(--ox-r-3);
   // The ground the card is finished on before any photograph exists.
@@ -990,7 +1021,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 
   .ox-goal {
-    min-block-size: 200px;
+    min-block-size: 228px;
   }
 
   .ox-goal__body {
@@ -1000,16 +1031,29 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 @media (min-width: 1024px) {
   .ox-goals__grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: var(--ox-4);
   }
 
   .ox-goal {
-    min-block-size: 190px;
+    min-block-size: 248px;
   }
 
   .ox-goal__label {
     font-size: 16px;
+  }
+}
+
+// Six across only from 1280, where the container is wide enough that a cell is
+// about 203 and a 260 card reads as a door. This rule used to sit at 1024 with
+// a 190px card, which made the row SHORTER on a wider screen: the measured
+// 203x190 that the owner called compressed, twice.
+@media (min-width: 1280px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .ox-goal {
+    min-block-size: 260px;
   }
 }
 
@@ -1960,7 +2004,8 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-posters__track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 78%;
+  // 74 puts 1.35 of a card in view, the middle of the spec's 1.3 to 1.5.
+  grid-auto-columns: 74%;
   gap: var(--ox-4);
   margin: 0;
   padding: 0 0 var(--ox-2);
