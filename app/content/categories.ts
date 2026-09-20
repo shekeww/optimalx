@@ -19,11 +19,28 @@ export interface CategoryFaqItem {
   aKey: string;
 }
 
+/**
+ * The four colours of the owner's own shaker photography (references/shakers.png,
+ * sampled 2026-09-20): a strong blue, a bright lime, the translucent near-white
+ * and the near-black. Four root categories carry one each on the home grid; every
+ * other category draws the neutral card and carries `null`.
+ *
+ * The tone is a NAME, not a value. The hexes live in one place,
+ * app/styles/06-ox/_b2-home.scss section 4, as `--ox-shaker-*`.
+ */
+export type CategoryTone = 'blue' | 'green' | 'white' | 'black';
+
 export interface CategoryContent {
   slug: string;
   /** Parent category slug, or null for a root category. */
   parent: string | null;
   icon: OxIconName;
+  /**
+   * The shaker colour this category carries on the home grid, or null for the
+   * neutral card. Only a ROOT category may carry one: a subcategory is never a
+   * tile on the home page.
+   */
+  tone: CategoryTone | null;
   h1Key: string;
   /** Meta title, verbatim from the owning keyword cluster. */
   titleKey: string;
@@ -51,11 +68,18 @@ function faq(key: string): CategoryFaqItem[] {
   }));
 }
 
-function base(slug: string, key: string, parent: string | null, icon: OxIconName) {
+function base(
+  slug: string,
+  key: string,
+  parent: string | null,
+  icon: OxIconName,
+  tone: CategoryTone | null = null
+) {
   return {
     slug,
     parent,
     icon,
+    tone,
     h1Key: `${KEY}.${key}.h1`,
     titleKey: `${KEY}.${key}.title`,
     introKey: `${KEY}.${key}.intro`,
@@ -65,7 +89,7 @@ function base(slug: string, key: string, parent: string | null, icon: OxIconName
 
 export const CATEGORIES: CategoryContent[] = [
   {
-    ...base('protein', 'protein', null, 'protein'),
+    ...base('protein', 'protein', null, 'protein', 'blue'),
     chipKeys: chips('protein', 6),
     relatedGuides: [
       'guides/protein-dose',
@@ -128,7 +152,7 @@ export const CATEGORIES: CategoryContent[] = [
     skus: ['OX-013', 'OX-014'],
   },
   {
-    ...base('creatine', 'creatine', null, 'creatine'),
+    ...base('creatine', 'creatine', null, 'creatine', 'green'),
     chipKeys: chips('creatine', 3),
     relatedGuides: [
       'guides/how-to-take-creatine',
@@ -168,7 +192,7 @@ export const CATEGORIES: CategoryContent[] = [
     skus: ['OX-022', 'OX-023'],
   },
   {
-    ...base('vitamins-minerals', 'vitamins_minerals', null, 'vitamins-minerals'),
+    ...base('vitamins-minerals', 'vitamins_minerals', null, 'vitamins-minerals', 'white'),
     chipKeys: chips('vitamins_minerals', 5),
     relatedGuides: [
       'guides/supplements-for-beginners',
@@ -178,7 +202,7 @@ export const CATEGORIES: CategoryContent[] = [
     skus: ['OX-024', 'OX-025', 'OX-026', 'OX-027', 'OX-028'],
   },
   {
-    ...base('collagen-beauty', 'collagen_beauty', null, 'collagen-beauty'),
+    ...base('collagen-beauty', 'collagen_beauty', null, 'collagen-beauty', 'black'),
     chipKeys: chips('collagen_beauty', 4),
     relatedGuides: [
       'guides/creatine-for-women',
@@ -221,6 +245,35 @@ export const CATEGORY_SLUGS: string[] = CATEGORIES.map((category) => category.sl
 /** The ten root slugs, for the "browse by type" grid. */
 export const ROOT_CATEGORY_SLUGS: string[] = CATEGORIES.filter(
   (category) => category.parent === null
+).map((category) => category.slug);
+
+/**
+ * The four root slugs that carry a shaker colour, in tile order: blue, green,
+ * white, black.
+ *
+ * WHY THESE FOUR. They are the four entries this catalogue can actually stand
+ * behind, read off its own shape rather than off a competitor's homepage:
+ *
+ *   protein            14 SKUs and five subcategories, the deepest shelf in the
+ *                      store and the reason most of its guides exist.
+ *   creatine           the ingredient this map points at most: five of the
+ *                      twelve guide slugs it cites name creatine, where the
+ *                      next highest, protein, is named by four.
+ *   vitamins-minerals  5 SKUs, and the only one of the four that a shopper who
+ *                      never enters a gym starts from.
+ *   collagen-beauty    4 SKUs, the second non-gym entry, and the one the
+ *                      creatine-for-women guide already writes toward.
+ *
+ * Two performance entries and two everyday-health entries. Nothing here is a
+ * sales claim: no "best selling", no ranking, no figure that is not a count of
+ * rows in this file.
+ *
+ * pre-workout and amino-acids were the near misses, and both are thinner
+ * shelves (2 and 3 SKUs) aimed at the same shopper protein and creatine
+ * already catch.
+ */
+export const SHAKER_CATEGORY_SLUGS: string[] = CATEGORIES.filter(
+  (category) => category.parent === null && category.tone !== null
 ).map((category) => category.slug);
 
 export function categoryBySlug(slug: string | undefined): CategoryContent | undefined {

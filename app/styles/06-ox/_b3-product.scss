@@ -2347,6 +2347,291 @@ body.is-sticky-product-bar.product-single {
 }
 
 // ---------------------------------------------------------------------------
+// 18b. The completion row and the bundle offer
+//      (BelowFold/FrequentlyBought.tsx, BelowFold/Bundle.tsx)
+// ---------------------------------------------------------------------------
+// Both sections are absent until a real companion set or a real bundle is
+// defined, so nothing here is ever a reserved box: it either has content or it
+// does not exist. Neither section animates. There is nothing in either one
+// whose movement would tell a shopper anything, and the page already spends
+// its motion budget on the gallery and the sticky bar.
+.ox-fbt,
+.ox-bundle-offer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  margin-block-start: var(--ox-6);
+  padding-block-start: var(--ox-6);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-fbt__title,
+.ox-bundle-offer__title {
+  margin: 0;
+}
+
+// Plates joined by a plus. It wraps on a phone rather than scrolling, because
+// three or four 80px plates fit on the narrowest screen this theme supports
+// and a strip that scrolls hides the thing the plus sign is explaining.
+.ox-fbt__strip,
+.ox-bundle-offer__strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-fbt__strip-item,
+.ox-bundle-offer__strip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+}
+
+.ox-fbt__plus,
+.ox-bundle-offer__plus {
+  flex: none;
+  color: var(--ox-fg-3);
+}
+
+.ox-fbt__thumb,
+.ox-bundle-offer__thumb {
+  display: block;
+  flex: none;
+  inline-size: 80px;
+  block-size: 80px;
+  padding: var(--ox-1);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+
+  img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+}
+
+.ox-fbt__rows {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+}
+
+// The whole row is the target, which is how a 20px checkbox still clears 44.
+.ox-fbt__row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 56px;
+  padding: var(--ox-2) var(--ox-3);
+
+  & + & {
+    border-block-start: 1px solid var(--ox-bd);
+  }
+}
+
+label.ox-fbt__row {
+  cursor: pointer;
+}
+
+.ox-fbt__check {
+  inline-size: 20px;
+  block-size: 20px;
+  margin: 0;
+  accent-color: var(--ox-accent);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// Keeps the checkbox column on a row that has no checkbox, so every name in
+// the list starts on the same line.
+.ox-fbt__check-slot {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+.ox-fbt__name {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  min-inline-size: 0;
+  font-size: var(--ox-t-body);
+  line-height: var(--ox-lh-snug);
+  color: var(--ox-fg);
+}
+
+.ox-fbt__badge {
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg-3);
+}
+
+.ox-fbt__choose {
+  display: inline-flex;
+  align-self: start;
+  align-items: center;
+  min-block-size: 44px;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-accent-dark);
+  text-decoration: underline;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-fbt__price,
+.ox-bundle-offer__item-price {
+  font-weight: var(--ox-w-title);
+  white-space: nowrap;
+}
+
+.ox-fbt__foot,
+.ox-bundle-offer__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+}
+
+.ox-fbt__total,
+.ox-bundle-offer__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ox-2);
+  margin: 0;
+}
+
+.ox-fbt__total-label,
+.ox-bundle-offer__price-label {
+  font-size: var(--ox-t-small);
+  color: var(--ox-fg-2);
+}
+
+.ox-fbt__add {
+  flex: 1 1 240px;
+}
+
+// The proxy add controls. They stay in the layout, because a custom element
+// that is never laid out is not a reliable click target, and they are clipped
+// to a pixel, taken out of the tab order and (with `inert` on the element)
+// out of the accessibility tree. Never `display: none`.
+.ox-fbt__proxies {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.ox-bundle-offer__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  padding: var(--ox-4);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-3);
+}
+
+.ox-bundle-offer__name {
+  margin: 0;
+  font-size: var(--ox-t-title);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
+
+  a {
+    color: inherit;
+  }
+}
+
+.ox-bundle-offer__items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-bundle-offer__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  min-block-size: 44px;
+  font-size: var(--ox-t-body);
+  line-height: var(--ox-lh-snug);
+
+  & + & {
+    border-block-start: 1px solid var(--ox-bd);
+  }
+}
+
+.ox-bundle-offer__item-name {
+  min-inline-size: 0;
+
+  a {
+    color: inherit;
+  }
+}
+
+// Renders only when the owner has set a real bundle discount; there is none
+// today, so this rule is unused on the live store by design.
+.ox-bundle-offer__discount {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ox-2);
+  margin: 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-go);
+}
+
+.ox-bundle-offer__actions {
+  display: flex;
+  flex: 1 1 260px;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+}
+
+.ox-bundle-offer__add {
+  flex: 1 1 180px;
+  inline-size: auto;
+}
+
+.ox-bundle-offer__add-icon {
+  margin-inline-end: 10px;
+}
+
+.ox-bundle-offer__view {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 640px) {
+  .ox-fbt__row {
+    padding-inline: var(--ox-4);
+  }
+
+  .ox-bundle-offer__card {
+    padding: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 19. Reduced motion (DIRECTION 7, the global contract)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {

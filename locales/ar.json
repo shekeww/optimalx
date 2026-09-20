@@ -1352,5 +1352,16 @@
   "ox.content.goals.performance.card": "الأداء وبناء العضلات",
   "ox.content.goals.recovery.card": "التعافي بعد التمرين",
   "ox.content.goals.hair_skin.card": "الشعر والبشرة والأظافر",
-  "ox.content.goals.ideal_weight.card": "الوزن المثالي"
+  "ox.content.goals.ideal_weight.card": "الوزن المثالي",
+  "ox.card.buy_now": "اشتري الآن",
+  "ox.card.colours": "الألوان المتاحة",
+  "ox.pdp.completes_with": "يكتمل مع",
+  "ox.pdp.fbt_this_product": "هذا المنتج",
+  "ox.pdp.fbt_total": "الإجمالي",
+  "ox.pdp.fbt_add_selected": "أضف المحدد إلى السلة",
+  "ox.pdp.bundle_offer_title": "عرض الحزمة",
+  "ox.pdp.bundle_price": "سعر الحزمة",
+  "ox.pdp.bundle_discount": "خصم الحزمة",
+  "ox.pdp.bundle_discount_percent": "خصم {{value}}%",
+  "ox.pdp.bundle_view": "اعرض الحزمة"
 }

@@ -33,6 +33,8 @@ import { HowToUse } from './BelowFold/HowToUse';
 import { PrePurchaseInfo } from './BelowFold/PrePurchaseInfo';
 import { Faq } from './BelowFold/Faq';
 import { BundleMembers } from './BelowFold/BundleMembers';
+import { Bundle } from './BelowFold/Bundle';
+import { FrequentlyBought } from './BelowFold/FrequentlyBought';
 import { ServicePdp } from './variants/ServicePdp';
 import { splitDescription } from './lib/nutritionTable';
 import { createGlossaryLookup } from './lib/glossary';
@@ -230,6 +232,30 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
           <RenderWhenVisible>
             <AddAlso productId={product.id} categoryId={product.category?.id ?? null} />
           </RenderWhenVisible>
+        )}
+
+        {/* The completion row and the bundle offer. Both are absent until a
+            real companion set or a real bundle is defined, so today this slot
+            renders nothing at all and the page is unchanged.
+
+            Deliberately NOT inside `RenderWhenVisible`. That wrapper emits a
+            `<section>` with `min-height: 400px` holding a pulsing grey
+            skeleton until its IntersectionObserver fires, which is the right
+            trade for a region that will certainly have content, and exactly
+            the wrong one for a region that is gated off: it would put a 400px
+            grey ghost under the buy zone on every product page, in the SSR
+            output and for every visitor without JavaScript, advertising a
+            block that does not exist.
+
+            Nothing is lost by dropping it. Both components return null
+            synchronously when no set matches, and their one API request is a
+            `useQuery` that stays `enabled: false` until there are ids to ask
+            for, so the gated page pays neither DOM nor network. */}
+        {isService ? null : (
+          <>
+            <FrequentlyBought product={product} />
+            <Bundle product={product} />
+          </>
         )}
       </div>
 

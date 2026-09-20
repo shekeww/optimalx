@@ -525,7 +525,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-card-skeleton__plate {
   aspect-ratio: 1 / 1;
-  max-block-size: 132px;
+  // The card reads its plate cap from this property and the grid raises it to
+  // 184 from 1024 up (line 498). The skeleton renders inside that same grid,
+  // so it has to read the property too: hardcoding 132 made every placeholder
+  // 52px shorter than the card that replaced it, which is the shift the
+  // skeleton exists to prevent.
+  max-block-size: var(--ox-card-plate-max, 132px);
   border-radius: var(--ox-r-2);
   margin-block-end: var(--ox-1);
 }
@@ -1093,7 +1098,301 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // ---------------------------------------------------------------------------
-// 12. Reduced motion (DIRECTION 7.1, 9.6)
+// 12. The product card, carried to the owner's target
+//
+// `.ox-card-product` is declared in _b3-product.scss section 1, which this
+// batch does not own. This section is the delta between what that file ships
+// and the design the owner attached ("the exact ui/ux design for product
+// cards"): the corners swap, the saving pill fills, a colour column runs down
+// the plate's trailing edge, a savings line joins the price, and the single
+// solid add button becomes a stepper plus an outlined add plus a solid accent
+// CTA. b4 is imported after b3 (_index.scss), so every rule here wins at equal
+// specificity without one `!important`.
+//
+// What the design asks for and this does NOT do, deliberately:
+//
+// - **No drop shadow.** The reference card sits on a soft shadow. There is not
+//   one shadow in the approved target and this file's own contract is value
+//   plus a hairline; a single shadowed component in a flat store reads as a
+//   foreign paste. The card keeps its 1px hairline.
+// - **No tint on the plate.** The reference photograph sits on a pale plate.
+//   Every product photograph in this catalogue is a JPEG or a lossy WebP with
+//   a baked-in white ground, so a grey plate under them draws a visible white
+//   rectangle inside a grey box on every card. That is the same defect the
+//   owner has just asked to be fixed on the product page, and introducing it
+//   here to match a mockup would be trading a real render for a drawing.
+// ---------------------------------------------------------------------------
+
+// The corners swap: the heart takes the reading start, the badge column the
+// opposite corner. Both rules re-point an inset the base file set the other
+// way, so both sides are stated rather than left to inherit.
+.ox-card-product__wish {
+  inset-inline-start: calc(var(--ox-1) * -1);
+  inset-inline-end: auto;
+}
+
+.ox-card-product__badges {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  align-items: flex-end;
+}
+
+// The saving pill: solid go, reversed type, fully rounded. Scoped to the card
+// so the soft treatment `.ox-badge--saving` carries everywhere else stays.
+// #0F7B4F against white measures 5.42:1, so the reversed label clears AA at
+// the badge's 12/700.
+.ox-card-product__saving-badge {
+  gap: var(--ox-1);
+  border-radius: var(--ox-r-pill);
+  background: var(--ox-go);
+  border-color: var(--ox-go);
+  color: var(--ox-paper);
+
+  // `.ox-price` sets its own ink and puts the riyal mark in the accent; inside
+  // a filled pill both have to take the pill's colour or the amount vanishes.
+  .ox-price,
+  .ox-price__mark,
+  .sicon-sar {
+    color: inherit;
+  }
+}
+
+.ox-card-product__percent {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+}
+
+// The colour column on the plate's trailing edge. It is a PREVIEW, not a
+// chooser: Salla's option modal is the only thing that may select a variant,
+// so the dots take no pointer events and a tap passes through to the card's
+// stretched title link, which opens the product page where that modal lives.
+.ox-card-product__swatches {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ox-card-product__swatch {
+  inline-size: 14px;
+  block-size: 14px;
+  border: 1px solid var(--ox-bd-2);
+  border-radius: var(--ox-r-pill);
+  // Set from the product's own option hex; the fallback keeps the dot visible
+  // if a colour ever arrives empty.
+  background: var(--ox-swatch, var(--ox-plate));
+
+  // The ring on the default value. An outline, not a shadow.
+  &.is-selected {
+    outline: 2px solid var(--ox-fg);
+    outline-offset: 2px;
+  }
+}
+
+// The title moves up the type ladder: 14 on a 306 cell read as a caption under
+// a thumbnail (homepage-scale-spec, "Type"). Two lines at the body step is 44,
+// which is the row the card and its skeleton both reserve.
+.ox-card-product__name {
+  min-block-size: 44px;
+  font-size: var(--ox-t-body);
+}
+
+// The meta line now leads with the category, or the brand where the store has
+// no categories, so the brand no longer needs a row of its own.
+.ox-card-product__chips {
+  color: var(--ox-fg-3);
+}
+
+// The savings line under the price. Reserved whether or not the product is on
+// sale, so a row of mixed products keeps one baseline under the price.
+.ox-card-product__saving {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 18px;
+  margin: 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: 18px;
+  color: var(--ox-go);
+}
+
+// ---------------------------------------------------------------------------
+// The action row: stepper at the reading start, Salla's add button filling the
+// rest. It wraps rather than crushing: the two flex bases add up to 264, so a
+// cell at 274 and above (the 4-across listing and home grids, and the 3-across
+// with a rail from 1280) keeps them on one line, and a narrower cell such as
+// the 2-across phone grid puts the add button on its own full-width row. No
+// media query, because this card has no idea which grid it is in.
+// ---------------------------------------------------------------------------
+.ox-card-product__action {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+}
+
+.ox-card-product__qty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1 1 124px;
+  max-inline-size: 140px;
+  min-block-size: 44px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd-2);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-card-product__qty-btn {
+  @include ox-focus(-3px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  // 44 rather than the 40 the box would otherwise give: the stepper is a real
+  // control on a touch grid, and two 44 squares still fit the 124 flex base
+  // the row is sized from.
+  inline-size: 44px;
+  align-self: stretch;
+  padding: 0;
+  color: var(--ox-fg);
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--ox-ink-4);
+    cursor: default;
+  }
+}
+
+.ox-card-product__qty-value {
+  flex: 1 1 auto;
+  min-inline-size: 24px;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-figure);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--ox-lh-num);
+  text-align: center;
+  color: var(--ox-fg);
+}
+
+.ox-card-product__add-slot {
+  display: flex;
+  flex: 1 1 132px;
+  min-inline-size: 0;
+}
+
+// The add button, outlined. Three elements deep: the slot, the web component,
+// and the `s-button-element` the component renders; only the last one draws,
+// so the contract has to reach it. The label sits in `--ox-accent-dark`
+// (4.90:1 on the card) rather than `--ox-accent` (3.58:1), which is the same
+// pairing the rest of the theme uses for accent text at body size.
+.ox-card-product__add {
+  display: block;
+  inline-size: 100%;
+  min-block-size: 44px;
+}
+
+.ox-card-product__add .s-button-element,
+.ox-card-product__add.s-button-element {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding-inline: var(--ox-2);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-accent);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-accent-dark);
+  font-family: inherit;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+}
+
+.ox-card-product__add .s-button-element:hover,
+.ox-card-product__add.s-button-element:hover {
+  background: var(--ox-accent-soft);
+}
+
+.ox-card-product__add .s-button-element:focus-visible,
+.ox-card-product__add.s-button-element:focus-visible {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+// The solid CTA. As a LINK it takes the shared `.ox-btn--primary.ox-btn--block`
+// contract unchanged, including its 19/700 label: white on #F54915 measures
+// 3.58:1, so the type has to stay large enough to be judged at the 3:1 floor.
+// The only thing added here is the raise above the card's stretched title link.
+.ox-card-product__buy {
+  position: relative;
+  z-index: 2;
+}
+
+// The same button as Salla's own quick-buy web component, on the products
+// where the platform has quick buy enabled. Three elements deep again: only
+// the `s-button-element` the component renders draws, so the primary contract
+// is restated onto it rather than inherited from `.ox-btn--primary`, which the
+// component's light DOM never sees. Every value is the primitive's own.
+.ox-card-product__buy--native {
+  display: block;
+  inline-size: 100%;
+}
+
+.ox-card-product__buy--native .s-button-element,
+.ox-card-product__buy--native.s-button-element {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding-inline: 20px;
+  background: var(--ox-accent);
+  border: 1px solid var(--ox-accent);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-on-accent);
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+}
+
+.ox-card-product__buy--native .s-button-element:hover,
+.ox-card-product__buy--native.s-button-element:hover {
+  background: var(--ox-accent-dark);
+  border-color: var(--ox-accent-dark);
+}
+
+.ox-card-product__buy--native .s-button-element:focus-visible,
+.ox-card-product__buy--native.s-button-element:focus-visible {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+.ox-card-product__buy-icon {
+  flex: none;
+}
+
+// ---------------------------------------------------------------------------
+// 13. Reduced motion (DIRECTION 7.1, 9.6)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
   .ox-subneed__link,

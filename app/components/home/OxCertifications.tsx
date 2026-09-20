@@ -1,6 +1,10 @@
 import { CertificationBand } from './CertificationBand';
-import { resolveCertifications, type CertificationEvidence } from '../../content/certifications';
-import { fieldList, rowText, type OxBlockProps } from './defaults';
+import {
+  resolveCertifications,
+  type CertificationEvidence,
+  type CertificationPhoto,
+} from '../../content/certifications';
+import { fieldList, fieldText, rowText, type OxBlockProps } from './defaults';
 
 /**
  * The certification band block (homepage-scale-spec section 10).
@@ -25,15 +29,51 @@ import { fieldList, rowText, type OxBlockProps } from './defaults';
  * without a code change: each row is a badge id and the certificate or
  * registration reference that proves it. A row with no reference is not
  * evidence and is dropped by the resolver, so an empty reference cannot turn
- * a badge on.
+ * a badge on, and neither can a lone dash typed to get past a field.
+ *
+ * The still is the merchant's `photo`, and it has no fallback. A photograph
+ * under four badges says that product holds them, and nothing on the home
+ * page ties the evidence rows to a product. A merchant who uploads one is
+ * the party asserting the link; the theme will not assert it for them.
  */
+
+/**
+ * One cell of a collection row.
+ *
+ * `rowText` covers the two shapes the engine sends for a plain field. Both
+ * of this block's sub-fields are declared `multilanguage` in the manifest,
+ * though, and a multilanguage field arrives as `{ ar, en }`, which `rowText`
+ * reads as empty. A certificate number is the same number in both languages,
+ * so the first non-empty value is the value. (The manifest should drop
+ * `multilanguage` on both; this keeps the evidence readable either way.)
+ */
+function cellText(row: unknown, id: string): string {
+  const direct = rowText(row, id);
+  if (direct !== '') return direct;
+  if (!row || typeof row !== 'object') return '';
+  const record = row as Record<string, unknown>;
+  const suffix = `.${id}`;
+  for (const key of Object.keys(record)) {
+    if (key !== id && !key.endsWith(suffix)) continue;
+    const value = record[key];
+    if (!value || typeof value !== 'object') continue;
+    for (const localized of Object.values(value as Record<string, unknown>)) {
+      if (typeof localized === 'string' && localized.trim() !== '') return localized.trim();
+    }
+  }
+  return '';
+}
+
 export function OxCertifications({ data }: OxBlockProps) {
   const evidence: CertificationEvidence[] = fieldList(data, 'certifications')
-    .map((row) => ({ id: rowText(row, 'id'), reference: rowText(row, 'reference') }))
+    .map((row) => ({ id: cellText(row, 'id'), reference: cellText(row, 'reference') }))
     .filter((row) => row.id !== '' && row.reference !== '');
 
   const badges = resolveCertifications(evidence);
   if (badges.length === 0) return null;
 
-  return <CertificationBand badges={badges} />;
+  const src = fieldText(data, 'photo');
+  const photo: CertificationPhoto | undefined = src === '' ? undefined : { src };
+
+  return <CertificationBand badges={badges} photo={photo} />;
 }

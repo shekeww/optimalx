@@ -1352,5 +1352,16 @@
   "ox.content.goals.performance.card": "Performance and building",
   "ox.content.goals.recovery.card": "Recovery after training",
   "ox.content.goals.hair_skin.card": "Hair, skin and nails",
-  "ox.content.goals.ideal_weight.card": "Ideal weight"
+  "ox.content.goals.ideal_weight.card": "Ideal weight",
+  "ox.card.buy_now": "Buy now",
+  "ox.card.colours": "Available colours",
+  "ox.pdp.completes_with": "Completes with",
+  "ox.pdp.fbt_this_product": "This product",
+  "ox.pdp.fbt_total": "Total",
+  "ox.pdp.fbt_add_selected": "Add selected to cart",
+  "ox.pdp.bundle_offer_title": "Bundle offer",
+  "ox.pdp.bundle_price": "Bundle price",
+  "ox.pdp.bundle_discount": "Bundle discount",
+  "ox.pdp.bundle_discount_percent": "{{value}}% off",
+  "ox.pdp.bundle_view": "View bundle"
 }

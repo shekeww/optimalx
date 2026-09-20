@@ -21,9 +21,9 @@
  * the design is checked in.
  *
  * Where the datum lives is an owner decision that has not been taken (a
- * product tag, a custom field, or the spec-line convention). `CERT_SOURCES`
- * is the shape it will arrive in; until the owner picks one, nothing writes
- * to it.
+ * product tag, a custom field, or the spec-line convention). The evidence
+ * shape below is the shape it will arrive in; until the owner picks one,
+ * nothing writes to it.
  */
 
 /** The four the reference carries. Proper nouns: never translated, never copy. */
@@ -82,22 +82,71 @@ export interface CertificationEvidence {
 }
 
 /**
+ * The badge id as the theme spells it, from whatever the merchant typed.
+ *
+ * Case and separator only: `Informed Choice`, `INFORMED_CHOICE` and
+ * `informed-choice` are the same certification, and a merchant who types the
+ * proper noun the way the reference prints it should not silently get
+ * nothing. It cannot loosen the gate, because a name that is not one of the
+ * four is still dropped, and the reference is a separate condition.
+ */
+export function normalizeCertificationId(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().toLowerCase().replace(/[\s_]+/g, '-');
+}
+
+/** Narrowing guard: only the four the theme defines may reach the band. */
+export function isCertificationId(value: unknown): value is CertificationId {
+  return (CERTIFICATION_IDS as readonly string[]).includes(value as string);
+}
+
+/**
+ * A reference is evidence only if it carries a letter or a digit.
+ *
+ * Blank, whitespace and a lone punctuation mark are all the same thing: a
+ * required field filled in to get past it. `-` is not a certificate number.
+ */
+const REFERENCE_HAS_SUBSTANCE = /[\p{L}\p{N}]/u;
+
+export function isCertificationReference(value: unknown): boolean {
+  return typeof value === 'string' && REFERENCE_HAS_SUBSTANCE.test(value);
+}
+
+/**
  * Turns whatever the product carries into the badges the band may print.
  *
  * Nothing on the store writes this yet, so every caller passes nothing and
  * gets nothing back. When the owner picks the source, this is the one
- * function that changes, and the gate stays where it is: an id with no
- * reference, or an id the theme does not define, never reaches the band.
+ * function that changes, and the gate stays where it is.
+ *
+ * Four conditions, and each one drops the row rather than degrading it:
+ *
+ *   1. the row is an object;
+ *   2. its reference is a string with a letter or a digit in it;
+ *   3. its id, normalized, is one of the four the theme defines;
+ *   4. the result is drawn from `CERTIFICATIONS`, so a row can only ever
+ *      switch a badge on. It can never supply a name, a line, or a fifth
+ *      certification of its own.
+ *
+ * Duplicates collapse and the order is always the canonical one, so two rows
+ * for `halal` cannot print the badge twice and the grid cannot be reordered
+ * by the order the merchant happened to type.
  */
 export function resolveCertifications(
-  evidence: readonly CertificationEvidence[] | undefined
+  evidence: readonly CertificationEvidence[] | undefined | null
 ): CertificationDefinition[] {
-  if (!evidence || evidence.length === 0) return [];
-  const proven = new Set(
-    evidence
-      .filter((item) => typeof item.reference === 'string' && item.reference.trim() !== '')
-      .map((item) => item.id)
-  );
+  const rows: readonly unknown[] = Array.isArray(evidence) ? evidence : [];
+  if (rows.length === 0) return [];
+
+  const proven = new Set<CertificationId>();
+  for (const row of rows) {
+    if (!row || typeof row !== 'object') continue;
+    const record = row as Record<string, unknown>;
+    if (!isCertificationReference(record.reference)) continue;
+    const id = normalizeCertificationId(record.id);
+    if (isCertificationId(id)) proven.add(id);
+  }
+
   return CERTIFICATIONS.filter((definition) => proven.has(definition.id));
 }
 
@@ -113,7 +162,30 @@ export const CERT_DISCLAIMER_EN =
   '*This product is not intended to diagnose, treat, cure, or prevent any disease.';
 export const CERT_DISCLAIMER_AR_KEY = `${KEY}.disclaimer_ar`;
 
-/** The product still beneath the badges (certification-band-spec, the pattern). */
-export const CERT_PRODUCT_PHOTO = '/assets/images/product-creatine.webp';
-export const CERT_PRODUCT_PHOTO_WIDTH = 713;
-export const CERT_PRODUCT_PHOTO_HEIGHT = 637;
+/** The product still beneath the badges, and its intrinsic box. */
+export interface CertificationPhoto {
+  src: string;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * The shipped still, and the reason it is NOT a default.
+ *
+ * The reference sets a product photograph under the grid, and structurally
+ * that is right. But a photograph under four certification badges says that
+ * THAT product holds them, and the evidence rows are not tied to any product
+ * on the home page. Shipping a still by default would manufacture exactly the
+ * claim the spec forbids: a certification displayed for a product that does
+ * not hold it.
+ *
+ * So the band draws a still only when the merchant supplies one, which is the
+ * merchant asserting which product the certificates they entered belong to.
+ * This constant stays for the surface that does have a product in hand, the
+ * product page, where the still is the product being looked at.
+ */
+export const CERT_PRODUCT_PHOTO: CertificationPhoto = {
+  src: '/assets/images/product-creatine.webp',
+  width: 713,
+  height: 637,
+};

@@ -228,16 +228,19 @@
   //
   // The polygon is restated against this box rather than the band: the band's
   // 58% and 44% become 58/60 and 44/60 of the element.
-  .ox-hero__photo,
-  .ox-hero__scrim {
+  // PHOTO ONLY here. The scrim gets the identical treatment further down, in
+  // the block after its own base rule: that base declares `inset: 0`, and it
+  // sits LOWER in this file than this block, so setting the scrim's inset here
+  // was silently undone. The photograph's base rule is above this one, which
+  // is the only reason it worked and the scrim did not.
+  .ox-hero__photo {
     inset-inline-end: 0;
     inset-inline-start: auto;
     inline-size: 60%;
     clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
   }
 
-  [dir='ltr'] .ox-hero__photo,
-  [dir='ltr'] .ox-hero__scrim {
+  [dir='ltr'] .ox-hero__photo {
     inset-inline-end: auto;
     inset-inline-start: 0;
     clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
@@ -394,8 +397,22 @@
     // whole frame seats the picture in the band without drawing a shape of its
     // own, and at roughly half the old strength the shakers keep their colour.
     background: rgba(14, 16, 20, 0.18);
+
+    // The same box and polygon the photograph gets, declared HERE rather than
+    // with it, because this is the first point after the scrim's own base
+    // rule. Without this the scrim kept `inset: 0`, resolved to the start
+    // side, and laid its wash over the copy panel instead of the picture.
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    inline-size: 60%;
+    clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
   }
 
+  [dir='ltr'] .ox-hero__scrim {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
+  }
 }
 
 // THE PHONE HERO IS STACKED, not a shrunken split.
@@ -648,23 +665,12 @@
     min-block-size: 520px;
   }
 
-  .ox-hero__scrim {
-    // Horizontal now, and physical for the same reason the wedge is: it is
-    // darkening the half of the photograph the copy sits on.
-    // Deep on the copy side and clean on the subject side. The stops are set
-    // so the headline reads on a busy frame as well as on the quiet one the
-    // brief asks for, because the shipped photograph is still a product shot
-    // and the merchant field can be pointed at anything.
-    background: linear-gradient(
-      90deg,
-      rgba(14, 16, 20, 0.97) 0%,
-      rgba(14, 16, 20, 0.95) 30%,
-      rgba(14, 16, 20, 0.86) 44%,
-      rgba(14, 16, 20, 0.46) 62%,
-      rgba(14, 16, 20, 0.12) 84%,
-      rgba(14, 16, 20, 0) 100%
-    );
-  }
+  // The heavy horizontal gradient that used to live here is GONE. It dated
+  // from the full-bleed composition, where the copy sat on top of the
+  // photograph and needed 0.97 of near-black behind it to stay legible. The
+  // copy has been on solid graphite since the split landed, so all this did
+  // was re-darken the picture from a block further down the file than the one
+  // that had just lightened it.
 
   // The copy sits opposite the photograph. The clip mirrors with the document,
   // so the copy is at the logical START in both directions: the right in
@@ -922,8 +928,52 @@ button.ox-trust__btn:hover .ox-trust__title {
 // ---------------------------------------------------------------------------
 // 4. OxCategories and CategoryTile (homepage-spec section 3)
 // ---------------------------------------------------------------------------
-// Eight tiles: two rows of four on a phone, one row of eight from 1024. Light
-// card, hairline, a large line glyph over a centred name, and nothing else.
+// Eight tiles: two rows of four on a phone, one row of eight from 1024. Card,
+// hairline, a large line glyph over a centred name, and nothing else.
+//
+// THE FOUR SHAKER COLOURS. The owner's product photography is four branded
+// shakers and they asked for four categories to carry those colours. Every
+// value below was sampled from references/shakers.png on 2026-09-20 (median of
+// four flat strips per bottle, away from the highlight and away from the white
+// logo), then moved only as far as contrast forced it. They are declared once,
+// here, and referenced by name: a component never writes one of these hexes.
+//
+//   name     photograph   shipped      why it moved
+//   blue     #0078DF      #0072D0      a white label was 4.42:1 on the sampled
+//                                      blue. Two steps darker buys 4.86:1 and
+//                                      the hue does not move.
+//   green    #7FC501      #7FC501      unchanged: ink on it is 8.47:1.
+//   white    #DCE2E5      #DCE2E5      unchanged.
+//   black    #151414      #14181F      the brand already owns this black
+//                                      (--ox-graphite-2). One black on the
+//                                      page, not two that nearly match.
+//
+// The EDGE is the second half of the job and it is not decoration. A tile's
+// boundary against the page has to clear 3:1 (WCAG 1.4.11). Blue (4.86:1) and
+// black (17.79:1) clear it on their ground alone; the lime is 2.12:1 against
+// white and the near-white is 1.31:1, so those two are held by their border
+// and would otherwise be a shape with no edge on a white page.
+//
+// The GLYPH ACCENT moves with the ground. Each sprite symbol carries one
+// element filled with --ox-accent, and orange measures 1.35:1 on the blue and
+// 1.69:1 on the lime: it disappears. On those two the accent becomes the
+// tile's own type colour, so the glyph reads as one drawing. On the near-black
+// the orange holds at 4.95:1 and stays, which is how every other dark band on
+// this page draws it, and the near-white takes --ox-accent-dark to clear 3:1.
+.ox-tile {
+  // The four, named. --ox-shaker-white-edge and the two blacks are aliases on
+  // purpose: the neutral 3:1 boundary and the chrome black already exist and
+  // must not be forked here.
+  --ox-shaker-blue: #0072D0;
+  --ox-shaker-blue-edge: #005BAF;
+  --ox-shaker-green: #7FC501;
+  --ox-shaker-green-edge: #5C9200;
+  --ox-shaker-white: #DCE2E5;
+  --ox-shaker-white-edge: var(--ox-line-3);
+  --ox-shaker-black: var(--ox-graphite-2);
+  --ox-shaker-black-edge: var(--ox-graphite);
+}
+
 .ox-cats__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -943,28 +993,74 @@ button.ox-trust__btn:hover .ox-trust__title {
   block-size: 100%;
   min-block-size: 104px;
   padding: var(--ox-2);
-  background: var(--ox-fill);
-  border: 1px solid var(--ox-bd);
+  // Three role tokens, one set per tone to re-point. The fallback IS the
+  // neutral card, so a tile with no tone is exactly what it was before.
+  background: var(--ox-tile-bg, var(--ox-fill));
+  border: 1px solid var(--ox-tile-bd, var(--ox-bd));
   border-radius: var(--ox-r-2);
-  color: var(--ox-fg);
+  color: var(--ox-tile-fg, var(--ox-fg));
   text-align: center;
   transition: transform var(--dur-base) var(--ease-out);
   @include ox-focus(2px);
 
   &:hover {
     transform: translateY(-2px);
-    border-color: var(--ox-line-3);
+    // A coloured tile keeps its own edge on hover: a grey hairline appearing
+    // over lime is a colour change, and colour is not a state this page
+    // animates. The neutral tile behaves exactly as it did.
+    border-color: var(--ox-tile-bd-hover, var(--ox-line-3));
   }
+}
+
+// The four tones. Each sets a ground, a boundary and a type colour, and
+// nothing else: the box, the glyph size and the spacing belong to the tile and
+// do not move with the colour. The measured contrast is on the line that
+// earns it.
+.ox-tile--blue {
+  --ox-tile-bg: var(--ox-shaker-blue);
+  --ox-tile-bd: var(--ox-shaker-blue-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-blue-edge);
+  --ox-tile-fg: var(--ox-paper); // 4.86:1 on the blue; the ground is 4.86:1 on the page
+  --ox-accent: var(--ox-paper); // orange is 1.35:1 here
+}
+
+.ox-tile--green {
+  --ox-tile-bg: var(--ox-shaker-green);
+  --ox-tile-bd: var(--ox-shaker-green-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-green-edge);
+  --ox-tile-fg: var(--ox-ink); // 8.47:1 on the lime; the edge is 3.77:1 on the page
+  --ox-accent: var(--ox-ink); // orange is 1.69:1 here
+}
+
+.ox-tile--white {
+  --ox-tile-bg: var(--ox-shaker-white);
+  --ox-tile-bd: var(--ox-shaker-white-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-white-edge);
+  --ox-tile-fg: var(--ox-ink); // 13.76:1 on it; the edge is 3.63:1 on the page
+  --ox-accent: var(--ox-accent-dark); // 3.79:1 here, where the lighter orange is 2.75:1
+}
+
+.ox-tile--black {
+  --ox-tile-bg: var(--ox-shaker-black);
+  --ox-tile-bd: var(--ox-shaker-black-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-black-edge);
+  --ox-tile-fg: var(--ox-ink-on-dark); // 16.21:1 on it; the ground is 17.79:1 on the page
+  // The accent stays orange: 4.95:1 on this black, the same relationship it
+  // has on every other dark band in the theme.
 }
 
 // The drawn size is an inline width and height on the svg, which no class
 // can override without also setting the box, so the box is set here per
 // viewport: the glyph is the tile's artwork and it has to grow with the tile.
+//
+// `inherit` rather than --ox-ink: the glyph takes the tile's own type colour,
+// so the white line art on the blue and the light line art on the black are
+// the same declaration as the dark line art on the neutral card.
 .ox-tile__icon {
   flex: none;
   inline-size: 34px;
   block-size: 34px;
-  color: var(--ox-ink);
+  color: inherit;
   stroke-width: 1.25;
 }
 
@@ -1004,6 +1100,10 @@ button.ox-trust__btn:hover .ox-trust__title {
     // 124 shrank the tile at the width where there is most room for it, the
     // same inversion the goal card had. homepage-scale-spec asks for at least
     // 150 with a 44px glyph, which the component already draws.
+    //
+    // Colour does not buy a smaller tile. 156 is the floor here, and eight
+    // columns inside the 1296 measure put the drawn box at 148 by 156, which
+    // is what it measured before the four took a ground.
     min-block-size: 156px;
   }
 

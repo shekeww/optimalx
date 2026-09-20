@@ -5,7 +5,12 @@ import type { Category } from '@salla.sa/twilight-theme-engine/types';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SectionHeader } from '../common/SectionHeader';
 import { matchesSlug } from '../layout/Header/useHeaderMenu';
-import { CATEGORIES, ROOT_CATEGORY_SLUGS } from '../../content/categories';
+import {
+  CATEGORIES,
+  ROOT_CATEGORY_SLUGS,
+  SHAKER_CATEGORY_SLUGS,
+  type CategoryTone,
+} from '../../content/categories';
 import type { OxIconName } from '../common/Icon';
 import { CategoryTile } from './CategoryTile';
 import { useSectionReveal } from './useSectionReveal';
@@ -27,7 +32,7 @@ import { fieldList, rowText, type OxBlockProps } from './defaults';
  * **At full measure, not as chips** (homepage-scale-spec section 3). The row
  * used to draw eight 148 by 140 tiles with a 34px glyph, which read as eight
  * small controls under a heading rather than as the page's first invitation
- * to shop. The tile is now 168 tall at desktop with a 44px glyph, the row
+ * to shop. The tile is 148 by 156 at desktop with a 44px glyph, the row
  * fills the 1296 measure, and the section is the first of the two answers to
  * "what do you sell".
  *
@@ -35,6 +40,23 @@ import { fieldList, rowText, type OxBlockProps } from './defaults';
  * name, so the API's `image` is deliberately not read here any more. Eight
  * supplier packshots at eight crops was the single thing that stopped this row
  * reading as one set.
+ *
+ * **The four entry categories lead the row and carry the shaker colours.**
+ * The owner's product photography is four branded shakers - blue, lime, a
+ * translucent white and a near-black - and they asked for four categories to
+ * carry those colours. `SHAKER_CATEGORY_SLUGS` names them and says why those
+ * four; `CategoryTile` turns the name into a modifier class.
+ *
+ * They lead rather than sit where the catalogue order happens to put them,
+ * because colour scattered through a row of eight reads as an accident. Four
+ * coloured then four neutral reads as a lead-in, and it is the same shape two
+ * of the four benchmarked Saudi stores draw (market-patterns section 4: both
+ * Sporter and Bodybuilding put exactly four category tiles on the home page).
+ * On a phone it falls out as one coloured row of four above one neutral row.
+ *
+ * A merchant selection overrides the order entirely, and a selected category
+ * that resolves to one of the four keeps its colour: the tone is looked up the
+ * same way the glyph already is.
  */
 
 export const DEFAULT_TILE_COUNT = 8;
@@ -44,7 +66,19 @@ interface Tile {
   label: string;
   to: string;
   icon: OxIconName;
+  tone: CategoryTone | null;
 }
+
+/**
+ * The default order: the four shaker categories, then the rest of the roots in
+ * catalogue order. Built once, at module scope, because it cannot change.
+ * `ROOT_CATEGORY_SLUGS` itself is left alone - the listing pages read it in
+ * catalogue order and this is a home-page arrangement, not a new taxonomy.
+ */
+const DEFAULT_TILE_SLUGS: string[] = [
+  ...SHAKER_CATEGORY_SLUGS,
+  ...ROOT_CATEGORY_SLUGS.filter((slug) => !SHAKER_CATEGORY_SLUGS.includes(slug)),
+];
 
 function fullRowCount(requested: number): number {
   if (requested >= 12) return 12;
@@ -71,6 +105,7 @@ export function OxCategories({ data }: OxBlockProps) {
             label,
             to: url || `/search?q=${encodeURIComponent(label)}`,
             icon: content?.icon ?? 'protein',
+            tone: content?.tone ?? null,
           } satisfies Tile;
         })
         .filter((tile) => tile.label !== '')
@@ -78,7 +113,7 @@ export function OxCategories({ data }: OxBlockProps) {
     }
 
     const all: Category[] = live ?? [];
-    return ROOT_CATEGORY_SLUGS.slice(0, DEFAULT_TILE_COUNT).map((slug) => {
+    return DEFAULT_TILE_SLUGS.slice(0, DEFAULT_TILE_COUNT).map((slug) => {
       const content = CATEGORIES.find((candidate) => candidate.slug === slug);
       const label = content ? t(content.h1Key) : slug;
       const match = all.find((item) => typeof item.url === 'string' && matchesSlug(item.url, slug));
@@ -87,6 +122,7 @@ export function OxCategories({ data }: OxBlockProps) {
         label: match?.name ?? label,
         to: match?.url ?? `/search?q=${encodeURIComponent(label)}`,
         icon: content?.icon ?? 'protein',
+        tone: content?.tone ?? null,
       } satisfies Tile;
     });
   }, [selected, live, t]);
@@ -103,7 +139,12 @@ export function OxCategories({ data }: OxBlockProps) {
         <ul className="ox-cats__grid ox-reveal" ref={gridRef}>
           {tiles.map((tile, index) => (
             <li key={tile.key} style={{ ['--i' as string]: String(index) }}>
-              <CategoryTile label={tile.label} to={tile.to} icon={tile.icon} />
+              <CategoryTile
+                label={tile.label}
+                to={tile.to}
+                icon={tile.icon}
+                tone={tile.tone}
+              />
             </li>
           ))}
         </ul>
