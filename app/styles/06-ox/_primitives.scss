@@ -58,12 +58,15 @@ $ox-angle-tan: 0.404;
 // "shop by your goal" draws. One definition, because it is now the global
 // primary treatment.
 //
-// `$fill` exists for one reason, and it is a contrast rule rather than a style
-// choice. White on `--ox-accent` measures 3.58:1, which clears the floor ONLY
-// as large text, so the 19/700 default is the smallest this fill may legally
-// carry. A button that needs a smaller label, such as the one inside a 306px
-// product card, passes `--ox-accent-dark` instead, where white is 4.96:1 and
-// legal at any size. The shape, the weight and the hover are shared either way.
+// CALL IT WITH NO ARGUMENTS. The default fill is `--ox-accent`, the logo's
+// orange, and it is the only orange a resting solid CTA may draw anywhere on
+// the site: a second one on a repeated button reads as a second brand. White
+// on it measures 3.58:1, which clears the floor ONLY as large text, so 19/700
+// is the smallest label this fill may legally carry and a button too small for
+// that label gives up its glyph and its padding instead of its type.
+//
+// `$fill` therefore exists for reversed grounds, where the accent itself is
+// the thing that fails — not for buttons that would like a smaller label.
 @mixin ox-primary-face($fill: var(--ox-accent), $hover: var(--ox-accent-dark)) {
   background: #{$fill};
   border-color: #{$fill};
@@ -424,20 +427,27 @@ $ox-angle-tan: 0.404;
   &--s44 { block-size: 44px; padding-inline: 34px; @include ox-angled(44px); }
   &--s48 { block-size: 48px; padding-inline: 36px; @include ox-angled(48px); }
 
-  // Opt-out, for the three cases where the parallelogram is wrong rather than
-  // merely different. Each one is a deliberate exception, not an oversight:
-  //   - an icon-only control, where a slanted square reads as a mistake and
-  //     the cut corners eat the 44px target;
-  //   - a control inside a bordered group (the quantity stepper), where the
-  //     cut would separate the button from the box it belongs to;
-  //   - a full-width button inside a padded card, where the cut ends leave
-  //     triangles of card showing at both edges. The approved references draw
-  //     every full-width add-to-cart square, which is why --block is square.
-  &--square,
-  &--block {
+  // THE ONLY OPT-OUT LEFT is the icon-only control, where a slanted square
+  // reads as a mistake rather than as the motif and the cut corners eat into
+  // the 44px target. It also covers a control inside a bordered group, such as
+  // the quantity stepper, where the cut would separate the button from the box
+  // it belongs to.
+  //
+  // `--block` used to opt out too, on the reasoning that a full-width button
+  // in a padded card leaves triangles of card showing at each end. The owner's
+  // instruction is that the brand's primary and secondary buttons are the
+  // buttons everywhere, and the product page's own full-width add-to-cart is
+  // angled, so a full-width button in a card cannot be the exception. The
+  // triangles are the shape, which is the point of it.
+  &--square {
     clip-path: none;
   }
-  &--block { inline-size: 100%; }
+  &--block {
+    inline-size: 100%;
+    &.ox-btn--s40 { @include ox-angled(40px); }
+    &.ox-btn--s44 { @include ox-angled(44px); }
+    &.ox-btn--s48 { @include ox-angled(48px); }
+  }
 
   &:active:not([aria-disabled='true']):not(:disabled) {
     transform: translateY(1px);
@@ -460,12 +470,13 @@ $ox-angle-tan: 0.404;
     @include ox-secondary-face;
   }
 
-  // Square and block keep the ordinary bordered treatment: with no clip there
-  // is nothing for the painted edge to solve, and the pseudo-element would
-  // just sit under a real border.
-  &--secondary.ox-btn--square,
-  &--secondary.ox-btn--block {
+  // Square keeps the ordinary bordered treatment: with no clip there is
+  // nothing for the painted edge to solve, and the pseudo-element would just
+  // sit under a real border. Block no longer qualifies — it is clipped now,
+  // so it needs the painted outline like every other secondary.
+  &--secondary.ox-btn--square {
     background: var(--ox-surface);
+    border: 1px solid var(--ox-fg);
     &::before { display: none; }
   }
   &--ghost {

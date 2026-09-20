@@ -1577,25 +1577,25 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 // Filled, not outlined: the goal cards are a row of six and want a quiet
 // action; these are three and they are the page's ask.
+//
+// THE BRAND PRIMARY, not a look-alike. This drew the shape with `skewX` on a
+// `::before` and an unskewed label above it, which lands in the same place as
+// the clip but is a second way of saying the same thing — and it let the
+// button set its own size, 13px on an accent fill, where white measures
+// 3.58:1 and needs 4.5:1 at that size. It takes the shared face and the shared
+// size now, which fixes the contrast as a side effect of fixing the identity.
 .ox-plan__cta {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--ox-1);
-  block-size: 34px;
+  justify-content: center;
+  gap: var(--ox-2);
+  block-size: 44px;
   margin-block-start: var(--ox-3);
-  padding-inline: 18px;
-  font-size: 13px;
-  font-weight: var(--ox-w-ui);
-  color: var(--ox-on-accent);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--ox-accent);
-    transform: skewX(var(--ox-skew));
-  }
+  padding-inline: 34px;
+  font-size: 19px;
+  @include ox-primary-face;
+  @include ox-angled(44px);
 }
 
 .ox-plan__cta-label,
@@ -1603,7 +1603,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   position: relative;
 }
 
-.ox-plan:hover .ox-plan__cta::before {
+.ox-plan:hover .ox-plan__cta {
   background: var(--ox-accent-dark);
 }
 
@@ -1800,24 +1800,19 @@ button.ox-trust__btn:hover .ox-trust__title {
   color: var(--ox-paper);
 }
 
+// The brand primary again, for the same reasons as `.ox-plan__cta` above: one
+// technique for the shape, and 19px is the floor for white on the accent.
 .ox-campaign__cta {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--ox-1);
+  justify-content: center;
+  gap: var(--ox-2);
   block-size: 44px;
-  padding-inline: 24px;
-  font-size: 15px;
-  font-weight: var(--ox-w-ui);
-  color: var(--ox-on-accent);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--ox-accent);
-    transform: skewX(var(--ox-skew));
-  }
+  padding-inline: 34px;
+  font-size: 19px;
+  @include ox-primary-face;
+  @include ox-angled(44px);
 }
 
 .ox-campaign__cta-label,

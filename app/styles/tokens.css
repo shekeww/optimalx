@@ -186,13 +186,18 @@
      the large bold price and not for small text; small accent text uses
      --ox-accent-dark, which is 4.59:1 on paper and so clears AA for body
      copy, with less headroom than it had on the cream. */
+  /* ONE ORANGE. #F54915 is the logo's, and it is the only fill any solid call
+     to action on this site draws — the hero's, the card's, the cart's. A
+     button that could not carry a label at this fill was briefly darkened
+     instead; that is no longer allowed, because a second orange on a repeated
+     button reads as a second brand. The LABEL yields to the fill: 19px/700 is
+     the floor, and a cell too narrow for it drops its glyph, not its type. */
   --ox-accent: #F54915;
+  /* The darker steps are for TEXT and for HOVER, never for a resting fill.
+     --ox-accent-dark is 4.59:1 on paper, so it is what small accent text uses
+     and what an accent button hovers to; --ox-accent-deep is deeper still and
+     is held for a hover that needs to go past it. */
   --ox-accent-dark: #D03709;
-  /* The deep step, for a solid accent button whose label is set at body size
-     rather than the primitive's 19px. White on --ox-accent is 3.58:1, which
-     only clears the 3:1 floor as LARGE text, so a smaller label needs a
-     darker fill: --ox-accent-dark gives 4.96:1 and this gives 6.90:1, which
-     is the hover state for it. */
   --ox-accent-deep: #A82D07;
   --ox-accent-light: #F98A6B;
   --ox-accent-rgb: 245, 73, 21;

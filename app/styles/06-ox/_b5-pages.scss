@@ -126,6 +126,38 @@
   max-inline-size: calc(var(--ox-container-narrow) + 2 * var(--ox-gutter));
 }
 
+// A PAGE THAT CARRIES FULL-BLEED SECTIONS STOPS BEING THE CONTAINER ITSELF.
+//
+// `.ox-page` is a centred, gutter-padded box, so a cover photograph inside it
+// stops at the measure and reads as a picture on the page rather than as the
+// top of the page. The fix is NOT the `100vw` margin escape: that overhangs
+// the content box by the reserved scrollbar and puts a horizontal scrollbar on
+// every page that uses it, which is why nothing else on this site reaches for
+// it (see the note in _b2-home.scss section 17).
+//
+// So the measure moves down one level. The page keeps its vertical rhythm and
+// gives up its width; each child takes exactly the box the page used to have,
+// which is the same geometry as before; and a child marked `.ox-page__bleed`
+// declines it and spans the frame. Two children do that on `/services`, the
+// cover band and the advisory section, and both draw their own inner
+// container, so their type still sits on the measure.
+.ox-page--bleed {
+  max-inline-size: none;
+  padding-inline: 0;
+
+  > * {
+    inline-size: 100%;
+    max-inline-size: var(--ox-container);
+    margin-inline: auto;
+    padding-inline: var(--ox-gutter);
+  }
+
+  > .ox-page__bleed {
+    max-inline-size: none;
+    padding-inline: 0;
+  }
+}
+
 .ox-page-head {
   display: flex;
   flex-direction: column;
@@ -250,6 +282,16 @@
 }
 
 .ox-hub__card-note {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
+// The medical line. It used to repeat under each of the three channel cards;
+// with the advisory section in their place it is said ONCE, directly under
+// that section, which is where the three channels and the three programmes it
+// qualifies all sit. It is still said verbatim, and it is still said a second
+// time under the scope panel further down.
+.ox-hub__medical {
   margin: 0;
   color: var(--ox-fg-3);
 }

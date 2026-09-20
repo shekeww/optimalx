@@ -1880,28 +1880,25 @@ body.ox-account {
     min-block-size: 44px;
   }
 
+  // THE TWO BRAND BUTTONS, in the toast as everywhere else. They had the right
+  // fills and the wrong everything else: a rounded rectangle at the inherited
+  // label size, which on an accent fill is white under 4.5:1. The toast is the
+  // moment a shopper decides between "go to the cart" and "keep looking", so
+  // it gets the same pair of buttons as the page that sent them here.
   &__button {
-    border-radius: var(--ox-r-2);
+    border-radius: 0;
     min-block-size: 44px;
-    font-weight: var(--ox-w-ui);
+    block-size: 44px;
+    padding-inline: 34px;
+    font-size: 19px;
+    @include ox-angled(44px);
 
     &--primary {
-      background: var(--ox-accent);
-      color: var(--ox-on-accent);
-
-      &:hover {
-        background: var(--ox-accent-dark);
-        color: var(--ox-on-accent);
-      }
+      @include ox-primary-face;
     }
 
     &--outline {
-      border-color: var(--ox-ink);
-      color: var(--ox-ink);
-
-      &:hover {
-        background: var(--ox-plate);
-      }
+      @include ox-secondary-face(var(--ox-ink), var(--ox-card));
     }
   }
 

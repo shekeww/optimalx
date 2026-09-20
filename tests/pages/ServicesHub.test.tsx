@@ -56,11 +56,17 @@ describe('ServicesHub', () => {
     expect(headings[0].textContent).toBe(t('ox.content.services.hub_h1'));
   });
 
-  it('carries the medical line verbatim under the scope panel and under every channel card', () => {
+  it('carries the medical line verbatim under the advisory section and under the scope panel', () => {
     renderWithProviders(<ServicesHub />);
     const lines = screen.getAllByTestId('ox-medical-line');
-    // one in the scope panel plus one per channel card
-    expect(lines).toHaveLength(4);
+    // Two, not four. It used to repeat under each of the three channel cards,
+    // which was three copies of the same sentence inside one screenful. The
+    // bare channel list is now the shared advisory section (`OxServices`), and
+    // the line is said ONCE directly under it — covering the three channels
+    // and the three programmes together — and once more under the scope panel.
+    // What the claims source requires is that it appears verbatim on the
+    // surface, not that it appears a given number of times.
+    expect(lines).toHaveLength(2);
     for (const line of lines) expect(line.textContent).toBe(MEDICAL_LINE);
   });
 

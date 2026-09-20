@@ -1227,17 +1227,22 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 // ---------------------------------------------------------------------------
 // The action row: stepper at the reading start, Salla's add button filling the
-// rest. It wraps rather than crushing: the two flex bases add up to 264, so a
-// cell at 274 and above (the 4-across listing and home grids, and the 3-across
-// with a rail from 1280) keeps them on one line, and a narrower cell such as
-// the 2-across phone grid puts the add button on its own full-width row. No
-// media query, because this card has no idea which grid it is in.
+// rest, ALWAYS ON ONE LINE. The card has no idea which grid it is in, so the
+// one step below is a container query on the card itself rather than a media
+// query: above 292 the row carries both, and below it the stepper goes and the
+// add button takes the row whole, glyph and label intact. Wrapping is never a
+// step — it is what made a row of cards ragged, since only the cards that
+// carry a stepper grow.
 // ---------------------------------------------------------------------------
 .ox-card-product__action {
   position: relative;
   z-index: 2;
   display: flex;
-  flex-wrap: wrap;
+  // NOWRAP. The stepper and the add button share one line at every card width,
+  // which is what keeps a row of cards the same height: when this wrapped, a
+  // card with a stepper stood 96px taller in its action row than one without,
+  // and the grid came out ragged (468 against 416 in the product page's rail).
+  flex-wrap: nowrap;
   align-items: stretch;
   gap: var(--ox-2);
   min-block-size: 44px;
@@ -1303,7 +1308,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-card-product__add-slot {
   display: flex;
-  flex: 1 1 132px;
+  // `1 1 0` rather than a 132px basis: the button is the element that yields
+  // when the card is narrow, because the stepper cannot go below its own
+  // contents and the owner asked for the button to shrink instead.
+  flex: 1 1 0;
   min-inline-size: 0;
 
   // The custom element host sizes to its own content unless it is told not
@@ -1397,53 +1405,47 @@ nav.breadcrumbs .s-breadcrumb-item button {
   outline-offset: 2px;
 }
 
-// The solid CTA, at CARD scale rather than page scale.
+// The solid CTA. ONE ORANGE ON THE WHOLE SITE, and it is the logo's: the
+// card's buy button draws the same `--ox-accent` (#F54915) as the hero's
+// "shop by your goal", because a second orange on the most-repeated button in
+// the catalogue reads as two brands rather than one.
 //
-// The primitive sets 19/700 for a reason: white on `--ox-accent` measures
-// 3.58:1, which clears the 3:1 floor only as LARGE text, so at page size the
-// label cannot shrink without failing. Inside a 306px card that 19px label
-// dwarfed everything around it, including the outline button beside it at 14.
+// It briefly did not. White on `--ox-accent` measures 3.58:1, which clears
+// the contrast floor only as LARGE text, so a body-size label on that fill is
+// illegal and the button was darkened to `--ox-accent-dark` (4.96:1) to let
+// the label shrink. The owner's call is that the accent is the brand and the
+// label follows it, not the other way round, so THE SIZE is what gives: 19/700
+// is the smallest legal label on this fill and the same one the hero sets.
 //
-// So the card takes the label down to body size and DARKENS THE FILL to keep
-// the pairing legal: white on `--ox-accent-dark` is 4.96:1, which clears the
-// 4.5:1 floor for normal text with room to spare. It is the same accent
-// family, one step down, and the hover goes deeper still rather than lighter.
-// The page's own primary buttons are untouched.
+// The card can afford it now. The CTA is the full-width bar across the foot of
+// the card rather than a chip sharing a line with the outline button, so 19px
+// reads as the card's one call to action instead of shouting over a 14px
+// sibling. The phone cell is too narrow for the glyph at this size and drops
+// it below 640 (see the query beneath).
 .ox-card-product__buy {
   position: relative;
   z-index: 2;
-  // Down to the SAME step as the outline button beside it. It went 19 to 16
-  // first, which was already past the ten per cent asked for, and still read
-  // large against a 14px sibling in a 306px card. The two now match and the
-  // hierarchy is carried by weight and fill instead of size: 700 on a solid
-  // accent against 600 on an outline.
-  // THE GLOBAL PRIMARY FACE, the same mixin the hero's "shop by your goal"
-  // uses. The fill is the dark step rather than the accent because this label
-  // is body size and white on `--ox-accent` is legal only as large text; the
-  // shape, weight and hover are the shared contract.
-  @include ox-primary-face(var(--ox-accent-dark), var(--ox-accent-deep));
-  font-size: var(--ox-t-small);
+  // THE GLOBAL PRIMARY FACE, the same mixin and the same arguments the hero's
+  // "shop by your goal" uses. No override: the fill, the hover, the weight and
+  // the size are the one contract.
+  @include ox-primary-face;
+  font-size: 19px;
   border-radius: 0;
   block-size: 44px;
   padding-inline: 24px;
   @include ox-angled(44px);
 }
 
-// At 390 the grid is two across, which leaves roughly 139px of button inside
-// the card's padding. The primitive's 19/700 label plus the bolt glyph and its
-// gap needs about 160, and `.ox-btn` sets `white-space: nowrap`, so the label
-// ran out of its own box. The sibling add button was already stepped down for
-// exactly this cell; the buy button was not, and it is the variant that
-// actually ships, since `can_quick_buy` is false on every product today.
+// THE PHONE CELL. At 390 the grid is two across, so a cell is about 173 and
+// its row about 141. The stepper is already gone at that width (the container
+// query below), so the add button has the row to itself and needs 132 of it
+// with the glyph kept, which fits.
 //
-// Only the phone cell steps down. From 640 the cell is wide enough for the
-// contract's own size, which is what keeps white on #F54915 judged at the 3:1
-// floor rather than a smaller type's.
-// At 390 the two-across cell leaves about 139px of button, and an angled 44px
-// button spends 36 of that on its run, so roughly 103 is left for the label.
-// The cart glyph and its gap cost 24 of those and carry no meaning the words
-// do not already carry, so the glyph goes and the label stays whole. The
-// shape, which is the brand, is what survives.
+// The buy button is the one that cannot fit whole: its label is 19/700 because
+// white on #F54915 is legal only at that size, which is about 90px of type,
+// and the bolt costs another 28 with its gap. The bolt is decoration where the
+// cart glyph is a signifier, so the bolt is what goes. The type never does —
+// it is the thing holding the contrast.
 @media (max-width: 639px) {
   .ox-card-product__buy,
   .ox-card-product__buy--native .s-button-element,
@@ -1451,20 +1453,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
     padding-inline: var(--ox-3);
   }
 
-  .ox-card-product__add .s-button-element,
-  .ox-card-product__add.s-button-element {
-    padding-inline: var(--ox-3);
-  }
-
-  .ox-card-product__add-icon {
+  .ox-card-product__buy-icon {
     display: none;
-  }
-
-  // The stepper gives back more still: below 640 the row wraps anyway, so it
-  // does not need to hold a share of one line.
-  .ox-card-product__qty {
-    flex: 0 1 96px;
-    max-inline-size: 96px;
   }
 }
 
@@ -1487,14 +1477,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
   inline-size: 100%;
   min-block-size: 44px;
   padding-inline: 20px;
-  background: var(--ox-accent-dark);
-  border: 1px solid var(--ox-accent-dark);
+  background: var(--ox-accent);
+  border: 1px solid var(--ox-accent);
   color: var(--ox-on-accent);
   font-family: inherit;
-  // Was still 19px. This block restates the whole contract rather than
-  // inheriting it, so it did not follow when the Link variant was stepped
-  // down; the two would have differed the day quick buy is switched on.
-  font-size: var(--ox-t-small);
+  // This block restates the whole contract rather than inheriting it, so it
+  // has to be kept in step with the Link variant by hand: the two would
+  // otherwise differ the day quick buy is switched on. Same fill, same size.
+  font-size: 19px;
   font-weight: var(--ox-w-title);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
@@ -1507,6 +1497,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-card-product__buy--native.s-button-element:hover {
   background: var(--ox-accent-dark);
   border-color: var(--ox-accent-dark);
+  color: var(--ox-on-accent);
 }
 
 .ox-card-product__buy--native .s-button-element:focus-visible,
@@ -1530,5 +1521,48 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-subneed__link:hover,
   .ox-brand-tile:hover .ox-brand-tile__plate {
     transform: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The compact action row, for a card in a NARROW grid.
+//
+// The product page's related rail gives a card 251px, where the home grid
+// gives it 306. At 251 the row has 218px to spend: the stepper's own contents
+// need 96 (two 36px squares and the value), the gap takes 8, and that leaves
+// 114 for the button, of which an angled 44px button spends 36 on its run.
+// 78px of label, in other words.
+//
+// So in a narrow card the cart glyph goes. It costs 28px with its gap and says
+// nothing the words do not, where the words at 14px need about 68. The font
+// size does not move, which is what the owner asked for: the button gives up
+// width and its icon, never its type.
+// THE STEPPER IS WHAT GIVES, NOT THE GLYPH AND NOT THE TYPE.
+//
+// The row's demands add up: the stepper cannot go under 96 (two 36px squares
+// and the value), and the add button cannot go under 36 of run + 24 of padding
+// + 20 of cart glyph + 8 of gap + about 68 of label at 14px, which is 156. So
+// one line needs 96 + 8 + 156 = 260 of row, and a card gives its row roughly
+// 32 less than its own width. Below about 292 the two cannot both be there.
+//
+// The glyph was briefly the thing that went, and that was the wrong trade: the
+// icon is what makes the button read as add-to-cart at a glance in a grid, and
+// the owner asked for it back. The STEPPER goes instead. Quantity defaults to
+// 1, which is what a shopper picking from a grid wants; the cart and the
+// product page both still carry a stepper for the shopper who wants more; and
+// every card in a narrow row then has the same 44px action row, which is the
+// ragged-grid problem solved rather than moved.
+//
+// Wrapping is never the answer, because only the cards that carry a stepper
+// would grow and the row would come out uneven (468 against 416, measured on
+// the product page's rail).
+@container oxcard (max-width: 292px) {
+  .ox-card-product__qty {
+    display: none;
+  }
+
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element {
+    padding-inline: 12px;
   }
 }

@@ -140,7 +140,7 @@
   "ox.booking.slots_left": "بقي {{count}} موعد",
   "ox.booking.submit_question": "أرسل السؤال",
   "ox.booking.what_next": "ماذا يحدث الآن",
-  "ox.card.add": "أضف إلى السلة",
+  "ox.card.add": "أضف للسلة",
   "ox.card.added": "أضيف إلى السلة",
   "ox.card.choose_options": "اختر الخيارات",
   "ox.card.expiry": "الصلاحية {{date}}",

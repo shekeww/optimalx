@@ -17,7 +17,15 @@
 // Fixed row heights: brand 18, name two lines, spec 18, rating 20, price 30,
 // action 44. Each row keeps its height when its content is absent, so a grid
 // of mixed products puts every price on one baseline.
+// The card is its own CONTAINER, so its action row can size itself to the grid
+// it landed in. The note further down this file says the card "has no idea
+// which grid it is in", and a viewport media query cannot tell it: the same
+// 1440 screen holds a 306px card on the home grid and a 251px one in the
+// product page's rail, and only the narrow one needs the compact treatment.
 .ox-card-product {
+  container-type: inline-size;
+  container-name: oxcard;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1235,10 +1243,28 @@
     transition: none;
   }
 
+  // THE PAGE'S PRIMARY BUTTON, and it took the longest to reach. This is the
+  // single most important control in the catalogue and it was the last one
+  // still wearing Salla's own shape: an 8px rounded rectangle in the platform
+  // fill, next to a hero, a card and a band that are all angled parallelograms
+  // in the brand accent. It could not take `.ox-btn--primary`, because it is
+  // the `s-button-element` a web component renders and the class never reaches
+  // it, so it takes the mixin instead. Same fill, same weight, same hover,
+  // same 22 degrees. One definition; the two can no longer drift.
+  //
+  // 19px is the floor for white on `--ox-accent`, and this button is the one
+  // place on the site with room to spare for it. The clip removes the border
+  // on the cut edges, which costs nothing on a filled button, and the run is
+  // 21px at 52 tall, so the padding carries it plus breathing room.
   .sticky-product-bar salla-add-product-button .s-button-element,
   .sticky-product-bar__btn.s-button-element {
     inline-size: 100%;
     min-block-size: 52px;
+    @include ox-primary-face;
+    font-size: 19px;
+    border-radius: 0;
+    padding-inline: 38px;
+    @include ox-angled(52px);
   }
 
   // The cart glyph the approved image draws before the label. The product
@@ -1287,6 +1313,14 @@ body.is-sticky-product-bar.product-single {
   .ox-buy .sticky-product-bar salla-add-product-button .s-button-element,
   .ox-buy .sticky-product-bar__btn.s-button-element {
     min-block-size: 56px;
+  }
+
+  // The run is a function of the height, so a taller button needs a longer cut
+  // and more padding to clear it: 23px at 56 tall.
+  .ox-buy .sticky-product-bar salla-add-product-button .s-button-element,
+  .ox-buy .sticky-product-bar__btn.s-button-element {
+    padding-inline: 40px;
+    @include ox-angled(56px);
   }
 }
 

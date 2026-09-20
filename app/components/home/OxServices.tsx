@@ -5,10 +5,22 @@ import { PlanCard } from './PlanCard';
 import { ChannelCard } from '../blocks/ChannelCard';
 import { HOME_PLANS, SERVICES_HUB, SERVICE_CHANNELS } from '../../content/services';
 import { useSectionReveal } from './useSectionReveal';
-import { fieldText, type OxBlockProps } from './defaults';
+import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 
 /**
  * The advisory row, `برامج وخطط التغذية` (homepage-spec section 7).
+ *
+ * IT IS THE ADVISORY SECTION FOR THE WHOLE SITE NOW, not only for the home
+ * page. `/services` used to open with a bare `اختر القناة التي تناسبك` list —
+ * the same three channel cards on the page ground, with no band, no plans tier
+ * and no motif — which meant the advisory half of the business was presented
+ * better on the home page than on its own page. That list is gone and this
+ * section stands in its place, with `routeOut` off so the header does not link
+ * the reader to the page they are already on.
+ *
+ * One component, two surfaces, on purpose: a second copy would drift, and the
+ * channels and the plans have to be described identically wherever they are
+ * read, since the prices and the free/paid split are claims.
  *
  * This block used to be the home page's one dark band: a photograph under a
  * gradient with the three "ask before you buy" channels sitting on it. The
@@ -46,22 +58,37 @@ function settingValue(settings: unknown, key: string): string {
 /** The reference band behind the advisory row (image brief section 9). */
 export const DEFAULT_SERVICES_BAND = '/assets/images/services-band.jpg';
 
-export function OxServices({ data }: OxBlockProps) {
+export interface OxServicesProps extends Partial<OxBlockProps> {
+  /**
+   * The "view all" route-out in the section header. It is on for the home
+   * page, where the section is a trailer for `/services`, and off on
+   * `/services` itself, where it would point the reader at the page they are
+   * already reading.
+   */
+  routeOut?: boolean;
+  className?: string;
+}
+
+export function OxServices({ data, routeOut = true, className }: OxServicesProps) {
   const { t } = useTranslation();
   const { settings } = useTheme();
   const rowRef = useSectionReveal<HTMLDivElement>();
+  // The block registry always passes `data`; `/services` mounts the section
+  // directly and has no merchant block behind it, so it passes none and the
+  // section falls back to its own defaults for the title and the band.
+  const fields: OxBlockData = data ?? { path: 'ox-services' };
 
-  const title = fieldText(data, 'title') || t('ox.home.plans_title');
+  const title = fieldText(fields, 'title') || t('ox.home.plans_title');
   // The band is ON by default now, on the owner's reference frame. It used to
   // be opt-in and therefore never on, so the section rendered as three cards
   // on the page ground while the approved design is a photographic band with
   // the cards lifted onto it. A merchant who uploads their own still wins.
-  const band = fieldText(data, 'image') || DEFAULT_SERVICES_BAND;
+  const band = fieldText(fields, 'image') || DEFAULT_SERVICES_BAND;
   const replyHours = settingValue(settings, SERVICES_HUB.replyTimeSetting);
 
   return (
     <section
-      className={['ox-services', band ? 'ox-services--banded ox-band-dark' : null]
+      className={['ox-services', band ? 'ox-services--banded ox-band-dark' : null, className]
         .filter(Boolean)
         .join(' ')}
       data-testid="ox-services"
@@ -73,7 +100,7 @@ export function OxServices({ data }: OxBlockProps) {
         </>
       ) : null}
       <div className="ox-container ox-services__inner">
-        <SectionHeader title={title} viewAll={{ to: '/services' }} />
+        <SectionHeader title={title} viewAll={routeOut ? { to: '/services' } : undefined} />
 
         {/* TWO TIERS, and the order is the point.
             The channels are how a shopper ASKS: free or nearly so, no
