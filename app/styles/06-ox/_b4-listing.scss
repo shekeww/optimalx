@@ -1529,15 +1529,39 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-card-product__buy {
   position: relative;
   z-index: 2;
-  // THE GLOBAL PRIMARY FACE, the same mixin and the same arguments the hero's
-  // "shop by your goal" uses. No override: the fill, the hover, the weight and
-  // the size are the one contract.
+  // THE GLOBAL PRIMARY FACE, the same mixin and the same fill the hero's "shop
+  // by your goal" uses. The accent does not change: one orange, the logo's.
   @include ox-primary-face;
-  font-size: 19px;
+  // TEN PER CENT SMALLER, asked for three times, and the label colour is the
+  // price of it rather than a second opinion.
+  //
+  // White on #F54915 measures 3.61:1. That clears the contrast floor ONLY as
+  // large text, and large text means 14pt bold — 18.67px — so 19/700 was the
+  // smallest white label this fill could legally carry. At 17px the exemption
+  // is gone and the pairing needs 4.5:1, which white cannot give on this
+  // orange at any weight.
+  //
+  // So the LABEL darkens instead of the fill. `--ox-ink` on `--ox-accent` is
+  // 5.06:1 and legal at any size, which keeps the one orange the owner asked
+  // for and the smaller label the owner asked for at the same time. The bolt
+  // follows `currentColor` with it. The alternative, if the white label is
+  // wanted back, is 19px — not a darker orange, which is the one thing this
+  // button is not allowed to be.
+  color: var(--ox-ink);
+  font-size: 17px;
   border-radius: 0;
-  block-size: 44px;
-  padding-inline: 24px;
-  @include ox-angled(44px);
+  // The box comes down with the label, so the button reads smaller rather than
+  // merely set smaller: 44 to 40, and the run follows the height to 16.
+  block-size: 40px;
+  padding-inline: 22px;
+  @include ox-angled(40px);
+
+  &:hover,
+  &:active {
+    // The hover darkens the fill, so the label has to go back to white or it
+    // loses its own contrast: --ox-ink on --ox-accent-dark is only 3.2:1.
+    color: var(--ox-on-accent);
+  }
 }
 
 // THE PHONE CELL. At 390 the grid is two across, so a cell is about 173 and
@@ -1579,22 +1603,24 @@ nav.breadcrumbs .s-breadcrumb-item button {
   justify-content: center;
   gap: var(--ox-2);
   inline-size: 100%;
-  min-block-size: 44px;
-  padding-inline: 20px;
+  min-block-size: 40px;
+  padding-inline: 22px;
   background: var(--ox-accent);
   border: 1px solid var(--ox-accent);
-  color: var(--ox-on-accent);
+  // Dark, for the same contrast reason as the Link variant above: at 17px the
+  // large-text exemption is gone and white on this orange is 3.61:1.
+  color: var(--ox-ink);
   font-family: inherit;
   // This block restates the whole contract rather than inheriting it, so it
   // has to be kept in step with the Link variant by hand: the two would
   // otherwise differ the day quick buy is switched on. Same fill, same size.
-  font-size: 19px;
+  font-size: 17px;
   font-weight: var(--ox-w-title);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
   border-radius: 0;
-  block-size: 44px;
-  @include ox-angled(44px);
+  block-size: 40px;
+  @include ox-angled(40px);
 }
 
 .ox-card-product__buy--native .s-button-element:hover,
