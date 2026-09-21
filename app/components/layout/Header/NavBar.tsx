@@ -322,22 +322,40 @@ export function NavBar() {
 
           return (
             <li className="ox-nav__item" key={link.key} data-nav-item="">
-              <Link
-                to={link.to}
-                id={link.dropdown ? `${panelId}-${link.key}-btn` : undefined}
-                className={`ox-nav__link${isActive(link.to) ? ' is-active' : ''}${open ? ' is-open' : ''}`}
-                aria-expanded={link.dropdown ? open : undefined}
-                aria-controls={link.dropdown ? `${panelId}-${link.key}` : undefined}
-                data-testid={`ox-nav-${link.key}`}
-                onPointerEnter={link.dropdown ? () => schedule(link.key) : undefined}
-                onPointerLeave={link.dropdown ? () => schedule(null) : undefined}
-                onFocus={link.dropdown ? () => schedule(link.key) : undefined}
-                onBlur={link.dropdown ? () => schedule(null) : undefined}
-                {...(isActive(link.to) ? { 'aria-current': 'page' } : {})}
-              >
-                {link.label}
-                {link.dropdown ? <Icon name="chevron-down" size={14} /> : null}
-              </Link>
+              {link.dropdown ? (
+                /* A trigger is a plain anchor: the engine's Link carries none
+                   of the disclosure props (aria-expanded, aria-controls, the
+                   pointer and focus handlers), and the item must keep a real
+                   href so a keyboard or no-JS visitor still reaches the page
+                   the panel summarises. Hover or focus opens the panel; click
+                   navigates. Plain items stay Links for prefetch and SPA
+                   navigation. */
+                <a
+                  href={link.to}
+                  id={`${panelId}-${link.key}-btn`}
+                  className={`ox-nav__link${isActive(link.to) ? ' is-active' : ''}${open ? ' is-open' : ''}`}
+                  aria-expanded={open}
+                  aria-controls={`${panelId}-${link.key}`}
+                  data-testid={`ox-nav-${link.key}`}
+                  onPointerEnter={() => schedule(link.key)}
+                  onPointerLeave={() => schedule(null)}
+                  onFocus={() => schedule(link.key)}
+                  onBlur={() => schedule(null)}
+                  {...(isActive(link.to) ? { 'aria-current': 'page' as const } : {})}
+                >
+                  {link.label}
+                  <Icon name="chevron-down" size={14} />
+                </a>
+              ) : (
+                <Link
+                  to={link.to}
+                  className={`ox-nav__link${isActive(link.to) ? ' is-active' : ''}`}
+                  data-testid={`ox-nav-${link.key}`}
+                  {...(isActive(link.to) ? { 'aria-current': 'page' } : {})}
+                >
+                  {link.label}
+                </Link>
+              )}
               {link.dropdown && open ? (
                 link.dropdown === 'products' ? (
                   <MegaPanel
