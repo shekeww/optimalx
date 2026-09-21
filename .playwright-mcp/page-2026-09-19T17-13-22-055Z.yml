@@ -1,0 +1,215 @@
+- generic [active] [ref=f47e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f47e2]:
+    - link "تخطي إلى المحتوى" [ref=f47e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f47e4]:
+      - generic [ref=f47e5]:
+        - text: 
+        - generic [ref=f47e7]:
+          - button "فتح القائمة" [ref=f47e8] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f47e9]: 
+          - link [ref=f47e10] [cursor=pointer]:
+            - /url: /optimal-x
+            - img "Optimal X" [ref=f47e11]
+    - main [ref=f47e15]:
+      - generic [ref=f47e16]:
+        - generic [ref=f47e17]:
+          - navigation "Breadcrumb" [ref=f47e18]:
+            - list [ref=f47e19]:
+              - listitem [ref=f47e20]:
+                - link "الرئيسية" [ref=f47e21] [cursor=pointer]:
+                  - /url: /optimal-x
+              - listitem [ref=f47e25]: جولد ستاندرد 100% واي بروتين - اوبتيموم نيوترشن
+          - generic [ref=f47e40]:
+            - generic [ref=f47e41]:
+              - paragraph [ref=f47e42]
+              - heading "جولد ستاندرد 100% واي بروتين - اوبتيموم نيوترشن" [level=1] [ref=f47e43]
+            - generic [ref=f47e45]:
+              - paragraph [ref=f47e46]:
+                - generic [ref=f47e47]:
+                  - text: "349.00"
+                  - generic [ref=f47e48]: 
+              - paragraph [ref=f47e49]:
+                - text: حوالي
+                - generic [ref=f47e50]:
+                  - text: "4.78"
+                  - generic [ref=f47e51]: 
+                - text: للحصة
+            - generic [ref=f47e64]:
+              - generic [ref=f47e65]:
+                - generic [ref=f47e66]: 73 حصة
+                - generic [ref=f47e70]: الحصة 31 جم
+                - generic [ref=f47e74]: بودرة
+                - generic [ref=f47e78]: الصلاحية 2028-03
+              - region [ref=f47e82]:
+                - heading "كم يوما تكفي العبوة؟" [level=2] [ref=f47e83]
+                - generic [ref=f47e84]:
+                  - generic [ref=f47e85]: حصص في اليوم
+                  - generic [ref=f47e86]:
+                    - button "إنقاص الحصص في اليوم" [disabled] [ref=f47e87]: −
+                    - status [ref=f47e88]: "1"
+                    - button "زيادة الحصص في اليوم" [ref=f47e89] [cursor=pointer]: +
+                - paragraph [ref=f47e90]:
+                  - strong [ref=f47e91]: تكفي نحو 73 يوما
+                  - generic [ref=f47e92]: تنتهي تقريبا في 2026-12-01
+                - paragraph [ref=f47e93]: حساب تقريبي من عدد الحصص على الملصق، وليس توصية بجرعة.
+              - text:   
+              - generic [ref=f47e94]: الكمية
+            - generic [ref=f47e104]:
+              - button "أضف إلى المفضلة" [ref=f47e105] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f47e106]: 
+              - generic [ref=f47e108]: مشاركة
+            - list [ref=f47e115]:
+              - listitem [ref=f47e116]:
+                - generic [ref=f47e119]:
+                  - paragraph [ref=f47e120]: منتجات أصلية
+                  - paragraph [ref=f47e121]: صلاحية واضحة على كل منتج
+              - listitem [ref=f47e122]:
+                - generic [ref=f47e125]:
+                  - paragraph [ref=f47e126]: شحن من المدينة المنورة
+                  - paragraph [ref=f47e127]: إلى كل مدينة في السعودية
+              - listitem [ref=f47e128]:
+                - generic [ref=f47e131]:
+                  - paragraph [ref=f47e132]: دفع آمن
+                  - paragraph [ref=f47e133]: طرق الدفع المتاحة تظهر عند إتمام الطلب
+              - listitem [ref=f47e134]:
+                - generic [ref=f47e137]:
+                  - paragraph [ref=f47e138]: مساعدة في الاختيار
+                  - paragraph [ref=f47e139]: رد مجاني
+        - generic [ref=f47e164]:
+          - region [ref=f47e165]:
+            - heading "الوصف" [level=2] [ref=f47e167]
+            - paragraph [ref=f47e169]: واي بروتين من اوبتيموم نيوترشن يجمع بين ايزوليت الواي والواي المركز والببتيدات في مزيج سريع الذوبان يحتوي على 24 جم من البروتين في كل مغرفة. مناسب للمتدربين الذين يبحثون عن مصدر بروتين يومي بعد التمرين أو بين الوجبات، وللمبتدئين الذين يفضلون منتجا واسع الانتشار بنكهات مجربة.
+          - region [ref=f47e170]:
+            - heading "الحقائق الغذائية" [level=2] [ref=f47e172]
+            - paragraph [ref=f47e173]: الحصة 31 جم
+            - table [ref=f47e175]:
+              - caption [ref=f47e176]: الحقائق الغذائية
+              - rowgroup [ref=f47e177]:
+                - row [ref=f47e178]:
+                  - columnheader "العنصر" [ref=f47e179]
+                  - columnheader "في الحصة الواحدة" [ref=f47e180]
+                  - columnheader "ماذا يعني الرقم" [ref=f47e181]
+              - rowgroup [ref=f47e182]:
+                - row [ref=f47e183]:
+                  - rowheader "السعرات الحرارية" [ref=f47e184]
+                  - cell "120" [ref=f47e185]
+                  - cell "طاقة الحصة الواحدة، وتحسب ضمن مجموع سعرات يومك لا فوقه." [ref=f47e186]
+                - row [ref=f47e187]:
+                  - rowheader "البروتين" [ref=f47e188]
+                  - cell "24 جم" [ref=f47e189]
+                  - cell "غرامات البروتين في الحصة الواحدة، وهو الرقم الذي تقارن به مسحوقا بآخر." [ref=f47e190]
+                - row [ref=f47e191]:
+                  - rowheader "الكربوهيدرات" [ref=f47e192]
+                  - cell "3 جم" [ref=f47e193]
+                  - cell "غرامات الكربوهيدرات في الحصة، وتشمل السكريات والنشويات والألياف." [ref=f47e194]
+                - row [ref=f47e195]:
+                  - rowheader "السكريات" [ref=f47e196]
+                  - cell "1 جم" [ref=f47e197]
+                  - cell "غرامات السكر في الحصة، وتشمل السكر المضاف والسكر الموجود أصلا في المكونات." [ref=f47e198]
+                - row [ref=f47e199]:
+                  - rowheader "الدهون" [ref=f47e200]
+                  - cell "1 جم" [ref=f47e201]
+                  - cell "غرامات الدهون في الحصة الواحدة، وتحسب ضمن سعرات اليوم مثل البروتين والكربوهيدرات." [ref=f47e202]
+                - row [ref=f47e203]:
+                  - rowheader "الأحماض الأمينية المتفرعة BCAA" [ref=f47e204]
+                  - cell "5.5 جم" [ref=f47e205]
+                  - 'cell "ثلاثة أحماض أمينية: اللوسين والايزولوسين والفالين، تباع مشروبا خلال التمرين." [ref=f47e206]'
+            - paragraph [ref=f47e207]: الأرقام منقولة من ملصق المنتج، وليست توصية لأي شخص بعينه.
+          - region [ref=f47e208]:
+            - heading "طريقة الاستخدام" [level=2] [ref=f47e210]
+            - list [ref=f47e211]:
+              - listitem [ref=f47e212]:
+                - generic [aria-hidden] [ref=f47e213]: "1"
+                - generic [ref=f47e214]: تخلط مغرفة واحدة مع 180 إلى 240 مل من الماء أو الحليب البارد، مرة أو مرتين يوميا.
+          - region [ref=f47e215]:
+            - heading "قبل أن تشتري" [level=2] [ref=f47e217]
+            - generic [ref=f47e218]:
+              - generic [ref=f47e219]:
+                - heading [level=3] [ref=f47e220]:
+                  - button "تنبيه" [expanded] [ref=f47e221] [cursor=pointer]:
+                    - generic [aria-hidden]: 
+                - region "تنبيه" [ref=f47e222]:
+                  - list [ref=f47e226]:
+                    - listitem [ref=f47e227]: المكملات الغذائية لا تغني عن الغذاء المتوازن.
+                    - listitem [ref=f47e228]: يحتوي على الحليب والصويا.
+              - generic [ref=f47e229]:
+                - heading [level=3] [ref=f47e230]:
+                  - button "مسببات الحساسية" [ref=f47e231] [cursor=pointer]:
+                    - generic [aria-hidden]: 
+                - region "مسببات الحساسية":
+                  - paragraph [ref=f47e234]: مسببات الحساسية المذكورة على الملصق مكتوبة في كل منتج تحت عنوان تنبيه، مثل الحليب أو الصويا أو القمح أو المكسرات. التركيبة قد تتغير بين دفعة وأخرى، والملصق على العبوة هو المرجع الأخير، فاقرأه قبل أول استخدام. وإن كان سؤالك عن مكون بعينه فأرسله لنا قبل الشراء.
+              - generic [ref=f47e235]:
+                - heading [level=3] [ref=f47e236]:
+                  - button "التخزين" [ref=f47e237] [cursor=pointer]:
+                    - generic [aria-hidden]: 
+                - region "التخزين":
+                  - paragraph [ref=f47e240]: احفظ العبوة مغلقة في مكان بارد وجاف بعيدا عن الشمس، وخاصة في الصيف.
+              - generic [ref=f47e241]:
+                - heading "ملاحظة طبية" [level=3] [ref=f47e242]
+                - paragraph [ref=f47e244]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+          - region [ref=f47e245]:
+            - heading "أسئلة شائعة" [level=2] [ref=f47e247]
+            - generic [ref=f47e249]:
+              - heading [level=3] [ref=f47e250]:
+                - button "لماذا قد تجد سعرا أقل في مكان آخر؟" [expanded] [ref=f47e251] [cursor=pointer]:
+                  - generic [aria-hidden]: 
+              - region "لماذا قد تجد سعرا أقل في مكان آخر؟" [ref=f47e252]:
+                - paragraph [ref=f47e256]: السعر المعروض على الصفحة هو السعر النهائي الذي تدفعه. ومعه نكتب عدد الحصص وحجم الحصة، فاقسم السعر على عدد الحصص لتعرف تكلفة الحصة الواحدة، فهي المقارنة الصحيحة بين عبوتين. العبوات تختلف في وزن السكوب وفي عدد الحصص، فالعبوة الأقل سعرا قد تكون الأعلى تكلفة في الحصة. وإن كان الفرق على المنتج نفسه، فقارن الحجم والنكهة وتاريخ الصلاحية قبل أن تقارن الرقم وحده.
+    - contentinfo [ref=f47e263]:
+      - generic [ref=f47e264]:
+        - link [ref=f47e265] [cursor=pointer]:
+          - /url: /optimal-x
+          - img "Optimal X" [ref=f47e266]
+        - navigation "روابط الصفحة" [ref=f47e267]:
+          - generic [ref=f47e268]:
+            - button "تسوق" [ref=f47e269] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f47e271]: 
+            - generic:
+              - generic:
+                - list
+          - generic [ref=f47e272]:
+            - button "المتجر" [ref=f47e273] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f47e275]: 
+            - list [ref=f47e276]:
+              - listitem [ref=f47e277]:
+                - link "من نحن" [ref=f47e278] [cursor=pointer]:
+                  - /url: /optimal-x/about
+              - listitem [ref=f47e279]:
+                - link "اتصل بنا" [ref=f47e280] [cursor=pointer]:
+                  - /url: /optimal-x/contact
+              - listitem [ref=f47e281]:
+                - link "فرع المدينة المنورة" [ref=f47e282] [cursor=pointer]:
+                  - /url: /optimal-x/branch
+              - listitem [ref=f47e283]:
+                - link "الأدلة" [ref=f47e284] [cursor=pointer]:
+                  - /url: /optimal-x/blog
+          - button "تواصل معنا" [ref=f47e286] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f47e288]: 
+        - paragraph [ref=f47e306]: طرق الدفع المتاحة تظهر عند إتمام الطلب. الشحن من المدينة المنورة إلى كل مدن السعودية.
+        - paragraph [ref=f47e307]:
+          - text: الحقوق محفوظة | 2026
+          - link "Optimal X" [ref=f47e308] [cursor=pointer]:
+            - /url: /optimal-x
+  - navigation "تنقل سريع" [ref=f47e310]:
+    - list [ref=f47e311]:
+      - listitem [ref=f47e312]:
+        - link "الرئيسية" [ref=f47e313] [cursor=pointer]:
+          - /url: /optimal-x
+          - generic [aria-hidden] [ref=f47e314]: 
+      - listitem [ref=f47e316]:
+        - button "التصنيفات" [ref=f47e317] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f47e318]: 
+      - listitem [ref=f47e320]:
+        - link "البحث" [ref=f47e321] [cursor=pointer]:
+          - /url: /optimal-x/search
+          - generic [aria-hidden] [ref=f47e322]: 
+      - listitem [ref=f47e324]:
+        - link "السلة" [ref=f47e325] [cursor=pointer]:
+          - /url: /optimal-x/cart
+          - generic [aria-hidden] [ref=f47e327]: 
+      - listitem [ref=f47e329]:
+        - link "حسابي" [ref=f47e330] [cursor=pointer]:
+          - /url: /optimal-x/account/profile
+          - generic [aria-hidden] [ref=f47e331]: 

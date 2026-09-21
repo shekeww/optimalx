@@ -1,0 +1,90 @@
+- generic [active] [ref=f232e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f232e2]:
+    - link "تخطي إلى المحتوى" [ref=f232e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f232e4]:
+      - list [ref=f232e7]:
+        - listitem [ref=f232e8]:
+          - generic [ref=f232e9]: منتجات أصلية
+        - listitem [ref=f232e13]:
+          - generic [ref=f232e14]: دفع آمن
+        - listitem [ref=f232e18]:
+          - generic [ref=f232e19]: شحن داخل المملكة
+      - generic [ref=f232e23]:
+        - generic [ref=f232e24]:
+          - link "Optimal X" [ref=f232e25] [cursor=pointer]:
+            - /url: /optimal-x
+          - navigation "التنقل الرئيسي" [ref=f232e27]:
+            - list [ref=f232e28]:
+              - listitem [ref=f232e29]:
+                - button "تسوق حسب هدفك" [ref=f232e30] [cursor=pointer]
+              - listitem [ref=f232e31]:
+                - link "المنتجات" [ref=f232e32] [cursor=pointer]:
+                  - /url: /optimal-x/latest-products
+              - listitem [ref=f232e33]:
+                - link "المكملات" [ref=f232e34] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f232e35]:
+                - link "البروتين" [ref=f232e36] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f232e37]:
+                - link "اسأل قبل أن تشتري" [ref=f232e38] [cursor=pointer]:
+                  - /url: /optimal-x/services
+              - listitem [ref=f232e39]:
+                - link "الخطط الغذائية" [ref=f232e40] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+              - listitem [ref=f232e41]:
+                - link "عن اوبتيمال اكس" [ref=f232e42] [cursor=pointer]:
+                  - /url: /optimal-x/about
+          - search "البحث في المتجر" [ref=f232e43]
+          - link "المفضلة" [ref=f232e51] [cursor=pointer]:
+            - /url: /optimal-x/account/wishlist
+            - generic [aria-hidden] [ref=f232e52]: 
+        - text: 
+    - main [ref=f232e59]
+    - contentinfo [ref=f232e95]:
+      - generic [ref=f232e96]:
+        - navigation "روابط الصفحة" [ref=f232e102]:
+          - generic [ref=f232e103]:
+            - button "عن اوبتيمال اكس" [ref=f232e104] [cursor=pointer]
+            - list [ref=f232e108]:
+              - listitem [ref=f232e109]:
+                - link "من نحن" [ref=f232e110] [cursor=pointer]:
+                  - /url: /optimal-x/about
+          - generic [ref=f232e111]:
+            - button "خدمة العملاء" [ref=f232e112] [cursor=pointer]
+            - list [ref=f232e116]:
+              - listitem [ref=f232e117]:
+                - link "تواصل معنا" [ref=f232e118] [cursor=pointer]:
+                  - /url: /optimal-x/contact
+              - listitem [ref=f232e119]:
+                - link "الأسئلة الشائعة" [ref=f232e120] [cursor=pointer]:
+                  - /url: /optimal-x/services
+          - generic [ref=f232e121]:
+            - button "المنتجات" [ref=f232e122] [cursor=pointer]
+            - list [ref=f232e126]:
+              - listitem [ref=f232e127]:
+                - link "المكملات" [ref=f232e128] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f232e129]:
+                - link "البروتين" [ref=f232e130] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f232e131]:
+                - link "التغذية" [ref=f232e132] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f232e133]:
+                - link "الخطط الغذائية" [ref=f232e134] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f232e135]:
+          - img "اوبتيمال اكس" [ref=f232e137]
+          - paragraph [ref=f232e138]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f232e139]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f232e140]: هدفك
+      - paragraph [ref=f232e143]:
+        - text: الحقوق محفوظة | 2026
+        - link "Optimal X" [ref=f232e144] [cursor=pointer]:
+          - /url: /optimal-x
+  - text:             

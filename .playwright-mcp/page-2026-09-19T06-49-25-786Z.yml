@@ -1,0 +1,67 @@
+- generic [active] [ref=e1]:
+  - region "Notifications alt+T"
+  - generic [ref=e2]:
+    - link "تخطي إلى المحتوى" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - link [ref=e7] [cursor=pointer]:
+            - /url: /optimal-x
+            - img "Optimal X" [ref=e8]
+          - search "البحث في المتجر" [ref=e9]
+          - link "المفضلة" [ref=e20] [cursor=pointer]:
+            - /url: /optimal-x/account/wishlist
+            - generic [aria-hidden] [ref=e21]: 
+        - text: 
+      - navigation "التنقل الرئيسي" [ref=e25]:
+        - list [ref=e27]:
+          - listitem [ref=e28]:
+            - button "تسوق حسب هدفك" [ref=e29] [cursor=pointer]
+          - listitem [ref=e30]:
+            - link "اسأل قبل أن تشتري" [ref=e31] [cursor=pointer]:
+              - /url: /optimal-x/services
+          - listitem [ref=e32]:
+            - link "الأدلة" [ref=e33] [cursor=pointer]:
+              - /url: /optimal-x/blog
+          - listitem [ref=e34]:
+            - link "فرع المدينة المنورة" [ref=e35] [cursor=pointer]:
+              - /url: /optimal-x/branch
+    - main [ref=e36]:
+      - 'heading "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية" [level=1] [ref=e37]'
+    - contentinfo [ref=e66]:
+      - generic [ref=e67]:
+        - link [ref=e68] [cursor=pointer]:
+          - /url: /optimal-x
+          - img "Optimal X" [ref=e69]
+        - navigation "روابط الصفحة" [ref=e70]:
+          - generic [ref=e71]:
+            - button "تسوق" [ref=e72] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e74]: 
+            - generic:
+              - generic:
+                - list
+          - generic [ref=e75]:
+            - button "المتجر" [ref=e76] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e78]: 
+            - list [ref=e79]:
+              - listitem [ref=e80]:
+                - link "من نحن" [ref=e81] [cursor=pointer]:
+                  - /url: /optimal-x/about
+              - listitem [ref=e82]:
+                - link "اتصل بنا" [ref=e83] [cursor=pointer]:
+                  - /url: /optimal-x/contact
+              - listitem [ref=e84]:
+                - link "فرع المدينة المنورة" [ref=e85] [cursor=pointer]:
+                  - /url: /optimal-x/branch
+              - listitem [ref=e86]:
+                - link "الأدلة" [ref=e87] [cursor=pointer]:
+                  - /url: /optimal-x/blog
+          - button "تواصل معنا" [ref=e89] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e91]: 
+        - paragraph [ref=e109]: طرق الدفع المتاحة تظهر عند إتمام الطلب. الشحن من المدينة المنورة إلى كل مدن السعودية.
+        - paragraph [ref=e110]:
+          - text: الحقوق محفوظة | 2026
+          - link "Optimal X" [ref=e111] [cursor=pointer]:
+            - /url: /optimal-x
+  - text:     

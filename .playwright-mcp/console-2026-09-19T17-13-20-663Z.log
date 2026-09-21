@@ -1,0 +1,6 @@
+[    1505ms] [LOG] allowed_pages: [thank-you] @ :10
+[    1506ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    1506ms] [LOG] limit: 32 @ :12
+[    5408ms] [WARNING] The resource https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.js?v=17898351681 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:5480/optimal-x/ar/p1996831868:0
+[   14758ms] [WARNING] The resource https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.js?v=17898351681 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:5480/optimal-x/ar/p1996831868:0
+[ 1152452ms] [WARNING] The resource https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.js?v=17898351681 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:5480/optimal-x/ar/p1996831868:0

@@ -1,0 +1,48 @@
+[    3394ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:5488/:0
+[    4582ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:14335
+[    4674ms] [WARNING] [Twilight] Could not hydrate twilight context: no root match in router state @ http://localhost:5488/@vite/client:532
+[    4731ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+      <MatchImpl routeId="__root__">
+        <MatchView router={{...}} match={{id:"__root__/", ...}}>
+          <RootComponent>
+            <html lang="ar" dir="rtl" suppressHydrationWarning={true}>
+              <head>
+              <body suppressHydrationWarning={true}>
+                <noscript>
+                <TwilightProvider translations={{ar.trans:{...}, ...}} layout={function OptimalXLayout}>
+                  <DocumentClassProvider>
+                    <I18nProvider i18nInstance={{observers:{}, ...}} themeTranslations={{ar.trans:{...}, ...}}>
+                      <I18nextProvider i18n={{observers:{}, ...}}>
+                        <ThemeDocumentSync>
+                        <TanStackDocumentSync>
++                       <div className="loading-overlay">
+-                       <salla-hook className="hydrated">
+                    ...
+                ...
+
+    at throwOnHydrationMismatch (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:2968:51)
+    at beginWork (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:6200:914)
+    at runWithFiberInDEV (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:851:66)
+    at performUnitOfWork (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:8429:92)
+    at workLoopConcurrentByScheduler (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:8425:55)
+    at renderRootConcurrent (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:8408:64)
+    at performWorkOnRoot (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:7957:145)
+    at performWorkOnRootViaSchedulerTask (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:9059:4)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5488/node_modules/.vite/deps/react-dom_client.js?v=8379d83e:36:38)
+[    4731ms] [ERROR] Trying to init Twilight without store.id! @ http://localhost:5488/@vite/client:532
+[    4731ms] [LOG] you can initiate twilight using this line only: Salla.init({store:{id:1234}}) @ https://cdn.assets.salla.network/dev/@salla.sa/twilight/9b1ad668bb386735f64a045e4c13b4c5508ad4c8/p-CynV-zYl.js:3
+[    4733ms] [ERROR] Trying to init Twilight without store.id! @ http://localhost:5488/@vite/client:532
+[    4733ms] [LOG] you can initiate twilight using this line only: Salla.init({store:{id:1234}}) @ https://cdn.assets.salla.network/dev/@salla.sa/twilight/9b1ad668bb386735f64a045e4c13b4c5508ad4c8/p-CynV-zYl.js:3

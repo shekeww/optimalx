@@ -1,0 +1,33 @@
+[     688ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'. @ :0
+[     689ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'battery'. @ :0
+[     689ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'document-domain'. @ :0
+[     689ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'execution-while-not-rendered'. @ :0
+[     689ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'execution-while-out-of-viewport'. @ :0
+[     689ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'navigation-override'. @ :0
+[    1616ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://s.salla.sa/themes/editor/277388345?version_id=499745075:0
+[    3258ms] [LOG] salla::analytics.isReady [] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    3274ms] [LOG] salla::language.load [Object] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    3277ms] [LOG] onReady [] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    4039ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'. @ :0
+[    4039ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'battery'. @ :0
+[    4039ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'document-domain'. @ :0
+[    4039ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'execution-while-not-rendered'. @ :0
+[    4039ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'execution-while-out-of-viewport'. @ :0
+[    4039ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'navigation-override'. @ :0
+[    4183ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://s.salla.sa/themes/editor/277388345?version_id=499745075:0
+[    5294ms] [LOG] salla::analytics.isReady [] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    5297ms] [LOG] salla::language.load [Object] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    5298ms] [LOG] onReady [] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    5688ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://o4506689782087680.ingest.us.sentry.io/api/4508765438607360/envelope/?sentry_version=7&sentry_key=e1911144ba12e67c938dbb0a936a18bd&sentry_client=sentry.javascript.browser%2F8.55.0:0
+[    5767ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'. @ :0
+[    5767ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'battery'. @ :0
+[    5767ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'document-domain'. @ :0
+[    5767ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'execution-while-not-rendered'. @ :0
+[    5767ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'execution-while-out-of-viewport'. @ :0
+[    5768ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'navigation-override'. @ :0
+[    5900ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://s.salla.sa/auth?legacy=0&intended_to=https%3A%2F%2Fs.salla.sa%2Fthemes%2Feditor%2F277388345%3Fversion_id%3D499745075:0
+[    6504ms] [WARNING] [Meta Pixel] - Duplicate Pixel ID: 441914779775405. @ https://connect.facebook.net/en_US/fbevents.js:203
+[    6546ms] [LOG] salla::analytics.isReady [] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    6551ms] [LOG] salla::language.load [Object] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    6552ms] [LOG] onReady [] @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1
+[    7593ms] [WARNING] Failed to parse mobile headers @ https://browser.sentry-cdn.com/8.55.0/bundle.tracing.replay.min.js:1

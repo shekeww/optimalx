@@ -1,0 +1,83 @@
+- generic [ref=f86e2]:
+  - banner [ref=f86e3]:
+    - generic [ref=f86e10]:
+      - generic [ref=f86e11]:
+        - link "Open-menu" [ref=f86e12] [cursor=pointer]:
+          - /url: "#mobile-menu"
+          - generic [ref=f86e13]: 
+        - link [ref=f86e14] [cursor=pointer]:
+          - /url: https://optimalx.com.sa
+          - img "Optimal X logo" [ref=f86e15]
+          - heading "Optimal X" [level=1] [ref=f86e16]
+      - generic [ref=f86e17]: 
+  - main [ref=f86e20]:
+    - generic [ref=f86e23]:
+      - generic [ref=f86e27]:
+        - heading [level=2]
+        - paragraph
+      - generic [ref=f86e31]:
+        - heading [level=2]
+        - paragraph
+    - generic [ref=f86e35]:
+      - link " بروتين وواي" [ref=f86e37] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=بروتين
+        - generic [ref=f86e38]: 
+        - heading "بروتين وواي" [level=2] [ref=f86e39]
+      - link " كرياتين" [ref=f86e41] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=كرياتين
+        - generic [ref=f86e42]: 
+        - heading "كرياتين" [level=2] [ref=f86e43]
+      - link " فيتامينات ومعادن" [ref=f86e45] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=فيتامين
+        - generic [ref=f86e46]: 
+        - heading "فيتامينات ومعادن" [level=2] [ref=f86e47]
+      - link " اوميغا 3" [ref=f86e49] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=اوميغا
+        - generic [ref=f86e50]: 
+        - heading "اوميغا 3" [level=2] [ref=f86e51]
+      - link " كولاجين وجمال" [ref=f86e53] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=كولاجين
+        - generic [ref=f86e54]: 
+        - heading "كولاجين وجمال" [level=2] [ref=f86e55]
+      - link " أحماض أمينية" [ref=f86e57] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=امينو
+        - generic [ref=f86e58]: 
+        - heading "أحماض أمينية" [level=2] [ref=f86e59]
+    - generic [ref=f86e61]:
+      - generic [ref=f86e62] [cursor=pointer]:
+        - generic: 
+        - heading "منتجات أصلية" [level=2]
+        - paragraph: كل منتج يحمل عدد حصصه وحجم الحصة وتاريخ صلاحيته
+      - generic [ref=f86e63] [cursor=pointer]:
+        - generic: 
+        - heading "شحن من المدينة المنورة" [level=2]
+        - paragraph: إلى كل مدينة في السعودية، أو استلم من الفرع
+      - generic [ref=f86e64] [cursor=pointer]:
+        - heading "مساعدة في الاختيار" [level=2]
+        - paragraph: لا نشخص ولا نعد بنتيجة، نساعدك على اختيار مكمل يناسب هدفك
+    - generic [ref=f86e66]:
+      - heading "أحدث المنتجات" [level=2] [ref=f86e68]
+      - link "عرض الكل " [ref=f86e69] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/latest-products
+        - text: عرض الكل
+        - generic [ref=f86e70]: 
+    - generic [ref=f86e74]:
+      - generic:
+        - heading [level=3]
+        - paragraph
+    - link [ref=f86e80] [cursor=pointer]:
+      - /url: ""
+      - img "Optimal X image-slider-0" [ref=f86e81]
+  - contentinfo [ref=f86e83]:
+    - generic "footer" [ref=f86e84]:
+      - generic [ref=f86e85]:
+        - generic [ref=f86e86]:
+          - link [ref=f86e87] [cursor=pointer]:
+            - /url: https://optimalx.com.sa/
+            - heading "Optimal X" [level=3] [ref=f86e88]
+          - generic [ref=f86e89]: اوبتيمال اكس للمنتجات الصحية.
+        - heading "روابط مهمة" [level=3] [ref=f86e91]
+    - paragraph [ref=f86e96]:
+      - text: جميع الحقوق محفوظة | 2026
+      - link "Optimal X" [ref=f86e97] [cursor=pointer]:
+        - /url: https://optimalx.com.sa

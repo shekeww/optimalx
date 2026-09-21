@@ -1,0 +1,463 @@
+- generic [active] [ref=f5e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f5e2]:
+    - link "تخطي إلى المحتوى" [ref=f5e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f5e4]:
+      - generic [ref=f5e6]:
+        - link "تواصل معنا" [ref=f5e8] [cursor=pointer]:
+          - /url: https://wa.me/966553524524
+        - list [ref=f5e12]:
+          - listitem [ref=f5e13]:
+            - generic [ref=f5e14]: منتجات أصلية
+          - listitem [ref=f5e18]:
+            - generic [ref=f5e19]: دفع آمن
+          - listitem [ref=f5e23]:
+            - generic [ref=f5e24]: شحن داخل المملكة
+      - generic [ref=f5e28]:
+        - generic [ref=f5e29]:
+          - link "Optimal X" [ref=f5e30] [cursor=pointer]:
+            - /url: /
+          - navigation "التنقل الرئيسي" [ref=f5e32]:
+            - list [ref=f5e33]:
+              - listitem [ref=f5e34]:
+                - link "المنتجات" [ref=f5e35] [cursor=pointer]:
+                  - /url: /latest-products
+              - listitem [ref=f5e36]:
+                - link "المكملات" [ref=f5e37] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f5e38]:
+                - link "البروتين" [ref=f5e39] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f5e40]:
+                - link "اسأل قبل أن تشتري" [ref=f5e41] [cursor=pointer]:
+                  - /url: /services
+              - listitem [ref=f5e42]:
+                - link "الخطط الغذائية" [ref=f5e43] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+              - listitem [ref=f5e44]:
+                - link "عن اوبتيمال اكس" [ref=f5e45] [cursor=pointer]:
+                  - /url: /about
+          - search "البحث في المتجر" [ref=f5e46]
+          - link "المفضلة" [ref=f5e54] [cursor=pointer]:
+            - /url: /account/wishlist
+            - generic [aria-hidden] [ref=f5e55]: 
+        - text: 
+    - main [ref=f5e62]:
+      - generic [ref=f5e63]:
+        - generic [ref=f5e65]:
+          - navigation "Breadcrumb" [ref=f5e66]:
+            - list [ref=f5e67]:
+              - listitem [ref=f5e68]:
+                - link "الرئيسية" [ref=f5e69] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=f5e73]:
+                - generic [ref=f5e74]: أحدث المنتجات
+          - generic [ref=f5e75]:
+            - heading "أحدث المنتجات" [level=1] [ref=f5e77]
+            - paragraph [ref=f5e79]: آخر ما أضفناه إلى المتجر، الأحدث أولا.
+        - generic [ref=f5e81]:
+          - generic [ref=f5e84]:
+            - paragraph [ref=f5e86]: عرض 16 منتجا
+            - generic [ref=f5e87]:
+              - generic [ref=f5e88]: ترتيب حسب
+              - combobox "ترتيب حسب" [ref=f5e89]:
+                - option "الأنسب" [selected]
+                - option "السعر من الأقل"
+                - option "السعر من الأعلى"
+          - generic "قائمة المنتجات" [ref=f5e92]:
+            - generic [ref=f5e93]:
+              - article [ref=f5e94]:
+                - generic [ref=f5e95]:
+                  - img "حزمة البداية - اوبتيمال اكس" [ref=f5e97]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e98] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e99]: 
+                - generic [ref=f5e100]:
+                  - heading [level=3] [ref=f5e101]:
+                    - link "حزمة البداية - اوبتيمال اكس" [ref=f5e102] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/حزمة-البداية-واي-وكرياتين-وملتي-فيتامين-اوبتيمال-اكس/p1141798217
+                  - paragraph [ref=f5e103]: واي بروتين وكرياتين وملتي فيتامين في حزمة واحدة بسعر أقل من مجموعها
+                  - generic [ref=f5e105]:
+                    - text: "509.00"
+                    - generic [ref=f5e106]: ر.س
+                  - paragraph [ref=f5e107]
+                  - group "الكمية" [ref=f5e109]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e110]
+                    - status [ref=f5e112]: "1"
+                    - button "زيادة الكمية" [ref=f5e113] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e116] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/حزمة-البداية-واي-وكرياتين-وملتي-فيتامين-اوبتيمال-اكس/p1141798217
+              - article [ref=f5e119]:
+                - generic [ref=f5e120]:
+                  - img "شوفان سريع التحضير 1 كجم - ماي بروتين" [ref=f5e122]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e123] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e124]: 
+                - generic [ref=f5e125]:
+                  - heading [level=3] [ref=f5e126]:
+                    - link "شوفان سريع التحضير 1 كجم - ماي بروتين" [ref=f5e127] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/شوفان-سريع-التحضير-1-كجم-من-ماي-بروتين-اوبتيمال-اكس/p1746003438
+                  - paragraph [ref=f5e128]: شوفان كامل مطحون ناعما يخلط في الشيكر، 20 حصة من 50 جم، بدون نكهة
+                  - generic [ref=f5e130]:
+                    - text: "55.00"
+                    - generic [ref=f5e131]: ر.س
+                  - paragraph [ref=f5e132]
+                  - group "الكمية" [ref=f5e134]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e135]
+                    - status [ref=f5e137]: "1"
+                    - button "زيادة الكمية" [ref=f5e138] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e141] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/شوفان-سريع-التحضير-1-كجم-من-ماي-بروتين-اوبتيمال-اكس/p1746003438
+              - article [ref=f5e144]:
+                - generic [ref=f5e145]:
+                  - img "زبدة الفول السوداني الطبيعية 1 كجم - ماي بروتين" [ref=f5e147]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e148] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e149]: 
+                - generic [ref=f5e150]:
+                  - heading [level=3] [ref=f5e151]:
+                    - link "زبدة الفول السوداني الطبيعية 1 كجم - ماي بروتين" [ref=f5e152] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/زبدة-الفول-السوداني-الطبيعية-1-كجم-ماي-بروتين-اوبتيمال-اكس/p547650018
+                  - paragraph [ref=f5e153]: فول سوداني محمص 100% بلا سكر أو ملح مضاف، ناعمة أو مقرمشة، عبوة 1 كجم
+                  - generic [ref=f5e155]:
+                    - text: "65.00"
+                    - generic [ref=f5e156]: ر.س
+                  - paragraph [ref=f5e157]
+                  - group "الكمية" [ref=f5e159]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e160]
+                    - status [ref=f5e162]: "1"
+                    - button "زيادة الكمية" [ref=f5e163] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e166] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/زبدة-الفول-السوداني-الطبيعية-1-كجم-ماي-بروتين-اوبتيمال-اكس/p547650018
+              - article [ref=f5e169]:
+                - generic [ref=f5e170]:
+                  - img "بروتين تشيبس بنمط التورتيا علبة 8 - كويست" [ref=f5e172]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e173] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e174]: 
+                - generic [ref=f5e175]:
+                  - heading [level=3] [ref=f5e176]:
+                    - link "بروتين تشيبس بنمط التورتيا علبة 8 - كويست" [ref=f5e177] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/كويست-بروتين-تشيبس-تورتيا-علبة-8-أكياس-اوبتيمال-اكس/p82983904
+                  - paragraph [ref=f5e178]: 19 جم بروتين و4 جم كربوهيدرات في كل كيس 32 جم، علبة 8 أكياس
+                  - generic [ref=f5e180]:
+                    - text: "125.00"
+                    - generic [ref=f5e181]: ر.س
+                  - paragraph [ref=f5e182]
+                  - group "الكمية" [ref=f5e184]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e185]
+                    - status [ref=f5e187]: "1"
+                    - button "زيادة الكمية" [ref=f5e188] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e191] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/كويست-بروتين-تشيبس-تورتيا-علبة-8-أكياس-اوبتيمال-اكس/p82983904
+              - article [ref=f5e194]:
+                - generic [ref=f5e195]:
+                  - img "كارب كيلا بروتين بار علبة 12 - جرينيد" [ref=f5e197]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e198] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e199]: 
+                - generic [ref=f5e200]:
+                  - heading [level=3] [ref=f5e201]:
+                    - link "كارب كيلا بروتين بار علبة 12 - جرينيد" [ref=f5e202] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/كارب-كيلا-بروتين-بار-علبة-12-من-جرينيد-اوبتيمال-اكس/p1497955814
+                  - paragraph [ref=f5e203]: 20 جم بروتين و1.5 جم سكر في كل بار 60 جم، علبة 12 بار
+                  - generic [ref=f5e205]:
+                    - text: "175.00"
+                    - generic [ref=f5e206]: ر.س
+                  - paragraph [ref=f5e207]
+                  - group "الكمية" [ref=f5e209]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e210]
+                    - status [ref=f5e212]: "1"
+                    - button "زيادة الكمية" [ref=f5e213] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e216] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/كارب-كيلا-بروتين-بار-علبة-12-من-جرينيد-اوبتيمال-اكس/p1497955814
+              - article [ref=f5e219]:
+                - generic [ref=f5e220]:
+                  - img "شيكر اوبتيمال اكس V2 سعة 820 مل - بلندر بوتل" [ref=f5e222]
+                  - generic [ref=f5e224]:
+                    - text: توفير
+                    - generic [ref=f5e225]: 51%
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e226] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e227]: 
+                - generic [ref=f5e228]:
+                  - heading [level=3] [ref=f5e229]:
+                    - link "شيكر اوبتيمال اكس V2 سعة 820 مل - بلندر بوتل" [ref=f5e230] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/شيكر-بلندر-بوتل-كلاسيك-v2-سعة-820-مل-اوبتيمال-اكس/p1673105563
+                  - paragraph [ref=f5e231]: شيكر بكرة خلط من الفولاذ وغطاء محكم، سعة 820 مل، خال من BPA
+                  - generic [ref=f5e232]:
+                    - generic [ref=f5e233]:
+                      - text: "29.00"
+                      - generic [ref=f5e234]: ر.س
+                    - generic [ref=f5e235]: بدلا من
+                    - generic [ref=f5e236]: 59.00 ر.س
+                  - paragraph [ref=f5e238]:
+                    - text: توفير
+                    - generic [ref=f5e239]:
+                      - text: "30.00"
+                      - generic [ref=f5e240]: ر.س
+                  - generic [ref=f5e241]:
+                    - group "اللون" [ref=f5e242]:
+                      - generic [ref=f5e244] [cursor=pointer]:
+                        - radio "أسود" [checked]
+                        - generic [ref=f5e245]: أسود
+                      - generic [ref=f5e246] [cursor=pointer]:
+                        - radio "أبيض"
+                        - generic [ref=f5e247]: أبيض
+                      - generic [ref=f5e248] [cursor=pointer]:
+                        - radio "أخضر"
+                        - generic [ref=f5e249]: أخضر
+                      - generic [ref=f5e250] [cursor=pointer]:
+                        - radio "أزرق"
+                        - generic [ref=f5e251]: أزرق
+                    - group "الكمية" [ref=f5e253]:
+                      - button "إنقاص الكمية" [disabled] [ref=f5e254]
+                      - status [ref=f5e256]: "1"
+                      - button "زيادة الكمية" [ref=f5e257] [cursor=pointer]
+                    - link "اشتري الآن" [ref=f5e260] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/شيكر-بلندر-بوتل-كلاسيك-v2-سعة-820-مل-اوبتيمال-اكس/p1673105563
+              - article [ref=f5e263]:
+                - generic [ref=f5e264]:
+                  - img "كلوروفريش كلوروفيل سائل بالنعناع - نيتشرز واي" [ref=f5e266]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e267] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e268]: 
+                - generic [ref=f5e269]:
+                  - heading [level=3] [ref=f5e270]:
+                    - link "كلوروفريش كلوروفيل سائل بالنعناع - نيتشرز واي" [ref=f5e271] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/كلوروفريش-كلوروفيل-سائل-بالنعناع-480-مل-اوبتيمال-اكس/p299069850
+                  - paragraph [ref=f5e272]: كلوروفيل سائل بنكهة النعناع الطبيعي، 16 حصة في عبوة 480 مل
+                  - generic [ref=f5e274]:
+                    - text: "65.00"
+                    - generic [ref=f5e275]: ر.س
+                  - paragraph [ref=f5e276]
+                  - group "الكمية" [ref=f5e278]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e279]
+                    - status [ref=f5e281]: "1"
+                    - button "زيادة الكمية" [ref=f5e282] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e285] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/كلوروفريش-كلوروفيل-سائل-بالنعناع-480-مل-اوبتيمال-اكس/p299069850
+              - article [ref=f5e288]:
+                - generic [ref=f5e289]:
+                  - img "نون سبورت أقراص إلكتروليت فوارة - نون هايدريشن" [ref=f5e291]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e292] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e293]: 
+                - generic [ref=f5e294]:
+                  - heading [level=3] [ref=f5e295]:
+                    - link "نون سبورت أقراص إلكتروليت فوارة - نون هايدريشن" [ref=f5e296] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/نون-سبورت-أقراص-إلكتروليت-فوارة-10-أقراص-اوبتيمال-اكس/p892168849
+                  - paragraph [ref=f5e297]: قرص فوار واحد يحول 470 مل ماء إلى مشروب إلكتروليت بسكر 1 جم، 10 أقراص
+                  - generic [ref=f5e299]:
+                    - text: "32.00"
+                    - generic [ref=f5e300]: ر.س
+                  - paragraph [ref=f5e301]
+                  - group "الكمية" [ref=f5e303]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e304]
+                    - status [ref=f5e306]: "1"
+                    - button "زيادة الكمية" [ref=f5e307] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e310] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/نون-سبورت-أقراص-إلكتروليت-فوارة-10-أقراص-اوبتيمال-اكس/p892168849
+              - article [ref=f5e313]:
+                - generic [ref=f5e314]:
+                  - img "بروبيوتيك-10 25 مليار - ناو فودز" [ref=f5e316]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e317] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e318]: 
+                - generic [ref=f5e319]:
+                  - heading [level=3] [ref=f5e320]:
+                    - link "بروبيوتيك-10 25 مليار - ناو فودز" [ref=f5e321] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/بروبيوتيك-10-25-مليار-50-كبسولة-ناو-فودز-اوبتيمال-اكس/p159067287
+                  - paragraph [ref=f5e322]: 10 سلالات بروبيوتيك بـ 25 مليار وحدة في كبسولة واحدة، 50 كبسولة نباتية
+                  - generic [ref=f5e324]:
+                    - text: "75.00"
+                    - generic [ref=f5e325]: ر.س
+                  - paragraph [ref=f5e326]
+                  - group "الكمية" [ref=f5e328]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e329]
+                    - status [ref=f5e331]: "1"
+                    - button "زيادة الكمية" [ref=f5e332] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e335] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/بروبيوتيك-10-25-مليار-50-كبسولة-ناو-فودز-اوبتيمال-اكس/p159067287
+              - article [ref=f5e338]:
+                - generic [ref=f5e339]:
+                  - img "بيوتين 10000 ميكروجرام كبسولات - ناو فودز" [ref=f5e341]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e342] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e343]: 
+                - generic [ref=f5e344]:
+                  - heading [level=3] [ref=f5e345]:
+                    - link "بيوتين 10000 ميكروجرام كبسولات - ناو فودز" [ref=f5e346] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/بيوتين-10000-ميكروجرام-120-كبسولة-ناو-فودز-اوبتيمال-اكس/p1175429259
+                  - paragraph [ref=f5e347]: بيوتين بتركيز 10000 ميكروجرام في كبسولة نباتية واحدة، 120 كبسولة
+                  - generic [ref=f5e349]:
+                    - text: "69.00"
+                    - generic [ref=f5e350]: ر.س
+                  - paragraph [ref=f5e351]
+                  - group "الكمية" [ref=f5e353]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e354]
+                    - status [ref=f5e356]: "1"
+                    - button "زيادة الكمية" [ref=f5e357] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e360] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/بيوتين-10000-ميكروجرام-120-كبسولة-ناو-فودز-اوبتيمال-اكس/p1175429259
+              - article [ref=f5e363]:
+                - generic [ref=f5e364]:
+                  - img "كولاجين ببتيدات مع فيتامين ج وبيوتين أقراص - نيوسيل" [ref=f5e366]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e367] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e368]: 
+                - generic [ref=f5e369]:
+                  - heading [level=3] [ref=f5e370]:
+                    - link "كولاجين ببتيدات مع فيتامين ج وبيوتين أقراص - نيوسيل" [ref=f5e371] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/كولاجين-نيوسيل-مع-فيتامين-ج-وبيوتين-270-قرصا-اوبتيمال-اكس/p1216299912
+                  - paragraph [ref=f5e372]: كولاجين بقري من أبقار مرعية مع فيتامين ج وبيوتين في أقراص، 270 قرصا
+                  - generic [ref=f5e374]:
+                    - text: "105.00"
+                    - generic [ref=f5e375]: ر.س
+                  - paragraph [ref=f5e376]
+                  - group "الكمية" [ref=f5e378]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e379]
+                    - status [ref=f5e381]: "1"
+                    - button "زيادة الكمية" [ref=f5e382] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e385] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/كولاجين-نيوسيل-مع-فيتامين-ج-وبيوتين-270-قرصا-اوبتيمال-اكس/p1216299912
+              - article [ref=f5e388]:
+                - generic [ref=f5e389]:
+                  - img "كولاجين ببتيدات من أبقار مرعية - سبورتس ريسيرش" [ref=f5e391]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e392] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e393]: 
+                - generic [ref=f5e394]:
+                  - heading [level=3] [ref=f5e395]:
+                    - link "كولاجين ببتيدات من أبقار مرعية - سبورتس ريسيرش" [ref=f5e396] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/كولاجين-ببتيدات-سبورتس-ريسيرش-454-جم-اوبتيمال-اكس/p750060942
+                  - paragraph [ref=f5e397]: 11 جم ببتيدات كولاجين من أبقار مرعية في المغرفة، 41 حصة في 454 جم
+                  - generic [ref=f5e399]:
+                    - text: "179.00"
+                    - generic [ref=f5e400]: ر.س
+                  - paragraph [ref=f5e401]
+                  - group "الكمية" [ref=f5e403]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e404]
+                    - status [ref=f5e406]: "1"
+                    - button "زيادة الكمية" [ref=f5e407] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e410] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/كولاجين-ببتيدات-سبورتس-ريسيرش-454-جم-اوبتيمال-اكس/p750060942
+              - article [ref=f5e413]:
+                - generic [ref=f5e414]:
+                  - img "سنتروم للرجال ملتي فيتامين - سنتروم" [ref=f5e416]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e417] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e418]: 
+                - generic [ref=f5e419]:
+                  - heading [level=3] [ref=f5e420]:
+                    - link "سنتروم للرجال ملتي فيتامين - سنتروم" [ref=f5e421] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/سنتروم-للرجال-ملتي-فيتامين-30-قرصا-اوبتيمال-اكس/p1390995085
+                  - paragraph [ref=f5e422]: ملتي فيتامين يومي للرجال بفيتامين د وزنك ومغنيسيوم، 30 قرصا
+                  - generic [ref=f5e424]:
+                    - text: "56.00"
+                    - generic [ref=f5e425]: ر.س
+                  - paragraph [ref=f5e426]
+                  - group "الكمية" [ref=f5e428]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e429]
+                    - status [ref=f5e431]: "1"
+                    - button "زيادة الكمية" [ref=f5e432] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e435] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/سنتروم-للرجال-ملتي-فيتامين-30-قرصا-اوبتيمال-اكس/p1390995085
+              - article [ref=f5e438]:
+                - generic [ref=f5e439]:
+                  - generic:
+                    - img "فيتامين د3 مع ك2 - سبورتس ريسيرش"
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e440] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e441]: 
+                - generic [ref=f5e442]:
+                  - heading [level=3] [ref=f5e443]:
+                    - link "فيتامين د3 مع ك2 - سبورتس ريسيرش" [ref=f5e444] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/فيتامين-د3-مع-ك2-60-كبسولة-سبورتس-ريسيرش-اوبتيمال-اكس/p1001367986
+                  - paragraph [ref=f5e445]: 5000 وحدة د3 مع 100 ميكروجرام ك2 (MK-7) بزيت جوز الهند، 60 كبسولة نباتية
+                  - generic [ref=f5e447]:
+                    - text: "105.00"
+                    - generic [ref=f5e448]: ر.س
+                  - paragraph [ref=f5e449]
+                  - group "الكمية" [ref=f5e451]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e452]
+                    - status [ref=f5e454]: "1"
+                    - button "زيادة الكمية" [ref=f5e455] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e458] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/فيتامين-د3-مع-ك2-60-كبسولة-سبورتس-ريسيرش-اوبتيمال-اكس/p1001367986
+              - article [ref=f5e461]:
+                - generic [ref=f5e462]:
+                  - img "زد ام ايه ZMA - ناو فودز" [ref=f5e464]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e465] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e466]: 
+                - generic [ref=f5e467]:
+                  - heading [level=3] [ref=f5e468]:
+                    - link "زد ام ايه ZMA - ناو فودز" [ref=f5e469] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/zma-زنك-ومغنيسيوم-وب6-من-ناو-فودز-90-كبسولة-اوبتيمال-اكس/p535063472
+                  - paragraph [ref=f5e470]: زنك 30 ملجم ومغنيسيوم 450 ملجم وفيتامين ب6 في 3 كبسولات، 90 كبسولة
+                  - generic [ref=f5e472]:
+                    - text: "115.00"
+                    - generic [ref=f5e473]: ر.س
+                  - paragraph [ref=f5e474]
+                  - group "الكمية" [ref=f5e476]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e477]
+                    - status [ref=f5e479]: "1"
+                    - button "زيادة الكمية" [ref=f5e480] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e483] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/zma-زنك-ومغنيسيوم-وب6-من-ناو-فودز-90-كبسولة-اوبتيمال-اكس/p535063472
+              - article [ref=f5e486]:
+                - generic [ref=f5e487]:
+                  - img "فيتامين د3 5000 وحدة دولية - ناو فودز" [ref=f5e489]
+                  - button "إضافة إلى المفضلة أو إزالتها" [ref=f5e490] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=f5e491]: 
+                - generic [ref=f5e492]:
+                  - heading [level=3] [ref=f5e493]:
+                    - link "فيتامين د3 5000 وحدة دولية - ناو فودز" [ref=f5e494] [cursor=pointer]:
+                      - /url: https://optimalx.com.sa/فيتامين-د3-5000-وحدة-120-كبسولة-ناو-فودز-اوبتيمال-اكس/p1882336694
+                  - paragraph [ref=f5e495]: 125 ميكروجرام فيتامين د3 في كبسولة هلامية صغيرة، 120 كبسولة
+                  - generic [ref=f5e497]:
+                    - text: "75.00"
+                    - generic [ref=f5e498]: ر.س
+                  - paragraph [ref=f5e499]
+                  - group "الكمية" [ref=f5e501]:
+                    - button "إنقاص الكمية" [disabled] [ref=f5e502]
+                    - status [ref=f5e504]: "1"
+                    - button "زيادة الكمية" [ref=f5e505] [cursor=pointer]
+                  - link "اشتري الآن" [ref=f5e508] [cursor=pointer]:
+                    - /url: https://optimalx.com.sa/فيتامين-د3-5000-وحدة-120-كبسولة-ناو-فودز-اوبتيمال-اكس/p1882336694
+            - button "عرض المزيد" [ref=f5e512] [cursor=pointer]
+    - contentinfo [ref=f5e513]:
+      - generic [ref=f5e514]:
+        - navigation "روابط الصفحة" [ref=f5e520]:
+          - generic [ref=f5e521]:
+            - button "عن اوبتيمال اكس" [ref=f5e522] [cursor=pointer]
+            - list [ref=f5e526]:
+              - listitem [ref=f5e527]:
+                - link "من نحن" [ref=f5e528] [cursor=pointer]:
+                  - /url: /about
+          - generic [ref=f5e529]:
+            - button "خدمة العملاء" [ref=f5e530] [cursor=pointer]
+            - list [ref=f5e534]:
+              - listitem [ref=f5e535]:
+                - link "تواصل معنا" [ref=f5e536] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=f5e537]:
+                - link "واتساب" [ref=f5e538] [cursor=pointer]:
+                  - /url: https://wa.me/966553524524
+              - listitem [ref=f5e539]:
+                - link "الأسئلة الشائعة" [ref=f5e540] [cursor=pointer]:
+                  - /url: /services
+          - generic [ref=f5e541]:
+            - button "المنتجات" [ref=f5e542] [cursor=pointer]
+            - list [ref=f5e546]:
+              - listitem [ref=f5e547]:
+                - link "المكملات" [ref=f5e548] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f5e549]:
+                - link "البروتين" [ref=f5e550] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f5e551]:
+                - link "التغذية" [ref=f5e552] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f5e553]:
+                - link "الخطط الغذائية" [ref=f5e554] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f5e555]:
+          - img "اوبتيمال اكس" [ref=f5e557]
+          - paragraph [ref=f5e558]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f5e559]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f5e560]: هدفك
+      - paragraph [ref=f5e563]:
+        - text: Copyright | 2026
+        - link "Optimal X" [ref=f5e564] [cursor=pointer]:
+          - /url: /
+  - text:     

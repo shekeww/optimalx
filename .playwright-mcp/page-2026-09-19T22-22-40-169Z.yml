@@ -1,0 +1,49 @@
+- generic [ref=f196e2]:
+  - generic [ref=f196e4]:
+    - generic [ref=f196e6]:
+      - generic [ref=f196e7]:
+        - generic [ref=f196e8]: الأكثر مبيعا
+        - button "تكبير" [ref=f196e9] [cursor=pointer]
+      - generic [ref=f196e10]:
+        - button "^" [ref=f196e11] [cursor=pointer]
+        - generic:
+          - button
+          - button
+          - button
+          - button
+          - button
+        - button "v" [ref=f196e12] [cursor=pointer]
+    - generic [ref=f196e13]:
+      - generic [ref=f196e14]:
+        - paragraph [ref=f196e15]: GHOST
+        - heading "جوست بروتين نباتي" [level=1] [ref=f196e16]
+        - paragraph [ref=f196e17]: Vegan Protein
+        - paragraph [ref=f196e18]: بروتين نباتي عالي الجودة بمذاق مميز لدعم بناء العضلات وتلبية الاحتياج اليومي.
+      - generic [ref=f196e19]:
+        - generic [ref=f196e20]:
+          - generic [ref=f196e21]: 20g
+          - generic [ref=f196e22]: بروتين
+        - generic [ref=f196e23]:
+          - generic [ref=f196e24]: "150"
+          - generic [ref=f196e25]: سعرة
+      - generic [ref=f196e27]:
+        - text: "199"
+        - generic [ref=f196e28]: ر.س
+      - generic [ref=f196e31]:
+        - generic [ref=f196e32]: اضف الى السلة
+        - generic [ref=f196e34]: "1"
+      - generic [ref=f196e39]: التوصيل
+      - generic [ref=f196e42]:
+        - generic [ref=f196e43]: منتجات أصلية
+        - generic [ref=f196e44]: شحن داخل المملكة
+        - generic [ref=f196e45]: دفع آمن
+  - paragraph [ref=f196e49]: بروتين نباتي
+  - generic [ref=f196e50]:
+    - generic [ref=f196e51]:
+      - button "التفاصيل" [ref=f196e52] [cursor=pointer]
+      - button "الفوائد" [ref=f196e53] [cursor=pointer]
+      - button "طريقة الاستخدام" [ref=f196e54] [cursor=pointer]
+    - generic [ref=f196e55]:
+      - heading "تفاصيل المنتج" [level=2] [ref=f196e57]
+      - heading "طريقة الاستخدام" [level=2] [ref=f196e59]
+      - heading "المعلومات الغذائية" [level=2] [ref=f196e61]

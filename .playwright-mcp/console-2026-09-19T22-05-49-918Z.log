@@ -1,0 +1,12 @@
+[     401ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/fonts/cairo-latin.woff2:0
+[     418ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/goal-strength.jpg:0
+[     418ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/goal-daily.jpg:0
+[     439ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/goal-weight.jpg:0
+[     439ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/goal-muscle.jpg:0
+[     440ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/goal-recovery.jpg:0
+[     440ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/goal-lean.jpg:0
+[     440ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/plan-nutrition.jpg:0
+[     440ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/fonts/cairo-arabic.woff2:0
+[     441ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/plan-training.jpg:0
+[     441ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/assets/images/plan-advisory.jpg:0
+[     460ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5301/favicon.ico:0

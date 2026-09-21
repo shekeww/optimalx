@@ -1,0 +1,16 @@
+[    1720ms] [LOG] allowed_pages: [thank-you] @ :10
+[    1720ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    1720ms] [LOG] limit: 32 @ :12
+[    2388ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-hero, index=0, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2389ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-trust-strip, index=1, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2389ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-goals, index=2, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2389ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-categories, index=3, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2390ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-products, index=4, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2391ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-brands, index=5, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2391ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-services, index=6, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2392ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-guides, index=7, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2392ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-branch, index=8, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2392ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-faq, index=9, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2393ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-newsletter, index=10, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[    2393ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-banner, index=11, renderCount=1 @ http://localhost:5401/assets/chunk-WITIL2MK-T-GzZIUV.js:1
+[   43528ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://api.salla.dev/store/v1/blog:0

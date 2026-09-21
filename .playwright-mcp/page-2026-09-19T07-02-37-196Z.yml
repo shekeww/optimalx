@@ -1,0 +1,181 @@
+- generic [active] [ref=f11e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f11e2]:
+    - link "تخطي إلى المحتوى" [ref=f11e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f11e4]:
+      - generic [ref=f11e5]:
+        - generic [ref=f11e6]:
+          - link [ref=f11e7] [cursor=pointer]:
+            - /url: /optimal-x
+            - img "Optimal X" [ref=f11e8]
+          - search "البحث في المتجر" [ref=f11e9]
+          - link "المفضلة" [ref=f11e20] [cursor=pointer]:
+            - /url: /optimal-x/account/wishlist
+            - generic [aria-hidden] [ref=f11e21]: 
+        - text: 
+      - navigation "التنقل الرئيسي" [ref=f11e25]:
+        - list [ref=f11e27]:
+          - listitem [ref=f11e28]:
+            - button "تسوق حسب هدفك" [ref=f11e29] [cursor=pointer]
+          - listitem [ref=f11e30]:
+            - link "اسأل قبل أن تشتري" [ref=f11e31] [cursor=pointer]:
+              - /url: /optimal-x/services
+          - listitem [ref=f11e32]:
+            - link "الأدلة" [ref=f11e33] [cursor=pointer]:
+              - /url: /optimal-x/blog
+          - listitem [ref=f11e34]:
+            - link "فرع المدينة المنورة" [ref=f11e35] [cursor=pointer]:
+              - /url: /optimal-x/branch
+    - main [ref=f11e36]:
+      - generic [ref=f11e37]:
+        - navigation "Breadcrumb" [ref=f11e38]:
+          - list [ref=f11e39]:
+            - listitem [ref=f11e40]:
+              - link "الرئيسية" [ref=f11e41] [cursor=pointer]:
+                - /url: /optimal-x
+            - listitem [ref=f11e45]: اسأل قبل أن تشتري
+        - generic [ref=f11e47]:
+          - 'heading "اسأل قبل أن تشتري: مساعدة مجانية في اختيار المكمل" [level=1] [ref=f11e48]'
+          - paragraph [ref=f11e49]: لمن يقف أمام رف المكملات ولا يعرف من أين يبدأ، ولمن اشترى منتجا ويريد أن يستخدمه بالطريقة الصحيحة.
+          - paragraph [ref=f11e50]: "نحن متجر صغير في المدينة المنورة، ونفضل أن نجيب عن سؤالك قبل أن نبيع لك. اختر القناة التي تناسبك: سؤال مكتوب مجاني نرد عليه، أو استشارة مرئية 20 دقيقة تحسم قيمتها من طلبك الأول، أو زيارة للفرع في الخالدية. في القنوات الثلاث نساعدك على اختيار المنتج وطريقة استخدامه، وهذا حد عملنا."
+        - region [ref=f11e51]:
+          - heading "اختر القناة التي تناسبك" [level=2] [ref=f11e52]
+          - generic [ref=f11e53]:
+            - generic [ref=f11e54]:
+              - article [ref=f11e55]:
+                - heading "سؤال مكتوب" [level=3] [ref=f11e58]
+                - paragraph [ref=f11e59]: مجاني
+                - paragraph [ref=f11e60]: رد. من كل مدن السعودية.
+                - paragraph [ref=f11e61]: اكتب سؤالك عن اختيار منتج أو طريقة استخدامه، ويرد عليك فريق المتجر كتابة على بريدك. بلا موعد، ومن كل مدن السعودية.
+                - paragraph
+                - link "أرسل سؤالك مجانا" [ref=f11e62] [cursor=pointer]:
+                  - /url: /optimal-x/services
+              - paragraph [ref=f11e64]: الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.
+              - paragraph [ref=f11e65]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+            - generic [ref=f11e66]:
+              - article [ref=f11e67]:
+                - heading "استشارة مرئية 20 دقيقة" [level=3] [ref=f11e70]
+                - paragraph [ref=f11e71]: مواعيد محدودة كل يوم. عبر Google Meet أو واتساب.
+                - paragraph [ref=f11e72]: مكالمة مرئية مع فريق المتجر نراجع فيها هدفك وجدول تمرينك وميزانيتك، وتخرج منها بقائمة مكتوبة بترتيب الأولوية.
+                - paragraph
+                - link "احجز موعدا" [ref=f11e73] [cursor=pointer]:
+                  - /url: /optimal-x/services
+              - paragraph [ref=f11e75]: الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.
+              - paragraph [ref=f11e76]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+            - generic [ref=f11e77]:
+              - article [ref=f11e78]:
+                - heading "زيارة الفرع" [level=3] [ref=f11e81]
+                - paragraph [ref=f11e82]: مجاني
+                - paragraph [ref=f11e83]: الخالدية، المدينة المنورة. الحجز اختياري.
+                - paragraph [ref=f11e84]: تعال إلى فرع الخالدية في المدينة المنورة، قارن الأحجام والنكهات، واسأل فريق الفرع، أو استلم طلبك الإلكتروني. الحجز اختياري ويضمن أن يكون أحدنا متفرغا لك.
+                - paragraph
+                - link "احجز زيارة أو تعال مباشرة" [ref=f11e85] [cursor=pointer]:
+                  - /url: /optimal-x/branch
+              - paragraph [ref=f11e87]: الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.
+              - paragraph [ref=f11e88]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+        - generic [ref=f11e89]:
+          - heading "ما الذي نساعدك فيه" [level=2] [ref=f11e90]
+          - list [ref=f11e91]:
+            - listitem [ref=f11e92]:
+              - generic [ref=f11e95]: اختيار المنتج المناسب لهدفك وميزانيتك
+            - listitem [ref=f11e96]:
+              - generic [ref=f11e99]: الفرق بين منتجين أو نوعين
+            - listitem [ref=f11e100]:
+              - generic [ref=f11e103]: طريقة الاستخدام والجرعة المطبوعة على الملصق
+            - listitem [ref=f11e104]:
+              - generic [ref=f11e107]: التوقيت مع التمرين ومع الوجبات
+            - listitem [ref=f11e108]:
+              - generic [ref=f11e111]: قراءة جدول الحقائق الغذائية والمكونات
+            - listitem [ref=f11e112]:
+              - generic [ref=f11e115]: الحفظ والصلاحية
+            - listitem [ref=f11e116]:
+              - generic [ref=f11e119]: الطلب والشحن والاستلام من الفرع
+          - paragraph [ref=f11e120]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+        - generic [ref=f11e121]:
+          - heading "كيف تبدأ" [level=2] [ref=f11e122]
+          - list [ref=f11e123]:
+            - listitem [ref=f11e124]:
+              - generic [aria-hidden] [ref=f11e125]: "1"
+              - heading "اختر القناة" [level=3] [ref=f11e126]
+              - paragraph [ref=f11e127]: مكتوب، أو مرئي، أو في الفرع. الكتابة أسرع لمعظم الأسئلة.
+            - listitem [ref=f11e128]:
+              - generic [aria-hidden] [ref=f11e129]: "2"
+              - heading "أخبرنا عن هدفك" [level=3] [ref=f11e130]
+              - paragraph [ref=f11e131]: "نموذج قصير: هدفك، وتمرينك، وما تستخدمه الآن، وسؤالك. لا نسأل عن أي شيء طبي."
+            - listitem [ref=f11e132]:
+              - generic [aria-hidden] [ref=f11e133]: "3"
+              - heading "يصلك الرد أو التأكيد" [level=3] [ref=f11e134]
+              - paragraph [ref=f11e135]: على بريدك. وفي المكالمة تصلك القائمة المكتوبة بعدها.
+        - region [ref=f11e136]:
+          - heading "أسئلة شائعة" [level=2] [ref=f11e137]
+          - generic [ref=f11e138]:
+            - generic [ref=f11e139]:
+              - heading [level=3] [ref=f11e140]:
+                - button "كم تكلفني المساعدة؟" [ref=f11e141] [cursor=pointer]:
+                  - generic [aria-hidden]: 
+              - region "كم تكلفني المساعدة؟":
+                - paragraph [ref=f11e144]: السؤال المكتوب مجاني، وزيارة الفرع مجانية. الاستشارة المرئية 20 دقيقة لها سعر معلن على صفحتها.
+            - generic [ref=f11e145]:
+              - heading [level=3] [ref=f11e146]:
+                - button "ماذا أحضر قبل المكالمة أو الزيارة؟" [ref=f11e147] [cursor=pointer]:
+                  - generic [aria-hidden]: 
+              - region "ماذا أحضر قبل المكالمة أو الزيارة؟":
+                - paragraph [ref=f11e150]: هدفك، وعدد أيام التمرين، وأسماء ما تستخدمه حاليا، وسؤالك مكتوبا. إن كانت الزيارة لاستلام طلب فأحضر رقم الطلب.
+            - generic [ref=f11e151]:
+              - heading [level=3] [ref=f11e152]:
+                - button "هل ألتزم بالشراء بعد أن أسأل؟" [ref=f11e153] [cursor=pointer]:
+                  - generic [aria-hidden]: 
+              - region "هل ألتزم بالشراء بعد أن أسأل؟":
+                - paragraph [ref=f11e156]: لا. بالإرسال لا تلتزم بأي شراء، ولك أن تأخذ الرد وتقرر لاحقا أو لا تشتري أصلا.
+            - generic [ref=f11e157]:
+              - heading [level=3] [ref=f11e158]:
+                - button "هل هذه استشارة صحية؟" [ref=f11e159] [cursor=pointer]:
+                  - generic [aria-hidden]: 
+              - region "هل هذه استشارة صحية؟":
+                - paragraph [ref=f11e162]: لا. نساعدك على اختيار المنتج وطريقة استخدامه والتوقيت وقراءة الملصق، وهذا حد عملنا. للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+        - generic [ref=f11e163]:
+          - heading "سؤال سريع؟" [level=2] [ref=f11e164]
+          - paragraph [ref=f11e166]:
+            - generic [ref=f11e167]: "رقم الجوال:"
+            - link "+966553524524" [ref=f11e169] [cursor=pointer]:
+              - /url: tel:+966553524524
+        - paragraph [ref=f11e170]:
+          - link "فرع المدينة المنورة" [ref=f11e171] [cursor=pointer]:
+            - /url: /optimal-x/branch
+    - contentinfo [ref=f11e173]:
+      - generic [ref=f11e174]:
+        - link [ref=f11e175] [cursor=pointer]:
+          - /url: /optimal-x
+          - img "Optimal X" [ref=f11e176]
+        - navigation "روابط الصفحة" [ref=f11e177]:
+          - generic [ref=f11e178]:
+            - button "تسوق" [ref=f11e179] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f11e181]: 
+            - generic:
+              - generic:
+                - list
+          - generic [ref=f11e182]:
+            - button "المتجر" [ref=f11e183] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f11e185]: 
+            - list [ref=f11e186]:
+              - listitem [ref=f11e187]:
+                - link "من نحن" [ref=f11e188] [cursor=pointer]:
+                  - /url: /optimal-x/about
+              - listitem [ref=f11e189]:
+                - link "اتصل بنا" [ref=f11e190] [cursor=pointer]:
+                  - /url: /optimal-x/contact
+              - listitem [ref=f11e191]:
+                - link "فرع المدينة المنورة" [ref=f11e192] [cursor=pointer]:
+                  - /url: /optimal-x/branch
+              - listitem [ref=f11e193]:
+                - link "الأدلة" [ref=f11e194] [cursor=pointer]:
+                  - /url: /optimal-x/blog
+          - button "تواصل معنا" [ref=f11e196] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f11e198]: 
+        - paragraph [ref=f11e216]: طرق الدفع المتاحة تظهر عند إتمام الطلب. الشحن من المدينة المنورة إلى كل مدن السعودية.
+        - paragraph [ref=f11e217]:
+          - text: الحقوق محفوظة | 2026
+          - link "Optimal X" [ref=f11e218] [cursor=pointer]:
+            - /url: /optimal-x
+  - text:     

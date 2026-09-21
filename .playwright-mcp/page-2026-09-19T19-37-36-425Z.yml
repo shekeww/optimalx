@@ -1,0 +1,168 @@
+- generic [active] [ref=f79e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f79e2]:
+    - link "تخطي إلى المحتوى" [ref=f79e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f79e4]:
+      - generic [ref=f79e5]:
+        - text: 
+        - generic [ref=f79e7]:
+          - button "فتح القائمة" [ref=f79e8] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f79e9]: 
+          - link "متجر تجريبي" [ref=f79e10] [cursor=pointer]:
+            - /url: /dev-ubq7yzb0tnbuirvv
+          - generic [ref=f79e12]:
+            - search "البحث في المتجر" [ref=f79e13]:
+              - generic [ref=f79e17]:
+                - img "search" [ref=f79e20]
+                - button "ابحث" [ref=f79e22] [cursor=pointer]
+            - generic [ref=f79e24] [cursor=pointer]:
+              - link "٠":
+                - /url: https://demostore.salla.sa/dev-ubq7yzb0tnbuirvv/cart
+                - generic [aria-hidden] [ref=f79e27]: 
+      - list [ref=f79e29]:
+        - listitem [ref=f79e30]:
+          - generic [ref=f79e31]: منتجات أصلية 100%
+        - listitem [ref=f79e35]:
+          - generic [ref=f79e36]: دفع آمن ومضمون
+        - listitem [ref=f79e40]:
+          - generic [ref=f79e41]: شحن داخل المملكة
+    - main [ref=f79e45]:
+      - generic [ref=f79e52]:
+        - 'heading "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية" [level=1] [ref=f79e53]'
+        - paragraph [ref=f79e54]: ما هدفك اليوم؟
+        - paragraph [ref=f79e55]: متجر مكملات غذائية ورياضية في المدينة المنورة، يختار لك منتجات أصلية ويشرح لك متى تحتاجها ومتى لا.
+        - generic [ref=f79e56]:
+          - link "تسوق حسب هدفك" [ref=f79e57] [cursor=pointer]:
+            - /url: "#ox-goals"
+          - link "اسأل قبل أن تشتري" [ref=f79e59] [cursor=pointer]:
+            - /url: /dev-ubq7yzb0tnbuirvv/services
+      - region "لماذا اوبتيمال اكس" [ref=f79e62]:
+        - list [ref=f79e64]:
+          - listitem [ref=f79e65]:
+            - button "منتجات أصلية صلاحية واضحة على كل منتج" [ref=f79e66] [cursor=pointer]:
+              - generic [ref=f79e69]:
+                - generic [ref=f79e70]: منتجات أصلية
+                - generic [ref=f79e71]: صلاحية واضحة على كل منتج
+          - listitem [ref=f79e72]:
+            - button "شحن من المدينة المنورة إلى كل مدينة في السعودية" [ref=f79e73] [cursor=pointer]:
+              - generic [ref=f79e76]:
+                - generic [ref=f79e77]: شحن من المدينة المنورة
+                - generic [ref=f79e78]: إلى كل مدينة في السعودية
+          - listitem [ref=f79e79]:
+            - button "دفع آمن طرق الدفع المتاحة تظهر عند إتمام الطلب" [ref=f79e80] [cursor=pointer]:
+              - generic [ref=f79e83]:
+                - generic [ref=f79e84]: دفع آمن
+                - generic [ref=f79e85]: طرق الدفع المتاحة تظهر عند إتمام الطلب
+          - listitem [ref=f79e86]:
+            - button "مساعدة في الاختيار رد مجاني" [ref=f79e87] [cursor=pointer]:
+              - generic [ref=f79e90]:
+                - generic [ref=f79e91]: مساعدة في الاختيار
+                - generic [ref=f79e92]: رد مجاني
+      - generic [ref=f79e95]:
+        - generic [ref=f79e96]:
+          - heading "تسوق حسب هدفك" [level=2] [ref=f79e97]
+          - paragraph [ref=f79e98]: ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط.
+        - list [ref=f79e99]:
+          - listitem [ref=f79e100]:
+            - link "مكملات الطاقة طاقة وتركيز قبل الحصة" [ref=f79e101] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B7%D8%A7%D9%82%D8%A9
+              - generic [ref=f79e105]:
+                - generic [ref=f79e106]: مكملات الطاقة
+                - generic [ref=f79e107]: طاقة وتركيز قبل الحصة
+          - listitem [ref=f79e108]:
+            - link "مكملات الصحة العامة فيتامينات يومية بجرعة معقولة" [ref=f79e109] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B5%D8%AD%D8%A9%20%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9
+              - generic [ref=f79e113]:
+                - generic [ref=f79e114]: مكملات الصحة العامة
+                - generic [ref=f79e115]: فيتامينات يومية بجرعة معقولة
+          - listitem [ref=f79e116]:
+            - link "مكملات الأداء لكمال الأجسام والجيم بروتين يومي بعد التمرين" [ref=f79e117] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%A1%20%D9%84%D9%83%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%A3%D8%AC%D8%B3%D8%A7%D9%85%20%D9%88%D8%A7%D9%84%D8%AC%D9%8A%D9%85
+              - generic [ref=f79e121]:
+                - generic [ref=f79e122]: مكملات الأداء لكمال الأجسام والجيم
+                - generic [ref=f79e123]: بروتين يومي بعد التمرين
+          - listitem [ref=f79e124]:
+            - link "مكملات التعافي بروتين سريع بعد التمرين" [ref=f79e125] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%81%D9%8A
+              - generic [ref=f79e129]:
+                - generic [ref=f79e130]: مكملات التعافي
+                - generic [ref=f79e131]: بروتين سريع بعد التمرين
+          - listitem [ref=f79e132]:
+            - link "مكملات الشعر والبشرة والأظافر كولاجين يومي في المشروب" [ref=f79e133] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D9%88%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9%20%D9%88%D8%A7%D9%84%D8%A3%D8%B8%D8%A7%D9%81%D8%B1
+              - generic [ref=f79e137]:
+                - generic [ref=f79e138]: مكملات الشعر والبشرة والأظافر
+                - generic [ref=f79e139]: كولاجين يومي في المشروب
+          - listitem [ref=f79e140]:
+            - 'link "مكملات الوزن المثالي: زيادة الكتلة العضلية ومرحلة التنشيف سعرات وبروتين في حصة واحدة" [ref=f79e141] [cursor=pointer]':
+              - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D9%88%D8%B2%D9%86%20%D8%A7%D9%84%D9%85%D8%AB%D8%A7%D9%84%D9%8A%3A%20%D8%B2%D9%8A%D8%A7%D8%AF%D8%A9%20%D8%A7%D9%84%D9%83%D8%AA%D9%84%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B6%D9%84%D9%8A%D8%A9%20%D9%88%D9%85%D8%B1%D8%AD%D9%84%D8%A9%20%D8%A7%D9%84%D8%AA%D9%86%D8%B4%D9%8A%D9%81
+              - generic [ref=f79e145]:
+                - generic [ref=f79e146]: "مكملات الوزن المثالي: زيادة الكتلة العضلية ومرحلة التنشيف"
+                - generic [ref=f79e147]: سعرات وبروتين في حصة واحدة
+    - contentinfo [ref=f79e157]:
+      - generic [ref=f79e158]:
+        - navigation "روابط الصفحة" [ref=f79e164]:
+          - generic [ref=f79e165]:
+            - button "عن اوبتيمال اكس" [ref=f79e166] [cursor=pointer]
+            - list [ref=f79e170]:
+              - listitem [ref=f79e171]:
+                - link "من نحن" [ref=f79e172] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/about
+          - generic [ref=f79e173]:
+            - button "خدمة العملاء" [ref=f79e174] [cursor=pointer]
+            - list [ref=f79e178]:
+              - listitem [ref=f79e179]:
+                - link "تواصل معنا" [ref=f79e180] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/contact
+              - listitem [ref=f79e181]:
+                - link "الأسئلة الشائعة" [ref=f79e182] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/services
+          - generic [ref=f79e183]:
+            - button "المنتجات" [ref=f79e184] [cursor=pointer]
+            - list [ref=f79e188]:
+              - listitem [ref=f79e189]:
+                - link "المكملات" [ref=f79e190] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f79e191]:
+                - link "البروتين" [ref=f79e192] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f79e193]:
+                - link "التغذية" [ref=f79e194] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f79e195]:
+                - link "الخطط الغذائية" [ref=f79e196] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f79e197]:
+          - img "اوبتيمال اكس" [ref=f79e199]
+          - paragraph [ref=f79e200]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f79e201]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f79e202]: هدفك
+      - paragraph [ref=f79e205]:
+        - text: الحقوق محفوظة | 2026
+        - link "متجر تجريبي" [ref=f79e206] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv
+  - navigation "تنقل سريع" [ref=f79e208]:
+    - list [ref=f79e209]:
+      - listitem [ref=f79e210]:
+        - link "الرئيسية" [ref=f79e211] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv
+          - generic [aria-hidden] [ref=f79e212]: 
+      - listitem [ref=f79e214]:
+        - button "التصنيفات" [ref=f79e215] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f79e216]: 
+      - listitem [ref=f79e218]:
+        - link "البحث" [ref=f79e219] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv/search
+          - generic [aria-hidden] [ref=f79e220]: 
+      - listitem [ref=f79e222]:
+        - link "السلة" [ref=f79e223] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv/cart
+          - generic [aria-hidden] [ref=f79e225]: 
+      - listitem [ref=f79e227]:
+        - link "حسابي" [ref=f79e228] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv/account/profile
+          - generic [aria-hidden] [ref=f79e229]: 
+  - text: 

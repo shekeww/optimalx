@@ -1,0 +1,12 @@
+[     729ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[    1103ms] [LOG] pageId: 1996831868 is product.single? true @ :8
+[    1104ms] [LOG] before get: [2052367464] type: object @ :15
+[    1105ms] [LOG] after set: [1996831868, 2052367464] @ :28
+[    1105ms] [LOG] allowed_pages: [thank-you] @ :10
+[    1106ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    1106ms] [LOG] limit: 32 @ :12
+[    1999ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[    3120ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D9%84%D8%AF-%D8%B3%D8%AA%D8%A7%D9%86%D8%AF%D8%B1%D8%AF-100-%D9%88%D8%A7%D9%8A-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D9%88%D9%85-%D9%86%D9%8A%D9%88%D8%AA%D8%B1%D8%B4%D9%86/p1996831868:0
+[    3120ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D9%84%D8%AF-%D8%B3%D8%AA%D8%A7%D9%86%D8%AF%D8%B1%D8%AF-100-%D9%88%D8%A7%D9%8A-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D9%88%D9%85-%D9%86%D9%8A%D9%88%D8%AA%D8%B1%D8%B4%D9%86/p1996831868:0

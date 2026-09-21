@@ -1,0 +1,35 @@
+- generic [ref=f58e2]:
+  - banner [ref=f58e3]:
+    - generic [ref=f58e11]:
+      - generic [ref=f58e12]:
+        - text: 
+        - link [ref=f58e13] [cursor=pointer]:
+          - /url: https://optimalx.com.sa
+          - img "Optimal X logo" [ref=f58e14]
+          - heading "Optimal X" [level=2] [ref=f58e15]
+      - generic [ref=f58e16]: 
+  - main [ref=f58e19]:
+    - navigation [ref=f58e21]
+    - generic [ref=f58e24]:
+      - heading "البحث عن (بروتين)" [level=1] [ref=f58e25]
+      - generic [ref=f58e27]:
+        - generic [ref=f58e28]: ترتيب حسب
+        - combobox "ترتيب حسب" [ref=f58e29]:
+          - option "مقترحاتنا" [selected]
+          - option "الأكثر مبيعًا"
+          - option "الأعلى تقييمًا"
+          - 'option "السعر: من الأعلى إلى الأقل"'
+          - 'option "السعر: من الأقل إلى الأعلى"'
+  - contentinfo [ref=f58e30]:
+    - generic "footer" [ref=f58e31]:
+      - generic [ref=f58e32]:
+        - generic [ref=f58e33]:
+          - link [ref=f58e34] [cursor=pointer]:
+            - /url: https://optimalx.com.sa/
+            - heading "Optimal X" [level=3] [ref=f58e35]
+          - generic [ref=f58e36]: اوبتيمال اكس للمنتجات الصحية.
+        - heading "روابط مهمة" [level=3] [ref=f58e38]
+    - paragraph [ref=f58e43]:
+      - text: جميع الحقوق محفوظة | 2026
+      - link "Optimal X" [ref=f58e44] [cursor=pointer]:
+        - /url: https://optimalx.com.sa

@@ -1,0 +1,9 @@
+[    1065ms] [LOG] allowed_pages: [thank-you] @ :10
+[    1065ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    1065ms] [LOG] limit: 32 @ :12
+[    1202ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://api.salla.dev/store/v1/menus/footer?lang=ar:0
+[    1658ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://api.salla.dev/store/v1/menus/footer?lang=ar:0
+[    2463ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://api.salla.dev/store/v1/menus/footer?lang=ar:0
+[    3567ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://api.salla.dev/store/v1/menus/footer?lang=ar:0
+[    3959ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://api.salla.dev/store/v1/menus/footer?lang=ar:0
+[    4678ms] [ERROR] Failed to load resource: the server responded with a status of 429 () @ https://api.salla.dev/store/v1/menus/footer?lang=ar:0

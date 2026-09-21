@@ -1,0 +1,7 @@
+[     596ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[     934ms] [LOG] allowed_pages: [thank-you] @ :10
+[     934ms] [LOG] title: شاهدتها مؤخرا @ :11
+[     934ms] [LOG] limit: 32 @ :12
+[    1579ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4

@@ -1,0 +1,118 @@
+- generic [active] [ref=f7e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f7e2]:
+    - link "تخطي إلى المحتوى" [ref=f7e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f7e4]:
+      - generic [ref=f7e6]:
+        - list [ref=f7e7]:
+          - listitem [ref=f7e8]:
+            - generic [ref=f7e9]: منتجات أصلية 100%
+          - listitem [ref=f7e13]:
+            - generic [ref=f7e14]: دفع آمن ومضمون
+          - listitem [ref=f7e18]:
+            - generic [ref=f7e19]: شحن داخل المملكة
+        - button "تغيير الدولة والعملة" [ref=f7e24] [cursor=pointer]:
+          - generic [ref=f7e25]: المملكة العربية السعودية
+      - generic [ref=f7e28]:
+        - generic [ref=f7e29]:
+          - link "متجر تجريبي" [ref=f7e30] [cursor=pointer]:
+            - /url: /dev-ubq7yzb0tnbuirvv
+          - navigation "التنقل الرئيسي" [ref=f7e32]:
+            - list [ref=f7e33]:
+              - listitem [ref=f7e34]:
+                - link "المنتجات" [ref=f7e35] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/latest-products
+              - listitem [ref=f7e36]:
+                - link "المكملات" [ref=f7e37] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f7e38]:
+                - link "البروتين" [ref=f7e39] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f7e40]:
+                - link "الخطط الغذائية" [ref=f7e41] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+              - listitem [ref=f7e42]:
+                - link "عن اوبتيمال اكس" [ref=f7e43] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/about
+          - search "البحث في المتجر" [ref=f7e44]
+          - link "المفضلة" [ref=f7e52] [cursor=pointer]:
+            - /url: /dev-ubq7yzb0tnbuirvv/account/wishlist
+            - generic [aria-hidden] [ref=f7e53]: 
+        - text: 
+    - main [ref=f7e60]:
+      - generic [ref=f7e61]:
+        - generic [ref=f7e63]:
+          - navigation "Breadcrumb" [ref=f7e64]:
+            - list [ref=f7e65]:
+              - listitem [ref=f7e66]:
+                - link "الرئيسية" [ref=f7e67] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv
+              - listitem [ref=f7e71]:
+                - generic [ref=f7e72]: العروض
+          - generic [ref=f7e73]:
+            - heading "العروض" [level=1] [ref=f7e75]
+            - paragraph [ref=f7e77]: المنتجات هنا بسعر أقل من سعرها المعتاد. السعر السابق يظهر بجانب السعر الحالي، والفرق بينهما بالريال.
+        - generic [ref=f7e79]:
+          - generic [ref=f7e83]:
+            - generic [ref=f7e84]: ترتيب حسب
+            - combobox "ترتيب حسب" [ref=f7e85]:
+              - option "الأنسب" [selected]
+              - option "الاكثر مبيعاً"
+              - option "الاعلى تقييماً"
+              - option "السعر من الأقل"
+              - option "السعر من الأعلى"
+          - generic "قائمة المنتجات" [ref=f7e88]:
+            - generic [ref=f7e91]:
+              - heading "لا عروض سارية الآن" [level=3] [ref=f7e95]
+              - paragraph [ref=f7e96]: تنتهي العروض ويبدأ غيرها. تصفح التشكيلة كاملة، أو ابدأ من هدفك.
+              - generic [ref=f7e97]:
+                - link "تسوق حسب هدفك" [ref=f7e98] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv
+                - link "تصفح التشكيلة كاملة" [ref=f7e100] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/latest-products
+    - contentinfo [ref=f7e102]:
+      - generic [ref=f7e103]:
+        - navigation "روابط الصفحة" [ref=f7e109]:
+          - generic [ref=f7e110]:
+            - button "عن اوبتيمال اكس" [ref=f7e111] [cursor=pointer]
+            - list [ref=f7e115]:
+              - listitem [ref=f7e116]:
+                - link "من نحن" [ref=f7e117] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/about
+          - generic [ref=f7e118]:
+            - button "خدمة العملاء" [ref=f7e119] [cursor=pointer]
+            - list [ref=f7e123]:
+              - listitem [ref=f7e124]:
+                - link "تواصل معنا" [ref=f7e125] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/contact
+              - listitem [ref=f7e126]:
+                - link "الأسئلة الشائعة" [ref=f7e127] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/services
+          - generic [ref=f7e128]:
+            - button "المنتجات" [ref=f7e129] [cursor=pointer]
+            - list [ref=f7e133]:
+              - listitem [ref=f7e134]:
+                - link "المكملات" [ref=f7e135] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f7e136]:
+                - link "البروتين" [ref=f7e137] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f7e138]:
+                - link "التغذية" [ref=f7e139] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f7e140]:
+                - link "الخطط الغذائية" [ref=f7e141] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f7e142]:
+          - img "اوبتيمال اكس" [ref=f7e144]
+          - paragraph [ref=f7e145]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f7e146]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f7e147]: هدفك
+      - paragraph [ref=f7e150]:
+        - text: الحقوق محفوظة | 2026
+        - link "متجر تجريبي" [ref=f7e151] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv
+  - text:     

@@ -1,0 +1,156 @@
+- main [ref=f26e2]:
+  - generic [ref=f26e10]:
+    - 'heading "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية" [level=1] [ref=f26e11]'
+    - paragraph [ref=f26e12]: ما هدفك اليوم؟
+    - paragraph [ref=f26e13]: متجر مكملات غذائية ورياضية في المدينة المنورة، يختار لك منتجات أصلية ويشرح لك متى تحتاجها ومتى لا.
+    - generic [ref=f26e14]:
+      - link "تسوق حسب هدفك" [ref=f26e15] [cursor=pointer]:
+        - /url: "#ox-goals"
+      - link "اسأل قبل أن تشتري" [ref=f26e17] [cursor=pointer]:
+        - /url: /services
+  - generic [ref=f26e21]:
+    - list [ref=f26e22]:
+      - listitem [ref=f26e23]:
+        - button "منتجات أصلية صلاحية واضحة على كل منتج" [ref=f26e24] [cursor=pointer]:
+          - generic [ref=f26e27]:
+            - generic [ref=f26e28]: منتجات أصلية
+            - generic [ref=f26e29]: صلاحية واضحة على كل منتج
+      - listitem [ref=f26e30]:
+        - button "شحن من المدينة المنورة إلى كل مدينة في السعودية" [ref=f26e31] [cursor=pointer]:
+          - generic [ref=f26e34]:
+            - generic [ref=f26e35]: شحن من المدينة المنورة
+            - generic [ref=f26e36]: إلى كل مدينة في السعودية
+      - listitem [ref=f26e37]:
+        - button "دفع آمن طرق الدفع المتاحة تظهر عند إتمام الطلب" [ref=f26e38] [cursor=pointer]:
+          - generic [ref=f26e41]:
+            - generic [ref=f26e42]: دفع آمن
+            - generic [ref=f26e43]: طرق الدفع المتاحة تظهر عند إتمام الطلب
+      - listitem [ref=f26e44]:
+        - button "مساعدة في الاختيار رد مجاني" [ref=f26e45] [cursor=pointer]:
+          - generic [ref=f26e48]:
+            - generic [ref=f26e49]: مساعدة في الاختيار
+            - generic [ref=f26e50]: رد مجاني
+    - paragraph [ref=f26e51]: بدأنا في الخالدية بفرع واحد وفريق من شخصين.
+  - generic [ref=f26e54]:
+    - generic [ref=f26e55]:
+      - heading "تسوق حسب هدفك" [level=2] [ref=f26e56]
+      - paragraph [ref=f26e57]: ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط.
+    - list [ref=f26e58]:
+      - listitem [ref=f26e59]:
+        - link "مكملات الطاقة طاقة يومية بلا انهيار" [ref=f26e60] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f26e65]:
+            - generic [ref=f26e66]: مكملات الطاقة
+            - generic [ref=f26e67]: طاقة يومية بلا انهيار
+      - listitem [ref=f26e68]:
+        - link "مكملات الصحة العامة فيتامينات ومعادن أساسية" [ref=f26e69] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f26e74]:
+            - generic [ref=f26e75]: مكملات الصحة العامة
+            - generic [ref=f26e76]: فيتامينات ومعادن أساسية
+      - listitem [ref=f26e77]:
+        - link "مكملات الأداء لكمال الأجسام بروتين وكرياتين" [ref=f26e78] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f26e83]:
+            - generic [ref=f26e84]: مكملات الأداء لكمال الأجسام
+            - generic [ref=f26e85]: بروتين وكرياتين
+      - listitem [ref=f26e86]:
+        - link "مكملات التعافي بعد التمرين" [ref=f26e87] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f26e92]:
+            - generic [ref=f26e93]: مكملات التعافي
+            - generic [ref=f26e94]: بعد التمرين
+      - listitem [ref=f26e95]:
+        - link "مكملات الشعر والبشرة كولاجين وبيوتين" [ref=f26e96] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f26e101]:
+            - generic [ref=f26e102]: مكملات الشعر والبشرة
+            - generic [ref=f26e103]: كولاجين وبيوتين
+      - listitem [ref=f26e104]:
+        - link "مكملات الوزن المثالي زيادة الكتلة العضلية" [ref=f26e105] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f26e110]:
+            - generic [ref=f26e111]: مكملات الوزن المثالي
+            - generic [ref=f26e112]: زيادة الكتلة العضلية
+  - generic [ref=f26e115]:
+    - generic [ref=f26e116]:
+      - heading "تصفح حسب النوع" [level=2] [ref=f26e117]
+      - paragraph [ref=f26e118]: بروتين وكرياتين وفيتامينات وغيرها، مرتبة كما تبحث عنها.
+    - list [ref=f26e119]:
+      - listitem [ref=f26e120]:
+        - link "بروتين باودر" [ref=f26e121] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=f26e128]:
+        - link "كرياتين مونوهيدرات" [ref=f26e129] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=f26e136]:
+        - link "بري وورك اوت (مكملات ما قبل التمرين)" [ref=f26e137] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=f26e144]:
+        - 'link "أحماض أمينية: بي سي اي اي" [ref=f26e145] [cursor=pointer]':
+          - /url: "#"
+      - listitem [ref=f26e152]:
+        - link "أوميغا 3 وزيت السمك" [ref=f26e153] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=f26e160]:
+        - link "الفيتامينات والمعادن" [ref=f26e161] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=f26e168]:
+        - link "كولاجين وببتيدات" [ref=f26e169] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=f26e176]:
+        - link "مكملات الصحة اليومية" [ref=f26e177] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f26e186]:
+    - generic [ref=f26e187]:
+      - paragraph [ref=f26e188]: الخدمات
+      - heading "اسأل قبل أن تشتري" [level=2] [ref=f26e189]
+      - paragraph [ref=f26e190]: سؤال مكتوب مجاني، أو استشارة مرئية، أو زيارة للفرع في المدينة المنورة.
+      - link "عرض الكل" [ref=f26e191] [cursor=pointer]:
+        - /url: /services
+    - generic [ref=f26e193]:
+      - article [ref=f26e194]:
+        - heading "سؤال مكتوب" [level=3] [ref=f26e198]
+        - paragraph [ref=f26e199]: رد من كل مدن السعودية.
+        - paragraph [ref=f26e200]: اكتب سؤالك عن اختيار منتج أو طريقة استخدامه، ويرد عليك فريق المتجر كتابة على بريدك. بلا موعد، ومن كل مدن السعودية.
+        - paragraph [ref=f26e201]: مجاني
+        - link "أرسل سؤالك مجانا" [ref=f26e202] [cursor=pointer]:
+          - /url: "#"
+      - article [ref=f26e204]:
+        - heading "استشارة مرئية 20 دقيقة" [level=3] [ref=f26e208]
+        - paragraph [ref=f26e209]: مواعيد محدودة كل يوم.
+        - paragraph [ref=f26e210]: مكالمة مرئية مع فريق المتجر نراجع فيها هدفك وجدول تمرينك وميزانيتك، وتخرج منها بقائمة مكتوبة بترتيب الأولوية.
+        - paragraph [ref=f26e211]:
+          - generic [ref=f26e212]: "99"
+        - link "احجز موعدا" [ref=f26e213] [cursor=pointer]:
+          - /url: "#"
+      - article [ref=f26e215]:
+        - heading "زيارة الفرع" [level=3] [ref=f26e219]
+        - paragraph [ref=f26e220]: الخالدية، المدينة المنورة. الحجز اختياري.
+        - paragraph [ref=f26e221]: تعال إلى فرع الخالدية في المدينة المنورة، قارن الأحجام والنكهات، واسأل فريق الفرع، أو استلم طلبك الإلكتروني.
+        - paragraph [ref=f26e222]: مجاني
+        - link "احجز زيارة أو تعال مباشرة" [ref=f26e223] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=f26e225]:
+      - paragraph [ref=f26e227]: الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.
+      - paragraph [ref=f26e228]:
+        - img "اوبتيمال اكس" [ref=f26e230]
+  - generic [ref=f26e235]:
+    - generic [ref=f26e236]:
+      - paragraph [ref=f26e237]: فرعنا في المدينة المنورة
+      - heading "فرعنا في المدينة المنورة" [level=2] [ref=f26e238]
+      - paragraph [ref=f26e239]: الخالدية، شارع جبار بن صخر. استلم طلبك أو اسأل فريق الفرع.
+    - paragraph [ref=f26e241]: استلام مجاني من الفرع.
+  - generic [ref=f26e244]:
+    - heading "أسئلة شائعة" [level=2] [ref=f26e246]
+    - generic [ref=f26e248]:
+      - heading [level=3] [ref=f26e250]:
+        - button "لماذا قد تجد سعرا أقل في مكان آخر؟" [ref=f26e251] [cursor=pointer]
+      - heading [level=3] [ref=f26e254]:
+        - button "ما أهم مكملات الجيم للمبتدئ؟" [ref=f26e255] [cursor=pointer]
+      - heading [level=3] [ref=f26e258]:
+        - button "كم سكوب بروتين في اليوم؟" [ref=f26e259] [cursor=pointer]
+      - heading [level=3] [ref=f26e262]:
+        - 'button "متى آخذ الكرياتين: قبل التمرين أم بعده؟" [ref=f26e263] [cursor=pointer]'
+      - heading [level=3] [ref=f26e266]:
+        - button "هل البروتين باودر مضر؟" [ref=f26e267] [cursor=pointer]

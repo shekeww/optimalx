@@ -1,0 +1,94 @@
+- generic [active] [ref=f13e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f13e2]:
+    - link "تخطي إلى المحتوى" [ref=f13e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f13e4]:
+      - generic [ref=f13e6]:
+        - list [ref=f13e7]:
+          - listitem [ref=f13e8]:
+            - generic [ref=f13e9]: منتجات أصلية 100%
+          - listitem [ref=f13e13]:
+            - generic [ref=f13e14]: دفع آمن ومضمون
+          - listitem [ref=f13e18]:
+            - generic [ref=f13e19]: شحن داخل المملكة
+        - button "تغيير الدولة والعملة" [ref=f13e24] [cursor=pointer]:
+          - generic [ref=f13e25]: المملكة العربية السعودية
+      - generic [ref=f13e28]:
+        - generic [ref=f13e29]:
+          - link "متجر تجريبي" [ref=f13e30] [cursor=pointer]:
+            - /url: /
+          - navigation "التنقل الرئيسي" [ref=f13e32]:
+            - list [ref=f13e33]:
+              - listitem [ref=f13e34]:
+                - link "المنتجات" [ref=f13e35] [cursor=pointer]:
+                  - /url: /latest-products
+              - listitem [ref=f13e36]:
+                - link "المكملات" [ref=f13e37] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f13e38]:
+                - link "البروتين" [ref=f13e39] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f13e40]:
+                - link "الخطط الغذائية" [ref=f13e41] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+              - listitem [ref=f13e42]:
+                - link "عن اوبتيمال اكس" [ref=f13e43] [cursor=pointer]:
+                  - /url: /about
+          - search "البحث في المتجر" [ref=f13e44]
+          - link "المفضلة" [ref=f13e52] [cursor=pointer]:
+            - /url: /account/wishlist
+            - generic [aria-hidden] [ref=f13e53]: 
+        - text: 
+    - main [ref=f13e60]:
+      - generic [ref=f13e62]:
+        - heading "حدث خطأ من جهتنا" [level=1] [ref=f13e65]
+        - paragraph [ref=f13e66]: لم يكتمل ما طلبته. أعد المحاولة بعد قليل. إن تكرر الخطأ فراسلنا على واتساب مع وصف ما كنت تفعله.
+        - link "الرئيسية" [ref=f13e68] [cursor=pointer]:
+          - /url: /
+        - paragraph [ref=f13e70]: رمز الخطأ 500
+    - contentinfo [ref=f13e71]:
+      - generic [ref=f13e72]:
+        - navigation "روابط الصفحة" [ref=f13e78]:
+          - generic [ref=f13e79]:
+            - button "عن اوبتيمال اكس" [ref=f13e80] [cursor=pointer]
+            - list [ref=f13e84]:
+              - listitem [ref=f13e85]:
+                - link "من نحن" [ref=f13e86] [cursor=pointer]:
+                  - /url: /about
+          - generic [ref=f13e87]:
+            - button "خدمة العملاء" [ref=f13e88] [cursor=pointer]
+            - list [ref=f13e92]:
+              - listitem [ref=f13e93]:
+                - link "تواصل معنا" [ref=f13e94] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=f13e95]:
+                - link "الأسئلة الشائعة" [ref=f13e96] [cursor=pointer]:
+                  - /url: /services
+          - generic [ref=f13e97]:
+            - button "المنتجات" [ref=f13e98] [cursor=pointer]
+            - list [ref=f13e102]:
+              - listitem [ref=f13e103]:
+                - link "المكملات" [ref=f13e104] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f13e105]:
+                - link "البروتين" [ref=f13e106] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f13e107]:
+                - link "التغذية" [ref=f13e108] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f13e109]:
+                - link "الخطط الغذائية" [ref=f13e110] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f13e111]:
+          - img "اوبتيمال اكس" [ref=f13e113]
+          - paragraph [ref=f13e114]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f13e115]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f13e116]: هدفك
+      - paragraph [ref=f13e119]:
+        - text: الحقوق محفوظة | 2026
+        - link "متجر تجريبي" [ref=f13e120] [cursor=pointer]:
+          - /url: /
+  - text:     

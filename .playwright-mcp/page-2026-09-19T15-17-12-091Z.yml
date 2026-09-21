@@ -1,0 +1,91 @@
+- generic [ref=f151e2]:
+  - banner [ref=f151e3]:
+    - generic [ref=f151e11]:
+      - generic [ref=f151e12]:
+        - text: 
+        - link [ref=f151e13] [cursor=pointer]:
+          - /url: https://optimalx.com.sa
+          - img "Optimal X logo" [ref=f151e14]
+          - heading "Optimal X" [level=2] [ref=f151e15]
+      - generic [ref=f151e23]: 
+  - main [ref=f151e26]:
+    - navigation [ref=f151e28]
+    - generic [ref=f151e30]:
+      - generic [ref=f151e32]:
+        - text: 
+        - link "نيترو تك 100% واي جولد - مسل تك" [ref=f151e34] [cursor=pointer]:
+          - /url: https://cdn.salla.sa/dPrxBd/768e3443-0d1d-4ecb-ae41-e59c63735dea-826.66666666667x1000-XfG2w4u840U2VJSHGo6Kk7Wxl5P0b4WaD8mnNsdM.jpg
+          - img "نيترو تك 100% واي جولد - مسل تك" [ref=f151e35]
+      - generic [ref=f151e36]:
+        - heading "نيترو تك 100% واي جولد - مسل تك" [level=1] [ref=f151e37]
+        - heading "واي ايزوليت وببتيدات مع 24 جم بروتين في المغرفة، 69 حصة في 2.27 كجم" [level=2] [ref=f151e38]
+        - generic [ref=f151e39]:
+          - text:  
+          - paragraph [ref=f151e41]:
+            - text: "355"
+            - generic [ref=f151e42]: 
+        - article [ref=f151e44]:
+          - paragraph [ref=f151e45]: "الحصص: 69 | حجم الحصة: 33 جم | الصلاحية: 2028-01 | الشكل: بودرة"
+          - paragraph [ref=f151e46]: نيترو تك واي جولد من مسل تك بودرة بروتين تعتمد على ايزوليت الواي وببتيدات الواي كمصدرين أساسيين، مع 24 جم بروتين في كل مغرفة ومحتوى منخفض من السكر. يناسب من يتدرب بانتظام ويريد بروتينا سريع الامتصاص بعد التمرين، ومن يفضل نكهات حلويات مثل الكوكيز والكريمة.
+          - table [ref=f151e47]:
+            - rowgroup [ref=f151e48]:
+              - row [ref=f151e49]:
+                - columnheader "الحقائق الغذائية" [ref=f151e50]
+                - columnheader "لكل حصة" [ref=f151e51]
+              - row [ref=f151e52]:
+                - cell "السعرات الحرارية" [ref=f151e53]
+                - cell "120" [ref=f151e54]
+              - row [ref=f151e55]:
+                - cell "البروتين" [ref=f151e56]
+                - cell "24 جم" [ref=f151e57]
+              - row [ref=f151e58]:
+                - cell "الكربوهيدرات" [ref=f151e59]
+                - cell "2 جم" [ref=f151e60]
+              - row [ref=f151e61]:
+                - cell "السكريات" [ref=f151e62]
+                - cell "1 جم" [ref=f151e63]
+              - row [ref=f151e64]:
+                - cell "الدهون" [ref=f151e65]
+                - cell "1.5 جم" [ref=f151e66]
+              - row [ref=f151e67]:
+                - cell "الأحماض الأمينية المتفرعة BCAA" [ref=f151e68]
+                - cell "5.5 جم" [ref=f151e69]
+              - row [ref=f151e70]:
+                - cell "الجلوتامين ومشتقاته" [ref=f151e71]
+                - cell "4 جم" [ref=f151e72]
+          - paragraph [ref=f151e73]: "طريقة الاستخدام: تخلط مغرفة واحدة مع 180 إلى 240 مل من الماء البارد بعد التمرين أو بين الوجبات."
+          - paragraph [ref=f151e74]: "تنبيه: المكملات الغذائية لا تغني عن الغذاء المتوازن. يحتوي على الحليب والصويا."
+        - generic [ref=f151e75]:
+          - generic "social share"
+          - generic "add to wishlist" [ref=f151e76]: 
+        - generic [ref=f151e78]:
+          - generic [ref=f151e79]:
+            - generic [ref=f151e80]: 
+            - text: رقم الموديل
+          - generic [ref=f151e81]: OX-002
+        - generic [ref=f151e82]:
+          - generic [ref=f151e84]:
+            - generic [ref=f151e85]: السعر
+            - generic [ref=f151e87]:
+              - text:  
+              - heading "355 " [level=2] [ref=f151e89]:
+                - text: "355"
+                - generic [ref=f151e90]: 
+          - generic [ref=f151e91]:
+            - generic [ref=f151e92]:
+              - generic [ref=f151e93]: الكمية
+              - generic "Quantity"
+            - text: أضف إلى السلة
+  - contentinfo [ref=f151e95]:
+    - generic "footer" [ref=f151e96]:
+      - generic [ref=f151e97]:
+        - generic [ref=f151e98]:
+          - link [ref=f151e99] [cursor=pointer]:
+            - /url: https://optimalx.com.sa/
+            - heading "Optimal X" [level=3] [ref=f151e100]
+          - generic [ref=f151e101]: اوبتيمال اكس للمنتجات الصحية.
+        - heading "روابط مهمة" [level=3] [ref=f151e103]
+    - paragraph [ref=f151e108]:
+      - text: جميع الحقوق محفوظة | 2026
+      - link "Optimal X" [ref=f151e109] [cursor=pointer]:
+        - /url: https://optimalx.com.sa

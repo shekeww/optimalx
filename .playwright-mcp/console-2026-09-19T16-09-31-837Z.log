@@ -1,0 +1,140 @@
+[     755ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[    1140ms] [LOG] allowed_pages: [thank-you] @ :10
+[    1140ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    1140ms] [LOG] limit: 32 @ :12
+[    1976ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4
+[    6258ms] [WARNING] The resource https://fonts.googleapis.com/css2?family=Cairo&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://optimalx.com.sa/:0
+[    9660ms] [WARNING] The resource https://fonts.googleapis.com/css2?family=Cairo&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://optimalx.com.sa/:0
+[  230641ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[  230945ms] [LOG] pageId: 2052367464 is product.single? true @ :8
+[  230945ms] [LOG] before get: [1057022406, 2052367464, 1673105563, 1746003438, 1996831868] type: object @ :15
+[  230945ms] [LOG] after set: [2052367464, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[  230946ms] [LOG] allowed_pages: [thank-you] @ :10
+[  230946ms] [LOG] title: شاهدتها مؤخرا @ :11
+[  230946ms] [LOG] limit: 32 @ :12
+[  231663ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[  232529ms] [ERROR] Unable to download payment manifest "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789834401743:0
+[  232529ms] [ERROR] Unable to download payment manifest "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789834401743:0
+[ 1088349ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 1088590ms] [LOG] pageId: 2052367464 is product.single? true @ :8
+[ 1088590ms] [LOG] before get: [2052367464, 1057022406, 1673105563, 1746003438, 1996831868] type: object @ :15
+[ 1088590ms] [LOG] after set: [2052367464, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[ 1088591ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 1088591ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 1088591ms] [LOG] limit: 32 @ :12
+[ 1089398ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[ 1089765ms] [ERROR] Unable to download payment manifest "https://www.apple.com/apple-pay". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789835259226:0
+[ 1089765ms] [ERROR] Unable to download payment manifest "https://www.apple.com/apple-pay". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789835259226:0
+[ 1163913ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 1164135ms] [LOG] pageId: 2052367464 is product.single? true @ :8
+[ 1164135ms] [LOG] before get: [2052367464, 1057022406, 1673105563, 1746003438, 1996831868] type: object @ :15
+[ 1164135ms] [LOG] after set: [2052367464, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[ 1164136ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 1164136ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 1164136ms] [LOG] limit: 32 @ :12
+[ 1164626ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[ 1165432ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789835334831:0
+[ 1165432ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789835334831:0
+[ 1168496ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 1168681ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 1168682ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 1168682ms] [LOG] limit: 32 @ :12
+[ 1169158ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4
+[ 1173010ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 1173063ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4
+[ 1173247ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 1173247ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 1173247ms] [LOG] limit: 32 @ :12
+[ 1177559ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 1177666ms] [LOG] allowed_pages: [thank-you] @ https://optimalx.com.sa/cart?v=1789835348708:615
+[ 1177666ms] [LOG] title: شاهدتها مؤخرا @ https://optimalx.com.sa/cart?v=1789835348708:616
+[ 1177666ms] [LOG] limit: 32 @ https://optimalx.com.sa/cart?v=1789835348708:617
+[ 3182802ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3183337ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3183339ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3183339ms] [LOG] limit: 32 @ :12
+[ 3183884ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4
+[ 3188137ms] [WARNING] The resource https://fonts.googleapis.com/css2?family=Cairo&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://optimalx.com.sa/:0
+[ 3190873ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3191215ms] [LOG] pageId: 1497955814 is product.single? true @ :8
+[ 3191216ms] [LOG] before get: [2052367464, 1057022406, 1673105563, 1746003438, 1996831868] type: object @ :15
+[ 3191216ms] [LOG] after set: [1497955814, 2052367464, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[ 3191217ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3191217ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3191217ms] [LOG] limit: 32 @ :12
+[ 3191970ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[ 3193108ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D9%83%D8%A7%D8%B1%D8%A8-%D9%83%D9%8A%D9%84%D8%A7-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D8%A8%D8%A7%D8%B1-%D8%B9%D9%84%D8%A8%D8%A9-12-%D8%AC%D8%B1%D9%8A%D9%86%D9%8A%D8%AF/p1497955814:0
+[ 3193108ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D9%83%D8%A7%D8%B1%D8%A8-%D9%83%D9%8A%D9%84%D8%A7-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D8%A8%D8%A7%D8%B1-%D8%B9%D9%84%D8%A8%D8%A9-12-%D8%AC%D8%B1%D9%8A%D9%86%D9%8A%D8%AF/p1497955814:0
+[ 3331474ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3331475ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3331475ms] [LOG] limit: 32 @ :12
+[ 3339046ms] [WARNING] The resource https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.js?v=17898351681 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:5480/optimal-x/ar/p1996831868:0
+[ 3687308ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3687710ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3687711ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3687711ms] [LOG] limit: 32 @ :12
+[ 3688290ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4
+[ 3692554ms] [WARNING] The resource https://fonts.googleapis.com/css2?family=Cairo&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://optimalx.com.sa/?v=1789837857965:0
+[ 3701579ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3701859ms] [LOG] pageId: 2052367464 is product.single? true @ :8
+[ 3701859ms] [LOG] before get: [1497955814, 2052367464, 1057022406, 1673105563, 1746003438, 1996831868] type: object @ :15
+[ 3701860ms] [LOG] after set: [2052367464, 1497955814, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[ 3701860ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3701861ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3701861ms] [LOG] limit: 32 @ :12
+[ 3702596ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[ 3703546ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789837872693:0
+[ 3703546ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789837872693:0
+[ 3724701ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3724955ms] [LOG] pageId: 2052367464 is product.single? true @ :8
+[ 3724955ms] [LOG] before get: [2052367464, 1497955814, 1057022406, 1673105563, 1746003438, 1996831868] type: object @ :15
+[ 3724955ms] [LOG] after set: [2052367464, 1497955814, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[ 3724956ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3724956ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3724957ms] [LOG] limit: 32 @ :12
+[ 3725489ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[ 3726104ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789837895787:0
+[ 3726104ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789837895787:0
+[ 3729904ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3730064ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3730064ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3730064ms] [LOG] limit: 32 @ :12
+[ 3730488ms] [LOG] > Salla: Snapchat pixel id is not available, we'll ignore the snapchat events @ :4
+[ 3735261ms] [WARNING] [webmcp-interceptor] document.modelContext is not available.
+To enable WebMCP, use Chrome M146+ and enable:
+chrome://flags/#enable-experimental-web-platform-features @ https://optimalx.com.sa/.webmcp/bridge.js:1343
+[ 3735506ms] [LOG] pageId: 2052367464 is product.single? true @ :8
+[ 3735506ms] [LOG] before get: [2052367464, 1497955814, 1057022406, 1673105563, 1746003438, 1996831868] type: object @ :15
+[ 3735506ms] [LOG] after set: [2052367464, 1497955814, 1057022406, 1673105563, 1746003438, 1996831868] @ :28
+[ 3735507ms] [LOG] allowed_pages: [thank-you] @ :10
+[ 3735507ms] [LOG] title: شاهدتها مؤخرا @ :11
+[ 3735507ms] [LOG] limit: 32 @ :12
+[ 3735977ms] [LOG] 🍏 Pay: Quick Buy Component Loaded @ https://cdn.salla.network/js/twilight/2.14.583/p-c3ad3c3d.entry.js:3
+[ 3736614ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789837906172:0
+[ 3736615ms] [ERROR] No "Link: rel=payment-method-manifest" HTTP header found at "https://www.apple.com/apple-pay/". @ https://optimalx.com.sa/%D8%AC%D9%88%D8%B3%D8%AA-%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86-%D9%86%D8%A8%D8%A7%D8%AA%D9%8A-%D8%AC%D9%88%D8%B3%D8%AA/p2052367464?v=1789837906172:0

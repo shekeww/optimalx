@@ -1,0 +1,296 @@
+- generic [active] [ref=f6e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f6e2]:
+    - link "تخطي إلى المحتوى" [ref=f6e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f6e4]:
+      - generic [ref=f6e6]:
+        - link "تواصل معنا" [ref=f6e8] [cursor=pointer]:
+          - /url: https://wa.me/966553524524
+        - list [ref=f6e12]:
+          - listitem [ref=f6e13]:
+            - generic [ref=f6e14]: منتجات أصلية
+          - listitem [ref=f6e18]:
+            - generic [ref=f6e19]: دفع آمن
+          - listitem [ref=f6e23]:
+            - generic [ref=f6e24]: شحن داخل المملكة
+      - generic [ref=f6e28]:
+        - generic [ref=f6e29]:
+          - link "Optimal X" [ref=f6e30] [cursor=pointer]:
+            - /url: /
+          - navigation "التنقل الرئيسي" [ref=f6e32]:
+            - list [ref=f6e33]:
+              - listitem [ref=f6e34]:
+                - link "المنتجات" [ref=f6e35] [cursor=pointer]:
+                  - /url: /latest-products
+              - listitem [ref=f6e36]:
+                - link "المكملات" [ref=f6e37] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f6e38]:
+                - link "البروتين" [ref=f6e39] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f6e40]:
+                - link "اسأل قبل أن تشتري" [ref=f6e41] [cursor=pointer]:
+                  - /url: /services
+              - listitem [ref=f6e42]:
+                - link "الخطط الغذائية" [ref=f6e43] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+              - listitem [ref=f6e44]:
+                - link "عن اوبتيمال اكس" [ref=f6e45] [cursor=pointer]:
+                  - /url: /about
+          - search "البحث في المتجر" [ref=f6e46]
+          - link "المفضلة" [ref=f6e54] [cursor=pointer]:
+            - /url: /account/wishlist
+            - generic [aria-hidden] [ref=f6e55]: 
+        - text: 
+    - main [ref=f6e62]:
+      - generic [ref=f6e63]:
+        - generic [ref=f6e64]:
+          - navigation "Breadcrumb" [ref=f6e65]:
+            - list [ref=f6e66]:
+              - listitem [ref=f6e67]:
+                - link "الرئيسية" [ref=f6e68] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=f6e72]:
+                - generic [ref=f6e73]: زبدة الفول السوداني الطبيعية 1 كجم - ماي بروتين
+          - generic [ref=f6e74]:
+            - generic [ref=f6e77]:
+              - img "صورة 1 من 1" [ref=f6e78]
+              - button "إضافة إلى المفضلة أو إزالتها" [ref=f6e79] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f6e80]: 
+              - button "تكبير صورة المنتج" [ref=f6e81] [cursor=pointer]:
+                - generic [ref=f6e82]: تكبير الصورة
+            - generic [ref=f6e88]:
+              - generic [ref=f6e89]:
+                - heading "زبدة الفول السوداني الطبيعية 1 كجم - ماي بروتين" [level=1] [ref=f6e90]
+                - paragraph [ref=f6e91]: فول سوداني محمص 100% بلا سكر أو ملح مضاف، ناعمة أو مقرمشة، عبوة 1 كجم
+                - paragraph [ref=f6e92]: زبدة الفول السوداني الطبيعية من ماي بروتين مصنوعة من الفول السوداني المحمص فقط، بلا سكر أو ملح أو زيت نخيل مضاف، وقد تنفصل طبقة زيت في الأعلى وهذا طبيعي في المنتج بمكون واحد. مناسبة لمن يريد مصدر بروتين ودهون من مكون واحد على الخبز أو في الشوفان أو مشروب الواي، ولمن يحتاج سعرات إضافية ضمن نظام غذائي مخطط.
+              - list [ref=f6e93]:
+                - listitem [ref=f6e94]:
+                  - paragraph [ref=f6e95]: "180"
+                  - paragraph [ref=f6e96]:
+                    - generic [ref=f6e97]: سعرة حرارية
+                    - generic [ref=f6e98]: في الحصة
+                - listitem [ref=f6e99]:
+                  - paragraph [ref=f6e100]: 9 جم
+                  - paragraph [ref=f6e101]:
+                    - generic [ref=f6e102]: بروتين
+                    - generic [ref=f6e103]: في الحصة
+              - paragraph [ref=f6e105]:
+                - generic [ref=f6e106]:
+                  - text: "65.00"
+                  - generic [ref=f6e107]: ر.س
+              - paragraph [ref=f6e119]:
+                - generic [ref=f6e122]: تاريخ انتهاء الصلاحية 2027-09
+              - generic [ref=f6e124]:
+                - generic [ref=f6e126]:
+                  - generic [ref=f6e127]:
+                    - generic [ref=f6e128]: 
+                    - text: Weight
+                  - generic [ref=f6e129]: "1.15"
+                - text:   
+                - generic [ref=f6e130]: Quantity
+              - button "اشتر الآن" [ref=f6e138] [cursor=pointer]
+              - generic [ref=f6e141]: طرق الدفع المتاحة في هذا المتجر
+              - list [ref=f6e153]:
+                - listitem [ref=f6e154]:
+                  - generic [ref=f6e157]:
+                    - paragraph [ref=f6e158]: دفع آمن
+                    - paragraph [ref=f6e159]: جميع طرق الدفع
+                - listitem [ref=f6e160]:
+                  - paragraph [ref=f6e164]: شحن داخل المملكة
+                - listitem [ref=f6e165]:
+                  - paragraph [ref=f6e169]: منتجات أصلية
+        - region [ref=f6e183]:
+          - generic [ref=f6e184]:
+            - heading "تغذية رياضية بأداء عالي" [level=2] [ref=f6e185]:
+              - generic [ref=f6e186]: تغذية رياضية
+              - generic [ref=f6e187]: بأداء عالي
+            - paragraph [ref=f6e188]: مذاق رائع. مكونات نظيفة. مصدر موثوق.
+          - paragraph [ref=f6e189]:
+            - img "اوبتيمال اكس" [ref=f6e191]
+        - generic [ref=f6e192]:
+          - navigation "أقسام صفحة المنتج" [ref=f6e193]:
+            - list [ref=f6e194]:
+              - listitem [ref=f6e195]:
+                - link "التفاصيل" [ref=f6e196] [cursor=pointer]:
+                  - /url: "#ox-details"
+              - listitem [ref=f6e197]:
+                - link "طريقة الاستخدام" [ref=f6e198] [cursor=pointer]:
+                  - /url: "#ox-howto"
+              - listitem [ref=f6e199]:
+                - link "المعلومات الغذائية" [ref=f6e200] [cursor=pointer]:
+                  - /url: "#ox-nutrition"
+          - generic [ref=f6e201]:
+            - region [ref=f6e202]:
+              - heading "تفاصيل المنتج" [level=2] [ref=f6e203]
+              - generic [ref=f6e204]:
+                - generic [ref=f6e205]:
+                  - term [ref=f6e206]: النوع
+                  - definition [ref=f6e207]: فول سوداني محمص 100% بلا سكر أو ملح مضاف، ناعمة أو مقرمشة، عبوة 1 كجم
+                - generic [ref=f6e208]:
+                  - term [ref=f6e209]: الحجم
+                  - definition [ref=f6e210]: "1.15"
+                - generic [ref=f6e211]:
+                  - term [ref=f6e212]: عدد الحصص
+                  - definition [ref=f6e213]: "33"
+                - generic [ref=f6e214]:
+                  - term [ref=f6e215]: رقم المنتج
+                  - definition [ref=f6e216]: OX-039
+              - region [ref=f6e218]:
+                - heading "قبل أن تشتري" [level=2] [ref=f6e220]
+                - generic [ref=f6e221]:
+                  - generic [ref=f6e222]:
+                    - heading [level=3] [ref=f6e223]:
+                      - button "تنبيه" [expanded] [ref=f6e224] [cursor=pointer]:
+                        - generic [aria-hidden]: 
+                    - region "تنبيه" [ref=f6e225]:
+                      - list [ref=f6e229]:
+                        - listitem [ref=f6e230]: يحتوي على الفول السوداني وقد يحتوي على آثار من مكسرات أخرى.
+                        - listitem [ref=f6e231]: غير مناسب لمن لديه حساسية من الفول السوداني.
+                  - generic [ref=f6e232]:
+                    - heading [level=3] [ref=f6e233]:
+                      - button "مسببات الحساسية" [ref=f6e234] [cursor=pointer]:
+                        - generic [aria-hidden]: 
+                    - region "مسببات الحساسية":
+                      - paragraph [ref=f6e237]: مسببات الحساسية المذكورة على الملصق مكتوبة في كل منتج تحت عنوان تنبيه، مثل الحليب أو الصويا أو القمح أو المكسرات. التركيبة قد تتغير بين دفعة وأخرى، والملصق على العبوة هو المرجع الأخير، فاقرأه قبل أول استخدام. وإن كان سؤالك عن مكون بعينه فأرسله لنا قبل الشراء.
+                  - generic [ref=f6e238]:
+                    - heading [level=3] [ref=f6e239]:
+                      - button "التخزين" [ref=f6e240] [cursor=pointer]:
+                        - generic [aria-hidden]: 
+                    - region "التخزين":
+                      - paragraph [ref=f6e243]: احفظ العبوة مغلقة في مكان بارد وجاف بعيدا عن الشمس، وخاصة في الصيف.
+                  - generic [ref=f6e244]:
+                    - heading "ملاحظة طبية" [level=3] [ref=f6e245]
+                    - paragraph [ref=f6e247]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+            - region [ref=f6e248]:
+              - heading "طريقة الاستخدام" [level=2] [ref=f6e249]
+              - list [ref=f6e250]:
+                - listitem [ref=f6e251]:
+                  - generic [ref=f6e255]:
+                    - generic [aria-hidden] [ref=f6e256]: "01"
+                    - paragraph [ref=f6e257]: ملعقة كبيرة ممتلئة على الخبز أو مع الشوفان أو في الشيكر مع الحليب.
+                - listitem [ref=f6e258]:
+                  - generic [ref=f6e262]:
+                    - generic [aria-hidden] [ref=f6e263]: "02"
+                    - paragraph [ref=f6e264]: تقلب جيدا قبل الاستخدام الأول وتحفظ مغلقة.
+              - region [ref=f6e266]:
+                - heading "كم يوما تكفي العبوة؟" [level=2] [ref=f6e267]
+                - generic [ref=f6e268]:
+                  - generic [ref=f6e269]: حصص في اليوم
+                  - generic [ref=f6e270]:
+                    - button "إنقاص الحصص في اليوم" [disabled] [ref=f6e271]: −
+                    - status [ref=f6e272]: "1"
+                    - button "زيادة الحصص في اليوم" [ref=f6e273] [cursor=pointer]: +
+                - paragraph [ref=f6e274]:
+                  - strong [ref=f6e275]: تكفي نحو 33 يوما
+                  - generic [ref=f6e276]: تنتهي تقريبا في 2026-10-23
+                - paragraph [ref=f6e277]: حساب تقريبي من عدد الحصص على الملصق، وليس توصية بجرعة.
+            - region [ref=f6e278]:
+              - heading "المعلومات الغذائية" [level=2] [ref=f6e280]
+              - table [ref=f6e283]:
+                - caption [ref=f6e284]: المعلومات الغذائية
+                - rowgroup [ref=f6e285]:
+                  - row [ref=f6e286]:
+                    - columnheader "العنصر" [ref=f6e287]
+                    - columnheader "لكل حصة (30 جم)" [ref=f6e289]
+                - rowgroup [ref=f6e291]:
+                  - row [ref=f6e292]:
+                    - rowheader "السعرات الحرارية ماذا يعني الرقم طاقة الحصة الواحدة، وتحسب ضمن مجموع سعرات يومك لا فوقه." [ref=f6e293]:
+                      - generic [ref=f6e294]: السعرات الحرارية
+                      - generic [ref=f6e295]:
+                        - generic [ref=f6e296]: ماذا يعني الرقم
+                        - text: طاقة الحصة الواحدة، وتحسب ضمن مجموع سعرات يومك لا فوقه.
+                    - cell "180" [ref=f6e297]
+                  - row [ref=f6e298]:
+                    - rowheader "البروتين ماذا يعني الرقم غرامات البروتين في الحصة الواحدة، وهو الرقم الذي تقارن به مسحوقا بآخر." [ref=f6e299]:
+                      - generic [ref=f6e300]: البروتين
+                      - generic [ref=f6e301]:
+                        - generic [ref=f6e302]: ماذا يعني الرقم
+                        - text: غرامات البروتين في الحصة الواحدة، وهو الرقم الذي تقارن به مسحوقا بآخر.
+                    - cell "9 جم" [ref=f6e303]
+                  - row [ref=f6e304]:
+                    - rowheader "الكربوهيدرات ماذا يعني الرقم غرامات الكربوهيدرات في الحصة، وتشمل السكريات والنشويات والألياف." [ref=f6e305]:
+                      - generic [ref=f6e306]: الكربوهيدرات
+                      - generic [ref=f6e307]:
+                        - generic [ref=f6e308]: ماذا يعني الرقم
+                        - text: غرامات الكربوهيدرات في الحصة، وتشمل السكريات والنشويات والألياف.
+                    - cell "4 جم" [ref=f6e309]
+                  - row [ref=f6e310]:
+                    - rowheader "السكريات ماذا يعني الرقم غرامات السكر في الحصة، وتشمل السكر المضاف والسكر الموجود أصلا في المكونات." [ref=f6e311]:
+                      - generic [ref=f6e312]: السكريات
+                      - generic [ref=f6e313]:
+                        - generic [ref=f6e314]: ماذا يعني الرقم
+                        - text: غرامات السكر في الحصة، وتشمل السكر المضاف والسكر الموجود أصلا في المكونات.
+                    - cell "2 جم" [ref=f6e315]
+                  - row [ref=f6e316]:
+                    - rowheader "الدهون ماذا يعني الرقم غرامات الدهون في الحصة الواحدة، وتحسب ضمن سعرات اليوم مثل البروتين والكربوهيدرات." [ref=f6e317]:
+                      - generic [ref=f6e318]: الدهون
+                      - generic [ref=f6e319]:
+                        - generic [ref=f6e320]: ماذا يعني الرقم
+                        - text: غرامات الدهون في الحصة الواحدة، وتحسب ضمن سعرات اليوم مثل البروتين والكربوهيدرات.
+                    - cell "14 جم" [ref=f6e321]
+                  - row [ref=f6e322]:
+                    - rowheader "الألياف ماذا يعني الرقم غرامات الألياف الغذائية في الحصة، وهي جزء من الكربوهيدرات لا يهضمه الجسم." [ref=f6e323]:
+                      - generic [ref=f6e324]: الألياف
+                      - generic [ref=f6e325]:
+                        - generic [ref=f6e326]: ماذا يعني الرقم
+                        - text: غرامات الألياف الغذائية في الحصة، وهي جزء من الكربوهيدرات لا يهضمه الجسم.
+                    - cell "2.5 جم" [ref=f6e327]
+              - paragraph [ref=f6e328]: الأرقام منقولة من ملصق المنتج، وليست توصية لأي شخص بعينه.
+          - region [ref=f6e329]:
+            - heading "أسئلة شائعة" [level=2] [ref=f6e331]
+            - generic [ref=f6e333]:
+              - heading [level=3] [ref=f6e334]:
+                - button "لماذا قد تجد سعرا أقل في مكان آخر؟" [expanded] [ref=f6e335] [cursor=pointer]:
+                  - generic [aria-hidden]: 
+              - region "لماذا قد تجد سعرا أقل في مكان آخر؟" [ref=f6e336]:
+                - paragraph [ref=f6e340]: السعر المعروض على الصفحة هو السعر النهائي الذي تدفعه. ومعه نكتب عدد الحصص وحجم الحصة، فاقسم السعر على عدد الحصص لتعرف تكلفة الحصة الواحدة، فهي المقارنة الصحيحة بين عبوتين. العبوات تختلف في وزن السكوب وفي عدد الحصص، فالعبوة الأقل سعرا قد تكون الأعلى تكلفة في الحصة. وإن كان الفرق على المنتج نفسه، فقارن الحجم والنكهة وتاريخ الصلاحية قبل أن تقارن الرقم وحده.
+    - contentinfo [ref=f6e343]:
+      - generic [ref=f6e344]:
+        - navigation "روابط الصفحة" [ref=f6e350]:
+          - generic [ref=f6e351]:
+            - button "عن اوبتيمال اكس" [ref=f6e352] [cursor=pointer]
+            - list [ref=f6e356]:
+              - listitem [ref=f6e357]:
+                - link "من نحن" [ref=f6e358] [cursor=pointer]:
+                  - /url: /about
+          - generic [ref=f6e359]:
+            - button "خدمة العملاء" [ref=f6e360] [cursor=pointer]
+            - list [ref=f6e364]:
+              - listitem [ref=f6e365]:
+                - link "تواصل معنا" [ref=f6e366] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=f6e367]:
+                - link "واتساب" [ref=f6e368] [cursor=pointer]:
+                  - /url: https://wa.me/966553524524
+              - listitem [ref=f6e369]:
+                - link "الأسئلة الشائعة" [ref=f6e370] [cursor=pointer]:
+                  - /url: /services
+          - generic [ref=f6e371]:
+            - button "المنتجات" [ref=f6e372] [cursor=pointer]
+            - list [ref=f6e376]:
+              - listitem [ref=f6e377]:
+                - link "المكملات" [ref=f6e378] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f6e379]:
+                - link "البروتين" [ref=f6e380] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f6e381]:
+                - link "التغذية" [ref=f6e382] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f6e383]:
+                - link "الخطط الغذائية" [ref=f6e384] [cursor=pointer]:
+                  - /url: /search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f6e385]:
+          - img "اوبتيمال اكس" [ref=f6e387]
+          - paragraph [ref=f6e388]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f6e389]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f6e390]: هدفك
+      - paragraph [ref=f6e393]:
+        - text: Copyright | 2026
+        - link "Optimal X" [ref=f6e394] [cursor=pointer]:
+          - /url: /
+  - text:     

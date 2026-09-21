@@ -1,0 +1,84 @@
+[    4705ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5190/node_modules/.vite/deps/react-dom_client.js?v=c58539c0:14335
+[    5122ms] [WARNING] [Twilight] Could not hydrate twilight context: no root match in router state @ http://localhost:5190/@vite/client:532
+[    5771ms] [ERROR] The result of getServerSnapshot should be cached to avoid an infinite loop @ http://localhost:5190/@vite/client:532
+[    5864ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <QueryClientProvider client={{}}>
+      <Matches>
+        <Transitioner>
+        <SafeFragment fallback={<Context>}>
+          <MatchesInner>
+            <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+              <MatchImpl routeId="__root__">
+                <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                  <RootComponent>
+                    <html lang="ar" dir="rtl" suppressHydrationWarning={true}>
+                      <head>
+                        <meta>
+                        <meta>
+                        <meta>
+                        <HeadContent>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset>
+                          <Asset tag="style" attrs={{id:"twilig...", ...}} nonce={undefined}>
+                            <style
++                             id="twilight-loading"
+-                             id={null}
+                              nonce={undefined}
+                              dangerouslySetInnerHTML={{
++                               __html: ".loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justi..."
+-                               __html: "salla-mini-checkout-modal,salla-mini-checkout-widget{visibility:hidden}.hydra..."
+                              }}
+-                             data-styles=""
+                            >
+                          ...
+                      ...
+ @ http://localhost:5190/@vite/client:532
+[    6232ms] [LOG] allowed_pages: [thank-you] @ :10
+[    6232ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    6232ms] [LOG] limit: 32 @ :12
+[    8184ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://api.salla.dev/store/v1/blog:0
+[   11787ms] [WARNING] The resource https://cdn.assets.salla.network/themes/customization/1888890798/1298199463/499745075.js?v=17898351681 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:5190/optimal-x/kitchen-sink:0

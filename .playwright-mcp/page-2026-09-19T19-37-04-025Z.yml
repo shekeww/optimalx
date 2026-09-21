@@ -1,0 +1,151 @@
+- generic [active] [ref=f77e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f77e2]:
+    - link "تخطي إلى المحتوى" [ref=f77e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f77e4]:
+      - generic [ref=f77e6]:
+        - list [ref=f77e7]:
+          - listitem [ref=f77e8]:
+            - generic [ref=f77e9]: منتجات أصلية 100%
+          - listitem [ref=f77e13]:
+            - generic [ref=f77e14]: دفع آمن ومضمون
+          - listitem [ref=f77e18]:
+            - generic [ref=f77e19]: شحن داخل المملكة
+        - button "تغيير الدولة والعملة" [ref=f77e24] [cursor=pointer]:
+          - generic [ref=f77e25]: المملكة العربية السعودية
+      - generic [ref=f77e28]:
+        - generic [ref=f77e29]:
+          - link "متجر تجريبي" [ref=f77e30] [cursor=pointer]:
+            - /url: /dev-ubq7yzb0tnbuirvv
+          - navigation "التنقل الرئيسي" [ref=f77e32]:
+            - list [ref=f77e33]:
+              - listitem [ref=f77e34]:
+                - link "المنتجات" [ref=f77e35] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/latest-products
+              - listitem [ref=f77e36]:
+                - link "المكملات" [ref=f77e37] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f77e38]:
+                - link "البروتين" [ref=f77e39] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f77e40]:
+                - link "الخطط الغذائية" [ref=f77e41] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+              - listitem [ref=f77e42]:
+                - link "عن اوبتيمال اكس" [ref=f77e43] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/about
+          - search "البحث في المتجر" [ref=f77e44]
+          - generic [ref=f77e46]:
+            - link "المفضلة" [ref=f77e47] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/account/wishlist
+              - generic [aria-hidden] [ref=f77e48]: 
+            - generic [ref=f77e50] [cursor=pointer]:
+              - link "٠":
+                - /url: https://demostore.salla.sa/dev-ubq7yzb0tnbuirvv/cart
+                - generic [aria-hidden] [ref=f77e53]: 
+        - text: 
+    - main [ref=f77e55]:
+      - generic [ref=f77e56]:
+        - generic [ref=f77e58]:
+          - navigation "Breadcrumb" [ref=f77e59]:
+            - list [ref=f77e60]:
+              - listitem [ref=f77e61]:
+                - link "الرئيسية" [ref=f77e62] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv
+              - listitem [ref=f77e66]:
+                - generic [ref=f77e67]: protein
+          - heading "نتائج البحث عن protein" [level=1] [ref=f77e70]
+        - generic [ref=f77e72]:
+          - generic [ref=f77e73]:
+            - heading "لم نجد نتائج لكلمة protein" [level=3] [ref=f77e77]
+            - paragraph [ref=f77e78]: جرب اسما آخر، أو الاسم بالإنجليزية مثل whey أو creatine، أو تحقق من الإملاء.
+            - link "اسأل قبل أن تشتري" [ref=f77e80] [cursor=pointer]:
+              - /url: /dev-ubq7yzb0tnbuirvv/services
+            - generic [ref=f77e82]:
+              - generic [ref=f77e83]:
+                - generic [ref=f77e84]: جرب البحث عن
+                - list [ref=f77e85]:
+                  - listitem [ref=f77e86]:
+                    - link "واي بروتين" [ref=f77e87] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%88%D8%A7%D9%8A%20%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+                  - listitem [ref=f77e89]:
+                    - link "كرياتين" [ref=f77e90] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%83%D8%B1%D9%8A%D8%A7%D8%AA%D9%8A%D9%86
+                  - listitem [ref=f77e92]:
+                    - link "بري وورك اوت" [ref=f77e93] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A8%D8%B1%D9%8A%20%D9%88%D9%88%D8%B1%D9%83%20%D8%A7%D9%88%D8%AA
+                  - listitem [ref=f77e95]:
+                    - link "فيتامين د3" [ref=f77e96] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%81%D9%8A%D8%AA%D8%A7%D9%85%D9%8A%D9%86%20%D8%AF3
+                  - listitem [ref=f77e98]:
+                    - link "كولاجين" [ref=f77e99] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86
+              - generic [ref=f77e101]:
+                - generic [ref=f77e102]: تصفح حسب الهدف
+                - list [ref=f77e103]:
+                  - listitem [ref=f77e104]:
+                    - link "الطاقة" [ref=f77e105] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%B7%D8%A7%D9%82%D8%A9
+                  - listitem [ref=f77e107]:
+                    - link "الصحة العامة" [ref=f77e108] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%B5%D8%AD%D8%A9%20%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9
+                  - listitem [ref=f77e110]:
+                    - link "الأداء" [ref=f77e111] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%A1
+                  - listitem [ref=f77e113]:
+                    - link "التعافي" [ref=f77e114] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%81%D9%8A
+                  - listitem [ref=f77e116]:
+                    - link "الشعر والبشرة" [ref=f77e117] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D9%88%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9
+                  - listitem [ref=f77e119]:
+                    - link "الوزن المثالي" [ref=f77e120] [cursor=pointer]:
+                      - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D9%88%D8%B2%D9%86%20%D8%A7%D9%84%D9%85%D8%AB%D8%A7%D9%84%D9%8A
+              - paragraph [ref=f77e122]: لم تجد ما تبحث عنه؟ اكتب لنا اسم المنتج ونخبرك إن كنا نوفره.
+          - heading "أحدث المنتجات" [level=2] [ref=f77e125]
+    - contentinfo [ref=f77e126]:
+      - generic [ref=f77e127]:
+        - navigation "روابط الصفحة" [ref=f77e133]:
+          - generic [ref=f77e134]:
+            - paragraph [ref=f77e135]: عن اوبتيمال اكس
+            - list [ref=f77e136]:
+              - listitem [ref=f77e137]:
+                - link "من نحن" [ref=f77e138] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/about
+          - generic [ref=f77e139]:
+            - paragraph [ref=f77e140]: خدمة العملاء
+            - list [ref=f77e141]:
+              - listitem [ref=f77e142]:
+                - link "تواصل معنا" [ref=f77e143] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/contact
+              - listitem [ref=f77e144]:
+                - link "الأسئلة الشائعة" [ref=f77e145] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/services
+          - generic [ref=f77e146]:
+            - paragraph [ref=f77e147]: المنتجات
+            - list [ref=f77e148]:
+              - listitem [ref=f77e149]:
+                - link "المكملات" [ref=f77e150] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f77e151]:
+                - link "البروتين" [ref=f77e152] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f77e153]:
+                - link "التغذية" [ref=f77e154] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f77e155]:
+                - link "الخطط الغذائية" [ref=f77e156] [cursor=pointer]:
+                  - /url: /dev-ubq7yzb0tnbuirvv/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f77e157]:
+          - img "اوبتيمال اكس" [ref=f77e159]
+          - paragraph [ref=f77e160]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f77e161]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f77e162]: هدفك
+      - paragraph [ref=f77e165]:
+        - text: الحقوق محفوظة | 2026
+        - link "متجر تجريبي" [ref=f77e166] [cursor=pointer]:
+          - /url: /dev-ubq7yzb0tnbuirvv
+  - text:     

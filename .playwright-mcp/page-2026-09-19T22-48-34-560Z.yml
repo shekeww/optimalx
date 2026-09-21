@@ -1,0 +1,350 @@
+- generic [active] [ref=f200e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f200e2]:
+    - link "تخطي إلى المحتوى" [ref=f200e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f200e4]:
+      - generic [ref=f200e5]:
+        - text: 
+        - generic [ref=f200e7]:
+          - button "فتح القائمة" [ref=f200e8] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f200e9]: 
+          - link "Optimal X" [ref=f200e10] [cursor=pointer]:
+            - /url: /optimal-x
+          - search "البحث في المتجر" [ref=f200e13]
+      - list [ref=f200e23]:
+        - listitem [ref=f200e24]:
+          - generic [ref=f200e25]: منتجات أصلية
+        - listitem [ref=f200e29]:
+          - generic [ref=f200e30]: دفع آمن
+        - listitem [ref=f200e34]:
+          - generic [ref=f200e35]: شحن داخل المملكة
+    - main [ref=f200e39]:
+      - generic [ref=f200e40]:
+        - generic [ref=f200e42]:
+          - navigation "Breadcrumb" [ref=f200e43]:
+            - list [ref=f200e44]:
+              - listitem [ref=f200e45]:
+                - link "الرئيسية" [ref=f200e46] [cursor=pointer]:
+                  - /url: /optimal-x
+              - listitem [ref=f200e50]:
+                - generic [ref=f200e51]: أحدث المنتجات
+          - generic [ref=f200e52]:
+            - heading "أحدث المنتجات" [level=1] [ref=f200e54]
+            - paragraph [ref=f200e56]: آخر ما أضفناه إلى المتجر، الأحدث أولا.
+        - generic [ref=f200e58]:
+          - combobox "ترتيب حسب" [ref=f200e63]:
+            - option "الأنسب" [selected]
+            - option "الاكثر مبيعاً"
+            - option "الاعلى تقييماً"
+            - option "السعر من الأقل"
+            - option "السعر من الأعلى"
+          - generic [ref=f200e65]:
+            - generic "قائمة المنتجات" [ref=f200e66]:
+              - generic [ref=f200e67]:
+                - article [ref=f200e68]:
+                  - generic [ref=f200e69]:
+                    - img "حزمة البداية - اوبتيمال اكس" [ref=f200e71]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e72] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e73]: 
+                  - generic [ref=f200e74]:
+                    - paragraph [ref=f200e75]
+                    - heading [level=3] [ref=f200e76]:
+                      - link "حزمة البداية - اوبتيمال اكس" [ref=f200e77] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/حزمة-البداية-اوبتيمال-اكس/p1141798217
+                    - paragraph [ref=f200e78]
+                    - generic [ref=f200e81]:
+                      - text: "509.00"
+                      - generic [ref=f200e82]: ر.س
+                - article [ref=f200e88]:
+                  - generic [ref=f200e89]:
+                    - img "شوفان سريع التحضير 1 كجم - ماي بروتين" [ref=f200e91]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e92] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e93]: 
+                  - generic [ref=f200e94]:
+                    - paragraph [ref=f200e95]
+                    - heading [level=3] [ref=f200e96]:
+                      - link "شوفان سريع التحضير 1 كجم - ماي بروتين" [ref=f200e97] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/شوفان-سريع-التحضير-1-كجم-ماي-بروتين/p1746003438
+                    - paragraph [ref=f200e98]
+                    - generic [ref=f200e101]:
+                      - text: "55.00"
+                      - generic [ref=f200e102]: ر.س
+                - article [ref=f200e108]:
+                  - generic [ref=f200e109]:
+                    - img "زبدة الفول السوداني الطبيعية 1 كجم - ماي بروتين" [ref=f200e111]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e112] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e113]: 
+                  - generic [ref=f200e114]:
+                    - paragraph [ref=f200e115]
+                    - heading [level=3] [ref=f200e116]:
+                      - link "زبدة الفول السوداني الطبيعية 1 كجم - ماي بروتين" [ref=f200e117] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/زبدة-الفول-السوداني-الطبيعية-1-كجم-ماي-بروتين/p547650018
+                    - paragraph [ref=f200e118]
+                    - generic [ref=f200e121]:
+                      - text: "65.00"
+                      - generic [ref=f200e122]: ر.س
+                - article [ref=f200e128]:
+                  - generic [ref=f200e129]:
+                    - img "بروتين تشيبس بنمط التورتيا علبة 8 - كويست" [ref=f200e131]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e132] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e133]: 
+                  - generic [ref=f200e134]:
+                    - paragraph [ref=f200e135]
+                    - heading [level=3] [ref=f200e136]:
+                      - link "بروتين تشيبس بنمط التورتيا علبة 8 - كويست" [ref=f200e137] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/بروتين-تشيبس-بنمط-التورتيا-علبة-8-كويست/p82983904
+                    - paragraph [ref=f200e138]
+                    - generic [ref=f200e141]:
+                      - text: "125.00"
+                      - generic [ref=f200e142]: ر.س
+                - article [ref=f200e148]:
+                  - generic [ref=f200e149]:
+                    - img "كارب كيلا بروتين بار علبة 12 - جرينيد" [ref=f200e151]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e152] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e153]: 
+                  - generic [ref=f200e154]:
+                    - paragraph [ref=f200e155]
+                    - heading [level=3] [ref=f200e156]:
+                      - link "كارب كيلا بروتين بار علبة 12 - جرينيد" [ref=f200e157] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/كارب-كيلا-بروتين-بار-علبة-12-جرينيد/p1497955814
+                    - paragraph [ref=f200e158]
+                    - generic [ref=f200e161]:
+                      - text: "175.00"
+                      - generic [ref=f200e162]: ر.س
+                - article [ref=f200e168]:
+                  - generic [ref=f200e169]:
+                    - img "شيكر اوبتيمال اكس V2 سعة 820 مل - بلندر بوتل" [ref=f200e171]
+                    - generic [ref=f200e173]:
+                      - text: توفير
+                      - generic [ref=f200e174]:
+                        - text: "30.00"
+                        - generic [ref=f200e175]: ر.س
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e176] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e177]: 
+                  - generic [ref=f200e178]:
+                    - paragraph [ref=f200e179]
+                    - heading [level=3] [ref=f200e180]:
+                      - link "شيكر اوبتيمال اكس V2 سعة 820 مل - بلندر بوتل" [ref=f200e181] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/شيكر-اوبتيمال-اكس-v2-سعة-820-مل-بلندر-بوتل/p1673105563
+                    - paragraph [ref=f200e182]
+                    - generic [ref=f200e184]:
+                      - generic [ref=f200e185]:
+                        - text: "29.00"
+                        - generic [ref=f200e186]: ر.س
+                      - generic [ref=f200e187]: بدلا من
+                      - generic [ref=f200e188]: 59.00 ر.س
+                - article [ref=f200e195]:
+                  - generic [ref=f200e196]:
+                    - img "كلوروفريش كلوروفيل سائل بالنعناع - نيتشرز واي" [ref=f200e198]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e199] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e200]: 
+                  - generic [ref=f200e201]:
+                    - paragraph [ref=f200e202]
+                    - heading [level=3] [ref=f200e203]:
+                      - link "كلوروفريش كلوروفيل سائل بالنعناع - نيتشرز واي" [ref=f200e204] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/كلوروفريش-كلوروفيل-سائل-بالنعناع-نيتشرز-واي/p299069850
+                    - paragraph [ref=f200e205]
+                    - generic [ref=f200e208]:
+                      - text: "65.00"
+                      - generic [ref=f200e209]: ر.س
+                - article [ref=f200e215]:
+                  - generic [ref=f200e216]:
+                    - img "نون سبورت أقراص إلكتروليت فوارة - نون هايدريشن" [ref=f200e218]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e219] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e220]: 
+                  - generic [ref=f200e221]:
+                    - paragraph [ref=f200e222]
+                    - heading [level=3] [ref=f200e223]:
+                      - link "نون سبورت أقراص إلكتروليت فوارة - نون هايدريشن" [ref=f200e224] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/نون-سبورت-أقراص-إلكتروليت-فوارة-نون-هايدريشن/p892168849
+                    - paragraph [ref=f200e225]
+                    - generic [ref=f200e228]:
+                      - text: "32.00"
+                      - generic [ref=f200e229]: ر.س
+                - article [ref=f200e235]:
+                  - generic [ref=f200e236]:
+                    - generic:
+                      - img "بروبيوتيك-10 25 مليار - ناو فودز"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e237] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e238]: 
+                  - generic [ref=f200e239]:
+                    - paragraph [ref=f200e240]
+                    - heading [level=3] [ref=f200e241]:
+                      - link "بروبيوتيك-10 25 مليار - ناو فودز" [ref=f200e242] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/بروبيوتيك-10-25-مليار-ناو-فودز/p159067287
+                    - paragraph [ref=f200e243]
+                    - generic [ref=f200e246]:
+                      - text: "75.00"
+                      - generic [ref=f200e247]: ر.س
+                - article [ref=f200e253]:
+                  - generic [ref=f200e254]:
+                    - img "بيوتين 10000 ميكروجرام كبسولات - ناو فودز" [ref=f200e256]
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e257] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e258]: 
+                  - generic [ref=f200e259]:
+                    - paragraph [ref=f200e260]
+                    - heading [level=3] [ref=f200e261]:
+                      - link "بيوتين 10000 ميكروجرام كبسولات - ناو فودز" [ref=f200e262] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/بيوتين-10000-ميكروجرام-كبسولات-ناو-فودز/p1175429259
+                    - paragraph [ref=f200e263]
+                    - generic [ref=f200e266]:
+                      - text: "69.00"
+                      - generic [ref=f200e267]: ر.س
+                - article [ref=f200e273]:
+                  - generic [ref=f200e274]:
+                    - generic:
+                      - img "كولاجين ببتيدات مع فيتامين ج وبيوتين أقراص - نيوسيل"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e275] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e276]: 
+                  - generic [ref=f200e277]:
+                    - paragraph [ref=f200e278]
+                    - heading [level=3] [ref=f200e279]:
+                      - link "كولاجين ببتيدات مع فيتامين ج وبيوتين أقراص - نيوسيل" [ref=f200e280] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/كولاجين-ببتيدات-مع-فيتامين-ج-وبيوتين-أقراص-نيوسيل/p1216299912
+                    - paragraph [ref=f200e281]
+                    - generic [ref=f200e284]:
+                      - text: "105.00"
+                      - generic [ref=f200e285]: ر.س
+                - article [ref=f200e291]:
+                  - generic [ref=f200e292]:
+                    - generic:
+                      - img "كولاجين ببتيدات من أبقار مرعية - سبورتس ريسيرش"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e293] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e294]: 
+                  - generic [ref=f200e295]:
+                    - paragraph [ref=f200e296]
+                    - heading [level=3] [ref=f200e297]:
+                      - link "كولاجين ببتيدات من أبقار مرعية - سبورتس ريسيرش" [ref=f200e298] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/كولاجين-ببتيدات-من-أبقار-مرعية-سبورتس-ريسيرش/p750060942
+                    - paragraph [ref=f200e299]
+                    - generic [ref=f200e302]:
+                      - text: "179.00"
+                      - generic [ref=f200e303]: ر.س
+                - article [ref=f200e309]:
+                  - generic [ref=f200e310]:
+                    - generic:
+                      - img "سنتروم للرجال ملتي فيتامين - سنتروم"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e311] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e312]: 
+                  - generic [ref=f200e313]:
+                    - paragraph [ref=f200e314]
+                    - heading [level=3] [ref=f200e315]:
+                      - link "سنتروم للرجال ملتي فيتامين - سنتروم" [ref=f200e316] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/سنتروم-للرجال-ملتي-فيتامين-سنتروم/p1390995085
+                    - paragraph [ref=f200e317]
+                    - generic [ref=f200e320]:
+                      - text: "56.00"
+                      - generic [ref=f200e321]: ر.س
+                - article [ref=f200e327]:
+                  - generic [ref=f200e328]:
+                    - generic:
+                      - img "فيتامين د3 مع ك2 - سبورتس ريسيرش"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e329] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e330]: 
+                  - generic [ref=f200e331]:
+                    - paragraph [ref=f200e332]
+                    - heading [level=3] [ref=f200e333]:
+                      - link "فيتامين د3 مع ك2 - سبورتس ريسيرش" [ref=f200e334] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/فيتامين-د3-مع-ك2-سبورتس-ريسيرش/p1001367986
+                    - paragraph [ref=f200e335]
+                    - generic [ref=f200e338]:
+                      - text: "105.00"
+                      - generic [ref=f200e339]: ر.س
+                - article [ref=f200e345]:
+                  - generic [ref=f200e346]:
+                    - generic:
+                      - img "زد ام ايه ZMA - ناو فودز"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e347] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e348]: 
+                  - generic [ref=f200e349]:
+                    - paragraph [ref=f200e350]
+                    - heading [level=3] [ref=f200e351]:
+                      - link "زد ام ايه ZMA - ناو فودز" [ref=f200e352] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/زد-ام-ايه-zma-ناو-فودز/p535063472
+                    - paragraph [ref=f200e353]
+                    - generic [ref=f200e356]:
+                      - text: "115.00"
+                      - generic [ref=f200e357]: ر.س
+                - article [ref=f200e363]:
+                  - generic [ref=f200e364]:
+                    - generic:
+                      - img "فيتامين د3 5000 وحدة دولية - ناو فودز"
+                    - button "إضافة إلى المفضلة أو إزالتها" [ref=f200e365] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f200e366]: 
+                  - generic [ref=f200e367]:
+                    - paragraph [ref=f200e368]
+                    - heading [level=3] [ref=f200e369]:
+                      - link "فيتامين د3 5000 وحدة دولية - ناو فودز" [ref=f200e370] [cursor=pointer]:
+                        - /url: https://optimalx.com.sa/فيتامين-د3-5000-وحدة-دولية-ناو-فودز/p1882336694
+                    - paragraph [ref=f200e371]
+                    - generic [ref=f200e374]:
+                      - text: "75.00"
+                      - generic [ref=f200e375]: ر.س
+              - button "عرض المزيد" [ref=f200e382] [cursor=pointer]
+            - paragraph [ref=f200e383]: عرض 16 منتجا
+    - contentinfo [ref=f200e384]:
+      - generic [ref=f200e385]:
+        - navigation "روابط الصفحة" [ref=f200e391]:
+          - generic [ref=f200e392]:
+            - button "عن اوبتيمال اكس" [ref=f200e393] [cursor=pointer]
+            - list [ref=f200e397]:
+              - listitem [ref=f200e398]:
+                - link "من نحن" [ref=f200e399] [cursor=pointer]:
+                  - /url: /optimal-x/about
+          - generic [ref=f200e400]:
+            - button "خدمة العملاء" [ref=f200e401] [cursor=pointer]
+            - list [ref=f200e405]:
+              - listitem [ref=f200e406]:
+                - link "تواصل معنا" [ref=f200e407] [cursor=pointer]:
+                  - /url: /optimal-x/contact
+              - listitem [ref=f200e408]:
+                - link "الأسئلة الشائعة" [ref=f200e409] [cursor=pointer]:
+                  - /url: /optimal-x/services
+          - generic [ref=f200e410]:
+            - button "المنتجات" [ref=f200e411] [cursor=pointer]
+            - list [ref=f200e415]:
+              - listitem [ref=f200e416]:
+                - link "المكملات" [ref=f200e417] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA
+              - listitem [ref=f200e418]:
+                - link "البروتين" [ref=f200e419] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+              - listitem [ref=f200e420]:
+                - link "التغذية" [ref=f200e421] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9
+              - listitem [ref=f200e422]:
+                - link "الخطط الغذائية" [ref=f200e423] [cursor=pointer]:
+                  - /url: /optimal-x/search?q=%D8%A7%D9%84%D8%AE%D8%B7%D8%B7%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A%D8%A9
+        - generic [ref=f200e424]:
+          - img "اوبتيمال اكس" [ref=f200e426]
+          - paragraph [ref=f200e427]:
+            - text: مكملات رياضية، تغذية وخطط غذائية
+            - generic [ref=f200e428]:
+              - text: تساعدك على الوصول إلى
+              - emphasis [ref=f200e429]: هدفك
+      - paragraph [ref=f200e432]:
+        - text: الحقوق محفوظة | 2026
+        - link "Optimal X" [ref=f200e433] [cursor=pointer]:
+          - /url: /optimal-x
+  - navigation "تنقل سريع" [ref=f200e435]:
+    - list [ref=f200e436]:
+      - listitem [ref=f200e437]:
+        - link "الرئيسية" [ref=f200e438] [cursor=pointer]:
+          - /url: /optimal-x
+          - generic [aria-hidden] [ref=f200e439]: 
+      - listitem [ref=f200e441]:
+        - button "التصنيفات" [ref=f200e442] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f200e443]: 
+      - listitem [ref=f200e445]:
+        - link "البحث" [ref=f200e446] [cursor=pointer]:
+          - /url: /optimal-x/search
+          - generic [aria-hidden] [ref=f200e447]: 
+      - listitem [ref=f200e449]:
+        - link "السلة" [ref=f200e450] [cursor=pointer]:
+          - /url: /optimal-x/cart
+          - generic [aria-hidden] [ref=f200e452]: 
+      - listitem [ref=f200e454]:
+        - link "حسابي" [ref=f200e455] [cursor=pointer]:
+          - /url: /optimal-x/account/profile
+          - generic [aria-hidden] [ref=f200e456]: 

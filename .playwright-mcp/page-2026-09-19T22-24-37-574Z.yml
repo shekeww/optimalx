@@ -1,0 +1,176 @@
+- generic [ref=f198e3]:
+  - generic [ref=f198e10]:
+    - heading "مكملات رياضية، تغذية وخطط مرتبة حسب هدفك." [level=1] [ref=f198e11]:
+      - generic [ref=f198e12]: مكملات رياضية، تغذية
+      - generic [ref=f198e13]: وخطط مرتبة حسب هدفك.
+    - paragraph [ref=f198e14]: Performance Nutrition & Training
+    - generic [ref=f198e15]:
+      - link "تسوق حسب هدفك" [ref=f198e16] [cursor=pointer]:
+        - /url: "#ox-goals"
+      - link "اسأل قبل أن تشتري" [ref=f198e19] [cursor=pointer]:
+        - /url: /services
+  - region "لماذا اوبتيمال اكس" [ref=f198e22]:
+    - list [ref=f198e24]:
+      - listitem [ref=f198e25]:
+        - button "منتجات أصلية صلاحية واضحة على كل منتج" [ref=f198e26] [cursor=pointer]:
+          - generic [ref=f198e29]:
+            - generic [ref=f198e30]: منتجات أصلية
+            - generic [ref=f198e31]: صلاحية واضحة على كل منتج
+      - listitem [ref=f198e32]:
+        - button "شحن من المدينة المنورة إلى كل مدينة في السعودية" [ref=f198e33] [cursor=pointer]:
+          - generic [ref=f198e36]:
+            - generic [ref=f198e37]: شحن من المدينة المنورة
+            - generic [ref=f198e38]: إلى كل مدينة في السعودية
+      - listitem [ref=f198e39]:
+        - button "دفع آمن طرق الدفع المتاحة تظهر عند إتمام الطلب" [ref=f198e40] [cursor=pointer]:
+          - generic [ref=f198e43]:
+            - generic [ref=f198e44]: دفع آمن
+            - generic [ref=f198e45]: طرق الدفع المتاحة تظهر عند إتمام الطلب
+      - listitem [ref=f198e46]:
+        - button "مساعدة في الاختيار رد مجاني" [ref=f198e47] [cursor=pointer]:
+          - generic [ref=f198e50]:
+            - generic [ref=f198e51]: مساعدة في الاختيار
+            - generic [ref=f198e52]: رد مجاني
+  - generic [ref=f198e55]:
+    - generic [ref=f198e56]:
+      - heading "تصفح حسب النوع" [level=2] [ref=f198e57]
+      - paragraph [ref=f198e58]: بروتين وكرياتين وفيتامينات وغيرها، مرتبة كما تبحث عنها.
+    - list [ref=f198e59]:
+      - listitem [ref=f198e60]:
+        - link "بروتين" [ref=f198e61] [cursor=pointer]:
+          - /url: /protein/c1
+      - listitem [ref=f198e65]:
+        - link "كرياتين" [ref=f198e66] [cursor=pointer]:
+          - /url: /creatine/c2
+      - listitem [ref=f198e70]:
+        - link "ما قبل التمرين" [ref=f198e71] [cursor=pointer]:
+          - /url: /pre-workout/c3
+      - listitem [ref=f198e75]:
+        - link "أحماض أمينية" [ref=f198e76] [cursor=pointer]:
+          - /url: /amino-acids/c4
+      - listitem [ref=f198e80]:
+        - link "أوميغا 3" [ref=f198e81] [cursor=pointer]:
+          - /url: /omega-3/c5
+      - listitem [ref=f198e85]:
+        - link "فيتامينات ومعادن" [ref=f198e86] [cursor=pointer]:
+          - /url: /vitamins-minerals/c6
+      - listitem [ref=f198e90]:
+        - link "كولاجين وجمال" [ref=f198e91] [cursor=pointer]:
+          - /url: /collagen-beauty/c7
+      - listitem [ref=f198e95]:
+        - link "صحة يومية" [ref=f198e96] [cursor=pointer]:
+          - /url: /daily-health/c8
+  - generic [ref=f198e102]:
+    - generic [ref=f198e103]:
+      - heading "تسوق حسب هدفك" [level=2] [ref=f198e104]
+      - paragraph [ref=f198e105]: ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط.
+    - list [ref=f198e106]:
+      - listitem [ref=f198e107]:
+        - link "مكملات الطاقة ما قبل التمرين، أحماض أمينية تسوق الآن" [ref=f198e108] [cursor=pointer]:
+          - /url: /goal-energy/c22
+          - generic [ref=f198e109]:
+            - generic [ref=f198e112]: مكملات الطاقة
+            - generic [ref=f198e113]: ما قبل التمرين، أحماض أمينية
+            - generic [ref=f198e114]: تسوق الآن
+      - listitem [ref=f198e116]:
+        - link "مكملات الصحة العامة ملتي فيتامين، أوميغا 3، فيتامين د تسوق الآن" [ref=f198e117] [cursor=pointer]:
+          - /url: /goal-general-health/c24
+          - generic [ref=f198e118]:
+            - generic [ref=f198e121]: مكملات الصحة العامة
+            - generic [ref=f198e122]: ملتي فيتامين، أوميغا 3، فيتامين د
+            - generic [ref=f198e123]: تسوق الآن
+      - listitem [ref=f198e125]:
+        - link "مكملات الأداء بروتين، كرياتين، ما قبل التمرين تسوق الآن" [ref=f198e126] [cursor=pointer]:
+          - /url: /goal-performance/c20
+          - generic [ref=f198e127]:
+            - generic [ref=f198e130]: مكملات الأداء
+            - generic [ref=f198e131]: بروتين، كرياتين، ما قبل التمرين
+            - generic [ref=f198e132]: تسوق الآن
+      - listitem [ref=f198e134]:
+        - link "مكملات التعافي بروتين، كازين، مغنيسيوم تسوق الآن" [ref=f198e135] [cursor=pointer]:
+          - /url: /goal-recovery/c21
+          - generic [ref=f198e136]:
+            - generic [ref=f198e139]: مكملات التعافي
+            - generic [ref=f198e140]: بروتين، كازين، مغنيسيوم
+            - generic [ref=f198e141]: تسوق الآن
+      - listitem [ref=f198e143]:
+        - link "مكملات الشعر والبشرة كولاجين، بيوتين، زنك تسوق الآن" [ref=f198e144] [cursor=pointer]:
+          - /url: /goal-hair-skin/c25
+          - generic [ref=f198e145]:
+            - generic [ref=f198e148]: مكملات الشعر والبشرة
+            - generic [ref=f198e149]: كولاجين، بيوتين، زنك
+            - generic [ref=f198e150]: تسوق الآن
+      - listitem [ref=f198e152]:
+        - link "مكملات الوزن المثالي ماس جينر، بروتين، سناكات تسوق الآن" [ref=f198e153] [cursor=pointer]:
+          - /url: /goal-ideal-weight/c23
+          - generic [ref=f198e154]:
+            - generic [ref=f198e157]: مكملات الوزن المثالي
+            - generic [ref=f198e158]: ماس جينر، بروتين، سناكات
+            - generic [ref=f198e159]: تسوق الآن
+  - generic [ref=f198e163]:
+    - generic [ref=f198e164]:
+      - heading "برامج وخطط التغذية" [level=2] [ref=f198e165]
+      - paragraph [ref=f198e166]: "الجانب الاستشاري من المتجر: خطة تغذية، أو خطة تمرين، أو استشارة مرئية قبل الشراء."
+      - link "عرض الكل" [ref=f198e167] [cursor=pointer]:
+        - /url: /services
+    - generic [ref=f198e169]:
+      - link "خطط التغذية والمكملات من أين تبدأ، وما الذي لا تحتاج إليه. اكتشف الخطة" [ref=f198e170] [cursor=pointer]:
+        - /url: /services#nutrition-plans
+        - generic [ref=f198e171]:
+          - generic [ref=f198e174]: خطط التغذية والمكملات
+          - generic [ref=f198e175]: من أين تبدأ، وما الذي لا تحتاج إليه.
+          - generic [ref=f198e176]: اكتشف الخطة
+      - link "خطط التمرين والتدريب جلسة شخصية في المدينة المنورة، أو عبر مكالمة مرئية. اكتشف الخطة" [ref=f198e178] [cursor=pointer]:
+        - /url: /p103621577
+        - generic [ref=f198e179]:
+          - generic [ref=f198e182]: خطط التمرين والتدريب
+          - generic [ref=f198e183]: جلسة شخصية في المدينة المنورة، أو عبر مكالمة مرئية.
+          - generic [ref=f198e184]: اكتشف الخطة
+      - link "الاستشارة المرئية 20 دقيقة تسأل فيها قبل أن تشتري. اكتشف الخطة" [ref=f198e186] [cursor=pointer]:
+        - /url: /p2000960449
+        - generic [ref=f198e187]:
+          - generic [ref=f198e190]: الاستشارة المرئية
+          - generic [ref=f198e191]: 20 دقيقة تسأل فيها قبل أن تشتري.
+          - generic [ref=f198e192]: اكتشف الخطة
+    - paragraph [ref=f198e195]: الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.
+  - 'region "أسبوع البروتين: أفضل العلامات التجارية" [ref=f198e197]':
+    - 'link "أسبوع البروتين: أفضل العلامات التجارية تسوق الآن" [ref=f198e199] [cursor=pointer]':
+      - /url: /offers
+      - generic [ref=f198e200]:
+        - generic [ref=f198e201]: "أسبوع البروتين: أفضل العلامات التجارية"
+        - generic [ref=f198e202]: تسوق الآن
+  - generic [ref=f198e206]:
+    - generic [ref=f198e207]:
+      - heading "أسئلة شائعة" [level=2] [ref=f198e209]
+      - generic [ref=f198e211]:
+        - generic [ref=f198e212]:
+          - heading [level=3] [ref=f198e213]:
+            - button "لماذا قد تجد سعرا أقل في مكان آخر؟" [ref=f198e214] [cursor=pointer]
+          - region "لماذا قد تجد سعرا أقل في مكان آخر؟":
+            - paragraph [ref=f198e217]: السعر المعروض على الصفحة هو السعر النهائي الذي تدفعه. ومعه نكتب عدد الحصص وحجم الحصة، فاقسم السعر على عدد الحصص لتعرف تكلفة الحصة الواحدة، فهي المقارنة الصحيحة بين عبوتين. العبوات تختلف في وزن السكوب وفي عدد الحصص، فالعبوة الأقل سعرا قد تكون الأعلى تكلفة في الحصة. وإن كان الفرق على المنتج نفسه، فقارن الحجم والنكهة وتاريخ الصلاحية قبل أن تقارن الرقم وحده.
+        - generic [ref=f198e218]:
+          - heading [level=3] [ref=f198e219]:
+            - button "ما أهم مكملات الجيم للمبتدئ؟" [ref=f198e220] [cursor=pointer]
+          - region "ما أهم مكملات الجيم للمبتدئ؟":
+            - paragraph [ref=f198e223]: واي بروتين إذا كان طعامك لا يغطي احتياجك من البروتين، وكرياتين مونوهيدرات بجرعة يومية ثابتة. هذان يكفيان في الأشهر الأولى. ما قبل التمرين والأحماض الأمينية إضافات لاحقة، وليست شرطا للبداية. الأهم من كل مكمل هو النوم والطعام والانتظام في التمرين.
+        - generic [ref=f198e224]:
+          - heading [level=3] [ref=f198e225]:
+            - button "كم سكوب بروتين في اليوم؟" [ref=f198e226] [cursor=pointer]
+          - region "كم سكوب بروتين في اليوم؟":
+            - paragraph [ref=f198e229]: يعطي السكوب الواحد عادة 20 إلى 25 غراما من البروتين، ويكفي معظم المتدربين سكوب إلى سكوبين يوميا لتكملة ما يأتي من الطعام. الأهم إجمالي البروتين خلال اليوم من الطعام والمكمل معا. الملصق يحدد وزن السكوب لكل منتج، ونعرضه في صفحة المنتج.
+        - generic [ref=f198e230]:
+          - heading [level=3] [ref=f198e231]:
+            - 'button "متى آخذ الكرياتين: قبل التمرين أم بعده؟" [ref=f198e232] [cursor=pointer]'
+          - 'region "متى آخذ الكرياتين: قبل التمرين أم بعده؟"':
+            - paragraph [ref=f198e235]: لا يوجد فرق حاسم بين الوقتين. الأهم هو الانتظام على جرعة يومية ثابتة، في أيام التمرين وأيام الراحة على حد سواء. من يفضل تحديد وقت يأخذه بعد التمرين مع وجبة تحتوي على كربوهيدرات. اقرأ دليل الكرياتين الكامل إن كنت تبدأ لأول مرة.
+        - generic [ref=f198e236]:
+          - heading [level=3] [ref=f198e237]:
+            - button "هل البروتين باودر مضر؟" [ref=f198e238] [cursor=pointer]
+          - region "هل البروتين باودر مضر؟":
+            - paragraph [ref=f198e241]: مسحوق البروتين مكمل غذائي مصدره الحليب أو النبات، ويستخدمه الأشخاص الأصحاء لتكملة احتياج البروتين اليومي ضمن طعام متوازن. لا يغني عن الوجبات ولا يعوض نقص النوم. من لديه حالة صحية يستشير مختصا قبل استخدام أي مكمل، ونحن لا نجيب عن هذه الأسئلة كتابة.
+    - generic [ref=f198e244]:
+      - heading "تصفح المزيد من المنتجات" [level=2] [ref=f198e245]
+      - link "عرض الكل" [ref=f198e246] [cursor=pointer]:
+        - /url: /latest-products
+  - link "راسلنا على واتساب" [ref=f198e248] [cursor=pointer]:
+    - /url: https://wa.me/966501234567

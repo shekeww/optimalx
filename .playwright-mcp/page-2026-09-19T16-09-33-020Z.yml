@@ -1,0 +1,258 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - link "Open-menu" [ref=e13] [cursor=pointer]:
+          - /url: "#mobile-menu"
+          - generic [ref=e14]: 
+        - link [ref=e15] [cursor=pointer]:
+          - /url: https://optimalx.com.sa
+          - img "Optimal X logo" [ref=e16]
+          - 'heading "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية" [level=1] [ref=e17]'
+      - generic [ref=e25]: 
+  - main [ref=e28]:
+    - generic [ref=e35]:
+      - heading "ما هدفك اليوم؟" [level=2] [ref=e36]
+      - paragraph [ref=e37]: متجر مكملات غذائية ورياضية في المدينة المنورة، يختار لك منتجات أصلية ويشرح لك متى تحتاجها ومتى لا.
+      - generic [ref=e38]:
+        - link "تسوق حسب هدفك" [ref=e39] [cursor=pointer]:
+          - /url: "#ox-goals"
+        - link "اسأل قبل أن تشتري" [ref=e40] [cursor=pointer]:
+          - /url: "#ox-services"
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - heading "تسوق حسب هدفك" [level=2] [ref=e44]
+        - paragraph [ref=e45]: ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط.
+      - list [ref=e46]:
+        - listitem [ref=e47]:
+          - link "الطاقة طاقة وتركيز قبل الحصة" [ref=e48] [cursor=pointer]:
+            - /url: /search?q=%D8%A7%D9%85%D9%8A%D9%86%D9%88
+            - generic [ref=e51]:
+              - generic [ref=e52]: الطاقة
+              - generic [ref=e53]: طاقة وتركيز قبل الحصة
+        - listitem [ref=e54]:
+          - link "الصحة العامة فيتامينات يومية بجرعة معقولة" [ref=e55] [cursor=pointer]:
+            - /url: /search?q=%D9%81%D9%8A%D8%AA%D8%A7%D9%85%D9%8A%D9%86
+            - generic [ref=e58]:
+              - generic [ref=e59]: الصحة العامة
+              - generic [ref=e60]: فيتامينات يومية بجرعة معقولة
+        - listitem [ref=e61]:
+          - link "الأداء بروتين يومي بعد التمرين" [ref=e62] [cursor=pointer]:
+            - /url: /search?q=%D8%A8%D8%B1%D9%88%D8%AA%D9%8A%D9%86
+            - generic [ref=e65]:
+              - generic [ref=e66]: الأداء
+              - generic [ref=e67]: بروتين يومي بعد التمرين
+        - listitem [ref=e68]:
+          - link "التعافي بروتين سريع بعد التمرين" [ref=e69] [cursor=pointer]:
+            - /url: /search?q=%D9%88%D8%A7%D9%8A
+            - generic [ref=e72]:
+              - generic [ref=e73]: التعافي
+              - generic [ref=e74]: بروتين سريع بعد التمرين
+        - listitem [ref=e75]:
+          - link "الشعر والبشرة كولاجين يومي في المشروب" [ref=e76] [cursor=pointer]:
+            - /url: /search?q=%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86
+            - generic [ref=e79]:
+              - generic [ref=e80]: الشعر والبشرة
+              - generic [ref=e81]: كولاجين يومي في المشروب
+        - listitem [ref=e82]:
+          - link "الوزن المثالي سعرات وبروتين في حصة واحدة" [ref=e83] [cursor=pointer]:
+            - /url: /search?q=%D8%AC%D9%8A%D9%86%D8%B1
+            - generic [ref=e86]:
+              - generic [ref=e87]: الوزن المثالي
+              - generic [ref=e88]: سعرات وبروتين في حصة واحدة
+    - generic [ref=e92]:
+      - link " بروتين وواي" [ref=e94] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=بروتين
+        - generic [ref=e95]: 
+        - heading "بروتين وواي" [level=2] [ref=e96]
+      - link " كرياتين" [ref=e98] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=كرياتين
+        - generic [ref=e99]: 
+        - heading "كرياتين" [level=2] [ref=e100]
+      - link " فيتامينات ومعادن" [ref=e102] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=فيتامين
+        - generic [ref=e103]: 
+        - heading "فيتامينات ومعادن" [level=2] [ref=e104]
+      - link " اوميغا 3" [ref=e106] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=اوميغا
+        - generic [ref=e107]: 
+        - heading "اوميغا 3" [level=2] [ref=e108]
+      - link " كولاجين وجمال" [ref=e110] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=كولاجين
+        - generic [ref=e111]: 
+        - heading "كولاجين وجمال" [level=2] [ref=e112]
+      - link " أحماض أمينية" [ref=e114] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=امينو
+        - generic [ref=e115]: 
+        - heading "أحماض أمينية" [level=2] [ref=e116]
+    - generic [ref=e117]:
+      - generic [ref=e118]:
+        - generic [ref=e119]:
+          - generic: 
+          - heading "منتجات أصلية" [level=2]
+          - paragraph: كل منتج يحمل عدد حصصه وحجم الحصة وتاريخ صلاحيته
+        - generic [ref=e120]:
+          - generic: 
+          - heading "شحن من المدينة المنورة" [level=2]
+          - paragraph: إلى كل مدينة في السعودية، أو استلم من الفرع
+        - generic [ref=e121]:
+          - heading "دفع آمن" [level=2]
+          - paragraph: طرق الدفع المتاحة تظهر عند إتمام الطلب
+        - generic [ref=e122]:
+          - heading "مساعدة في الاختيار" [level=2]
+          - paragraph: لا نشخص ولا نعد بنتيجة، نساعدك على اختيار مكمل يناسب هدفك
+      - button "لماذا اوبتيمال اكس" [ref=e124] [cursor=pointer]:
+        - text: لماذا اوبتيمال اكس
+        - generic [aria-hidden] [ref=e125]: 
+    - generic [ref=e127]:
+      - heading "أحدث المنتجات" [level=2] [ref=e129]
+      - link "عرض الكل " [ref=e130] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/latest-products
+        - text: عرض الكل
+        - generic [ref=e131]: 
+    - generic [ref=e133]:
+      - link "بروتين وواي" [ref=e134] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=بروتين
+        - article [ref=e135]:
+          - heading "بروتين وواي" [level=3] [ref=e136]
+          - paragraph [ref=e137]: واي وكازين ونباتي
+      - link "كرياتين" [ref=e138] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=كرياتين
+        - article [ref=e139]:
+          - heading "كرياتين" [level=3] [ref=e140]
+          - paragraph [ref=e141]: مونوهيدرات بجرعة واضحة
+      - link "فيتامينات ومعادن" [ref=e142] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=فيتامين
+        - article [ref=e143]:
+          - heading "فيتامينات ومعادن" [level=3] [ref=e144]
+          - paragraph [ref=e145]: للروتين اليومي
+      - link "كولاجين وجمال" [ref=e146] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=كولاجين
+        - article [ref=e147]:
+          - heading "كولاجين وجمال" [level=3] [ref=e148]
+          - paragraph [ref=e149]: للشعر والبشرة والأظافر
+      - link "سناكس وبارات" [ref=e150] [cursor=pointer]:
+        - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=بار
+        - article [ref=e151]:
+          - heading "سناكس وبارات" [level=3] [ref=e152]
+          - paragraph [ref=e153]: بروتين في وجبة خفيفة
+    - generic [ref=e156]:
+      - generic [ref=e157]:
+        - heading "اسأل قبل أن تشتري" [level=2] [ref=e158]
+        - paragraph [ref=e159]: سؤال مكتوب مجاني، أو استشارة مرئية، أو زيارة للفرع في المدينة المنورة.
+      - list [ref=e160]:
+        - listitem [ref=e161]:
+          - generic [ref=e162]:
+            - heading "سؤال مكتوب" [level=3] [ref=e165]
+            - generic [ref=e166]: مجاني
+          - paragraph [ref=e167]: من كل مدن السعودية.
+          - paragraph [ref=e168]: اكتب سؤالك عن اختيار منتج أو طريقة استخدامه، ويرد عليك فريق المتجر كتابة على بريدك. بلا موعد، ومن كل مدن السعودية.
+          - link "أرسل سؤالك مجانا" [ref=e169] [cursor=pointer]:
+            - /url: /%D8%B3%D8%A4%D8%A7%D9%84-%D9%85%D9%83%D8%AA%D9%88%D8%A8-%D9%85%D8%AC%D8%A7%D9%86%D9%8A%D8%8C-%D8%B1%D8%AF-%D8%AE%D9%84%D8%A7%D9%84-24-%D8%B3%D8%A7%D8%B9%D8%A9-%D8%B9%D9%85%D9%84-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p487045117
+        - listitem [ref=e170]:
+          - heading "استشارة مرئية 20 دقيقة" [level=3] [ref=e174]
+          - paragraph [ref=e175]: مواعيد محدودة كل يوم. عبر Google Meet أو واتساب.
+          - paragraph [ref=e176]: مكالمة مرئية مع فريق المتجر نراجع فيها هدفك وجدول تمرينك وميزانيتك، وتخرج منها بقائمة مكتوبة بترتيب الأولوية.
+          - link "احجز موعدا" [ref=e177] [cursor=pointer]:
+            - /url: /%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D9%85%D8%B1%D8%A6%D9%8A%D8%A9-20-%D8%AF%D9%82%D9%8A%D9%82%D8%A9-%D9%84%D8%A7%D8%AE%D8%AA%D9%8A%D8%A7%D8%B1-%D8%A7%D9%84%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p2000960449
+        - listitem [ref=e178]:
+          - generic [ref=e179]:
+            - heading "زيارة الفرع" [level=3] [ref=e182]
+            - generic [ref=e183]: مجاني
+          - paragraph [ref=e184]: الخالدية، المدينة المنورة. الحجز اختياري.
+          - paragraph [ref=e185]: تعال إلى فرع الخالدية في المدينة المنورة، قارن الأحجام والنكهات، واسأل فريق الفرع، أو استلم طلبك الإلكتروني. الحجز اختياري ويضمن أن يكون أحدنا متفرغا لك.
+          - link "احجز زيارة أو تعال مباشرة" [ref=e186] [cursor=pointer]:
+            - /url: /%D8%B2%D9%8A%D8%A7%D8%B1%D8%A9-%D9%81%D8%B1%D8%B9-%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9-%D8%A7%D9%84%D9%85%D9%86%D9%88%D8%B1%D8%A9-%D8%AD%D8%AC%D8%B2-%D9%85%D8%AC%D8%A7%D9%86%D9%8A-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p1051830221
+      - paragraph [ref=e187]: الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.
+      - generic [ref=e188]:
+        - generic [ref=e189]:
+          - heading "ما الذي نساعدك فيه" [level=3] [ref=e190]
+          - list [ref=e191]:
+            - listitem [ref=e192]: اختيار المنتج المناسب لهدفك وميزانيتك
+            - listitem [ref=e193]: الفرق بين منتجين أو نوعين
+            - listitem [ref=e194]: طريقة الاستخدام والجرعة المطبوعة على الملصق
+            - listitem [ref=e195]: التوقيت مع التمرين ومع الوجبات
+            - listitem [ref=e196]: قراءة جدول الحقائق الغذائية والمكونات
+            - listitem [ref=e197]: الحفظ والصلاحية
+            - listitem [ref=e198]: الطلب والشحن والاستلام من الفرع
+          - paragraph [ref=e199]: للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.
+        - generic [ref=e200]:
+          - heading "كيف تبدأ" [level=3] [ref=e201]
+          - list [ref=e202]:
+            - listitem [ref=e203]:
+              - generic [ref=e204]: اختر القناة
+              - generic [ref=e205]: مكتوب، أو مرئي، أو في الفرع. الكتابة أسرع لمعظم الأسئلة.
+            - listitem [ref=e206]:
+              - generic [ref=e207]: أخبرنا عن هدفك
+              - generic [ref=e208]: "نموذج قصير: هدفك، وتمرينك، وما تستخدمه الآن، وسؤالك. لا نسأل عن أي شيء طبي."
+            - listitem [ref=e209]:
+              - generic [ref=e210]: يصلك الرد أو التأكيد
+              - generic [ref=e211]: على بريدك. وفي المكالمة تصلك القائمة المكتوبة بعدها.
+    - generic [ref=e215]:
+      - heading "مختارات فريق اوبتيمال اكس" [level=3] [ref=e216]
+      - paragraph [ref=e217]: نختار ونشرح قبل أن نبيع. كل منتج يحمل عدد حصصه وحجم الحصة وتاريخ صلاحيته، وجدول الحقائق الغذائية فيه عمود يقول ماذا يعني كل رقم.
+    - link [ref=e223] [cursor=pointer]:
+      - /url: https://optimalx.com.sa/redirect/manual/https://optimalx.com.sa/search?q=اوبتيموم
+      - img "Optimal X image-slider-0" [ref=e224]
+    - generic [ref=e227]:
+      - generic [ref=e228]:
+        - heading "فرعنا في المدينة المنورة" [level=2] [ref=e229]
+        - paragraph [ref=e230]: الخالدية، شارع جبار بن صخر. استلم طلبك أو اسأل فريق الفرع.
+      - generic [ref=e231]:
+        - generic [ref=e232]:
+          - paragraph [ref=e233]: حي الخالدية، شارع جبار بن صخر، المدينة المنورة
+          - paragraph [ref=e234]: استلام مجاني من الفرع.
+          - link "احجز زيارة أو تعال مباشرة" [ref=e236] [cursor=pointer]:
+            - /url: /%D8%B2%D9%8A%D8%A7%D8%B1%D8%A9-%D9%81%D8%B1%D8%B9-%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9-%D8%A7%D9%84%D9%85%D9%86%D9%88%D8%B1%D8%A9-%D8%AD%D8%AC%D8%B2-%D9%85%D8%AC%D8%A7%D9%86%D9%8A-%D8%A7%D9%88%D8%A8%D8%AA%D9%8A%D9%85%D8%A7%D9%84-%D8%A7%D9%83%D8%B3/p1051830221
+        - generic [ref=e237]:
+          - heading "ما يمكنك فعله في الفرع" [level=3] [ref=e238]
+          - list [ref=e239]:
+            - listitem [ref=e240]:
+              - generic [ref=e241]: استلام طلبك الإلكتروني
+              - generic [ref=e242]: اختر الاستلام من الفرع عند إتمام الطلب، ويصلك تنبيه عندما يكون جاهزا.
+            - listitem [ref=e243]:
+              - generic [ref=e244]: مقارنة الأحجام والنكهات
+              - generic [ref=e245]: العبوات أمامك على الرف، فقارن وزن السكوب وعدد الحصص بنفسك.
+            - listitem [ref=e246]:
+              - generic [ref=e247]: الشراء والدفع في الفرع
+              - generic [ref=e248]: بطرق الدفع المتاحة في الفرع، بالأسعار نفسها المعروضة في المتجر.
+            - listitem [ref=e249]:
+              - generic [ref=e250]: سؤال فريق الفرع
+              - generic [ref=e251]: عن الاختيار وطريقة الاستخدام وقراءة الملصق. لا نقدم استشارة صحية.
+            - listitem [ref=e252]:
+              - generic [ref=e253]: حجز وقت للزيارة
+              - generic [ref=e254]: اختياري. يضمن أن يكون أحدنا متفرغا لك وطلبك جاهزا.
+    - generic [ref=e256]:
+      - heading "أسئلة شائعة" [level=2] [ref=e258]
+      - generic [ref=e259]:
+        - generic [ref=e260]:
+          - heading [level=3] [ref=e261]:
+            - button "لماذا قد تجد سعرا أقل في مكان آخر؟" [expanded] [ref=e262] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e264]: 
+          - region "لماذا قد تجد سعرا أقل في مكان آخر؟" [ref=e265]:
+            - paragraph [ref=e267]: السعر المعروض على الصفحة هو السعر النهائي الذي تدفعه. ومعه نكتب عدد الحصص وحجم الحصة، فاقسم السعر على عدد الحصص لتعرف تكلفة الحصة الواحدة، فهي المقارنة الصحيحة بين عبوتين. العبوات تختلف في وزن السكوب وفي عدد الحصص، فالعبوة الأقل سعرا قد تكون الأعلى تكلفة في الحصة. وإن كان الفرق على المنتج نفسه، فقارن الحجم والنكهة وتاريخ الصلاحية قبل أن تقارن الرقم وحده.
+        - heading [level=3] [ref=e269]:
+          - button "ما أهم مكملات الجيم للمبتدئ؟" [ref=e270] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e272]: 
+        - heading [level=3] [ref=e274]:
+          - button "كم سكوب بروتين في اليوم؟" [ref=e275] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e277]: 
+        - heading [level=3] [ref=e279]:
+          - 'button "متى آخذ الكرياتين: قبل التمرين أم بعده؟" [ref=e280] [cursor=pointer]':
+            - generic [aria-hidden] [ref=e282]: 
+        - heading [level=3] [ref=e284]:
+          - button "هل البروتين باودر مضر؟" [ref=e285] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e287]: 
+  - contentinfo [ref=e288]:
+    - generic "footer" [ref=e289]:
+      - generic [ref=e290]:
+        - generic [ref=e291]:
+          - link [ref=e292] [cursor=pointer]:
+            - /url: https://optimalx.com.sa/
+            - heading "Optimal X" [level=3] [ref=e293]
+          - generic [ref=e294]: اوبتيمال اكس للمنتجات الصحية.
+        - heading "روابط مهمة" [level=3] [ref=e296]
+    - paragraph [ref=e301]:
+      - text: جميع الحقوق محفوظة | 2026
+      - link "Optimal X" [ref=e302] [cursor=pointer]:
+        - /url: https://optimalx.com.sa

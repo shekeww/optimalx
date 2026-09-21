@@ -1,0 +1,48 @@
+- generic [active] [ref=f189e1]:
+  - generic [ref=f189e2]:
+    - generic [ref=f189e4]:
+      - generic [ref=f189e7]:
+        - generic [ref=f189e8]: الأكثر مبيعا
+        - generic [ref=f189e9]: تكبير الصورة
+      - generic [ref=f189e10]:
+        - generic [ref=f189e11]:
+          - paragraph [ref=f189e12]: GHOST
+          - heading "جوست بروتين نباتي" [level=1] [ref=f189e13]
+          - paragraph [ref=f189e14]: Vegan Protein - Pancake Batter
+          - paragraph [ref=f189e15]: بروتين نباتي عالي الجودة بمذاق يشبه كيك اللذيذ لدعم بناء العضلات وتلبية احتياجك اليومي.
+        - generic [ref=f189e17]:
+          - generic [ref=f189e18]: 20g
+          - generic [ref=f189e19]: بروتين في الحصة
+        - generic [ref=f189e20]:
+          - text: "199"
+          - generic [ref=f189e21]: ر.س
+        - button "أضف إلى السلة" [ref=f189e22] [cursor=pointer]
+    - generic [ref=f189e23]:
+      - generic [ref=f189e24]:
+        - button "الفوائد" [ref=f189e25] [cursor=pointer]
+        - button "التفاصيل" [ref=f189e26] [cursor=pointer]
+      - generic [ref=f189e27]:
+        - heading "تفاصيل المنتج" [level=2] [ref=f189e28]
+        - table [ref=f189e29]:
+          - rowgroup [ref=f189e30]:
+            - row [ref=f189e31]:
+              - rowheader "العلامة التجارية" [ref=f189e32]
+              - cell "GHOST" [ref=f189e33]
+      - generic [ref=f189e34]:
+        - generic [ref=f189e35]: السعرات الحرارية
+        - generic [ref=f189e36]: الطاقة التي تمنحها الحصة
+  - generic [ref=f189e37]:
+    - heading "وقود تقدمك" [level=1] [ref=f189e38]
+    - heading "المكملات" [level=1] [ref=f189e39]
+    - heading "اختر هدفك" [level=2] [ref=f189e40]
+    - heading "الأسئلة الشائعة" [level=3] [ref=f189e41]
+    - paragraph [ref=f189e42]: سطر تمهيدي تحت العنوان.
+    - paragraph [ref=f189e43]: نص المتن العادي في الصفحة.
+    - paragraph [ref=f189e44]: تعليق صغير
+    - text: تصنيف المدينة Fuel Your Progress
+    - article [ref=f189e45]:
+      - heading "أوبتيموم جولد ستاندرد" [level=3] [ref=f189e46]
+      - generic [ref=f189e47]: 249 ر.س
+  - generic [ref=f189e48]:
+    - paragraph [ref=f189e49]: نص على خلفية داكنة
+    - paragraph [ref=f189e50]: سطر تمهيدي داكن

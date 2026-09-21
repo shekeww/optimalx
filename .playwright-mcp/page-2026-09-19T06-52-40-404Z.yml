@@ -1,0 +1,143 @@
+- generic [active] [ref=f7e1]:
+  - region "Notifications alt+T"
+  - generic [ref=f7e2]:
+    - link "تخطي إلى المحتوى" [ref=f7e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=f7e4]:
+      - generic [ref=f7e5]:
+        - text: 
+        - generic [ref=f7e7]:
+          - button "فتح القائمة" [ref=f7e8] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f7e9]: 
+          - link [ref=f7e10] [cursor=pointer]:
+            - /url: /optimal-x
+            - img "Optimal X" [ref=f7e11]
+    - main [ref=f7e15]:
+      - generic [ref=f7e21]:
+        - 'heading "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية" [level=1] [ref=f7e22]'
+        - paragraph [ref=f7e23]: ما هدفك اليوم؟
+        - paragraph [ref=f7e24]: متجر مكملات غذائية ورياضية في المدينة المنورة، يختار لك منتجات أصلية ويشرح لك متى تحتاجها ومتى لا.
+        - generic [ref=f7e25]:
+          - link "تسوق حسب هدفك" [ref=f7e26] [cursor=pointer]:
+            - /url: "#ox-goals"
+          - link "اسأل قبل أن تشتري" [ref=f7e28] [cursor=pointer]:
+            - /url: /optimal-x/services
+      - region "لماذا اوبتيمال اكس" [ref=f7e31]:
+        - list [ref=f7e33]:
+          - listitem [ref=f7e34]:
+            - button "منتجات أصلية صلاحية واضحة على كل منتج" [ref=f7e35] [cursor=pointer]:
+              - generic [ref=f7e38]:
+                - generic [ref=f7e39]: منتجات أصلية
+                - generic [ref=f7e40]: صلاحية واضحة على كل منتج
+          - listitem [ref=f7e41]:
+            - button "شحن من المدينة المنورة إلى كل مدينة في السعودية" [ref=f7e42] [cursor=pointer]:
+              - generic [ref=f7e45]:
+                - generic [ref=f7e46]: شحن من المدينة المنورة
+                - generic [ref=f7e47]: إلى كل مدينة في السعودية
+          - listitem [ref=f7e48]:
+            - button "دفع آمن طرق الدفع المتاحة تظهر عند إتمام الطلب" [ref=f7e49] [cursor=pointer]:
+              - generic [ref=f7e52]:
+                - generic [ref=f7e53]: دفع آمن
+                - generic [ref=f7e54]: طرق الدفع المتاحة تظهر عند إتمام الطلب
+          - listitem [ref=f7e55]:
+            - button "مساعدة في الاختيار رد مجاني" [ref=f7e56] [cursor=pointer]:
+              - generic [ref=f7e59]:
+                - generic [ref=f7e60]: مساعدة في الاختيار
+                - generic [ref=f7e61]: رد مجاني
+      - generic [ref=f7e64]:
+        - generic [ref=f7e65]:
+          - heading "تسوق حسب هدفك" [level=2] [ref=f7e66]
+          - paragraph [ref=f7e67]: ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط.
+        - list [ref=f7e68]:
+          - listitem [ref=f7e69]:
+            - link "مكملات الطاقة طاقة وتركيز قبل الحصة" [ref=f7e70] [cursor=pointer]:
+              - /url: /optimal-x/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B7%D8%A7%D9%82%D8%A9
+              - generic [ref=f7e73]:
+                - generic [ref=f7e74]: مكملات الطاقة
+                - generic [ref=f7e75]: طاقة وتركيز قبل الحصة
+          - listitem [ref=f7e76]:
+            - link "مكملات الصحة العامة فيتامينات يومية بجرعة معقولة" [ref=f7e77] [cursor=pointer]:
+              - /url: /optimal-x/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B5%D8%AD%D8%A9%20%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9
+              - generic [ref=f7e80]:
+                - generic [ref=f7e81]: مكملات الصحة العامة
+                - generic [ref=f7e82]: فيتامينات يومية بجرعة معقولة
+          - listitem [ref=f7e83]:
+            - link "مكملات الأداء لكمال الأجسام والجيم بروتين يومي بعد التمرين" [ref=f7e84] [cursor=pointer]:
+              - /url: /optimal-x/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%A1%20%D9%84%D9%83%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%A3%D8%AC%D8%B3%D8%A7%D9%85%20%D9%88%D8%A7%D9%84%D8%AC%D9%8A%D9%85
+              - generic [ref=f7e87]:
+                - generic [ref=f7e88]: مكملات الأداء لكمال الأجسام والجيم
+                - generic [ref=f7e89]: بروتين يومي بعد التمرين
+          - listitem [ref=f7e90]:
+            - link "مكملات التعافي بروتين سريع بعد التمرين" [ref=f7e91] [cursor=pointer]:
+              - /url: /optimal-x/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%81%D9%8A
+              - generic [ref=f7e94]:
+                - generic [ref=f7e95]: مكملات التعافي
+                - generic [ref=f7e96]: بروتين سريع بعد التمرين
+          - listitem [ref=f7e97]:
+            - link "مكملات الشعر والبشرة والأظافر كولاجين يومي في المشروب" [ref=f7e98] [cursor=pointer]:
+              - /url: /optimal-x/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D9%88%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9%20%D9%88%D8%A7%D9%84%D8%A3%D8%B8%D8%A7%D9%81%D8%B1
+              - generic [ref=f7e101]:
+                - generic [ref=f7e102]: مكملات الشعر والبشرة والأظافر
+                - generic [ref=f7e103]: كولاجين يومي في المشروب
+          - listitem [ref=f7e104]:
+            - 'link "مكملات الوزن المثالي: زيادة الكتلة العضلية ومرحلة التنشيف سعرات وبروتين في حصة واحدة" [ref=f7e105] [cursor=pointer]':
+              - /url: /optimal-x/search?q=%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D9%88%D8%B2%D9%86%20%D8%A7%D9%84%D9%85%D8%AB%D8%A7%D9%84%D9%8A%3A%20%D8%B2%D9%8A%D8%A7%D8%AF%D8%A9%20%D8%A7%D9%84%D9%83%D8%AA%D9%84%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B6%D9%84%D9%8A%D8%A9%20%D9%88%D9%85%D8%B1%D8%AD%D9%84%D8%A9%20%D8%A7%D9%84%D8%AA%D9%86%D8%B4%D9%8A%D9%81
+              - generic [ref=f7e108]:
+                - generic [ref=f7e109]: "مكملات الوزن المثالي: زيادة الكتلة العضلية ومرحلة التنشيف"
+                - generic [ref=f7e110]: سعرات وبروتين في حصة واحدة
+    - contentinfo [ref=f7e120]:
+      - generic [ref=f7e121]:
+        - link [ref=f7e122] [cursor=pointer]:
+          - /url: /optimal-x
+          - img "Optimal X" [ref=f7e123]
+        - navigation "روابط الصفحة" [ref=f7e124]:
+          - generic [ref=f7e125]:
+            - button "تسوق" [ref=f7e126] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f7e128]: 
+            - generic:
+              - generic:
+                - list
+          - generic [ref=f7e129]:
+            - button "المتجر" [ref=f7e130] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f7e132]: 
+            - list [ref=f7e133]:
+              - listitem [ref=f7e134]:
+                - link "من نحن" [ref=f7e135] [cursor=pointer]:
+                  - /url: /optimal-x/about
+              - listitem [ref=f7e136]:
+                - link "اتصل بنا" [ref=f7e137] [cursor=pointer]:
+                  - /url: /optimal-x/contact
+              - listitem [ref=f7e138]:
+                - link "فرع المدينة المنورة" [ref=f7e139] [cursor=pointer]:
+                  - /url: /optimal-x/branch
+              - listitem [ref=f7e140]:
+                - link "الأدلة" [ref=f7e141] [cursor=pointer]:
+                  - /url: /optimal-x/blog
+          - button "تواصل معنا" [ref=f7e143] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f7e145]: 
+        - paragraph [ref=f7e163]: طرق الدفع المتاحة تظهر عند إتمام الطلب. الشحن من المدينة المنورة إلى كل مدن السعودية.
+        - paragraph [ref=f7e164]:
+          - text: الحقوق محفوظة | 2026
+          - link "Optimal X" [ref=f7e165] [cursor=pointer]:
+            - /url: /optimal-x
+  - navigation "تنقل سريع" [ref=f7e167]:
+    - list [ref=f7e168]:
+      - listitem [ref=f7e169]:
+        - link "الرئيسية" [ref=f7e170] [cursor=pointer]:
+          - /url: /optimal-x
+          - generic [aria-hidden] [ref=f7e171]: 
+      - listitem [ref=f7e173]:
+        - button "التصنيفات" [ref=f7e174] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f7e175]: 
+      - listitem [ref=f7e177]:
+        - link "البحث" [ref=f7e178] [cursor=pointer]:
+          - /url: /optimal-x/search
+          - generic [aria-hidden] [ref=f7e179]: 
+      - listitem [ref=f7e181]:
+        - link "السلة" [ref=f7e182] [cursor=pointer]:
+          - /url: /optimal-x/cart
+          - generic [aria-hidden] [ref=f7e184]: 
+      - listitem [ref=f7e186]:
+        - link "حسابي" [ref=f7e187] [cursor=pointer]:
+          - /url: /optimal-x/account/profile
+          - generic [aria-hidden] [ref=f7e188]: 

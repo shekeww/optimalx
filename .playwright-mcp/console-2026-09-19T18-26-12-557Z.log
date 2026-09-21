@@ -1,0 +1,15 @@
+[    1380ms] [LOG] allowed_pages: [thank-you] @ :10
+[    1380ms] [LOG] title: شاهدتها مؤخرا @ :11
+[    1380ms] [LOG] limit: 32 @ :12
+[    1801ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-hero, index=0, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1802ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-trust-strip, index=1, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1802ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-goals, index=2, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1803ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-categories, index=3, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1803ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-products, index=4, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1804ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-brands, index=5, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1805ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-services, index=6, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1805ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-guides, index=7, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1806ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-branch, index=8, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1806ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-faq, index=9, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1807ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-newsletter, index=10, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
+[    1807ms] [LOG] [HomeComponentRenderer] MOUNT: path=ox-banner, index=11, renderCount=1 @ http://localhost:4174/assets/chunk-WITIL2MK-Bu1pxSoS.js:1
