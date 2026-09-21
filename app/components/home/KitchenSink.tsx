@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { OxHero } from './OxHero';
-import { OxTrustStrip } from './OxTrustStrip';
 import { OxGoals } from './OxGoals';
 import { OxCategories } from './OxCategories';
 import { OxProducts } from './OxProducts';
@@ -50,10 +49,6 @@ export function KitchenSink() {
 
       <Panel title="OxHero, no upload (the theme photograph, art directed per breakpoint)">
         <OxHero data={block('ox-hero')} />
-      </Panel>
-
-      <Panel title="OxTrustStrip (the shared statistic strip; one panel open at a time)">
-        <OxTrustStrip data={block('ox-trust-strip')} />
       </Panel>
 
       <Panel title="OxGoals (settle runs once when 30% in view)">

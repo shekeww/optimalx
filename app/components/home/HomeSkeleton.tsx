@@ -45,16 +45,6 @@ export function HeroSkeleton() {
   );
 }
 
-export function TrustSkeleton() {
-  return (
-    <BlockSkeleton path="ox-trust-strip" className="ox-skel-trust">
-      {rows(4).map((index) => (
-        <SkeletonBar key={index} width="80%" />
-      ))}
-    </BlockSkeleton>
-  );
-}
-
 export function GoalsSkeleton() {
   return (
     <BlockSkeleton path="ox-goals" className="ox-skel-grid ox-skel-grid--goals">
@@ -237,7 +227,6 @@ export function HomeSkeleton() {
   return (
     <div className="ox-home-skeleton" data-testid="ox-home-skeleton">
       <HeroSkeleton />
-      <TrustSkeleton />
       <GoalsSkeleton />
     </div>
   );
@@ -246,7 +235,6 @@ export function HomeSkeleton() {
 /** Every block's placeholder, keyed by registry path (registerHomeComponentConfig). */
 export const BLOCK_SKELETONS: Record<HomeBlockPath, () => ReactNode> = {
   'ox-hero': HeroSkeleton,
-  'ox-trust-strip': TrustSkeleton,
   'ox-goals': GoalsSkeleton,
   'ox-categories': CategoriesSkeleton,
   'ox-products': ProductsSkeleton,

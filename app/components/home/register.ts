@@ -8,7 +8,6 @@ import { createElement } from 'react';
 import { HOME_BLOCK_HEIGHT_CSS, HOME_BLOCK_PATHS, type HomeBlockPath } from './defaults';
 import { BLOCK_SKELETONS } from './HomeSkeleton';
 import { OxHero } from './OxHero';
-import { OxTrustStrip } from './OxTrustStrip';
 import { OxGoals } from './OxGoals';
 import { OxCategories } from './OxCategories';
 import { OxProducts } from './OxProducts';
@@ -47,7 +46,6 @@ import { OxBanner } from './OxBanner';
 
 const BLOCKS: Record<HomeBlockPath, AnyHomeComponent> = {
   'ox-hero': OxHero,
-  'ox-trust-strip': OxTrustStrip,
   'ox-goals': OxGoals,
   'ox-categories': OxCategories,
   'ox-products': OxProducts,

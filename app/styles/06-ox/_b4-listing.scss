@@ -1705,9 +1705,25 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // The two cases this has to separate, in content-box terms: the home and
 // listing grids at 274, which keep the stepper, and the product page's related
 // rail at roughly 219, which cannot hold one. 240 sits between them.
+// The stepper STAYS on a narrow card (owner call, 2026-09-22: quantity and
+// variants show on a phone too). There is no room for it beside the add
+// button in a 173px cell, so here, and only here, the row wraps: the stepper
+// takes a full line above the button. The action block grows by one row on
+// every card that carries a stepper, which is every in-stock product, so the
+// grid stays level; the earlier reason for never wrapping was a rail that
+// mixed cards with and without one.
 @container oxcard (max-width: 240px) {
+  .ox-card-product__action {
+    flex-wrap: wrap;
+  }
+
   .ox-card-product__qty {
-    display: none;
+    flex: 1 1 100%;
+    max-inline-size: none;
+  }
+
+  .ox-card-product__add-slot {
+    flex: 1 1 100%;
   }
 
   .ox-card-product__add,

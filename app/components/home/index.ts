@@ -1,5 +1,4 @@
 export { OxHero } from './OxHero';
-export { OxTrustStrip } from './OxTrustStrip';
 export { OxGoals } from './OxGoals';
 export { GoalCard } from './GoalCard';
 export { PlanCard } from './PlanCard';

@@ -229,19 +229,9 @@ export const OxProductCard = memo(function OxProductCard({
             </>
           ) : null}
         </div>
-        {/* The savings line. It is only ever the second reading of a saving
-            the badge has already stated as a percentage; when there is no
-            percentage the badge carries the amount and this row stays empty,
-            so the figure is never printed twice. The row keeps its height
-            either way, which is what holds the buttons on one baseline across
-            a row of mixed products. */}
-        <p className="ox-card-product__saving">
-          {saving !== null && percent !== null && !outOfStock ? (
-            <>
-              {t('ox.pdp.save_label')} <Price amount={saving} go currency={product.currency} />
-            </>
-          ) : null}
-        </p>
+        {/* No savings line under the price (owner call, 2026-09-22): the pill
+            in the image corner already states the saving, and the extra row
+            stretched every card for a figure printed twice. */}
         {withoutAddButton ? null : <BuyControls product={product} outOfStock={outOfStock} />}
       </div>
     </article>

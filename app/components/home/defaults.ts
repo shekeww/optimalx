@@ -36,7 +36,6 @@ import type { HomeComponentData } from '@salla.sa/twilight-theme-engine/types';
  */
 export const HOME_BLOCK_PATHS = [
   'ox-hero',
-  'ox-trust-strip',
   'ox-goals',
   'ox-products',
   // The four blocks below were written, committed and never registered, so
@@ -96,7 +95,6 @@ export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
  */
 export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop: number }> = {
   'ox-hero': { mobile: 480, desktop: 560 },
-  'ox-trust-strip': { mobile: 65, desktop: 77 },
   // Desktop numbers re-measured on 2026-09-20 off the running page (see
   // scratchpad/measured-2026-09-20.md). The old table reserved 4990px against
   // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
@@ -195,7 +193,6 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
     secondary_label: null,
     secondary_url: null,
   },
-  'ox-trust-strip': { items: [] },
   'ox-goals': {},
   'ox-categories': { categories: [] },
   'ox-products': { title: null, products: [] },

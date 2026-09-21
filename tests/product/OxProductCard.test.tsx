@@ -136,10 +136,6 @@ describe('OxProductCard', () => {
       '.ox-card-product__name',
       '.ox-card-product__chips',
       '.ox-card-product__price',
-      // The savings line reserves its height whether or not this product has
-      // a saving, because a row mixes discounted and undiscounted products
-      // and the buttons have to stay on one baseline.
-      '.ox-card-product__saving',
       '.ox-card-product__action',
     ]) {
       expect(container.querySelector(cls), cls).not.toBeNull();
@@ -274,9 +270,6 @@ describe('OxProductCard', () => {
   it('prints no saving badge and no savings line off a sale', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
     expect(container.querySelector('.ox-card-product__saving-badge')).toBeNull();
-    // The row is reserved so the buttons stay on one baseline, and empty so no
-    // discount is implied.
-    expect(container.querySelector('.ox-card-product__saving')?.textContent).toBe('');
     expect(container.querySelector('.ox-price--was')).toBeNull();
   });
 
@@ -296,9 +289,9 @@ describe('OxProductCard', () => {
     // The struck regular price is the catalogue's own number.
     const prices = container.querySelectorAll('.ox-card-product__price [data-testid="money"]');
     expect(Array.from(prices).map((node) => node.textContent)).toEqual(['240', '310']);
-    // The green line is the same saving read a second way: 310 - 240.
-    const saving = container.querySelector('.ox-card-product__saving [data-testid="money"]');
-    expect(saving?.textContent).toBe('70');
+    // No second reading under the price: the pill is the only place the
+    // saving is printed (owner call, 2026-09-22).
+    expect(container.querySelector('.ox-card-product__saving')).toBeNull();
   });
 
   it('never prints the saving twice: no percentage means the line stays empty', () => {
@@ -307,9 +300,9 @@ describe('OxProductCard', () => {
         product={makeProduct({ is_on_sale: true, regular_price: 310, sale_price: 240 })}
       />
     );
-    // The pill falls back to the amount, so the line under the price is empty.
+    // The pill falls back to the amount; there is no line under the price.
     expect(container.querySelector('.ox-card-product__saving-badge')).not.toBeNull();
-    expect(container.querySelector('.ox-card-product__saving [data-testid="money"]')).toBeNull();
+    expect(container.querySelector('.ox-card-product__saving')).toBeNull();
   });
 
   it('drops the saving pill and the buy CTA when the product is out of stock', () => {

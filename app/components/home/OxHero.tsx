@@ -61,7 +61,9 @@ import { fieldText, type OxBlockProps } from './defaults';
 // lost. A frame whose type must be read belongs in a full-bleed band, where the
 // whole composition survives, not in this hero's photo half.
 export const DEFAULT_HERO = '/assets/images/hero-creatine.webp';
-export const DEFAULT_HERO_MOBILE = '/assets/images/hero-shakers-mobile.webp';
+// The same composition on a phone (owner call, 2026-09-22): object-fit crops
+// the landscape frame to the athlete and the tub.
+export const DEFAULT_HERO_MOBILE = '/assets/images/hero-creatine-mobile.webp';
 
 /**
  * The frames the photo half cycles through when the merchant has not set its
