@@ -3126,3 +3126,9 @@ https://react.dev/link/hydration-mismatch
 [63096159ms] [ERROR] [vite] Failed to reload /app/components/common/Band.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:3210/@vite/client:532
 [63099098ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/ar/services/services:0
 [63099158ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/favicon.ico:0
+[64241616ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/:0
+[64241663ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/favicon.ico:0
+[64324289ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/:0
+[64324438ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/favicon.ico:0
+[64391265ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/:0
+[64391389ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/favicon.ico:0
