@@ -3,6 +3,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
+import ar from '../../locales/ar.json';
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
@@ -65,10 +66,13 @@ describe('OxHero', () => {
   });
 
   it('sets the subline under the headline, and steps aside for a merchant one', () => {
+    // The subline is the owner's copy and the owner edits it directly, so the
+    // test reads the dictionary rather than asserting a phrase: the earlier
+    // literal ("المدينة المنورة") went stale the day the owner rewrote the line.
     const plain = renderWithProviders(<OxHero data={data()} />);
-    expect(plain.container.querySelector('.ox-hero__sub')?.textContent).toContain(
-      'المدينة المنورة'
-    );
+    const sub = plain.container.querySelector('.ox-hero__sub')?.textContent?.trim();
+    expect(sub).toBe(ar['ox.home.hero_subline']);
+    expect(sub?.length ?? 0).toBeGreaterThan(20);
     plain.unmount();
 
     const { container } = renderWithProviders(<OxHero data={data({ subline: 'سطر التاجر' })} />);

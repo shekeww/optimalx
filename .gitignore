@@ -27,3 +27,6 @@ app/routeTree.gen.ts
 
 # Combined log of pnpm preview:offline (scripts/preview-offline.mjs)
 .offline-preview.log
+
+# OAuth token pair written by scripts/salla-auth.mjs. Never committed.
+.salla-token.json

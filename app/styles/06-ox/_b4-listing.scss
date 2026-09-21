@@ -210,7 +210,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
   max-inline-size: var(--ox-container-text);
 }
 
-// Two lines on mobile, one on desktop; the DOM keeps the whole paragraph.
+// Two lines, mobile and desktop alike, the `ox.common.show_more` toggle
+// (CategoryIntro.tsx) removing the clamp on demand; the DOM keeps the whole
+// paragraph either way. Desktop used to drop to one line with no way to read
+// the rest, which made the 60 to 90 word opening copy every category page is
+// supposed to carry unreadable at the width most of this store's traffic
+// renders (SEO-ENG-009).
 .ox-listing__intro-text.is-clamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -218,12 +223,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
   overflow: hidden;
 }
 
+.ox-listing__intro-toggle {
+  align-self: flex-start;
+}
+
 @media (min-width: 1024px) {
   .ox-listing__title-row {
     min-block-size: 56px;
-  }
-  .ox-listing__intro-text.is-clamped {
-    -webkit-line-clamp: 1;
   }
 }
 

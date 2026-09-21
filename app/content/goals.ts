@@ -47,6 +47,10 @@ export interface GoalContent {
   slug: string;
   /** Sprite symbol (DIRECTION 8.7). */
   icon: OxIconName;
+  /** Short label: nav item, drawer row, breadcrumb crumb (Contract B). */
+  nameKey: string;
+  /** Meta description, 120 to 155 characters, answer-first (Contract B). */
+  descriptionKey: string;
   h1Key: string;
   /**
    * The SHORT label, for the goal card and the header menu.
@@ -82,6 +86,8 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-energy',
     icon: 'goal-energy',
+    nameKey: 'ox.tax.goal_energy.name',
+    descriptionKey: 'ox.tax.goal_energy.description',
     h1Key: `${KEY}.energy.h1`,
     cardKey: `${KEY}.energy.card`,
     titleKey: `${KEY}.energy.title`,
@@ -116,6 +122,8 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-general-health',
     icon: 'goal-general-health',
+    nameKey: 'ox.tax.goal_general_health.name',
+    descriptionKey: 'ox.tax.goal_general_health.description',
     h1Key: `${KEY}.general_health.h1`,
     cardKey: `${KEY}.general_health.card`,
     titleKey: `${KEY}.general_health.title`,
@@ -165,6 +173,8 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-performance',
     icon: 'goal-performance',
+    nameKey: 'ox.tax.goal_performance.name',
+    descriptionKey: 'ox.tax.goal_performance.description',
     h1Key: `${KEY}.performance.h1`,
     cardKey: `${KEY}.performance.card`,
     titleKey: `${KEY}.performance.title`,
@@ -216,6 +226,8 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-recovery',
     icon: 'goal-recovery',
+    nameKey: 'ox.tax.goal_recovery.name',
+    descriptionKey: 'ox.tax.goal_recovery.description',
     h1Key: `${KEY}.recovery.h1`,
     cardKey: `${KEY}.recovery.card`,
     titleKey: `${KEY}.recovery.title`,
@@ -264,6 +276,8 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-hair-skin',
     icon: 'goal-hair-skin',
+    nameKey: 'ox.tax.goal_hair_skin.name',
+    descriptionKey: 'ox.tax.goal_hair_skin.description',
     h1Key: `${KEY}.hair_skin.h1`,
     cardKey: `${KEY}.hair_skin.card`,
     titleKey: `${KEY}.hair_skin.title`,
@@ -297,6 +311,8 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-ideal-weight',
     icon: 'goal-ideal-weight',
+    nameKey: 'ox.tax.goal_ideal_weight.name',
+    descriptionKey: 'ox.tax.goal_ideal_weight.description',
     h1Key: `${KEY}.ideal_weight.h1`,
     cardKey: `${KEY}.ideal_weight.card`,
     titleKey: `${KEY}.ideal_weight.title`,

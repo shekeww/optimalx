@@ -7,6 +7,7 @@ import { digitsOnly } from '../../blocks/href';
 import { HEADER_NAV, SECONDARY_NAV } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
+import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { resolveNavHref } from '../navLinks';
 import { LocalizationButton } from './LocalizationButton';
 import { Logo } from './Logo';
@@ -66,6 +67,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const { settings } = useTheme();
   const store = useStore();
   const { items, goals } = useHeaderMenu();
+  const { types, utility } = useTaxonomyLinks();
   const panelRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
   const [group, setGroup] = useState<'goals' | 'categories' | null>(initialGroup);
@@ -96,10 +98,14 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const phone = digitsOnly(store?.contacts?.phone || store?.contacts?.mobile || '');
   const promise = settingValue(settings, 'delivery_promise_line');
 
-  // The header items collapse in here below 1024, above the standing pages.
-  // An item with no destination is dropped, exactly as on the bar.
+  // The header items that are plain links collapse in here below 1024, above
+  // the standing pages. The four with their own desktop dropdown (products,
+  // supplements, protein, more) are not repeated flat: their content is the
+  // "categories" group a few lines down plus the goals group above it, so a
+  // duplicate flat entry would be a second, thinner copy of the same links.
   const primary: Array<{ key: string; label: string; to: string }> = [];
   for (const entry of HEADER_NAV) {
+    if (entry.dropdown) continue;
     const label = t(entry.labelKey);
     const to = resolveNavHref(entry, label, items);
     if (to) primary.push({ key: entry.key, label, to });
@@ -177,21 +183,26 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
               open={group === 'categories'}
               onToggle={() => setGroup((current) => (current === 'categories' ? null : 'categories'))}
             >
-              {items.map((item) => (
-                <li key={String(item.id)}>
-                  <Link to={item.url} className="ox-drawer__row ox-drawer__row--sub" onClick={onClose}>
-                    <span>{item.title}</span>
+              {/* The ten type roots first, protein's five children nested
+                  under it, then the four utility categories: one tree built
+                  from `useTaxonomyLinks` (Contract C) rather than the
+                  dashboard menu, so it lists every taxonomy node whether or
+                  not the merchant has created a matching category yet. */}
+              {[...types, ...utility].map((type) => (
+                <li key={type.slug}>
+                  <Link to={type.to} className="ox-drawer__row ox-drawer__row--sub" onClick={onClose}>
+                    <span>{type.label}</span>
                   </Link>
-                  {item.children?.length ? (
+                  {type.children.length > 0 ? (
                     <ul className="ox-drawer__sublist">
-                      {item.children.map((child) => (
-                        <li key={String(child.id)}>
+                      {type.children.map((child) => (
+                        <li key={child.slug}>
                           <Link
-                            to={child.url}
+                            to={child.to}
                             className="ox-drawer__row ox-drawer__row--child"
                             onClick={onClose}
                           >
-                            <span>{child.title}</span>
+                            <span>{child.label}</span>
                           </Link>
                         </li>
                       ))}

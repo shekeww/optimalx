@@ -41,9 +41,13 @@ export interface CategoryContent {
    * tile on the home page.
    */
   tone: CategoryTone | null;
+  /** Short label: nav item, drawer row, breadcrumb crumb, chip (Contract B). */
+  nameKey: string;
   h1Key: string;
   /** Meta title, verbatim from the owning keyword cluster. */
   titleKey: string;
+  /** Meta description, 120 to 155 characters, answer-first (Contract B). */
+  descriptionKey: string;
   /** The 60 to 90 word paragraph above the grid. */
   introKey: string;
   /** Filter chip labels, in order. A chip is a label, not a live filter id. */
@@ -80,6 +84,11 @@ function base(
     parent,
     icon,
     tone,
+    // Contract B: the taxonomy's name and description keys live in the new
+    // `tax.*` partial under the node's own key, never duplicated here or
+    // renamed alongside it if `key` ever changes.
+    nameKey: `ox.tax.${key}.name`,
+    descriptionKey: `ox.tax.${key}.description`,
     h1Key: `${KEY}.${key}.h1`,
     titleKey: `${KEY}.${key}.title`,
     introKey: `${KEY}.${key}.intro`,

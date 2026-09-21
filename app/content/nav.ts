@@ -28,6 +28,14 @@ export interface NavEntry {
   tokens?: string[];
   /** A store contact channel rather than a page. */
   kind?: 'whatsapp';
+  /**
+   * Which of `NavBar`'s taxonomy dropdowns this item opens, if any:
+   * `products` (goals column + types column + "كل المنتجات"), `types` (the
+   * ten type roots, protein expandable), `protein` (protein's five
+   * children) or `more` (the four utility categories plus the standing
+   * pages). An entry with no `dropdown` is a plain link.
+   */
+  dropdown?: 'products' | 'types' | 'protein' | 'more';
 }
 
 export interface FooterColumn {
@@ -38,47 +46,42 @@ export interface FooterColumn {
 
 /**
  * The header row, in order from the RTL start: products, supplements,
- * protein, the advisory, meal plans, the brand page.
+ * protein, the advisory, more. Five items, taxonomy-built (PLAN-ship §1 item
+ * 5, Batch S1 step 3), replacing the fixed `supplements`/`meal-plans` slugs
+ * that pointed at categories the taxonomy never named.
  *
- * `المنتجات` points at the store's own full listing rather than a category,
- * so it is the one item that is always live.
- *
- * **The advisory sits on the bar, not only in the drawer.** It was in the
- * mobile drawer's page list and nowhere on the desktop chrome, which gave the
- * store two different site maps with the thing that distinguishes it from a
- * supplement catalogue on the smaller of the two. A desktop visitor could
- * reach `/services` from one home block and one footer link.
- *
- * **Its position in this array is the whole fix, not its presence.** Six
- * items plus the goals panel do not fit the bar: measured on the live store
- * at 1440, the nav is given 500px, the goals item takes 128 of it and the
- * overflow control 58, which leaves 314 for six labels that measure 507
- * together. `NavBar` moves the TRAILING items into "المزيد", so an advisory
- * typed last would be the first thing hidden, at the commonest desktop
- * width, which is where it was invisible to begin with. Fourth keeps it on
- * the bar beside the three shopping pillars and sends meal plans and the
- * brand page into the dropdown instead; both of those are in the footer too,
- * and neither is what this store is for.
+ * `المنتجات` opens the mega panel (goals column + types column + "كل
+ * المنتجات") and falls back to its own `to` when `show_goal_nav` is off, so
+ * the merchant's opt-in still governs whether a full panel or a plain link
+ * sits first (PLAN-ship keeps this gating; only what it toggles changed).
+ * `المكملات` opens a dropdown of the ten type roots, protein expandable to
+ * its five children. `البروتين` is a live link with its own five-child
+ * dropdown. `اسأل قبل أن تشتري` is the advisory, unchanged in position and
+ * wording (PLAN-final: keeping it fourth, beside the shopping pillars, is
+ * what makes it visible at the commonest desktop width; see NavBar.tsx for
+ * the measured widths this row is sized against). `المزيد` opens the four
+ * utility categories plus the standing pages this row has no room for
+ * (guides, the branch, about, contact): it replaces `meal-plans` (removed,
+ * conductor §5 decision: the label contradicted the services disclaimer)
+ * and the old trailing `about-brand` link.
  */
 export const HEADER_NAV: NavEntry[] = [
-  { key: 'products', labelKey: 'ox.nav.products', slug: 'products', to: '/latest-products' },
-  { key: 'supplements', labelKey: 'ox.nav.supplements', slug: 'supplements' },
-  { key: 'protein', labelKey: 'ox.nav.protein', slug: 'protein' },
+  { key: 'products', labelKey: 'ox.nav.products', to: '/latest-products', dropdown: 'products' },
+  { key: 'supplements', labelKey: 'ox.nav.supplements', to: '/categories', dropdown: 'types' },
+  { key: 'protein', labelKey: 'ox.nav.protein', slug: 'protein', dropdown: 'protein' },
   { key: 'services', labelKey: 'ox.nav.services', to: '/services' },
-  { key: 'meal-plans', labelKey: 'ox.nav.meal_plans', slug: 'meal-plans' },
-  { key: 'about-brand', labelKey: 'ox.nav.about_brand', to: '/about' },
+  { key: 'more', labelKey: 'ox.nav.more', dropdown: 'more' },
 ];
 
 /**
- * The standing pages the mobile drawer lists under the header items.
- *
- * It is what is left of the drawer's own page list once the advisory moved on
- * to `HEADER_NAV`: the drawer renders `HEADER_NAV` first and this after it, so
- * the two surfaces now publish one site map rather than two. Nothing is in
- * both lists, and an item added to either one reaches both surfaces.
+ * The standing pages the desktop `more` dropdown and the mobile drawer both
+ * list, guides before the utility categories reach them their own row. About
+ * moved here from the old trailing `about-brand` header item; the two
+ * surfaces publish one site map, so an entry added here reaches both.
  */
 export const SECONDARY_NAV: NavEntry[] = [
   { key: 'guides', labelKey: 'ox.nav.guides', to: '/blog' },
+  { key: 'about-brand', labelKey: 'ox.nav.about_brand', to: '/about' },
   { key: 'branch', labelKey: 'ox.nav.branch', to: '/branch' },
   { key: 'contact', labelKey: 'ox.nav.contact', to: '/contact' },
 ];
@@ -108,13 +111,17 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     ],
   },
   {
+    // `MENU.types` top four (app/content/taxonomy.ts): protein, creatine,
+    // pre-workout, amino-acids, in catalogue order. Replaces the old
+    // `supplements`/`meal-plans` slugs, neither of which named a taxonomy
+    // node (PLAN-ship Batch S1 step 3).
     key: 'products',
     headingKey: 'ox.footer.products',
     links: [
-      { key: 'supplements', labelKey: 'ox.footer.supplements', slug: 'supplements' },
       { key: 'protein', labelKey: 'ox.footer.protein', slug: 'protein' },
-      { key: 'nutrition', labelKey: 'ox.footer.nutrition', slug: 'daily-health' },
-      { key: 'meal-plans', labelKey: 'ox.footer.meal_plans', slug: 'meal-plans' },
+      { key: 'creatine', labelKey: 'ox.footer.creatine', slug: 'creatine' },
+      { key: 'pre-workout', labelKey: 'ox.footer.pre_workout', slug: 'pre-workout' },
+      { key: 'amino-acids', labelKey: 'ox.footer.amino_acids', slug: 'amino-acids' },
     ],
   },
 ];

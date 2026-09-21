@@ -88,6 +88,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
 vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
   menu: { queries: { header: () => ({ queryKey: ['menu', 'header'], queryFn: async () => [] }) } },
 }));
+vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
+  category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
+}));
 
 const { ListingPage } = await import('../../app/components/listing/ListingPage');
 const { createT } = await import('../helpers/i18n');

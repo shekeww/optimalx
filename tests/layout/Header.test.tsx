@@ -41,6 +41,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
     footer: async () => [],
   },
 }));
+vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
+  category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
@@ -178,23 +181,22 @@ describe('Header', () => {
     expect(document.body.classList.contains('menu-opened')).toBe(false);
   });
 
-  it('opens the mega panel from the goals item and closes it on Escape', async () => {
-    // The goals item is opt-in now: the approved design carries five nav items
-    // on the bar, and the mega panel would be a sixth.
+  it('opens the mega panel from المنتجات on hover/focus once show_goal_nav is on', async () => {
+    // The panel is opt-in now: the approved design carries five nav items on
+    // the bar, and a sixth "goals" item would not fit beside them.
     setSettings({ show_goal_nav: true });
     renderWithProviders(<Header />);
-    const goals = screen.getByTestId('ox-nav-goals');
-    expect(goals.getAttribute('aria-expanded')).toBe('false');
+    const products = screen.getByTestId('ox-nav-products');
+    expect(products.getAttribute('aria-expanded')).toBe('false');
 
-    fireEvent.click(goals);
+    fireEvent.focus(products);
     await waitFor(() => expect(screen.getByTestId('ox-mega-panel')).toBeTruthy());
-    expect(goals.getAttribute('aria-expanded')).toBe('true');
+    expect(products.getAttribute('aria-expanded')).toBe('true');
 
     act(() => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     });
     await waitFor(() => expect(screen.queryByTestId('ox-mega-panel')).toBeNull());
-    expect(document.activeElement).toBe(goals);
   });
 
   it('publishes its measured height on <html> for anchor scroll offsets', async () => {
@@ -224,20 +226,19 @@ describe('Header', () => {
     expect(document.documentElement.style.getPropertyValue('--ox-header-h')).toBe('');
   });
 
-  it('drops the goals item when show_goal_nav is off, and by default', () => {
-    // It stays opt-in because the bar cannot carry it and the advisory at
-    // 1440 (the measurement is in NavBar's docblock), and the advisory is
-    // the higher-ranked of the two.
+  it('keeps المنتجات a plain link (no panel) when show_goal_nav is off, and by default', () => {
+    // The panel stays opt-in because the bar cannot carry a sixth item beside
+    // the advisory at 1440 (the measurement is in NavBar's docblock).
     for (const settings of [{ show_goal_nav: false }, {}]) {
       setSettings(settings);
       const view = renderWithProviders(<Header />);
-      expect(screen.queryByTestId('ox-nav-goals')).toBeNull();
+      expect(screen.getByTestId('ox-nav-products').getAttribute('aria-expanded')).toBeNull();
       view.unmount();
     }
 
     setSettings({ show_goal_nav: true });
     renderWithProviders(<Header />);
-    expect(screen.queryByTestId('ox-nav-goals')).not.toBeNull();
+    expect(screen.getByTestId('ox-nav-products').getAttribute('aria-expanded')).toBe('false');
   });
 
   it('carries the utility strip whether or not its two outer zones have content', () => {

@@ -26,6 +26,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
     },
   },
 }));
+vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
+  category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),

@@ -33,9 +33,10 @@
 import { route } from '@tanstack/virtual-file-routes';
 
 export const routes = [
-  // Dev-only component gallery. The component itself renders "Not found."
-  // when import.meta.env.DEV is false, so a published build exposes nothing
-  // useful even though the path still exists in the route tree.
+  // Dev-only component gallery. The route path still exists in the tree (the
+  // plugin auto-discovers this file), but the loader throws notFound() when
+  // import.meta.env.DEV is false, so a published build answers a real 404
+  // and the eight section chunks never ship.
   route('/kitchen-sink', 'kitchen-sink.tsx'),
   // P0 seam: the page routes B5 fills in (DIRECTION 6.11, 6.12, 6.15, 6.16 and
   // the unit converter). The plugin nests them under `{-$locale}`, so they
