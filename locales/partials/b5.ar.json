@@ -1,177 +1,351 @@
 {
-  "ox.services.title": "اسأل قبل أن تشتري",
-  "ox.services.intro": "سؤال مكتوب مجاني، أو استشارة مرئية، أو زيارة للفرع في المدينة المنورة.",
-  "ox.services.written": "سؤال مكتوب",
-  "ox.services.video": "استشارة مرئية 20 دقيقة",
-  "ox.services.visit": "زيارة الفرع",
-  "ox.services.training": "جلسة تدريب شخصي 60 دقيقة",
-  "ox.services.free": "مجاني",
-  "ox.services.credit": "{{amount}} ريالا تحسم من طلبك الأول",
-  "ox.services.reply_time": "رد",
-  "ox.services.reply_within": "الرد خلال {{hours}} ساعة عمل.",
-  "ox.services.scope_title": "ما الذي نساعدك فيه",
-  "ox.services.medical_line": "للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.",
-  "ox.services.footer_line": "الرد رأي عام من فريق المتجر لمساعدتك على الاختيار، وليس استشارة صحية.",
-  "ox.services.cta_written": "أرسل سؤالك مجانا",
-  "ox.services.cta_video": "احجز موعدا",
-  "ox.services.cta_visit": "احجز زيارة أو تعال مباشرة",
-  "ox.services.channels_title": "اختر القناة التي تناسبك",
-  "ox.services.compare_title": "قارن بين الخدمات",
-  "ox.services.compare_how": "كيف تتم",
-  "ox.services.how_title": "كيف تبدأ",
-  "ox.services.faq_title": "أسئلة شائعة",
-  "ox.services.faq_1_q": "كم تكلفني المساعدة؟",
-  "ox.services.faq_1_a": "السؤال المكتوب مجاني، وزيارة الفرع مجانية. الاستشارة المرئية 20 دقيقة لها سعر معلن على صفحتها.",
-  "ox.services.faq_2_q": "ماذا أحضر قبل المكالمة أو الزيارة؟",
-  "ox.services.faq_2_a": "هدفك، وعدد أيام التمرين، وأسماء ما تستخدمه حاليا، وسؤالك مكتوبا. إن كانت الزيارة لاستلام طلب فأحضر رقم الطلب.",
-  "ox.services.faq_3_q": "هل ألتزم بالشراء بعد أن أسأل؟",
-  "ox.services.faq_3_a": "لا. بالإرسال لا تلتزم بأي شراء، ولك أن تأخذ الرد وتقرر لاحقا أو لا تشتري أصلا.",
-  "ox.services.faq_4_q": "هل هذه استشارة صحية؟",
-  "ox.services.faq_4_a": "لا. نساعدك على اختيار المنتج وطريقة استخدامه والتوقيت وقراءة الملصق، وهذا حد عملنا. للحالات المرضية أو الأسئلة الدوائية، راجع طبيبك.",
-  "ox.services.contact_title": "سؤال سريع؟",
-  "ox.services.meta_title": "اسأل قبل أن تشتري: مساعدة في الاختيار | اوبتيمال اكس",
-  "ox.services.meta_description": "اسأل قبل أن تشتري: سؤال مكتوب مجاني نرد عليه، أو استشارة مرئية 20 دقيقة تحسم من طلبك الأول، أو زيارة فرع الخالدية في المدينة المنورة.",
-  "ox.branch.title": "فرعنا في المدينة المنورة",
-  "ox.branch.address": "حي الخالدية، شارع جبار بن صخر، المدينة المنورة",
-  "ox.branch.locality": "المدينة المنورة",
-  "ox.branch.region": "منطقة المدينة المنورة",
-  "ox.branch.hours": "ساعات العمل",
-  "ox.branch.open_now": "مفتوح الآن",
-  "ox.branch.closed_now": "مغلق الآن",
-  "ox.branch.opens_at": "يفتح الساعة {{time}}",
-  "ox.branch.prayer_note": "نغلق وقت الصلاة ونعود بعدها.",
-  "ox.branch.directions": "افتح الموقع في الخرائط",
-  "ox.branch.whatsapp": "راسلنا على واتساب",
-  "ox.branch.pickup_title": "كيف تستلم طلبك من الفرع",
-  "ox.branch.pickup_free": "الاستلام من الفرع مجاني",
-  "ox.branch.order_ready": "طلبك جاهز للاستلام",
-  "ox.branch.faq_title": "أسئلة شائعة عن الفرع",
-  "ox.branch.interior_alt": "داخل فرع اوبتيمال اكس في حي الخالدية بالمدينة المنورة",
-  "ox.branch.meta_description": "فرع اوبتيمال اكس في الخالدية بالمدينة المنورة، شارع جبار بن صخر. استلم طلبك مجانا، قارن الأحجام والنكهات، واسأل فريق الفرع. ساعات العمل والخريطة هنا.",
-  "ox.pages.about.h1": "من نحن",
-  "ox.pages.about.lead": "اوبتيمال اكس متجر جديد للمكملات الغذائية والرياضية، بدأ في المدينة المنورة بفرع واحد في حي الخالدية على شارع جبار بن صخر، ويشحن إلى كل مدن السعودية.",
-  "ox.pages.about.story_1": "نحن شريكان اثنان نتدرب مثلكم. اشترينا من قبل مكملات لم نكن نحتاج إليها، لأن أحدا لم يشرح لنا الفرق بين منتج وآخر. من هنا جاءت فكرة المتجر: مكان يشرح قبل أن يبيع.",
-  "ox.pages.about.story_2": "ما نفعله: نختار تشكيلة محدودة نعرفها ونستطيع شرحها. نكتب على كل منتج عدد حصصه وحجم الحصة وتاريخ صلاحيته، ونضيف إلى جدول الحقائق الغذائية عمودا ثالثا يقول ما يعنيه كل رقم. ونرد على أسئلتكم المكتوبة بأنفسنا.",
-  "ox.pages.about.story_3": "ما لا نفعله: لا نشخص، ولا نفسر تحاليل، ولا نعد بنتيجة، ولا نضع خططا غذائية. نساعدك على اختيار مكمل يناسب هدفك وعلى استخدامه بالطريقة المطبوعة على الملصق، وهذا حد عملنا.",
-  "ox.pages.about.story_4": "المتجر جديد. لا نملك بعد تقييمات ولا أرقام مبيعات نعرضها، ولن نخترعها. ما نملكه فرع بعنوان حقيقي، ومنتجات أصلية بتاريخ صلاحية واضح، ووقت للرد على سؤالك.",
-  "ox.pages.about.why_title": "لماذا اوبتيمال اكس",
-  "ox.pages.about.why_1_title": "نشرح قبل أن نبيع",
-  "ox.pages.about.why_1_body": "كل منتج يحمل عدد حصصه وحجم الحصة وتاريخ صلاحيته. وجدول الحقائق الغذائية فيه عمود ثالث يقول ما يعنيه كل رقم.",
-  "ox.pages.about.why_2_title": "تشكيلة مختارة لا مخزن ضخم",
-  "ox.pages.about.why_2_body": "نختار منتجات نعرفها ونستطيع شرحها. لا نضيف منتجا لأنه رائج فقط.",
-  "ox.pages.about.why_3_title": "نقول ما هو خارج عملنا",
-  "ox.pages.about.why_3_body": "لا نشخص ولا نعد بنتيجة. نساعدك على اختيار مكمل يناسب هدفك، وهذا كل ما نفعله.",
-  "ox.pages.about.why_4_title": "متجر جديد من المدينة المنورة",
-  "ox.pages.about.why_4_body": "بدأنا في الخالدية بفرع واحد وفريق من شخصين. نشحن إلى كل السعودية، ونجيب على أسئلتكم بأنفسنا.",
-  "ox.pages.about.photo_alt": "واجهة فرع اوبتيمال اكس في حي الخالدية، المدينة المنورة",
-  "ox.pages.about.registration_title": "بيانات المنشأة",
-  "ox.pages.about.meta_title": "من نحن: متجر مكملات من المدينة المنورة | اوبتيمال اكس",
-  "ox.pages.about.meta_description": "اوبتيمال اكس متجر جديد للمكملات الغذائية والرياضية من المدينة المنورة، بفرع واحد وشريكين. نختار تشكيلة نعرفها ونشرحها، ونقول ما هو خارج عملنا.",
-  "ox.pages.contact.h1": "اتصل بنا",
-  "ox.pages.contact.intro": "اختر القناة الأنسب لسؤالك. لأسئلة الاختيار والاستخدام، السؤال المكتوب أفضل لأننا نراجع الرد قبل إرساله.",
-  "ox.pages.contact.channels_title": "قنوات التواصل",
-  "ox.pages.contact.whatsapp_line": "للأسئلة السريعة عن التوفر والطلبات والاستلام. خلال ساعات العمل.",
-  "ox.pages.contact.email_line": "للأسئلة المكتوبة والفواتير والإرجاع.",
-  "ox.pages.contact.phone_line": "خلال ساعات العمل. خارجها راسلنا كتابة.",
-  "ox.pages.contact.branch_title": "الفرع",
-  "ox.pages.contact.branch_line": "ساعات العمل والخريطة في صفحة الفرع.",
-  "ox.pages.contact.social_line": "للمتابعة لا للدعم. الرسائل الخاصة تحول إلى البريد.",
-  "ox.pages.contact.social_title": "حساباتنا",
-  "ox.pages.contact.hours_line": "أيام العمل من الأحد إلى الخميس. الرسائل التي تصل خارج هذا الوقت نرد عليها في يوم العمل التالي.",
-  "ox.pages.contact.ask_title": "اسأل قبل أن تشتري",
-  "ox.pages.contact.pdpl": "TODO-legal: لطلب نسخة من بياناتك أو حذفها راسلنا عبر القنوات أعلاه، وننفذ الطلب خلال أيام العمل المذكورة في سياسة الخصوصية.",
-  "ox.pages.contact.meta_title": "اتصل بنا: واتساب وبريد وهاتف وفرع | اوبتيمال اكس",
-  "ox.pages.contact.meta_description": "تواصل مع اوبتيمال اكس عبر واتساب أو البريد أو الهاتف، أو زر فرع الخالدية في المدينة المنورة. نرد على الرسائل من الأحد إلى الخميس.",
-  "ox.error.404_title": "الصفحة غير موجودة",
-  "ox.error.404_body": "ربما تغير الرابط، أو حذف المنتج من التشكيلة. لا شيء ضاع من سلتك.",
-  "ox.error.generic_title": "حدث خطأ من جهتنا",
-  "ox.error.generic_body": "لم يكتمل ما طلبته. أعد المحاولة بعد قليل. إن تكرر الخطأ فراسلنا على واتساب مع وصف ما كنت تفعله.",
-  "ox.error.offline_title": "لا يوجد اتصال بالإنترنت",
-  "ox.error.offline_body": "تحقق من اتصالك ثم أعد المحاولة. سلتك محفوظة ولن تفقد ما أضفته.",
-  "ox.error.report_link": "وصلت إلى هنا من رابط داخل المتجر؟ أخبرنا لنصلحه.",
-  "ox.error.home": "الرئيسية",
-  "ox.error.search_label": "ابحث عن منتج",
-  "ox.error.latest_title": "أحدث المنتجات",
-  "ox.error.code": "رمز الخطأ {{code}}",
-  "ox.form.name": "الاسم",
-  "ox.form.phone": "رقم الجوال",
-  "ox.form.email": "البريد الإلكتروني",
-  "ox.form.subject": "الموضوع",
-  "ox.form.message": "الرسالة",
-  "ox.form.goal": "هدفك",
-  "ox.form.training_frequency": "عدد أيام التمرين في الأسبوع",
-  "ox.form.dietary_preferences": "التفضيلات الغذائية",
-  "ox.form.current_products": "ما تستخدمه حاليا",
-  "ox.form.question": "سؤالك",
-  "ox.form.label_photo": "صورة الملصق (اختياري)",
-  "ox.form.order_number": "رقم الطلب",
-  "ox.form.consent": "TODO-legal: أوافق على معالجة بياناتي لغرض الرد على سؤالي أو تأكيد موعدي فقط، وفق سياسة الخصوصية.",
-  "ox.form.submit": "إرسال",
-  "ox.form.sending": "جار الإرسال",
-  "ox.form.sent": "تم الإرسال",
-  "ox.validation.required": "هذا الحقل مطلوب",
-  "ox.validation.phone": "أدخل رقم جوال سعودي يبدأ بالرقم 05",
-  "ox.validation.email": "أدخل بريدا إلكترونيا صحيحا",
-  "ox.validation.min_length": "اكتب {{n}} أحرف على الأقل",
-  "ox.validation.max_length": "الحد الأقصى {{max}} حرف",
-  "ox.validation.file_type": "الصيغ المقبولة JPG أو PNG",
-  "ox.validation.file_size": "حجم الملف يتجاوز {{max}} ميغابايت",
-  "ox.validation.consent": "نحتاج إلى موافقتك لإرسال النموذج",
-  "ox.validation.slot": "اختر موعدا قبل التأكيد",
-  "ox.validation.quantity": "الكمية المتاحة {{max}}",
-  "ox.tools.converter.h1": "محول وحدات المكملات",
-  "ox.tools.converter.intro": "حول بين الغرام والكيلوغرام والأونصة والباوند لتقارن أحجام العبوات ووزن الحصة.",
-  "ox.tools.converter.amount_label": "القيمة",
-  "ox.tools.converter.from_label": "من وحدة",
-  "ox.tools.converter.to_label": "إلى وحدة",
-  "ox.tools.converter.result": "{{value}} {{unit}}",
-  "ox.tools.converter.result_label": "الناتج",
-  "ox.tools.converter.invalid": "أدخل رقما موجبا",
-  "ox.tools.converter.note": "تحويل وزن فقط. وزن الحصة والجرعة يبقيان كما هما على ملصق المنتج.",
-  "ox.tools.converter.unit_g": "غرام",
-  "ox.tools.converter.unit_kg": "كيلوغرام",
-  "ox.tools.converter.unit_oz": "أونصة",
-  "ox.tools.converter.unit_lb": "باوند",
-  "ox.tools.converter.meta_title": "محول وحدات المكملات | اوبتيمال اكس",
-  "ox.tools.converter.meta_description": "أداة بسيطة للتحويل بين الغرام والكيلوغرام والأونصة والباوند عند مقارنة أحجام عبوات المكملات.",
-  "ox.services.covers_title": "ما الذي تشمله الخدمة",
-  "ox.services.prepare_title": "ما تحضره قبلها",
-  "ox.services.output_title": "ما تخرج به",
-  "ox.services.stat_price": "السعر",
-  "ox.services.stat_reply": "الرد خلال",
-  "ox.services.stat_reply_unit": "ساعة عمل",
-  "ox.services.stat_change": "التعديل والإلغاء",
-  "ox.services.nutrition.title": "التغذية والمكملات: من أين تبدأ",
-  "ox.services.nutrition.subline": "لا نكتب أنظمة غذائية ولا نفسر تحاليل. نساعدك على اختيار مكمل يكمل غذاءك الحالي، وعلى استخدامه كما هو مكتوب على الملصق.",
-  "ox.services.nutrition.intro": "المكمل اسمه مكمل لأنه يكمل غذاء قائما ولا يحل محله. في الاستشارة المرئية نمر على هدفك وعدد أيام تمرينك وميزانيتك وما تأكله في يوم عادي، ثم نقترح منتجا أو اثنين بترتيب الأولوية، ونشرح الجرعة المطبوعة على الملصق. لا نضع جدول وجبات، ولا نحسب سعرات، ولا نعطي رقما لوزن أو نسبة دهون.",
-  "ox.services.nutrition.scope_1": "اختيار مكمل يناسب غذاءك الحالي وهدفك",
-  "ox.services.nutrition.scope_2": "ترتيب الأولوية بين منتجين أو ثلاثة",
-  "ox.services.nutrition.scope_3": "الجرعة والتوقيت كما هما مطبوعان على الملصق",
-  "ox.services.nutrition.scope_4": "قراءة جدول الحقائق الغذائية والمكونات",
-  "ox.services.nutrition.prepare": "هدفك، وعدد أيام التمرين، وما تأكله في يوم عادي بشكل عام، وأسماء ما تستخدمه الآن.",
-  "ox.services.nutrition.output": "قائمة مكتوبة بمنتج أو منتجين بترتيب الأولوية، مع الجرعة المطبوعة على الملصق.",
-  "ox.services.nutrition.footer": "هذه ليست خطة غذائية ولا استشارة صحية. لا نضع أنظمة غذائية ولا نفسر تحاليل.",
-  "ox.services.nutrition.cta": "احجز استشارة مرئية",
-  "ox.pages.about.story_title": "قصة المتجر",
-  "ox.pages.about.stat_branch_value": "1",
-  "ox.pages.about.stat_branch_label": "فرع",
-  "ox.pages.about.stat_shipping_label": "الشحن",
-  "ox.pages.about.stat_shipping_sub": "إلى كل مدن السعودية",
-  "ox.pages.about.stat_team_value": "2",
-  "ox.pages.about.stat_team_label": "شريكان",
-  "ox.pages.about.stat_team_sub": "نرد على أسئلتكم بأنفسنا",
-  "ox.pages.about.cr_label": "السجل التجاري",
-  "ox.pages.about.vat_label": "الرقم الضريبي",
-  "ox.pages.about.maroof_label": "معروف",
-  "ox.pages.faq.h1": "أسئلة شائعة",
-  "ox.pages.faq.lead": "ما يسأل عنه المتسوقون قبل الشراء: الاختيار، والاستخدام، والطلب، والفرع. الإجابات هي نفسها التي تجدها في صفحات المنتجات والخدمات.",
-  "ox.pages.faq.search_label": "ابحث في الأسئلة",
-  "ox.pages.faq.search_placeholder": "اكتب كلمة من سؤالك",
-  "ox.pages.faq.group_service": "الخدمة والمساعدة",
-  "ox.pages.faq.group_products": "المنتجات والاستخدام",
-  "ox.pages.faq.group_branch": "الفرع والاستلام",
-  "ox.pages.faq.empty_title": "لا يوجد سؤال بهذه الكلمة",
-  "ox.pages.faq.empty_body": "جرب كلمة أخرى، أو أرسل سؤالك مكتوبا ويرد عليك فريق المتجر.",
-  "ox.pages.faq.contact_title": "لم تجد سؤالك؟",
-  "ox.pages.anchors_label": "أقسام الصفحة"
+"ox.services.title": "اسألنا قبل ما تشتري",
+
+"ox.services.intro": "سؤالك مكتوب، استشارة مرئية، أو زيارة لفرعنا في المدينة المنورة. اختر الطريقة اللي تناسبك.",
+
+"ox.services.written": "سؤال مكتوب",
+
+"ox.services.video": "استشارة مرئية 20 دقيقة",
+
+"ox.services.visit": "زيارة الفرع",
+
+"ox.services.training": "جلسة تدريب شخصي 60 دقيقة",
+
+"ox.services.free": "مجاني",
+
+"ox.services.credit": "{{amount}} ريال تنخصم من طلبك الأول",
+
+"ox.services.reply_time": "وقت الرد",
+
+"ox.services.reply_within": "نرد عليك خلال {{hours}} ساعة عمل.",
+
+"ox.services.scope_title": "وش نقدر نساعدك فيه",
+
+"ox.services.medical_line": "للحالات الصحية أو الأسئلة المتعلقة بالأدوية، الأفضل ترجع لطبيبك.",
+
+"ox.services.footer_line": "نساعدك تفهم المنتج وتختار الأنسب لهدفك واحتياجك.",
+
+"ox.services.cta_written": "أرسل سؤالك مجانًا",
+
+"ox.services.cta_video": "احجز استشارتك",
+
+"ox.services.cta_visit": "احجز زيارة أو مر علينا",
+
+"ox.services.channels_title": "اختر الطريقة اللي تناسبك",
+
+"ox.services.compare_title": "قارن الخدمات",
+
+"ox.services.compare_how": "كيف تتم",
+
+"ox.services.how_title": "كيف تبدأ",
+
+"ox.services.faq_title": "أسئلة شائعة",
+
+"ox.services.faq_1_q": "هل المساعدة مجانية؟",
+
+"ox.services.faq_1_a": "السؤال المكتوب وزيارة الفرع مجانًا. أما الاستشارة المرئية 20 دقيقة فسعرها موضح في صفحة الخدمة.",
+
+"ox.services.faq_2_q": "وش أجهز قبل المكالمة أو الزيارة؟",
+
+"ox.services.faq_2_a": "يكفينا تعرف هدفك، وعدد أيام تمرينك، والمنتجات اللي تستخدمها حاليًا، وتجهز سؤالك. وإذا جاي تستلم طلب، يكفي رقم الطلب.",
+
+"ox.services.faq_3_q": "هل أحتاج أشتري بعد ما أسأل؟",
+
+"ox.services.faq_3_a": "أبدًا. اسأل وخذ المعلومة كاملة، وبعدها قرر وش يناسبك.",
+
+"ox.services.faq_4_q": "وش نوع المساعدة اللي تقدمونها؟",
+
+"ox.services.faq_4_a": "نساعدك تفهم المنتجات، تقارن بينها، وتعرف وش يناسب هدفك وكيف تستخدمه بالطريقة الموضحة على المنتج. وللحالات الصحية أو الأسئلة الدوائية، الأفضل ترجع لطبيبك.",
+
+"ox.services.contact_title": "عندك سؤال؟",
+
+"ox.services.meta_title": "اسأل قبل ما تشتري | اوبتيمال اكس",
+
+"ox.services.meta_description": "اسأل أوبتيمال إكس قبل الشراء. سؤال مكتوب مجاني، استشارة مرئية 20 دقيقة، أو زيارة فرعنا في الخالدية بالمدينة المنورة.",
+
+"ox.branch.title": "فرعنا في المدينة المنورة",
+
+"ox.branch.address": "حي الخالدية، شارع جبار بن صخر، المدينة المنورة",
+
+"ox.branch.locality": "المدينة المنورة",
+
+"ox.branch.region": "منطقة المدينة المنورة",
+
+"ox.branch.hours": "ساعات العمل",
+
+"ox.branch.open_now": "مفتوح الآن",
+
+"ox.branch.closed_now": "مغلق الآن",
+
+"ox.branch.opens_at": "يفتح الساعة {{time}}",
+
+"ox.branch.prayer_note": "نغلق وقت الصلاة ونرجع بعدها.",
+
+"ox.branch.directions": "افتح الموقع في الخرائط",
+
+"ox.branch.whatsapp": "راسلنا على واتساب",
+
+"ox.branch.pickup_title": "استلم طلبك من الفرع",
+
+"ox.branch.pickup_free": "الاستلام من الفرع مجاني",
+
+"ox.branch.order_ready": "طلبك جاهز للاستلام",
+
+"ox.branch.faq_title": "أسئلة شائعة عن الفرع",
+
+"ox.branch.interior_alt": "داخل فرع اوبتيمال اكس في حي الخالدية بالمدينة المنورة",
+
+"ox.branch.meta_description": "فرع اوبتيمال اكس في حي الخالدية بالمدينة المنورة، شارع جبار بن صخر. استلم طلبك مجانًا، وشوف المنتجات واسأل فريقنا. ساعات العمل والخريطة هنا.",
+
+"ox.pages.about.h1": "من نحن",
+
+"ox.pages.about.lead": "أوبتيمال إكس متجر مكملات غذائية ورياضية من المدينة المنورة، بدأنا بفرع في حي الخالدية ونوصل طلباتنا إلى جميع مدن السعودية.",
+
+"ox.pages.about.story_1": "فكرة أوبتيمال إكس بدأت من تجربة مررنا فيها مثل كثير من الناس. كنا نشتري مكملات، وبعد فترة نكتشف أن بعض الأشياء ما كانت تناسبنا من الأساس. غالبًا لأننا ما كنا نعرف وش الفرق بين المنتجات أو وش اللي نحتاجه فعلًا. من هنا بدأت الفكرة: متجر يساعدك تفهم اختيارك قبل ما تشتري.",
+
+"ox.pages.about.story_2": "نختار منتجاتنا بعناية ونركز على تشكيلة نعرفها ونقدر نشرحها. نوضح لك المعلومات المهمة عن كل منتج مثل عدد الحصص، حجم الحصة وتاريخ الصلاحية، ونبسط لك جدول الحقائق الغذائية عشان تعرف وش تعني الأرقام والمكونات.",
+
+"ox.pages.about.story_3": "إذا كنت محتار بين منتجين أو ما تعرف وش يناسب هدفك، تقدر تسألنا قبل الشراء. نوفر استشارة مجانية، وخيارات من الخطط والخدمات الغذائية والتدريبية، ونساعدك تختار الأنسب لك وتستخدم المنتج بالطريقة الصحيحة.",
+
+"ox.pages.about.story_4": "بدأنا من المدينة المنورة وما زلنا في البداية. نبني أوبتيمال إكس خطوة بخطوة، ونحرص أن يكون عندك مكان تعرف وش تشتري منه، وتلقى أحد يرد عليك إذا احتجت.",
+
+"ox.pages.about.why_title": "ليش أوبتيمال إكس",
+
+"ox.pages.about.why_1_title": "نشرح قبل ما تشتري",
+
+"ox.pages.about.why_1_body": "نوضح لك المعلومات المهمة عن المنتج وعدد الحصص وحجم الحصة وتاريخ الصلاحية، ونبسط لك الحقائق الغذائية.",
+
+"ox.pages.about.why_2_title": "تشكيلة مختارة",
+
+"ox.pages.about.why_2_body": "نختار منتجات نعرفها ونقدر نشرحها لك، ونضيف للتشكيلة لما يكون فيه سبب واضح يخدم احتياج العميل.",
+
+"ox.pages.about.why_3_title": "اختيار على حسب هدفك",
+
+"ox.pages.about.why_3_body": "نسألك عن هدفك واحتياجك ونساعدك تقارن الخيارات وتختار المنتج أو الخدمة الأقرب لك.",
+
+"ox.pages.about.why_4_title": "من المدينة المنورة",
+
+"ox.pages.about.why_4_body": "بدأنا بفرع في حي الخالدية، ونوصل طلباتنا إلى جميع مدن السعودية، وفريقنا موجود للرد على أسئلتكم.",
+
+"ox.pages.about.photo_alt": "واجهة فرع اوبتيمال اكس في حي الخالدية، المدينة المنورة",
+
+"ox.pages.about.registration_title": "بيانات المنشأة",
+
+"ox.pages.about.meta_title": "من نحن | اوبتيمال اكس للمكملات الغذائية والرياضية",
+
+"ox.pages.about.meta_description": "تعرف على أوبتيمال إكس، متجر مكملات غذائية ورياضية من المدينة المنورة. نختار منتجاتنا بعناية ونساعدك تعرف وش يناسب هدفك واحتياجك.",
+
+"ox.pages.contact.h1": "تواصل معنا",
+
+"ox.pages.contact.intro": "عندك سؤال عن منتج، طلب أو خدمة؟ اختر الطريقة اللي تناسبك وتواصل معنا.",
+
+"ox.pages.contact.channels_title": "طرق التواصل",
+
+"ox.pages.contact.whatsapp_line": "للأسئلة السريعة عن المنتجات، التوفر، الطلبات والاستلام. خلال ساعات العمل.",
+
+"ox.pages.contact.email_line": "للأسئلة المكتوبة، الفواتير، والاسترجاع.",
+
+"ox.pages.contact.phone_line": "للتواصل خلال ساعات العمل.",
+
+"ox.pages.contact.branch_title": "فرعنا",
+
+"ox.pages.contact.branch_line": "تلقى ساعات العمل والموقع في صفحة الفرع.",
+
+"ox.pages.contact.social_line": "تابعنا على حساباتنا لمعرفة الجديد والعروض والمحتوى.",
+
+"ox.pages.contact.social_title": "حساباتنا",
+
+"ox.pages.contact.hours_line": "أيام العمل من الأحد إلى الخميس. ونرد على الرسائل اللي توصل خارج ساعات العمل في أقرب يوم عمل.",
+
+"ox.pages.contact.ask_title": "اسألنا قبل ما تشتري",
+
+"ox.pages.contact.pdpl": "TODO-legal: لطلب نسخة من بياناتك أو حذفها، تواصل معنا عبر القنوات المذكورة في سياسة الخصوصية.",
+
+"ox.pages.contact.meta_title": "تواصل معنا | اوبتيمال اكس",
+
+"ox.pages.contact.meta_description": "تواصل مع اوبتيمال اكس عبر واتساب أو البريد أو الهاتف، أو زر فرعنا في حي الخالدية بالمدينة المنورة.",
+
+"ox.error.404_title": "الصفحة غير موجودة",
+
+"ox.error.404_body": "يمكن الرابط تغير أو المنتج ما عاد ضمن التشكيلة. تقدر ترجع للرئيسية أو تبحث عن المنتج.",
+
+"ox.error.generic_title": "صار خطأ",
+
+"ox.error.generic_body": "ما اكتمل طلبك. جرّب مرة ثانية، وإذا استمر الخطأ تواصل معنا على واتساب.",
+
+"ox.error.offline_title": "ما فيه اتصال بالإنترنت",
+
+"ox.error.offline_body": "تأكد من اتصالك بالإنترنت وحاول مرة ثانية. سلتك محفوظة.",
+
+"ox.error.report_link": "واجهت المشكلة من رابط داخل المتجر؟ بلغنا ونراجعها.",
+
+"ox.error.home": "الرئيسية",
+
+"ox.error.search_label": "ابحث عن منتج",
+
+"ox.error.latest_title": "أحدث المنتجات",
+
+"ox.error.code": "رمز الخطأ {{code}}",
+
+"ox.form.name": "الاسم",
+
+"ox.form.phone": "رقم الجوال",
+
+"ox.form.email": "البريد الإلكتروني",
+
+"ox.form.subject": "الموضوع",
+
+"ox.form.message": "الرسالة",
+
+"ox.form.goal": "هدفك",
+
+"ox.form.training_frequency": "كم يوم تتمرن في الأسبوع؟",
+
+"ox.form.dietary_preferences": "تفضيلاتك الغذائية",
+
+"ox.form.current_products": "وش تستخدم حاليًا؟",
+
+"ox.form.question": "سؤالك",
+
+"ox.form.label_photo": "صورة الملصق (اختياري)",
+
+"ox.form.order_number": "رقم الطلب",
+
+"ox.form.consent": "TODO-legal: أوافق على معالجة بياناتي لغرض الرد على سؤالي أو تأكيد موعدي، وفق سياسة الخصوصية.",
+
+"ox.form.submit": "إرسال",
+
+"ox.form.sending": "جاري الإرسال",
+
+"ox.form.sent": "تم الإرسال",
+
+"ox.validation.required": "هذا الحقل مطلوب",
+
+"ox.validation.phone": "أدخل رقم جوال سعودي يبدأ بـ 05",
+
+"ox.validation.email": "أدخل بريدًا إلكترونيًا صحيحًا",
+
+"ox.validation.min_length": "اكتب {{n}} أحرف على الأقل",
+
+"ox.validation.max_length": "الحد الأقصى {{max}} حرف",
+
+"ox.validation.file_type": "الصيغ المقبولة JPG أو PNG",
+
+"ox.validation.file_size": "حجم الملف يتجاوز {{max}} ميغابايت",
+
+"ox.validation.consent": "نحتاج موافقتك لإرسال النموذج",
+
+"ox.validation.slot": "اختر موعدًا قبل التأكيد",
+
+"ox.validation.quantity": "الكمية المتاحة {{max}}",
+
+"ox.tools.converter.h1": "محول وحدات المكملات",
+
+"ox.tools.converter.intro": "حوّل بين الغرام والكيلوغرام والأونصة والباوند لمقارنة أحجام العبوات ووزن الحصة.",
+
+"ox.tools.converter.amount_label": "القيمة",
+
+"ox.tools.converter.from_label": "من وحدة",
+
+"ox.tools.converter.to_label": "إلى وحدة",
+
+"ox.tools.converter.result": "{{value}} {{unit}}",
+
+"ox.tools.converter.result_label": "الناتج",
+
+"ox.tools.converter.invalid": "أدخل رقمًا موجبًا",
+
+"ox.tools.converter.note": "هذا التحويل للوزن فقط. وزن الحصة وطريقة الاستخدام تبقى كما هي على ملصق المنتج.",
+
+"ox.tools.converter.unit_g": "غرام",
+
+"ox.tools.converter.unit_kg": "كيلوغرام",
+
+"ox.tools.converter.unit_oz": "أونصة",
+
+"ox.tools.converter.unit_lb": "باوند",
+
+"ox.tools.converter.meta_title": "محول وحدات المكملات | اوبتيمال اكس",
+
+"ox.tools.converter.meta_description": "أداة بسيطة للتحويل بين الغرام والكيلوغرام والأونصة والباوند عند مقارنة أحجام عبوات المكملات.",
+
+"ox.services.covers_title": "وش تشمل الخدمة",
+
+"ox.services.prepare_title": "وش تحتاج قبلها",
+
+"ox.services.output_title": "وش تطلع به",
+
+"ox.services.stat_price": "السعر",
+
+"ox.services.stat_reply": "وقت الرد",
+
+"ox.services.stat_reply_unit": "ساعة عمل",
+
+"ox.services.stat_change": "التعديل والإلغاء",
+
+"ox.services.nutrition.title": "التغذية والمكملات: من وين تبدأ",
+
+"ox.services.nutrition.subline": "إذا كنت محتار وش تحتاج أو محتار بين أكثر من منتج، نساعدك ترتب خياراتك وتفهم الفرق بينها.",
+
+"ox.services.nutrition.intro": "في الاستشارة المرئية نتعرف على هدفك، وعدد أيام تمرينك، ونمط أكلك بشكل عام، والمنتجات اللي تستخدمها حاليًا. بعدها نساعدك تختار المنتجات والخدمات الأقرب لاحتياجك، ونشرح لك المعلومات وطريقة الاستخدام الموجودة على المنتج.",
+
+"ox.services.nutrition.scope_1": "اختيار مكمل يناسب هدفك واحتياجك",
+
+"ox.services.nutrition.scope_2": "مقارنة الخيارات ومعرفة الفرق بينها",
+
+"ox.services.nutrition.scope_3": "فهم الجرعة والتوقيت المكتوبين على المنتج",
+
+"ox.services.nutrition.scope_4": "قراءة جدول الحقائق الغذائية والمكونات",
+
+"ox.services.nutrition.prepare": "هدفك، وعدد أيام تمرينك، ونمط أكلك بشكل عام، وأسماء المنتجات اللي تستخدمها حاليًا.",
+
+"ox.services.nutrition.output": "فهم أوضح لخياراتك، مع ترشيحات للمنتجات أو الخدمات الأقرب لهدفك واحتياجك.",
+
+"ox.services.nutrition.footer": "هدف الاستشارة مساعدتك على فهم خياراتك واتخاذ قرار أوضح.",
+
+"ox.services.nutrition.cta": "احجز استشارة مرئية",
+
+"ox.pages.about.story_title": "قصتنا",
+
+"ox.pages.about.stat_branch_value": "1",
+
+"ox.pages.about.stat_branch_label": "فرع",
+
+"ox.pages.about.stat_shipping_label": "الشحن",
+
+"ox.pages.about.stat_shipping_sub": "إلى جميع مدن السعودية",
+
+"ox.pages.about.stat_team_value": "2",
+
+"ox.pages.about.stat_team_label": "شريكان",
+
+"ox.pages.about.stat_team_sub": "نرد على أسئلتكم بأنفسنا",
+
+"ox.pages.about.cr_label": "السجل التجاري",
+
+"ox.pages.about.vat_label": "الرقم الضريبي",
+
+"ox.pages.about.maroof_label": "معروف",
+
+"ox.pages.faq.h1": "أسئلة شائعة",
+
+"ox.pages.faq.lead": "هنا تلقى إجابات على أكثر الأسئلة اللي توصلنا قبل الشراء، من اختيار المنتج واستخدامه إلى الطلب والاستلام من الفرع.",
+
+"ox.pages.faq.search_label": "ابحث في الأسئلة",
+
+"ox.pages.faq.search_placeholder": "اكتب كلمة من سؤالك",
+
+"ox.pages.faq.group_service": "الخدمة والمساعدة",
+
+"ox.pages.faq.group_products": "المنتجات والاستخدام",
+
+"ox.pages.faq.group_branch": "الفرع والاستلام",
+
+"ox.pages.faq.empty_title": "ما لقينا سؤال بهذه الكلمة",
+
+"ox.pages.faq.empty_body": "جرّب كلمة ثانية، أو أرسل لنا سؤالك مباشرة.",
+
+"ox.pages.faq.contact_title": "ما لقيت إجابتك؟",
+
+"ox.pages.anchors_label": "أقسام الصفحة"
 }
