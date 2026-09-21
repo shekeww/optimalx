@@ -30,3 +30,7 @@ app/routeTree.gen.ts
 
 # OAuth token pair written by scripts/salla-auth.mjs. Never committed.
 .salla-token.json
+
+# Preview and browser-session artefacts (never shipped, never reviewed)
+.playwright-mcp/
+.offline-preview.log
