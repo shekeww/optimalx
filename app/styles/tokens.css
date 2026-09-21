@@ -26,8 +26,9 @@
      engine also loads a static Google Cairo from the dashboard, and leading
      with the shared name would let that resolve 400 and 700 while ours served
      the rest. Plain 'Cairo' stays as the fallback. See 01-settings/fonts.scss. */
-  --font-main: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-ar: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ox-font: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-main: var(--ox-font);
+  --font-ar: var(--ox-font);
 
   /* ---------- Ours: the Cairo weight ladder ----------
      Cairo is self-hosted and genuinely variable, wght 200 to 1000, split by

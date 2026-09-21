@@ -7,14 +7,22 @@
 @import "tailwindcss/utilities";
 @import "./app.scss";
 
-/* RTL-specific font */
+/* The brand font is the theme's, not the dashboard's. The engine's applyTheme
+   writes the store's identity font as an INLINE --font-main on the root
+   element, and an inline declaration beats every stylesheet rule on that
+   element, including the [dir="rtl"] remap the scaffold shipped: on a store
+   whose dashboard font is not Cairo (the Partners demo stores, 2026-09-21)
+   the whole page fell back to that font. `!important` on a custom property
+   is the one thing that outranks an inline value, so the identity holds
+   wherever the theme is installed, and the engine components that read
+   var(--font-main) inline get Cairo too. */
+:root,
 [dir="rtl"] {
-  --font-main: var(--font-ar);
+  --font-main: var(--ox-font) !important;
 }
 
-/* Apply fonts from Salla SDK if available */
 body {
-  font-family: var(--font-main);
+  font-family: var(--ox-font);
 }
 
 /* Reserve the scrollbar gutter on the viewport at all times. When a modal or
