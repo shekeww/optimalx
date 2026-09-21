@@ -142,7 +142,11 @@ export function Header() {
     return () => window.removeEventListener(DRAWER_OPEN_EVENT, onOpen);
   }, []);
 
-  const sticky = (settings as Record<string, unknown> | undefined)?.header_is_sticky !== false;
+  // Not sticky unless the merchant switches it on. The identity has the bar
+  // scroll away with the page (owner call, 2026-09-22); the earlier `!== false`
+  // made every store without the setting sticky, which is what the Partners
+  // demo stores showed.
+  const sticky = (settings as Record<string, unknown> | undefined)?.header_is_sticky === true;
   const withSearchRow = SEARCH_ROW_ROUTES.has(routeId) || SEARCH_ROW_ROUTES.has(leafRouteId);
 
   const classes = [
