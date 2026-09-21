@@ -9,6 +9,7 @@ import { Explainer } from './GoalLanding/Explainer';
 import { NeedHelp } from './GoalLanding/NeedHelp';
 import { SubNeeds } from './GoalLanding/SubNeeds';
 import { ListingHeader } from './ListingHeader';
+import { ListingToolbar } from './ListingToolbar';
 import { ListEnd, LoadMore } from './LoadMore';
 import { ProductCardSkeleton } from './ProductGrid';
 import { RelatedGuides } from './RelatedGuides';
@@ -29,14 +30,22 @@ export default function KitchenSink() {
     <section>
       <h2>Listing (B4)</h2>
 
-      <h3>ListingHeader</h3>
-      <ListingHeader
-        title="واي بروتين"
-        intro={<CategoryIntro introKey="ox.content.categories.whey_protein.intro" />}
+      <h3>ListingHeader, in the masthead band</h3>
+      <div className="ox-listing__band">
+        <div className="ox-container ox-listing__band-inner">
+          <ListingHeader
+            title="واي بروتين"
+            intro={<CategoryIntro introKey="ox.content.categories.whey_protein.intro" />}
+          />
+        </div>
+      </div>
+
+      <h3>ListingToolbar</h3>
+      <ListingToolbar
+        chips={<ChildChips slug="protein" />}
         sort={{ value: 'ourSuggest', options: sortOptions(t), onChange: () => undefined }}
         filters={{ count: 2, onOpen: () => undefined }}
       />
-      <ChildChips slug="protein" />
 
       <h3>Grid skeleton</h3>
       <ul className="ox-grid-products">

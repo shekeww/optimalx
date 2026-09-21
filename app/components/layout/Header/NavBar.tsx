@@ -1,8 +1,13 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTwilight } from '@salla.sa/twilight-theme-engine';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { HEADER_NAV, SECONDARY_NAV, type NavEntry } from '../../../content/nav';
+import { Icon } from '../../common/Icon';
+import type { TaxonomyLink } from '../../listing/useTaxonomyLinks';
+import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
+import { resolveNavHref } from '../navLinks';
 import { MegaPanel } from './MegaPanel';
 import { useHeaderMenu } from './useHeaderMenu';
 
@@ -14,6 +19,7 @@ interface NavLinkItem {
   key: string;
   label: string;
   to: string;
+  dropdown?: NavEntry['dropdown'];
 }
 
 /**
@@ -22,46 +28,158 @@ interface NavLinkItem {
  * Pure so the arithmetic is testable without a layout engine: the component
  * feeds it measured widths. Returns `items.length` when everything fits, in
  * which case no overflow control is rendered at all.
+ *
+ * **`gap` is the row's own column gap and it is not optional in practice.**
+ * The list is a 32px-gap flex row, so five items do not cost the sum of five
+ * widths, they cost that plus four gaps, and leaving the gaps out of the sum
+ * overstates what fits by 128px. Measured on the live store at 1440: the row
+ * reported four items and a "المزيد" control as fitting a 510px nav, and the
+ * control was laid out at x=552 against a nav starting at x=691, which is to
+ * say underneath the search pill. Every gap is counted here now: the ones
+ * between the items that stay, and the one before the overflow control.
  */
-export function fitCount(itemWidths: number[], containerWidth: number, moreWidth: number): number {
+export function fitCount(
+  itemWidths: number[],
+  containerWidth: number,
+  moreWidth: number,
+  gap = 0
+): number {
   let total = 0;
   for (const width of itemWidths) total += width;
+  total += gap * Math.max(0, itemWidths.length - 1);
   if (total <= containerWidth) return itemWidths.length;
 
-  const budget = containerWidth - moreWidth;
+  const budget = containerWidth - moreWidth - gap;
   let used = 0;
   let count = 0;
   for (const width of itemWidths) {
-    if (used + width > budget) break;
-    used += width;
+    const next = used + width + (count > 0 ? gap : 0);
+    if (next > budget) break;
+    used = next;
     count += 1;
   }
   return count;
 }
 
+/** The row's column gap in pixels, or 0 where the engine reports none. */
+function columnGapOf(node: HTMLElement): number {
+  if (typeof getComputedStyle !== 'function') return 0;
+  const value = parseFloat(getComputedStyle(node).columnGap);
+  return Number.isFinite(value) ? value : 0;
+}
+
+/** "المكملات": the ten type roots, protein expandable to its five children. */
+function TypesDropdown({ types, onClose }: { types: TaxonomyLink[]; onClose: () => void }) {
+  return (
+    <ul className="ox-nav__dropdown" data-testid="ox-nav-types-panel">
+      {types.map((type) => (
+        <li key={type.slug}>
+          <Link to={type.to} className="ox-nav__droplink" onClick={onClose}>
+            {type.label}
+          </Link>
+          {type.children.length > 0 ? (
+            <ul className="ox-nav__subdropdown">
+              {type.children.map((child) => (
+                <li key={child.slug}>
+                  <Link to={child.to} className="ox-nav__droplink ox-nav__droplink--sub" onClick={onClose}>
+                    {child.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** "البروتين": protein's own five children, no live grandchildren to nest. */
+function ProteinDropdown({ node, onClose }: { node: TaxonomyLink | undefined; onClose: () => void }) {
+  if (!node || node.children.length === 0) return null;
+  return (
+    <ul className="ox-nav__dropdown" data-testid="ox-nav-protein-panel">
+      {node.children.map((child) => (
+        <li key={child.slug}>
+          <Link to={child.to} className="ox-nav__droplink" onClick={onClose}>
+            {child.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** "المزيد": the four utility categories, then the standing pages. */
+function MoreDropdown({
+  utility,
+  pages,
+  onClose,
+}: {
+  utility: TaxonomyLink[];
+  pages: NavLinkItem[];
+  onClose: () => void;
+}) {
+  return (
+    <ul className="ox-nav__dropdown" data-testid="ox-nav-more-panel">
+      {utility.map((node) => (
+        <li key={node.slug}>
+          <Link to={node.to} className="ox-nav__droplink" onClick={onClose}>
+            {node.label}
+          </Link>
+        </li>
+      ))}
+      {pages.map((page) => (
+        <li key={page.key}>
+          <Link to={page.to} className="ox-nav__droplink" onClick={onClose}>
+            {page.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /**
- * The desktop category row (DIRECTION 5.1 NavBar, 6.1: 48 tall).
+ * The desktop navigation, inside the main bar rather than in a row of its own.
  *
- * Order: the goals item (which opens the mega panel, gated on the
- * `show_goal_nav` setting), the live categories from
- * `menu.queries.header()`, then the three standing pages. Items that would
- * overflow the container move into a "المزيد" dropdown, recomputed with a
- * ResizeObserver.
+ * Five items, taxonomy-built (PLAN-ship Batch S1 step 3): المنتجات (mega
+ * panel, `show_goal_nav` gated), المكملات (the ten type roots), البروتين
+ * (its five children), اسأل قبل أن تشتري (the advisory, a plain link) and
+ * المزيد (the four utility categories plus the standing pages). Every
+ * dropdown's content comes from `useTaxonomyLinks` (Contract C): a slug
+ * resolves to its live category once the merchant creates one, and to a
+ * search for its own name otherwise (PLAN-final C15).
  *
- * Categories are never keyed by id: the dashboard categories do not exist yet
- * and the menu is the only source of a URL (PLAN-final C15).
+ * **Three of the four dropdown items are real links, not buttons.** المنتجات,
+ * المكملات and البروتين each have their own destination
+ * (`/latest-products`, `/categories`, the protein category), so the item is
+ * an anchor that navigates on click and opens its dropdown on hover or focus
+ * - the dropdown is a shortcut, not the only way in. المزيد has no single
+ * destination of its own (it is a shelf of four categories and four pages),
+ * so it stays a toggle button, the same pattern the old goals item used.
+ *
+ * **`show_goal_nav` still gates المنتجات's panel, not its presence.** The
+ * item is always on the bar; the setting decides whether hovering it opens
+ * the mega panel (goals column + types column) or nothing, so a merchant who
+ * has not opted into the goals axis still gets a working "products" link.
+ *
+ * Items that would overflow the bar move into the row's own overflow
+ * control ("المزيد", the automatic one, distinct from the taxonomy "المزيد"
+ * item above): recomputed with a ResizeObserver, which is what keeps the
+ * row on one line between 1024 and 1280 without wrapping the search pill.
  */
 export function NavBar() {
   const { t } = useTranslation();
   const { settings } = useTheme();
   const { location } = useTwilight();
-  const { items, goals } = useHeaderMenu();
+  const { items } = useHeaderMenu();
+  const { types, goals, utility, bySlug } = useTaxonomyLinks();
 
-  const showGoals = (settings as Record<string, unknown> | undefined)?.show_goal_nav !== false;
+  const showGoals = (settings as Record<string, unknown> | undefined)?.show_goal_nav === true;
   const panelId = useId();
-  const goalsItemId = `${panelId}-goals`;
 
-  const [open, setOpen] = useState(false);
+  const [openKey, setOpenKey] = useState<string | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [visible, setVisible] = useState<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -71,37 +189,45 @@ export function NavBar() {
   const countRef = useRef(0);
   const listRef = useRef<HTMLUListElement>(null);
   const moreRef = useRef<HTMLLIElement>(null);
-  const goalsRef = useRef<HTMLButtonElement>(null);
 
-  const links: NavLinkItem[] = [
-    ...items.map((item) => ({ key: String(item.id), label: item.title, to: item.url })),
-    { key: 'services', label: t('ox.nav.services'), to: '/services' },
-    { key: 'guides', label: t('ox.nav.guides'), to: '/blog' },
-    { key: 'branch', label: t('ox.nav.branch'), to: '/branch' },
-  ];
+  const links: NavLinkItem[] = [];
+  for (const entry of HEADER_NAV) {
+    const label = t(entry.labelKey);
+    // المنتجات falls back to a plain link when the merchant has not opted
+    // into the goals axis (see the module doc); every other item keeps its
+    // dropdown.
+    const dropdown = entry.dropdown === 'products' && !showGoals ? undefined : entry.dropdown;
+    const to =
+      entry.key === 'protein'
+        ? (bySlug('protein')?.to ?? resolveNavHref(entry, label, items) ?? '/')
+        : (resolveNavHref(entry, label, items) ?? '/');
+    links.push({ key: entry.key, label, to, dropdown });
+  }
+
+  const pages: NavLinkItem[] = SECONDARY_NAV.map((entry) => ({
+    key: entry.key,
+    label: t(entry.labelKey),
+    to: resolveNavHref(entry, t(entry.labelKey), items) ?? entry.to ?? '/',
+  }));
 
   const measure = useCallback(() => {
     const list = listRef.current;
     if (!list) return;
-    const row = list.getBoundingClientRect().width;
+    const host = list.parentElement ?? list;
+    const row = host.getBoundingClientRect().width;
     if (!row) return;
-    // The goals item never moves into the overflow, so its width comes off the
-    // budget before anything is measured against it.
-    const fixed = list.querySelector<HTMLElement>('[data-nav-fixed]');
-    const container = row - (fixed?.getBoundingClientRect().width ?? 0);
+    const gap = columnGapOf(list);
     const rendered = Array.from(list.querySelectorAll<HTMLElement>('[data-nav-item]'));
     if (rendered.length >= countRef.current) {
       widths.current = rendered.map((node) => node.getBoundingClientRect().width);
     }
     if (widths.current.length === 0) return;
     const moreWidth = moreRef.current?.getBoundingClientRect().width ?? 96;
-    setVisible(fitCount(widths.current, container, moreWidth));
+    setVisible(fitCount(widths.current, row, moreWidth, gap));
   }, []);
 
   countRef.current = links.length;
 
-  // A changed item set invalidates the cached widths: render them all again,
-  // then re-measure on the next pass.
   useEffect(() => {
     widths.current = [];
     setVisible(null);
@@ -113,9 +239,12 @@ export function NavBar() {
 
   useEffect(() => {
     measure();
-    if (typeof ResizeObserver === 'undefined' || !listRef.current) return;
+    const list = listRef.current;
+    if (typeof ResizeObserver === 'undefined' || !list) return;
     const observer = new ResizeObserver(measure);
-    observer.observe(listRef.current);
+    const host = list.parentElement;
+    if (host) observer.observe(host);
+    observer.observe(list);
     return () => observer.disconnect();
   }, [measure, links.length]);
 
@@ -125,99 +254,161 @@ export function NavBar() {
     };
   }, []);
 
-  const schedule = (next: boolean) => {
+  const schedule = (next: string | null) => {
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOpen(next), next ? OPEN_DELAY : CLOSE_DELAY);
+    timer.current = setTimeout(() => setOpenKey(next), next ? OPEN_DELAY : CLOSE_DELAY);
   };
-
-  const closePanel = useCallback(() => {
+  const cancelClose = () => {
     if (timer.current) clearTimeout(timer.current);
-    setOpen(false);
-    goalsRef.current?.focus();
-  }, []);
+  };
+  const close = (key: string) => {
+    cancelClose();
+    setOpenKey((current) => (current === key ? null : current));
+  };
 
   const shown = visible === null ? links : links.slice(0, visible);
   const overflow = visible === null ? [] : links.slice(visible);
-  const isActive = (to: string) => to !== '/' && Boolean(location?.pathname?.startsWith(to));
+  const isActive = (to: string) =>
+    to !== '/' && !to.startsWith('/search') && Boolean(location?.pathname?.startsWith(to));
+
+  const panelContent = (link: NavLinkItem): ReactNode => {
+    if (link.dropdown === 'types') return <TypesDropdown types={types} onClose={() => close(link.key)} />;
+    if (link.dropdown === 'protein')
+      return <ProteinDropdown node={bySlug('protein')} onClose={() => close(link.key)} />;
+    if (link.dropdown === 'more')
+      return <MoreDropdown utility={utility} pages={pages} onClose={() => close(link.key)} />;
+    return null;
+  };
 
   return (
     <nav className="ox-nav" aria-label={t('ox.nav.main_label')} data-testid="ox-navbar">
-      <div className="ox-nav__inner ox-container">
-        <ul className="ox-nav__list" ref={listRef}>
-          {showGoals ? (
-            <li className="ox-nav__item ox-nav__item--goals" data-nav-fixed="">
-              <button
-                type="button"
-                id={goalsItemId}
-                ref={goalsRef}
-                className={`ox-nav__link${open ? ' is-open' : ''}`}
-                aria-expanded={open}
-                aria-controls={panelId}
-                data-testid="ox-nav-goals"
-                onClick={() => {
-                  if (timer.current) clearTimeout(timer.current);
-                  setOpen((current) => !current);
-                }}
-                onPointerEnter={() => schedule(true)}
-                onPointerLeave={() => schedule(false)}
-              >
-                {t('ox.nav.goals')}
-              </button>
-              {open ? (
-                <MegaPanel
-                  id={panelId}
-                  labelledBy={goalsItemId}
-                  goals={goals}
-                  categories={items}
-                  onClose={closePanel}
-                  onPointerEnter={() => {
-                    if (timer.current) clearTimeout(timer.current);
+      <ul className="ox-nav__list" ref={listRef}>
+        {shown.map((link) => {
+          const open = openKey === link.key;
+
+          if (link.dropdown === 'more') {
+            return (
+              <li className="ox-nav__item" key={link.key} data-nav-item="">
+                <button
+                  type="button"
+                  className={`ox-nav__link${open ? ' is-open' : ''}`}
+                  aria-expanded={open}
+                  aria-controls={`${panelId}-${link.key}`}
+                  data-testid={`ox-nav-${link.key}`}
+                  onClick={() => {
+                    cancelClose();
+                    setOpenKey((current) => (current === link.key ? null : link.key));
                   }}
-                  onPointerLeave={() => schedule(false)}
-                />
-              ) : null}
-            </li>
-          ) : null}
+                  onPointerEnter={() => schedule(link.key)}
+                  onPointerLeave={() => schedule(null)}
+                >
+                  {link.label}
+                  <Icon name="chevron-down" size={14} />
+                </button>
+                {open ? (
+                  <div
+                    id={`${panelId}-${link.key}`}
+                    role="group"
+                    aria-label={link.label}
+                    onPointerEnter={cancelClose}
+                    onPointerLeave={() => schedule(null)}
+                  >
+                    {panelContent(link)}
+                  </div>
+                ) : null}
+              </li>
+            );
+          }
 
-          {shown.map((link) => (
+          return (
             <li className="ox-nav__item" key={link.key} data-nav-item="">
-              <Link
-                to={link.to}
-                className={`ox-nav__link${isActive(link.to) ? ' is-active' : ''}`}
-                {...(isActive(link.to) ? { 'aria-current': 'page' } : {})}
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-
-          {overflow.length > 0 ? (
-            <li className="ox-nav__item ox-nav__item--more" ref={moreRef}>
-              <button
-                type="button"
-                className="ox-nav__link"
-                aria-expanded={moreOpen}
-                data-testid="ox-nav-more"
-                onClick={() => setMoreOpen((current) => !current)}
-              >
-                {t('ox.nav.more')}
-                <i className="sicon-keyboard_arrow_down ox-mirror" aria-hidden="true" />
-              </button>
-              {moreOpen ? (
-                <ul className="ox-nav__dropdown" data-testid="ox-nav-overflow">
-                  {overflow.map((link) => (
-                    <li key={link.key}>
-                      <Link to={link.to} className="ox-nav__droplink" onClick={() => setMoreOpen(false)}>
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              {link.dropdown ? (
+                /* A trigger is a plain anchor: the engine's Link carries none
+                   of the disclosure props (aria-expanded, aria-controls, the
+                   pointer and focus handlers), and the item must keep a real
+                   href so a keyboard or no-JS visitor still reaches the page
+                   the panel summarises. Hover or focus opens the panel; click
+                   navigates. Plain items stay Links for prefetch and SPA
+                   navigation. */
+                <a
+                  href={link.to}
+                  id={`${panelId}-${link.key}-btn`}
+                  className={`ox-nav__link${isActive(link.to) ? ' is-active' : ''}${open ? ' is-open' : ''}`}
+                  aria-expanded={open}
+                  aria-controls={`${panelId}-${link.key}`}
+                  data-testid={`ox-nav-${link.key}`}
+                  onPointerEnter={() => schedule(link.key)}
+                  onPointerLeave={() => schedule(null)}
+                  onFocus={() => schedule(link.key)}
+                  onBlur={() => schedule(null)}
+                  {...(isActive(link.to) ? { 'aria-current': 'page' as const } : {})}
+                >
+                  {link.label}
+                  <Icon name="chevron-down" size={14} />
+                </a>
+              ) : (
+                <Link
+                  to={link.to}
+                  className={`ox-nav__link${isActive(link.to) ? ' is-active' : ''}`}
+                  data-testid={`ox-nav-${link.key}`}
+                  {...(isActive(link.to) ? { 'aria-current': 'page' } : {})}
+                >
+                  {link.label}
+                </Link>
+              )}
+              {link.dropdown && open ? (
+                link.dropdown === 'products' ? (
+                  <MegaPanel
+                    id={`${panelId}-${link.key}`}
+                    labelledBy={`${panelId}-${link.key}-btn`}
+                    goals={goals}
+                    types={types}
+                    onClose={() => close(link.key)}
+                    onPointerEnter={cancelClose}
+                    onPointerLeave={() => schedule(null)}
+                  />
+                ) : (
+                  <div
+                    id={`${panelId}-${link.key}`}
+                    role="group"
+                    aria-label={link.label}
+                    onPointerEnter={cancelClose}
+                    onPointerLeave={() => schedule(null)}
+                  >
+                    {panelContent(link)}
+                  </div>
+                )
               ) : null}
             </li>
-          ) : null}
-        </ul>
-      </div>
+          );
+        })}
+
+        {overflow.length > 0 ? (
+          <li className="ox-nav__item ox-nav__item--more" ref={moreRef}>
+            <button
+              type="button"
+              className="ox-nav__link"
+              aria-expanded={moreOpen}
+              data-testid="ox-nav-overflow-control"
+              onClick={() => setMoreOpen((current) => !current)}
+            >
+              {t('ox.nav.more')}
+              <Icon name="chevron-down" size={14} />
+            </button>
+            {moreOpen ? (
+              <ul className="ox-nav__dropdown" data-testid="ox-nav-overflow">
+                {overflow.map((link) => (
+                  <li key={link.key}>
+                    <Link to={link.to} className="ox-nav__droplink" onClick={() => setMoreOpen(false)}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </li>
+        ) : null}
+      </ul>
     </nav>
   );
 }

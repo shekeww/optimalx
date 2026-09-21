@@ -1,0 +1,20 @@
+# Normalise line endings on text files only. `text=auto` lets git detect
+# binaries by content; `* text` (without =auto) forced every file to text and
+# stripped CR bytes out of every image and font in the repo (7104b50).
+* text=auto eol=lf
+
+# Belt and braces: never touch these, whatever the detector says.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+*.mp4 binary
+*.webm binary

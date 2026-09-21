@@ -42,6 +42,34 @@ describe('OxTrustStrip', () => {
     expect(screen.getByTestId('ox-trust-help').textContent).toContain('مساعدة في الاختيار');
   });
 
+  it('is four cells divided by hairlines, each a glyph with two lines', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<OxTrustStrip data={data()} />);
+    const row = container.querySelector('.ox-trust__row') as HTMLElement;
+    // It owns its box rather than borrowing the product page's `.ox-stats`:
+    // that strip is a two by two grid on a phone and this one scrolls
+    // sideways under the hero, which is what the reference's phone pane
+    // shows. `data-count` is what re-spaces the survivors when a cell is
+    // gated away, so it has to be the real number and never a literal.
+    expect(row).not.toBeNull();
+    expect(row.getAttribute('data-count')).toBe('4');
+    expect(container.querySelectorAll('.ox-trust__item')).toHaveLength(4);
+    expect(container.querySelectorAll('.ox-trust__item .ox-trust__icon')).toHaveLength(4);
+    expect(container.querySelectorAll('.ox-trust__item .ox-trust__title')).toHaveLength(4);
+    expect(container.querySelectorAll('.ox-trust__item .ox-trust__line')).toHaveLength(4);
+  });
+
+  it('never prints the banned absolute on the authenticity cell', () => {
+    setSettings({});
+    renderWithProviders(<OxTrustStrip data={data()} />);
+    // The reference prints "منتجات أصلية 100%". The absolute is banned until
+    // distributor invoices exist (FINAL-claims-source), so the cell reads the
+    // claim without it and nothing on the row carries a percentage.
+    const row = screen.getByTestId('ox-trust-authentic');
+    expect(row.textContent).toContain('منتجات أصلية');
+    expect(row.textContent).not.toContain('100');
+  });
+
   it('claims official distributors only when the owner has turned the gate on', () => {
     setSettings({});
     const closed = renderWithProviders(<OxTrustStrip data={data()} />);

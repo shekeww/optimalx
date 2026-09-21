@@ -106,20 +106,30 @@ function bridgeT(t: TFunction): ItemsListTFunction {
 
 /**
  * The card skeleton, box for box (DIRECTION 5.6 "every block has a skeleton
- * whose outer box equals the final block"): a 1:1 plate, then the card's six
- * fixed rows (brand 20, name two lines, chips 24, rating 20, price 32,
- * action 44), so a loading row and a loaded row are the same height.
+ * whose outer box equals the final block").
+ *
+ * The rows are the ones `.ox-card-product` reserves: the 1:1 plate, then the
+ * name over two lines at 44, the meta line at 18, the price at 30, the savings
+ * line at 18, and the two action rows, the stepper-and-add row at 44 and the
+ * buy button at 44.
+ *
+ * Re-counted when the card was rebuilt. The card lost its brand row, grew its
+ * name box from 40 to 44 and gained two rows (the savings line and the buy
+ * button); this still described the old shape, so it stood about 48px short of
+ * what replaced it and the grid jumped on resolve. That is the same shift the
+ * card's own plate rule was changed to prevent in the same commit, which is
+ * the sort of thing a skeleton is for.
  */
 export function ProductCardSkeleton() {
   return (
     <Skeleton className="ox-card-skeleton">
       <SkeletonBlock className="ox-card-skeleton__plate" />
-      <SkeletonBar height={20} width="50%" />
-      <SkeletonBar height={20} width="90%" />
-      <SkeletonBar height={20} width="70%" />
-      <SkeletonBar height={24} width="60%" />
-      <SkeletonBar height={20} width="40%" />
-      <SkeletonBar height={32} width="55%" />
+      <SkeletonBar height={22} width="92%" />
+      <SkeletonBar height={22} width="64%" />
+      <SkeletonBar height={18} width="55%" />
+      <SkeletonBar height={30} width="50%" />
+      <SkeletonBar height={18} width="40%" />
+      <SkeletonBlock height={44} />
       <SkeletonBlock height={44} />
     </Skeleton>
   );

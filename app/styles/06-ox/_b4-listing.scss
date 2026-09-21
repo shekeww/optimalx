@@ -1,13 +1,125 @@
 // B4: listing, goal landing, filters, search and brands (DIRECTION 5.3, 5.5,
-// 6.3, 6.4, 6.8, 6.14). Role tokens only, logical properties only, motion only
-// through --dur-* and --ease-*, transform and opacity only, and nothing on a
-// wedge element animates (amendment A9).
+// 6.3, 6.4, 6.8, 6.14), carried onto the approved design
+// (docs/design-target/pdp-target.png, scratchpad/target-spec.md).
+//
+// Rules this file obeys, checked by scripts/check-rtl.mjs and check-motion.mjs:
+// logical properties only, role tokens only, motion only through --dur-* and
+// --ease-* on transform and opacity, colour never transitions, and no shadow
+// anywhere. Surfaces separate by value plus a 1px hairline, which is the one
+// thing that keeps a wall of mixed supplier photography reading as one store.
+//
+// The listing carries no wedge. The wedge is a signature that belongs to a
+// screen's dark band; a category page has no dark band, and the goal landing's
+// one wedge is the hero corner in section 9.
+
+// ---------------------------------------------------------------------------
+// 0. SHARED: the site-wide breadcrumb (shared part 9)
+//
+// Consumed by PAGES (about, contact, services, branch, blog, static pages) and
+// COMMERCE (account, cart), which is why a site-wide rule lives in a batch
+// partial: LISTING owns it, nobody redeclares it. The engine `Breadcrumb`
+// renders `nav.breadcrumbs.w-full.py-5 > ol.s-breadcrumb-wrapper >
+// li.s-breadcrumb-item`, with a 32px chevron in `span.s-breadcrumb-arrow`
+// (theme-engine Breadcrumb-W64WMO56.js). Passing `className="ox-crumbs"`
+// replaces the engine's own Tailwind classes; both selectors are styled so a
+// route that forgets the class still gets the design.
+//
+// The scoped overrides in _b6-commerce.scss (the account profile header) and
+// in the inherited Raed sheets keep winning where they apply: they are more
+// specific and they come later.
+// ---------------------------------------------------------------------------
+.ox-crumbs,
+nav.breadcrumbs {
+  display: block;
+  inline-size: 100%;
+  padding-block: var(--ox-3);
+  font-size: var(--ox-t-small);
+  line-height: var(--ox-lh-lead);
+  color: var(--ox-fg-3);
+}
+
+.ox-crumbs .s-breadcrumb-wrapper,
+nav.breadcrumbs .s-breadcrumb-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  // A long trail scrolls rather than wrapping to three lines on a phone.
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-crumbs .s-breadcrumb-item,
+nav.breadcrumbs .s-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  flex: none;
+  color: var(--ox-fg-3);
+}
+
+.ox-crumbs .s-breadcrumb-item a,
+nav.breadcrumbs .s-breadcrumb-item a {
+  @include ox-focus(2px);
+  color: var(--ox-fg-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+}
+
+// The current page is the only item set in the ink, and it is never a link.
+.ox-crumbs .s-breadcrumb-item[aria-current='page'],
+nav.breadcrumbs .s-breadcrumb-item[aria-current='page'] {
+  color: var(--ox-fg);
+  font-weight: var(--ox-w-ui);
+}
+
+// The engine ships a 32px viewBox chevron with no size attributes of its own.
+.ox-crumbs .s-breadcrumb-arrow,
+nav.breadcrumbs .s-breadcrumb-arrow {
+  color: var(--ox-ink-4);
+
+  svg {
+    inline-size: 16px;
+    block-size: 16px;
+    fill: currentColor;
+  }
+
+  [dir='ltr'] & svg {
+    transform: scaleX(-1);
+  }
+}
+
+.ox-crumbs .s-breadcrumb-item button,
+nav.breadcrumbs .s-breadcrumb-item button {
+  @include ox-focus(2px);
+  min-block-size: 32px;
+  padding-inline: var(--ox-1);
+  color: var(--ox-fg-2);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
 
 // ---------------------------------------------------------------------------
 // 1. Page frame and vertical rhythm (DIRECTION 4.2)
 // ---------------------------------------------------------------------------
 .ox-listing {
-  padding-block-end: var(--ox-12);
+  padding-block-end: var(--ox-16);
 }
 
 .ox-listing__body {
@@ -19,28 +131,76 @@
 
 @media (min-width: 1024px) {
   .ox-listing__body {
-    padding-block-start: var(--ox-16);
+    gap: var(--ox-16);
+    padding-block-start: var(--ox-8);
   }
 }
 
 // ---------------------------------------------------------------------------
-// 2. ListingHeader (DIRECTION 5.3, 6.3 block 2)
+// 2. The masthead band (DIRECTION 6.3 blocks 1 and 2)
+//
+// The head region is a full-bleed warm plate carrying the breadcrumb, the h1
+// and the category intro, closed by a hairline in the darker plate tone. It is
+// the same value-and-hairline separation the approved image uses between the
+// page and its panels, applied at page scale: it gives every listing a
+// masthead without a photograph the store does not own, and it stops a
+// catalogue page opening as a bare grid under the dark chrome.
+//
+// The goal landing has no masthead: its dark hero is the head region, and two
+// stacked head bands would be one too many.
+// ---------------------------------------------------------------------------
+.ox-listing__band {
+  background: var(--ox-plate);
+  border-block-end: 1px solid var(--ox-plate-2);
+}
+
+.ox-listing__band-inner {
+  display: flex;
+  flex-direction: column;
+  padding-block-end: var(--ox-6);
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__band-inner {
+    padding-block-end: var(--ox-8);
+  }
+}
+
+// The breadcrumb inside the masthead loses its own top padding: the band sets
+// the rhythm, and the trail sits 12 under the chrome.
+.ox-listing__band .ox-crumbs {
+  padding-block: var(--ox-3) var(--ox-4);
+}
+
+// ---------------------------------------------------------------------------
+// 3. ListingHeader: the title block (DIRECTION 5.3, 6.3 block 2)
+//
+// No count line. The products API returns no total, and a total is never
+// invented (PLAN-final B4, claims gate); the progress line under the grid
+// states the loaded count instead.
 // ---------------------------------------------------------------------------
 .ox-listing__head {
   display: flex;
   flex-direction: column;
   gap: var(--ox-3);
+  min-inline-size: 0;
 }
 
 .ox-listing__title-row {
   display: flex;
   align-items: center;
-  gap: var(--ox-3);
+  gap: var(--ox-4);
   min-block-size: 48px;
 }
 
 .ox-listing__media {
   flex: 0 0 auto;
+}
+
+.ox-listing__title-row h1,
+.ox-listing__title-row h2 {
+  margin: 0;
+  min-inline-size: 0;
 }
 
 .ox-listing__intro,
@@ -50,7 +210,12 @@
   max-inline-size: var(--ox-container-text);
 }
 
-// Two lines on mobile, one on desktop; the DOM keeps the whole paragraph.
+// Two lines, mobile and desktop alike, the `ox.common.show_more` toggle
+// (CategoryIntro.tsx) removing the clamp on demand; the DOM keeps the whole
+// paragraph either way. Desktop used to drop to one line with no way to read
+// the rest, which made the 60 to 90 word opening copy every category page is
+// supposed to carry unreadable at the width most of this store's traffic
+// renders (SEO-ENG-009).
 .ox-listing__intro-text.is-clamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -58,11 +223,71 @@
   overflow: hidden;
 }
 
+.ox-listing__intro-toggle {
+  align-self: flex-start;
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__title-row {
+    min-block-size: 56px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. The toolbar: child chips, filters trigger and sort (6.3 blocks 3 and 2)
+//
+// One instrument rather than three stray controls: a rule above and below, the
+// sub-category scroller at the RTL start and the controls at the end, sharing
+// one 64 row on desktop and stacking on a phone. It sits directly on the grid,
+// which is where a shopper looks for it.
+// ---------------------------------------------------------------------------
+.ox-listing__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  padding-block: var(--ox-2);
+  border-block: 1px solid var(--ox-bd);
+}
+
+.ox-listing__chips {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  min-block-size: 44px;
+}
+
+.ox-listing__chips-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > li {
+    flex: none;
+  }
+}
+
+.ox-chip--link {
+  text-decoration: none;
+}
+
 .ox-listing__controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--ox-3);
+  flex-wrap: wrap;
+  gap: var(--ox-2) var(--ox-3);
+  flex: none;
   min-block-size: 44px;
 }
 
@@ -82,8 +307,8 @@
   border-radius: var(--ox-r-pill);
   background: var(--ox-ink);
   color: var(--ox-paper);
-  font-size: clamp(11.5px, 11.31px + 0.048vw, 12px);
-  font-weight: 700;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-figure);
 }
 
 .ox-listing__sort {
@@ -92,17 +317,20 @@
   gap: var(--ox-2);
   margin-inline-start: auto;
 
+  // Width only. The `background` shorthand would drop the chevron the
+  // primitive draws as a background image, and the fill is already the card
+  // cream the design asks for.
   .ox-select {
     inline-size: auto;
-    min-inline-size: 168px;
+    min-inline-size: 176px;
   }
 }
 
 .ox-listing__sort-label {
   display: none;
-  font-size: clamp(13px, 12.63px + 0.095vw, 14px);
-  font-weight: 600;
-  color: var(--ox-fg-2);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg-3);
   white-space: nowrap;
 }
 
@@ -113,52 +341,47 @@
 }
 
 @media (min-width: 1024px) {
-  .ox-listing__title-row {
-    min-block-size: 56px;
+  .ox-listing__toolbar {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ox-6);
+    min-block-size: 64px;
+    padding-block: 0;
   }
-  .ox-listing__intro-text.is-clamped {
-    -webkit-line-clamp: 1;
+  .ox-listing__chips {
+    min-block-size: 64px;
   }
+  // The rail carries the same facets from 1024 up, so the trigger is a
+  // mobile-only control and is removed rather than hidden behind the rail.
   .ox-listing__filters-trigger {
     display: none;
   }
-}
-
-// ---------------------------------------------------------------------------
-// 3. Child chips (DIRECTION 6.3 block 3)
-// ---------------------------------------------------------------------------
-.ox-listing__chips {
-  min-block-size: 52px;
-  display: flex;
-  align-items: center;
-}
-
-.ox-listing__chips-row {
-  display: flex;
-  gap: var(--ox-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
+  .ox-listing__controls {
+    flex-wrap: nowrap;
+    min-block-size: 64px;
+  }
+  .ox-listing__count {
+    flex: 1 1 auto;
+    min-block-size: 64px;
   }
 }
 
-.ox-chip--link {
-  text-decoration: none;
+// ---------------------------------------------------------------------------
+// 5. Rail and grid (DIRECTION 6.3 blocks 4 and 5)
+// ---------------------------------------------------------------------------
+// The toolbar and the grid are one block: the rule under the toolbar is the
+// grid's own top edge, so they are never separated by a section gap.
+.ox-listing__catalogue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
 }
 
-// ---------------------------------------------------------------------------
-// 4. Rail and grid (DIRECTION 6.3 blocks 4 and 5)
-// ---------------------------------------------------------------------------
 .ox-listing__grid-head {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
-  scroll-margin-block-start: var(--ox-16);
+  gap: var(--ox-4);
+  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-4));
 }
 
 .ox-listing__results {
@@ -171,8 +394,43 @@
   min-inline-size: 0;
 }
 
+// The rail is a panel, not a bare column: cream fill, one hairline, 16 radius,
+// the same card contract the rest of the store uses. It renders only when the
+// API returned facets, so a store with none gets the full row for the grid and
+// that render is the designed one.
 .ox-filters {
   display: none;
+  min-inline-size: 0;
+}
+
+.ox-filters__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  min-block-size: 44px;
+  padding: var(--ox-3) var(--ox-4);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-filters__title {
+  margin: 0;
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
+}
+
+.ox-filters__body {
+  padding: var(--ox-2) var(--ox-4) var(--ox-4);
+}
+
+// `salla-filters` is a platform web component whose light-DOM class names are
+// not in this repository, so it is given the surface and the type roles rather
+// than a per-class restyle it could rename out from under us.
+.ox-filters salla-filters {
+  display: block;
+  color: var(--ox-fg);
+  font-size: var(--ox-t-body);
 }
 
 @media (min-width: 1024px) {
@@ -187,29 +445,63 @@
     z-index: var(--ox-z-raised);
     max-block-size: calc(100vh - var(--ox-h-bar) - var(--ox-6));
     overflow-y: auto;
+    background: var(--ox-surface);
+    border: 1px solid var(--ox-bd);
+    border-radius: var(--ox-r-4);
   }
 }
 
 .ox-grid-products {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ox-3);
+  gap: var(--ox-4);
   margin: 0;
   padding: 0;
   list-style: none;
   align-items: stretch;
+
+  // `ItemsList` renders the cards as direct children of this wrapper: it
+  // honours `itemsAs` only for the value "Fragment" and emits a div for every
+  // other value (components-react native/items-list/ItemsList.js). The card is
+  // therefore the grid item itself, which is what keeps one baseline per row.
+  > * {
+    min-inline-size: 0;
+  }
+
+  // The kitchen sink hand-writes list items around the same cards.
+  > li {
+    display: flex;
+  }
+
+  > li > * {
+    inline-size: 100%;
+  }
+}
+
+// The zero-products render: `ItemsList` puts the empty node inside this same
+// wrapper and marks it, so the grid stops being a grid rather than dropping the
+// state into the first column.
+.ox-grid-products.s-items-list-empty {
+  display: block;
 }
 
 @media (min-width: 640px) {
   .ox-grid-products {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--ox-4);
   }
 }
 
 @media (min-width: 1024px) {
   .ox-grid-products {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ox-6);
+    // A listing cell is 306 wide where the product page's carousel card is
+    // 211, so the card's default plate cap leaves the photograph filling about
+    // a third of the cell with dead space either side. The card reads the cap
+    // from this property, so raising it here scales the image with the cell
+    // without redefining anything the card owns. Below 1024 the cells are
+    // narrow enough that the default is already correct.
+    --ox-card-plate-max: 184px;
   }
   .ox-grid-products--with-rail {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -222,25 +514,40 @@
   }
 }
 
-// The card skeleton: the same box as a loaded card, row for row.
+// The card skeleton: the same box as a loaded card, row for row, so the swap
+// from loading to loaded shifts nothing. Padding, gap, radius, plate cap and
+// the six fixed rows are the values `.ox-card-product` declares in
+// _b3-product.scss; they are mirrored here rather than shared because that
+// file is frozen and its classes are consumed, never redefined.
 .ox-card-skeleton {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-2);
-  padding: var(--ox-3);
+  gap: var(--ox-3);
+  padding: var(--ox-4);
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4);
 }
 
 .ox-card-skeleton__plate {
   aspect-ratio: 1 / 1;
+  // The card reads its plate cap from this property and the grid raises it to
+  // 184 from 1024 up (line 498). The skeleton renders inside that same grid,
+  // so it has to read the property too: hardcoding 132 made every placeholder
+  // 52px shorter than the card that replaced it, which is the shift the
+  // skeleton exists to prevent.
+  max-block-size: var(--ox-card-plate-max, 132px);
   border-radius: var(--ox-r-2);
   margin-block-end: var(--ox-1);
 }
 
 // ---------------------------------------------------------------------------
-// 5. LoadMore: the ItemsList chrome restyled (DIRECTION 5.3)
+// 6. LoadMore: the ItemsList chrome restyled (DIRECTION 5.3)
+//
+// `ItemsList` renders the button as `<salla-button width="normal">` inside
+// `.s-items-list-load-more` (components-react native/items-list/ItemsList.js),
+// so the secondary contract is written onto the element's own button part and
+// onto the light-DOM fallback class.
 // ---------------------------------------------------------------------------
 .ox-listing__list {
   display: block;
@@ -249,11 +556,25 @@
 .s-items-list-load-more {
   display: flex;
   justify-content: center;
-  padding-block-start: var(--ox-12);
+  padding-block-start: var(--ox-8);
 
   salla-button::part(button),
   .s-button-element {
     block-size: 48px;
+    min-inline-size: 200px;
+    padding-inline: var(--ox-6);
+    border: 1px solid var(--ox-fg);
+    border-radius: var(--ox-r-2);
+    background: var(--ox-surface);
+    color: var(--ox-fg);
+    font-family: inherit;
+    font-size: var(--ox-t-body);
+    font-weight: var(--ox-w-ui);
+  }
+
+  salla-button::part(button):hover,
+  .s-button-element:hover {
+    background: var(--ox-plate);
   }
 }
 
@@ -266,11 +587,24 @@
   color: var(--ox-fg-3);
 }
 
+// The loaded count moved into the toolbar, above the grid, so it no longer
+// centres itself under a column of cards: it reads as the first thing in the
+// control row, at the same size as the sort label beside it.
 .ox-listing__progress {
   margin: 0;
-  padding-block-start: var(--ox-3);
   color: var(--ox-fg-3);
-  text-align: center;
+  text-align: start;
+  white-space: nowrap;
+}
+
+// Below 1024 it takes the whole first line of the control row, so the count,
+// the filter trigger and the sort select are never three things fighting over
+// 390px; from 1024 it sits at the row's inline start beside them.
+.ox-listing__count {
+  display: flex;
+  align-items: center;
+  flex: 1 0 100%;
+  min-inline-size: 0;
 }
 
 .s-items-list-loading,
@@ -280,8 +614,31 @@
   padding-block: var(--ox-6);
 }
 
+// The empty grid: the state sits on a plate inset the width of the grid
+// column, so a category with nothing in it still reads as a finished page
+// rather than a hole. Every category on this store is empty today, which is
+// exactly why this render is the one the design is checked in.
+.ox-listing__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-4);
+}
+
+.ox-listing__empty .ox-empty {
+  padding-block: var(--ox-12);
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__empty .ox-empty {
+    padding-block: var(--ox-16);
+  }
+}
+
 // ---------------------------------------------------------------------------
-// 6. Filters drawer (DIRECTION 5.3, 5.6 Drawer)
+// 7. Filters drawer (DIRECTION 5.3, 5.6 Drawer)
 // ---------------------------------------------------------------------------
 .ox-filters-drawer__footer {
   position: sticky;
@@ -292,12 +649,19 @@
 }
 
 // ---------------------------------------------------------------------------
-// 7. Search zero state (DIRECTION 5.3 ZeroResults, 6.8)
+// 8. Search zero state (DIRECTION 5.3 ZeroResults, 6.8)
 // ---------------------------------------------------------------------------
 .ox-zero {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-12);
+  gap: var(--ox-16);
+}
+
+.ox-zero__state {
+  max-inline-size: 560px;
+  padding-inline: var(--ox-4);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-4);
 }
 
 .ox-zero__row {
@@ -305,11 +669,12 @@
   flex-direction: column;
   gap: var(--ox-2);
   align-items: center;
+  inline-size: 100%;
 }
 
 .ox-zero__label {
   color: var(--ox-fg-3);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
 }
 
 .ox-zero__chips {
@@ -322,15 +687,24 @@
   list-style: none;
 }
 
+// The chip sits on the plate here, so it takes the card fill to stay readable.
+.ox-zero__chips .ox-chip {
+  background: var(--ox-card);
+}
+
 .ox-zero__ask {
   margin: 0;
+  padding-block-start: var(--ox-2);
   color: var(--ox-fg-2);
   text-align: center;
   max-inline-size: 420px;
+  border-block-start: 1px solid var(--ox-plate-2);
 }
 
 // ---------------------------------------------------------------------------
-// 8. Goal landing (DIRECTION 5.3 GoalLanding hero, 6.4, 4.5 goal polygon)
+// 9. Goal landing (DIRECTION 5.3 GoalLanding hero, 6.4, 4.5 goal polygon)
+//
+// The corner is this screen's one wedge, and nothing on it moves (A9).
 // ---------------------------------------------------------------------------
 .ox-goal-hero {
   position: relative;
@@ -358,12 +732,14 @@
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(23, 23, 26, 0.72),
-      rgba(23, 23, 26, 0.88)
+      rgba(14, 17, 23, 0.72),
+      rgba(14, 17, 23, 0.9)
     );
   }
 }
 
+// The tonal edge, not the orange stroke: DIRECTION 5.3 builds this hero as the
+// home hero "without the stroke", so the goal page spends no accent here.
 .ox-goal-hero__corner {
   @include ox-wedge-corner(64px, 158px);
   background: var(--ox-graphite-2);
@@ -388,8 +764,8 @@
 
 .ox-goal-hero__eyebrow {
   margin: 0;
-  font-weight: 600;
-  color: var(--ox-fg-3);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg-2);
 }
 
 .ox-goal-hero__title {
@@ -483,8 +859,8 @@
 .ox-subneeds {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-4);
-  scroll-margin-block-start: var(--ox-16);
+  gap: var(--ox-6);
+  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-4));
 }
 
 .ox-subneeds__row {
@@ -503,23 +879,34 @@
   }
 }
 
+.ox-subneed {
+  display: flex;
+  min-inline-size: 0;
+}
+
 .ox-subneed__link {
   @include ox-focus(2px);
   display: flex;
   flex-direction: column;
   gap: var(--ox-2);
-  block-size: 100%;
-  padding: var(--ox-4);
+  inline-size: 100%;
+  min-block-size: 168px;
+  padding: var(--ox-6);
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4);
   text-decoration: none;
   color: var(--ox-fg);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  transition: transform var(--dur-fast) var(--ease-out);
 
   &:hover {
-    border-color: var(--ox-bd-2);
+    border-color: var(--ox-fg);
+    transform: translateY(-2px);
   }
+}
+
+.ox-subneed__title {
+  margin: 0;
 }
 
 .ox-subneed__line {
@@ -531,21 +918,25 @@
   align-items: center;
   gap: var(--ox-1);
   margin-block-start: auto;
-  font-weight: 600;
+  padding-block-start: var(--ox-3);
+  font-weight: var(--ox-w-ui);
   color: var(--ox-fg);
 }
 
+// The panel that closes a goal landing: plate, hairline, no shadow.
 .ox-needhelp {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
-  padding: var(--ox-4);
+  gap: var(--ox-4);
+  padding: var(--ox-6);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
+  border: 1px solid var(--ox-plate-2);
+  border-radius: var(--ox-r-4);
   align-items: flex-start;
 
   p {
     margin: 0;
+    max-inline-size: 54ch;
   }
 }
 
@@ -554,12 +945,13 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: var(--ox-6);
+    gap: var(--ox-8);
+    padding: var(--ox-8);
   }
 }
 
 // ---------------------------------------------------------------------------
-// 9. FAQ and related guides (DIRECTION 6.3 blocks 7 and 8)
+// 10. FAQ and related guides (DIRECTION 6.3 blocks 7 and 8)
 // ---------------------------------------------------------------------------
 .ox-listing__faq,
 .ox-listing__guides {
@@ -568,10 +960,15 @@
   gap: var(--ox-4);
 }
 
+.ox-listing__faq {
+  max-inline-size: var(--ox-container-narrow);
+}
+
 .ox-listing__guides-list {
   margin: 0;
   padding: 0;
   list-style: none;
+  max-inline-size: var(--ox-container-narrow);
   border-block-start: 1px solid var(--ox-bd);
 }
 
@@ -593,10 +990,17 @@
 }
 
 // ---------------------------------------------------------------------------
-// 10. Brands (DIRECTION 6.14)
+// 11. Brands (DIRECTION 6.14)
 // ---------------------------------------------------------------------------
 .ox-brands {
-  padding-block: var(--ox-6) var(--ox-16);
+  padding-block-end: var(--ox-16);
+}
+
+// The band is a grandparent of its own container, so this reaches only the
+// content column under it: the grid, or the empty state when the store has no
+// brands yet.
+.ox-brands > .ox-container {
+  padding-block-start: var(--ox-8);
 }
 
 .ox-brands__head {
@@ -635,6 +1039,7 @@
 @media (min-width: 1024px) {
   .ox-brands__grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--ox-6);
   }
   .ox-brands__head {
     min-block-size: 88px;
@@ -657,12 +1062,12 @@
   aspect-ratio: 3 / 2;
   padding: var(--ox-6);
   background: var(--ox-plate);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  border: 1px solid var(--ox-plate-2);
+  border-radius: var(--ox-r-4);
+  transition: transform var(--dur-fast) var(--ease-out);
 
   .ox-brand-tile:hover & {
-    border-color: var(--ox-bd-2);
+    transform: translateY(-2px);
   }
 }
 
@@ -675,7 +1080,7 @@
 .ox-brand-tile__name {
   display: block;
   min-block-size: 40px;
-  font-weight: 600;
+  font-weight: var(--ox-w-title);
   text-align: center;
 }
 
@@ -687,7 +1092,7 @@
   inline-size: 96px;
   block-size: 64px;
   padding: var(--ox-2);
-  background: var(--ox-plate);
+  background: var(--ox-card);
   border: 1px solid var(--ox-bd);
   border-radius: var(--ox-r-2);
 }
@@ -699,11 +1104,730 @@
 }
 
 // ---------------------------------------------------------------------------
-// 11. Reduced motion (DIRECTION 7.1, 9.6)
+// 12. The product card, carried to the owner's target
+//
+// `.ox-card-product` is declared in _b3-product.scss section 1, which this
+// batch does not own. This section is the delta between what that file ships
+// and the design the owner attached ("the exact ui/ux design for product
+// cards"): the corners swap, the saving pill fills, a colour column runs down
+// the plate's trailing edge, a savings line joins the price, and the single
+// solid add button becomes a stepper plus an outlined add plus a solid accent
+// CTA. b4 is imported after b3 (_index.scss), so every rule here wins at equal
+// specificity without one `!important`.
+//
+// What the design asks for and this does NOT do, deliberately:
+//
+// - **No drop shadow.** The reference card sits on a soft shadow. There is not
+//   one shadow in the approved target and this file's own contract is value
+//   plus a hairline; a single shadowed component in a flat store reads as a
+//   foreign paste. The card keeps its 1px hairline.
+// - **No tint on the plate.** The reference photograph sits on a pale plate.
+//   Every product photograph in this catalogue is a JPEG or a lossy WebP with
+//   a baked-in white ground, so a grey plate under them draws a visible white
+//   rectangle inside a grey box on every card. That is the same defect the
+//   owner has just asked to be fixed on the product page, and introducing it
+//   here to match a mockup would be trading a real render for a drawing.
+// ---------------------------------------------------------------------------
+
+// The corners swap: the heart takes the reading start, the badge column the
+// opposite corner. Both rules re-point an inset the base file set the other
+// way, so both sides are stated rather than left to inherit.
+.ox-card-product__wish {
+  inset-inline-start: calc(var(--ox-1) * -1);
+  inset-inline-end: auto;
+}
+
+.ox-card-product__badges {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  align-items: flex-end;
+}
+
+// The saving pill: solid go, reversed type, fully rounded. Scoped to the card
+// so the soft treatment `.ox-badge--saving` carries everywhere else stays.
+// #0F7B4F against white measures 5.42:1, so the reversed label clears AA at
+// the badge's 12/700.
+.ox-card-product__saving-badge {
+  gap: var(--ox-1);
+  border-radius: var(--ox-r-pill);
+  background: var(--ox-go);
+  border-color: var(--ox-go);
+  color: var(--ox-paper);
+
+  // `.ox-price` sets its own ink and puts the riyal mark in the accent; inside
+  // a filled pill both have to take the pill's colour or the amount vanishes.
+  .ox-price,
+  .ox-price__mark,
+  .sicon-sar {
+    color: inherit;
+  }
+}
+
+.ox-card-product__percent {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+}
+
+// The colour column on the plate's trailing edge. It is a PREVIEW, not a
+// chooser: Salla's option modal is the only thing that may select a variant,
+// so the dots take no pointer events and a tap passes through to the card's
+// stretched title link, which opens the product page where that modal lives.
+.ox-card-product__swatches {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ox-card-product__swatch {
+  inline-size: 14px;
+  block-size: 14px;
+  border: 1px solid var(--ox-bd-2);
+  border-radius: var(--ox-r-pill);
+  // Set from the product's own option hex; the fallback keeps the dot visible
+  // if a colour ever arrives empty.
+  background: var(--ox-swatch, var(--ox-plate));
+
+  // The ring on the default value. An outline, not a shadow.
+  &.is-selected {
+    outline: 2px solid var(--ox-fg);
+    outline-offset: 2px;
+  }
+}
+
+// The title moves up the type ladder: 14 on a 306 cell read as a caption under
+// a thumbnail (homepage-scale-spec, "Type"). Two lines at the body step is 44,
+// which is the row the card and its skeleton both reserve.
+.ox-card-product__name {
+  min-block-size: 44px;
+  font-size: var(--ox-t-body);
+}
+
+// The meta line now leads with the category, or the brand where the store has
+// no categories, so the brand no longer needs a row of its own.
+.ox-card-product__chips {
+  color: var(--ox-fg-3);
+}
+
+// The savings line under the price. Reserved whether or not the product is on
+// sale, so a row of mixed products keeps one baseline under the price.
+.ox-card-product__saving {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 18px;
+  margin: 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: 18px;
+  color: var(--ox-go);
+}
+
+// ---------------------------------------------------------------------------
+// The action row: stepper at the reading start, Salla's add button filling the
+// rest, ALWAYS ON ONE LINE. The card has no idea which grid it is in, so the
+// one step below is a container query on the card itself rather than a media
+// query: above 292 the row carries both, and below it the stepper goes and the
+// add button takes the row whole, glyph and label intact. Wrapping is never a
+// step — it is what made a row of cards ragged, since only the cards that
+// carry a stepper grow.
+// ---------------------------------------------------------------------------
+.ox-card-product__action {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  // NOWRAP. The stepper and the add button share one line at every card width,
+  // which is what keeps a row of cards the same height: when this wrapped, a
+  // card with a stepper stood 96px taller in its action row than one without,
+  // and the grid came out ragged (468 against 416 in the product page's rail).
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+}
+
+.ox-card-product__qty {
+  display: inline-flex;
+  // LTR on purpose. The DOM order is decrease, value, increase, which under
+  // the document's RTL laid the control out as "+ 1 -" with the plus on the
+  // right. A stepper is a numeric control and numerals read left to right in
+  // Arabic as well, so it is pinned here and reads "- 1 +" in both languages.
+  direction: ltr;
+  align-items: center;
+  justify-content: space-between;
+  // Narrower than it was (124/140). The add button beside it is angled now
+  // and an angled 44px button spends 18px of run at each end, so 36px of its
+  // width is slant rather than label. The stepper is three glyphs and a
+  // number; it can afford the space and the button cannot.
+  flex: 0 1 100px;
+  max-inline-size: 100px;
+  min-block-size: 44px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd-2);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-card-product__qty-btn {
+  @include ox-focus(-3px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  // The SQUARE is 36 and the TARGET is 44, via `ox-hit-area`, which extends the
+  // tappable box past the painted one. Two 44px squares plus the value needed
+  // 112px in a box the row could only spare 100 for, so the increase button
+  // was rendering outside its own container. Shrinking the paint rather than
+  // the target keeps the 44px guideline intact.
+  @include ox-hit-area;
+  inline-size: 36px;
+  align-self: stretch;
+  padding: 0;
+  color: var(--ox-fg);
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--ox-ink-4);
+    cursor: default;
+  }
+}
+
+.ox-card-product__qty-value {
+  flex: 1 1 auto;
+  min-inline-size: 24px;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-figure);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--ox-lh-num);
+  text-align: center;
+  color: var(--ox-fg);
+}
+
+.ox-card-product__add-slot {
+  display: flex;
+  // TEN PER CENT NARROWER than the space it is given, on the owner's ask. The
+  // slot still takes the rest of the row so the stepper's position does not
+  // move, and the button sits at 90% of it, anchored to the reading start. The
+  // tenth it gives back is whitespace between the button and the card's edge,
+  // which is what makes the pair read as a control group rather than as a bar
+  // stretched to fit.
+  justify-content: flex-start;
+  // `1 1 0` rather than a 132px basis: the button is the element that yields
+  // when the card is narrow, because the stepper cannot go below its own
+  // contents and the owner asked for the button to shrink instead.
+  flex: 1 1 0;
+  min-inline-size: 0;
+
+  // The custom element host sizes to its own content unless it is told not
+  // to, and `inline-size: 100%` on the button INSIDE it then resolves against
+  // that shrunken host rather than against the slot. Measured before this:
+  // a 272px slot holding a 92px button on the product with options, and a
+  // 136px slot holding a 111px button on every other card. So the row had a
+  // hole in it on one card and a 25px shortfall on all the rest.
+  > * {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    inline-size: 100%;
+  }
+}
+
+// The add button, outlined. Three elements deep: the slot, the web component,
+// and the `s-button-element` the component renders; only the last one draws,
+// so the contract has to reach it. The label sits in `--ox-accent-dark`
+// (4.90:1 on the card) rather than `--ox-accent` (3.58:1), which is the same
+// pairing the rest of the theme uses for accent text at body size.
+.ox-card-product__add {
+  display: block;
+  // NINETY PER CENT, not a hundred, on the owner's ask. It has to live HERE
+  // rather than on `.ox-card-product__add-slot > *`: both selectors carry one
+  // class, so they tie on specificity and this rule comes later and wins. The
+  // 90% attempt on the slot's child was simply being overruled.
+  inline-size: 90%;
+  min-block-size: 44px;
+}
+
+.ox-card-product__add .s-button-element,
+.ox-card-product__add.s-button-element {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  min-block-size: 44px;
+  block-size: 44px;
+  // The run at each end, so the label clears the slant.
+  padding-inline: 20px;
+  // ANGLED, like every other call to action in this identity. The clip eats a
+  // border, so the outline is painted the way `.ox-btn--secondary` paints
+  // its own: the element IS the edge colour and an inset pseudo carries the
+  // fill, both wearing the same clip.
+  // THE GLOBAL SECONDARY FACE, the same mixin the hero's "ask before you buy"
+  // uses through `.ox-btn--secondary`. This button cannot take that class,
+  // because it is the `s-button-element` a Salla web component renders, so it
+  // takes the mixin instead: one definition, and the two can no longer drift.
+  //
+  // The fill is the CARD's colour rather than the surface, which is what makes
+  // it read as a stroke with nothing behind it, and the stroke is dark rather
+  // than the hero's white because this sits on a white card.
+  @include ox-secondary-face(var(--ox-fg), var(--ox-card));
+  border-radius: 0;
+  font-family: inherit;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  @include ox-angled(44px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    background: var(--ox-card);
+    clip-path: inherit;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Salla puts the glyph AND the label inside one `.s-button-text` span and
+// leaves it `display: block`, so the two flowed as inline content and wrapped:
+// the cart icon sat on its own line above the words and the button grew to
+// 56px. One row, one gap, one line.
+.ox-card-product__add .s-button-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  white-space: nowrap;
+}
+
+// THE CART GLYPH, DRAWN RATHER THAN SLOTTED, and on the same line as the words.
+//
+// It used to be a `<PdpIcon>` child of the web component. That works right up
+// until the component upgrades, at which point it keeps the slotted TEXT and
+// drops element children: the svg ended up outside the label row, stacked above
+// it, with none of the button's styling on it. This is a mask on the label's
+// own `::before` instead, so it is part of the flex row by construction and
+// nothing the component does to its children can move it.
+//
+// The same `--ox-cart-glyph` the product page's add button uses, at the same
+// stroke — one definition of the cart in the whole theme. `inline-size` and
+// `block-size` are pinned because a mask has no intrinsic size, and `flex: none`
+// stops it being squeezed when the label is long.
+//
+// It stays at EVERY width. The glyph is what makes the button readable as
+// add-to-cart at a glance in a grid, so when a narrow card runs out of room the
+// stepper is what goes (see the container query below), never this.
+.ox-card-product__add .s-button-text::before {
+  content: '';
+  flex: none;
+  inline-size: 18px;
+  block-size: 18px;
+  background: currentColor;
+  // Both spellings: Safari only dropped the prefix at 17.4 and autoprefixer is
+  // not configured to add it for the mask shorthand.
+  -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+  mask: var(--ox-cart-glyph) center / contain no-repeat;
+}
+
+// ---------------------------------------------------------------------------
+// THE UN-UPGRADED STATE, which is a real state and not a loading flicker.
+//
+// `salla-add-product-button` only becomes a button when Salla's SDK registers
+// the custom element. Measured on the home grid with the page complete: eight
+// hosts, zero skeletons, `customElements.get('salla-add-product-button')` FALSE
+// and every host still `HTMLElement` with no shadow root and a single text
+// node. So the element sat there as an unstyled inline box reading `أضف للسلة`
+// with no edge, no shape and no glyph — which is exactly what the owner was
+// looking at, and no amount of styling `.s-button-element` could reach it
+// because that element did not exist.
+//
+// The host therefore carries the secondary face ITSELF, and hands it over the
+// moment the real button appears. `:not(:has(.s-button-element))` is the whole
+// mechanism: while the component is un-upgraded the host is the button, and as
+// soon as Salla renders its own `.s-button-element` inside, this block stops
+// matching and the rules above take over. No double frame in either state, and
+// no flash of unstyled control on a slow SDK.
+//
+// The painted outline needs `::before` for its fill, so the glyph goes on
+// `::after` with `order: -1`, which puts it ahead of the anonymous text item in
+// the flex row. Same mask, same token, same inline placement as the upgraded
+// state.
+// ---------------------------------------------------------------------------
+.ox-card-product__add:not(:has(.s-button-element)) {
+  @include ox-secondary-face(var(--ox-fg), var(--ox-card));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  block-size: 44px;
+  padding-inline: 20px;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  cursor: pointer;
+  @include ox-angled(44px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    background: var(--ox-card);
+    clip-path: inherit;
+  }
+
+  &::after {
+    content: '';
+    order: -1;
+    position: relative;
+    z-index: 1;
+    flex: none;
+    inline-size: 18px;
+    block-size: 18px;
+    background: currentColor;
+    -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+    mask: var(--ox-cart-glyph) center / contain no-repeat;
+  }
+
+  // Above the fill, for the same reason the mixin lifts its own children.
+  .ox-card-product__add-label {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// When the component DOES upgrade it rebuilds from the text content and this
+// wrapper stops existing, so the rule above is scoped to the fallback only and
+// nothing here has to be undone.
+
+
+
+.ox-card-product__add .s-button-element:focus-visible,
+.ox-card-product__add.s-button-element:focus-visible {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+// The solid CTA. ONE ORANGE ON THE WHOLE SITE, and it is the logo's: the
+// card's buy button draws the same `--ox-accent` (#F54915) as the hero's
+// "shop by your goal", because a second orange on the most-repeated button in
+// the catalogue reads as two brands rather than one.
+//
+// It briefly did not. White on `--ox-accent` measures 3.58:1, which clears
+// the contrast floor only as LARGE text, so a body-size label on that fill is
+// illegal and the button was darkened to `--ox-accent-dark` (4.96:1) to let
+// the label shrink. The owner's call is that the accent is the brand and the
+// label follows it, not the other way round, so THE SIZE is what gives: 19/700
+// is the smallest legal label on this fill and the same one the hero sets.
+//
+// The card can afford it now. The CTA is the full-width bar across the foot of
+// the card rather than a chip sharing a line with the outline button, so 19px
+// reads as the card's one call to action instead of shouting over a 14px
+// sibling. The phone cell is too narrow for the glyph at this size and drops
+// it below 640 (see the query beneath).
+.ox-card-product__buy {
+  position: relative;
+  z-index: 2;
+  // THE GLOBAL PRIMARY FACE, the same mixin and the same fill the hero's "shop
+  // by your goal" uses. The accent does not change: one orange, the logo's.
+  @include ox-primary-face;
+  // SMALLER AGAIN, AND WHITE, ON THE OWNER'S EXPLICIT INSTRUCTION — and this
+  // pairing does not meet the contrast floor. It is recorded here rather than
+  // quietly shipped, because the next person to read this file needs to know
+  // it is a decision and not an oversight.
+  //
+  // Measured: white on #F54915 is 3.59:1. The floor for normal text is 4.5:1.
+  // The large-text exemption needs 14pt bold, which is 18.67px, so at 15.5px
+  // it does not apply. There were exactly three ways to make it legal — a
+  // bigger label (19px), a darker fill, or a dark label — and the owner has
+  // now ruled out all three: the label must be smaller, the orange must be the
+  // logo's, and the label must be white.
+  //
+  // So this ships as a KNOWN EXCEPTION. It is the only one in the theme. If it
+  // is ever revisited, the cheapest fix is the label size, not the fill.
+  color: var(--ox-on-accent);
+  font-size: 15.5px;
+  border-radius: 0;
+  // The box comes down with the label, so the button reads smaller rather than
+  // merely set smaller: 44 to 36, and the run follows the height to 15.
+  block-size: 36px;
+  padding-inline: 20px;
+  @include ox-angled(36px);
+}
+
+// THE PHONE CELL. At 390 the grid is two across, so a cell is about 173 and
+// its row about 141. The stepper is already gone at that width (the container
+// query below), so the add button has the row to itself and needs 132 of it
+// with the glyph kept, which fits.
+//
+// The buy button is the one that cannot fit whole: its label is 19/700 because
+// white on #F54915 is legal only at that size, which is about 90px of type,
+// and the bolt costs another 28 with its gap. The bolt is decoration where the
+// cart glyph is a signifier, so the bolt is what goes. The type never does —
+// it is the thing holding the contrast.
+@media (max-width: 639px) {
+  .ox-card-product__buy,
+  .ox-card-product__buy--native .s-button-element,
+  .ox-card-product__buy--native.s-button-element {
+    padding-inline: var(--ox-3);
+  }
+
+  .ox-card-product__buy-icon {
+    display: none;
+  }
+}
+
+// The same button as Salla's own quick-buy web component, on the products
+// where the platform has quick buy enabled. Three elements deep again: only
+// the `s-button-element` the component renders draws, so the primary contract
+// is restated onto it rather than inherited from `.ox-btn--primary`, which the
+// component's light DOM never sees. Every value is the primitive's own.
+.ox-card-product__buy--native {
+  display: block;
+  inline-size: 100%;
+}
+
+.ox-card-product__buy--native .s-button-element,
+.ox-card-product__buy--native.s-button-element {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  min-block-size: 36px;
+  padding-inline: 20px;
+  background: var(--ox-accent);
+  border: 1px solid var(--ox-accent);
+  // White, matching the Link variant, and carrying the same recorded contrast
+  // exception: 3.59:1 against a 4.5:1 floor, on the owner's instruction.
+  color: var(--ox-on-accent);
+  font-family: inherit;
+  // This block restates the whole contract rather than inheriting it, so it
+  // has to be kept in step with the Link variant by hand: the two would
+  // otherwise differ the day quick buy is switched on. Same fill, same size.
+  font-size: 15.5px;
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  border-radius: 0;
+  block-size: 36px;
+  @include ox-angled(36px);
+}
+
+.ox-card-product__buy--native .s-button-element:hover,
+.ox-card-product__buy--native.s-button-element:hover {
+  background: var(--ox-accent-dark);
+  border-color: var(--ox-accent-dark);
+  color: var(--ox-on-accent);
+}
+
+.ox-card-product__buy--native .s-button-element:focus-visible,
+.ox-card-product__buy--native.s-button-element:focus-visible {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+.ox-card-product__buy-icon {
+  flex: none;
+}
+
+// ---------------------------------------------------------------------------
+// 13. Reduced motion (DIRECTION 7.1, 9.6)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
   .ox-subneed__link,
   .ox-brand-tile__plate {
     transition: none;
+  }
+  .ox-subneed__link:hover,
+  .ox-brand-tile:hover .ox-brand-tile__plate {
+    transform: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The compact action row, for a card in a NARROW grid.
+//
+// The product page's related rail gives a card 251px, where the home grid
+// gives it 306. At 251 the row has 218px to spend: the stepper's own contents
+// need 96 (two 36px squares and the value), the gap takes 8, and that leaves
+// 114 for the button, of which an angled 44px button spends 36 on its run.
+// 78px of label, in other words.
+//
+// So in a narrow card the cart glyph goes. It costs 28px with its gap and says
+// nothing the words do not, where the words at 14px need about 68. The font
+// size does not move, which is what the owner asked for: the button gives up
+// width and its icon, never its type.
+// THE STEPPER IS WHAT GIVES, NOT THE GLYPH AND NOT THE TYPE.
+//
+// The row's demands add up: the stepper cannot go under 96 (two 36px squares
+// and the value), and the add button cannot go under 36 of run + 24 of padding
+// + 20 of cart glyph + 8 of gap + about 68 of label at 14px, which is 156. So
+// one line needs 96 + 8 + 156 = 260 of row, and a card gives its row roughly
+// 32 less than its own width. Below about 292 the two cannot both be there.
+//
+// The glyph was briefly the thing that went, and that was the wrong trade: the
+// icon is what makes the button read as add-to-cart at a glance in a grid, and
+// the owner asked for it back. The STEPPER goes instead. Quantity defaults to
+// 1, which is what a shopper picking from a grid wants; the cart and the
+// product page both still carry a stepper for the shopper who wants more; and
+// every card in a narrow row then has the same 44px action row, which is the
+// ragged-grid problem solved rather than moved.
+//
+// Wrapping is never the answer, because only the cards that carry a stepper
+// would grow and the row would come out uneven (468 against 416, measured on
+// the product page's rail).
+// 240, NOT 292, and the difference is what `container-type: inline-size`
+// actually measures. It queries the container's CONTENT box, not its border
+// box. The card is 306 wide on the home grid with 16px of padding each side,
+// so the query sees 274 — and a 292 threshold fired there and took the stepper
+// off a card that had room for it. Measured: cardOuterW 306, padding 16/16,
+// cardContentW 274, qty display none.
+//
+// The two cases this has to separate, in content-box terms: the home and
+// listing grids at 274, which keep the stepper, and the product page's related
+// rail at roughly 219, which cannot hold one. 240 sits between them.
+@container oxcard (max-width: 240px) {
+  .ox-card-product__qty {
+    display: none;
+  }
+
+  .ox-card-product__add,
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element {
+    padding-inline: 12px;
+  }
+}
+
+// THE TWO-ACROSS PHONE CELL, where the sums stop being comfortable and start
+// being exact. At 390 the grid gives a card 173 and its row 141, and the
+// button wants 36 of run + 24 of padding + 18 of glyph + 8 of gap + about 70
+// of label at 14px: 156, which is 15 more than exists.
+//
+// Four things could give and three of them are the wrong ones. The 44px target
+// is the last thing to trade on a phone. The label's size is fixed by the
+// owner. The glyph is what makes the control readable at a glance in a grid,
+// and dropping it here is what the owner asked to have undone. So the padding
+// and the gap give, and the glyph comes down two pixels: 36 + 12 + 16 + 4 + 70
+// is 138 in a 141 row. Three pixels spare, measured, not assumed.
+//
+// If a longer label ever needs more than this, the cell is the thing to change
+// — one across on a phone, as the big Saudi storefronts do — not the glyph.
+@container oxcard (max-width: 160px) {
+  .ox-card-product__add,
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element {
+    padding-inline: 6px;
+  }
+
+  .ox-card-product__add .s-button-text,
+  .ox-card-product__add:not(:has(.s-button-element)) {
+    gap: 4px;
+  }
+
+  .ox-card-product__add .s-button-text::before,
+  .ox-card-product__add:not(:has(.s-button-element))::after {
+    inline-size: 16px;
+    block-size: 16px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The card's variant chooser (VariantChips.tsx)
+//
+// A shopper picks the flavour or the colour on the card and adds THAT one,
+// without opening the product page. The chips carry Salla's own field names —
+// `options[<option_id>]` with the value id as the value — so the form's POST is
+// byte-for-byte the product page's. The styling is ours; the contract is not.
+//
+// One row, scrollable rather than wrapping: a second row of chips would make
+// one card taller than its neighbours and the grid ragged, which is the defect
+// the action row above spent three rounds fixing. Four colours at 390 is the
+// real case and it fits; more than that scrolls.
+// ---------------------------------------------------------------------------
+.ox-card-product__form {
+  display: contents;
+}
+
+.ox-card-product__variants {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: var(--ox-1);
+  margin: 0 0 var(--ox-2);
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.ox-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 28px;
+  padding-inline: 10px;
+  border: 1px solid var(--ox-bd-2);
+  border-radius: var(--ox-r-2);
+  background: var(--ox-card);
+  color: var(--ox-fg-2);
+  font-size: 12px;
+  font-weight: var(--ox-w-ui);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+// The input is the control; the chip is its face. It stays in the accessibility
+// tree and keyboard order — `opacity: 0` with a real box, never `display: none`,
+// which would take the radio group off the keyboard entirely.
+.ox-chip__input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ox-chip:has(.ox-chip__input:checked) {
+  border-color: var(--ox-fg);
+  background: var(--ox-fg);
+  color: var(--ox-on-accent);
+}
+
+// Focus lands on the invisible input, so the ring is drawn on the chip.
+.ox-chip:has(.ox-chip__input:focus-visible) {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+// A narrow card gives the chips the card's full row and lets them scroll.
+@container oxcard (max-width: 240px) {
+  .ox-chip {
+    padding-inline: 8px;
+    font-size: 11.5px;
   }
 }

@@ -4,13 +4,22 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 
 const themeSettings: Record<string, unknown> = {};
-const twilight: Record<string, unknown> = { routeId: '/{-$locale}/', location: { pathname: '/' } };
+const twilight: Record<string, unknown> = { routeId: 'index', location: { pathname: '/' } };
+const leafRouteId = { current: '/{-$locale}/' };
 const menuItems: Array<{ id: number; title: string; url: string }> = [];
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
 );
 vi.mock('@salla.sa/twilight-theme-engine', () => ({ useTwilight: () => twilight }));
+// The engine's routeId is empty in a browser, so the header also reads the
+// router's own leaf id; the mock answers with whatever the test set.
+vi.mock('@tanstack/react-router', () => ({
+  useRouterState: (options?: { select?: (state: unknown) => unknown }) => {
+    const state = { matches: [{ routeId: leafRouteId.current }] };
+    return options?.select ? options.select(state) : state;
+  },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({
   HookSlot: ({ name }: { name: string }) => <div data-hook-slot={name} />,
 }));
@@ -31,6 +40,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
     queries: { header: () => ({ queryKey: ['menu', 'header'], queryFn: async () => menuItems }) },
     footer: async () => [],
   },
+}));
+vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
+  category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
 }));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
@@ -73,7 +85,8 @@ function stubResizeObserver(): { fire: () => void } {
 
 beforeEach(() => {
   menuItems.length = 0;
-  twilight.routeId = '/{-$locale}/';
+  twilight.routeId = 'index';
+  leafRouteId.current = '/{-$locale}/';
   twilight.location = { pathname: '/' };
   document.documentElement.style.removeProperty('--ox-header-h');
 });
@@ -127,13 +140,31 @@ describe('Header', () => {
 
   it('adds the mobile search row only on the routes that carry one', () => {
     setSettings({});
-    const home = renderWithProviders(<Header />);
-    expect(home.container.querySelector('.ox-mobilebar__search')).toBeNull();
-    home.unmount();
+    // The ids are the engine's semantic ones, which is the fix: the set was
+    // written in the router's spelling, so no entry ever matched and the row
+    // never rendered anywhere. The home and product pages are in it now too.
+    for (const routeId of ['index', 'product.single', 'product.index', 'product.index.search']) {
+      twilight.routeId = routeId;
+      const view = renderWithProviders(<Header />);
+      expect(view.container.querySelector('.ox-mobilebar__search'), routeId).not.toBeNull();
+      view.unmount();
+    }
 
-    twilight.routeId = '/{-$locale}/search';
-    const search = renderWithProviders(<Header />);
-    expect(search.container.querySelector('.ox-mobilebar__search')).not.toBeNull();
+    // And the router's own leaf id carries the client pass on its own, which
+    // is the pass that was dropping the row: the engine reports an empty
+    // routeId in a browser.
+    twilight.routeId = '';
+    for (const leaf of ['/{-$locale}/', '/{-$locale}/$slug/p{$id}', '/{-$locale}/$slug/c{$id}']) {
+      leafRouteId.current = leaf;
+      const view = renderWithProviders(<Header />);
+      expect(view.container.querySelector('.ox-mobilebar__search'), leaf).not.toBeNull();
+      view.unmount();
+    }
+
+    // A page in neither spelling has no row.
+    leafRouteId.current = '/{-$locale}/about';
+    const about = renderWithProviders(<Header />);
+    expect(about.container.querySelector('.ox-mobilebar__search')).toBeNull();
   });
 
   it('opens the drawer on the menu button and removes it from the DOM on close', async () => {
@@ -150,21 +181,22 @@ describe('Header', () => {
     expect(document.body.classList.contains('menu-opened')).toBe(false);
   });
 
-  it('opens the mega panel from the goals item and closes it on Escape', async () => {
-    setSettings({});
+  it('opens the mega panel from المنتجات on hover/focus once show_goal_nav is on', async () => {
+    // The panel is opt-in now: the approved design carries five nav items on
+    // the bar, and a sixth "goals" item would not fit beside them.
+    setSettings({ show_goal_nav: true });
     renderWithProviders(<Header />);
-    const goals = screen.getByTestId('ox-nav-goals');
-    expect(goals.getAttribute('aria-expanded')).toBe('false');
+    const products = screen.getByTestId('ox-nav-products');
+    expect(products.getAttribute('aria-expanded')).toBe('false');
 
-    fireEvent.click(goals);
+    fireEvent.focus(products);
     await waitFor(() => expect(screen.getByTestId('ox-mega-panel')).toBeTruthy());
-    expect(goals.getAttribute('aria-expanded')).toBe('true');
+    expect(products.getAttribute('aria-expanded')).toBe('true');
 
     act(() => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     });
     await waitFor(() => expect(screen.queryByTestId('ox-mega-panel')).toBeNull());
-    expect(document.activeElement).toBe(goals);
   });
 
   it('publishes its measured height on <html> for anchor scroll offsets', async () => {
@@ -194,9 +226,70 @@ describe('Header', () => {
     expect(document.documentElement.style.getPropertyValue('--ox-header-h')).toBe('');
   });
 
-  it('drops the goals item when show_goal_nav is off', () => {
-    setSettings({ show_goal_nav: false });
+  it('keeps المنتجات a plain link (no panel) when show_goal_nav is off, and by default', () => {
+    // The panel stays opt-in because the bar cannot carry a sixth item beside
+    // the advisory at 1440 (the measurement is in NavBar's docblock).
+    for (const settings of [{ show_goal_nav: false }, {}]) {
+      setSettings(settings);
+      const view = renderWithProviders(<Header />);
+      expect(screen.getByTestId('ox-nav-products').getAttribute('aria-expanded')).toBeNull();
+      view.unmount();
+    }
+
+    setSettings({ show_goal_nav: true });
     renderWithProviders(<Header />);
-    expect(screen.queryByTestId('ox-nav-goals')).toBeNull();
+    expect(screen.getByTestId('ox-nav-products').getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('carries the utility strip whether or not its two outer zones have content', () => {
+    setSettings({});
+    const bare = renderWithProviders(<Header />);
+    // The three trust items are standing statements about the store, so the
+    // strip renders even with no contact number and nothing to localise.
+    expect(screen.getByTestId('ox-utility-bar')).toBeTruthy();
+    expect(screen.getByTestId('ox-utility-trust').querySelectorAll('li')).toHaveLength(3);
+    expect(bare.container.querySelector('[data-testid="ox-utility-contact"]')).toBeNull();
+    expect(bare.container.querySelector('[data-testid="ox-country-control"]')).toBeNull();
+    bare.unmount();
+
+    setSettings({ whatsapp_number: '+966 50 123 4567' });
+    renderWithProviders(<Header />);
+    expect(screen.getByTestId('ox-utility-contact').getAttribute('href')).toBe(
+      'https://wa.me/966501234567'
+    );
+  });
+
+  it('re-mounts the same three trust items as the mobile scroller', () => {
+    setSettings({});
+    renderWithProviders(<Header />);
+    const scroller = screen.getByTestId('ox-trust-scroller');
+    expect(scroller.querySelectorAll('li')).toHaveLength(3);
+    // Same copy in both, so the two never disagree; CSS shows exactly one.
+    const bar = screen.getByTestId('ox-utility-trust');
+    expect(scroller.textContent).toBe(bar.textContent);
+  });
+
+  it('collapses the search pill to a glyph on a route with no search row', () => {
+    setSettings({});
+    twilight.routeId = 'page-single';
+    leafRouteId.current = '/{-$locale}/about';
+    const about = renderWithProviders(<Header />);
+    expect(about.container.querySelector('.ox-search--collapsed')).not.toBeNull();
+    expect(about.container.querySelector('.ox-mobilebar__search')).toBeNull();
+    about.unmount();
+
+    twilight.routeId = 'product.index.search';
+    const search = renderWithProviders(<Header />);
+    expect(search.container.querySelector('.ox-mobilebar__search')).not.toBeNull();
+    expect(search.container.querySelector('.ox-search--collapsed')).toBeNull();
+  });
+
+  it('makes no claim in the chrome that the store cannot support', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<Header />);
+    const text = container.textContent ?? '';
+    for (const banned of ['تتبع', 'خلال', 'يوم', 'مجاني', 'مضمونة']) {
+      expect(text).not.toContain(banned);
+    }
   });
 });

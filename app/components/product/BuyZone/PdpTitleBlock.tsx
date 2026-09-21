@@ -1,73 +1,67 @@
-import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
-import { SallaRatingStars } from '@salla.sa/twilight-components-react/rating-stars';
-import { Badge, BadgeStack } from '../../common/Badge';
 import { Bdi } from '../../common/Bdi';
-import { Price } from '../../common/Price';
-import { claimsOfficialDistributors, savingOf, type Settings } from '../lib/claims';
-import { monthsUntilExpiry } from '../lib/supply';
+import { RatingRow } from '../RatingRow';
 
 export interface PdpTitleBlockProps {
   product: Product;
-  /** Expiry as YYYY-MM from the spec line, for the near-expiry note. */
-  expiry?: string | null;
-  settings?: Settings;
+  /** The description's first prose paragraph, clamped to three lines. */
+  lead?: string;
+  /** True when the page has a reviews region for the count to link into. */
+  hasReviews?: boolean;
 }
 
 /**
- * Brand line, h1, rating row and badge row (DIRECTION 5.4 PdpTitleBlock).
+ * Brand line, title, Latin subtitle, rating row and the short description
+ * (design region 18 to 20).
  *
- * The rating row is removed entirely when the count is zero rather than drawn
- * empty: a new store shows no stars at all, and no rating is ever invented.
- * "موزعون رسميون" is behind `claim_official_distributors` (PLAN-final 5.1).
+ * Three of the five parts are gated, and the block is drawn so that it is
+ * finished with any of them missing:
+ *   B11  the brand line renders only on a real brand, and its slot collapses;
+ *   B12  the subtitle renders only when the catalogue carries one;
+ *   B1   the rating row renders only above zero reviews, which is why a new
+ *        store sees the title sitting straight above its description.
+ *
+ * The column is `text-align: start`, not left: in Arabic that is the right
+ * edge, and it is what lines the title up with the price and the buy button
+ * below it.
  */
-export function PdpTitleBlock({ product, expiry, settings }: PdpTitleBlockProps) {
-  const { t } = useTranslation();
-  const ratingCount = product.rating?.count ?? 0;
-  const saving = savingOf(product);
-  const outOfStock = product.is_out_of_stock || product.status === 'out';
-  const expiryMonths = monthsUntilExpiry(expiry);
-  const nearExpiry = expiryMonths !== null && expiryMonths >= 0 && expiryMonths < 6;
+export function PdpTitleBlock({ product, lead, hasReviews = false }: PdpTitleBlockProps) {
+  const brand = product.brand?.name;
+  const subtitle = typeof product.subtitle === 'string' ? product.subtitle.trim() : '';
 
   return (
     <div className="ox-pdp__title-block">
-      <p className="ox-pdp__brand">
-        {product.brand?.name ? (
-          product.brand.url ? (
+      {brand ? (
+        <p className="ox-pdp__brand">
+          {product.brand?.url ? (
             <Link to={product.brand.url} className="ox-pdp__brand-link">
-              <Bdi>{product.brand.name}</Bdi>
+              <Bdi>{brand}</Bdi>
             </Link>
           ) : (
-            <Bdi>{product.brand.name}</Bdi>
-          )
-        ) : null}
-      </p>
-      <h1 className="ox-pdp__h1 ox-h1">
-        <Bdi>{product.name}</Bdi>
-      </h1>
-      {ratingCount > 0 ? (
-        <p className="ox-pdp__rating">
-          <SallaRatingStars value={product.rating?.stars ?? 0} />
-          <a href="#ox-reviews" className="ox-pdp__rating-link">
-            {t('ox.pdp.rating_count', { count: ratingCount })}
-          </a>
+            <Bdi>{brand}</Bdi>
+          )}
         </p>
       ) : null}
-      <BadgeStack className="ox-pdp__badges">
-        {outOfStock ? <Badge tone="stop">{t('ox.card.out_of_stock')}</Badge> : null}
-        {!outOfStock && saving !== null ? (
-          <Badge tone="saving">
-            {t('ox.pdp.save_label')} <Price amount={saving} go currency={product.currency} />
-          </Badge>
-        ) : null}
-        {nearExpiry && expiry ? (
-          <Badge tone="note">{t('ox.card.expiry', { date: expiry })}</Badge>
-        ) : null}
-        {claimsOfficialDistributors(settings) ? (
-          <Badge tone="neutral">{t('ox.pdp.official_distributors')}</Badge>
-        ) : null}
-      </BadgeStack>
+
+      <h1 className="ox-pdp__h1">
+        <Bdi>{product.name}</Bdi>
+      </h1>
+
+      {subtitle ? (
+        <p className="ox-pdp__subtitle">
+          <Bdi>{subtitle}</Bdi>
+        </p>
+      ) : null}
+
+      <RatingRow
+        stars={product.rating?.stars ?? 0}
+        count={product.rating?.count ?? 0}
+        href={hasReviews ? '#ox-reviews' : undefined}
+        className="ox-pdp__rating"
+      />
+
+      {lead ? <p className="ox-pdp__lead">{lead}</p> : null}
     </div>
   );
 }

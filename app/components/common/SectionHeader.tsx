@@ -14,8 +14,6 @@ export interface SectionHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 't
    * Never a decorative label.
    */
   eyebrow?: ReactNode;
-  /** One line under the title, --ox-fg-2 (FINAL-content 1.4 intros). */
-  descriptor?: ReactNode;
   /** The "view all" link at the end of the title row; label defaults to ox.common.view_all. */
   viewAll?: { to: string; label?: ReactNode };
   /** Desktop-only slot at the end of the title row (slider arrows). */
@@ -26,14 +24,13 @@ export interface SectionHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 't
 
 /**
  * Section header (DIRECTION 5.2): optional eyebrow row (24 by 2 accent rule
- * plus a small 600 label), the title, an optional descriptor, and the "view
+ * plus a small 600 label), the centred title, and the "view
  * all" link whose chevron mirrors in RTL and moves 2px on hover.
  */
 export function SectionHeader({
   title,
   as: Heading = 'h2',
   eyebrow,
-  descriptor,
   viewAll,
   actions,
   titleId,
@@ -50,7 +47,6 @@ export function SectionHeader({
         {title}
       </Heading>
       {actions ? <div className="ox-sh__actions">{actions}</div> : null}
-      {descriptor ? <p className="ox-sh__desc ox-lead">{descriptor}</p> : null}
       {viewAll ? (
         <Link to={viewAll.to} className="ox-sh__link">
           <span>{viewAll.label ?? t('ox.common.view_all')}</span>

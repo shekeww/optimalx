@@ -26,6 +26,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
     },
   },
 }));
+vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
+  category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
@@ -105,10 +108,30 @@ describe('MobileDrawer', () => {
     await waitFor(() => expect(document.body.classList.contains('menu-opened')).toBe(false));
   });
 
+  it('publishes the same site map the bar does, with the advisory once', async () => {
+    const { unmount } = renderWithProviders(<Harness initialOpen />);
+    const drawer = await screen.findByTestId('ox-mobile-drawer');
+    const labels = Array.from(drawer.querySelectorAll('.ox-drawer__list > li > a')).map(
+      (node) => node.textContent
+    );
+    // It used to be typed into the drawer's own page list and left off the
+    // desktop bar entirely, which gave the store two different site maps.
+    // It comes from `HEADER_NAV` now, so it is on both and duplicated on
+    // neither.
+    expect(labels.filter((label) => label === 'اسأل قبل أن تشتري')).toHaveLength(1);
+    expect(labels).toContain('الأدلة');
+    expect(labels).toContain('فرع المدينة المنورة');
+    expect(labels).toContain('اتصل بنا');
+    unmount();
+  });
+
   it('shows a contact row only for the numbers the store actually has', async () => {
-    renderWithProviders(<Harness initialOpen />);
+    const first = renderWithProviders(<Harness initialOpen />);
     const bare = await screen.findByTestId('ox-mobile-drawer');
     expect(bare.querySelectorAll('.ox-drawer__contact-link')).toHaveLength(0);
+    // The second render has to stand alone: the query below reaches the whole
+    // document, so leaving this drawer mounted would count its links twice.
+    first.unmount();
 
     storeValue.contacts = { whatsapp: '+966 50 123 4567', phone: '0148000000' };
     const { unmount } = renderWithProviders(<Harness initialOpen />);

@@ -62,7 +62,14 @@ describe('OxFaq', () => {
     const rows = container.querySelectorAll('.ox-acc__row');
     expect(rows).toHaveLength(HOME_FAQ.length);
     expect(rows[0].id).toBe(PRICE_FAQ.id);
-    expect(rows[0].textContent).toContain('لماذا قد تجد سعرا أقل في مكان آخر؟');
+    expect(rows[0].textContent).toContain('كيف تختار أوبتيمال إكس المنتجات التي تناسبني؟');
+  });
+
+  it('puts the rows in a panel, which is the unit for structured content', () => {
+    const { container } = renderWithProviders(<OxFaq data={data('ox-faq')} />);
+    const panel = container.querySelector('.ox-faq__panel');
+    expect(panel?.classList.contains('ox-panel')).toBe(true);
+    expect(panel?.querySelector('.ox-acc')).not.toBeNull();
   });
 
   it('keeps the price question first even when the merchant writes their own rows', () => {
@@ -118,12 +125,25 @@ describe('OxBanner', () => {
     expect(container.querySelector('[data-testid="ox-banner"]')).toBeNull();
   });
 
-  it('is one link with straight edges when the merchant fills it', () => {
+  it('is one link carrying the dark band when the merchant fills it', () => {
     renderWithProviders(<OxBanner data={data('ox-banner', { line: 'حملة', url: '/offers' })} />);
     const banner = screen.getByTestId('ox-banner');
     expect(banner.querySelectorAll('a')).toHaveLength(1);
     expect(banner.querySelector('a')?.getAttribute('href')).toBe('/offers');
-    expect(banner.querySelector('.ox-band__wedge')).toBeNull();
+    // The reference's campaign band is a dark band with the wedge pair at its
+    // start corner, not the flat plate strip this block used to draw.
+    expect(banner.querySelectorAll('.ox-band__wedge')).toHaveLength(2);
+    expect(banner.querySelector('.ox-campaign__line')?.textContent).toBe('حملة');
+  });
+
+  it('never prints a discount figure of its own', () => {
+    renderWithProviders(
+      <OxBanner data={data('ox-banner', { line: 'حملة', url: '/offers', image: 'https://cdn.example/c.jpg' })} />
+    );
+    // The reference draws a medallion reading "up to 40%". No field carries
+    // that number and no store data supplies it, so the band has no element
+    // for it: a merchant asserting a figure does it in their own artwork.
+    expect(screen.getByTestId('ox-banner').textContent).not.toMatch(/[0-9]+%/);
   });
 });
 
@@ -139,7 +159,7 @@ describe('OxCategories', () => {
     expect(tiles[0].querySelector('img')).toBeNull();
   });
 
-  it('uses the live category URL and count when the store has the category', async () => {
+  it('uses the live category URL and name when the store has the category', async () => {
     categories.length = 0;
     categories.push({
       id: 7,
@@ -152,7 +172,31 @@ describe('OxCategories', () => {
     await waitFor(() => expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe(
       `/${ROOT_CATEGORY_SLUGS[0]}/c7`
     ));
-    expect(screen.getAllByTestId('ox-category-tile')[0].textContent).toContain('12');
+    expect(screen.getAllByTestId('ox-category-tile')[0].textContent).toContain('بروتين');
+  });
+
+  it('prints no count and no photograph: eight tiles are one set or they are none', async () => {
+    categories.length = 0;
+    categories.push({
+      id: 8,
+      name: 'كرياتين',
+      url: `/${ROOT_CATEGORY_SLUGS[0]}/c8`,
+      products_count: 12,
+      image: 'https://cdn.example/k.jpg',
+    });
+    renderWithProviders(<OxCategories data={data('ox-categories')} />);
+    await waitFor(() =>
+      expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe(
+        `/${ROOT_CATEGORY_SLUGS[0]}/c8`
+      )
+    );
+    const tile = screen.getAllByTestId('ox-category-tile')[0];
+    // The reference draws a line glyph over a centred name and nothing else.
+    // A supplier packshot in one tile and a drawing in the next is what stops
+    // a row of eight reading as one set, so the API's image is not read.
+    expect(tile.querySelector('img')).toBeNull();
+    expect(tile.querySelector('.ox-tile__count')).toBeNull();
+    expect(tile.textContent).not.toContain('12');
   });
 
   it('renders the merchant selection when there is one', async () => {

@@ -2,6 +2,7 @@ import { Suspense, lazy, useId, useState } from 'react';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon, type OxIconName } from '../common/Icon';
+import { StoreRating } from '../common/StoreRating';
 import { fieldList, rowText, type OxBlockProps } from './defaults';
 
 const SallaPayments = lazy(() =>
@@ -11,6 +12,19 @@ const SallaPayments = lazy(() =>
 /**
  * The trust strip under the hero (DIRECTION 5.2 OxTrustStrip, 6.2 row 2,
  * FINAL-content 1.3 and 1.5).
+ *
+ * Four cells on the light ground divided by hairlines, each a glyph beside a
+ * bold line and a lighter one. No fill, no border around the row, no shadow:
+ * the separation is the hairline and nothing else, which is how every surface
+ * in this design is separated.
+ *
+ * **It is no longer `.ox-stats`.** The product page's statistic strip and this
+ * row were one class until the phone layouts parted: the reference's phone
+ * pane scrolls these four sideways under the hero, while a product page's
+ * facts stay a two by two grid. Forcing one class to be both meant the home
+ * page overriding half of the product page's rules inside a width query, which
+ * is how a shared part rots. They share the design (equal cells, hairlines, a
+ * glyph, a two line caption) and each owns its own box.
  *
  * Four items, one definition panel, one item open at a time. Two claims gates
  * live here (PLAN-final 5.1):
@@ -58,7 +72,9 @@ export function OxTrustStrip({ data }: OxBlockProps) {
   const merchantRows = fieldList(data, 'items');
   const items: TrustItem[] =
     merchantRows.length > 0
-      ? merchantRows.map((row, index) => ({
+      ? // Four at most: the strip's cell rules are drawn for one to four cells,
+        // and a fifth promise in the same row is a promise nobody reads.
+        merchantRows.slice(0, 4).map((row, index) => ({
           id: `item-${index + 1}`,
           icon: MERCHANT_ICONS[rowText(row, 'icon')] ?? 'authentic',
           title: rowText(row, 'title'),
@@ -101,16 +117,26 @@ export function OxTrustStrip({ data }: OxBlockProps) {
   return (
     <section className="ox-trust" aria-label={t('ox.home.trust_region')} data-testid="ox-trust-strip">
       <div className="ox-container">
-        <ul className="ox-trust__row">
+        {/*
+          The store's Google rating, directly under the hero and above the
+          four promises, because it is the one piece of outside evidence the
+          business owns and the four cells below it are all the store's own
+          word. It self-gates on `content/social-proof.ts`: without the
+          settings filled it renders nothing and the strip is exactly what it
+          was before.
+        */}
+        <StoreRating variant="rail" className="ox-trust__rating" />
+
+        <ul className="ox-trust__row" data-count={items.length}>
           {items.map((item) => {
             const expandable = Boolean(item.definition) || Boolean(item.marks);
             const isOpen = open === item.id;
             const body = (
               <>
-                <Icon name={item.icon} size={24} className="ox-trust__icon" />
+                <Icon name={item.icon} size={26} className="ox-trust__icon" />
                 <span className="ox-trust__text">
                   <span className="ox-trust__title">{item.title}</span>
-                  <span className="ox-trust__line ox-small">{item.line}</span>
+                  <span className="ox-trust__line">{item.line}</span>
                 </span>
               </>
             );

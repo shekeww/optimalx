@@ -1,4 +1,20 @@
-// Cairo - self-hosted.
+// Cairo - self-hosted, and deliberately NOT called "Cairo".
+//
+// The engine injects the dashboard's font as a stylesheet link
+// (deriveFontParts -> <link id="salla-theme-font">). This store's dashboard
+// holds a Google Cairo URL at weights 300, 400 and 700 only. That stylesheet
+// declares @font-face for family "Cairo" too, so with both loaded the browser
+// resolves 400 and 700 from Google's STATIC faces and 500, 600, 800 and 900
+// from our variable file: one typeface, two sources, and a subtly different
+// rendering between weights that sit next to each other in the same heading.
+//
+// Naming ours "Cairo VF" removes the collision entirely. --font-main leads
+// with it, so our variable file is always what renders, and plain "Cairo"
+// stays next in the stack as a genuine fallback if the woff2 fails.
+//
+// The Google request is still made until the owner clears the font from the
+// dashboard; it is then unused weight on the critical path. That is an owner
+// action, recorded in the deployment checklist.
 //
 // One variable file per subset (weight axis 200-1000), so three requests cover
 // every weight we use instead of one request per weight. unicode-range means the
@@ -11,7 +27,7 @@
 // its HTTP cache per site.
 
 @font-face {
-  font-family: 'Cairo';
+  font-family: 'Cairo VF';
   font-style: normal;
   font-weight: 200 1000;
   font-display: swap;
@@ -20,7 +36,7 @@
 }
 
 @font-face {
-  font-family: 'Cairo';
+  font-family: 'Cairo VF';
   font-style: normal;
   font-weight: 200 1000;
   font-display: swap;
@@ -29,7 +45,7 @@
 }
 
 @font-face {
-  font-family: 'Cairo';
+  font-family: 'Cairo VF';
   font-style: normal;
   font-weight: 200 1000;
   font-display: swap;

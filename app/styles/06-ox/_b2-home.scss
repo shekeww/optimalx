@@ -1,11 +1,14 @@
-// OptimalX home (B2): the twelve blocks of DIRECTION 6.2, their rhythm, the
-// hero and services wedges (4.5), the goal settle (7.2) and the block
-// skeletons (A7).
+// OptimalX home (B2), built to the owner's reference: the hero, the trust
+// strip, the category row, the goal row, the rails, the campaign band, the
+// advisory row, the FAQ row and the floating contact affordance.
 //
-// Role tokens only, logical properties only, transform and opacity only. The
-// trust panel's `grid-template-rows` is the one written exception DIRECTION 7.1
-// allows, and it is user initiated. Nothing on a wedge element ever animates
-// (amendment A9).
+// Role tokens only, logical properties only, transform and opacity only. Two
+// written exceptions live here and each is named where it is taken: the trust
+// panel's `grid-template-rows` (DIRECTION 7.1 allows it and it is user
+// initiated), and the hero's physical side, which belongs to the photograph
+// rather than to the reading direction and is written as a `[dir='ltr']`
+// override rather than as a physical property. Nothing on a wedge element
+// ever animates (amendment A9).
 
 // ---------------------------------------------------------------------------
 // 1. Block rhythm (DIRECTION 4.2, 6.2 sequence rules)
@@ -13,11 +16,20 @@
 // Every block is wrapped by the engine renderer in `.s-block.s-block--<path>`
 // with the reserved height from register.ts, so the gaps live on the wrapper
 // and the blocks themselves carry none.
+// THREE TIERS, and the point is that they are distinguishable. The page
+// measured 0/64/63/65/96/96/64 on 2026-09-20: two values pretending to be a
+// rhythm, which is part of why every section read as equally important.
+//
+// homepage-scale-spec states the rule: "A full-bleed band needs no margin
+// above or below, because its own edges are the separation. A grid after a
+// band needs 64. Two quiet sections in a row need 96, so they do not merge."
 .s-block--ox-hero,
 .s-block--ox-trust-strip,
 .s-block--ox-goals,
 .s-block--ox-categories,
 .s-block--ox-products,
+.s-block--ox-posters,
+.s-block--ox-products-secondary,
 .s-block--ox-brands,
 .s-block--ox-services,
 .s-block--ox-guides,
@@ -34,34 +46,137 @@
   margin-block-start: 0;
 }
 
+// TIER 1, none. A full-bleed band supplies its own separation, at every width,
+// and a margin above it would open a strip of page ground over a photograph
+// that is meant to butt against what precedes it. Both are gated and render
+// nothing today, so this rule is what they meet when they first appear.
+.s-block--ox-poster,
+.s-block--ox-certifications {
+  margin-block-start: 0;
+}
+
 @media (min-width: 1024px) {
+  // TIER 2, 64. The shopping flow: the goal row, the two grids and the
+  // carousel between them. These belong to one another and read as a
+  // sequence, so they sit closer than a chapter break.
   .s-block--ox-goals,
-  .s-block--ox-categories,
   .s-block--ox-products,
-  .s-block--ox-brands,
-  .s-block--ox-faq,
-  .s-block--ox-banner {
+  .s-block--ox-posters,
+  .s-block--ox-products-secondary {
     margin-block-start: var(--ox-16);
   }
 
-  // The breaths that make the dark band read as a chapter (DIRECTION 4.2).
+  // TIER 3, 96. The quiet sections, which merge into one another without it
+  // (DIRECTION 4.2), and the dark rows that need to read as chapters.
+  .s-block--ox-categories,
+  .s-block--ox-brands,
   .s-block--ox-services,
   .s-block--ox-guides,
   .s-block--ox-branch,
-  .s-block--ox-newsletter {
+  .s-block--ox-faq,
+  .s-block--ox-newsletter,
+  .s-block--ox-banner {
     margin-block-start: var(--ox-24);
   }
 }
 
 // ---------------------------------------------------------------------------
-// 2. OxHero (DIRECTION 5.2, 4.5 hero polygons, 8.1)
+// 1b. The page's one reveal (homepage-spec "Motion, and the limits on it")
 // ---------------------------------------------------------------------------
+// A short rise and fade on the direct children of `.ox-reveal`, staggered by
+// `--stagger-step` times the child's `--i`, on transform and opacity only.
+//
+// The attribute is what arms it, and the element is rendered without one:
+// server HTML, a client with JavaScript off and anything already on screen at
+// hydration are all painted and stay painted. `useSectionReveal` adds
+// `ready` only to a row that is still below the fold, so the transition can
+// never hide something the visitor was already reading.
+.ox-reveal > * {
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+  transition-delay: calc(var(--stagger-step) * var(--i, 0));
+}
+
+.ox-reveal[data-reveal='ready'] > * {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.ox-reveal[data-reveal='in'] > * {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-reveal > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 1c. The two call-to-action shapes the reference introduces
+// ---------------------------------------------------------------------------
+// The parallelogram is the detail that ties a button to the brand: it is the
+// wedge, at button scale, on the same 22 degrees. It is drawn as a clip-path
+// rather than a skew so the label stays upright and so `:active`'s 1px
+// translate is not fighting a transform for the same slot.
+//
+// The run is the height times tan(22deg). A 48px control gives 19px, and the
+// inline padding carries that much extra so a label never touches the cut.
+.ox-cta-wedge {
+  // 18px at the 44px height a phone gets, 19px at the 48px a desktop gets:
+  // the run has to track the height or the cut stops being 22 degrees.
+  --ox-cta-run: 18px;
+  border-radius: 0;
+  padding-inline: calc(16px + var(--ox-cta-run));
+  clip-path: polygon(
+    var(--ox-cta-run) 0,
+    100% 0,
+    calc(100% - var(--ox-cta-run)) 100%,
+    0 100%
+  );
+}
+
+[dir='ltr'] .ox-cta-wedge {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ox-cta-run)) 0,
+    100% 100%,
+    var(--ox-cta-run) 100%
+  );
+}
+
+// The outline pill that answers it. One shape each, so the pair reads as a
+// primary and a secondary rather than as two buttons.
+.ox-cta-pill {
+  border-radius: var(--ox-r-pill);
+}
+
+@media (min-width: 640px) {
+  .ox-cta-wedge {
+    --ox-cta-run: 19px;
+    padding-inline: calc(24px + var(--ox-cta-run));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. OxHero (homepage-spec section 1)
+// ---------------------------------------------------------------------------
+// One full-bleed dark photograph with the copy on the quiet half of it. The
+// band is not split into a panel and a column any more: the reference's frame
+// is a single cinematic image and the image brief writes the empty left half
+// into the prompt, so the photograph and the layout are one decision.
 .ox-hero {
   position: relative;
   isolation: isolate;
   display: flex;
-  align-items: flex-end;
-  min-block-size: 500px;
+  // Phone: the shipped vertical crop puts the subject in the lower two thirds
+  // and leaves the top third dark, so the copy sits at the top of the frame.
+  align-items: flex-start;
+  min-block-size: 480px;
   overflow: hidden;
 }
 
@@ -70,16 +185,10 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: var(--ox-graphite-2);
-
-  // Mobile legibility is a linear gradient to the band colour, never a blur
-  // (render budget rule 2).
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(23, 23, 26, 0) 40%, var(--ox-graphite) 100%);
-  }
+  // The ground under the photograph is the band colour, so the utility bar,
+  // the header and this band read as one block of near-black at the top of
+  // the page, which is the first thing the reference does.
+  background: var(--ox-graphite);
 }
 
 .ox-hero__photo {
@@ -87,12 +196,166 @@
   inset: 0;
 }
 
+// The shipped default is a <picture>: a theme asset has no CDN behind it, so
+// the two crops are art directed with a media query rather than a srcset.
+.ox-hero__photo picture {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+// THE SPLIT. The photograph occupies one half behind a hard diagonal and the
+// copy sits on solid graphite on the other, which is the owner's approved
+// reference. It replaced a full-bleed photograph under a heavy scrim: that
+// version had to darken the whole frame to keep white type legible, so the
+// photograph was never actually seen. Here it is not covered at all.
+//
+// The diagonal is wider at the top, matching the reference, and it is a
+// physical polygon with a `[dir='ltr']` mirror rather than a logical one,
+// because `clip-path` takes no logical values.
+// From 640 only. At phone widths the split leaves neither half usable, so the
+// photograph stays full bleed there and the scrim below carries the type.
+@media (min-width: 640px) {
+  // THE PHOTO ELEMENT IS SIZED TO THE VISIBLE REGION, not to the whole band.
+  //
+  // This is why the frames read as "zoomed in". The img used to stretch across
+  // the full band and get clipped afterwards, so `object-fit: cover` was
+  // fitting a photograph into a 1425x560 box, a ratio of 2.54, and discarding
+  // about 43 per cent of its height before the clip even ran. Sizing the box
+  // to the 60 per cent the diagonal shows makes the target ratio about 1.53,
+  // close to the frames themselves, so cover now trims a few per cent instead
+  // of half the picture.
+  //
+  // The polygon is restated against this box rather than the band: the band's
+  // 58% and 44% become 58/60 and 44/60 of the element.
+  // PHOTO ONLY here. The scrim gets the identical treatment further down, in
+  // the block after its own base rule: that base declares `inset: 0`, and it
+  // sits LOWER in this file than this block, so setting the scrim's inset here
+  // was silently undone. The photograph's base rule is above this one, which
+  // is the only reason it worked and the scrim did not.
+  // 60%, BACK WHERE IT WAS. This width is the boundary between the photograph
+  // and the graphite, so widening it to 68% shrank the black shape rather than
+  // moving the orange strap — the strap is `.ox-hero__edge`, a separate bar,
+  // and it did not move at all. Reverted: the black extends to the left again.
+  .ox-hero__photo {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    inline-size: 60%;
+    clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-hero__photo {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
+  }
+}
+
+// A TRACK, not a stack. The frames sit in a row and the row slides, which is
+// one compositor transform for the whole carousel instead of an opacity
+// animation per frame. Forced to `ltr`: these are photographs, their order is
+// not reading order, and inheriting the document's RTL would run the slide
+// backwards in Arabic.
+.ox-hero__track {
+  position: absolute;
+  inset: 0;
+  direction: ltr;
+  display: flex;
+  inline-size: 100%;
+  block-size: 100%;
+  // Long and eased out, because this band is the first thing a visitor sees
+  // and a quick slide reads as a glitch rather than as motion.
+  transition: transform 1100ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: translateX(calc(var(--ox-hero-i, 0) * -100%));
+}
+
+.ox-hero__frame {
+  position: relative;
+  flex: 0 0 100%;
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+
+.ox-hero__frame > .ox-hero__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+// The accent edge along the diagonal: the reference's one bright line on the
+// first screen. Drawn as a skewed bar rather than a border, because a clipped
+// element cannot carry one.
+// 51%, PUSHED RIGHT FROM 42%. `inset-inline-end` is measured from the reading
+// END, which in RTL is the left edge, so a LARGER number moves this bar toward
+// the right.
+//
+// 51 is not a taste call, it is where the seam is. The photograph is 60% of the
+// band and its clip runs from 96.7% to 73.3% of its own box, so at a 1427 band
+// the cut falls between 828 at the top and 627 at the bottom — a centre of
+// about 727, which is 51% of the band. At 42% the bar was sitting 120px inside
+// the photograph, drawing a bright line across the athlete instead of along the
+// edge it exists to mark.
+.ox-hero__edge {
+  position: absolute;
+  z-index: 2;
+  inset-block: -12%;
+  inset-inline-end: 51%;
+  inline-size: 10px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+[dir='ltr'] .ox-hero__edge {
+  inset-inline-end: auto;
+  inset-inline-start: 51%;
+}
+
+.ox-hero__dots {
+  position: absolute;
+  z-index: 3;
+  inset-block-end: var(--ox-4);
+  inset-inline-start: var(--ox-4);
+  display: flex;
+  gap: var(--ox-2);
+}
+
+.ox-hero__dot {
+  @include ox-hit-area;
+  inline-size: 8px;
+  block-size: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ox-r-pill);
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out);
+
+  &[data-active] {
+    background: var(--ox-accent);
+    transform: scale(1.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ox-ink-on-dark);
+    outline-offset: 3px;
+  }
+}
+
+// A visitor who asked for less motion gets the first frame and no crossfade.
+@media (prefers-reduced-motion: reduce) {
+  .ox-hero__track {
+    transition: none;
+  }
+}
+
 .ox-hero__img,
 .ox-hero__video {
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center;
 }
 
 .ox-hero__video {
@@ -100,19 +363,212 @@
   inset: 0;
 }
 
-.ox-hero__stroke {
-  display: none;
+// One flat gradient, never a blur (render budget rule 2). On a phone it runs
+// block-wise and darkens the top, where the copy is. It is painted whether or
+// not the photograph loads, so white type is legible on the band colour alone.
+.ox-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  // Only a vignette now. The copy sits on the solid panel, so this no longer
+  // carries legibility and no longer has to flatten the photograph to do it.
+  background: linear-gradient(
+    to bottom,
+    rgba(14, 16, 20, 0.34) 0%,
+    rgba(14, 16, 20, 0.08) 38%,
+    rgba(14, 16, 20, 0.12) 70%,
+    rgba(14, 16, 20, 0.52) 100%
+  );
 }
 
-.ox-hero__corner {
+// On a phone the scrim is the only thing making white type legible over a
+// photograph, so it stays heavy there and only lightens once the split takes
+// over and the copy moves onto solid graphite.
+@media (max-width: 639px) {
+  .ox-hero__scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(14, 16, 20, 0.94) 0%,
+      rgba(14, 16, 20, 0.86) 34%,
+      rgba(14, 16, 20, 0.6) 62%,
+      rgba(14, 16, 20, 0.9) 100%
+    );
+  }
+}
+
+@media (min-width: 640px) {
+  // REDUCED, not removed. The copy sits on solid graphite here so the scrim
+  // no longer carries legibility, but taking it away entirely left the
+  // photograph sitting brighter than the near-black chrome above it and the
+  // band stopped reading as one block. This is a light vignette: enough to
+  // seat the frame in the band, not enough to flatten it.
+  .ox-hero__scrim {
+    // FLAT and HALF. It was a vertical vignette, dark at the top and floor and
+    // nearly clear through the middle, which read as a band of shadow lying
+    // across the photograph rather than as part of it. An even wash over the
+    // whole frame seats the picture in the band without drawing a shape of its
+    // own, and at roughly half the old strength the shakers keep their colour.
+    background: rgba(14, 16, 20, 0.18);
+
+    // The same box and polygon the photograph gets, declared HERE rather than
+    // with it, because this is the first point after the scrim's own base
+    // rule. Without this the scrim kept `inset: 0`, resolved to the start
+    // side, and laid its wash over the copy panel instead of the picture.
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    inline-size: 60%;
+    clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-hero__scrim {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
+  }
+}
+
+// THE PHONE HERO IS STACKED, not a shrunken split.
+//
+// It used to be the desktop composition scaled down: the photograph full bleed
+// behind everything with the headline, the subline and the buttons printed on
+// top of it. At 390 that put white type over a row of bottles, so the heading
+// sat across a shaker, the subline crossed a second one, and the primary
+// button covered a third. Nothing was comfortably legible and the secondary
+// action fell off the fold.
+//
+// So the phone gets the same IDEA in a shape that fits it: the photograph is a
+// band across the top, cut on the diagonal along its floor so the brand
+// geometry survives, and the copy sits underneath on the solid ground where it
+// can be read. No text is ever over the picture, both actions are visible, and
+// the band still reads as this store's hero rather than a generic stack.
+@media (max-width: 639px) {
+  .ox-hero {
+    display: block;
+    min-block-size: 0;
+    align-items: stretch;
+  }
+
+  // The panel stops being the whole band and becomes the picture's own box.
+  .ox-hero__panel {
+    position: relative;
+    block-size: 300px;
+  }
+
+  .ox-hero__photo,
+  .ox-hero__scrim {
+    inset: 0;
+    inline-size: 100%;
+    // The cut runs along the floor of the band, leaning the same way as every
+    // other wedge in the theme.
+    clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-hero__photo,
+  [dir='ltr'] .ox-hero__scrim {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 88%);
+  }
+
+  .ox-hero__inner {
+    position: relative;
+    z-index: 2;
+    padding-block: var(--ox-6) var(--ox-8);
+    background: var(--ox-graphite);
+  }
+
+  .ox-hero__text {
+    max-inline-size: none;
+    gap: var(--ox-3);
+  }
+
+  // The actions row keeps its single phone call to action: the rule further
+  // down that hides the outline pill below 640 is a deliberate, documented
+  // decision (the second button goes to the same place the services row and
+  // the trust strip already offer). This block used to try to re-show it,
+  // which was dead code anyway, since that rule has equal specificity and
+  // comes later.
+  .ox-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ox-3);
+  }
+
+  // The dots move onto the solid ground, where they are visible against
+  // something other than the photograph.
+  .ox-hero__dots {
+    inset-block-end: auto;
+    inset-block-start: 272px;
+  }
+}
+
+// The edge only exists where there is a diagonal to draw it on. Written as a
+// max-width rule rather than a base `display: none` plus a min-width override,
+// because the two rules have equal specificity and the later one wins: the
+// base was hiding it at every width.
+@media (max-width: 639px) {
+  .ox-hero__edge {
+    display: none;
+  }
+}
+
+// The wedge pair at the band's left edge.
+//
+// Left in both locales, on purpose, and this is the one place in the theme
+// where a side is physical. The wedge answers the photograph: the subject is
+// right of centre in the file, the quiet pixels are on the left of the file,
+// and neither moves when the document direction does. `inset-inline-end` is
+// the physical left in the RTL document this theme is written in; the
+// `[dir='ltr']` override puts it back on the left there too. Nothing here
+// animates (A9), and the lean is `--ox-skew`, never re-derived.
+.ox-hero__wedge {
+  position: absolute;
+  z-index: 2;
+  inset-inline-end: 0;
   background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+[dir='ltr'] .ox-hero__wedge {
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+}
+
+// Staggered, not stacked: the pair descends away from the edge, which is what
+// the reference draws and what stops two bars reading as one long one. The
+// offsets are an inset per bar rather than a shared inset plus a margin: a
+// margin on an absolutely positioned box is easy to lose behind a later rule,
+// and these two were landing on top of each other because of one.
+.ox-hero__wedge--wide {
+  inset-block-start: 20%;
+  inset-inline-end: -8px;
+  inline-size: 20px;
+  block-size: 72px;
+}
+
+.ox-hero__wedge--thin {
+  inset-block-start: 46%;
+  inset-inline-end: 24px;
+  inline-size: 11px;
+  block-size: 72px;
+}
+
+[dir='ltr'] .ox-hero__wedge--wide {
+  inset-inline-end: auto;
+  inset-inline-start: -8px;
+}
+
+[dir='ltr'] .ox-hero__wedge--thin {
+  inset-inline-end: auto;
+  inset-inline-start: 24px;
 }
 
 .ox-hero__videobtn {
   position: absolute;
   inset-block-end: var(--ox-4);
   inset-inline-end: var(--ox-4);
-  z-index: 2;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -129,74 +585,137 @@
   }
 }
 
+// No `inline-size: 100%` here: the element also carries `.ox-container`, and a
+// later declaration of the same specificity beat it, so the hero copy ran to
+// the viewport edge while every other section sat in the measure.
 .ox-hero__inner {
   position: relative;
-  z-index: 1;
-  inline-size: 100%;
-  padding-block: var(--ox-6);
+  z-index: 2;
+  display: flex;
+  padding-block: var(--ox-8);
 }
 
 .ox-hero__text {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
+  align-items: flex-start;
+  gap: var(--ox-4);
+  // Right aligned in Arabic, left aligned in English: the block is pinned to
+  // one physical side but the type inside it still reads with the document.
+  text-align: start;
 }
 
 .ox-hero__eyebrow {
   margin: 0;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--ox-fg-2);
+  letter-spacing: 0.02em;
+  color: rgb(255 255 255 / 0.72);
+}
+
+@media (min-width: 1024px) {
+  .ox-hero__eyebrow {
+    font-size: 15px;
+  }
 }
 
 .ox-hero__headline {
   margin: 0;
-  color: var(--ox-fg);
+  color: var(--ox-ink-on-dark);
+  // 22 at 390 (the reference's phone pane) rising to 56 at 1440, linear
+  // between. The ladder's `.ox-display` starts at 34, which is a shout on a
+  // 390 column carrying two lines of Arabic.
+  font-size: clamp(22px, calc(9.37px + 3.238vw), 56px);
+  line-height: 1.25;
+}
+
+// Each line is its own block, so the break is the design's and not the
+// container's. The closing word is the one piece of accent type on the first
+// screen: 5.2:1 on the band, which clears AA at this size with room to spare.
+.ox-hero__line {
+  display: block;
+}
+
+.ox-hero__accent {
+  color: var(--ox-accent);
+}
+
+// The Latin lockup line under the headline. Light weight, wide, and set in
+// the Latin face; a merchant subline replaces it entirely.
+.ox-hero__latin {
+  margin: 0;
+  color: var(--ox-ink-2-on-dark);
+  font-size: clamp(15px, calc(11.3px + 0.95vw), 25px);
+  font-weight: var(--ox-w-open);
+  line-height: 1.3;
 }
 
 .ox-hero__sub {
   margin: 0;
   max-inline-size: 46ch;
-  color: var(--ox-fg-2);
+  color: var(--ox-ink-2-on-dark);
 }
 
 .ox-hero__actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--ox-3);
   margin-block-start: var(--ox-2);
 }
 
+// Phone carries one call to action (homepage-spec, phone pane). The second is
+// the same destination the services row and the trust strip already offer, so
+// nothing is lost by dropping it from the first screen on a small column.
+.ox-hero__actions .ox-cta-pill {
+  display: none;
+}
+
 @media (min-width: 640px) {
   .ox-hero {
-    min-block-size: 520px;
+    // From here the desktop crop is served and its subject is right of
+    // centre, so the copy moves to the middle of the frame.
     align-items: center;
+    min-block-size: 520px;
   }
 
-  .ox-hero__photo {
-    inset-inline-start: auto;
-    inline-size: 52%;
-    @include ox-wedge-photo-stroked(520px);
-  }
+  // The heavy horizontal gradient that used to live here is GONE. It dated
+  // from the full-bleed composition, where the copy sat on top of the
+  // photograph and needed 0.97 of near-black behind it to stay legible. The
+  // copy has been on solid graphite since the split landed, so all this did
+  // was re-darken the picture from a block further down the file than the one
+  // that had just lightened it.
 
-  .ox-hero__stroke {
-    display: block;
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: 0;
-    inline-size: 52%;
-    @include ox-wedge-stroke(520px);
-  }
-
-  .ox-hero__corner {
-    display: none;
-  }
-
-  .ox-hero__panel::after {
-    display: none;
+  // The copy sits opposite the photograph. The clip mirrors with the document,
+  // so the copy is at the logical START in both directions: the right in
+  // Arabic, the left in English, which is the reference and is also where each
+  // language begins reading. This used to be pinned to the physical left in
+  // both, which put Arabic copy on the side the eye reaches last.
+  .ox-hero__inner {
+    justify-content: flex-start;
   }
 
   .ox-hero__text {
-    max-inline-size: 48%;
+    max-inline-size: 52%;
+  }
+
+  .ox-hero__actions .ox-cta-pill {
+    display: inline-flex;
+  }
+
+  .ox-hero__wedge--wide {
+    inline-size: 24px;
+    block-size: 96px;
+  }
+
+  .ox-hero__wedge--thin {
+    inset-inline-end: 34px;
+    inline-size: 13px;
+    block-size: 96px;
+  }
+
+  [dir='ltr'] .ox-hero__wedge--thin {
+    inset-inline-start: 34px;
   }
 }
 
@@ -205,53 +724,96 @@
     min-block-size: 560px;
   }
 
-  .ox-hero__photo {
-    inline-size: 58%;
-    @include ox-wedge-photo-stroked(560px);
-  }
-
-  .ox-hero__stroke {
-    inline-size: 58%;
-    @include ox-wedge-stroke(560px);
-  }
-
   .ox-hero__inner {
     padding-block: var(--ox-16);
   }
 
-  // Columns 1 to 5 of 12 at the start side (DIRECTION 4.3 rule 1).
+  // Columns 1 to 6 of 12 at the physical left (DIRECTION 4.3 rule 1, mirrored
+  // by the photograph).
   .ox-hero__text {
-    max-inline-size: 41.6667%;
+    max-inline-size: 48%;
+    gap: var(--ox-6);
+  }
+
+  .ox-hero__wedge--wide {
+    inset-block-start: 19%;
+    inset-inline-end: -10px;
+    inline-size: 28px;
+    block-size: 118px;
+  }
+
+  .ox-hero__wedge--thin {
+    inset-block-start: 47%;
+    inset-inline-end: 44px;
+    inline-size: 15px;
+    block-size: 118px;
+  }
+
+  [dir='ltr'] .ox-hero__wedge--wide {
+    inset-inline-start: -10px;
+  }
+
+  [dir='ltr'] .ox-hero__wedge--thin {
+    inset-inline-start: 44px;
   }
 }
 
 // ---------------------------------------------------------------------------
-// 3. OxTrustStrip (DIRECTION 5.2, 6.2 row 2)
+// 3. OxTrustStrip (homepage-spec section 2)
 // ---------------------------------------------------------------------------
+// Four cells on the light ground divided by hairlines, each a glyph beside a
+// bold line and a lighter one. No fill, no border around the row, no shadow.
+//
+// It is no longer `.ox-stats`. That class is the product page's statistic
+// strip and it is a two by two grid on a phone; this row scrolls sideways
+// under the hero, which is what the reference's phone pane shows. One class
+// cannot be both without the home page overriding half the product page's
+// rules inside a width query, so they share the design and each owns its box.
 .ox-trust {
   background: var(--ox-paper);
   border-block-end: 1px solid var(--ox-line);
 }
 
 .ox-trust__row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
   margin: 0;
   padding: 0;
   list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
+// About 2.2 cells on a 390 column, which is the reference's phone pane: the
+// third one peeking past the edge is what says the row scrolls.
 .ox-trust__item {
+  position: relative;
+  flex: 0 0 auto;
+  inline-size: 152px;
   min-inline-size: 0;
+  scroll-snap-align: start;
+  border-inline-end: 1px solid var(--ox-bd);
+
+  &:last-child {
+    border-inline-end: 0;
+  }
 }
 
 .ox-trust__btn {
   display: flex;
   align-items: center;
-  gap: var(--ox-3);
+  justify-content: center;
+  gap: var(--ox-2);
   inline-size: 100%;
-  min-block-size: 72px;
-  padding-inline: var(--ox-2);
+  block-size: 100%;
+  min-block-size: 64px;
+  padding-inline: var(--ox-3);
   text-align: start;
   color: var(--ox-fg);
   @include ox-focus(-2px);
@@ -261,9 +823,20 @@ button.ox-trust__btn:hover .ox-trust__title {
   text-decoration: underline;
 }
 
+// The open cell carries the one indicator this block is allowed: the same 2px
+// accent rule the tab strip uses.
+.ox-trust__btn[aria-expanded='true']::after {
+  content: '';
+  position: absolute;
+  inset-inline: var(--ox-4);
+  inset-block-end: 0;
+  block-size: 2px;
+  background: var(--ox-accent);
+}
+
 .ox-trust__icon {
   flex: none;
-  color: var(--ox-fg);
+  color: var(--ox-ink-2);
 }
 
 .ox-trust__text {
@@ -273,13 +846,26 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 .ox-trust__title {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-size: 13px;
+  font-weight: var(--ox-w-title);
+  line-height: 1.35;
+  color: var(--ox-fg);
+  white-space: nowrap;
 }
 
+// Wrapped to two lines on a phone rather than run out on one: the caption is
+// the half of the cell that makes it a promise rather than a badge, and one
+// nowrap line of it made each cell 211px wide, so the scroller showed one and
+// a half of them.
 .ox-trust__line {
-  color: var(--ox-fg-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: var(--ox-w-quiet);
+  line-height: 1.35;
+  color: var(--ox-ink-4);
 }
 
 .ox-trust__panel {
@@ -307,137 +893,105 @@ button.ox-trust__btn:hover .ox-trust__title {
   padding-block: var(--ox-4);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
+  // Wide enough for four cells side by side: the scroller becomes the row the
+  // reference draws on desktop, with the hairlines doing the dividing.
   .ox-trust__row {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 4. OxGoals and GoalCard (DIRECTION 5.2, 6.2 row 3, 7.2 settle)
-// ---------------------------------------------------------------------------
-.ox-goals {
-  scroll-margin-block-start: calc(var(--ox-header-h, 96px) + var(--ox-4));
-}
-
-.ox-goals__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--ox-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ox-goal {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--ox-2);
-  block-size: 128px;
-  padding: var(--ox-4);
-  background: var(--ox-surface);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
-  color: var(--ox-fg);
-  @include ox-focus(2px);
-
-  &:hover {
-    border-color: var(--ox-bd-2);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow-x: visible;
   }
 
-  &:active {
-    background: var(--ox-plate);
+  .ox-trust__row[data-count='1'] {
+    grid-template-columns: minmax(0, 1fr);
   }
-}
 
-.ox-goal__icon {
-  color: var(--ox-fg);
-}
-
-.ox-goal__body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-inline-size: 0;
-}
-
-.ox-goal__label {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.ox-goal__line {
-  color: var(--ox-fg-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@keyframes ox-goal-settle {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+  .ox-trust__row[data-count='2'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .ox-trust__row[data-count='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-}
 
-// Armed only after mount and only when motion is allowed, so the server HTML
-// and a no-JS client always show the six cards.
-.ox-goals__grid[data-settle='pending'] .ox-goal {
-  opacity: 0;
-}
+  .ox-trust__item {
+    inline-size: auto;
+  }
 
-.ox-goals__grid[data-settle='running'] .ox-goal {
-  animation: ox-goal-settle var(--dur-base) var(--ease-out) both;
-  animation-delay: calc(var(--stagger-step) * var(--i, 0));
-}
+  .ox-trust__btn {
+    min-block-size: 76px;
+    gap: var(--ox-3);
+    padding-inline: var(--ox-4);
+  }
 
-@media (min-width: 640px) {
-  .ox-goals__grid {
-    grid-template-columns: repeat(3, 1fr);
+  .ox-trust__line {
+    font-size: 12px;
   }
 }
 
 @media (min-width: 1024px) {
-  .ox-goals__grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: var(--ox-6);
+  .ox-trust__title {
+    font-size: 15px;
   }
 
-  .ox-goal {
-    block-size: 160px;
-    padding: 20px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ox-goals__grid .ox-goal {
-    opacity: 1;
-    animation: none;
-  }
-
-  // DIRECTION 7.1, anchor scrolls: the scaffold sets `scroll-behavior: smooth`
-  // on html in 02-generic/common.scss and never turns it off. The hero CTA is
-  // the anchor scroll this theme ships, so the correction rides with it; the
-  // conductor should move this line next to the declaration it answers.
-  html {
-    scroll-behavior: auto;
+  .ox-trust__line {
+    font-size: 13px;
   }
 }
 
 // ---------------------------------------------------------------------------
-// 5. OxCategories and CategoryTile (DIRECTION 5.2, 6.2 row 4)
+// 4. OxCategories and CategoryTile (homepage-spec section 3)
 // ---------------------------------------------------------------------------
+// Eight tiles: two rows of four on a phone, one row of eight from 1024. Card,
+// hairline, a large line glyph over a centred name, and nothing else.
+//
+// THE FOUR SHAKER COLOURS. The owner's product photography is four branded
+// shakers and they asked for four categories to carry those colours. Every
+// value below was sampled from references/shakers.png on 2026-09-20 (median of
+// four flat strips per bottle, away from the highlight and away from the white
+// logo), then moved only as far as contrast forced it. They are declared once,
+// here, and referenced by name: a component never writes one of these hexes.
+//
+//   name     photograph   shipped      why it moved
+//   blue     #0078DF      #0072D0      a white label was 4.42:1 on the sampled
+//                                      blue. Two steps darker buys 4.86:1 and
+//                                      the hue does not move.
+//   green    #7FC501      #7FC501      unchanged: ink on it is 8.47:1.
+//   white    #DCE2E5      #DCE2E5      unchanged.
+//   black    #151414      #14181F      the brand already owns this black
+//                                      (--ox-graphite-2). One black on the
+//                                      page, not two that nearly match.
+//
+// The EDGE is the second half of the job and it is not decoration. A tile's
+// boundary against the page has to clear 3:1 (WCAG 1.4.11). Blue (4.86:1) and
+// black (17.79:1) clear it on their ground alone; the lime is 2.12:1 against
+// white and the near-white is 1.31:1, so those two are held by their border
+// and would otherwise be a shape with no edge on a white page.
+//
+// The GLYPH ACCENT moves with the ground. Each sprite symbol carries one
+// element filled with --ox-accent, and orange measures 1.35:1 on the blue and
+// 1.69:1 on the lime: it disappears. On those two the accent becomes the
+// tile's own type colour, so the glyph reads as one drawing. On the near-black
+// the orange holds at 4.95:1 and stays, which is how every other dark band on
+// this page draws it, and the near-white takes --ox-accent-dark to clear 3:1.
+.ox-tile {
+  // The four, named. --ox-shaker-white-edge and the two blacks are aliases on
+  // purpose: the neutral 3:1 boundary and the chrome black already exist and
+  // must not be forked here.
+  --ox-shaker-blue: #0072D0;
+  --ox-shaker-blue-edge: #005BAF;
+  --ox-shaker-green: #7FC501;
+  --ox-shaker-green-edge: #5C9200;
+  --ox-shaker-white: #DCE2E5;
+  --ox-shaker-white-edge: var(--ox-line-3);
+  --ox-shaker-black: var(--ox-graphite-2);
+  --ox-shaker-black-edge: var(--ox-graphite);
+}
+
 .ox-cats__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--ox-4);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ox-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -447,70 +1001,399 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-tile {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
   block-size: 100%;
-  background: var(--ox-surface);
-  border: 1px solid var(--ox-bd);
+  min-block-size: 104px;
+  padding: var(--ox-2);
+  // Three role tokens, one set per tone to re-point. The fallback IS the
+  // neutral card, so a tile with no tone is exactly what it was before.
+  background: var(--ox-tile-bg, var(--ox-fill));
+  border: 1px solid var(--ox-tile-bd, var(--ox-bd));
   border-radius: var(--ox-r-2);
-  overflow: hidden;
-  color: var(--ox-fg);
+  color: var(--ox-tile-fg, var(--ox-fg));
+  text-align: center;
+  transition: transform var(--dur-base) var(--ease-out);
   @include ox-focus(2px);
 
   &:hover {
-    border-color: var(--ox-bd-2);
+    transform: translateY(-2px);
+    // A coloured tile keeps its own edge on hover: a grey hairline appearing
+    // over lime is a colour change, and colour is not a state this page
+    // animates. The neutral tile behaves exactly as it did.
+    border-color: var(--ox-tile-bd-hover, var(--ox-line-3));
   }
-
-  &:hover .ox-tile__plate {
-    background: var(--ox-plate-2);
-  }
 }
 
-.ox-tile__plate {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 4 / 3;
-  padding: var(--ox-3);
-  background: var(--ox-plate);
+// The four tones. Each sets a ground, a boundary and a type colour, and
+// nothing else: the box, the glyph size and the spacing belong to the tile and
+// do not move with the colour. The measured contrast is on the line that
+// earns it.
+.ox-tile--blue {
+  --ox-tile-bg: var(--ox-shaker-blue);
+  --ox-tile-bd: var(--ox-shaker-blue-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-blue-edge);
+  --ox-tile-fg: var(--ox-paper); // 4.86:1 on the blue; the ground is 4.86:1 on the page
+  --ox-accent: var(--ox-paper); // orange is 1.35:1 here
 }
 
-.ox-tile__img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
+.ox-tile--green {
+  --ox-tile-bg: var(--ox-shaker-green);
+  --ox-tile-bd: var(--ox-shaker-green-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-green-edge);
+  --ox-tile-fg: var(--ox-ink); // 8.47:1 on the lime; the edge is 3.77:1 on the page
+  --ox-accent: var(--ox-ink); // orange is 1.69:1 here
 }
 
+.ox-tile--white {
+  --ox-tile-bg: var(--ox-shaker-white);
+  --ox-tile-bd: var(--ox-shaker-white-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-white-edge);
+  --ox-tile-fg: var(--ox-ink); // 13.76:1 on it; the edge is 3.63:1 on the page
+  --ox-accent: var(--ox-accent-dark); // 3.79:1 here, where the lighter orange is 2.75:1
+}
+
+.ox-tile--black {
+  --ox-tile-bg: var(--ox-shaker-black);
+  --ox-tile-bd: var(--ox-shaker-black-edge);
+  --ox-tile-bd-hover: var(--ox-shaker-black-edge);
+  --ox-tile-fg: var(--ox-ink-on-dark); // 16.21:1 on it; the ground is 17.79:1 on the page
+  // The accent stays orange: 4.95:1 on this black, the same relationship it
+  // has on every other dark band in the theme.
+}
+
+// The drawn size is an inline width and height on the svg, which no class
+// can override without also setting the box, so the box is set here per
+// viewport: the glyph is the tile's artwork and it has to grow with the tile.
+//
+// `inherit` rather than --ox-ink: the glyph takes the tile's own type colour,
+// so the white line art on the blue and the light line art on the black are
+// the same declaration as the dark line art on the neutral card.
 .ox-tile__icon {
-  color: var(--ox-ink-2);
-}
-
-.ox-tile__strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ox-2);
-  block-size: 48px;
-  padding-inline: var(--ox-3);
+  flex: none;
+  inline-size: 34px;
+  block-size: 34px;
+  color: inherit;
+  stroke-width: 1.25;
 }
 
 .ox-tile__label {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ox-tile__count {
-  flex: none;
-  color: var(--ox-fg-3);
+  font-size: 11px;
+  font-weight: var(--ox-w-title);
+  line-height: 1.35;
 }
 
 @media (min-width: 640px) {
   .ox-cats__grid {
-    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ox-4);
+  }
+
+  .ox-tile {
+    min-block-size: 132px;
+    gap: var(--ox-3);
+    padding: var(--ox-3);
+  }
+
+  .ox-tile__icon {
+    inline-size: 42px;
+    block-size: 42px;
+  }
+
+  .ox-tile__label {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cats__grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .ox-tile {
+    // 124 shrank the tile at the width where there is most room for it, the
+    // same inversion the goal card had. homepage-scale-spec asks for at least
+    // 150 with a 44px glyph, which the component already draws.
+    //
+    // Colour does not buy a smaller tile. 156 is the floor here, and eight
+    // columns inside the 1296 measure put the drawn box at 148 by 156, which
+    // is what it measured before the four took a ground.
+    min-block-size: 156px;
+  }
+
+  .ox-tile__icon {
+    inline-size: 48px;
+    block-size: 48px;
+  }
+
+  .ox-tile__label {
+    font-size: 13.5px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. OxGoals and GoalCard (homepage-spec section 4)
+// ---------------------------------------------------------------------------
+// Six dark photographic cards. This is the largest visual block on the page,
+// so the composition is fixed rather than content driven: identical heights,
+// the glyph at the same optical position, the line clamped to one, and one
+// accent slash per card at the top corner.
+.ox-goals {
+  scroll-margin-block-start: calc(var(--ox-header-h, 96px) + var(--ox-4));
+}
+
+.ox-goals__grid {
+  display: grid;
+  // minmax(0, 1fr), never 1fr: `1fr` is `minmax(auto, 1fr)`, so a track
+  // holding a clamped or nowrap label takes that label's min-content width
+  // and the grid runs past the viewport.
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-goal {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  block-size: 100%;
+  // 168 was the compressed value the owner objected to. homepage-scale-spec
+  // asks for 260 at desktop; the phone and tablet steps below climb to it
+  // rather than jumping, and the card is a door rather than a chip at every
+  // width.
+  min-block-size: 200px;
+  overflow: hidden;
+  border-radius: var(--ox-r-3);
+  // The ground the card is finished on before any photograph exists.
+  background: var(--ox-graphite-2);
+  color: var(--ox-ink-on-dark);
+  transition: transform var(--dur-base) var(--ease-out);
+  @include ox-focus(2px);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// Invisible until it reports a load. Ten of the sixteen frames the brief
+// lists are not shot yet, and a sized img that 404s paints a broken-image
+// glyph in the corner of its box even with an empty alt. This way the
+// server's HTML shows the card's dark ground, a visitor with scripting off
+// never sees one, and the photograph appears the moment it is real. No
+// transition: a photograph fading in under a heading is motion nobody asked
+// for.
+.ox-goal__photo,
+.ox-plan__photo {
+  opacity: 0;
+}
+
+// The photograph reads as a texture behind the card, not as the card. At full
+// strength it fought the label and every one of the six tiles looked like a
+// different design; held back it does what it is there for, which is to give
+// each goal a physical sense without becoming the subject. The card's own
+// graphite ground shows through underneath, which is what keeps the six
+// reading as one set even though the frames are unrelated shots.
+.ox-goal__photo[data-ready] {
+  opacity: 0.42;
+}
+
+.ox-plan__photo[data-ready] {
+  opacity: 0.48;
+}
+
+.ox-goal__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+// Painted whether or not a photograph loaded under it: it is what guarantees
+// the type's contrast on the frame the owner has not shot yet.
+.ox-goal__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  // Softer than it was, because the photograph is now held at 0.42 and the
+  // two multiply. The floor still rises to near-opaque under the label: the
+  // title and its line sit there and they are the only thing on the card that
+  // must never lose contrast, whatever the frame turns out to be.
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 14, 18, 0.1) 0%,
+    rgba(12, 14, 18, 0.32) 42%,
+    rgba(12, 14, 18, 0.78) 78%,
+    rgba(12, 14, 18, 0.92) 100%
+  );
+}
+
+// The accent slash at the card's top corner. It mirrors with the document,
+// unlike the hero's pair: this one is pure geometry and geometry belongs to
+// the reading direction (tokens.css, `--ox-skew`). It never animates (A9).
+.ox-goal__slash {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: -24px;
+  inset-inline-end: -4px;
+  inline-size: 20px;
+  block-size: 92px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+.ox-goal__body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 4px;
+  block-size: 100%;
+  padding: var(--ox-3);
+}
+
+.ox-goal__icon {
+  flex: none;
+  color: var(--ox-paper);
+  margin-block-end: var(--ox-1);
+}
+
+.ox-goal__label {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: var(--ox-w-stmt);
+  line-height: 1.3;
+  color: var(--ox-paper);
+}
+
+// Two lines, clamped. The line lists the product types behind the goal and
+// most of those lists do not fit a 171px card on one line; ellipsing them
+// after the second word makes the card say less than the icon does.
+.ox-goal__line {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  inline-size: 100%;
+  font-size: 11.5px;
+  font-weight: var(--ox-w-quiet);
+  line-height: 1.4;
+  color: var(--ox-ink-2-on-dark);
+}
+
+// The small outline parallelogram. The card is one link, so this is a span;
+// the shape is a skewed pseudo element behind an upright label.
+.ox-goal__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  block-size: 26px;
+  margin-block-start: var(--ox-2);
+  padding-inline: 14px;
+  font-size: 11.5px;
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-accent);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--ox-accent);
+    transform: skewX(var(--ox-skew));
+  }
+}
+
+// Positioned, so they paint above the positioned pseudo element that draws
+// the shape. Without this the outline covers its own label.
+.ox-goal__cta-label,
+.ox-goal__cta i {
+  position: relative;
+}
+
+.ox-goal:hover .ox-goal__cta::before {
+  background: rgba(var(--ox-accent-rgb), 0.16);
+}
+
+@media (min-width: 640px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-4);
+  }
+
+  .ox-goal {
+    min-block-size: 228px;
+  }
+
+  .ox-goal__body {
+    padding: var(--ox-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-goals__grid {
+    gap: var(--ox-4);
+  }
+
+  .ox-goal {
+    min-block-size: 248px;
+  }
+
+  .ox-goal__label {
+    font-size: 16px;
+  }
+}
+
+// Six across only from 1280, where the container is wide enough that a cell is
+// about 203 and the card reads as a door. This rule used to sit at 1024 with
+// a 190px card, which made the row SHORTER on a wider screen: the measured
+// 203x190 that the owner called compressed, twice.
+//
+// THE DOORS ARE TALL NOW, and that is the point of the section rather than a
+// preference. "تسوق حسب هدفك" is how this store expects to be navigated — the
+// shopper does not arrive knowing they want creatine, they arrive knowing they
+// want to recover — so the goal row is the primary way into the catalogue and
+// it was being given less height than a product card. At 203 wide a 260 card is
+// a landscape tile that reads as a banner strip; a 400 card is a portrait door
+// that reads as a place to go, and the photography behind it finally has room
+// to be a photograph rather than a texture.
+@media (min-width: 1280px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: var(--ox-6);
+  }
+
+  .ox-goal {
+    min-block-size: 400px;
+  }
+
+  // The plate grows with the card: at 260 the body sat on roughly a third of
+  // the face, and at 400 that same padding leaves the type floating. It keeps
+  // the copy anchored to the foot where the eye lands after the picture.
+  .ox-goal__body {
+    padding: var(--ox-6);
+  }
+
+  .ox-goal__label {
+    font-size: 19px;
+  }
+}
+
+// From 1536 the container stops growing but the section can still breathe.
+@media (min-width: 1536px) {
+  .ox-goal {
+    min-block-size: 440px;
   }
 }
 
@@ -570,7 +1453,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 @media (min-width: 1024px) {
   .ox-brands__strip {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     overflow-x: visible;
   }
 
@@ -581,27 +1464,49 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
-// 8. OxServices (DIRECTION 5.2, 4.5 services polygon, 6.2 row 7)
+// 8. OxServices: the advisory row (homepage-spec section 7)
 // ---------------------------------------------------------------------------
+// Three dark cards on the light ground, one per programme. They were three
+// cards floating on one band photograph until the reference showed this;
+// three cards on the page read as three things the store sells, which is what
+// this half of the business needs.
 .ox-services {
   position: relative;
+}
+
+// The opt-in band the manifest's "Band image" field turns on. Off by default,
+// so the section is three cards on the page ground, which is what the
+// reference draws and what keeps the advisory row reading as three things the
+// store sells rather than one decorated stripe.
+.ox-services--banded {
   isolation: isolate;
   overflow: hidden;
   padding-block: var(--ox-12);
 }
 
-// Scoped to the services band: the hub and goal heroes carry their own band
-// height, and DIRECTION 4.5 gives each band its own run.
-.ox-services .ox-band__wedge {
+.ox-services__photo,
+.ox-services__scrim {
   position: absolute;
-  inset-block: 0;
-  inset-inline-end: 0;
+  inset: 0;
   z-index: 0;
-  inline-size: 80px;
-  block-size: 198px;
-  background: var(--ox-graphite-2);
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ox-services__photo {
+  object-fit: cover;
+  object-position: center;
+}
+
+// One flat gradient, never a blur (render budget rule 2).
+.ox-services__scrim {
   pointer-events: none;
-  @include ox-wedge-corner(80px, 198px);
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 14, 18, 0.82) 0%,
+    rgba(12, 14, 18, 0.92) 55%,
+    rgba(12, 14, 18, 0.97) 100%
+  );
 }
 
 .ox-services__inner {
@@ -609,22 +1514,167 @@ button.ox-trust__btn:hover .ox-trust__title {
   z-index: 1;
 }
 
-.ox-services__reply,
-.ox-services__note {
-  margin: var(--ox-4) 0 0;
-  color: var(--ox-fg-2);
+// A dark card on a dark band needs the next step up or it disappears into it.
+.ox-services--banded .ox-plan {
+  background: var(--ox-graphite-3);
 }
 
 @media (min-width: 1024px) {
-  .ox-services {
-    min-block-size: 480px;
+  .ox-services--banded {
     padding-block: var(--ox-16);
   }
+}
 
-  .ox-services .ox-band__wedge {
-    inline-size: calc(34% + 194px);
-    block-size: auto;
-    @include ox-wedge(480px);
+.ox-plans {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ox-4);
+  align-items: stretch;
+}
+
+.ox-plan {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  block-size: 100%;
+  min-block-size: 200px;
+  overflow: hidden;
+  border-radius: var(--ox-r-3);
+  background: var(--ox-graphite-2);
+  color: var(--ox-ink-on-dark);
+  transition: transform var(--dur-base) var(--ease-out);
+  @include ox-focus(2px);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.ox-plan__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+// Softened alongside the goal card's: the photograph now sits at 0.48 and the
+// scrim multiplies with it, so the old values stacked to near-black and threw
+// the picture away. The plan card carries more type than a goal tile (a name,
+// a price, a meta line, a paragraph and an action), so its floor stays a
+// little heavier than the goal row's.
+.ox-plan__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 14, 18, 0.12) 0%,
+    rgba(12, 14, 18, 0.38) 40%,
+    rgba(12, 14, 18, 0.82) 80%,
+    rgba(12, 14, 18, 0.93) 100%
+  );
+}
+
+.ox-plan__slash {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: -26px;
+  inset-inline-end: -4px;
+  inline-size: 24px;
+  block-size: 104px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+.ox-plan__body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: var(--ox-1);
+  block-size: 100%;
+  padding: 20px;
+}
+
+.ox-plan__icon {
+  flex: none;
+  color: var(--ox-paper);
+  margin-block-end: var(--ox-2);
+}
+
+.ox-plan__title {
+  color: var(--ox-paper);
+}
+
+.ox-plan__line {
+  color: var(--ox-ink-2-on-dark);
+}
+
+// Filled, not outlined: the goal cards are a row of six and want a quiet
+// action; these are three and they are the page's ask.
+//
+// THE BRAND PRIMARY, not a look-alike. This drew the shape with `skewX` on a
+// `::before` and an unskewed label above it, which lands in the same place as
+// the clip but is a second way of saying the same thing — and it let the
+// button set its own size, 13px on an accent fill, where white measures
+// 3.58:1 and needs 4.5:1 at that size. It takes the shared face and the shared
+// size now, which fixes the contrast as a side effect of fixing the identity.
+.ox-plan__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  block-size: 44px;
+  margin-block-start: var(--ox-3);
+  padding-inline: 34px;
+  font-size: 19px;
+  @include ox-primary-face;
+  @include ox-angled(44px);
+}
+
+.ox-plan__cta-label,
+.ox-plan__cta i {
+  position: relative;
+}
+
+.ox-plan:hover .ox-plan__cta {
+  background: var(--ox-accent-dark);
+}
+
+.ox-services__notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  margin-block-start: var(--ox-4);
+  max-inline-size: 78ch;
+}
+
+.ox-services__reply,
+.ox-services__note {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
+@media (min-width: 768px) {
+  .ox-plans {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-6);
+  }
+
+  .ox-plan {
+    min-block-size: 232px;
+  }
+
+  .ox-plan__body {
+    padding: var(--ox-6);
   }
 }
 
@@ -637,7 +1687,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 @media (min-width: 1024px) {
   .ox-guides {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--ox-6);
   }
 }
@@ -647,10 +1697,36 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
-// 10. OxFaq (DIRECTION 6.2 row 10)
+// 10. OxFaq and the secondary rail beside it (homepage-spec section 8)
 // ---------------------------------------------------------------------------
-.ox-faq .ox-acc {
+// The rail is `offers`, which a new store has none of, so `.ox-faq__rail` is
+// an empty div most days and `:empty` takes it out of the row. The accordion
+// column then grows to the measure on its own, which is exactly how the
+// section read before the rail existed.
+.ox-faq__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-8);
+}
+
+.ox-faq__rail:empty {
+  display: none;
+}
+
+.ox-faq__col {
+  min-inline-size: 0;
+}
+
+.ox-faq__panel {
   max-inline-size: var(--ox-container-text);
+}
+
+.ox-faq .ox-acc {
+  border-block-start: 0;
+}
+
+.ox-faq .ox-acc__row:last-child {
+  border-block-end: 0;
 }
 
 .ox-faq__answer {
@@ -658,54 +1734,220 @@ button.ox-trust__btn:hover .ox-trust__title {
   color: var(--ox-fg-2);
 }
 
+@media (min-width: 1024px) {
+  .ox-faq__row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--ox-16);
+  }
+
+  // The accordion is first in the DOM and takes the reading start; the rail
+  // takes the wider far side, which is the split the reference draws.
+  .ox-faq__col {
+    flex: 0 1 40%;
+  }
+
+  .ox-faq__rail {
+    flex: 1 1 56%;
+    min-inline-size: 0;
+  }
+}
+
 // ---------------------------------------------------------------------------
-// 11. OxBanner (DIRECTION 6.2 row 12): straight edges, one line, one link
+// 11. OxBanner, the campaign band (homepage-spec section 6)
 // ---------------------------------------------------------------------------
-.ox-banner__inner {
+// Absent by default: the block renders null with no line and no image, and
+// its reserved height is 0 on both viewports, so the page closes on the FAQ
+// row and the footer with no gap where a campaign would have been.
+.ox-campaign {
+  position: relative;
+}
+
+.ox-campaign__inner {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
-  border-radius: var(--ox-r-2);
+  justify-content: center;
+  min-block-size: 200px;
+  padding: var(--ox-6);
   overflow: hidden;
-  background: var(--ox-plate);
-  color: var(--ox-fg);
+  border-radius: var(--ox-r-3);
+  background: var(--ox-graphite);
+  color: var(--ox-ink-on-dark);
+  transition: transform var(--dur-base) var(--ease-out);
   @include ox-focus(2px);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
-.ox-banner__media {
-  display: block;
-  aspect-ratio: 4 / 3;
+.ox-campaign__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
-.ox-banner__img {
+.ox-campaign__img {
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
-.ox-banner__line {
+.ox-campaign__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 14, 18, 0.86) 0%,
+    rgba(12, 14, 18, 0.7) 60%,
+    rgba(12, 14, 18, 0.9) 100%
+  );
+}
+
+.ox-campaign__wedge {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 0;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+.ox-campaign__wedge--wide {
+  inset-inline-end: 0;
+  inline-size: 20px;
+  block-size: 96px;
+}
+
+.ox-campaign__wedge--thin {
+  inset-inline-end: 32px;
+  inline-size: 11px;
+  block-size: 96px;
+}
+
+.ox-campaign__text {
+  position: relative;
+  z-index: 3;
   display: flex;
-  align-items: center;
-  gap: var(--ox-2);
-  padding: var(--ox-4);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-4);
+  max-inline-size: 42ch;
 }
 
-.ox-banner__chevron {
-  flex: none;
+.ox-campaign__line {
+  color: var(--ox-paper);
+}
+
+// The brand primary again, for the same reasons as `.ox-plan__cta` above: one
+// technique for the shape, and 19px is the floor for white on the accent.
+.ox-campaign__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  block-size: 44px;
+  padding-inline: 34px;
+  font-size: 19px;
+  @include ox-primary-face;
+  @include ox-angled(44px);
+}
+
+.ox-campaign__cta-label,
+.ox-campaign__cta i {
+  position: relative;
 }
 
 @media (min-width: 1024px) {
-  .ox-banner__media {
-    aspect-ratio: auto;
-    block-size: 240px;
+  .ox-campaign__inner {
+    min-block-size: 260px;
+    padding: var(--ox-12);
   }
 
-  .ox-banner__inner {
-    position: relative;
+  // The frame's product sits left of centre (image brief section 12), so the
+  // scrim buries the right half where the copy goes.
+  .ox-campaign__scrim {
+    background: linear-gradient(
+      270deg,
+      rgba(12, 14, 18, 0.93) 0%,
+      rgba(12, 14, 18, 0.8) 42%,
+      rgba(12, 14, 18, 0.3) 78%,
+      rgba(12, 14, 18, 0.1) 100%
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11b. The floating contact affordance (homepage-spec section 10)
+// ---------------------------------------------------------------------------
+// The reference draws it in the phone pane's bottom corner at the reading
+// start, which is the right in Arabic. It mirrors with the document, because
+// the launcher is a learned position in the corner a thumb reaches.
+//
+// The green is WhatsApp's own mark and not a theme colour: a channel button
+// that is not the channel's colour is not recognised, and this is the only
+// place on the site that is allowed one.
+.ox-wa {
+  position: fixed;
+  z-index: var(--ox-z-sticky);
+  inset-block-end: calc(var(--ox-h-tabbar) + var(--ox-3));
+  inset-inline-start: var(--ox-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 52px;
+  block-size: 52px;
+  border-radius: var(--ox-r-pill);
+  background: #1faf54;
+  color: #ffffff;
+  transition: transform var(--dur-base) var(--ease-out);
+  @include ox-focus(3px);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.ox-wa__icon {
+  color: currentColor;
+}
+
+@media (min-width: 1024px) {
+  // No tab bar from here up, so the button clears the viewport edge instead.
+  .ox-wa {
+    inset-block-end: var(--ox-6);
+    inset-inline-start: var(--ox-6);
+    inline-size: 56px;
+    block-size: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-tile,
+  .ox-goal,
+  .ox-plan,
+  .ox-campaign__inner,
+  .ox-wa {
+    transition: none;
   }
 
-  .ox-banner__line {
-    padding-inline: var(--ox-6);
+  .ox-tile:hover,
+  .ox-goal:hover,
+  .ox-plan:hover,
+  .ox-campaign__inner:hover,
+  .ox-wa:hover {
+    transform: none;
+  }
+
+  // DIRECTION 7.1, anchor scrolls: the scaffold sets `scroll-behavior: smooth`
+  // on html in 02-generic/common.scss and never turns it off. The hero CTA is
+  // the anchor scroll this theme ships, so the correction rides with it.
+  html {
+    scroll-behavior: auto;
   }
 }
 
@@ -722,8 +1964,25 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-skel-hero {
   display: flex;
   align-items: flex-end;
-  background: var(--ox-graphite-2);
+  background: var(--ox-graphite);
   padding-block-end: var(--ox-6);
+}
+
+// The advisory row is on the light ground now; only its three cards are dark.
+.ox-skel-services {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+
+  .ox-skel-grid {
+    flex: 1 1 auto;
+  }
+}
+
+// A placeholder for a card that is about to land dark. A light grey box where
+// a near-black card arrives is a flash, not a placeholder.
+.ox-skel-dark {
+  background: var(--ox-graphite-2);
 }
 
 .ox-skel-hero__text {
@@ -733,9 +1992,12 @@ button.ox-trust__btn:hover .ox-trust__title {
   inline-size: min(100%, 420px);
 }
 
+// The strip is a sideways scroller of four on a phone and a row of four from
+// 768, so the placeholder is a row at both.
 .ox-skel-trust {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   align-items: center;
   gap: var(--ox-3);
 }
@@ -743,7 +2005,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-skel-grid {
   display: grid;
   gap: var(--ox-4);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .ox-skel-grid--channels,
@@ -775,15 +2037,19 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 .ox-skel-branch {
-  display: grid;
-  gap: var(--ox-4);
-  grid-template-rows: 268px auto;
+  display: flex;
+  align-items: stretch;
 }
 
 .ox-skel-branch__card {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
+  justify-content: center;
   gap: var(--ox-3);
+  padding: var(--ox-4);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
 }
 
 .ox-skel-faq {
@@ -800,24 +2066,25 @@ button.ox-trust__btn:hover .ox-trust__title {
   justify-content: center;
 }
 
-@media (min-width: 640px) {
-  .ox-skel-trust {
-    grid-template-columns: repeat(4, 1fr);
-  }
+// Two rows of four on a phone, matching the tile grid it stands in for.
+.ox-skel-grid--tiles {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 
+@media (min-width: 1024px) {
   .ox-skel-grid--tiles {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
   .ox-skel-grid--goals {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .ox-skel-grid--channels,
   .ox-skel-grid--guides {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .ox-skel-rail {
@@ -825,8 +2092,586 @@ button.ox-trust__btn:hover .ox-trust__title {
     block-size: 510px;
   }
 
-  .ox-skel-branch {
-    grid-template-rows: none;
-    grid-template-columns: 7fr 5fr;
+  .ox-skel-branch__card {
+    padding: var(--ox-8);
+  }
+}
+
+// The product grid placeholder (HomeSkeleton ProductsGridSkeleton). It takes
+// its columns from `.ox-grid-products` and only needs a cell height here.
+// That height tracks the card's image plate, which is 132 until 1024 and 184
+// above it (_b3-product 53, _b4-listing 498); the remainder is the card's
+// title, price and action, which do not change with the breakpoint.
+.ox-skel-pgrid {
+  --ox-skel-card: 380px;
+}
+
+@media (min-width: 1024px) {
+  .ox-skel-pgrid {
+    --ox-skel-card: 432px;
+  }
+}
+
+// The store rating above the trust cells (OxTrustStrip). Centred with the
+// headings, and separated from the cells by space alone, because the row
+// below is already divided by hairlines and a second rule here would read as
+// a border around nothing.
+.ox-trust__rating {
+  display: inline-flex;
+  margin-block-end: 20px;
+}
+
+.ox-trust .ox-trust__rating {
+  align-self: center;
+}
+
+// ---------------------------------------------------------------------------
+// 17. The three bands the retail-scale rebuild wrote and never styled
+//
+// OxPoster, OxPosters/PosterCard and CertificationBand were committed as
+// components with no CSS and no manifest entry, so they had never rendered
+// once. This section is their stylesheet. The numbers come from
+// homepage-scale-spec: a full-bleed band is at least 480 tall at 1280 and 560
+// from 1440, a carousel shows 1.3 to 1.5 of the next card at the trailing
+// edge, and a card that carries a photograph shows it behind the content at
+// 0.42 to 0.48 on the card's own dark ground.
+//
+// On full bleed: the `s-block` wrapper the engine emits is ALREADY the full
+// content width (1425 at a 1440 viewport, the 15 being the scrollbar). Only
+// `.ox-container` narrows to 1296 with 64 gutters. So a band does not need to
+// escape anything; it needs its photograph to span the block while only its
+// text sits in a container. That is what these rules do, and it is why none
+// of them reaches for the 100vw margin trick, which would have introduced a
+// horizontal scrollbar on every page that has one.
+// ---------------------------------------------------------------------------
+
+// 17.1 The campaign poster (homepage-scale-spec section 5)
+//
+// The loudest thing on the page after the hero. Absent by default: the block
+// renders null until the merchant writes a headline, so the rules below only
+// ever apply to a real campaign.
+.ox-poster {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  overflow: hidden;
+  min-block-size: 420px;
+  color: var(--ox-paper);
+  text-decoration: none;
+  background: var(--ox-graphite);
+}
+
+.ox-poster__img,
+.ox-poster__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ox-poster__img {
+  object-fit: cover;
+  // The band is a photograph first. It sits brighter than a card's backdrop
+  // because nothing is printed across its whole face, only down one side.
+  opacity: 0.72;
+}
+
+// Deepens toward the reading edge rather than the floor: the poster's text is
+// a column at the start edge, not a caption along the bottom.
+.ox-poster__scrim {
+  background: linear-gradient(
+    to left,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.72) 38%,
+    rgb(14 16 20 / 0.12) 78%
+  );
+}
+
+[dir='ltr'] .ox-poster__scrim {
+  background: linear-gradient(
+    to right,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.72) 38%,
+    rgb(14 16 20 / 0.12) 78%
+  );
+}
+
+.ox-poster__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-block-size: 420px;
+  padding-block: var(--ox-12);
+}
+
+.ox-poster__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-3);
+  max-inline-size: 520px;
+}
+
+.ox-poster__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ox-accent);
+  text-transform: uppercase;
+}
+
+.ox-poster__headline {
+  margin: 0;
+  font-size: clamp(30px, 2.4vw, 46px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+// The accent rule under the subline, drawn as its own element so it keeps its
+// width when the line wraps.
+.ox-poster__rule {
+  inline-size: 64px;
+  block-size: 3px;
+  background: var(--ox-accent);
+}
+
+.ox-poster__line {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.86);
+}
+
+.ox-poster__cta {
+  margin-block-start: var(--ox-2);
+}
+
+// The row of outline glyphs along the floor. Each is a fact, never a benefit.
+.ox-poster__glyphs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-6);
+  margin: var(--ox-8) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-poster__glyph {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.82);
+}
+
+.ox-poster__glyph-icon {
+  flex: none;
+  color: var(--ox-paper);
+}
+
+.ox-poster__glyph-label {
+  white-space: nowrap;
+}
+
+// The brand wedge, the same motif the hero and the advisory band carry.
+.ox-poster__wedge {
+  position: absolute;
+  z-index: 1;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+.ox-poster__wedge--wide {
+  inset-block-start: 0;
+  inset-inline-start: 40px;
+  inline-size: 18px;
+  block-size: 96px;
+}
+
+.ox-poster__wedge--thin {
+  inset-block-start: 0;
+  inset-inline-start: 68px;
+  inline-size: 7px;
+  block-size: 62px;
+  opacity: 0.7;
+}
+
+@media (min-width: 1280px) {
+  .ox-poster,
+  .ox-poster__inner {
+    min-block-size: 480px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .ox-poster,
+  .ox-poster__inner {
+    min-block-size: 560px;
+  }
+}
+
+@media (max-width: 639px) {
+  .ox-poster,
+  .ox-poster__inner {
+    min-block-size: 360px;
+  }
+  .ox-poster__text {
+    max-inline-size: none;
+  }
+  // Four glyphs in a wrapped row on a phone becomes two ragged lines; a
+  // single scrolling row keeps the floor of the band one line tall.
+  .ox-poster__glyphs {
+    gap: var(--ox-4);
+    margin-block-start: var(--ox-6);
+  }
+}
+
+// 17.2 The poster carousel (homepage-scale-spec section 7)
+//
+// Native scroll snap, no autoplay, no JavaScript per frame. The partial card
+// at the trailing edge is the whole point of the row: a scroller that ends
+// flush looks finished when it is not.
+.ox-posters__track {
+  display: grid;
+  grid-auto-flow: column;
+  // 74 puts 1.35 of a card in view, the middle of the spec's 1.3 to 1.5.
+  grid-auto-columns: 74%;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0 0 var(--ox-2);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.ox-posters__slide {
+  scroll-snap-align: start;
+  min-inline-size: 0;
+}
+
+@media (min-width: 640px) {
+  // 1.4 cards of the next one showing, the middle of the spec's 1.3 to 1.5.
+  .ox-posters__track { grid-auto-columns: 46%; }
+}
+
+@media (min-width: 1024px) {
+  .ox-posters__track { grid-auto-columns: 31.5%; }
+}
+
+@media (min-width: 1280px) {
+  .ox-posters__track { grid-auto-columns: 27%; }
+}
+
+.ox-pcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  isolation: isolate;
+  overflow: hidden;
+  block-size: 300px;
+  padding: var(--ox-6);
+  border-radius: var(--ox-r-4);
+  background: var(--ox-graphite-2);
+  color: var(--ox-paper);
+  text-decoration: none;
+}
+
+.ox-pcard__photo,
+.ox-pcard__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+// The treatment the goal and plan cards already use: the frame sits low
+// enough that the card's own dark ground shows through, so a row of unrelated
+// photographs still reads as one set.
+.ox-pcard__photo {
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+.ox-pcard__photo[data-ready] { opacity: 0.46; }
+
+.ox-pcard__scrim {
+  background: linear-gradient(
+    to top,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.55) 46%,
+    rgb(14 16 20 / 0.15) 100%
+  );
+}
+
+.ox-pcard__top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  margin-block-end: auto;
+}
+
+.ox-pcard__icon { color: var(--ox-accent); }
+
+.ox-pcard__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+}
+
+.ox-pcard__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ox-accent);
+  text-transform: uppercase;
+}
+
+.ox-pcard__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  // Stated, not inherited. The card sets `color: var(--ox-paper)` on itself,
+  // but a global heading rule has higher specificity on the heading element
+  // and was painting these near-black on a near-black photograph.
+  color: var(--ox-paper);
+}
+
+.ox-pcard__line {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.ox-pcard__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  margin-block-start: var(--ox-2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ox-paper);
+}
+
+.ox-pcard__cta-label { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-pcard__photo { transition: none; }
+}
+
+// 17.3 The certification band (certification-band-spec)
+//
+// The system's verification green, never the supplier's. Every badge is gated
+// on real per-product evidence, so with no data the band does not render at
+// all and none of this applies. It is a PRODUCT attribute shown for a product
+// that holds it, never a property of the shop.
+.ox-certs {
+  position: relative;
+  background: var(--ox-verify);
+  color: var(--ox-paper);
+}
+
+.ox-certs__inner {
+  display: grid;
+  gap: var(--ox-8);
+  padding-block: var(--ox-12);
+}
+
+.ox-certs__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  text-align: center;
+}
+
+.ox-certs__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgb(255 255 255 / 0.72);
+  text-transform: uppercase;
+}
+
+.ox-certs__title {
+  margin: 0;
+  color: var(--ox-paper);
+}
+
+.ox-certs__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Two by two, per the reference.
+@media (min-width: 640px) {
+  .ox-certs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.ox-certs__badge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  padding: var(--ox-4) var(--ox-6);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: var(--ox-r-3);
+}
+
+.ox-certs__name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ox-certs__en {
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.76);
+}
+
+.ox-certs__ar {
+  font-size: 14px;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.ox-certs__product {
+  display: flex;
+  justify-content: center;
+}
+
+.ox-certs__still {
+  inline-size: auto;
+  // Both axes. A merchant upload arrives with no width or height attribute,
+  // so capping only the block axis still let a wide file run past the band.
+  max-inline-size: 100%;
+  max-block-size: 220px;
+  object-fit: contain;
+}
+
+// The regulatory disclaimer at the foot. Quiet, but never omitted: it is the
+// sentence that keeps a row of badges from reading as a health claim.
+.ox-certs__legal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: 0;
+  padding-block-start: var(--ox-4);
+  border-block-start: 1px solid rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.7);
+  text-align: center;
+}
+
+.ox-certs__legal-ar,
+.ox-certs__legal-en { display: block; }
+
+// ---------------------------------------------------------------------------
+// 18. The advisory section, as two tiers
+//
+// It was one row of three plan cards on a photograph: 470px tall, three plain
+// 416x232 rounded rectangles, and nothing in it that a supplements shop could
+// not have bought from a template. It now carries the whole advisory offer,
+// which is the channel chooser that used to live only on /services plus the
+// plans it leads to, and it is given the room that needs.
+//
+// WHY TWO TIERS AND NOT SIX CARDS. The two rows answer different questions.
+// The channels are how a shopper ASKS: free or nearly so, no commitment, the
+// cheapest yes on the page, so they go first. The plans are what the asking
+// LEADS TO, and they are paid. Six cards in one row would read as six
+// equivalent things and lose that distinction, which is the confusion the
+// whole brief is written against.
+//
+// WHY NOT MIRRORED. Repeating one card shape twice is precisely what makes a
+// section feel like a template. The two tiers share the identity (the accent
+// slash, the angled call to action, the same dark ground) and differ in
+// treatment: a channel card is an upright brief with a price, a plan card is a
+// photographic door.
+//
+// WHY THE CARDS ARE NOT PARALLELOGRAMS. The angle belongs on the CTA, the
+// slash and the divider, where it is decoration. Clipping a card that holds a
+// paragraph cuts the corners off the paragraph, so the motif would cost the
+// section its readability to prove a point about itself.
+// ---------------------------------------------------------------------------
+.ox-services__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-8);
+}
+
+.ox-services__tier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+}
+
+.ox-services__tier-title {
+  margin: 0;
+  font-size: var(--ox-t-lead);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg);
+}
+
+// The divider between the tiers: the theme's own lean, drawn as a thin
+// parallelogram rather than a rule, so the break between "ask" and "get a
+// plan" carries the identity instead of a hairline.
+.ox-services__rule {
+  align-self: stretch;
+  block-size: 2px;
+  background: linear-gradient(
+    to left,
+    rgba(var(--ox-accent-rgb), 0) 0%,
+    rgba(var(--ox-accent-rgb), 0.55) 22%,
+    rgba(var(--ox-accent-rgb), 0.55) 78%,
+    rgba(var(--ox-accent-rgb), 0) 100%
+  );
+  transform: skewX(var(--ox-skew));
+}
+
+.ox-services__channels {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .ox-services__channels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-services__channels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // The plan cards grow with the section. At 232 they read as captions under
+  // the channel row rather than as the paid outcome it leads to.
+  .ox-services--banded .ox-plan {
+    min-block-size: 260px;
+  }
+}
+
+// The band needs the room the second tier asks for.
+@media (min-width: 1024px) {
+  .ox-services--banded {
+    padding-block: var(--ox-24);
   }
 }

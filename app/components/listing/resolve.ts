@@ -29,6 +29,18 @@ export function pathSegments(url: string): string[] {
   return path.split('/').filter(Boolean);
 }
 
+/**
+ * True when the URL carries this slug as a path segment. A Salla category URL
+ * is `/{slug}/c{id}` (route `/{-$locale}/$slug/c{$id}`), and a multilingual
+ * store prefixes the locale, so the slug is neither the first nor the last
+ * segment in the general case. The one implementation every slug resolver in
+ * the chrome and the listing shares (useTaxonomyLinks, useHeaderMenu,
+ * useSlugLink, navLinks).
+ */
+export function matchesSlug(url: string, slug: string): boolean {
+  return pathSegments(url).includes(slug);
+}
+
 /** `c123` and `p123`: the engine's entity segments. Built without a literal regex. */
 function isEntitySegment(segment: string): boolean {
   const first = segment.charAt(0);

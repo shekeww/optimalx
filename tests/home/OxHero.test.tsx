@@ -3,6 +3,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
+import ar from '../../locales/ar.json';
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
@@ -23,7 +24,9 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     }),
 }));
 
-const { OxHero } = await import('../../app/components/home/OxHero');
+const { OxHero, DEFAULT_HERO, DEFAULT_HERO_MOBILE } = await import(
+  '../../app/components/home/OxHero'
+);
 
 function data(extra: Record<string, unknown> = {}): OxBlockData {
   return { path: 'ox-hero', key: 'hero', ...HOME_BLOCK_FIELDS['ox-hero'], ...extra } as OxBlockData;
@@ -47,31 +50,125 @@ afterEach(() => {
 });
 
 describe('OxHero', () => {
-  it('makes the keyword eyebrow the page h1 and the headline a paragraph (DIRECTION 5.2, C19)', () => {
+  it('asks the reference question as the page h1, over a one line eyebrow', () => {
     const { container } = renderWithProviders(<OxHero data={data()} />);
     const heading = container.querySelectorAll('h1');
+    // The owner's reference hero is a QUESTION, not a statement broken over
+    // two lines with an accented closing word. That earlier lockup is gone,
+    // and with it `.ox-hero__line` and `.ox-hero__accent`. The eyebrow is back
+    // because the reference draws one: who the shop is, before it asks.
     expect(heading).toHaveLength(1);
-    expect(heading[0].textContent).toBe('اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية');
-    expect(container.querySelector('.ox-hero__headline')?.tagName).toBe('P');
-    expect(container.querySelector('.ox-hero__headline')?.textContent).toBe('ما هدفك اليوم؟');
+    expect(heading[0].classList.contains('ox-hero__headline')).toBe(true);
+    expect(heading[0].textContent).toBe('ما هدفك اليوم؟');
+    expect(container.querySelectorAll('.ox-hero__line')).toHaveLength(0);
+    const eyebrow = container.querySelector('.ox-hero__eyebrow');
+    expect(eyebrow?.textContent).toContain('اوبتيمال اكس');
   });
 
-  it('renders no image at all until the owner uploads one (never a broken image)', () => {
+  it('sets the subline under the headline, and steps aside for a merchant one', () => {
+    // The subline is the owner's copy and the owner edits it directly, so the
+    // test reads the dictionary rather than asserting a phrase: the earlier
+    // literal ("المدينة المنورة") went stale the day the owner rewrote the line.
+    const plain = renderWithProviders(<OxHero data={data()} />);
+    const sub = plain.container.querySelector('.ox-hero__sub')?.textContent?.trim();
+    expect(sub).toBe(ar['ox.home.hero_subline']);
+    expect(sub?.length ?? 0).toBeGreaterThan(20);
+    plain.unmount();
+
+    const { container } = renderWithProviders(<OxHero data={data({ subline: 'سطر التاجر' })} />);
+    expect(container.querySelector('.ox-hero__sub')?.textContent).toBe('سطر التاجر');
+  });
+
+  it('slides the frames on a track rather than crossfading them', () => {
     const { container } = renderWithProviders(<OxHero data={data()} />);
-    expect(container.querySelector('img')).toBeNull();
-    expect(container.querySelector('.ox-hero__photo')).not.toBeNull();
+    const track = container.querySelector('.ox-hero__track');
+    // One transform for the whole row, and the server renders it at frame 0,
+    // so the hero is correct before hydration and with scripting off.
+    expect(track).not.toBeNull();
+    expect((track as HTMLElement).style.getPropertyValue('--ox-hero-i')).toBe('0');
+    expect(track?.children.length).toBeGreaterThan(1);
   });
 
-  it('marks the hero image as the LCP candidate with explicit dimensions', () => {
-    renderWithProviders(
+  it('carries the wedge pair at the band edge and nothing else orange', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    expect(container.querySelectorAll('.ox-band__wedge')).toHaveLength(2);
+    expect(container.querySelectorAll('.ox-hero__wedge--wide')).toHaveLength(1);
+    expect(container.querySelectorAll('.ox-hero__wedge--thin')).toHaveLength(1);
+  });
+
+  it('gives the primary action the brand parallelogram and the secondary the pill', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    const links = container.querySelectorAll('.ox-hero__actions a');
+    expect(links[0].classList.contains('ox-cta-wedge')).toBe(true);
+    expect(links[1].classList.contains('ox-cta-pill')).toBe(true);
+  });
+
+  it('ships its own photograph, so the first screen is finished with nothing configured', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    const photo = screen.getByTestId('ox-hero-default-photo') as HTMLImageElement;
+    // Art directed: a 3:4 crop for the full-bleed mobile band, a 3:2 crop for
+    // the desktop wedge panel, both theme assets and both decorative.
+    expect(photo.getAttribute('src')).toBe(DEFAULT_HERO_MOBILE);
+    expect(container.querySelector('source')?.getAttribute('srcset')).toBe(DEFAULT_HERO);
+    expect(photo.getAttribute('alt')).toBe('');
+    // It is the LCP element whether it came from the theme or the dashboard.
+    expect(photo.getAttribute('fetchpriority')).toBe('high');
+    expect(photo.getAttribute('loading')).toBe('eager');
+    expect(photo.getAttribute('width')).toBe('780');
+    expect(photo.getAttribute('height')).toBe('1040');
+  });
+
+  it('steps aside the moment the owner uploads their own', () => {
+    renderWithProviders(<OxHero data={data({ image: 'https://cdn.example/hero.jpg' })} />);
+    expect(screen.queryByTestId('ox-hero-default-photo')).toBeNull();
+  });
+
+  it('marks the merchant hero as the LCP candidate and art directs it', () => {
+    const { container } = renderWithProviders(
       <OxHero data={data({ image: 'https://cdn.example/hero.jpg', mobile_image: 'https://cdn.example/m.jpg' })} />
     );
-    const img = screen.getByRole('presentation', { hidden: true }) as HTMLImageElement;
-    expect(img.getAttribute('data-priority')).toBe('true');
-    expect(img.getAttribute('width')).toBe('835');
-    expect(img.getAttribute('height')).toBe('560');
-    expect(img.getAttribute('data-mobile-src')).toBe('https://cdn.example/m.jpg');
+    const img = container.querySelector('.ox-hero__frame img') as HTMLImageElement;
+    expect(img.getAttribute('fetchpriority')).toBe('high');
+    expect(img.getAttribute('loading')).toBe('eager');
     expect(img.getAttribute('alt')).toBe('');
+
+    // Both branches are one <picture> now, merchant and theme alike, so the
+    // merchant's mobile upload gets real art direction instead of being
+    // handed to the engine component as an attribute. That means the <img>
+    // carries the PORTRAIT dimensions and the <source> carries the desktop
+    // frame, which is what the theme's own default always did. A 1440x560
+    // landscape letterboxed into a tall mobile band wastes most of the screen.
+    expect(img.getAttribute('src')).toBe('https://cdn.example/m.jpg');
+    expect(img.getAttribute('width')).toBe('780');
+    expect(img.getAttribute('height')).toBe('1040');
+    expect(container.querySelector('.ox-hero__frame source')?.getAttribute('srcset')).toBe(
+      'https://cdn.example/hero.jpg'
+    );
+  });
+
+  it('cycles the photo half, with the first frame server-rendered active', () => {
+    const { container } = renderWithProviders(<OxHero data={data()} />);
+    const frames = container.querySelectorAll('.ox-hero__frame');
+    expect(frames.length).toBeGreaterThan(1);
+    // Exactly one frame is active in the server's output, and it is the first,
+    // so the hero is finished before any script runs and nothing shifts.
+    expect(container.querySelectorAll('.ox-hero__frame[data-active]')).toHaveLength(1);
+    expect(frames[0].hasAttribute('data-active')).toBe(true);
+    // Only the first frame competes for the connection.
+    const imgs = container.querySelectorAll('.ox-hero__frame img');
+    expect(imgs[0].getAttribute('loading')).toBe('eager');
+    expect(imgs[1].getAttribute('loading')).toBe('lazy');
+    expect(imgs[1].hasAttribute('fetchpriority')).toBe(false);
+    // One dot per frame, so the rotation can be stopped (WCAG 2.2.2).
+    expect(container.querySelectorAll('.ox-hero__dot')).toHaveLength(frames.length);
+  });
+
+  it('does not rotate when the merchant supplies a single photograph', () => {
+    const { container } = renderWithProviders(
+      <OxHero data={data({ image: 'https://cdn.example/hero.jpg' })} />
+    );
+    expect(container.querySelectorAll('.ox-hero__frame')).toHaveLength(1);
+    expect(container.querySelector('.ox-hero__dots')).toBeNull();
   });
 
   it('sends the primary CTA to the goals block and the secondary to the services page', () => {
@@ -87,6 +184,8 @@ describe('OxHero', () => {
       <OxHero data={data({ headline: 'عنوان التاجر', primary_url: '/offers' })} />
     );
     expect(container.querySelector('.ox-hero__headline')?.textContent).toBe('عنوان التاجر');
+    // A merchant headline is one string, so it takes no accent word.
+    expect(container.querySelector('.ox-hero__accent')).toBeNull();
     expect(container.querySelector('.ox-hero__actions a')?.getAttribute('href')).toBe('/offers');
   });
 

@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import type { MenuItem } from '@salla.sa/twilight-theme-engine/types';
-import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { GOALS } from '../../../content/goals';
+import { matchesSlug, pathSegments } from '../../listing/resolve';
+import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import type { OxIconName } from '../../common/Icon';
 
 export interface ResolvedLink {
@@ -20,76 +20,42 @@ export interface HeaderMenu {
   /** Top-level dashboard menu items, in dashboard order. */
   items: MenuItem[];
   isLoading: boolean;
-  /** The six goals, resolved against the live menu by slug. */
+  /** The six goals, resolved against the live taxonomy by slug. */
   goals: ResolvedLink[];
 }
 
-/** Path segments of a menu URL, query, hash and origin removed. */
-export function pathSegments(url: string): string[] {
-  let path = url;
-  const hash = path.indexOf('#');
-  if (hash >= 0) path = path.slice(0, hash);
-  const query = path.indexOf('?');
-  if (query >= 0) path = path.slice(0, query);
-  const scheme = path.indexOf('//');
-  if (scheme >= 0) {
-    const afterHost = path.indexOf('/', scheme + 2);
-    path = afterHost >= 0 ? path.slice(afterHost) : '';
-  }
-  return path.split('/').filter(Boolean);
-}
+// `pathSegments` and `matchesSlug` used to be defined here a second time; the
+// one implementation now lives in `listing/resolve.ts` (Contract C), and this
+// re-export keeps every existing import (NavBar, MegaPanel, home's
+// OxCategories, this module's own tests) working unchanged.
+export { pathSegments, matchesSlug };
 
 /**
- * True when the URL carries this slug as a path segment. A Salla category URL
- * is `/{slug}/c{id}` (route `/{-$locale}/$slug/c{$id}`), and a multilingual
- * store prefixes the locale, so the slug is neither the first nor the last
- * segment in the general case.
- */
-export function matchesSlug(url: string, slug: string): boolean {
-  return pathSegments(url).includes(slug);
-}
-
-function flatten(items: MenuItem[] | undefined): MenuItem[] {
-  if (!items) return [];
-  const out: MenuItem[] = [];
-  const walk = (list: MenuItem[]) => {
-    for (const item of list) {
-      out.push(item);
-      if (item.children?.length) walk(item.children);
-    }
-  };
-  walk(items);
-  return out;
-}
-
-/**
- * The header menu (engine `menu.queries.header()`, api/menu.d.ts:5-13) plus
- * slug resolution for the goal collections.
+ * The dashboard header menu (engine `menu.queries.header()`, api/menu.d.ts)
+ * plus the six goal collections resolved by `useTaxonomyLinks` (Contract C).
  *
- * A goal whose category the merchant has not created yet links to a search for
- * its label instead of a dead URL, which is the fallback the owner checklist
- * records (PLAN-final C15).
+ * This hook used to run its own slug resolution against the dashboard menu
+ * only; it is now a thin adapter over `useTaxonomyLinks`, which also checks
+ * the live category list and carries an id-based match once batch S5 writes
+ * `taxonomy-ids.ts`. The public shape (`ResolvedLink[]`) is unchanged, so
+ * `OxGoals` and every other existing consumer keeps working (PLAN-ship
+ * Contract C).
  */
 export function useHeaderMenu(): HeaderMenu {
-  const { t } = useTranslation();
   const { data, isPending } = useQuery(menu.queries.header());
+  const taxonomy = useTaxonomyLinks();
 
-  const goals = useMemo(() => {
-    const all = flatten(data);
-    return GOALS.map<ResolvedLink>((goal) => {
-      const match = all.find(
-        (item) => typeof item.url === 'string' && matchesSlug(item.url, goal.slug)
-      );
-      const label = match?.title ?? t(goal.h1Key);
-      return {
-        slug: goal.slug,
-        label,
-        to: match?.url ?? `/search?q=${encodeURIComponent(label)}`,
-        resolved: Boolean(match),
-        icon: goal.icon,
-      };
-    });
-  }, [data, t]);
+  const goals = useMemo<ResolvedLink[]>(
+    () =>
+      taxonomy.goals.map((link) => ({
+        slug: link.slug,
+        label: link.label,
+        to: link.to,
+        resolved: link.resolved,
+        icon: link.icon,
+      })),
+    [taxonomy.goals]
+  );
 
-  return { items: data ?? [], isLoading: isPending, goals };
+  return { items: data ?? [], isLoading: isPending || taxonomy.isLoading, goals };
 }

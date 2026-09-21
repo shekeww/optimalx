@@ -1,15 +1,18 @@
 import { useState, type ReactNode } from 'react';
 import { Accordion } from './Accordion';
 import { Badge, BadgeStack, type BadgeTone } from './Badge';
+import { Band } from './Band';
 import { Bdi } from './Bdi';
 import { Button, type ButtonSize, type ButtonVariant } from './Button';
 import { Chip, ChipRow } from './Chip';
 import { EmptyState } from './EmptyState';
 import { Icon, OX_ICON_NAMES, type OxIconSize } from './Icon';
+import { Panel, PanelRow, PanelRowGroup } from './Panel';
 import { Price } from './Price';
 import { SectionHeader } from './SectionHeader';
 import { Skeleton, SkeletonBar, SkeletonBlock, SkeletonCircle } from './Skeleton';
 import { Sprite } from './Sprite';
+import { StatStrip } from './StatStrip';
 import { Table, TableWrap } from './Table';
 import { Tabs } from './Tabs';
 import { Tooltip } from './Tooltip';
@@ -208,7 +211,7 @@ export function KitchenSink() {
         title="SectionHeader"
         note="The eyebrow renders only when it states a fact the heading lacks (amendment A4)."
       >
-        <SectionHeader title="تسوق حسب هدفك" descriptor="ستة أهداف. كل هدف يقودك إلى ما يناسبه فقط." />
+        <SectionHeader title="تسوق حسب هدفك" />
         <div style={{ marginBlockStart: 24 }}>
           <SectionHeader
             as="h3"
@@ -334,6 +337,70 @@ export function KitchenSink() {
               </button>
             </Tooltip>
           </Row>
+        </div>
+      </Block>
+
+      <Block
+        title="Panel, PanelRow and PanelRowGroup"
+        note="The cream card with a hairline. The group stretches one to three panels to a common height and returns null at zero."
+      >
+        <PanelRowGroup>
+          <Panel title="تفاصيل المنتج">
+            <PanelRow label="العلامة التجارية" value={<Bdi>{LATIN_NAME}</Bdi>} />
+            <PanelRow label="الحجم" value={<Bdi>907g</Bdi>} />
+            <PanelRow label="عدد الحصص" value="32" />
+          </Panel>
+          <Panel title="ما الذي نساعدك فيه" tone="plate">
+            <p className="ox-body">{AR_SENTENCE}</p>
+          </Panel>
+          <Panel title="مع إجراء" action={<Button variant="link">عرض الكل</Button>}>
+            <p className="ox-body">{AR_SENTENCE}</p>
+          </Panel>
+        </PanelRowGroup>
+        <PanelRowGroup>{null}</PanelRowGroup>
+      </Block>
+
+      <Block
+        title="StatStrip"
+        note="Every cell must trace to store data, a setting or a content map. Zero cells render nothing at all."
+      >
+        <StatStrip
+          cells={[
+            { id: 'a', value: <Bdi>20g</Bdi>, label: 'بروتين', sub: 'في الحصة' },
+            { id: 'b', value: <Bdi>150</Bdi>, label: 'سعرة حرارية', sub: 'في الحصة' },
+            { id: 'c', glyph: 'vegan-leaf', label: 'نباتي', sub: <Bdi>Vegan</Bdi> },
+            { id: 'd', value: <Bdi>907g</Bdi>, label: 'حجم العبوة' },
+          ]}
+        />
+        <div style={{ marginBlockStart: 16 }}>
+          <StatStrip cells={[{ id: 'one', value: <Bdi>60</Bdi>, label: 'حصة' }]} />
+        </div>
+        <StatStrip cells={[]} />
+      </Block>
+
+      <Block
+        title="Band"
+        note="One wedge per screen. Badges are facts: with none the band drops its lower tier and keeps its proportions."
+      >
+        <Band
+          photo="/assets/images/services-band.jpg"
+          line1="اسأل قبل أن تشتري"
+          line2="ثم اشتر"
+          subline={AR_SENTENCE}
+          badges={[
+            { id: 'v', glyph: 'vegan-leaf', label: 'نباتي', latin: <Bdi>Vegan</Bdi> },
+            { id: 's', glyph: 'low-sugar', label: 'منخفض السكر', latin: <Bdi>Low Sugar</Bdi> },
+          ]}
+        />
+        <div style={{ marginBlockStart: 16 }}>
+          <Band
+            photo="/assets/images/services-band.jpg"
+            line1="بلا شارات وبلا وتد"
+            subline={AR_SENTENCE}
+            wedge={false}
+            lockup={false}
+            action={<Button>احجز موعدا</Button>}
+          />
         </div>
       </Block>
 

@@ -1,3 +1,9 @@
+// Offline preview only. Must be the first import in this file: `router.tsx`
+// is the one module both the workerd SSR runner and the browser evaluate
+// before any route loader runs (the worker's entry is TanStack's own
+// `server-entry`, not `app/server.ts`, so importing it there does nothing).
+// Inert unless VITE_API_URL is set. See app/dev/offline-api.ts.
+import './dev/offline-api';
 import { createRouter } from '@salla.sa/twilight-theme-engine/tanstack';
 import { routeTree } from './routeTree.gen';
 import { registerOxHomeComponents } from './components/home/register';

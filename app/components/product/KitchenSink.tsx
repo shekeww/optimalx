@@ -5,10 +5,12 @@ import { OxProductCard } from './OxProductCard';
 import { SpecChips } from './BuyZone/SpecChips';
 import { SupplyCalculator } from './BuyZone/SupplyCalculator';
 import { DeliveryPromise } from './BuyZone/DeliveryPromise';
+import { ExpiryLine } from './BuyZone/ExpiryLine';
 import { TrustGrid } from './BuyZone/TrustGrid';
 import { StickyBar } from './BuyZone/StickyBar';
 import { PdpTitleBlock } from './BuyZone/PdpTitleBlock';
 import { PdpPriceBlock } from './BuyZone/PdpPriceBlock';
+import { PdpGallery } from './BuyZone/PdpGallery';
 import { NutritionTable } from './BelowFold/NutritionTable';
 import { HowToUse } from './BelowFold/HowToUse';
 import { PrePurchaseInfo } from './BelowFold/PrePurchaseInfo';
@@ -74,6 +76,22 @@ function fixture(overrides: Partial<Product> = {}): Product {
   } as Product;
 }
 
+/**
+ * Five real catalogue images, so the gallery's thumbnail rail can be looked
+ * at. No product in the live store carries more than one image today (the
+ * write log records exactly one `product_image_add` per product), so the rail
+ * never appears on a real product page and the only way to see it is here.
+ * Five is one past the four the rail draws, which is what makes its chevrons
+ * live.
+ */
+const GALLERY_IMAGES = [
+  'https://cdn.salla.sa/dPrxBd/7c0a3ecd-515d-48d8-b575-1fa8b30c11dc-500x500-M3GIPfzBrU7DXXZJsNrmoqZ7u4kRejfSXKMQtV1h.jpg',
+  'https://cdn.salla.sa/dPrxBd/335faea8-5dae-4157-94d8-cbc0415953e2-500x500-va7a4JfENowR83Szqdm771ErO8No3smnu8JCmTkG.jpg',
+  'https://cdn.salla.sa/dPrxBd/28308f33-fbf9-4682-8d55-5b9fa8fc2fd8-500x500-3wZJASuQpBlzCZEmbOXLWgp14KpXbg4Hu123tDPG.jpg',
+  'https://cdn.salla.sa/dPrxBd/ec122d27-551a-4680-8df4-5c3a5b47a460-500x500-R6PBB0mLYlAzRRW6m0gHEQEgwVtbioNeDysidPOS.webp',
+  'https://cdn.salla.sa/dPrxBd/304b903e-d5e2-4705-9bb2-c9231b4ff5bd-500x500-ecvwzCk8Cgk6Xul5OyaHJGw8fpO0IPnqJINPCk4V.jpg',
+].map((url, index) => ({ id: 900 + index, url, alt: '' }));
+
 function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section dir="ltr" style={{ marginBlockEnd: 48, textAlign: 'start' }}>
@@ -122,19 +140,26 @@ export function KitchenSink() {
         </Grid>
       </Panel>
 
+      <Panel title="PdpGallery: five images (rail and chevrons) and one (plate alone)">{/* ox-allow: latin-sentence */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 32 }}>
+          <PdpGallery product={fixture({ images: GALLERY_IMAGES })} />
+          <PdpGallery product={fixture({ images: [GALLERY_IMAGES[0]] })} />
+        </div>
+      </Panel>
+
       <Panel title="PdpTitleBlock and PdpPriceBlock: plain, on sale, with a VAT number">{/* ox-allow: latin-sentence */}
-        <PdpTitleBlock product={fixture()} expiry={spec?.expiry} />
-        <PdpPriceBlock product={fixture()} servings={spec?.servings} />
+        <PdpTitleBlock product={fixture()} lead={parts.lead} />
+        <PdpPriceBlock product={fixture()} servings={spec?.servings} expiry={spec?.expiry} />
         <hr />
         <PdpTitleBlock
           product={fixture({ is_on_sale: true, regular_price: 300, sale_price: 240 })}
-          expiry="2026-11"
-          settings={{ claim_official_distributors: true }}
+          lead={parts.lead}
         />
         <PdpPriceBlock
           product={fixture({ is_on_sale: true, regular_price: 300, sale_price: 240 })}
           servings={spec?.servings}
-          settings={{ vat_number: '310000000000003' }}
+          expiry="2026-11"
+          settings={{ vat_number: '310000000000003', claim_official_distributors: true }}
         />
       </Panel>
 
@@ -146,6 +171,13 @@ export function KitchenSink() {
         <SpecChips spec={parseSpecLine('<p>نص عادي.</p>')} />
         <SupplyCalculator servings={null} />
         <DeliveryPromise settings={withThreshold} currency="SAR" shippable={false} />
+      </Panel>
+
+      <Panel title="ExpiryLine: far date states the fact, near date defers to the badge">{/* ox-allow: latin-sentence */}
+        <ExpiryLine expiry="2029-03" />
+        <p>Nothing below: inside six months, and no printed expiry.</p>{/* ox-allow: latin-sentence */}
+        <ExpiryLine expiry="2026-11" />
+        <ExpiryLine expiry={null} />
       </Panel>
 
       <Panel title="TrustGrid: physical and digital">{/* ox-allow: latin-sentence */}

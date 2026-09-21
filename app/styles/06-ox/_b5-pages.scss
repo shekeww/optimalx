@@ -1,11 +1,115 @@
-// B5: services hub, branch, about, contact, converter, 404 and error
-// (DIRECTION 5.6, 6.11, 6.12, 6.15, 6.16, 6.17, 6.18). Role tokens only,
-// logical properties only, motion only through --dur-* and --ease-*, transform
-// and opacity only, and nothing on a wedge element animates (amendment A9).
+// B5: the pages that are read rather than bought. Services hub and the five
+// service pages, FAQ, about, contact, branch, converter, 404 and error
+// (DIRECTION 5.6, 6.11, 6.12, 6.15, 6.16, 6.17, 6.18).
+//
+// Carried onto the approved design (docs/design-target/pdp-target.png):
+//   - the ground is warm. Paper page, card panels, plate insets, and no pure
+//     white surface anywhere outside a form control;
+//   - no drop shadow. Surfaces separate by a value step plus a 1px hairline;
+//   - orange is rationed. On these pages it appears on the primary button and
+//     on the band wedge, and nowhere else;
+//   - the wedge is a signature: at most one per screen, and it belongs to that
+//     screen's band.
+//
+// Rules: role tokens only, logical properties only, motion only through
+// --dur-* and --ease-*, transform and opacity only, and nothing on a wedge
+// element animates (amendment A9).
+
+// ---------------------------------------------------------------------------
+// 0. SHARED. Declared here, consumed by every batch.
+//
+//    `.ox-panel`, `.ox-panel__head`, `.ox-panel__title`, `.ox-panels` and the
+//    `.ox-details__*` row contract are declared in `_b3-product.scss` and are
+//    consumed exactly as they are. The four rules below are the parts
+//    `app/components/common/Panel.tsx` adds on top of that set, and
+//    `.ox-pager` is shared part 11 (PAGES owns it, COMMERCE renders it in the
+//    account order history).
+// ---------------------------------------------------------------------------
+.ox-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  min-inline-size: 0;
+}
+
+.ox-panel__head + .ox-panel__body {
+  margin-block-start: var(--ox-4);
+}
+
+.ox-panel__action {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+}
+
+// The warm inset tone. No hairline: a 1px --ox-line on --ox-plate is under a
+// perceptible step, and the value change is doing the separating already.
+.ox-panel--plate {
+  background: var(--ox-plate);
+  border-color: transparent;
+}
+
+// A key/value row that is the panel's first child has no table wrapper above
+// it, so it draws its own opening hairline.
+.ox-panel__body > .ox-details__row:first-child {
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-pager__link {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 44px;
+  block-size: 44px;
+  padding-inline: var(--ox-3);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-1);
+  background: var(--ox-card);
+  color: var(--ox-fg);
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--ox-ink-3);
+  }
+
+  &[aria-current='page'] {
+    background: var(--ox-ink);
+    border-color: var(--ox-ink);
+    color: var(--ox-paper);
+  }
+}
+
+.ox-pager__gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 32px;
+  block-size: 44px;
+  color: var(--ox-fg-3);
+}
 
 // ---------------------------------------------------------------------------
 // 1. Page frame and vertical rhythm (DIRECTION 4.2)
 // ---------------------------------------------------------------------------
+// 48 between sections on a phone, 64 from 1024. The band gets 96 around it on
+// desktop, because a section break that is not given room stops reading as a
+// break and starts reading as another block.
 .ox-page {
   display: flex;
   flex-direction: column;
@@ -18,9 +122,40 @@
 }
 
 // The text-measure pages read as documents, not as grids (DIRECTION 4.1).
-.ox-page--about,
 .ox-page--converter {
   max-inline-size: calc(var(--ox-container-narrow) + 2 * var(--ox-gutter));
+}
+
+// A PAGE THAT CARRIES FULL-BLEED SECTIONS STOPS BEING THE CONTAINER ITSELF.
+//
+// `.ox-page` is a centred, gutter-padded box, so a cover photograph inside it
+// stops at the measure and reads as a picture on the page rather than as the
+// top of the page. The fix is NOT the `100vw` margin escape: that overhangs
+// the content box by the reserved scrollbar and puts a horizontal scrollbar on
+// every page that uses it, which is why nothing else on this site reaches for
+// it (see the note in _b2-home.scss section 17).
+//
+// So the measure moves down one level. The page keeps its vertical rhythm and
+// gives up its width; each child takes exactly the box the page used to have,
+// which is the same geometry as before; and a child marked `.ox-page__bleed`
+// declines it and spans the frame. Two children do that on `/services`, the
+// cover band and the advisory section, and both draw their own inner
+// container, so their type still sits on the measure.
+.ox-page--bleed {
+  max-inline-size: none;
+  padding-inline: 0;
+
+  > * {
+    inline-size: 100%;
+    max-inline-size: var(--ox-container);
+    margin-inline: auto;
+    padding-inline: var(--ox-gutter);
+  }
+
+  > .ox-page__bleed {
+    max-inline-size: none;
+    padding-inline: 0;
+  }
 }
 
 .ox-page-head {
@@ -28,6 +163,7 @@
   flex-direction: column;
   gap: var(--ox-3);
   max-inline-size: var(--ox-container-text);
+  padding-block-start: var(--ox-4);
 }
 
 .ox-page-head__title,
@@ -39,78 +175,86 @@
   color: var(--ox-fg-2);
 }
 
-// ---------------------------------------------------------------------------
-// 2. Hub hero (DIRECTION 6.11 block 2, 4.5 "goal landing and services hub
-//    hero" row: 360 mobile, 420 desktop, run 170)
-// ---------------------------------------------------------------------------
-.ox-page-hero {
-  --ox-band-h: 360px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--ox-4);
-  min-block-size: var(--ox-band-h);
-  padding-block: var(--ox-8);
-  overflow: hidden;
+.ox-page__back {
+  margin: 0;
 }
 
-.ox-page-hero__body {
-  position: relative;
-  z-index: 1;
+@media (min-width: 1024px) {
+  .ox-page {
+    gap: var(--ox-16);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. The band as a page hero
+// ---------------------------------------------------------------------------
+// `.ox-bband` is the product page's block and is consumed unchanged. These
+// rules only give it the presence a page hero needs and place the one control
+// the generic `Band` adds.
+.ox-bband__action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+  margin-block-start: var(--ox-2);
+}
+
+.ox-page--services__band,
+.ox-page--about__band,
+.ox-page--faq__band {
+  margin-block-start: var(--ox-2);
+}
+
+@media (min-width: 1024px) {
+  .ox-page--services__band,
+  .ox-page--about__band,
+  .ox-page--faq__band {
+    min-block-size: 360px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. The statistic strip at page level
+// ---------------------------------------------------------------------------
+// `.ox-stats` carries no frame of its own, which is right inside the buy zone
+// where a panel already contains it. Standing alone on the page it needs the
+// two hairlines to read as one strip rather than as loose text.
+.ox-page--about__stats,
+.ox-service__stats {
+  border-block: 1px solid var(--ox-bd);
+}
+
+.ox-stats__free {
+  font-size: 22px;
+  font-weight: var(--ox-w-figure);
+  color: var(--ox-verify);
+}
+
+// ---------------------------------------------------------------------------
+// 4. Services hub and the service pages (DIRECTION 6.11)
+// ---------------------------------------------------------------------------
+.ox-hub-intro,
+.ox-service-intro {
   display: flex;
   flex-direction: column;
   gap: var(--ox-3);
   max-inline-size: var(--ox-container-text);
 }
 
-.ox-page-hero__title,
-.ox-page-hero__sub,
-.ox-page-hero__intro,
-.ox-page-hero__reply {
+.ox-hub-intro__lead,
+.ox-hub-intro__reply,
+.ox-service-intro__lead {
   margin: 0;
 }
 
-.ox-page-hero__sub {
+.ox-hub-intro__lead,
+.ox-service-intro__lead {
   color: var(--ox-fg-2);
 }
 
-.ox-page-hero__intro {
-  color: var(--ox-fg-2);
-}
-
-.ox-page-hero__reply {
+.ox-hub-intro__reply {
   color: var(--ox-fg-3);
 }
 
-// Mobile: the tonal corner, never a full panel behind the text.
-.ox-page-hero__panel {
-  @include ox-wedge-corner(64px, 158px);
-  background: var(--ox-graphite-2);
-}
-
-@media (min-width: 1024px) {
-  .ox-page-hero {
-    --ox-band-h: 420px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-  }
-
-  .ox-page-hero__panel {
-    @include ox-wedge(420px, start);
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: 0;
-    inline-size: 50%;
-    block-size: auto;
-    background: var(--ox-graphite-2);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 3. Services hub sections (DIRECTION 6.11 blocks 3 to 7)
-// ---------------------------------------------------------------------------
 .ox-hub__section,
 .ox-hub__faq,
 .ox-contact,
@@ -118,7 +262,8 @@
 .ox-contact-branch,
 .ox-contact-social,
 .ox-about-why,
-.ox-branch-do {
+.ox-branch-do,
+.ox-page--branch__faq {
   display: flex;
   flex-direction: column;
   gap: var(--ox-6);
@@ -141,6 +286,16 @@
   color: var(--ox-fg-3);
 }
 
+// The medical line. It used to repeat under each of the three channel cards;
+// with the advisory section in their place it is said ONCE, directly under
+// that section, which is where the three channels and the three programmes it
+// qualifies all sit. It is still said verbatim, and it is still said a second
+// time under the scope panel further down.
+.ox-hub__medical {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
 .ox-hub__foot {
   margin: 0;
 }
@@ -150,22 +305,216 @@
 }
 
 // ---------------------------------------------------------------------------
-// 4. ScopePanel (DIRECTION 6.11 block 4)
+// 4b. The service comparison grid
 // ---------------------------------------------------------------------------
-.ox-scope {
+// One question per row, one service per column, the same four questions
+// asked of all five. It is a real table because the relationship between a
+// column and a row has to reach the accessibility tree, and because a grid
+// of divs would not keep a row on one baseline across five columns of
+// unequal text.
+//
+// Below the width where five columns fit it scrolls sideways, natively, with
+// snap points on the columns and the question column pinned at the inline
+// start: the one column a reader needs while the rest move. No JavaScript
+// runs per frame, and nothing here animates.
+.ox-compare {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
-  padding: var(--ox-6);
-  background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
+  gap: var(--ox-4);
 }
 
-.ox-scope__title,
-.ox-scope__closing {
+.ox-compare__scroller {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: thin;
+}
+
+// `separate`, not `collapse`: a collapsed table hands its borders to the
+// table itself, and a sticky cell then scrolls out from under its own rule.
+// Every rule below is drawn on the cell, so the pinned column keeps its.
+.ox-compare__table {
+  inline-size: 100%;
+  min-inline-size: 640px;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: start;
+}
+
+// Pinned with the row heads under it, one layer above them, so the header
+// row and the question column stay a corner rather than coming apart.
+.ox-compare__corner {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 2;
+  inline-size: 132px;
+  min-inline-size: 132px;
+  background: var(--ox-paper);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__head {
+  min-inline-size: 168px;
+  padding: var(--ox-3);
+  vertical-align: bottom;
+  text-align: start;
+  scroll-snap-align: start;
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__link {
+  @include ox-focus(2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  min-block-size: 44px;
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-tight);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+}
+
+.ox-compare__icon {
+  color: var(--ox-fg-3);
+}
+
+// Pinned while the columns scroll under it. It carries the page ground so
+// the cells passing beneath it are covered rather than showing through.
+.ox-compare__rowhead {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  inline-size: 132px;
+  min-inline-size: 132px;
+  padding: var(--ox-3);
+  vertical-align: top;
+  text-align: start;
+  font-size: 13px;
+  font-weight: var(--ox-w-quiet);
+  color: var(--ox-fg-3);
+  background: var(--ox-paper);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__cell {
+  padding: var(--ox-3);
+  vertical-align: top;
+  scroll-snap-align: start;
+  font-size: 14px;
+  line-height: var(--ox-lh-lead);
+  color: var(--ox-fg-2);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-compare__table tbody tr:last-child .ox-compare__cell,
+.ox-compare__table tbody tr:last-child .ox-compare__rowhead {
+  border-block-end: 0;
+}
+
+.ox-compare__free {
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-verify, #14514c);
+}
+
+@media (min-width: 1024px) {
+  .ox-compare__table {
+    min-inline-size: 0;
+  }
+}
+
+// The limit-of-our-work line. Set on the page ground with a rule at the
+// inline start rather than in a tinted box: it is the page telling the truth
+// about itself, not a warning notice.
+.ox-service-limit {
+  margin: 0;
+  padding-inline-start: var(--ox-4);
+  border-inline-start: 2px solid var(--ox-bd-2);
+  color: var(--ox-fg-2);
+  max-inline-size: var(--ox-container-text);
+}
+
+// ---------------------------------------------------------------------------
+// 4b. One advisory service, as an anchored section of the hub
+// ---------------------------------------------------------------------------
+// Five of these stack under the anchor strip. They are separated by a rule and
+// by space, never by five more dark bands: the band is the page's section
+// break and it is spent once, at the top.
+.ox-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-16);
+}
+
+.ox-service {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+  // A deep link (#personal-training) lands under the sticky header, not
+  // behind it.
+  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-8));
+}
+
+.ox-service + .ox-service {
+  padding-block-start: var(--ox-16);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-service__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--ox-4);
+  row-gap: var(--ox-2);
+  align-items: center;
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-service__icon {
+  grid-row: span 2;
+  align-self: start;
+  color: var(--ox-fg-2);
+}
+
+.ox-service__title,
+.ox-service__sub,
+.ox-service__lead {
   margin: 0;
 }
 
+.ox-service__sub,
+.ox-service__lead {
+  color: var(--ox-fg-2);
+}
+
+.ox-service__lead {
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-service__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+}
+
+@media (min-width: 1024px) {
+  .ox-services-list {
+    gap: var(--ox-24);
+  }
+
+  .ox-service + .ox-service {
+    padding-block-start: var(--ox-24);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. ScopePanel (DIRECTION 6.11 block 4)
+// ---------------------------------------------------------------------------
+// The panel's fill, padding and heading now come from `.ox-panel`; what is
+// left here is the tick list and the closing line.
 .ox-scope__list {
   display: grid;
   grid-template-columns: 1fr;
@@ -185,12 +534,14 @@
 .ox-scope__tick {
   flex: none;
   margin-block-start: 2px;
+  color: var(--ox-verify);
 }
 
 .ox-scope__closing {
-  color: var(--ox-fg-2);
-  border-block-start: 1px solid var(--ox-bd);
+  margin: 0;
   padding-block-start: var(--ox-3);
+  color: var(--ox-fg-2);
+  border-block-start: 1px solid var(--ox-bd-2);
 }
 
 @media (min-width: 768px) {
@@ -198,20 +549,24 @@
     grid-template-columns: repeat(2, 1fr);
     column-gap: var(--ox-6);
   }
+
+  // Inside a three-panel row the list has one column again; two would leave
+  // four-word cells.
+  .ox-panels .ox-scope__list {
+    grid-template-columns: 1fr;
+  }
 }
 
 // ---------------------------------------------------------------------------
-// 5. HowItWorks and PickupSteps (DIRECTION 6.11 block 5, 6.12 block 4)
+// 6. HowItWorks and PickupSteps (DIRECTION 6.11 block 5, 6.12 block 4)
 // ---------------------------------------------------------------------------
-.ox-how,
-.ox-pickup {
+.ox-how {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-4);
+  gap: var(--ox-6);
 }
 
 .ox-how__title,
-.ox-pickup__title,
 .ox-pickup__late {
   margin: 0;
 }
@@ -224,13 +579,40 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: none;
 }
 
+// The numeral is the design's own device: large, tabular, in the accent, with
+// the step title beside it. It is decoration for assistive tech (the list
+// carries the order) and it never moves.
 .ox-how__step {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-1);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--ox-4);
+  row-gap: var(--ox-1);
+  align-items: baseline;
+  padding-block: var(--ox-4);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-how__num {
+  grid-row: span 2;
+  align-self: start;
+  font-size: 28px;
+  font-weight: var(--ox-w-figure);
+  line-height: var(--ox-lh-num);
+  color: var(--ox-accent);
+}
+
+.ox-how__step-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
+}
+
+.ox-how__line {
+  margin: 0;
+  color: var(--ox-fg-2);
 }
 
 .ox-pickup__step {
@@ -238,30 +620,21 @@
   align-items: flex-start;
   gap: var(--ox-3);
   margin: 0;
+  min-block-size: 32px;
 }
 
-.ox-how__num,
 .ox-pickup__num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  inline-size: 32px;
-  block-size: 32px;
+  inline-size: 28px;
+  block-size: 28px;
   border-radius: var(--ox-r-pill);
-  background: var(--ox-plate);
+  background: var(--ox-card);
   color: var(--ox-fg-2);
-  font-weight: 700;
-}
-
-.ox-how__step-title {
-  margin: 0;
-  font-weight: 700;
-}
-
-.ox-how__line {
-  margin: 0;
-  color: var(--ox-fg-2);
+  font-size: 14px;
+  font-weight: var(--ox-w-figure);
 }
 
 .ox-pickup__late {
@@ -271,16 +644,23 @@
 @media (min-width: 768px) {
   .ox-how__list {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--ox-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-how__num {
+    font-size: 34px;
   }
 }
 
 // ---------------------------------------------------------------------------
-// 6. Branch page (DIRECTION 6.12)
+// 7. Branch page (DIRECTION 6.12)
 // ---------------------------------------------------------------------------
 .ox-branch-map {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
+  gap: var(--ox-4);
   align-items: flex-start;
 }
 
@@ -288,7 +668,7 @@
 .ox-branch-map__plate {
   inline-size: 100%;
   block-size: 268px;
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4, 16px);
   overflow: hidden;
 }
 
@@ -303,6 +683,8 @@
   block-size: 100%;
 }
 
+// Every piece of imagery on this site sits on the plate; a map we cannot draw
+// is still imagery, so its stand-in sits there too.
 .ox-branch-map__plate {
   display: flex;
   flex-direction: column;
@@ -314,6 +696,10 @@
   padding-inline: var(--ox-4);
 }
 
+.ox-branch-map__icon {
+  color: var(--ox-fg-2);
+}
+
 .ox-branch-map__address,
 .ox-branch-map__landmark {
   margin: 0;
@@ -323,29 +709,24 @@
   color: var(--ox-fg-3);
 }
 
-.ox-branch-do__list {
+.ox-branch-do__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--ox-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
-.ox-branch-do__item {
+.ox-branch-do__item-title {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--ox-2);
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--ox-w-title);
 }
 
 .ox-branch-do__tick {
   flex: none;
-  margin-block-start: 2px;
-}
-
-.ox-branch-do__item-title {
-  margin: 0;
-  font-weight: 700;
+  color: var(--ox-verify);
 }
 
 .ox-branch-do__line {
@@ -354,9 +735,8 @@
 }
 
 @media (min-width: 768px) {
-  .ox-branch-do__list {
+  .ox-branch-do__grid {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: var(--ox-8);
   }
 }
 
@@ -365,29 +745,20 @@
   .ox-branch-map__plate {
     block-size: 400px;
   }
+
+  .ox-branch-do__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 // ---------------------------------------------------------------------------
-// 7. About (DIRECTION 6.15)
+// 8. About (DIRECTION 6.15)
 // ---------------------------------------------------------------------------
 .ox-about-why__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--ox-6);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ox-about-why__item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-1);
-}
-
-.ox-about-why__item-title {
-  margin: 0;
-  font-weight: 700;
+  gap: var(--ox-4);
+  align-items: stretch;
 }
 
 .ox-about-why__body {
@@ -406,22 +777,14 @@
   margin: 0;
 }
 
-.ox-about-reg {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  padding: var(--ox-6);
-  background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
-}
-
-.ox-about-reg__title,
-.ox-about-reg__line {
-  margin: 0;
-}
-
-.ox-about-reg__line {
+.ox-about-story__p:last-child {
+  padding-block-start: var(--ox-3);
   color: var(--ox-fg-2);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-about-reg {
+  max-inline-size: var(--ox-container-narrow);
 }
 
 .ox-about-out {
@@ -430,46 +793,60 @@
   gap: var(--ox-3);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .ox-about-why__grid {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: var(--ox-8);
   }
+}
 
+@media (min-width: 768px) {
   .ox-about-out {
     flex-direction: row;
   }
 }
 
+@media (min-width: 1024px) {
+  .ox-about-why__grid {
+    gap: 20px;
+  }
+}
+
 // ---------------------------------------------------------------------------
-// 8. Contact (DIRECTION 6.16)
+// 9. Contact (DIRECTION 6.16)
 // ---------------------------------------------------------------------------
 .ox-contact__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--ox-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  align-items: stretch;
 }
 
-.ox-contact__card {
+.ox-contact__card .ox-panel__title {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--ox-2);
-  min-block-size: 72px;
-  padding: var(--ox-4);
-  background: var(--ox-card);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
 }
 
-.ox-contact__label {
+.ox-contact__icon {
+  flex: none;
+  color: var(--ox-fg-2);
+}
+
+.ox-contact__value {
   margin: 0;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: var(--ox-w-title);
+
+  a {
+    color: var(--ox-fg);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ox-accent-dark);
+    }
+  }
 }
 
-.ox-contact__value,
 .ox-contact__line,
 .ox-contact__hours,
 .ox-contact__pdpl,
@@ -487,7 +864,24 @@
   color: var(--ox-fg-2);
 }
 
-.ox-contact-branch,
+.ox-contact-branch__panel {
+  max-inline-size: var(--ox-container-narrow);
+}
+
+.ox-contact-branch__hours {
+  margin-block-start: var(--ox-2);
+}
+
+.ox-contact-branch__link {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-block-size: 44px;
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg);
+}
+
 .ox-contact-social {
   align-items: flex-start;
   gap: var(--ox-3);
@@ -500,12 +894,22 @@
   margin: 0;
   padding: 0;
   list-style: none;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    color: var(--ox-fg);
+    font-weight: var(--ox-w-ui);
+  }
 }
 
 .ox-contact-row {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-3);
+  gap: var(--ox-4);
+  padding-block-start: var(--ox-6);
+  border-block-start: 1px solid var(--ox-bd);
 }
 
 .ox-contact-row__title,
@@ -525,6 +929,12 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
+  .ox-contact-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .ox-contact-row__actions {
     flex-direction: row;
     align-items: center;
@@ -533,7 +943,46 @@
 }
 
 // ---------------------------------------------------------------------------
-// 9. Unit converter (DIRECTION 6.18)
+// 10. FAQ page (PLAN-final 5.3, references/faq.png)
+// ---------------------------------------------------------------------------
+.ox-faq-filter {
+  max-inline-size: 480px;
+}
+
+.ox-faq-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+}
+
+// A deep link (#faq-group-branch) lands under the sticky header, not behind it.
+.ox-faq-group {
+  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-8));
+}
+
+// A group's rows are an accordion inside a panel, so the panel's own padding
+// already spaces them; the accordion's opening hairline would double the
+// panel's head rule.
+.ox-faq-group .ox-acc {
+  border-block-start: 0;
+}
+
+.ox-faq-group .ox-acc__row:last-child {
+  border-block-end: 0;
+}
+
+.ox-page--faq__contact {
+  max-inline-size: var(--ox-container-text);
+}
+
+@media (min-width: 1024px) {
+  .ox-faq-groups {
+    gap: var(--ox-8);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Unit converter (DIRECTION 6.18)
 // ---------------------------------------------------------------------------
 .ox-converter {
   display: grid;
@@ -547,15 +996,15 @@
   flex-direction: column;
   gap: var(--ox-1);
   margin: 0;
-  padding: var(--ox-4);
+  padding: var(--ox-6);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
+  border-radius: var(--ox-r-4, 16px);
   max-inline-size: var(--ox-container-text);
 }
 
 .ox-converter__result-label {
   color: var(--ox-fg-3);
-  font-weight: 600;
+  font-weight: var(--ox-w-ui);
 }
 
 .ox-converter__invalid {
@@ -576,7 +1025,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// 10. NotFound and ErrorState (DIRECTION 5.6, 6.17)
+// 12. NotFound and ErrorState (DIRECTION 5.6, 6.17)
 // ---------------------------------------------------------------------------
 .ox-state {
   display: flex;
@@ -588,7 +1037,7 @@
 }
 
 .ox-state__mark {
-  // The one orange decoration outside buttons and the hero stroke
+  // The one orange decoration outside buttons and the band wedge
   // (DIRECTION 5.6). Static: no rotation, no spin.
   inline-size: 64px;
   block-size: 64px;
@@ -629,4 +1078,13 @@
 
 .ox-page--404__latest {
   inline-size: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// 13. Kitchen sink (dev only)
+// ---------------------------------------------------------------------------
+.ox-ks-pages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
 }

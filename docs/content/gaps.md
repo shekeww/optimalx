@@ -21,11 +21,11 @@ partial from redefining a base value.
 
 ### ox.content.faq.price_a
 Surface: the PDP FAQ and the home FAQ, answering `ox.content.faq.price_q`
-("لماذا قد تجد سعرا أقل في مكان آخر؟"). Names no other store, states no VAT
+("كيف تختار أوبتيمال إكس المنتجات التي تناسبني؟"). Names no other store, states no VAT
 position, and sends the shopper to the per serving comparison the page already
 prints.
 
-- AR: السعر المعروض على الصفحة هو السعر النهائي الذي تدفعه. ومعه نكتب عدد الحصص وحجم الحصة، فاقسم السعر على عدد الحصص لتعرف تكلفة الحصة الواحدة، فهي المقارنة الصحيحة بين عبوتين. العبوات تختلف في وزن السكوب وفي عدد الحصص، فالعبوة الأقل سعرا قد تكون الأعلى تكلفة في الحصة. وإن كان الفرق على المنتج نفسه، فقارن الحجم والنكهة وتاريخ الصلاحية قبل أن تقارن الرقم وحده.
+- AR: نختار منتجات موثوقة بعناية، ونوضح لك الفائدة وطريقة الاستخدام وعدد الحصص، مع استشارة مجانية وخيارات تناسب هدفك واحتياجك.
 - EN: The price on the page is the final price you pay. Next to it we print the number of servings and the serving size, so divide the price by the servings to get the cost per serving, which is the comparison that actually holds between two packs. Packs differ in scoop weight and in how many servings they hold, so the cheaper tub can be the more expensive one per serving. If the difference is on the same product, compare the size, the flavour and the expiry date before you compare the number on its own.
 
 ### ox.content.faq.pdp_allergens_a

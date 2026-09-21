@@ -1,0 +1,74 @@
+import { Link } from '@salla.sa/twilight-theme-engine/common';
+import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon, type OxIconName } from '../common/Icon';
+import { BandPhoto } from './BandPhoto';
+
+export interface PosterCardProps {
+  id: string;
+  photo: string;
+  photoWidth: number;
+  photoHeight: number;
+  eyebrow: string;
+  title: string;
+  line: string;
+  icon: OxIconName;
+  to: string;
+  /** DOM index, consumed by the reveal stagger. */
+  index?: number;
+}
+
+/**
+ * One secondary poster in the carousel (homepage-scale-spec section 7).
+ *
+ * It carries the treatment the spec fixes for every card that has a
+ * photograph: the frame behind the content at low opacity on the card's own
+ * dark ground, a gradient that deepens toward the floor where the label sits,
+ * and the ground showing through, so a row of five unrelated shots still
+ * reads as one set.
+ *
+ * The shape is the identity's, not a rounded rectangle: the corner at the
+ * reading start of the floor is CUT on the same 22 degrees as every other
+ * angled edge in the system, drawn as a clip-path so the cut is the card's
+ * real silhouette and the photograph is cut with it. A rounded rectangle here
+ * is exactly the "close enough" the owner ruled out.
+ *
+ * The whole card is one link and the action is a span, never a nested button.
+ */
+export function PosterCard({
+  id,
+  photo,
+  photoWidth,
+  photoHeight,
+  eyebrow,
+  title,
+  line,
+  icon,
+  to,
+  index = 0,
+}: PosterCardProps) {
+  const { t } = useTranslation();
+  return (
+    <Link
+      to={to}
+      className="ox-pcard"
+      data-testid="ox-poster-card"
+      data-poster={id}
+      style={{ ['--i' as string]: String(index) }}
+    >
+      <BandPhoto src={photo} className="ox-pcard__photo" width={photoWidth} height={photoHeight} />
+      <span className="ox-pcard__scrim" aria-hidden="true" />
+      <span className="ox-pcard__body">
+        <span className="ox-pcard__top">
+          <Icon name={icon} size={24} className="ox-pcard__icon" />
+          <span className="ox-pcard__eyebrow">{eyebrow}</span>
+        </span>
+        <span className="ox-pcard__title ox-h3">{title}</span>
+        <span className="ox-pcard__line">{line}</span>
+        <span className="ox-pcard__cta">
+          <span className="ox-pcard__cta-label">{t('ox.common.view_all')}</span>
+          <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+        </span>
+      </span>
+    </Link>
+  );
+}

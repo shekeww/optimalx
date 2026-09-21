@@ -21,3 +21,12 @@ optimalx/
 # absolute pnpm path of the engine on the machine that generated it, so a
 # committed copy carries one machine into everyone else's build.
 app/routeTree.gen.ts
+
+# Browser-automation session artifacts (console logs, screenshots).
+.playwright-mcp/
+
+# Combined log of pnpm preview:offline (scripts/preview-offline.mjs)
+.offline-preview.log
+
+# OAuth token pair written by scripts/salla-auth.mjs. Never committed.
+.salla-token.json

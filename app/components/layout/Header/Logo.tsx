@@ -1,42 +1,61 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Wordmark } from '../../common/Wordmark';
 
 /**
- * The stopgap mark: `public/Logo.webp` is a 1254 square raster on white
- * (DIRECTION 8.6 allows it until the SVG set exists). It is drawn inside a
- * fixed box with `object-fit: contain`, so the reserved space never depends on
- * the file's own ratio and swapping in the SVG changes nothing but the `src`.
+ * The stopgap raster: `public/Logo.webp` is a 1254 square on white. It is
+ * still the mark on a light ground where the store has uploaded nothing else.
  */
 export const LOGO_SRC = '/Logo.webp';
 
 export interface LogoProps {
-  /** Rendered box; the mark is contained inside it. */
+  /** Drawn width of the lockup in px (112 header, 108 mobile, 150 footer). */
+  width?: number;
+  /**
+   * Draw the store's uploaded raster instead of the reversed lockup. Only the
+   * drawer head uses this: it is the one place the mark sits on paper.
+   */
+  raster?: boolean;
+  /** Reserved box for the raster; ignored by the lockup. */
   size?: number;
-  /** Eager on the header (it is in the first viewport), lazy in the footer. */
+  /** Eager in the header (it is in the first viewport), lazy elsewhere. */
   priority?: boolean;
-  /** `true` on a dark band: the raster is on white, so it gets a paper plate. */
-  onDark?: boolean;
   className?: string;
 }
 
-export function Logo({ size = 40, priority = false, onDark = false, className }: LogoProps) {
+/**
+ * The store mark, linked home.
+ *
+ * Everywhere the approved design puts the mark, it sits on a dark band, so the
+ * default is the reversed `Wordmark` lockup rather than the raster (a raster
+ * on white needs a paper plate on graphite, which is a rectangle the design
+ * does not have). `raster` keeps the uploaded logo available for the one
+ * light-ground placement.
+ */
+export function Logo({ width = 112, raster = false, size = 40, priority = false, className }: LogoProps) {
   const { t } = useTranslation();
   const store = useStore();
   const name = store?.name || t('ox.header.logo_alt');
-  const src = store?.logo || LOGO_SRC;
 
   return (
-    <Link to="/" className={['ox-logo', onDark ? 'ox-logo--on-dark' : null, className].filter(Boolean).join(' ')}>
-      <img
-        src={src}
-        alt={name}
-        width={size}
-        height={size}
-        decoding={priority ? 'sync' : 'async'}
-        loading={priority ? 'eager' : 'lazy'}
-        {...(priority ? { fetchPriority: 'high' as const } : {})}
-      />
+    <Link to="/" className={['ox-logo', className].filter(Boolean).join(' ')} aria-label={name}>
+      {raster ? (
+        <img
+          src={store?.logo || LOGO_SRC}
+          alt=""
+          width={size}
+          height={size}
+          decoding={priority ? 'sync' : 'async'}
+          loading={priority ? 'eager' : 'lazy'}
+          {...(priority ? { fetchPriority: 'high' as const } : {})}
+        />
+      ) : (
+        // The bar is not tall enough for the strapline to be legible, so the
+        // header carries the mark alone. The Link already names the store, so
+        // the image inside it is not announced a second time.
+        <Wordmark width={width} variant="wordmark" tone="dark" label="" priority={priority} />
+      )}
     </Link>
   );
 }

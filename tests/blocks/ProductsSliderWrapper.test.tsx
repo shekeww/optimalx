@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 
@@ -23,6 +23,12 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 const { ProductsSliderWrapper } = await import('../../app/components/blocks/ProductsSliderWrapper');
 
 describe('ProductsSliderWrapper', () => {
+  // The loader is a module-level mock, so queued `once` values and the call
+  // log leak between cases unless each one starts from nothing.
+  beforeEach(() => {
+    list.mockReset();
+  });
+
   it('renders the engine ProductCard for every item the loader returns', async () => {
     list.mockResolvedValueOnce({
       items: [
@@ -42,6 +48,80 @@ describe('ProductsSliderWrapper', () => {
       <ProductsSliderWrapper source="latest" sliderId="rail-2" title="من الخيارات الشائعة" />
     );
     expect(container.querySelector('[data-testid="ox-products-slider"]')).not.toBeNull();
+    await waitFor(() =>
+      expect(container.querySelector('[data-testid="ox-products-slider"]')).toBeNull()
+    );
+  });
+
+  it('falls through to the next source only when the one before it came back empty', async () => {
+    list.mockResolvedValueOnce({ items: [], next: null });
+    list.mockResolvedValueOnce({ items: [], next: null });
+    list.mockResolvedValueOnce({ items: [{ id: 9, name: 'كرياتين' }], next: null });
+    renderWithProviders(
+      <ProductsSliderWrapper
+        source="related"
+        sourceValue={42}
+        fallbacks={[
+          { source: 'categories', sourceValue: 7 },
+          { source: 'latest' },
+        ]}
+        perPage={8}
+        sliderId="rail-4"
+      />
+    );
+    await waitFor(() => expect(screen.getAllByTestId('engine-product-card')).toHaveLength(1));
+    expect(list).toHaveBeenNthCalledWith(1, { source: 'related', sourceValue: 42, perPage: 8 });
+    expect(list).toHaveBeenNthCalledWith(2, { source: 'categories', sourceValue: 7, perPage: 8 });
+    expect(list).toHaveBeenNthCalledWith(3, { source: 'latest', perPage: 8 });
+  });
+
+  it('stops at the first source that answers, and never asks the ones after it', async () => {
+    list.mockResolvedValueOnce({ items: [{ id: 1, name: 'واي' }], next: null });
+    renderWithProviders(
+      <ProductsSliderWrapper
+        source="related"
+        sourceValue={42}
+        fallbacks={[{ source: 'latest' }]}
+        sliderId="rail-5"
+      />
+    );
+    await waitFor(() => expect(screen.getAllByTestId('engine-product-card')).toHaveLength(1));
+    expect(list).toHaveBeenCalledTimes(1);
+  });
+
+  it('drops the excluded product, and treats a source that returns only it as empty', async () => {
+    list.mockResolvedValueOnce({ items: [{ id: 42, name: 'نفس المنتج' }], next: null });
+    list.mockResolvedValueOnce({
+      items: [
+        { id: 42, name: 'نفس المنتج' },
+        { id: 8, name: 'منتج آخر' },
+      ],
+      next: null,
+    });
+    renderWithProviders(
+      <ProductsSliderWrapper
+        source="related"
+        sourceValue={42}
+        exclude={42}
+        fallbacks={[{ source: 'latest' }]}
+        sliderId="rail-6"
+      />
+    );
+    await waitFor(() => expect(screen.getAllByTestId('engine-product-card')).toHaveLength(1));
+    expect(screen.getByTestId('engine-product-card').textContent).toBe('منتج آخر');
+    expect(list).toHaveBeenCalledTimes(2);
+  });
+
+  it('still removes itself when every source in the chain comes back empty', async () => {
+    list.mockResolvedValue({ items: [], next: null });
+    const { container } = renderWithProviders(
+      <ProductsSliderWrapper
+        source="related"
+        sourceValue={42}
+        fallbacks={[{ source: 'latest' }]}
+        sliderId="rail-7"
+      />
+    );
     await waitFor(() =>
       expect(container.querySelector('[data-testid="ox-products-slider"]')).toBeNull()
     );

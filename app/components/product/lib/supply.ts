@@ -74,13 +74,3 @@ export function monthsUntilExpiry(
   return (year - now.getFullYear()) * 12 + (month - 1 - now.getMonth());
 }
 
-/** Price of one serving, or null when either input is missing. */
-export function pricePerServing(
-  price: number | string | null | undefined,
-  servings: number | null | undefined
-): number | null {
-  const amount = typeof price === 'string' ? Number(price) : price;
-  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) return null;
-  if (typeof servings !== 'number' || !Number.isFinite(servings) || servings <= 0) return null;
-  return Math.round((amount / servings) * 100) / 100;
-}

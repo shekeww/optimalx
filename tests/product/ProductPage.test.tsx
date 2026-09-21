@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { createT } from './i18n-mock';
 
@@ -10,12 +10,13 @@ const t = createT('ar');
 const slots: { name: string; context: Record<string, unknown> | undefined }[] = [];
 const detail = vi.fn();
 let themeSettings: Record<string, unknown> = {};
+let ratingSettings: Record<string, unknown> = { show_on_product: false };
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () => (await import('./i18n-mock')).i18nModuleMock('ar'));
 vi.mock('@salla.sa/twilight-theme-engine', () => ({
   useTwilight: () => ({
     theme: { settings: themeSettings },
-    store: { country: 'SA', settings: { rating: { show_on_product: false } } },
+    store: { country: 'SA', settings: { rating: ratingSettings } },
     locale: 'ar',
   }),
 }));
@@ -74,6 +75,17 @@ vi.mock('../../app/components/blocks/ProductsSliderWrapper', () => ({
   ProductsSliderWrapper: ({ title }: { title: React.ReactNode }) => (
     <div data-testid="related">{title}</div>
   ),
+}));
+/** What `AddAlso` gets back per source; empty is the live store's answer. */
+const listBySource: Record<string, { id: number; name: string }[]> = {};
+const listCalls: string[] = [];
+vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
+  product: {
+    list: async ({ source }: { source: string }) => {
+      listCalls.push(source);
+      return { items: listBySource[source] ?? [], next: null };
+    },
+  },
 }));
 
 const stub = (name: string) => ({ [name]: () => <div data-testid={name} /> });
@@ -151,6 +163,13 @@ function makeProduct(overrides: Record<string, unknown> = {}) {
 
 const page = { slug: 'product.single', title: 'Gold Standard Whey', breadcrumbs: [] } as never;
 
+/** `YYYY-MM`, n whole months from today, so a date assertion cannot rot. */
+function monthsFromNow(n: number): string {
+  const now = new Date();
+  const then = new Date(now.getFullYear(), now.getMonth() + n, 1);
+  return `${then.getFullYear()}-${String(then.getMonth() + 1).padStart(2, '0')}`;
+}
+
 function renderPage(overrides: Record<string, unknown> = {}) {
   return renderWithProviders(<ProductPage product={makeProduct(overrides)} page={page} />);
 }
@@ -181,10 +200,15 @@ describe('ProductPage: the engine contract', () => {
     expect(detail).toHaveBeenCalledTimes(1);
   });
 
-  it('uses the engine Breadcrumb and emits no second breadcrumb of its own (C11)', () => {
+  it('uses the engine Breadcrumb, shows it, and emits no second one (C11)', () => {
     const { container } = renderPage();
-    expect(screen.getByTestId('engine-breadcrumb')).toBeTruthy();
-    expect(container.querySelectorAll('nav')).toHaveLength(1);
+    const breadcrumb = screen.getByTestId('engine-breadcrumb');
+    expect(breadcrumb).toBeTruthy();
+    expect(container.querySelectorAll('[data-testid="engine-breadcrumb"]')).toHaveLength(1);
+    // Visible, not clipped. A visitor who arrives on a product from search
+    // has no other answer to "what kind of store is this, and what else is
+    // in it".
+    expect(breadcrumb.closest('.ox-sr-only')).toBeNull();
   });
 
   it('leaves the cart to the engine form and turns its CDN sticky bar off', () => {
@@ -203,30 +227,42 @@ describe('ProductPage: the physical composition', () => {
     slots.length = 0;
     detail.mockClear();
     themeSettings = {};
+    for (const key of Object.keys(listBySource)) delete listBySource[key];
+    listCalls.length = 0;
   });
 
-  it('puts the chips, the calculator and the delivery lines inside the form', () => {
-    renderPage();
-    const form = screen.getByTestId('engine-form');
-    expect(form.querySelector('.ox-pdp__chips')).not.toBeNull();
-    expect(form.querySelector('.ox-supply')).not.toBeNull();
+  it('puts the statistic strip above the price and the calculator in the method panel', () => {
+    const { container } = renderPage();
+    expect(container.querySelector('.ox-stats')).not.toBeNull();
+    expect(container.querySelector('.ox-howto .ox-supply')).not.toBeNull();
+    const buy = container.querySelector('.ox-pdp__buy');
+    const order = Array.from(buy?.children ?? []).map((node) => node.className);
+    const stats = order.findIndex((name) => name.indexOf('ox-stats') >= 0);
+    const price = order.findIndex((name) => name.indexOf('ox-pdp__price-block') >= 0);
+    expect(stats).toBeGreaterThanOrEqual(0);
+    expect(stats).toBeLessThan(price);
   });
 
   it('splits the description into its blocks and repeats none of them', () => {
     const { container } = renderPage();
     expect(container.querySelector('.ox-nutrition')).not.toBeNull();
     expect(container.querySelector('.ox-howto')).not.toBeNull();
-    expect(container.querySelector('.ox-prose')?.innerHTML).not.toContain('table');
-    expect(container.querySelector('.ox-prose')?.textContent).not.toContain('الحصص:');
+    const lead = container.querySelector('.ox-pdp__lead')?.textContent ?? '';
+    expect(lead.length).toBeGreaterThan(0);
+    expect(lead).not.toContain('الحصص:');
+    // One prose paragraph only, so it is the short description and the
+    // benefits region is correctly absent, along with its tab.
+    expect(container.querySelector('.ox-prose')).toBeNull();
+    expect(container.textContent).not.toContain(t('ox.pdp.tab_benefits'));
   });
 
   it('renders the description through the sanitiser, never raw', () => {
     const { container } = renderPage({
-      description: '<p>الحصص: 5</p><p>نص<script>alert(1)</script></p>',
+      description: '<p>الحصص: 5</p><p>نص<script>alert(1)</script></p><p>مزيد<b>x</b></p>',
     });
-    const prose = container.querySelector('.ox-prose');
-    expect(prose?.innerHTML).not.toContain('script');
-    expect(prose?.textContent).toContain('نص');
+    expect(container.innerHTML).not.toContain('<script');
+    expect(container.querySelector('.ox-pdp__lead')?.textContent).toContain('نص');
+    expect(container.querySelector('.ox-prose')?.textContent).toContain('مزيد');
   });
 
   it('always carries the mandated medical line, verbatim and open', () => {
@@ -240,10 +276,71 @@ describe('ProductPage: the physical composition', () => {
     expect(container.querySelector('.ox-pdp__chips')).toBeNull();
   });
 
-  it('renders the sticky bar and the related rail', () => {
+  it('renders the sticky bar and the related rail at the bottom', () => {
     const { container } = renderPage();
     expect(container.querySelector('.ox-sticky')).not.toBeNull();
     expect(screen.getByTestId('related')).toBeTruthy();
+    expect(container.querySelector('.ox-related__title')?.textContent).toBe(
+      t('ox.pdp.you_may_like')
+    );
+  });
+
+  it('leaves the cross-sell slot out entirely until there is something in it', async () => {
+    // The live store answers `related` with nothing and puts no product in a
+    // category, so the honest render of this region is no region: no
+    // heading, no reserved box, nothing that appears and then collapses.
+    const { container } = renderPage();
+    await waitFor(() => expect(listCalls).toContain('related'));
+    expect(container.querySelector('[data-testid="ox-add-also"]')).toBeNull();
+  });
+
+  it('cross-sells under the buy zone once the merchant has linked products', async () => {
+    listBySource.related = [
+      { id: 11, name: 'Creatine' },
+      { id: 12, name: 'Shaker' },
+      { id: 13, name: 'Bar' },
+      { id: 14, name: 'A fourth the strip does not take' },
+    ];
+    const { container } = renderPage();
+    const strip = await screen.findByTestId('ox-add-also');
+    // Three, directly under the buy zone, above the brand band and the tabs.
+    expect(strip.querySelectorAll('li')).toHaveLength(3);
+    // The heading claims nothing about anybody else's basket.
+    expect(strip.querySelector('h2')?.textContent).toBe(t('ox.pdp.add_also'));
+    const order = Array.from(
+      container.querySelectorAll('[data-testid="ox-add-also"], .ox-brand-band, .ox-strip')
+    );
+    expect(order[0]?.getAttribute('data-testid')).toBe('ox-add-also');
+  });
+
+  it('never offers the product the shopper is already looking at', async () => {
+    listBySource.related = [
+      { id: 1996831868, name: 'Gold Standard Whey' },
+      { id: 12, name: 'Shaker' },
+    ];
+    renderPage();
+    const strip = await screen.findByTestId('ox-add-also');
+    expect(strip.textContent).not.toContain('Gold Standard Whey');
+    expect(strip.querySelectorAll('li')).toHaveLength(1);
+  });
+
+  it('states the expiry above the fold once the date is far enough out', () => {
+    // The trust strip promises a clear expiry on every product, and the buy
+    // column used to show one only when it was nearly expired. The fixture
+    // label's own date is years out, so it is the reassurance case.
+    const { container } = renderPage();
+    const line = container.querySelector('[data-testid="ox-pdp-expiry"]');
+    expect(line?.textContent).toContain('2029-03');
+
+    // Inside six months the date is a warning and the price block already
+    // badges it, so the fact is above the fold either way and never twice.
+    // Two months out, computed from today so the assertion cannot rot.
+    const near = monthsFromNow(2);
+    const soon = renderPage({
+      description: `<p>الحصص: 10 | الصلاحية: ${near} | الشكل: بودرة</p><p>وصف قصير.</p>`,
+    });
+    expect(soon.container.querySelector('[data-testid="ox-pdp-expiry"]')).toBeNull();
+    expect(soon.container.querySelector('.ox-pdp__badges')?.textContent).toContain(near);
   });
 });
 
@@ -252,6 +349,7 @@ describe('ProductPage: the claims gates', () => {
     slots.length = 0;
     detail.mockClear();
     themeSettings = {};
+    ratingSettings = { show_on_product: false };
   });
 
   it('hides the VAT line until vat_number is set', () => {
@@ -275,7 +373,7 @@ describe('ProductPage: the claims gates', () => {
     expect(after.container.textContent).toContain(t('ox.pdp.official_distributors'));
   });
 
-  it('shows no delivery or free-shipping line until the settings carry one', () => {
+  it('shows no merchant delivery or free-shipping line until the settings carry one', () => {
     const empty = renderPage();
     expect(empty.container.querySelector('.ox-delivery')).toBeNull();
 
@@ -285,10 +383,116 @@ describe('ProductPage: the claims gates', () => {
     expect(set.container.textContent).toContain(t('ox.pdp.free_shipping_prefix'));
   });
 
-  it('never states a reply time, and never a rating the store does not have', () => {
+  it('never states a rating the store does not have', () => {
     const { container } = renderPage();
-    expect(container.querySelector('.ox-pdp__rating')).toBeNull();
-    expect(container.textContent).toContain(t('ox.trust.help_line'));
+    expect(container.querySelector('.ox-rating')).toBeNull();
+    expect(container.querySelector('.ox-trust-grid')).not.toBeNull();
+  });
+
+  it('turns the zero-review state into an offer without inventing a review', () => {
+    ratingSettings = { show_on_product: true };
+    const { container } = renderPage();
+    const block = container.querySelector('[data-testid="ox-pdp-no-reviews"]');
+    // The honest sentence is unchanged and is still first.
+    expect(block?.textContent).toContain(t('ox.pdp.no_reviews'));
+    // What follows it is the one thing the store can actually offer instead,
+    // and it is also the only link from a product page to the advisory.
+    expect(block?.textContent).toContain(t('ox.pdp.no_reviews_ask'));
+    expect(block?.querySelector('a')?.getAttribute('href')).toBe('/services');
+    // No star, no average, no count, no "be the first to rate" that the
+    // platform would not accept from a visitor who has not bought.
+    expect(container.querySelector('.ox-rating')).toBeNull();
+
+    // Salla's own comments element is mounted at zero too, so a customer who
+    // can review is not locked out of leaving the first one.
+    expect(container.querySelector('salla-comments')).not.toBeNull();
+  });
+
+  it('drops the zero-review copy once the product has real reviews', () => {
+    ratingSettings = { show_on_product: true };
+    const { container } = renderPage({ rating: { stars: 4.5, count: 3 } });
+    expect(container.querySelector('[data-testid="ox-pdp-no-reviews"]')).toBeNull();
+    expect(container.querySelector('salla-comments')).not.toBeNull();
+  });
+
+  it('gates every trust sub-line on the setting that would make it true', () => {
+    const before = renderPage();
+    expect(before.container.querySelectorAll('.ox-trust-grid__line')).toHaveLength(0);
+    expect(before.container.textContent).not.toContain(t('ox.pdp.trust_track_order'));
+    expect(before.container.textContent).not.toContain(t('ox.pdp.trust_authentic_sub'));
+
+    themeSettings = {
+      order_tracking_url: 'https://track.test/',
+      authenticity_page_url: 'https://optimalx.test/authentic',
+    };
+    const after = renderPage();
+    expect(after.container.textContent).toContain(t('ox.pdp.trust_track_order'));
+    expect(after.container.textContent).toContain(t('ox.pdp.trust_authentic_sub'));
+  });
+
+  it('shows no delivery estimate until both ends of the window are configured', () => {
+    const none = renderPage();
+    expect(none.container.querySelector('.ox-delivery')).toBeNull();
+
+    themeSettings = { delivery_estimate_min_days: 2 };
+    const half = renderPage();
+    expect(half.container.querySelector('.ox-delivery')).toBeNull();
+
+    themeSettings = { delivery_estimate_min_days: 2, delivery_estimate_max_days: 4 };
+    const full = renderPage();
+    expect(full.container.querySelectorAll('.ox-delivery__row')).toHaveLength(1);
+  });
+
+  it('shows the plate badge only from the platform promotion label', () => {
+    const none = renderPage();
+    expect(none.container.querySelector('.ox-gallery__badge')).toBeNull();
+
+    const flagged = renderPage({ promotion_title: 'الأكثر مبيعا' });
+    expect(flagged.container.querySelector('.ox-gallery__badge')?.textContent).toBe(
+      'الأكثر مبيعا'
+    );
+  });
+
+  it('draws a statistic cell only where the product carries the figure', () => {
+    const plain = renderPage();
+    // The fixture label carries protein only: no weight, no tags, no calories.
+    expect(plain.container.querySelectorAll('.ox-stats__cell')).toHaveLength(1);
+    expect(plain.container.textContent).not.toContain(t('ox.pdp.stat_vegan_latin'));
+
+    const tagged = renderPage({ weight: '907g', tags: [{ name: 'نباتي', url: '/t/1' }] });
+    expect(tagged.container.querySelectorAll('.ox-stats__cell')).toHaveLength(3);
+    expect(tagged.container.textContent).toContain(t('ox.pdp.stat_vegan_latin'));
+  });
+
+  it('gives the band a badge only from a real tag, and none by default', () => {
+    const plain = renderPage();
+    expect(plain.container.querySelectorAll('.ox-bband__badge')).toHaveLength(0);
+    expect(plain.container.querySelector('.ox-bband')?.className).toContain('ox-bband--short');
+
+    const tagged = renderPage({
+      tags: [
+        { name: 'نباتي', url: '/t/1' },
+        { name: 'خالي من الغلوتين', url: '/t/2' },
+      ],
+    });
+    expect(tagged.container.querySelectorAll('.ox-bband__badge')).toHaveLength(2);
+  });
+
+  it('builds the anchor strip only out of regions that are on the page', () => {
+    const { container } = renderPage();
+    const tabs = Array.from(container.querySelectorAll('.ox-strip__tab')).map((node) =>
+      node.getAttribute('href')
+    );
+    expect(tabs).toEqual(['#ox-details', '#ox-howto', '#ox-nutrition']);
+    for (const href of tabs) {
+      expect(container.querySelector(href as string), href as string).not.toBeNull();
+    }
+  });
+
+  it('shows no reviews tab and no invented reviews on a store with none', () => {
+    const { container } = renderPage();
+    expect(container.textContent).not.toContain(t('ox.pdp.reviews'));
+    expect(container.querySelector('salla-comments')).toBeNull();
   });
 });
 
@@ -310,6 +514,7 @@ describe('ProductPage: the variants', () => {
     expect(container.querySelector('.ox-sticky')).toBeNull();
     expect(container.querySelector('.ox-nutrition')).toBeNull();
     expect(container.querySelector('.ox-trust-grid')).toBeNull();
+    expect(container.querySelector('.ox-bband')).toBeNull();
     expect(screen.getByText(t('ox.pdp.medical_line'))).toBeTruthy();
   });
 
@@ -375,9 +580,9 @@ describe('ProductPage: the variants', () => {
     expect(container.querySelector('.ox-supply')).toBeNull();
   });
 
-  it('food: keeps the physical composition and adds the calories chip', () => {
+  it('food: keeps the physical composition and adds the calories statistic', () => {
     const { container } = renderPage({ type: 'food', calories: 220 });
     expect(container.querySelector('.ox-supply')).not.toBeNull();
-    expect(container.querySelector('.ox-pdp__chips')?.textContent).toContain('220');
+    expect(container.querySelector('.ox-stats')?.textContent).toContain('220');
   });
 });

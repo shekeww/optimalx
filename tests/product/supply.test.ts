@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import {
   MAX_DOSE,
@@ -5,7 +7,6 @@ import {
   clampDose,
   estimateSupply,
   monthsUntilExpiry,
-  pricePerServing,
   toIsoDate,
 } from '../../app/components/product/lib/supply';
 import { effectivePrice } from '../../app/components/product/lib/claims';
@@ -66,17 +67,26 @@ describe('supply: expiry proximity', () => {
   });
 });
 
-describe('supply: price per serving', () => {
-  it('divides the price by the servings to two decimals', () => {
-    expect(pricePerServing(240, 73)).toBe(3.29);
-    expect(pricePerServing('100', 4)).toBe(25);
+describe('there is no price per serving, anywhere', () => {
+  /**
+   * BUILD.md section 6 is explicit and marks it HARD: "no per-serving pricing
+   * anywhere - removed by owner decision. Serving count carries that comparison
+   * instead." The claims source repeats it. It had been computed and printed
+   * under the price on every product page, so this asserts the helper is gone
+   * rather than merely unused, which is what stops it coming back.
+   */
+  it('exports no helper that could compute one', async () => {
+    const supply = await import('../../app/components/product/lib/supply');
+    expect(Object.keys(supply)).not.toContain('pricePerServing');
   });
 
-  it('returns null when either side is missing', () => {
-    expect(pricePerServing(undefined, 10)).toBeNull();
-    expect(pricePerServing(100, null)).toBeNull();
-    expect(pricePerServing(0, 10)).toBeNull();
-    expect(pricePerServing('abc', 10)).toBeNull();
+  it('is not rendered by the buy column', () => {
+    const source = fs.readFileSync(
+      path.join('app', 'components', 'product', 'BuyZone', 'PdpPriceBlock.tsx'),
+      'utf8'
+    );
+    expect(source).not.toContain('pricePerServing');
+    expect(source).not.toContain('per_serving');
   });
 });
 

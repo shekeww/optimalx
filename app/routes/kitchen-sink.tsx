@@ -1,13 +1,19 @@
 import { Suspense, lazy, useEffect, useState, type ComponentType } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 
 /**
  * Kitchen sink: every component in every state, one section per batch.
  *
  * Dev-only. A published theme must not expose this route: it is a test
  * fixture, not a storefront page, and Salla's theme review treats stray routes
- * as a defect. The guard mirrors the DevSettingsWidget gate in `__root.tsx`,
- * checked at render rather than at route level so the route tree stays static.
+ * as a defect. The route tree stays static (the plugin auto-discovers
+ * `app/routes.ts`), so the gate is a real HTTP 404 thrown from the loader
+ * before anything renders, mirroring the DevSettingsWidget gate in
+ * `__root.tsx`. `SECTIONS` below is gated the same way so the eight lazy
+ * imports fold away in a production build (`import.meta.env.DEV` is a
+ * compile-time constant; the dead branch, and every `import()` inside it, is
+ * removed by the bundler, the same technique `__root.tsx` uses for
+ * `DevSettingsWidget`).
  *
  * Each batch owns `app/components/<dir>/KitchenSink.tsx` and nobody else edits
  * it (PLAN-final C16); this file only lazy-imports the eight fixed paths, so
@@ -21,6 +27,9 @@ import { createFileRoute } from '@tanstack/react-router';
  * the kitchen-sink files for that reason, and only those.
  */
 export const Route = createFileRoute('/{-$locale}/kitchen-sink')({
+  loader: () => {
+    if (!import.meta.env.DEV) throw notFound();
+  },
   component: KitchenSinkRoute,
 });
 
@@ -31,7 +40,7 @@ interface SectionDefinition {
   Component: ComponentType;
 }
 
-const SECTIONS: SectionDefinition[] = [
+const SECTIONS: SectionDefinition[] = import.meta.env.DEV ? [
   {
     id: 'common',
     title: 'Common primitives',
@@ -80,7 +89,7 @@ const SECTIONS: SectionDefinition[] = [
     batch: 'B6',
     Component: lazy(() => import('../components/commerce/KitchenSink')),
   },
-];
+] : [];
 
 /** The four Cairo weights the design depends on (DIRECTION 3). */
 const FONT_CHECKS = ['400 16px Cairo', '600 16px Cairo', '700 16px Cairo', '800 16px Cairo'];
@@ -153,7 +162,7 @@ function Banner({ probe }: { probe: Probe | null }) {
         <strong>Fonts</strong>{' '}
         {probe.fonts.map((font) => `${font.spec}: ${font.ok ? 'ok' : 'MISSING'}`).join(' · ')}
         {failingFonts.length > 0
-          ? ' — display falls back to 700 at the same size and line height (DIRECTION 3).'
+          ? ' - display falls back to 700 at the same size and line height (DIRECTION 3).'
           : ''}
       </p>
       <p style={{ margin: '4px 0 0' }}>
@@ -175,14 +184,8 @@ function SectionFallback({ title }: { title: string }) {
 function KitchenSinkRoute() {
   const probe = useProbe();
 
-  if (!import.meta.env.DEV) {
-    return (
-      <main style={{ padding: 48, textAlign: 'center' }}>
-        <p>Not found.</p>
-      </main>
-    );
-  }
-
+  // The production case never reaches this component: the loader above
+  // throws notFound() first. No fallback render is needed here.
   return (
     <main
       style={{

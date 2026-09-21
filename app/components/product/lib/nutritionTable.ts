@@ -35,6 +35,12 @@ export interface NutritionTable {
 export interface DescriptionParts {
   specLine: SpecLine | null;
   nutrition: NutritionTable | null;
+  /**
+   * The first prose paragraph as plain text: the short description the buy
+   * column clamps to three lines under the title (design region 20). It is
+   * text, not markup, so nothing merchant-authored can reach the DOM here.
+   */
+  lead: string;
   /** Sanitised HTML of the prose paragraphs, with the parsed parts removed. */
   bodyHtml: string;
   /** The "طريقة الاستخدام" sentence, split into steps on the sentence stop. */
@@ -166,6 +172,7 @@ export function splitDescription(
   const body: OxNode[] = [];
   let seenFirstParagraph = false;
   let droppedTable = false;
+  let lead = '';
 
   for (const node of nodes) {
     if (!isElement(node)) {
@@ -195,6 +202,12 @@ export function splitDescription(
         continue;
       }
       if (text.length === 0) continue;
+      // The first prose paragraph is the buy column's short description; the
+      // rest stays in the body, which becomes the benefits region.
+      if (lead.length === 0) {
+        lead = text;
+        continue;
+      }
     }
     body.push(node);
   }
@@ -202,6 +215,7 @@ export function splitDescription(
   return {
     specLine,
     nutrition,
+    lead,
     bodyHtml: serialize(body),
     howToUse,
     warning,

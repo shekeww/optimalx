@@ -11,6 +11,7 @@ import { OptimalXLayout } from '../components/layout/OptimalXLayout';
 import { ErrorState } from '../components/pages/ErrorState';
 import { NotFound } from '../components/pages/NotFound';
 import { dropBaseCanonical, stopDarkMode } from '../components/pages/rootHead';
+import { offlineApiBootScript } from '../dev/offline-api';
 import '../styles/app.css';
 
 // Dev-only: reads the theme's local twilight.json (settings + components),
@@ -63,6 +64,9 @@ export const Route = createTwilightRootRoute()({
   errorComponent: ErrorState,
 });
 
+/** Empty on every normal run; a redirect installer during `pnpm preview:offline`. */
+const offlineApiScript = offlineApiBootScript();
+
 function RootComponent({ children }: { children?: ReactNode }) {
   const ctx = getTwilightContext();
 
@@ -78,6 +82,20 @@ function RootComponent({ children }: { children?: ReactNode }) {
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/*
+          Offline preview only, and the FIRST script in the document on
+          purpose: the Salla SDK is a head module and runs before the client
+          bundle, so the api.salla.dev redirect has to be installed here or
+          the SDK reaches the challenged host anyway. Null on every normal
+          run. See app/dev/offline-api.ts.
+        */}
+        {offlineApiScript ? (
+          <script
+            id="ox-offline-api"
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{ __html: offlineApiScript }}
+          />
+        ) : null}
         <HeadContent />
       </head>
       <body suppressHydrationWarning>

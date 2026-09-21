@@ -41,27 +41,46 @@
    1. Tokens
    --------------------------------------------------------------------------- */
 
-:root{
+/* `html:root` rather than `:root`. Salla sets --color-primary* on :root from
+   the dashboard's brand colour, at the same specificity as ours, so which one
+   wins comes down to which sheet loads last — and a snippet's load order is
+   not something this file gets to guarantee. Adding the type selector makes
+   ours (0,1,1) against their (0,1,0) and settles it. The storefront also
+   carries `--theme-primary-color` INLINE on <html>, which cannot be overridden
+   from a stylesheet at all; it is inert on Raed (no rule reads it, verified on
+   the live product page 2026-09-20) so it is left alone. */
+html:root{
   --font-main:'Cairo',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-ar:'Cairo',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --color-primary:#EE4D22;
-  --color-primary-dark:#C93D18;
-  --color-primary-light:#F38264;
+  /* THE LOGO'S ORANGE, and the only one. This was #EE4D22, the value still
+     sitting in the Salla dashboard's brand field, which is a different orange
+     from the mark. Every accent on the storefront resolves from here. */
+  --color-primary:#F54915;
+  --color-primary-dark:#D03709;
+  --color-primary-light:#F98A6B;
   --color-primary-reverse:#FFFFFF;
-  --color-primary-rgb:238,77,34;
+  --color-primary-rgb:245,73,21;
 
-  --ox-accent:#EE4D22;
-  --ox-accent-dark:#C93D18;
+  --ox-accent:#F54915;
+  --ox-accent-dark:#D03709;
+  --ox-accent-deep:#A82D07;
 
-  --ox-paper:#F9F5EE;
-  --ox-card:#FBF8F3;
-  --ox-line:#F0ECE5;
-  --ox-line-2:#EEEBE3;
-  --ox-rule:#F1EDE6;
-  --ox-plate:#F1E9E1;
-  --ox-fill:#F3EEE8;
+  /* THE NEUTRAL GROUND. The skin was built on the warm cream the first target
+     render used (#F9F5EE paper on #FBF8F3 card). The theme moved off it: the
+     product photographs are shot on white, so a cream plate put a grey frame
+     around every one of them and the seam was the most visible edge in the
+     fold. White paper, white card, and the greys are neutral rather than
+     warm so nothing beside a photograph reads as tinted. */
+  --ox-paper:#FFFFFF;
+  --ox-card:#FFFFFF;
+  --ox-line:#ECECEB;
+  --ox-line-2:#E4E4E3;
+  --ox-rule:#ECECEB;
+  --ox-plate:#F1F1F0;
+  --ox-plate-2:#E6E6E5;
+  --ox-fill:#F4F4F3;
   --ox-input:#FFFFFF;
-  --ox-input-bd:#EBEAE7;
+  --ox-input-bd:#E4E4E3;
 
   --ox-g1:#0E1014;
   --ox-g2:#0E1115;
@@ -177,17 +196,58 @@ body.theme-raed{
    3. Buttons
    --------------------------------------------------------------------------- */
 
+/* THE ANGLE IS THE IDENTITY, so it is on every call to action rather than on
+   a chosen few. A parallelogram on the same 22 degrees as the wedge, the hero
+   split and the accent slashes: at 44px tall the run is 44 * 0.404 = 18px at
+   EACH end, so 36px of the button's width is slant rather than label and the
+   inline padding has to carry it.
+
+   `clip-path`, not `transform:skewX`. A skew slants the label with the box and
+   needs a counter-skewed inner wrapper, which is markup we cannot add inside
+   Salla's own button components. A clip cuts the shape and leaves the type
+   upright, on an element we do not own. */
 .theme-raed .s-button-element{
   font-family:var(--font-main);
   font-weight:700;
-  border-radius:var(--ox-r-sm);
+  border-radius:0;
   box-shadow:none;
   min-height:44px;
+  padding-inline:34px;
+  clip-path:polygon(18px 0,100% 0,calc(100% - 18px) 100%,0 100%);
   transition:transform var(--dur-fast) var(--ease-out);
+}
+
+[dir="ltr"] .theme-raed .s-button-element{
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 100%,18px 100%);
 }
 
 .theme-raed .s-button-element:active{transform:scale(.99)}
 
+/* AN ICON-ONLY CONTROL KEEPS ITS SQUARE. A slanted square reads as a mistake
+   rather than as the motif, and the cut corners eat into the 44px target.
+   This list has to be exhaustive rather than tidy: every one of these is a
+   `.s-button-element`, so anything left off it inherits a 34px inline padding
+   and an 18px cut on a 32px box, which is a destroyed control rather than a
+   styled one. The wishlist heart is the one that actually bit. */
+.theme-raed :is(
+  .s-button-icon,
+  .btn--icon,
+  salla-button[shape=icon] .s-button-element,
+  .s-product-card-wishlist-btn,
+  .s-product-card-wishlist-btn .s-button-element,
+  .btn--wishlist,
+  .btn--wishlist .s-button-element,
+  .s-button-element[aria-label][class*=wishlist]
+){
+  clip-path:none;
+  padding-inline:0;
+  border-radius:var(--ox-r-pill);
+}
+
+/* THE PRIMARY. 19/700 white on the accent is not a preference: white on
+   #F54915 measures 3.58:1, which clears the floor only as LARGE text, so this
+   is the smallest label this fill may legally carry. A button too narrow for
+   it gives up its glyph and its padding, never its type. */
 .theme-raed :is(.s-button-btn,.s-button-primary,.btn--primary,button.btn-primary){
   background-color:var(--ox-accent);
   color:#FFFFFF;
@@ -201,16 +261,34 @@ body.theme-raed{
   color:#FFFFFF;
 }
 
+/* THE SECONDARY, painted rather than bordered. The clip removes the border on
+   the cut edges, so an outline button cannot use `border`: the ELEMENT is the
+   edge colour and an inset pseudo carries the fill, both wearing the same clip.
+   Hover moves the STROKE and leaves the fill alone — recolouring the pseudo
+   repaints the whole face and reads as a second shape sliding over a button
+   that already has an edge. */
 .theme-raed .s-button-outline{
-  background-color:transparent;
-  border:1px solid var(--ox-ink);
+  position:relative;
+  background-color:var(--ox-ink);
+  border:0;
   color:var(--ox-ink);
   font-size:15px;
 }
 
+.theme-raed .s-button-outline::before{
+  content:'';
+  position:absolute;
+  inset:1px;
+  z-index:0;
+  background-color:var(--ox-card);
+  clip-path:inherit;
+}
+
+.theme-raed .s-button-outline > *{position:relative;z-index:1}
+
 .theme-raed .s-button-outline:hover{
-  background-color:var(--ox-ink);
-  color:var(--ox-paper);
+  background-color:var(--ox-accent);
+  color:var(--ox-accent);
 }
 
 .theme-raed .s-button-text{
@@ -1113,13 +1191,18 @@ section.sticky-product-bar salla-add-product-button{
   margin:0;
 }
 
+/* The page's primary button, and the most important control in the catalogue.
+   The run is a function of the height, so at 56 tall it is 56 * 0.404 = 23px
+   at each end and the padding carries that plus breathing room. */
 section.sticky-product-bar .s-add-product-button-main,
 form.product-form .s-add-product-button-main{
   width:100%;
   height:56px;
   min-height:56px;
   border:0;
-  border-radius:var(--ox-r-sm);
+  border-radius:0;
+  padding-inline:40px;
+  clip-path:polygon(23px 0,100% 0,calc(100% - 23px) 100%,0 100%);
   background-color:var(--ox-accent);
   color:#FFFFFF;
   font-size:19px;
@@ -1130,6 +1213,11 @@ form.product-form .s-add-product-button-main{
   justify-content:center;
   gap:12px;
   box-shadow:none;
+}
+
+[dir="ltr"] section.sticky-product-bar .s-add-product-button-main,
+[dir="ltr"] form.product-form .s-add-product-button-main{
+  clip-path:polygon(0 0,calc(100% - 23px) 0,100% 100%,23px 100%);
 }
 
 form.product-form .s-add-product-button-main:hover{background-color:var(--ox-accent-dark)}
@@ -1863,12 +1951,18 @@ h4.s-product-card-price,.s-product-card-sale-price h4{
   width:100%;
 }
 
+/* The card's CTA inherits the 44px cut from the base rule, so it only has to
+   drop the radius: a rounded box under a clip rounds the corners BEFORE the
+   cut and leaves a nick at each flat edge. The inline padding comes down from
+   the base 34, because a card cell is narrow and the 19px label is the one
+   thing that may not shrink — white on the accent is legal only at that size. */
 .s-product-card-content-footer .s-button-element{
   width:100%;
   height:44px;
   min-height:44px;
   border:0;
-  border-radius:var(--ox-r-sm);
+  border-radius:0;
+  padding-inline:22px;
   background-color:var(--ox-accent);
   color:#FFFFFF;
   font-size:19px;
@@ -2561,8 +2655,20 @@ footer.store-footer :is(.s-social-link:hover,salla-social a:hover){color:var(--o
   .sticky-product-bar__quantity salla-quantity-input,
   .sticky-product-bar__quantity .s-quantity-input-container{width:120px}
 
+  /* 48 tall on a phone, so the run is 19 rather than 23 and the padding comes
+     in with it: the cell is narrow and the label is the thing that must fit. */
   section.sticky-product-bar .s-add-product-button-main,
-  form.product-form .s-add-product-button-main{height:48px;min-height:48px}
+  form.product-form .s-add-product-button-main{
+    height:48px;
+    min-height:48px;
+    padding-inline:26px;
+    clip-path:polygon(19px 0,100% 0,calc(100% - 19px) 100%,0 100%);
+  }
+
+  [dir="ltr"] section.sticky-product-bar .s-add-product-button-main,
+  [dir="ltr"] form.product-form .s-add-product-button-main{
+    clip-path:polygon(0 0,calc(100% - 19px) 0,100% 100%,19px 100%);
+  }
 
   /* The price mirror, when the script builds one. */
   .ox-bar__price{

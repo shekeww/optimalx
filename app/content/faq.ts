@@ -1,5 +1,6 @@
 import { GOALS } from './goals';
 import { CATEGORIES } from './categories';
+import { BRANCH } from './branch';
 
 /**
  * The FAQ sets two surfaces share: the home FAQ block (DIRECTION 6.2 row 10)
@@ -90,3 +91,53 @@ export function pdpFaq(categorySlug: string | undefined): FaqItem[] {
     })),
   ];
 }
+
+// ---------------------------------------------------------------------------
+// The FAQ page groups
+// ---------------------------------------------------------------------------
+
+export interface FaqGroup {
+  /** Anchor id, so the strip can deep-link the group. */
+  id: string;
+  titleKey: string;
+  items: FaqItem[];
+}
+
+/**
+ * The three groups the FAQ page is built from (DIRECTION 6.18, PLAN-final 5.3
+ * "FAQ").
+ *
+ * Not one sentence of this is new. The service answers are the hub's four, the
+ * product answers are the home five (which already reference the goal and
+ * category maps rather than restating them), and the branch answers are the
+ * three on `/branch`. A question is edited in one place and the FAQPage
+ * structured data on every surface stays a single version of the same answer.
+ *
+ * Writing a fresh FAQ here would have meant writing fresh claims, which is
+ * exactly what the claims source exists to stop.
+ */
+export const FAQ_PAGE_GROUPS: FaqGroup[] = [
+  {
+    id: 'faq-group-service',
+    titleKey: 'ox.pages.faq.group_service',
+    items: [1, 2, 3, 4].map((n) => ({
+      id: `faq-service-${n}`,
+      qKey: `ox.services.faq_${n}_q`,
+      aKey: `ox.services.faq_${n}_a`,
+    })),
+  },
+  {
+    id: 'faq-group-products',
+    titleKey: 'ox.pages.faq.group_products',
+    items: HOME_FAQ,
+  },
+  {
+    id: 'faq-group-branch',
+    titleKey: 'ox.pages.faq.group_branch',
+    items: BRANCH.faq.map((row, index) => ({
+      id: `faq-branch-${index + 1}`,
+      qKey: row.qKey,
+      aKey: row.aKey,
+    })),
+  },
+];

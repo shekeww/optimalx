@@ -12,6 +12,10 @@ import { OxTrustStrip } from './OxTrustStrip';
 import { OxGoals } from './OxGoals';
 import { OxCategories } from './OxCategories';
 import { OxProducts } from './OxProducts';
+import { OxPoster } from './OxPoster';
+import { OxPosters } from './OxPosters';
+import { OxProductsSecondary } from './OxProductsSecondary';
+import { OxCertifications } from './OxCertifications';
 import { OxBrands } from './OxBrands';
 import { OxServices } from './OxServices';
 import { OxGuides } from './OxGuides';
@@ -21,7 +25,8 @@ import { OxNewsletterBlock } from './OxNewsletterBlock';
 import { OxBanner } from './OxBanner';
 
 /**
- * The twelve home blocks (DIRECTION 6.2) and their render shells.
+ * The sixteen home blocks (DIRECTION 6.2, extended by homepage-scale-spec)
+ * and their render shells.
  *
  * `registerHomeComponents` writes `home:<path>` registry keys; the loader
  * strips the `home.` prefix off the manifest path, so `home.ox-hero` in
@@ -46,6 +51,10 @@ const BLOCKS: Record<HomeBlockPath, AnyHomeComponent> = {
   'ox-goals': OxGoals,
   'ox-categories': OxCategories,
   'ox-products': OxProducts,
+  'ox-poster': OxPoster,
+  'ox-posters': OxPosters,
+  'ox-products-secondary': OxProductsSecondary,
+  'ox-certifications': OxCertifications,
   'ox-brands': OxBrands,
   'ox-services': OxServices,
   'ox-guides': OxGuides,

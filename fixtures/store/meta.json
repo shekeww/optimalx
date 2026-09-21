@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-09-20T01:33:41.573Z",
+  "generator": "scripts/snapshot-store.mjs",
+  "transport": "Salla Admin API via MCP — no request is made to api.salla.dev",
+  "store": {
+    "id": 1888890798,
+    "name": "Optimal X",
+    "url": "https://optimalx.com.sa",
+    "currency": "SAR"
+  },
+  "counts": {
+    "products": 47,
+    "product_details": 47,
+    "categories": 0,
+    "brands": 0,
+    "reviews": 0,
+    "menu_header_items": 0,
+    "menu_footer_items": 0,
+    "home_components": 10
+  },
+  "raw_sources": {
+    "store-context.json": "mcp Salla store_context_get",
+    "branding.json": "mcp Salla store_branding_get",
+    "languages.json": "mcp Salla languages_list",
+    "categories.json": "mcp Salla categories_list",
+    "menus.json": "mcp Salla menu_list (index + each menu id)",
+    "reviews.json": "mcp Salla reviews_list",
+    "theme-settings.json": "mcp Salla theme_settings_list",
+    "homepage-components.json": "mcp Salla homepage_components_list",
+    "products.page1.json": "mcp Salla products_list (page 1, per_page 25)",
+    "products.page2.json": "mcp Salla products_list (page 2, per_page 25)"
+  }
+}

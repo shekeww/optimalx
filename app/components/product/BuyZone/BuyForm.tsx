@@ -10,6 +10,15 @@ export interface BuyFormProps {
   formEndSlot?: ReactNode;
   /** The sticky bar watches this element and proxies its add button. */
   anchorRef?: RefObject<HTMLDivElement | null>;
+  /**
+   * Rendered inside `.ox-buy`, after the engine's form. The buy-now half of
+   * the CTA pair lives here rather than as a sibling of the whole block, so
+   * the distance between add-to-cart and buy-now is one margin this
+   * stylesheet owns and not the buy column's own gap on top of it. Measured
+   * before the move: 46px between the two buttons (16 section margin + 18
+   * column gap + 12 own margin) where the pair is meant to sit 12 apart.
+   */
+  afterForm?: ReactNode;
 }
 
 /**
@@ -29,7 +38,7 @@ export interface BuyFormProps {
  * or gate. Our own StickyBar replaces it and proxies this form's add button,
  * so the chosen quantity and options are the ones that reach the cart.
  */
-export function BuyForm({ product, formStartSlot, formEndSlot, anchorRef }: BuyFormProps) {
+export function BuyForm({ product, formStartSlot, formEndSlot, anchorRef, afterForm }: BuyFormProps) {
   return (
     <div className="ox-buy" ref={anchorRef}>
       <AddToCartForm
@@ -38,6 +47,7 @@ export function BuyForm({ product, formStartSlot, formEndSlot, anchorRef }: BuyF
         formStartSlot={formStartSlot}
         formEndSlot={formEndSlot}
       />
+      {afterForm}
     </div>
   );
 }

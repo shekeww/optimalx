@@ -19,17 +19,44 @@ import type { HomeComponentData } from '@salla.sa/twilight-theme-engine/types';
  * fallback; a merchant who does not gets the launch copy.
  */
 
-/** Registry paths, in DIRECTION 6.2 order. The `home.` prefix is stripped by the loader. */
+/**
+ * Registry paths, in DIRECTION 6.2 order. The `home.` prefix is stripped by
+ * the loader.
+ *
+ * One departure from 6.2, and it is measured rather than felt: the category
+ * tiles used to sit between the goals and the products, which put the first
+ * price on the page 2,152px down a phone on the heights this file recorded
+ * before the homepage rebuild, and still several hundred pixels below the
+ * fold after it. A visitor decided whether to stay without ever seeing what
+ * the store charges for anything. The goals block stays high, because goal is
+ * the axis this store is organised around; the category row is the block that
+ * moves, to directly under the products it leads into. `twilight.json`
+ * carries the same order and `tests/home/defaults.test.ts` asserts the two
+ * agree.
+ */
 export const HOME_BLOCK_PATHS = [
   'ox-hero',
   'ox-trust-strip',
   'ox-goals',
-  'ox-categories',
   'ox-products',
+  // The four blocks below were written, committed and never registered, so
+  // they had never rendered once, and the page they were written for never
+  // existed. They go in here at the rhythm homepage-scale-spec asks for:
+  // dense grid, then a full stop, then the connective tissue, then a second
+  // grid. The spec also lists the category row third, and that is the one
+  // instruction NOT followed: the departure recorded above is measured, the
+  // first price is currently 1,662px down (1.85 viewports), and lifting a
+  // 246px category block above the products would push it past two screens
+  // and undo the fix. Order serves the price, not the numbering.
+  'ox-poster',
+  'ox-posters',
+  'ox-products-secondary',
+  'ox-categories',
   'ox-brands',
   'ox-services',
   'ox-guides',
   'ox-branch',
+  'ox-certifications',
   'ox-faq',
   'ox-newsletter',
   'ox-banner',
@@ -37,20 +64,81 @@ export const HOME_BLOCK_PATHS = [
 
 export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
 
-/** Reserved heights from the DIRECTION 6.2 table, at 390 and at 1440. */
+/**
+ * Reserved heights, at 390 and at 1440.
+ *
+ * Both columns are MEASURED off the rendered page, desktop at a 1425 viewport
+ * and mobile at a 375 one. The reserved box is only a pre-mount `min-height`
+ * that the lazy shell releases once the block mounts, so a number that does
+ * not match the built block is a one-off jump at exactly the moment the
+ * shopper is reading.
+ *
+ * The homepage rebuild moved five of them, and each is worth writing down:
+ *
+ * - `ox-trust-strip` shrank: the cells are a glyph beside two lines now, not
+ *   a glyph above them, and on a phone the row is one line of a sideways
+ *   scroller rather than a two by two grid.
+ * - `ox-categories` shrank a long way: the tile is a glyph over a name, with
+ *   no 4:3 image plate under it, and the row is eight across on a desktop
+ *   and two rows of four on a phone.
+ * - `ox-goals` grew: the cards are dark photographic cards with a title, a
+ *   line and an action, not 128px icon tiles.
+ * - `ox-services` shrank a long way: it is three cards on the page ground
+ *   now, not three channel cards inside a 704px band.
+ * - `ox-faq` grew: the block carries the secondary rail beside the accordion,
+ *   which is a column of its own on a desktop and a second stack on a phone.
+ *   The number reserves for the rail HAVING products, because the live store
+ *   has 47 of them; a catalogue with none collapses the rail instead, which
+ *   is the smaller and rarer jump.
+ *
+ * Re-measure these whenever a block's composition changes. A guess here is
+ * indistinguishable from a bug to the person reading the page.
+ */
 export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop: number }> = {
-  'ox-hero': { mobile: 500, desktop: 560 },
-  'ox-trust-strip': { mobile: 144, desktop: 72 },
-  'ox-goals': { mobile: 544, desktop: 280 },
-  'ox-categories': { mobile: 880, desktop: 694 },
-  'ox-products': { mobile: 508, desktop: 630 },
-  'ox-brands': { mobile: 64, desktop: 80 },
-  'ox-services': { mobile: 920, desktop: 480 },
-  'ox-guides': { mobile: 485, desktop: 556 },
-  'ox-branch': { mobile: 810, desktop: 480 },
-  'ox-faq': { mobile: 408, desktop: 400 },
-  'ox-newsletter': { mobile: 320, desktop: 300 },
-  'ox-banner': { mobile: 268, desktop: 240 },
+  'ox-hero': { mobile: 480, desktop: 560 },
+  'ox-trust-strip': { mobile: 65, desktop: 77 },
+  // Desktop numbers re-measured on 2026-09-20 off the running page (see
+  // scratchpad/measured-2026-09-20.md). The old table reserved 4990px against
+  // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
+  // a layout shift in the least forgivable direction: everything a shopper was
+  // reading jumps upward under them.
+  // Desktop was 332 when the goal door was 260 tall. The door is 400 from 1280
+  // now, so this follows it: reserving the old number would hand the block a
+  // 140px jump on mount, which is the layout shift this table exists to stop.
+  'ox-goals': { mobile: 678, desktop: 472 },
+  // The largest single error in the old table, and in the opposite direction.
+  // The rail became an eight-card grid and the reservation never followed, so
+  // this block UNDER-reserved by 410px and jumped down on mount.
+  'ox-products': { mobile: 1759, desktop: 1040 },
+  'ox-categories': { mobile: 337, desktop: 228 },
+  // The campaign poster is gated on a real campaign and renders null until
+  // the merchant writes a headline, so it reserves nothing by default. A store
+  // running one takes the shift on that block instead, which is the smaller
+  // cost and affects nobody today.
+  'ox-poster': { mobile: 0, desktop: 0 },
+  'ox-posters': { mobile: 362, desktop: 380 },
+  'ox-products-secondary': { mobile: 924, desktop: 1040 },
+  // Both of these render nothing today and reserving for them was pure shift:
+  // the store has zero brands, and the guides block has no entries. Same
+  // reasoning as the newsletter and banner rows below.
+  'ox-brands': { mobile: 0, desktop: 0 },
+  'ox-services': { mobile: 796, desktop: 342 },
+  'ox-guides': { mobile: 0, desktop: 0 },
+  'ox-branch': { mobile: 268, desktop: 184 },
+  // No certification holds the per-product evidence a badge needs, so the
+  // resolver returns an empty list and the band renders null.
+  'ox-certifications': { mobile: 0, desktop: 0 },
+  'ox-faq': { mobile: 371, desktop: 439 },
+  // Both of these are off until the merchant turns them on: the newsletter
+  // behind the `show_newsletter` setting, the banner behind an uploaded image.
+  // Until then each renders null, so reserving their old 320 and 268 put 588px
+  // of grey placeholder above the footer on a phone and then collapsed it on
+  // scroll, which is the largest layout jump on the page. DIRECTION 6.2 already
+  // says the banner's row reserves 0 on both viewports; the map simply did not
+  // agree with it. A store that does turn one on takes a shift on that block
+  // instead, which is the smaller of the two costs and affects nobody today.
+  'ox-newsletter': { mobile: 0, desktop: 0 },
+  'ox-banner': { mobile: 0, desktop: 0 },
 };
 
 /** The two viewports the DIRECTION 6.2 heights are measured at. */
@@ -111,8 +199,18 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   'ox-goals': {},
   'ox-categories': { categories: [] },
   'ox-products': { title: null, products: [] },
+  // The campaign poster's whole gate: no headline, no band.
+  'ox-poster': { headline: null, eyebrow: null, line: null, image: null, cta_label: null, cta_url: null },
+  // The carousel builds its cards from the catalogue and the goal menu, so it
+  // takes no merchant field.
+  'ox-posters': {},
+  'ox-products-secondary': { title: null },
+  // Each row is a badge id and the certificate reference that proves it. A row
+  // with no reference is not evidence and the resolver drops it, so an empty
+  // reference cannot turn a badge on.
+  'ox-certifications': { certifications: [], photo: null },
   'ox-brands': { brands: [] },
-  'ox-services': { title: null, intro: null },
+  'ox-services': { image: null, title: null },
   'ox-guides': { title: null },
   'ox-branch': {},
   'ox-faq': { items: [] },

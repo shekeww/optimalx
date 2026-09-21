@@ -222,7 +222,7 @@ salla-modal {
   }
 }
 
-// Unhydrated web components — reserve space to prevent CLS
+// Unhydrated web components - reserve space to prevent CLS
 salla-slider {
   display: block;
 }
@@ -465,7 +465,7 @@ salla-localization-modal {
     min-height: 0;
   }
 
-  /* No `height: 0` / `height: auto` here — it isn't transitioned, so on close it
+  /* No `height: 0` / `height: auto` here - it isn't transitioned, so on close it
      snaps the panel shut before the `grid-template-rows` animation can run. The
      `0fr` ⇄ `1fr` row track (with the child's `overflow: hidden`) collapses and
      expands on its own, animated both ways. */
@@ -525,7 +525,7 @@ salla-localization-modal {
 /*
   Loading-skeleton placeholder pulse (`Pulse` from
   @salla.sa/twilight-components-react/skeletons, used across every
-  `*Skeleton` block). The component itself ships no CSS — its zoom in/out
+  `*Skeleton` block). The component itself ships no CSS - its zoom in/out
   comes from the runtime-injected base stylesheet, which loads after this one
   and wins the cascade, so beating it needs `!important`. Swap it for a plain
   opacity fade.
@@ -546,17 +546,17 @@ salla-localization-modal {
 }
 
 /* `SliderSkeleton`'s image placeholder (`photos-slider`'s loading state,
-   `app/router.tsx`) — the runtime stylesheet sets its own height, so match
+   `app/router.tsx`) - the runtime stylesheet sets its own height, so match
    the block's real rendered height instead of leaving the vendor default. */
 .s-skeleton-slider-image {
   height: 380px #{!important};
 }
 
 /* `ProductDetailSkeleton`'s thumb strip (`app/routes/product-single.tsx`'s
-   `pendingComponent`) — the real slider hides thumbs on mobile too
+   `pendingComponent`) - the real slider hides thumbs on mobile too
    (`.s-slider-thumbs`, `04-components/slider.scss`), so match that here
    instead of showing a row the loaded page won't have. Scoped to the
-   product-detail skeleton's own wrapper — `SliderSkeleton` (home page)
+   product-detail skeleton's own wrapper - `SliderSkeleton` (home page)
    reuses the same `.s-skeleton-slider-thumbs` class for its own thumbs. */
 @media (max-width: 767px) {
   .s-skeleton-detail-images .s-skeleton-slider-thumbs {

@@ -59,12 +59,21 @@ describe('splitDescription', () => {
     expect(parts.warning.length).toBeGreaterThan(0);
   });
 
-  it('leaves the prose in bodyHtml, already sanitised, with nothing else in it', () => {
-    expect(parts.bodyHtml).toContain('<p>');
-    expect(parts.bodyHtml).not.toContain('<table');
-    expect(parts.bodyHtml).not.toContain('الحصص:');
-    expect(parts.bodyHtml).not.toContain('طريقة الاستخدام');
-    expect(parts.bodyHtml).not.toContain('تنبيه');
+  it('leaves the prose in the lead and bodyHtml, with nothing else in either', () => {
+    expect(parts.lead.length).toBeGreaterThan(0);
+    for (const value of [parts.lead, parts.bodyHtml]) {
+      expect(value).not.toContain('<table');
+      expect(value).not.toContain('الحصص:');
+      expect(value).not.toContain('طريقة الاستخدام');
+      expect(value).not.toContain('تنبيه');
+    }
+  });
+
+  it('takes the first prose paragraph as the buy column short description', () => {
+    // The lead is plain text, not markup: nothing merchant-authored can reach
+    // the DOM through the buy column at all.
+    expect(parts.lead).not.toContain('<');
+    expect(parts.bodyHtml).not.toContain(parts.lead);
   });
 
   it('drops the labels from the how-to-use and warning lines', () => {
@@ -78,13 +87,15 @@ describe('splitDescription', () => {
     );
     expect(hostile.bodyHtml).not.toContain('script');
     expect(hostile.bodyHtml).not.toContain('onclick');
-    expect(hostile.bodyHtml).toContain('نص');
+    expect(hostile.lead).toBe('نص');
+    expect(hostile.bodyHtml).toContain('مزيد');
   });
 
-  it('keeps the first paragraph in the body when it is prose, not a spec line', () => {
+  it('reads the first paragraph as the lead when it is prose, not a spec line', () => {
     const prose = splitDescription('<p>وصف عادي للمنتج.</p>');
     expect(prose.specLine).toBeNull();
-    expect(prose.bodyHtml).toContain('وصف عادي للمنتج.');
+    expect(prose.lead).toBe('وصف عادي للمنتج.');
+    expect(prose.bodyHtml).toBe('');
   });
 
   it('handles an empty description without throwing', () => {

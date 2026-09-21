@@ -47,7 +47,21 @@ export interface GoalContent {
   slug: string;
   /** Sprite symbol (DIRECTION 8.7). */
   icon: OxIconName;
+  /** Short label: nav item, drawer row, breadcrumb crumb (Contract B). */
+  nameKey: string;
+  /** Meta description, 120 to 155 characters, answer-first (Contract B). */
+  descriptionKey: string;
   h1Key: string;
+  /**
+   * The SHORT label, for the goal card and the header menu.
+   *
+   * Every `h1Key` opens with "مكملات", which is right on a page whose whole
+   * subject is supplements and wrong on a row of six cards inside a supplement
+   * shop, where the word is on every tile and carries nothing. The owner asked
+   * for it gone from the cards. The h1 keeps it, because that heading is read
+   * on its own in a search result where the category is not obvious.
+   */
+  cardKey: string;
   /** Meta title; the head helper appends nothing to it. */
   titleKey: string;
   introKey: string;
@@ -72,7 +86,10 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-energy',
     icon: 'goal-energy',
+    nameKey: 'ox.tax.goal_energy.name',
+    descriptionKey: 'ox.tax.goal_energy.description',
     h1Key: `${KEY}.energy.h1`,
+    cardKey: `${KEY}.energy.card`,
     titleKey: `${KEY}.energy.title`,
     introKey: `${KEY}.energy.intro`,
     subNeeds: [
@@ -105,7 +122,10 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-general-health',
     icon: 'goal-general-health',
+    nameKey: 'ox.tax.goal_general_health.name',
+    descriptionKey: 'ox.tax.goal_general_health.description',
     h1Key: `${KEY}.general_health.h1`,
+    cardKey: `${KEY}.general_health.card`,
     titleKey: `${KEY}.general_health.title`,
     introKey: `${KEY}.general_health.intro`,
     subNeeds: [
@@ -153,7 +173,10 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-performance',
     icon: 'goal-performance',
+    nameKey: 'ox.tax.goal_performance.name',
+    descriptionKey: 'ox.tax.goal_performance.description',
     h1Key: `${KEY}.performance.h1`,
+    cardKey: `${KEY}.performance.card`,
     titleKey: `${KEY}.performance.title`,
     introKey: `${KEY}.performance.intro`,
     explainer: {
@@ -203,7 +226,10 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-recovery',
     icon: 'goal-recovery',
+    nameKey: 'ox.tax.goal_recovery.name',
+    descriptionKey: 'ox.tax.goal_recovery.description',
     h1Key: `${KEY}.recovery.h1`,
+    cardKey: `${KEY}.recovery.card`,
     titleKey: `${KEY}.recovery.title`,
     introKey: `${KEY}.recovery.intro`,
     subNeeds: [
@@ -250,7 +276,10 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-hair-skin',
     icon: 'goal-hair-skin',
+    nameKey: 'ox.tax.goal_hair_skin.name',
+    descriptionKey: 'ox.tax.goal_hair_skin.description',
     h1Key: `${KEY}.hair_skin.h1`,
+    cardKey: `${KEY}.hair_skin.card`,
     titleKey: `${KEY}.hair_skin.title`,
     introKey: `${KEY}.hair_skin.intro`,
     subNeeds: [
@@ -282,7 +311,10 @@ export const GOALS: GoalContent[] = [
   {
     slug: 'goal-ideal-weight',
     icon: 'goal-ideal-weight',
+    nameKey: 'ox.tax.goal_ideal_weight.name',
+    descriptionKey: 'ox.tax.goal_ideal_weight.description',
     h1Key: `${KEY}.ideal_weight.h1`,
+    cardKey: `${KEY}.ideal_weight.card`,
     titleKey: `${KEY}.ideal_weight.title`,
     introKey: `${KEY}.ideal_weight.intro`,
     // One URL, two anchored directions. The goal name never stands alone as an
@@ -385,3 +417,77 @@ export function goalSkus(goal: GoalContent): string[] {
   const all = [...goal.skus, ...(goal.groups ?? []).flatMap((group) => group.skus)];
   return [...new Set(all)];
 }
+
+/**
+ * The photograph behind each goal card on the home page.
+ *
+ * The paths are the ones `docs/build/image-brief.md` sections 3 to 8 name, so
+ * the owner's generated frames drop straight in with no code change. Only
+ * four of them have been shot; a goal whose file is absent renders the card's
+ * flat dark ground instead, which is why the card is designed to be finished
+ * without a photograph (`GoalCard`, `_b2-home.scss` section 4).
+ *
+ * The brief's six frames were written against the reference image's goal set,
+ * which partitions the same catalogue differently from ours: it splits weight
+ * into gain and cut, and it has no hair, skin and nails goal at all. The six
+ * are therefore matched to our six by subject, and one pairing is a compromise
+ * worth naming: `goal-lean.jpg` is the brief's only frame of a woman training
+ * and it carries `goal-hair-skin`, whose catalogue skews the same way. If the
+ * owner would rather have a dedicated frame for it, the brief needs a
+ * seventeenth entry and only this line changes.
+ */
+export const GOAL_PHOTOS: Record<string, string> = {
+  // The four frames that EXIST. Ten of the brief's sixteen were never shot,
+  // and a goal pointing at one of them fetched a 404 on every home page load
+  // for a photograph that could never arrive. `BandPhoto` swallowed the
+  // broken image, so nothing looked wrong; the request went out all the same,
+  // six times, on the block that is the largest on the page. Only a path
+  // whose file is in `public/assets/images` belongs in this map.
+  //
+  // `goal-strength-w.webp` is the owner's own frame and the brief names it
+  // for a goal card. It is modest athletic wear, which this market requires,
+  // and it carries performance because that is what it shows.
+  'goal-performance': '/assets/images/goal-strength-w.webp',
+  'goal-energy': '/assets/images/band-cardio.webp',
+  'goal-general-health': '/assets/images/nutrition-band.jpg',
+  'goal-recovery': '/assets/images/athlete-band.jpg',
+  // Both cropped from the owner's own files on 2026-09-20, so the row is six
+  // photographs rather than four and two holes.
+  //
+  // `goal-ideal-weight` is the left of the athlete banner, taken above its
+  // floor and inside its right edge on purpose: that file carries burnt-in
+  // Arabic ("طاقة أعلى لأداء أفضل") and a strip of claim icons, and an outcome
+  // claim is still a claim when it is pixels rather than copy.
+  'goal-ideal-weight': '/assets/images/goal-ideal-weight.webp',
+  // Whole food behind the hair, skin and nails row. This goal's catalogue is
+  // collagen and biotin, and food is what the store's own advice points at
+  // alongside them; a photograph of vegetables asserts nothing.
+  'goal-hair-skin': '/assets/images/goal-hair-skin.webp',
+};
+
+/** The card photograph for a goal, or undefined when the brief names none. */
+export function goalPhoto(slug: string): string | undefined {
+  return GOAL_PHOTOS[slug];
+}
+
+/**
+ * The second line on a goal card, as a locale key.
+ *
+ * The card used to borrow the goal's first sub-need heading, and one of the
+ * six read "energy and focus before the session", which is an effect. The
+ * claims source is explicit that a goal card names a CATEGORY OF PRODUCT and
+ * never a promised result, so the line is now a list of the product types the
+ * goal actually routes to. It is also the more useful line: a shopper
+ * scanning six cards wants to know what is behind each one.
+ *
+ * The sub-need headings stay exactly as they are on the goal landing pages,
+ * where they sit under a paragraph that frames them.
+ */
+export const GOAL_CARD_LINES: Record<string, string> = {
+  'goal-performance': 'ox.home.goal_line_performance',
+  'goal-recovery': 'ox.home.goal_line_recovery',
+  'goal-energy': 'ox.home.goal_line_energy',
+  'goal-ideal-weight': 'ox.home.goal_line_ideal_weight',
+  'goal-general-health': 'ox.home.goal_line_general_health',
+  'goal-hair-skin': 'ox.home.goal_line_hair_skin',
+};

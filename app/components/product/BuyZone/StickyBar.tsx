@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState, type RefObject } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { Image } from '@salla.sa/twilight-theme-engine/common';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
-import { Bdi } from '../../common/Bdi';
 import { Price } from '../../common/Price';
 import { effectivePrice } from '../lib/claims';
 
@@ -23,6 +21,11 @@ export const STICKY_BODY_CLASS = 'ox-sticky-bar';
  * dist/AddToCartForm-NICDUAS3.js), so this is ours, driven by one
  * IntersectionObserver on the buy zone. While it is up, `body` carries
  * `ox-sticky-bar` so the mobile tab bar steps aside.
+ *
+ * The approved design gives it the price at the inline start and the add
+ * button filling the rest of the row; there is no thumbnail and no product
+ * name, because by the time the bar is up the shopper is already looking at
+ * both. It clears `env(safe-area-inset-bottom)` from the stylesheet.
  *
  * Its button is a proxy, not a second cart path: it clicks the form's own
  * `salla-add-product-button`, so the quantity and the options the shopper
@@ -71,23 +74,9 @@ export function StickyBar({ product, anchorRef }: StickyBarProps) {
 
   return (
     <div className={'ox-sticky' + (visible ? ' is-visible' : '')} aria-hidden={!visible}>
-      <div className="ox-container ox-sticky__inner">
-        <div className="ox-sticky__thumb">
-          <Image
-            src={product.image?.url}
-            alt=""
-            aspectRatio="1/1"
-            objectFit="contain"
-            noWrapper
-            srcSetWidths={[80]}
-            sizes="40px"
-          />
-        </div>
-        <p className="ox-sticky__name">
-          <Bdi>{product.name}</Bdi>
-        </p>
+      <div className="ox-sticky__inner">
         <p className="ox-sticky__price">
-          <Price amount={effectivePrice(product)} currency={product.currency} />
+          <Price amount={effectivePrice(product)} size="card" currency={product.currency} />
         </p>
         <button
           type="button"

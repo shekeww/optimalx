@@ -48,11 +48,11 @@ export function KitchenSink() {
         </table>
       </Panel>
 
-      <Panel title="OxHero, no upload (plate, no broken image)">
+      <Panel title="OxHero, no upload (the theme photograph, art directed per breakpoint)">
         <OxHero data={block('ox-hero')} />
       </Panel>
 
-      <Panel title="OxTrustStrip (one panel open at a time)">
+      <Panel title="OxTrustStrip (the shared statistic strip; one panel open at a time)">
         <OxTrustStrip data={block('ox-trust-strip')} />
       </Panel>
 
@@ -72,7 +72,7 @@ export function KitchenSink() {
         <OxBrands data={block('ox-brands')} />
       </Panel>
 
-      <Panel title="OxServices (dark band, one wedge, three channels)">
+      <Panel title="OxServices (photographic band, one wedge, the lockup, three channels)">
         <OxServices data={block('ox-services')} />
       </Panel>
 

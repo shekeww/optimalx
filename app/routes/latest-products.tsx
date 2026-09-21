@@ -4,13 +4,17 @@ import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/rout
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { ListingPage } from '../components/listing/ListingPage';
 import { listingHeadExtend } from '../components/listing/head';
+import { STATIC_TITLE_KEYS } from '../components/listing/listingCopy';
+import { headString } from '../components/seo/strings';
 
 /**
  * The latest-products listing (DIRECTION 6.3 composition, static source).
  *
- * The engine loader keeps the params it had: `title` is only a fallback for
- * its own `common.titles` key, and the visible h1 is whatever the loader
- * resolves, never a string of this theme's.
+ * The title is resolved from our own locale. The engine falls back to its own
+ * `SOURCE_TITLE_KEY` (`blocks.home.latest_products`) only when no title is
+ * passed, and that platform key is not in this theme's dictionary, so the h1
+ * would be the raw key; the English literal that shipped instead printed
+ * "Latest Products" as the h1 of an Arabic-first store.
  */
 export const Route = createFileRoute('/{-$locale}/latest-products')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -23,7 +27,7 @@ export const Route = createFileRoute('/{-$locale}/latest-products')({
     ProductListing.loader({
       params: {
         source: 'latest',
-        title: 'Latest Products',
+        title: headString(params.locale, STATIC_TITLE_KEYS.latest),
         slug: 'latest-products',
       },
       search: { page: deps.page, sort: deps.sort },

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Breadcrumb, Link } from '@salla.sa/twilight-theme-engine/common';
+import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
@@ -9,10 +9,12 @@ import { HoursTable } from '../blocks/HoursTable';
 import { digitsOnly, safeExternalUrl } from '../blocks/href';
 import { Bdi } from '../common/Bdi';
 import { Icon, type OxIconName } from '../common/Icon';
+import { Panel } from '../common/Panel';
 import { parseBranchHours } from '../../content/branch';
 import { channelById } from '../../content/services';
 import { isPendingCopy } from './copy';
 import { settingText } from '../product/lib/claims';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 interface ChannelRow {
   id: string;
@@ -27,9 +29,16 @@ interface ChannelRow {
 /**
  * `/contact` (DIRECTION 6.16, FINAL-content 6.2).
  *
- * Every row is built from a real contact value and disappears with it: a
- * store with no WhatsApp number shows no WhatsApp row, and the page never
- * prints a channel it cannot honour.
+ * The page stays a short utility page: a header in the text measure, three
+ * channel panels, the written-question card, the branch panel with its hours,
+ * and the accounts row. It carries no dark band on purpose. The band is the
+ * system's section break for a long page, and spending it here, one click from
+ * the services hub and the FAQ which both open on one, would turn a signature
+ * into a template.
+ *
+ * Every row is built from a real contact value and disappears with it: a store
+ * with no WhatsApp number shows no WhatsApp row, and the page never prints a
+ * channel it cannot honour.
  *
  * The values are Latin digits and Latin addresses inside Arabic text, so each
  * one is a `bdi` with `dir="ltr"` (DIRECTION 3.4 and the 9.8 RTL row). They
@@ -57,7 +66,7 @@ export function ContactPage() {
   if (whatsapp) {
     rows.push({
       id: 'whatsapp',
-      icon: 'help',
+      icon: 'whatsapp',
       labelKey: 'ox.branch.whatsapp',
       lineKey: 'ox.pages.contact.whatsapp_line',
       value: whatsapp,
@@ -99,7 +108,7 @@ export function ContactPage() {
 
   return (
     <div className="ox-page ox-page--contact">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <header className="ox-page-head">
         <h1 className="ox-page-head__title ox-h1">{t('ox.pages.contact.h1')}</h1>
@@ -111,11 +120,19 @@ export function ContactPage() {
           <h2 id="ox-contact-title" className="ox-h2">
             {t('ox.pages.contact.channels_title')}
           </h2>
-          <ul className="ox-contact__grid">
+          <div className="ox-contact__grid">
             {rows.map((row) => (
-              <li key={row.id} className="ox-contact__card" data-testid={`ox-contact-${row.id}`}>
-                <Icon name={row.icon} size={24} className="ox-contact__icon" />
-                <h3 className="ox-contact__label">{t(row.labelKey)}</h3>
+              <Panel
+                key={row.id}
+                className="ox-contact__card"
+                testId={`ox-contact-${row.id}`}
+                title={
+                  <>
+                    <Icon name={row.icon} size={24} className="ox-contact__icon" />
+                    <span>{t(row.labelKey)}</span>
+                  </>
+                }
+              >
                 <p className="ox-contact__value">
                   <Bdi ltr lang={null}>
                     <a
@@ -127,9 +144,9 @@ export function ContactPage() {
                   </Bdi>
                 </p>
                 <p className="ox-contact__line ox-small">{t(row.lineKey)}</p>
-              </li>
+              </Panel>
             ))}
-          </ul>
+          </div>
           <p className="ox-contact__hours ox-small">{t('ox.pages.contact.hours_line')}</p>
         </section>
       ) : null}
@@ -154,12 +171,14 @@ export function ContactPage() {
         <h2 id="ox-contact-branch-title" className="ox-h2">
           {t('ox.pages.contact.branch_title')}
         </h2>
-        <p className="ox-contact-branch__address ox-body">{t('ox.branch.address')}</p>
-        <p className="ox-contact-branch__line ox-small">{t('ox.pages.contact.branch_line')}</p>
-        <Link to="/branch" className="ox-contact-branch__link">
-          {t('ox.nav.branch')}
-        </Link>
-        <HoursTable rows={hoursRows} className="ox-contact-branch__hours" />
+        <Panel className="ox-contact-branch__panel" tone="plate">
+          <p className="ox-contact-branch__address ox-body">{t('ox.branch.address')}</p>
+          <p className="ox-contact-branch__line ox-small">{t('ox.pages.contact.branch_line')}</p>
+          <HoursTable rows={hoursRows} className="ox-contact-branch__hours" />
+          <Link to="/branch" className="ox-contact-branch__link">
+            {t('ox.nav.branch')}
+          </Link>
+        </Panel>
       </section>
 
       {social.length > 0 ? (

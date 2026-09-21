@@ -5,7 +5,7 @@ import type { SVGProps } from 'react';
  * that spreads `props` onto the `<svg>`, so callers can pass `className`,
  * `width`/`height`, `aria-*`, `slot`, etc. Colour follows `currentColor`.
  *
- * Style: 24×24 viewBox, 1.5 stroke, round caps/joins, no fill — keep new
+ * Style: 24×24 viewBox, 1.5 stroke, round caps/joins, no fill - keep new
  * icons matching so the set stays visually consistent.
  */
 

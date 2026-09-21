@@ -22,58 +22,276 @@
      undefined makes --font-main invalid on every Arabic page and drops body
      text back to the browser default. Arabic is the primary locale here, so
      that failure would be the normal case, not the edge case. */
-  --font-main: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-ar: 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* 'Cairo VF' is our self-hosted variable file and must come first: the
+     engine also loads a static Google Cairo from the dashboard, and leading
+     with the shared name would let that resolve 400 and 700 while ours served
+     the rest. Plain 'Cairo' stays as the fallback. See 01-settings/fonts.scss. */
+  --font-main: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ar: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Brand. */
-  --color-primary: #EE4D22;
-  --color-primary-dark: #C93D18;
+  /* ---------- Ours: the Cairo weight ladder ----------
+     Cairo is self-hosted and genuinely variable, wght 200 to 1000, split by
+     unicode-range across three files (app/styles/01-settings/fonts.scss). Every
+     step below is therefore a true instance: nothing is synthesised, and no
+     step costs a request the page was not already making.
 
-  /* Derived from --color-primary; adjust once the colour ramp is decided.
+     Seven steps, one job each. The rule that resolves the collision the theme
+     shipped with, where 600 was used 52 times and 700 48 times and neither had
+     a definition:
+
+         600 is what you press. 700 is what you read as a name.
+
+     When an element is both - an active tab, a card title inside an anchor, a
+     footer heading that doubles as the mobile accordion toggle - the name wins
+     and it takes 700. A control never carries 700 at rest.
+
+     Reversed type loses apparent weight, so the two lightest steps are not
+     available on a dark band: .ox-band-dark below re-points --ox-w-open at
+     Read and --ox-w-read at Quiet, and every component inside it follows
+     without a variant class. With the floor at 400 that makes 450 the
+     lightest weight any reversed copy ever takes. Interface and above do not move, because at 600
+     the stroke is thick enough that the optical loss does not read. */
+  /* THE FLOOR IS 500, raised twice on 2026-09-20: 350 -> 400, then 400 -> 500.
+     Arabic needs more stroke than Latin at the same optical size, and Cairo is
+     a low-contrast face, so a weight that looks open in Latin reads as thin in
+     Arabic at body size. 400 was still thin on the owner's screens — the
+     paragraph copy on the services comparison table was the case that settled
+     it — and thin is the opposite of what this brand is.
+
+     BODY COPY IS NOW 500 AND READING COPY 550, which is the smallest pair that
+     carries the identity at lead size without tipping into the weight the UI
+     steps own. The scale keeps all seven levels and the gaps above are
+     unchanged, so nothing that was a control becomes a name: Interface is
+     still 600, Title still 700. What compresses is the bottom of the scale,
+     which is exactly where the complaint was. */
+  --ox-w-open: 500;
+  --ox-w-read: 550;
+  --ox-w-quiet: 550;
+  --ox-w-ui: 600;
+  --ox-w-title: 700;
+  --ox-w-stmt: 800;
+  --ox-w-figure: 900;
+
+  /* ---------- Ours: the size ladder ----------
+     Nine steps, 390 to 1440, linear between. The pairing of a size with a
+     weight step is the role; the roles are the .ox-* classes in
+     06-ox/_primitives.scss, and tailwind.config.cjs resolves text-display
+     through text-micro to these same tokens so a utility and a class cannot
+     drift apart.
+
+     `title` is the step the design used everywhere and the scale never named:
+     17 rising to 18, the panel and card heading. Before this it was written
+     as bare pixels in three files. */
+  --ox-t-display: clamp(34px, 25.83px + 2.095vw, 56px);
+  --ox-t-h1: clamp(28px, 23.54px + 1.143vw, 40px);
+  --ox-t-h2: clamp(24px, 21.03px + 0.762vw, 32px);
+  --ox-t-h3: clamp(18px, 17.26px + 0.190vw, 20px);
+  --ox-t-title: clamp(17px, 16.63px + 0.095vw, 18px);
+  --ox-t-lead: clamp(17px, 15.89px + 0.286vw, 20px);
+  --ox-t-body: clamp(15px, 14.63px + 0.095vw, 16px);
+  --ox-t-small: clamp(13px, 12.63px + 0.095vw, 14px);
+  --ox-t-micro: clamp(11.5px, 11.31px + 0.048vw, 12px);
+
+  /* ---------- Ours: Arabic line-height floors ----------
+     Measured from public/assets/fonts/cairo-arabic.woff2, 1000 units per em:
+
+       tall form    alef, lam, kaf, tah                      +717
+       body height  heh, medial meem, medial seen, dal       +500
+       descender    yeh -430, meem -332, ain and hah -318,
+                    nun, lam and seen -248
+
+     One Arabic line can therefore put ink from -430 to +717, which is 1.147em.
+     Latin in the same face reaches only 0.937em (cap 702 down to -235), so a
+     line-height chosen for Arabic always serves Latin and never the reverse:
+     there is one set of floors here, not two.
+
+     1.147 is the height at which two stacked Arabic lines touch. --ox-lh-tight
+     adds three per cent of air to it and is the hard floor for anything that
+     can hold Arabic. The theme shipped display at 1.15, which is 0.2px of
+     clearance at 56px, and h1 at 1.20, which is none.
+
+     line-height: 1 is legal in exactly one case: content guaranteed to be
+     Western numerals. Latin digits top at 671 and drop to -10, 0.681em, so
+     they clear a 1em box with room to spare. That is --ox-lh-num, and a count
+     bubble or a step numeral is the only thing allowed to use it. */
+  --ox-lh-tight: 1.18;
+  --ox-lh-head: 1.25;
+  --ox-lh-snug: 1.4;
+  --ox-lh-caption: 1.5;
+  --ox-lh-lead: 1.6;
+  --ox-lh-body: 1.7;
+  --ox-lh-prose: 1.9;
+  --ox-lh-flat: 1.2;
+  --ox-lh-num: 1;
+
+  /* ---------- Ours: Latin set inside Arabic ----------
+     Measured from the same files. Cairo's Latin x-height is 500 units and its
+     Arabic body height is also 500. The two scripts are already optically
+     matched at the same pixel size, so MIXED-CASE Latin inside Arabic copy -
+     the product subtitle, a supplier brand written as Optimum Nutrition, a
+     unit string - needs no size correction at all. Do not add one.
+
+     Uppercase Latin is the exception, and the reason is mass rather than
+     height. Every glyph in an all-caps run stands at the cap height, 691,
+     against an Arabic ribbon that is mostly 500 with occasional strokes at
+     717, so the run reads as a solid block. --ox-latin-caps-size brings the
+     cap to 636 units, which sits between the Arabic body and the Arabic alef.
+     It applies only to caps set INSIDE Arabic: a Latin line of its own, in
+     its own lang and dir, has no Arabic beside it to match and keeps its
+     size. .ox-latin-caps and .ox-latin-track are those two cases.
+
+     Tracking exists only here. Arabic is a joined script and letter-spacing
+     breaks the joins into loose glyphs, so Arabic is never tracked. Because
+     the only role that can track also sets text-transform: uppercase, it is
+     structurally impossible to track Arabic through this system.
+
+     Latin digits are deliberately NOT reduced. They top at 660 to 671 against
+     the Arabic 500, so they stand taller than the copy around them, and that
+     is doing a job: in this store the numerals are the scannable content.
+     They are aligned rather than shrunk, with tabular-nums on .ox-num. */
+  --ox-latin-caps-size: 0.92em;
+  --ox-latin-track: 0.08em;
+
+  /* Arabic is never tracked, and this is where that is enforced. It is one
+     declaration rather than one per component because letter-spacing
+     inherits: everything is 0 until .ox-latin-caps or .ox-latin-track opts a
+     run of uppercase Latin out of it, and neither of those can reach Arabic
+     because both set the uppercase transform themselves. */
+  letter-spacing: 0;
+
+  /* Brand.
+     #F54915 is the weighted mean of 15,854 saturated orange pixels sampled
+     from the primary button, the card buttons and the price in
+     docs/design-target/pdp-target.png. The owner's logo shipped a different
+     orange (#FC4000) and was recoloured to this one, so the mark and the
+     interface are a single colour. The Salla dashboard still holds #EE4D22;
+     changing it is an owner action, and until it happens Salla's own native
+     components render in the old orange. See the note on --ox-accent. */
+  --color-primary: #F54915;
+  --color-primary-dark: #D03709;
+
+  /* Derived from --color-primary.
      --color-primary-light is the fill mixed 30% toward white.
      --color-primary-reverse is what sits ON a primary fill (text, icons).
      --color-primary-rgb is bare channels, for rgba(…) tints - it must stay in
      sync with --color-primary by hand; CSS cannot derive one from the other. */
-  --color-primary-light: #F38264;
+  --color-primary-light: #F98A6B;
   --color-primary-reverse: #FFFFFF;
-  --color-primary-rgb: 238, 77, 34;
+  --color-primary-rgb: 245, 73, 21;
 
-  /* ---------- Ours: accent aliases ---------- */
-  --ox-accent: var(--color-primary);
-  --ox-accent-dark: var(--color-primary-dark);
-  --ox-accent-light: var(--color-primary-light);
-  --ox-accent-rgb: var(--color-primary-rgb);
-  --ox-accent-soft: #FDEDE9;
-  --ox-on-accent: #17171A;
+  /* ---------- Ours: accent aliases ----------
+     These are deliberately NOT var(--color-primary). applyTheme() overwrites
+     the --color-primary* family inline on <html> after hydration, taking the
+     value from the dashboard, so an alias would silently revert our components
+     to whatever the dashboard holds. Literals keep the design correct on a
+     store whose dashboard has not been updated yet. Do not "fix" these back
+     into aliases; update both sides together instead.
 
-  /* ---------- Ours: ground and surfaces ---------- */
-  --ox-paper: #F7F7F8;
+     Contrast, remeasured against the lighter ground: white on #F54915 is
+     3.59:1, so an accent fill carries a label only at 19px/700 and above,
+     which is what .ox-btn--primary is. #F54915 on paper is 3.44:1, fine for
+     the large bold price and not for small text; small accent text uses
+     --ox-accent-dark, which is 4.59:1 on paper and so clears AA for body
+     copy, with less headroom than it had on the cream. */
+  /* ONE ORANGE. #F54915 is the logo's, and it is the only fill any solid call
+     to action on this site draws — the hero's, the card's, the cart's. A
+     button that could not carry a label at this fill was briefly darkened
+     instead; that is no longer allowed, because a second orange on a repeated
+     button reads as a second brand. The LABEL yields to the fill: 19px/700 is
+     the floor, and a cell too narrow for it drops its glyph, not its type. */
+  --ox-accent: #F54915;
+  /* The darker steps are for TEXT and for HOVER, never for a resting fill.
+     --ox-accent-dark is 4.59:1 on paper, so it is what small accent text uses
+     and what an accent button hovers to; --ox-accent-deep is deeper still and
+     is held for a hover that needs to go past it. */
+  --ox-accent-dark: #D03709;
+  --ox-accent-deep: #A82D07;
+  --ox-accent-light: #F98A6B;
+  --ox-accent-rgb: 245, 73, 21;
+  --ox-accent-soft: #FDEEE8;
+  --ox-on-accent: #FFFFFF;
+
+  /* ---------- Ours: ground and surfaces ----------
+     The ground is light and close to neutral, by owner decision.
+
+     These were a warm cream band sampled from the approved image
+     (#F9F5EE paper, #FBF8F3 card, #F1E9E1 plate). On screen at full size the
+     owner read that as darker and more saturated than intended and asked for
+     the lighter ground the Saudi market is used to, naming iHerb. Measured
+     from sa.iherb.com at 1440: a white body with very light neutral grey
+     section bands and no warmth anywhere.
+
+     So the band keeps its STRUCTURE, which is what the design depends on -
+     four values inside a narrow range, a panel separated from the page by
+     value and a hairline and never by a shadow - and loses its warmth. A
+     trace of warmth stays in the last digit so the page is not clinically
+     cold next to the orange; it is far below the threshold where it reads as
+     beige.
+
+     This is a deliberate departure from the target image's ground. Nothing
+     else in the image changes. */
+  /* The page and the card are the SAME white, by owner decision: a card is
+     told from the page by its hairline, not by a change of value. This is the
+     iHerb model, where the body is white and cards are white with a border,
+     and it is why --ox-edge matters more here than in a design that leans on
+     tonal steps.
+
+     Two greys survive and they are not decoration:
+       --ox-fill  the banded strips that break the page into sections
+       --ox-plate the ground behind product photography, which has to be a
+                  step down from the card or a cut-out product floats on
+                  nothing and a grid of mixed supplier shots stops reading as
+                  one store.
+     Do not flatten those two to white as well; the plate is load-bearing. */
+  --ox-paper: #FFFFFF;
   --ox-card: #FFFFFF;
-  --ox-plate: #F1F1F3;
-  --ox-plate-2: #E9E9EC;
-  --ox-graphite: #17171A;
-  --ox-graphite-2: #222226;
-  --ox-graphite-3: #2C2C32;
+  --ox-fill: #F4F4F3;
+  --ox-plate: #F1F1F0;
+  --ox-plate-2: #E6E6E5;
+  --ox-input: #FFFFFF;
+  --ox-input-bd: #E6E6E5;
+  --ox-graphite: #0E1014;
+  --ox-graphite-2: #14181F;
+  --ox-graphite-3: #1C2128;
+
+  /* The named dark bands. `--ox-graphite-2/-3` keep their meaning ("dark
+     surface", "dark elevated") and are referenced across six stylesheets, so
+     the bands are named rather than renumbered. */
+  --ox-band-util: #0E1014;
+  --ox-band-header: #0E1115;
+  --ox-band-brand: #0E1117;
+  --ox-band-footer: #0F1216;
+  --ox-band-strip: #0D1116;
+  --ox-pill-dark: #14181F;
+  --ox-search: #25282C;
 
   /* ---------- Ours: ink and lines ---------- */
-  --ox-ink: #17171A;
-  --ox-ink-2: #5A5A61;
-  --ox-ink-3: #6F6F78;
-  --ox-ink-4: #9A9AA3;
-  --ox-ink-on-dark: #F7F7F8;
-  --ox-ink-2-on-dark: #B9B9C1;
-  --ox-ink-3-on-dark: #8C8C96;
-  --ox-line: #E6E6E9;
-  --ox-line-2: #D2D2D8;
-  /* Control boundaries at rest (inputs, checkboxes, switches): 3.2 to 3.7:1
-     on paper, card and plate, which meets WCAG 1.4.11; --ox-line-2 measures
-     1.6:1 and stays decorative (DIRECTION section 9, amendment A1). */
-  --ox-line-3: #85858E;
+  --ox-ink: #12171E;
+  --ox-ink-2: #3A4046;
+  --ox-ink-3: #5C6063;
+  --ox-ink-4: #6D7173;
+  --ox-ink-on-dark: #F7F4EE;
+  --ox-ink-2-on-dark: #B7B6B2;
+  --ox-ink-3-on-dark: #8A8D8E;
+  --ox-line: #ECECEB;
+  --ox-line-2: #E4E4E3;
+  /* Control boundaries at rest (inputs, checkboxes, switches): 3.47:1 on
+     paper and 3.24:1 on the plate, both clearing the 3:1 WCAG 1.4.11 asks of
+     a non-text boundary. --ox-line-2 measures well under it and stays
+     decorative (DIRECTION section 9, amendment A1). */
+  --ox-line-3: #86868A;
   --ox-line-on-dark: rgba(255, 255, 255, 0.12);
 
   /* ---------- Ours: semantic ---------- */
   --ox-go: #0F7B4F;
   --ox-go-soft: #E8F4EE;
+  /* The verification green: trust glyphs, the delivery estimate and the
+     saving figure. Darker than --ox-go; 8.70:1 on the ground. */
+  --ox-verify: #14514C;
+  --ox-verify-soft: #E7F0EE;
+  /* The one light green: the emphasised closing word of the footer line,
+     which needs to read on a near-black band where --ox-verify does not. */
+  --ox-mint: #3FA37A;
   --ox-note: #8A5E0E;
   --ox-note-soft: #FBF2E0;
   --ox-stop: #B3261E;
@@ -89,13 +307,15 @@
   --ox-bd-2: var(--ox-line-2);
   --ox-focus: var(--ox-ink);
 
-  /* ---------- Ours: focus, shadows, radii ---------- */
+  /* ---------- Ours: focus, radii ----------
+     There is no shadow token. The approved design does not carry one drop
+     shadow: surfaces are separated by value and a hairline. The focus ring is
+     the only ring on the page. */
   --ox-focus-ring: 2px solid var(--ox-focus);
-  --ox-shadow-1: 0 1px 3px rgba(23, 23, 26, 0.08);
-  --ox-shadow-2: 0 8px 24px rgba(23, 23, 26, 0.1);
-  --ox-shadow-3: 0 24px 48px rgba(23, 23, 26, 0.18);
   --ox-r-1: 6px;
   --ox-r-2: 8px;
+  --ox-r-3: 12px;
+  --ox-r-4: 16px;
   --ox-r-pill: 9999px;
 
   /* ---------- Ours: spacing, containers, chrome heights, z-index ---------- */
@@ -109,12 +329,14 @@
   --ox-16: 64px;
   --ox-24: 96px;
   --ox-gutter: 16px;
-  --ox-container: 1280px;
+  --ox-container: 1296px;
   --ox-container-narrow: 880px;
   --ox-container-text: 720px;
   --ox-h-util: 36px;
-  --ox-h-bar: 56px;
-  --ox-h-nav: 48px;
+  --ox-h-bar: 64px;
+  /* The mobile trust scroller that the utility bar's three items become
+     below 1024 (the nav row is gone: it merged into the main bar). */
+  --ox-h-trust: 40px;
   --ox-h-tabbar: calc(56px + env(safe-area-inset-bottom, 0px));
   --ox-h-sticky: 64px;
   --ox-z-raised: 10;
@@ -136,6 +358,19 @@
   --direction-factor: 1;
   --ox-angle: 22deg;
   --ox-angle-tan: 0.4040;
+  /* The lean of the wedge, defined once because five stylesheets draw it and
+     they must never disagree.
+
+     Pixel-scanned from the approved image: in the brand band the accent bar's
+     left edge runs from x142 at its top to x51 at its foot, so the motif
+     leans top-RIGHT to bottom-LEFT. Every wedge in the build leaned the other
+     way, which put the one piece of the identity that repeats on every page
+     backwards on all of them.
+
+     It multiplies by --direction-factor so the lean mirrors with the
+     document: the motif belongs to the reading direction, not to the screen.
+     Consume it as skewX(var(--ox-skew)) and never re-derive it. */
+  --ox-skew: calc(var(--direction-factor) * var(--ox-angle));
   /* --ox-band-h is set per band (560, 500, 420, 360); this root value only
      keeps --ox-wedge-run resolvable outside a band. */
   --ox-band-h: 560px;
@@ -147,22 +382,42 @@
   --direction-factor: -1;
 }
 
+/* Some engines do not inherit letter-spacing into a form control, which is
+   why the theme used to repeat `letter-spacing: 0` at fifteen call sites.
+   One rule covers every control, ours and Salla's, rather than the ones
+   somebody remembered. */
+button,
+input,
+select,
+textarea {
+  letter-spacing: inherit;
+}
+
 @media (min-width: 640px) {
   :root {
     --ox-gutter: 24px;
+    --ox-h-util: 48px;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
     --ox-gutter: 32px;
-    --ox-h-bar: 72px;
+    --ox-h-bar: 88px;
   }
 }
 
 /* A dark band re-declares the role tokens once; every component inside it
    adapts without a variant class. */
 .ox-band-dark {
+  /* Reversed type reads lighter than the same weight on paper, so the two
+     lightest steps are withdrawn here: a lead becomes Read and body copy
+     becomes Quiet. Nothing above Interface moves. A dark component that is
+     not a band (the utility bar, the header, the brand band) repeats these
+     two lines in its own block. These follow the floor up: with body copy at
+     500 on paper, reversed body copy is 550 and a reversed lead is 600. */
+  --ox-w-open: 550;
+  --ox-w-read: 600;
   --ox-bg: var(--ox-graphite);
   --ox-surface: var(--ox-graphite-2);
   --ox-fg: var(--ox-ink-on-dark);
@@ -171,6 +426,15 @@
   --ox-bd: var(--ox-line-on-dark);
   --ox-bd-2: var(--ox-line-on-dark);
   --ox-focus: var(--ox-paper);
+  /* THE PLATES, which this block forgot. A plate is one step off the ground,
+     and on a dark band that step is darker, not #F1F1F0. Leaving them light
+     meant `.ox-btn--secondary:hover::before` painted a near-white fill behind
+     white type: the hero's outline button turned into a white slab with white
+     text on it the moment a pointer touched it, which is what "appearing white
+     with white text when hovered" was. It was never an overlapping shape; it
+     was this pseudo, which is the element that draws the button's own fill. */
+  --ox-plate: var(--ox-graphite-3);
+  --ox-plate-2: var(--ox-graphite-2);
   color: var(--ox-fg);
   background: var(--ox-bg);
 }

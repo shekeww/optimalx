@@ -22,11 +22,19 @@ export interface FiltersRailProps {
  * The desktop filter rail (DIRECTION 5.3 FiltersRail, 6.3 block 4): the native
  * `SallaFilters` in a 280 column, sticky under the header, from 1024 up.
  *
+ * It is a panel, not a bare column: cream fill, one hairline, the 16 radius
+ * every card in this store shares, and a ruled head row carrying the title.
+ * That is the same surface contract the approved image gives every block of
+ * structured content, so the rail reads as part of the page rather than as the
+ * platform's own widget dropped beside it.
+ *
  * The facets are the ones the loader received (`filterable: true` on the
  * category and search queries, theme-engine dist/routes/product-listing.js);
- * nothing is added to them and no group is invented. Below 1024 the same
- * component is mounted once inside the drawer instead, with its own id,
- * exactly as the engine does it.
+ * nothing is added to them and no group is invented. On this store the API
+ * returns none today, so the rail is absent and the grid takes the whole row,
+ * which is the render the design is checked in. Below 1024 the same component
+ * is mounted once inside the drawer instead, with its own id, exactly as the
+ * engine does it.
  */
 export function FiltersRail({ filters, id = 'filters-menu', className }: FiltersRailProps) {
   const { t } = useTranslation();
@@ -37,7 +45,12 @@ export function FiltersRail({ filters, id = 'filters-menu', className }: Filters
       className={['ox-filters', className].filter(Boolean).join(' ')}
       aria-label={t('ox.filter.title')}
     >
-      <SallaFilters id={id} filters={filters as SallaFiltersFilters} />
+      <div className="ox-filters__head">
+        <p className="ox-filters__title">{t('ox.filter.title')}</p>
+      </div>
+      <div className="ox-filters__body">
+        <SallaFilters id={id} filters={filters as SallaFiltersFilters} />
+      </div>
     </aside>
   );
 }

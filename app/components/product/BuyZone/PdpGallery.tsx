@@ -1,40 +1,47 @@
+import { useState } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Image } from '@salla.sa/twilight-theme-engine/common';
+import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { ProductGalleryProps } from '@salla.sa/twilight-theme-engine/product';
 import type { ProductImage } from '@salla.sa/twilight-theme-engine/types';
-import { SallaSlider } from '@salla.sa/twilight-components-react/slider';
-import { SallaSocialShare } from '@salla.sa/twilight-components-react/social-share';
+import { PdpIcon } from '../PdpIcon';
+import { PdpThumbRail } from './PdpThumbRail';
+import { promotionLabel } from '../lib/claims';
 
 /**
- * The PDP gallery, registered over `product:gallery` (DIRECTION 5.4).
+ * The PDP gallery, registered over `product:gallery` (DIRECTION 5.4), rebuilt
+ * to the approved design (regions 14 to 17).
  *
- * The engine's own gallery is a `salla-slider type="thumbs"` with an `items`
- * slot and a `thumbs` slot (theme-engine chunk-UQRLBMIO.js:261-300); this
- * keeps that contract so the web component behaves identically, and changes
- * only what it looks like: every image sits contained on an `--ox-plate`
- * square, so the portrait sources in the catalogue (OX-002, OX-006, OX-014)
- * letterbox on the plate instead of being cropped.
+ * Two columns: a 64 wide thumbnail rail at the inline start and the plate. The
+ * plate is the warm `--ox-plate` surface every product image in this store
+ * sits on, which is what makes a grid of mixed supplier photography read as
+ * one shop. The diagonal band and the accent parallelogram behind the image
+ * are the brand's wedge motif at the same 22 degrees as the rest of the theme.
  *
- * It never renders the engine `ProductGallery`: that component resolves this
- * same registry key and would recurse.
+ * It no longer wraps `salla-slider`: this is the theme's own markup, the
+ * design needs a vertical rail with its own controls, and the slider's thumbs
+ * slot cannot carry one. Nothing about cart, checkout or search moves; only
+ * the picture does.
+ *
+ * Zoom is a transform on the image, never a colour change and never a filter,
+ * and it is a real button with `aria-pressed` rather than a hover affordance
+ * that a touch device could not reach.
  */
 
-/** 2x the largest slot: 358 on mobile, 560 on desktop (amendment A8). */
-const GALLERY_WIDTHS = [400, 720, 1120] as const;
-const GALLERY_SIZES = '(min-width: 1024px) 560px, 100vw';
-const THUMB_WIDTHS = [128] as const;
+/** 2x the largest drawn slot: 358 at 390, 580 at 1440. */
+const GALLERY_WIDTHS = [400, 760, 1160] as const;
+const GALLERY_SIZES = '(min-width: 1024px) 580px, 100vw';
 
 function imagesOf(product: ProductGalleryProps['product']): ProductImage[] {
   if (product.images && product.images.length > 0) return product.images;
   return product.image?.url ? [product.image] : [];
 }
 
-function keyOf(image: ProductImage, index: number): string {
-  return String(image.id ?? image.url ?? image.video_url ?? index);
-}
-
 export function PdpGallery({ product }: ProductGalleryProps) {
   const { t } = useTranslation();
+  const wishlist = useWishlist();
+  const [active, setActive] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
   const images = imagesOf(product);
   const total = images.length;
 
@@ -42,61 +49,62 @@ export function PdpGallery({ product }: ProductGalleryProps) {
     return <div className="ox-gallery ox-gallery--empty" aria-hidden="true" />;
   }
 
+  const index = Math.min(active, total - 1);
+  const image = images[index];
+  const badge = promotionLabel(product);
+  const inWishlist = wishlist.has(product.id);
+
   return (
-    <div className="ox-gallery">
-      <SallaSlider
-        id={'ox-gallery-' + product.id}
-        className="ox-gallery__slider"
-        type="thumbs"
-        loop={false}
-        autoHeight={false}
-        listenToThumbnailsOption
-        showThumbsControls={false}
-        sliderConfig={{ watchOverflow: true }}
-      >
-        <div slot="items">
-          {images.map((image, index) => (
-            <div className="swiper-slide ox-gallery__slide" key={keyOf(image, index)}>
-              <div className="ox-gallery__plate">
-                <Image
-                  src={image.url}
-                  alt={image.alt || t('ox.pdp.gallery_image', { index: index + 1, total })}
-                  aspectRatio="1/1"
-                  objectFit="contain"
-                  priority={index === 0}
-                  noWrapper
-                  srcSetWidths={GALLERY_WIDTHS}
-                  sizes={GALLERY_SIZES}
-                  className="ox-gallery__img"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-        {total > 1 ? (
-          <div slot="thumbs">
-            {images.map((image, index) => (
-              <div className="ox-gallery__thumb" key={'t' + keyOf(image, index)}>
-                <Image
-                  src={image.url}
-                  alt=""
-                  aspectRatio="1/1"
-                  objectFit="contain"
-                  noWrapper
-                  srcSetWidths={THUMB_WIDTHS}
-                  sizes="64px"
-                  className="ox-gallery__thumb-img"
-                />
-                {image.video_url ? (
-                  <i className="sicon-play ox-gallery__play" aria-hidden="true" />
-                ) : null}
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </SallaSlider>
-      <div className="ox-gallery__share">
-        <SallaSocialShare />
+    <div className={'ox-gallery' + (total > 1 ? ' ox-gallery--railed' : '')}>
+      {total > 1 ? (
+        <PdpThumbRail
+          images={images}
+          activeIndex={index}
+          onSelect={(next) => {
+            setActive(next);
+            setZoomed(false);
+          }}
+        />
+      ) : null}
+
+      <div className="ox-gallery__plate">
+        <span className="ox-gallery__band" aria-hidden="true" />
+        <span className="ox-gallery__mark" aria-hidden="true" />
+        <Image
+          key={image.url}
+          src={image.url}
+          alt={image.alt || t('ox.pdp.gallery_image', { index: index + 1, total })}
+          aspectRatio="1/1"
+          objectFit="contain"
+          priority={index === 0}
+          noWrapper
+          srcSetWidths={GALLERY_WIDTHS}
+          sizes={GALLERY_SIZES}
+          className={'ox-gallery__img' + (zoomed ? ' is-zoomed' : '')}
+        />
+
+        {badge ? <p className="ox-gallery__badge">{badge}</p> : null}
+
+        <button
+          type="button"
+          className={'ox-gallery__wish' + (inWishlist ? ' is-active' : '')}
+          onClick={() => wishlist.toggle(product.id)}
+          aria-pressed={inWishlist}
+          aria-label={t('ox.a11y.wishlist_toggle')}
+        >
+          <i className="sicon-heart" aria-hidden="true" />
+        </button>
+
+        <button
+          type="button"
+          className="ox-gallery__zoom"
+          onClick={() => setZoomed((value) => !value)}
+          aria-pressed={zoomed}
+          aria-label={t('ox.pdp.zoom_label')}
+        >
+          <span className="ox-gallery__zoom-label">{t('ox.pdp.zoom')}</span>
+          <PdpIcon name="expand" size={16} />
+        </button>
       </div>
     </div>
   );

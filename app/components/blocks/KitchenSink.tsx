@@ -49,8 +49,11 @@ export function KitchenSink() {
       <Panel title="HoursTable: empty setting renders nothing">{/* ox-allow: latin-sentence */}
         <HoursTable rows={[]} />
       </Panel>
-      <Panel title="OxBranch: on paper, h2 with the eyebrow (home)">{/* ox-allow: latin-sentence */}
+      <Panel title="OxBranch: no photograph, so the flat card (what the store renders today)">{/* ox-allow: latin-sentence */}
         <OxBranch headingLevel="h2" now={now} />
+      </Panel>
+      <Panel title="OxBranch: with a photograph, the 7/5 split and the angled edge">{/* ox-allow: latin-sentence */}
+        <OxBranch headingLevel="h2" photo="/assets/images/placeholder.png" now={now} />
       </Panel>
       <Panel title="OxBranch: on .ox-band-dark, h1, no eyebrow (branch page)">{/* ox-allow: latin-sentence */}
         <div className="ox-band-dark" style={{ padding: 24 }}>

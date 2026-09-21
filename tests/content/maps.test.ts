@@ -120,9 +120,15 @@ describe('content maps: locale keys', () => {
     expect(missing).toEqual([]);
   });
 
-  it('references a key outside ox.content only for the medical line B3 owns', () => {
-    const outside = [...REFERENCED].filter((key) => !key.startsWith('ox.content.')).sort();
-    expect(outside).toEqual(['ox.pdp.medical_line']);
+  it('references a key outside ox.content only for the medical line and the taxonomy name/description keys', () => {
+    // Contract B: `nameKey` and `descriptionKey` point at `ox.tax.*` (S1's new
+    // partial), never duplicated under `ox.content.*`, so both categories.ts
+    // and goals.ts legitimately reach outside this block now.
+    const outside = [...REFERENCED]
+      .filter((key) => !key.startsWith('ox.content.'))
+      .filter((key) => key !== 'ox.pdp.medical_line' && !key.startsWith('ox.tax.'))
+      .sort();
+    expect(outside).toEqual([]);
   });
 
   it('leaves no ox.content key in the partial unreferenced by a map, except the page chrome', () => {

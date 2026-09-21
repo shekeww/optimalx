@@ -1,9 +1,10 @@
 import { useId, useMemo, useState } from 'react';
-import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
+
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../common/Bdi';
 import { convert, formatAmount, UNIT_IDS, type UnitId } from './convert';
+import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /**
  * `/tools/converter` (DIRECTION 6.18): a narrow form of one input and two
@@ -31,7 +32,7 @@ export function UnitConverter() {
 
   return (
     <div className="ox-page ox-page--converter">
-      <Breadcrumb page={page} />
+      <OxBreadcrumb page={page} />
 
       <header className="ox-page-head">
         <h1 className="ox-page-head__title ox-h1">{t('ox.tools.converter.h1')}</h1>

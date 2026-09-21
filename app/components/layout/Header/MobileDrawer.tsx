@@ -4,8 +4,11 @@ import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { digitsOnly } from '../../blocks/href';
+import { HEADER_NAV, SECONDARY_NAV } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
+import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
+import { resolveNavHref } from '../navLinks';
 import { LocalizationButton } from './LocalizationButton';
 import { Logo } from './Logo';
 import { useHeaderMenu } from './useHeaderMenu';
@@ -64,6 +67,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const { settings } = useTheme();
   const store = useStore();
   const { items, goals } = useHeaderMenu();
+  const { types, utility } = useTaxonomyLinks();
   const panelRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
   const [group, setGroup] = useState<'goals' | 'categories' | null>(initialGroup);
@@ -94,12 +98,34 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const phone = digitsOnly(store?.contacts?.phone || store?.contacts?.mobile || '');
   const promise = settingValue(settings, 'delivery_promise_line');
 
-  const pages = [
-    { key: 'services', label: t('ox.nav.services'), to: '/services' },
-    { key: 'guides', label: t('ox.nav.guides'), to: '/blog' },
-    { key: 'branch', label: t('ox.nav.branch'), to: '/branch' },
-    { key: 'about', label: t('ox.nav.about'), to: '/about' },
-    { key: 'contact', label: t('ox.nav.contact'), to: '/contact' },
+  // The header items that are plain links collapse in here below 1024, above
+  // the standing pages. The four with their own desktop dropdown (products,
+  // supplements, protein, more) are not repeated flat: their content is the
+  // "categories" group a few lines down plus the goals group above it, so a
+  // duplicate flat entry would be a second, thinner copy of the same links.
+  const primary: Array<{ key: string; label: string; to: string }> = [];
+  for (const entry of HEADER_NAV) {
+    if (entry.dropdown) continue;
+    const label = t(entry.labelKey);
+    const to = resolveNavHref(entry, label, items);
+    if (to) primary.push({ key: entry.key, label, to });
+  }
+
+  // The standing pages the bar does not carry. The advisory used to be typed
+  // here and nowhere else, which is what made the drawer and the bar two
+  // different site maps; it is in `HEADER_NAV` now and reaches this list
+  // through `primary` above.
+  const pages = SECONDARY_NAV.map((entry) => ({
+    key: entry.key,
+    label: t(entry.labelKey),
+    to: entry.to ?? '/',
+  }));
+
+  // Wishlist and account leave the mobile bar, which carries the cart, and
+  // arrive here as their own group.
+  const account = [
+    { key: 'account', label: t('ox.nav.account'), to: '/account/profile', icon: 'sicon-user' },
+    { key: 'wishlist', label: t('ox.header.wishlist'), to: '/account/wishlist', icon: 'sicon-heart' },
   ];
 
   return (
@@ -115,7 +141,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
         tabIndex={-1}
       >
         <div className="ox-drawer__head">
-          <Logo size={40} className="ox-drawer__logo" />
+          <Logo raster size={40} className="ox-drawer__logo" />
           <button
             type="button"
             className="ox-iconbtn"
@@ -128,7 +154,15 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
         </div>
 
         <nav className="ox-drawer__nav" aria-label={t('ox.nav.drawer_label')}>
-          <ul className="ox-drawer__list">
+          <ul className="ox-drawer__list" data-testid="ox-drawer-list">
+            {primary.map((item) => (
+              <li key={item.key} data-drawer-primary="">
+                <Link to={item.to} className="ox-drawer__row" onClick={onClose}>
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            ))}
+
             <Group
               label={t('ox.nav.goals')}
               open={group === 'goals'}
@@ -149,21 +183,26 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
               open={group === 'categories'}
               onToggle={() => setGroup((current) => (current === 'categories' ? null : 'categories'))}
             >
-              {items.map((item) => (
-                <li key={String(item.id)}>
-                  <Link to={item.url} className="ox-drawer__row ox-drawer__row--sub" onClick={onClose}>
-                    <span>{item.title}</span>
+              {/* The ten type roots first, protein's five children nested
+                  under it, then the four utility categories: one tree built
+                  from `useTaxonomyLinks` (Contract C) rather than the
+                  dashboard menu, so it lists every taxonomy node whether or
+                  not the merchant has created a matching category yet. */}
+              {[...types, ...utility].map((type) => (
+                <li key={type.slug}>
+                  <Link to={type.to} className="ox-drawer__row ox-drawer__row--sub" onClick={onClose}>
+                    <span>{type.label}</span>
                   </Link>
-                  {item.children?.length ? (
+                  {type.children.length > 0 ? (
                     <ul className="ox-drawer__sublist">
-                      {item.children.map((child) => (
-                        <li key={String(child.id)}>
+                      {type.children.map((child) => (
+                        <li key={child.slug}>
                           <Link
-                            to={child.url}
+                            to={child.to}
                             className="ox-drawer__row ox-drawer__row--child"
                             onClick={onClose}
                           >
-                            <span>{child.title}</span>
+                            <span>{child.label}</span>
                           </Link>
                         </li>
                       ))}
@@ -177,6 +216,19 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
               <li key={page.key}>
                 <Link to={page.to} className="ox-drawer__row" onClick={onClose}>
                   <span>{page.label}</span>
+                </Link>
+              </li>
+            ))}
+
+            {account.map((item) => (
+              <li key={item.key} className="ox-drawer__account" data-drawer-account="">
+                <Link
+                  to={item.to}
+                  className="ox-drawer__row ox-drawer__row--sub"
+                  onClick={onClose}
+                >
+                  <i className={item.icon} aria-hidden="true" />
+                  <span>{item.label}</span>
                 </Link>
               </li>
             ))}

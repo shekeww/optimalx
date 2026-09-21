@@ -1,4 +1,5 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { SectionHeader } from '../common/SectionHeader';
 
 /**
  * The guides index header (DIRECTION 6.13 Index row 2, FINAL-content 1.4
@@ -14,9 +15,11 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 export function BlogIndexHeader() {
   const { t } = useTranslation();
   return (
-    <header className="ox-blog-head" data-testid="ox-blog-head">
-      <h1 className="ox-h1">{t('ox.blog.index_title')}</h1>
-      <p className="ox-body ox-blog-head__intro">{t('ox.blog.index_intro')}</p>
-    </header>
+    <div className="ox-blog-head" data-testid="ox-blog-head">
+      <SectionHeader
+        as="h1"
+        title={t('ox.blog.index_title')}
+      />
+    </div>
   );
 }

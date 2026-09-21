@@ -129,3 +129,103 @@ export function isNewProduct(product: Product, now: Date = new Date()): boolean 
   const days = (now.getTime() - time) / 86400000;
   return days >= 0 && days <= NEW_PRODUCT_DAYS;
 }
+
+/**
+ * The delivery window, in days, from the store's own shipping configuration.
+ *
+ * The design prints "within 2 to 4 days". That figure exists nowhere in this
+ * repository and never will: it is two settings the owner fills in once a
+ * carrier agreement is signed. Until both are numbers the delivery row does
+ * not render at all, and the buy column closes the gap (B3, B4, B5).
+ */
+export interface DeliveryWindow {
+  from: number;
+  to: number;
+}
+
+export function deliveryWindow(settings: Settings): DeliveryWindow | null {
+  const from = settingNumber(settings, 'delivery_estimate_min_days');
+  const to = settingNumber(settings, 'delivery_estimate_max_days');
+  if (from === null || to === null || to < from) return null;
+  return { from: Math.round(from), to: Math.round(to) };
+}
+
+/**
+ * The city the estimate is quoted for: the shopper's own selection where the
+ * store keeps one, otherwise the store's configured default. Never a literal.
+ */
+export function deliveryCity(settings: Settings, fallback?: string | null): string | null {
+  return settingText(settings, 'delivery_city') ?? (fallback ? fallback.trim() || null : null);
+}
+
+/**
+ * The authenticity page. The trust item's sub-line asserts a guarantee, so it
+ * renders only when there is a page that states what the guarantee is (B18).
+ */
+export function authenticityPageUrl(settings: Settings): string | null {
+  return settingText(settings, 'authenticity_page_url');
+}
+
+/**
+ * Order tracking. "تتبع طلبك" is a carrier capability, not a wish: without a
+ * tracking destination the trust item shows its title alone (B17).
+ */
+export function orderTrackingUrl(settings: Settings): string | null {
+  return settingText(settings, 'order_tracking_url');
+}
+
+/**
+ * The badge on the image plate.
+ *
+ * It renders the platform's own promotion label, verbatim, and only when Salla
+ * has one on this product. The theme never computes "best seller" from sales,
+ * because the store has no sales to compute it from (B2).
+ */
+export function promotionLabel(product: Pick<Product, 'promotion_title'>): string | null {
+  const value = product.promotion_title;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+/** The gateway slugs the store actually has enabled, or an empty list. */
+export function enabledPayments(payments: unknown): string[] {
+  if (!Array.isArray(payments)) return [];
+  const out: string[] = [];
+  for (const entry of payments) {
+    if (typeof entry === 'string' && entry.trim().length > 0) out.push(entry.trim());
+  }
+  return out;
+}
+
+/**
+ * Salla's split-payment gateways, the only ones `salla-installment` can draw.
+ *
+ * Verified on the live store on 2026-09-20: `store.settings.payments` is
+ * `["mada","credit_card","stc_pay","apple_pay"]`, none of them a split
+ * provider, and `salla-installment` mounted anyway and sat in its own
+ * `s-skeleton-card` forever, 116px of pulsing grey bars between the price and
+ * the buy button on every product. A widget that cannot resolve is worse than
+ * no widget, so the slot is gated on the store actually having a provider.
+ *
+ * A gateway slug not on this list means the slot stays shut until the list is
+ * extended. That failure is a missing row, never a permanent skeleton, which
+ * is the direction this store's gates always fail in.
+ */
+export const INSTALLMENT_GATEWAYS = [
+  'tabby',
+  'tamara',
+  'mispay',
+  'madfu',
+  'emkan',
+  'spotii',
+  'baseeta',
+  'quara',
+  'forsa',
+];
+
+/** True when at least one enabled gateway is a split-payment provider. */
+export function hasInstallmentGateway(payments: unknown): boolean {
+  const enabled = enabledPayments(payments).map((slug) => slug.toLowerCase());
+  return enabled.some((slug) => INSTALLMENT_GATEWAYS.some((name) => slug.indexOf(name) >= 0));
+}

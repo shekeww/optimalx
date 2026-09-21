@@ -45,6 +45,29 @@ describe('OxBranch', () => {
     expect(screen.queryByRole('table')).toBeNull();
   });
 
+  it('renders no photo panel at all until a real photograph is supplied', () => {
+    setSettings({});
+    const { container } = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
+    // An angled plate with nothing in it reads as a failed upload, and the
+    // theme may not ship an invented shopfront captioned as this branch.
+    expect(container.querySelector('.ox-branch__photo')).toBeNull();
+    expect(container.querySelector('.ox-branch')?.classList.contains('ox-branch--flat')).toBe(true);
+    // Nothing else in the second column either, so the card stays one column.
+    expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('bare');
+  });
+
+  it('takes the photo panel and the two column card once the facts exist', () => {
+    setSettings({ whatsapp_number: '+966 50 123 4567' });
+    const { container } = renderWithProviders(
+      <OxBranch photo="https://cdn.example/branch.jpg" now={THURSDAY_NOON} />
+    );
+    expect(container.querySelector('.ox-branch__photo img')?.getAttribute('src')).toBe(
+      'https://cdn.example/branch.jpg'
+    );
+    expect(container.querySelector('.ox-branch')?.classList.contains('ox-branch--flat')).toBe(false);
+    expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('full');
+  });
+
   it('marks the row covering today and shows the live status chip', () => {
     setSettings({ branch_hours: HOURS });
     renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
