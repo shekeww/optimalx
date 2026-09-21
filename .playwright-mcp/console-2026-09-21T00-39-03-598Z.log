@@ -3120,3 +3120,5 @@ https://react.dev/link/hydration-mismatch
 [52771069ms] [ERROR] [vite] Failed to reload /app/components/common/WebComponentBoundary.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:3210/@vite/client:532
 [52774128ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/services:0
 [52774193ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/favicon.ico:0
+[63077319ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3210/app/components/commerce/CartHeader.tsx?t=1790014216439:0
+[63077320ms] [ERROR] [vite] Failed to reload /app/components/commerce/CartHeader.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:3210/@vite/client:532
