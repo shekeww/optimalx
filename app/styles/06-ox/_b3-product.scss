@@ -2816,6 +2816,16 @@ label.ox-fbt__row {
   margin-block-start: var(--ox-3);
 }
 
+// The pair sits 12px apart and nothing else. The engine's last form section
+// (the quantity and add row) carries the buy zone's 16px section rhythm on its
+// bottom edge, which is right between the form's own sections and wrong
+// between the two halves of one control; the buy-now's own margin above is the
+// whole distance. `:last-of-type` rather than `:last-child` because the form
+// ends with a hidden input after the sections.
+.ox-buy .product-form > section:last-of-type {
+  margin-block-end: 0;
+}
+
 .ox-buy__now {
   @include ox-focus(2px);
   @include ox-primary-face;
@@ -2853,5 +2863,18 @@ label.ox-fbt__row {
   .ox-buy .sticky-product-bar salla-add-product-button .s-button-element,
   .ox-buy .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
     padding-inline: 26px;
+  }
+}
+
+// Written after the base rule on purpose: same specificity, so source order
+// decides, and a 1024 rule placed above the base was silently losing to it.
+// Desktop lifts the add row to 56 tall (the 1024 rule in the buy zone above),
+// so the buy-now follows: same height, same 23px run, same padding. Two
+// buttons that disagree about their own scale stop reading as a pair.
+@media (min-width: 1024px) {
+  .ox-buy__now {
+    block-size: 56px;
+    padding-inline: 40px;
+    @include ox-angled(56px);
   }
 }

@@ -6,6 +6,19 @@ That brings up the theme at **http://localhost:3210/** rendering the real
 OptimalX catalogue, with no request to `api.salla.dev` from any process it
 starts.
 
+**Open every direct URL with `?storeId=1888890798`**, for example
+`http://localhost:3210/latest-products?storeId=1888890798`. On a loopback
+host the engine has no store in the hostname, so unless the URL names one it
+reads the first path segment as the store's username whenever that segment
+matches `^[a-z0-9][a-z0-9_-]{0,62}$` (engine `resolveRequestStoreBase`), strips
+it, and renders the home for `/latest-products`, `/brands`, `/cart` and every
+other ASCII route. Arabic product slugs do not match the pattern, which is why
+a PDP opened directly works and a listing opened directly does not. Client-side
+navigation is unaffected, so clicking through from the home always works, and
+production is unaffected because `optimalx.com.sa` identifies the store by
+host. Found 2026-09-21 after an hour of chasing a routing regression that did
+not exist.
+
 ---
 
 ## Why this exists

@@ -197,14 +197,16 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                   </>
                 ) : null
               }
+              afterForm={
+                /* The other half of the pair. The engine's form owns the
+                   stepper and the add button; this adds the buy-now beneath
+                   them, inside the same block so the two sit 12px apart, and
+                   proxies that same button, so the quantity and options the
+                   shopper chose are what reaches the cart. A service is
+                   booked rather than bought, so it gets no buy-now. */
+                isService ? null : <BuyActions product={product} anchorRef={buyZoneRef} />
+              }
             />
-
-            {/* The other half of the pair. The engine's form owns the stepper
-                and the add button; this adds the buy-now beneath them and
-                proxies that same button, so the quantity and options the
-                shopper chose are what reaches the cart. A service is booked
-                rather than bought, so it gets no buy-now. */}
-            {isService ? null : <BuyActions product={product} anchorRef={buyZoneRef} />}
 
             <HookSlot name="product:single.form.end" context={hookContext} />
 
