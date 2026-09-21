@@ -132,7 +132,12 @@ try {
 
 console.log(`[preview] snapshot API ready at ${API_BASE}/store/v1`);
 start('[vite]', process.execPath, [join(ROOT, 'node_modules', 'vite', 'bin', 'vite.js'), 'dev', '--port', String(DEV_PORT), '--strictPort'], {
-  VITE_API_URL: API_BASE,
+  // `OFFLINE_API_PUBLIC_URL` swaps in a public address for the snapshot API
+  // (a Cloudflare quick tunnel to 5178) so a visitor reached through a tunnel
+  // to the theme gets client-side data too: the boot script the page ships
+  // sends the browser's Salla calls to this base, and 127.0.0.1 only resolves
+  // on this machine. Added 2026-09-22 to share the build before Salla builds it.
+  VITE_API_URL: process.env.OFFLINE_API_PUBLIC_URL || API_BASE,
   // Belt and braces: if the redirect ever fails to install, a call to
   // api.salla.dev fails locally and loudly instead of re-arming the
   // Cloudflare mitigation on this connection.
