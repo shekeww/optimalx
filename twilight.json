@@ -604,8 +604,8 @@
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d103",
       "title": {
-        "ar": "تسوق حسب هدفك",
-        "en": "Shop by goal"
+        "ar": "تسوق حسب احتياجك (الهدف)",
+        "en": "Shop by need (goal)"
       },
       "icon": "sicon-layout-grid-rearrange",
       "path": "home.ox-goals",
@@ -791,8 +791,8 @@
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d104",
       "title": {
-        "ar": "تصفح حسب النوع",
-        "en": "Browse by type"
+        "ar": "تسوق حسب احتياجك (النوع)",
+        "en": "Shop by need (type)"
       },
       "icon": "sicon-fabric-swatch",
       "path": "home.ox-categories",

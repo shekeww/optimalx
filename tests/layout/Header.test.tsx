@@ -19,6 +19,11 @@ vi.mock('@tanstack/react-router', () => ({
     const state = { matches: [{ routeId: leafRouteId.current }] };
     return options?.select ? options.select(state) : state;
   },
+  // `useTaxonomyLinks.ts` (S2b, 2026-09-22) reads `useRouter({ warn: false })`
+  // to prefer a route loader's taxonomy data; no test here provides one, so
+  // this returns `undefined`, exactly what the real hook returns outside a
+  // `<RouterProvider>`, and `useTaxonomyLinks` falls back to its query.
+  useRouter: () => undefined,
 }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({
   HookSlot: ({ name }: { name: string }) => <div data-hook-slot={name} />,

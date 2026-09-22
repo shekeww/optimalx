@@ -34,3 +34,6 @@ app/routeTree.gen.ts
 # Preview and browser-session artefacts (never shipped, never reviewed)
 .playwright-mcp/
 .offline-preview.log
+
+# Reference imagery and mockups stay local; 83 files (128 MB) were committed by the owner tooling on 2026-09-22 and removed from the index
+references/

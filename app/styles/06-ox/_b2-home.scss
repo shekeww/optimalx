@@ -1293,6 +1293,206 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
+// 5. GoalCard (kept: `app/components/listing/CategoriesIndex.tsx` - the
+//    `/categories` index page, outside this batch's file ownership - still
+//    imports the component directly for its own goal row. `OxGoals` itself,
+//    the HOME block that used to render these cards, is retired; its six
+//    cards live in `OxNeeds`' goals pane now (`NeedCard`, section 4 above).
+//    Unchanged from the block this replaced on the home page, so the
+//    `/categories` page's own goal row keeps its current design.)
+// ---------------------------------------------------------------------------
+.ox-goal {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  block-size: 100%;
+  min-block-size: 200px;
+  overflow: hidden;
+  border-radius: var(--ox-r-3);
+  background: var(--ox-graphite-2);
+  color: var(--ox-ink-on-dark);
+  transition: transform var(--dur-base) var(--ease-out);
+  @include ox-focus(2px);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.ox-goal__photo,
+.ox-plan__photo {
+  opacity: 0;
+}
+
+.ox-goal__photo[data-ready] {
+  opacity: 0.42;
+}
+
+// 0.55 (X-IDENTITY-2026-09-22.md §4.5, measured): the scrim needs alpha
+// >= 0.60 to clear 4.5:1 for --ox-ink-on-dark over a worst-case white pixel,
+// and this is the photograph's own half of that budget.
+.ox-plan__photo[data-ready] {
+  opacity: 0.55;
+}
+
+.ox-goal__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ox-goal__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 14, 18, 0.1) 0%,
+    rgba(12, 14, 18, 0.32) 42%,
+    rgba(12, 14, 18, 0.78) 78%,
+    rgba(12, 14, 18, 0.92) 100%
+  );
+}
+
+.ox-goal__slash {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: -24px;
+  inset-inline-end: -4px;
+  inline-size: 20px;
+  block-size: 92px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+.ox-goal__body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 4px;
+  block-size: 100%;
+  padding: var(--ox-3);
+}
+
+.ox-goal__icon {
+  flex: none;
+  color: var(--ox-paper);
+  margin-block-end: var(--ox-1);
+}
+
+.ox-goal__label {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: var(--ox-w-stmt);
+  line-height: 1.3;
+  color: var(--ox-paper);
+}
+
+.ox-goal__line {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  inline-size: 100%;
+  font-size: 11.5px;
+  font-weight: var(--ox-w-quiet);
+  line-height: 1.4;
+  color: var(--ox-ink-2-on-dark);
+}
+
+.ox-goal__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  block-size: 26px;
+  margin-block-start: var(--ox-2);
+  padding-inline: 14px;
+  font-size: 11.5px;
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-accent);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--ox-accent);
+    transform: skewX(var(--ox-skew));
+  }
+}
+
+.ox-goal__cta-label,
+.ox-goal__cta i {
+  position: relative;
+}
+
+.ox-goal:hover .ox-goal__cta::before {
+  background: rgba(var(--ox-accent-rgb), 0.16);
+}
+
+@media (min-width: 640px) {
+  .ox-goal {
+    min-block-size: 228px;
+  }
+
+  .ox-goal__body {
+    padding: var(--ox-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-goal {
+    min-block-size: 248px;
+  }
+
+  .ox-goal__label {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-goal {
+    min-block-size: 400px;
+  }
+
+  .ox-goal__body {
+    padding: var(--ox-6);
+  }
+
+  .ox-goal__label {
+    font-size: 19px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .ox-goal {
+    min-block-size: 440px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-goal {
+    transition: none;
+  }
+
+  .ox-goal:hover {
+    transform: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 6. OxProducts (the rail itself is styled by _blocks.scss)
 // ---------------------------------------------------------------------------
 .ox-products {

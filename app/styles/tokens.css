@@ -369,8 +369,14 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --stagger-step: 40ms;
   --direction-factor: 1;
-  --ox-angle: 22deg;
-  --ox-angle-tan: 0.4040;
+  /* X-IDENTITY-2026-09-22.md §2.1: re-derived from the mark itself (34° from
+     vertical, tan 0.6745085) rather than the 22°/0.404 this build shipped
+     with, because the mark measures 34° across all ten of its straight edges
+     (§1.2) and 22° matched nothing in it. */
+  --ox-angle: 34deg;          /* was 22deg */
+  --ox-angle-tan: 0.6745;     /* was 0.4040 — tan 34° = 0.6745085 */
+  --ox-angle-cos: 0.8290;     /* perpendicular thickness = horizontal width × this */
+  --ox-angle-h: 56deg;        /* the same angle read from the horizontal */
   /* The lean of the wedge, defined once because five stylesheets draw it and
      they must never disagree.
 
@@ -384,10 +390,17 @@
      document: the motif belongs to the reading direction, not to the screen.
      Consume it as skewX(var(--ox-skew)) and never re-derive it. */
   --ox-skew: calc(var(--direction-factor) * var(--ox-angle));
-  /* --ox-band-h is set per band (560, 500, 420, 360); this root value only
-     keeps --ox-wedge-run resolvable outside a band. */
-  --ox-band-h: 560px;
-  --ox-wedge-run: calc(var(--ox-band-h) * var(--ox-angle-tan));
+  --ox-lean: 0px;             /* set per surface: the height an edge leans over */
+  --ox-run: calc(var(--ox-lean) * var(--ox-angle-tan));
+  /* The step motif (X-IDENTITY §3.1). --ox-step-h is the ledge's own
+     rendered height t = clamp(0.055·H, 4, 24), set per surface. --ox-step-j
+     (the jog) is driven off --ox-step-H, the *unclamped* block-size, rather
+     than off --ox-step-h, so the 3.49 ratio (owner note 5, non-negotiable)
+     never breaks where the clamp bites — 0.1924 = 0.055 × 3.49. */
+  --ox-step-h: 0px;
+  --ox-step-H: 0px;
+  --ox-step-j: calc(var(--ox-step-H) * 0.1924);
+  --ox-bar-w: 0.230;          /* bar thickness as a fraction of the mark's width (493.28) */
 }
 
 /* Every horizontal translate multiplies by --direction-factor, keyframes included. */

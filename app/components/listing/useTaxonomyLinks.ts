@@ -65,12 +65,16 @@ function hasTaxonomy(value: unknown): value is { taxonomy: TaxonomyLoaderData } 
  * that actually ran. `useRouter({ warn: false })` never throws with no
  * `<RouterProvider>` ancestor (every existing component test renders bare,
  * with no router) - it returns `undefined` and this falls through to the
- * plain query below, which is the pre-existing behaviour.
+ * plain query below, which is the pre-existing behaviour. `router?.state?.matches`
+ * is read the same defensive way, because several existing tests already
+ * stub `useRouter` for an unrelated reason (`useRouter().history.push`) with
+ * an object that carries no `state` at all.
  */
 function useTaxonomyLoaderData(): TaxonomyLoaderData | undefined {
   const router = useRouter({ warn: false });
-  if (!router) return undefined;
-  for (const match of router.state.matches) {
+  const matches = router?.state?.matches;
+  if (!matches) return undefined;
+  for (const match of matches) {
     if (hasTaxonomy(match.loaderData)) return match.loaderData.taxonomy;
   }
   return undefined;

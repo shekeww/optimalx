@@ -48,8 +48,8 @@ Free fit versus the locked-34 fit. `x = m·y + c`; rms is the residual in px.
 | NW arm, end edge | +0.6685 | 33.76° | 37.577 | 0.34 | 23 |
 | SE arm, start edge | +0.6553 | 33.24° | 139.655 | 0.83 | 29 |
 | SE arm, end edge | +0.6465 | 32.88° | 274.575 | 1.25 | 35 |
-| NE chamfer | +0.325 (3 samples) | — | 55.973 | 0.74 | 3 |
-| SW chamfer | +0.7054 | 35.20° | 121.445 | 0.92 | 6 |
+| NE chamfer | +0.5000 (3 samples) | 26.57° | 55.973 | 0.74 | 3 |
+| SW chamfer | +0.5643 | 29.44° | 121.445 | 0.92 | 6 |
 
 Mean of the eight long edges: **33.72°**, spread 32.88 to 34.21. The identity
 angle is **34°**; the worst locked residual is 1.25 px, 0.24 % of the box. The
@@ -86,8 +86,10 @@ Two further measured facts, both small and both real:
   toward the inline-end of the line the NE arm would continue on. The long bar
   is very slightly offset across the crossing, in the same direction as the jog.
 - The NW and SE arms are **234.25 px apart horizontally (194.20 perpendicular)**
-  — 1.75 bar thicknesses. They are parallel, not collinear. Reading them as one
-  broken bar is wrong; they are the two halves of the counter-chevron.
+  — **1.71** bar thicknesses (194.20 / 113.50 = 1.7115, not 1.75 — the divisor
+  is the corrected 113.50 mean perpendicular thickness, §1.5). They are
+  parallel, not collinear. Reading them as one broken bar is wrong; they are
+  the two halves of the counter-chevron.
 
 ### 1.4 Vertices
 
@@ -141,11 +143,19 @@ All 18 edges, measured on the 24-grid path: 8 exactly horizontal, 10 at
 
 The four ledge runs, end to end: NW foot **92.92 → 225.09** (132.2); SE head
 **273.21 → 408.13** (134.9); NE foot **205.71 → 329.72** (124.0, the chamfer
-takes 14.9 off the full width); SW head **180.02 → 287.37** (107.4, likewise).
+takes 14.9 off the full width); SW head **180.02 → 287.37** (107.4). These are
+two different quantities and the row above conflated them: 14.9 is how much
+the NE ledge is shortened by its own chamfer (138.86 arm width − 124.0 ledge
+run = 14.86); the SW chamfer's own horizontal extent is separately **34.32**
+(141.67 SW arm width − 107.4 SW ledge run), not 14.9 and not interchangeable
+with the NE figure. §3.1's chamfer row (`14.9 / 17.2 horiz`) mixes the same two
+kinds of quantity across its two chamfers; read its `14.9` as the NE ledge
+shortening and its `17.2` as a separate measurement, not as one ratio.
 
-**Bar thickness for the system: 22.5 % of the mark's height** (mean
-perpendicular thickness 113.5 of 493.28 wide / 436 tall). When the mark is drawn
-as a stroke rather than a filled shape, that is the stroke width.
+**Bar thickness for the system: 23.0 % of the mark's width** (mean
+perpendicular thickness 113.50 of 493.28 wide / 436 tall: (115.12 + 117.45 +
+109.58 + 111.85) / 4 = 113.50; 113.50 / 493.28 = 0.2301). When the mark is
+drawn as a stroke rather than a filled shape, that is the stroke width.
 
 ### 1.6 The two SVG paths
 
@@ -186,10 +196,21 @@ Replace the block at `app/styles/tokens.css` ~372–392.
 --ox-skew: calc(var(--direction-factor) * var(--ox-angle));
 --ox-lean: 0px;             /* set per surface: the height an edge leans over */
 --ox-run: calc(var(--ox-lean) * var(--ox-angle-tan));
---ox-step-h: 0px;           /* the ledge height, section 3 */
---ox-step-j: calc(var(--ox-step-h) * 3.49);
---ox-bar-w: 0.225;          /* bar thickness as a fraction of the mark's height */
+--ox-step-h: 0px;           /* the ledge height t, section 3 (clamp 4→24 applied per surface) */
+--ox-step-H: 0px;           /* the block-size H that drives t and j, set per surface */
+--ox-step-j: calc(var(--ox-step-H) * 0.1924);
+--ox-bar-w: 0.230;          /* bar thickness as a fraction of the mark's width (493.28) */
 ```
+
+`--ox-step-j` is driven off `--ox-step-H` directly (0.1924 = 0.055 × 3.49), not off
+`--ox-step-h`'s own clamped value: the two formulas in 3.1 diverge exactly where
+the `t = clamp(0.055·H, 4, 24)` clamp bites (H 44 → `3.49·t` gives 14.0 against
+the table's 8.5; H 560 → `3.49·t` gives 83.8 against the table's 107.7), and
+owner note 5 calls the 3.49 ratio non-negotiable. Driving `--ox-step-j` off the
+unclamped `H` reproduces the 3.1 table exactly at every row (H 44 →
+0.1924 × 44 = 8.5; H 560 → 0.1924 × 560 = 107.7); `--ox-step-h` keeps its own
+clamp for the ledge's rendered height, which can legitimately differ from what
+the jog's proportions imply at the extremes.
 
 `$ox-angle-tan` in `app/styles/06-ox/_primitives.scss:15` changes from `0.404`
 to `0.6745` in the same commit, and `ox-run()` rounds to **0.1 px** instead of
@@ -226,8 +247,13 @@ height, which is the whole reason this section exists.
 | 300 | 202.35 | 121.2 | 202.4 | 34.01° |
 | 320 | 215.84 | 129.3 | 215.8 | 34.00° |
 
-Whole-pixel pairs within 0.05° of 34 (run : lean): **29:43, 31:46, 54:80,
-60:89, 81:120, 108:160, 120:178, 162:240, 180:267, 216:320, 240:356, 270:400**.
+A selection of whole-pixel pairs within 0.05° of 34 (run : lean) — exhaustive
+enumeration for lean ≤ 400 returns roughly 220 pairs, so this is not the full
+list: **27:40** (atan(27/40) = 34.019°, and the one this build actually ships,
+at 320/390 for need cards and featured rail tiles — see the need-card and
+featured-rail rows of 2.4/3.3), **29:43, 31:46, 54:80, 60:89, 81:120, 108:160,
+120:178, 162:240, 180:267, 216:320, 240:356, 270:400**, and further small
+pairs including 25:37, 33:49, 52:77, 56:83, 64:95, 68:101.
 
 ### 2.3 The clamp, and why the full-height diagonal dies
 
@@ -255,6 +281,18 @@ vertical run and the lean is a hard miter, never a curve. This is not a
 compromise; it is the mark's own construction (section 1.3: every arm ends on a
 horizontal ledge, not on a point).
 
+**Exemption.** The 24 % budget governs a cut *into* a filled panel — a
+`clip-path` removing a wedge from a solid shape, where the run is measured
+against that shape's own inline-size. A thin parallelogram **bar** (the hero
+strap, `.ox-hero__edge`; the footer wedge bars, `.ox-footer__wedge`) is exempt:
+its run is the distance the bar's fixed-width body *travels* across the band on
+its lean, not a bite taken out of its own inline-size, and a bar's inline-size
+(10–14 px) is unrelated to how far it travels. Measured: the hero strap's run
+202.4 against its own 12 px inline-size is 1687 %; the footer wedge bars' run
+80.9 (at 390) and 121.4 (at 1440) against 10 px and 14 px bars are 809 % and
+867 %. All are correct as specified and none violates the budget, because the
+budget was never about them.
+
 ### 2.4 Derived values, per primitive, at the three widths
 
 | Primitive | 320 | 390 | 1440 |
@@ -277,35 +315,69 @@ Any control narrower than `run / 0.24` loses the parallelogram and becomes
 `.ox-cta-pill`. That is a hard rule, not a preference: it is what keeps the
 angle at 34 instead of quietly flattening.
 
-Old values that must change, with their files:
+Old values that must change, with their files. Re-verified live against the
+working tree on 2026-09-22 (the branch has moved since an earlier draft of
+this table; two line references below were wrong and are corrected, not just
+copied forward):
 
 | Call site | today | becomes |
 |---|---|---|
-| `_b2-home.scss:135,144` `.ox-cta-wedge --ox-cta-run` | 18 / 19 | 29.7 / 32.4 |
-| `_b2-home.scss:244,250` hero photo polygon | `96.7 % / 73.3 %` (run 226 over 560) | vertical to 46.4 %, then 34° — see 2.5 |
-| `_b2-home.scss:477,482` mobile hero floor cut | `100 % 88 %` | replaced by the corner, 2.4 |
-| `_b2-home.scss:1673,1890`, `_b6-commerce.scss:1894` `ox-angled(44px)` | run 18 | run 29.7 |
-| `_b3-product.scss:1291,1336,2859` `ox-angled(52px)` | run 21 | run 35.1 |
-| `_b3-product.scss:1426,2891` `ox-angled(56px)` | run 23 | run 37.8 |
-| `_b3-product.scss:2873` `ox-angled(48px)` | run 19 | run 32.4 |
-| `_b4-listing.scss:1407,1508` `ox-angled(40px)` | run 16 | run 27.0 |
-| `_b4-listing.scss:1592,1659` `ox-angled(36px)` | run 15 | run 24.3 |
-| every `transform: skewX(var(--ox-skew))` (13 sites) | 22° | 34°; each one re-measured against 2.3's budget before it ships |
+| `_b2-home.scss:135,144` `.ox-cta-wedge --ox-cta-run` (literal, not run-derived) | 18 / 19 | **29.7 / 32.4** — manual edit |
+| `_b2-home.scss:244,250` hero photo polygon (literal percentages) | `96.7 % / 73.3 %` (run 226 over 560) | vertical to 46.4 %, then 34° — see 2.5, manual edit |
+| `_b2-home.scss:434,440` hero scrim polygon (duplicate of :244,250, same box, literal percentages) | `96.7 % / 73.3 %` | same fix as the photo — see 2.5, manual edit |
+| `_b2-home.scss:477,482` mobile hero floor cut (literal percentages) | `100 % 88 %` | replaced by the corner, 2.4, manual edit |
+| `_b2-home.scss:2121` `ox-angled(44px)` — *re-verified live: the file's only `ox-angled(44px)` call. An earlier draft of this row cited `:1673,1890`; those lines are `.ox-plan__cta` and an accent gradient in the live tree, not this call — a session-drift error (concurrent batches shifted the file), corrected here* | run 18 | run 29.7 — **automatic**, `ox-angled()` calls `ox-run()` |
+| `_b6-commerce.scss:1894` `ox-angled(44px)` | run 18 | run 29.7 — automatic |
+| `_b3-product.scss:1291,1336,2859` `ox-angled(52px)` | run 21 | run 35.1 — automatic |
+| `_b3-product.scss:1426,2891` `ox-angled(56px)` | run 23 | run 37.8 — automatic |
+| `_b3-product.scss:2873` `ox-angled(48px)` | run 19 | run 32.4 — automatic |
+| `_b4-listing.scss:1407,1508` `ox-angled(40px)` | run 16 | run 27.0 — automatic |
+| `_b4-listing.scss:1592,1659` `ox-angled(36px)` | run 15 | run 24.3 — automatic |
+| `_primitives.scss:441,462` `ox-angled(40px)` (`.ox-btn--s40`) | run 16 | run 27.0 — automatic; padding-inline 32 → **43.0** |
+| `_primitives.scss:442,463` `ox-angled(44px)` (`.ox-btn--s44`) | run 18 | run 29.7 — automatic; padding-inline 34 → **45.7** |
+| `_primitives.scss:443,464` `ox-angled(48px)` (`.ox-btn--s48`) | run 19 | run 32.4 — automatic; padding-inline 36 → **48.4** |
+| `_b4-listing.scss:744` `ox-wedge-corner(64px,158px)` (literal `$w`, not run-derived) | `w` 64 (≈22° against the fixed 158 leg) | **`w` 106.6** (158 × 0.6745), manual edit |
+| `_b4-listing.scss:795` `ox-wedge(420px)` | run 170 | run 283.3 — automatic |
+| `_b6-commerce.scss:560` `ox-wedge-corner(56px,138px)` | `w` 56 (≈22°) | **`w` 93.1** (138 × 0.6745), manual edit |
+| `_blocks.scss:32` `ox-wedge-corner(64px,158px)` | `w` 64 | **`w` 106.6**, manual edit |
+| `_blocks.scss:96` `ox-wedge(480px, start)` | run 194 | run 323.8 — automatic |
+| every `transform: skewX(var(--ox-skew))` (13 sites) | 22° | 34° — automatic via `--ox-angle`; each one re-measured against 2.3's budget before it ships |
+
+Total `@include ox-angled` sites in `app/styles/`: **18**, re-counted live
+(`_b2-home.scss` 1, `_b6-commerce.scss` 1, `_b3-product.scss` 6,
+`_b4-listing.scss` 4, `_primitives.scss` 6) — not the 11 an earlier draft
+implied. Five further sites carry the angle through `ox-wedge`/`ox-wedge-corner`
+rather than `ox-angled`, listed above. `ox-angled()` and `ox-wedge()` both call
+`ox-run()` internally and recompute automatically once `$ox-angle-tan` changes;
+`ox-wedge-corner()` takes an explicit pixel leg (`$w`) with no call to
+`ox-run()`, so its three call sites need a manual edit to hit 34° — the "manual
+edit" rows above.
 
 ### 2.5 The hero edge, exactly
 
 RTL is the default declaration; `[dir='ltr']` mirrors it. Percentages are of the
-photo pane's own box (60 % of the band, 864 at 1440), so the polygon does not
-have to be restated when the band height changes.
+photo pane's own box (60 % of the band, 864 at 1440). **This polygon is valid
+only at pane 864×560.** A percentage pair's edge angle depends on the box
+aspect (7.1's own `polygon-slope` rule concedes exactly this): holding the
+width at 864 and dropping the band to 500 turns the same two percentages into
+35.98°, not 34.00°. The polygon must be restated, not merely reused, if the
+band height changes.
 
 Pane 864 by 560. Vertical from the top to y 260 (46.43 %), then 34° to the foot,
-displacing 202.4 (23.43 %).
+displacing 202.4 (23.43 %). The block labelled RTL below removes a triangle at
+the pane's bottom, on the side where `100% 100%`/`100% 46.43%` sit — the
+inline-END edge in RTL (inline-start is the right edge per the Conventions
+line above) — matching `ox-wedge($side: start)` in
+`app/styles/06-ox/_primitives.scss:22-24` and `app/styles/tokens.css`'s own
+"the motif leans top-RIGHT to bottom-LEFT" note. An earlier draft of this
+section had the two blocks swapped.
 
 ```
+/* identity: 34deg, run 202.4 of 864 */
 /* RTL — the pane sits at inline-end, its inline-start edge is cut */
-clip-path: polygon(0 0, 100% 0, 100% 100%, 23.43% 100%, 0 46.43%);
-/* LTR */
 clip-path: polygon(0 0, 100% 0, 100% 46.43%, 76.57% 100%, 0 100%);
+/* LTR */
+clip-path: polygon(0 0, 100% 0, 100% 100%, 23.43% 100%, 0 46.43%);
 ```
 
 The strap is a separate 12 px parallelogram on the same line, `--ox-accent`,
@@ -342,16 +414,39 @@ block-size of the element the step is cut into:
 | 120 | 6.6 | 23.1 | 500 | 24.0 (clamped) | 96.2 |
 | 158 | 8.7 | 30.4 | 560 | 24.0 | 107.7 |
 
+Every row above already reads as `0.1924 · H` (H 44 → 8.47 ≈ 8.5; H 560 →
+107.7 exactly), so this table does not change under the `--ox-step-j` fix in
+2.1 — it was the token that disagreed with the table, not the table with
+itself. `t`'s own "(clamped)" markings stay: `t` is still `clamp(0.055·H, 4,
+24)` for the ledge's *rendered height*, and only `j` is now read straight off
+`H` rather than off the clamped `t`.
+
 ### 3.2 The 158 px law
 
 BUILD 3.3 forbids angles on small elements; 3.5 requires 34° diagonals inside
-sprite symbols, which are 24 px. Both are right; the rule that reconciles them:
+sprite symbols, which are 24 px. Both are right; the rule that reconciles them
+applies to a **band- or panel-scale** cut, not to every layout box regardless
+of what it is:
 
-> **Below 158 px of block-size, an angle may exist only inside a sprite symbol.
-> It may never be a `clip-path`, `skew` or `rotate` on a layout box.**
-> At those sizes the identity is carried by the **ledge alone** — a horizontal
-> notch in a straight edge, depth `j`, height `t`. A notch is axis-aligned, so
-> it costs nothing in rendering, nothing in RTL and nothing in reflow.
+> **Below 158 px of block-size, a band- or panel-scale angle may exist only
+> inside a sprite symbol. It may never be a `clip-path`, `skew` or `rotate` on
+> a band or panel layout box.** At those sizes the identity is carried by the
+> **ledge alone** — a horizontal notch in a straight edge, depth `j`, height
+> `t`. A notch is axis-aligned, so it costs nothing in rendering, nothing in
+> RTL and nothing in reflow.
+>
+> **Named exceptions**, because the law as first written forbade primitives
+> this document itself mandates, verified live: sized CTA buttons
+> (`.ox-btn--s40/s44/s48`, `app/styles/06-ox/_primitives.scss:441-443`,
+> block-size 40/44/48 with `@include ox-angled(...)` in the same rule), the
+> footer wedge bars (`.ox-footer__wedge`, lean 120/180 — 2.3's bar exemption
+> covers their *run*, this exception covers their *block-size*), and the
+> section divider's 34° segment (3.3, block-size 1 px). These are control- or
+> line-scale marks, not a cut into a panel; the law exists to stop a 40 px
+> card corner from carrying a full diagonal, not to reach a button's own
+> corner. `ox-angled(40/48/52/56px)` at `_b3-product.scss`/`_b4-listing.scss`
+> cut the block they sit in at band scale (the action row itself, not a
+> sub-158 layout box) and were never inside the 158 px case to begin with.
 
 158 is DIRECTION 4.5's existing floor and it is kept.
 
@@ -359,14 +454,41 @@ sprite symbols, which are 24 px. Both are right; the rule that reconciles them:
 
 | Surface | Form | 320 | 390 | 1440 |
 |---|---|---|---|---|
-| Need card (pastel), top inline-end corner | corner cut at 34°, its foot closed by a ledge | lean 40 / run 27, ledge t 4 / j 12.3 | lean 40 / run 27, t 4 / j 12.3 | lean 64 / run 43.2, t 6.6 / j 23.1 |
+| Need card (pastel), top inline-end corner | corner cut at 34°, its foot closed by a ledge | lean 40 / run 27, ledge t 4 / j 14.0 | lean 40 / run 27, t 4 / j 14.0 | lean 64 / run 43.2, t 6.6 / j 23.0 |
 | Plan card (dark, photographic) | same, top inline-start | lean 48 / run 32.4 | lean 56 / run 37.8 | lean 96 / run 64.8 |
-| Section divider between two bands | full-width 1 px `--ox-line`, stepped once at 62 % of the container: 34° over `t`, then flat | t 4 / j 14 | t 4 / j 14 | t 6 / j 21 |
-| Active tab indicator (`.ox-tab`, `.ox-tabbar`) | 3 px `--ox-accent` bar, **notch only**: a `t 3 / j 10` bite out of its inline-end | j 10 | j 10 | j 14 |
-| Booking slot, selected state | 2 px `--ox-ink` boundary, notch `t 4 / j 12` at the top inline-end corner | same | same | same |
-| Price tag / saving badge | notch `t 4 / j 10` at the inline-end, no lean | same | same | j 12 |
-| Badge (`الأكثر طلبا`, `جديد`) | notch `t 3 / j 8` at the inline-end | same | same | same |
+| Section divider between two bands | full-width 1 px `--ox-line`, stepped once at 62 % of the container: 34° over `t`, then flat | t 4 / j 14.0 | t 4 / j 14.0 | t 6 / j 20.9 |
+| Active tab indicator (`.ox-tab`, `.ox-tabbar`) | 4 px `--ox-accent` bar (raised from 3: `t 3` is below 2.1's clamp floor of 4 and is illegal), **notch only**: a `t 4 / j 14.0` bite out of its inline-end | j 14.0 | j 14.0 | j 14.0 |
+| Booking slot, selected state | 2 px `--ox-ink` boundary, notch `t 4 / j 14.0` at the top inline-end corner | same | same | same |
+| Price tag / saving badge | notch `t 4 / j 14.0` at the inline-end, no lean | same | same | same |
+| Badge (`الأكثر طلبا`, `جديد`) | notch `t 4 / j 14.0` at the inline-end (raised from `t 3`, illegal) | same | same | same |
 | Featured rail cover tile | corner cut, lean 40 / run 27 | lean 40 | lean 48 / run 32.4 | lean 64 / run 43.2 |
+
+**Every notch now reads `j = 3.49 · t` exactly**, replacing the eight measured
+ratios this table shipped with (tab indicator `t3/j10` = 3.33; badge `t3/j8` =
+2.67; the Listing filter/sort chip in §6, `t3/j8` = 2.67; price tag `t4/j10` =
+2.50; booking slot `t4/j12` = 3.00; need card `t4/j12.3` = 3.08; section
+divider `t4/j14` = 3.50 at 320/390, already correct). `t3` is below 2.1's
+clamp floor of 4 and is illegal on its own terms, not only on the ratio: every
+`t3` above is raised to `t4`, which also raises the physical bar/boundary it
+notches into from 3 px to 4 px where the notch is cut into that same bar (the
+active tab indicator) — a notch cannot be taller than the line it bites into.
+`t4 → j 13.96 ≈ 14.0`; `t6 → j 20.94 ≈ 20.9`; `t6.6 → j 23.03 ≈ 23.0`. The
+Listing row in §6 ("filter and sort chips: notch `t 3 / j 8`") carries the
+same illegal ratio and is corrected there to `t 4 / j 14.0`.
+
+**Which `H` drives the need card's `t`/`j`, exactly.** 3.1 defines `H` as the
+block-size of the element the step is cut into — for a pastel need card
+(≈180–220 tall) that is `clamp(0.055·H, 4, 24)` = **t 9.9–12.1**, giving
+**j 34.6–42.3**, not the `t4/j14.0`(320/390)/`t6.6/j23.0`(1440) printed above.
+Reverse-solving the printed values against 3.1's own `H`/`t`/`j` table shows
+they were read off the wrong rows: `t4/j12.3` (pre-fix) is 3.1's `H=64` row
+and `t6.6/j23.1` is 3.1's `H=120` row — both copied from the reference table
+by matching the *lean* value of an unrelated primitive (this card's own 1440
+lean is 64; 120 belongs to nothing on this card) rather than computed from the
+card's own block-size. This is flagged, not silently corrected to the
+180–220-derived values, because swapping to `t 9.9–12.1 / j 34.6–42.3` is a
+visible design change to an already-shipped card and needs an owner call, not
+an arithmetic one.
 
 **One angled gesture per component block.** A card that takes the corner cut
 does not also take a notch, a skewed price or an angled badge. A band that takes
@@ -387,6 +509,12 @@ a stepped edge does not also carry a wedge. This is enforced, not advised
 All three emit a static `clip-path` with an `[dir='ltr']` mirror and **never** a
 `transition` or `animation`.
 
+**Focus visibility.** None of the three mixins may sit on the same selector as
+`@include ox-focus` (or a bare `outline`): `clip-path` clips an element's
+outline, so a clipped, focusable control needs its clip on a `::before`/
+`::after` instead, with the outline left on the unclipped element — see 7.1's
+`focus-clipped` rule for the exact mechanism and the live finding it catches.
+
 ---
 
 ## 4. The mark as a device
@@ -402,38 +530,63 @@ One per section, maximum. Never two in a viewport.
 | position | `inset-block-start: -8%`, `inset-inline-end: -10%` | same | `inset-block-start: -12%`, `inset-inline-end: -8%` |
 
 Contrast ceiling **1.2 : 1 against its own ground**, measured, with the maximum
-alpha for each pairing:
+alpha for each pairing. **No row here uses `--ox-accent`.** BUILD.md 3.1
+reserves `--ox-accent` for things people can click and this document's own
+preamble does not amend 3.1 ("BUILD.md wins — none of those change"); a
+decorative, `aria-hidden`, `pointer-events: none` watermark is exactly the
+non-interactive case 3.1 is written against. An earlier draft of this table
+priced the watermark in accent (0.10–0.12) and shipped it that way at
+`app/styles/06-ox/_b2-home.scss` (`.ox-plan__watermark { color:
+var(--ox-accent); opacity: 0.12 }`); that is a live BUILD 3.1 violation this
+document caused and is corrected here to `--ox-ink` / `--ox-ink-on-dark` only:
 
-| mark colour | ground | max alpha at 1.2:1 | composite | ship at |
-|---|---|---|---|---|
-| `--ox-accent` #F54915 | `--ox-paper` #FFFFFF | 0.140 | #FEE6DE | **0.10** |
-| `--ox-ink` #12171E | #FFFFFF | 0.088 | #EAEBEB | **0.06** |
-| `--ox-accent` | `--ox-fill` #F4F4F3 | 0.149 | #F4DBD2 | **0.10** |
-| `--ox-accent` | `--ox-plate` #F1F1F0 | 0.151 | #F2D8CF | **0.10** |
-| `--ox-accent` | `--ox-band-util` #0E1014 | 0.179 | #371A14 | **0.12** |
-| `--ox-ink-on-dark` #F7F4EE | #0E1014 | 0.081 | #212226 | **0.06** |
-| `--ox-accent` | `--ox-pill-dark` #14181F | 0.173 | #3B201D | **0.12** |
+| mark colour | ground | max alpha at 1.2:1 | ship at |
+|---|---|---|---|
+| `--ox-ink` #12171E | `--ox-paper` #FFFFFF | 0.088 | **0.06** |
+| `--ox-ink` | `--ox-fill` #F4F4F3 | ≤ 0.088 (a near-white ground; the paper figure is the conservative floor — shipping at 0.06 clears it either way) | **0.06** |
+| `--ox-ink` | `--ox-plate` #F1F1F0 | ≤ 0.088, same reasoning | **0.06** |
+| `--ox-ink-on-dark` #F7F4EE | `--ox-band-util` #0E1014 | 0.081 | **0.06** |
+| `--ox-ink-on-dark` | `--ox-pill-dark` #14181F | ≤ 0.081, a slightly lighter dark ground than band-util | **0.06** |
 
 The watermark is `aria-hidden`, `pointer-events: none`, never animated, and
 never sits under body copy — only under a heading block or an image. It counts
-as neither the section's one accent element (BUILD 3.1) nor its one angled
-primitive: it is a picture of the mark, not a cut in the layout.
+as neither the section's one accent element (BUILD 3.1 — moot now, since it
+never carries the accent) nor its one angled primitive: it is a picture of the
+mark, not a cut in the layout.
+
+**Render path.** The watermark and the 404/empty-state figure (4.3) are drawn
+as `<svg><use href="#ox-mark"/></svg>` from the already-inlined sprite
+(`app/assets/ox-sprite.svg`, the same pattern `app/components/home/
+PlanCard.tsx:46` already uses) or as a CSS `mask-image` with an inline `data:`
+SVG. **Never** a `url()` image request, never an `<img>`, and no new
+render-blocking asset — no new font, stylesheet or sprite file. §8.6's
+unassigned-owner note is resolved: this is the mechanism, not a decision left
+open.
 
 ### 4.2 Loader and skeleton
 
 Card and block skeletons keep DIRECTION 7.1's opacity pulse (1 → 0.6 → 1, 1.2 s,
-`--ease-in-out`, static at 0.8 under reduced motion). **Amendment:** the one
-route-level loader — `.ox-skel` when it covers the whole main region — adds a
-**sweep**: a 34° band, inline-size 36 % of the skeleton, `--ox-fill` to
-transparent, translated on `transform` only, 1.4 s linear. One composited layer,
-released when the route resolves, never repeated per card. Under reduced motion
-the sweep element is not rendered.
+`--ease-in-out`, static at 0.8 under reduced motion). **The route-level sweep
+this section previously amended in is removed** (see §5's preamble fix): a
+second, independently-moving wedge on top of the goal-grid settle is a second
+signature moment DIRECTION 7.1/7.2 does not sanction and BUILD.md 3.4 rules
+out ("Scroll reveals | Not used. Templated-build tell and an LCP cost"). The
+route-level loader stays exactly DIRECTION 7.1's opacity pulse; it carries no
+sweep.
 
 ### 4.3 404 and empty states
 
-The mark as the figure, drawn in `--ox-plate-2` #E6E6E5 at full opacity
-(1.15 : 1 on paper, inside the ceiling) — **not** in accent, because these pages
-carry a primary button and the accent belongs to it.
+The mark as the figure, drawn in `--ox-plate-2` #E6E6E5 at full opacity —
+**not** in accent, because these pages carry a primary button and the accent
+belongs to it. Recomputed: L(#E6E6E5) = 0.79068, contrast on `--ox-paper`
+#FFFFFF = 1.05 / 0.84068 = **1.2490 : 1**, rounded **1.25 : 1** — outside
+§4.1's 1.2 : 1 ceiling, not the "1.15 : 1, inside the ceiling" an earlier
+draft claimed. Written here as an explicit, named exemption from §4.1's
+ceiling for the 404/empty-state figure only: it is the one place the mark is
+drawn large (200/240/360 wide) and pale enough that holding it to 1.2 : 1
+would make it disappear against the page ground, and unlike the watermark it
+never sits over a heading or body copy that itself needs to clear a contrast
+floor.
 
 | | 320 | 390 | 1440 |
 |---|---|---|---|
@@ -445,11 +598,19 @@ in the grid column) so nothing shifts when the figure paints.
 
 ### 4.4 List bullet
 
-A single chevron of the mark — the `<` half, 34° — as a **sprite symbol** at
-10 px (320/390) and 12 px (1440), inline-start of the item, `--ox-accent-dark`
-when the list is a benefit list and `--ox-fg-3` when it is a plain list. It is a
-symbol, not a CSS shape, which is what makes it legal below 158 px (3.2).
-*Handoff: the symbol does not exist yet; S2a owns the sprite.*
+**Dropped.** A chevron drawn from the mark's own `<` half is a second icon
+system for UI chrome, which BUILD.md 3.5 forbids by name ("Do not ship a
+second icon system for UI chrome — search, account, wishlist, cart, filter,
+sort, share, **chevrons** all come from `sallaicons`"; the custom sprite is
+"for category and trust icons only"), and `app/components/common/Icon.tsx`'s
+own standing note already resolved this question the same way: "Every
+chevron/arrow the theme draws elsewhere is sallaicons (BUILD.md:221); do not
+add a new caller for this one." This document does not amend BUILD 3.5 (its
+preamble names only 3.3 and 4.5 as the rules it overrides), so a list bullet
+uses a `sicon-*` chevron like every other chevron in the theme, at 10 px
+(320/390) / 12 px (1440), `--ox-accent-dark` on a benefit list and `--ox-fg-3`
+on a plain list. The S2a sprite handoff this section previously opened is
+closed, not pending: no new symbol is added.
 
 ### 4.5 Faded photographic cards (advisory band, `/services`)
 
@@ -495,15 +656,28 @@ identity through **two things and no more**:
 
 No watermark on a pastel card — the card is already coloured and a second
 device makes it noisy. The dark plan cards take the opposite split: the
-**watermark** (accent at 0.12 on #0E1014) and **no corner cut**, so the two rows
-read as a pair rather than as the same card twice.
+**watermark** (`--ox-ink-on-dark` at 0.06 on #0E1014, not accent — see 4.1's
+BUILD 3.1 fix) and **no corner cut**, so the two rows read as a pair rather
+than as the same card twice. `app/styles/06-ox/_b2-home.scss`'s live
+`.ox-plan__watermark` still reads `color: var(--ox-accent); opacity: 0.12`;
+that file's watermark rule is owned by S2c in this batch and is listed as a
+required follow-up in `docs/build/progress/XID.md` rather than edited here.
 
 ---
 
 ## 5. Motion
 
-Nothing here overrides DIRECTION 7; it adds the identity layer and re-states
-the budget.
+Nothing here overrides DIRECTION 7 or BUILD.md 3.4; it adds the identity layer
+and re-states the budget. Two things this section shipped with did override
+them without saying so, and are removed rather than grandfathered in under a
+new amendment clause: §5.1's advisory-band/posters-guides-brands reveals
+(below) and §4.2's route-loader sweep (removed above). BUILD.md 3.4's motion
+table
+reads "Goal selection | The one signature moment... Homepage only", and
+DIRECTION 7.1/7.2 sanction exactly one revealed block; adding a written
+amendment for a second and third moving element is a bigger governance claim
+than an arithmetic fix should make on the owner's behalf, so the safer
+correction is to cut back to what was already sanctioned.
 
 - **Only `transform` and `opacity`.** The accordion's `grid-template-rows` stays
   the single written exception. No `clip-path` is ever animated — a polygon
@@ -522,29 +696,41 @@ the budget.
 `useSectionReveal` is unchanged: one module-scope `IntersectionObserver`,
 no React state, `rootMargin: 0px 0px -8% 0px`, armed only for elements below
 `0.9 × innerHeight` at hydration. It never hides anything already on screen,
-which is what keeps CLS at 0 and the SSR html identical to the first paint.
+which is what keeps CLS at 0 and the SSR html identical to the first paint —
+true without qualification now that no above-the-fold element (the hero strap
+included; see the removed 5.2 below) is ever mounted at `opacity: 0`.
 
 | Section | what moves | stagger | duration |
 |---|---|---|---|
-| Needs grid | the cards, `opacity 0→1` + `translateY(8px)→0` | `--stagger-step` 40 ms × DOM index, 6 cards, last lands at 380 ms | `--dur-base` `--ease-out` |
-| Advisory band | the three cards, same | 40 ms × index, last at 260 ms | `--dur-base` |
+| Needs / goals grid | the cards, `opacity 0→1` + `translateY(8px)→0` | `--stagger-step` 40 ms × DOM index, 6 cards, last lands at 380 ms | `--dur-base` `--ease-out` |
+| Advisory band | **nothing** — cut back, below | — | — |
 | Product rails | **nothing** — a horizontal scroller never reveals | — | — |
-| Posters, guides, brands | the row, one `opacity 0→1`, no translate | none | `--dur-base` |
+| Posters, guides, brands | **nothing** — cut back, below | — | — |
 | Newsletter, CTA band | nothing | — | — |
 | Footer | nothing | — | — |
 
-`--stagger-step` has exactly **two** consumers after this change: the needs grid
-and the advisory band. Rails, product grids, listings and tables never stagger.
+**Cut back to the one block DIRECTION 7.1/7.2 and BUILD.md 3.4 already
+sanction.** An earlier draft of this table added the advisory band's stagger
+and a plain fade on posters/guides/brands — a second and third revealed block
+BUILD.md 3.4 rules out ("Goal selection | The one signature moment... Homepage
+only") and DIRECTION 7.1/7.2 do not list. Removed rather than grandfathered in
+under a new amendment, for the reason given in §5's preamble. `--stagger-step`
+has exactly **one** consumer after this change: the needs/goals grid. Rails,
+product grids, listings, tables, the advisory band and the posters/guides/
+brands rows never stagger or reveal.
 
-### 5.2 The one hero entrance
+### 5.2 The hero entrance — removed
 
-On first load only, the hero strap (`.ox-hero__edge`) runs
-`transform: translateX(calc(var(--direction-factor) * -24px)) → 0` with
-`opacity 0 → 1` over `--dur-slow` `--ease-out`, once, on mount, never on a
-route return. It is a 12 px-wide element: the moved layer is 12 × 324 ≈ 0.015 MB.
-Nothing else in the hero moves — not the photograph, not the polygon, not the
-headline. The band's box is reserved by `min-block-size` before the transition
-starts, so the entrance contributes **0** to CLS.
+**This section is deleted, not amended.** It described the hero strap
+(`.ox-hero__edge`) mounting at `opacity: 0` and animating in on first load,
+which directly contradicted §2.5's own "It never animates (check-motion rule
+`wedge-motion`)" two sections earlier — `scripts/check-motion.mjs:111`
+implements that rule and fails exactly this. The live code
+(`app/styles/06-ox/_b2-home.scss`'s `.ox-hero__edge` rule) already has no
+`transition`/`animation` on the strap, so deleting this section brings the
+document in line with what is actually built rather than requiring a new
+animation to be added to match a spec that contradicted itself. §2.5's "never
+animates" line is the one that stands.
 
 ### 5.3 Budgets
 
@@ -561,14 +747,26 @@ starts, so the entrance contributes **0** to CLS.
   layout effect *after* hydration, so the server tree and the first client tree
   are identical.
 
+**Browser floor and reflow.** Every `clip-path` in this system ships with a
+`-webkit-clip-path` twin and every `mask` with a `-webkit-mask` twin; an
+`@supports not (clip-path: polygon(0 0, 1px 0, 0 1px))` block resets the
+element to a square box — the notches and corner cuts degrade to straight
+edges, **never** to a hidden control. Supported Safari floor: **Safari 14**
+(`clip-path: polygon()` unprefixed since 13.1; the `-webkit-` twin covers 9.1
+through 13). **200 % zoom / WCAG 1.4.10:** at 200 % on a 1280 viewport the
+effective width is 640 — exactly the breakpoint 2.4 uses for the hero button
+stack. The corner cuts, notches and CTA slants must not clip or overlap text
+at 200 % at 320, 390 and 640 effective width; a control that would lose its
+label to a cut at any of the three instead drops to `.ox-cta-pill` (2.4's own
+"any control narrower than `run / 0.24` loses the parallelogram" rule already
+covers the mechanism — this is the same rule applied under zoom, not a new one).
+
 ### 5.4 Reduced motion, per effect
 
 | Effect | `prefers-reduced-motion: reduce` |
 |---|---|
 | Section reveals | never armed — `useSectionReveal` returns before observing |
-| Hero strap entrance | not rendered as a transition; the strap is present at its final position |
 | Skeleton pulse | static at opacity 0.8 |
-| Route-loader sweep | the sweep element is not rendered |
 | Tab indicator | jumps |
 | Notch, corner cut, stepped edge, watermark | never animated in any mode |
 
@@ -577,22 +775,24 @@ starts, so the entrance contributes **0** to CLS.
 ## 6. Surface matrix
 
 Sizes are the angled primitive's `lean / run` unless marked. "—" means the
-surface carries no angled primitive at all, by decision.
+surface carries no angled primitive at all, by decision. Every `t 3` below is
+raised to `t 4` and every notch reads `j = 3.49 · t` (3.3's fix): `t 3 / j 10`
+becomes `t 4 / j 14.0` wherever it appears in this table.
 
 | Route family | Primitive(s) and size at 320 / 390 / 1440 | Forbidden |
 |---|---|---|
-| **Header** (`.ox-header`, `.ox-mainbar`, `.ox-mobilebar`, `.ox-utility`) | — . The logo is the mark + wordmark at block-size 24 / 24 / 28. The active nav link takes a 3 px accent underline with a `t 3 / j 10` notch | any lean; a watermark; an angled search field |
+| **Header** (`.ox-header`, `.ox-mainbar`, `.ox-mobilebar`, `.ox-utility`) | — . The logo is the mark + wordmark at block-size 24 / 24 / 28. The active nav link takes a 4 px accent underline with a `t 4 / j 14.0` notch | any lean; a watermark; an angled search field |
 | **Footer** (`.ox-footer__wedge`) | two accent bars, 34° parallelograms with horizontal ends, in a box 140 / 140 / 220 wide: hidden at 320, `120 / 80.9` at 390, `180 / 121.4` at 1440 | more than two bars; any skew on the columns; a watermark in the same band |
-| **Mobile tab bar** (`.ox-tabbar`) | — . Active tab: 3 px accent bar with a `t 3 / j 10` notch | any lean (the bar is 56 tall, under the 158 law) |
+| **Mobile tab bar** (`.ox-tabbar`) | — . Active tab: 4 px accent bar with a `t 4 / j 14.0` notch | any lean (the bar is 56 tall, under the 158 law; 3.2's named exception list does not include the tab bar) |
 | **Home hero** | corner `96 / 64.8` / corner `120 / 80.9` / split edge `300 / 202.4` + 12 px strap | a second wedge in the band; an animated polygon; the old `100% 88%` floor cut |
 | **Home — needs section** (pastel cards) | card corner cut `40 / 27` / `40 / 27` / `64 / 43.2`; accent arrow per card | watermark; a lean on the pill toggle; a second angled element per card; accent *text* on a tint (use `--ox-accent-deep`) |
 | **Home — advisory band** (faded photo cards) | band edge `72 / 48.6` / `96 / 64.8` / `180 / 121.4`; 236°/124° scrim; one watermark at 200 / 240 / 420 | a corner cut on the cards (the band edge is the section's one gesture); text below the 72 % scrim stop |
 | **Home — brand band, CTA band** | one stepped band edge `72 / 48.6` / `96 / 64.8` / `180 / 121.4`; the CTA is `.ox-cta-wedge` `44 / 29.7` / `44 / 29.7` / `48 / 32.4` | two wedges; a watermark *and* a band edge in the same section |
 | **Home — product rails, posters, guides, brands, newsletter** | — . Product cards are conventional (BUILD 3.3: browse vs buy) | any lean, any notch, any watermark on a product card |
-| **Listing** (`/$slug/c$id`) | featured rail cover tiles: corner cut `40 / 27` / `48 / 32.4` / `64 / 43.2`; filter and sort chips: notch `t 3 / j 8` | angles on the grid, on the card, on the pagination; a watermark |
+| **Listing** (`/$slug/c$id`) | featured rail cover tiles: corner cut `40 / 27` / `48 / 32.4` / `64 / 43.2`; filter and sort chips: notch `t 4 / j 14.0` | angles on the grid, on the card, on the pagination; a watermark |
 | **Listing — empty** | mark figure 120 / 140 / 180 in `--ox-plate-2` | accent on the figure |
-| **PDP, physical** | `ox-angled` blocks at `44 / 29.7`, `48 / 32.4`, `52 / 35.1`, `56 / 37.8` (`_b3-product.scss` sites in 2.4) — **one per block**; price notch `t 4 / j 10` | a wedge in the gallery; a lean on a variant chip; a watermark near the buy column |
-| **PDP, booking / service** | slot grid: selected slot notch `t 4 / j 12`; the service hero takes one band edge `72 / 48.6` / `96 / 64.8` / `180 / 121.4` | an angled slot; animation on a slot; two gestures in the booking block |
+| **PDP, physical** | `ox-angled` blocks at `44 / 29.7`, `48 / 32.4`, `52 / 35.1`, `56 / 37.8` (`_b3-product.scss` sites in 2.4) — **one per block**; price notch `t 4 / j 14.0` | a wedge in the gallery; a lean on a variant chip; a watermark near the buy column |
+| **PDP, booking / service** | slot grid: selected slot notch `t 4 / j 14.0`; the service hero takes one band edge `72 / 48.6` / `96 / 64.8` / `180 / 121.4` | an angled slot; animation on a slot; two gestures in the booking block |
 | **Booking confirmation, thank-you** | one watermark 200 / 240 / 420 on the confirmation panel | any lean (the page is a receipt); accent on the watermark over the order summary |
 | **Cart** | — . Conventional, per BUILD 3.3 | every angled primitive; the watermark; the mark figure except in the empty state |
 | **Account** | — . List rows 72 tall; `EmptyState` per surface at 120 / 140 / 180 | every angled primitive |
@@ -605,6 +805,20 @@ surface carries no angled primitive at all, by decision.
 | **Search / zero results** | suggestions panel straight; zero-results mark figure 120 / 140 / 180 | angled suggestion rows |
 | **404** | mark figure 200 / 240 / 360 in `--ox-plate-2`; the CTA is `.ox-cta-wedge` | accent on the figure; motion on the figure |
 | **Checkout, any Salla-native component** | — . Untouched | everything |
+
+**Amendment to BUILD.md 3.3.** The PDP and Listing rows above put
+`ox-angled` primitives and corner cuts on surfaces 3.3's HARD
+browse-versus-buy rule reserves for "white cards, equal heights, square
+corners, **no `clip-path`**". This document's preamble already claims
+precedence over 3.3 and owner note 4 proposed a one-line fix; the actual line
+is: **3.3's "no `clip-path`" clause does not apply to the specific, named
+primitives this document lists for PDP and Listing** — the featured rail
+corner cut, the PDP `ox-angled` action blocks and price notch, and the
+booking slot notch — **and applies unchanged to everything else 3.3 already
+covers**: the product grid, the card itself, pagination, and every surface
+this section marks "Forbidden: angles on the grid, on the card, on the
+pagination." Browse-versus-buy stays the rule; the identity system adds a
+short, enumerated exception list to it rather than opening the surface wholesale.
 
 ---
 
@@ -630,8 +844,22 @@ scope `app`, allowlist = the inherited Raed stylesheets `app/styles/01-` through
 | `unmirrored` | a `skew` not wrapped in `calc(var(--direction-factor) * …)`, or a `polygon` with no `[dir='ltr']` counterpart in the same file |
 | `mark-drift` | the `d` of `#ox-mark` in `app/assets/ox-sprite.svg` not byte-equal to the string in section 1.6 |
 | `watermark-contrast` | a `.ox-watermark` rule whose opacity exceeds the ceiling in 4.1 for the ground named in the same block |
+| `focus-clipped` | a rule combining an angled primitive (a non-axis `polygon`, a `skew`, or an `@include` of `ox-angled` / `ox-wedge*` / `ox-lean-corner`) with `@include ox-focus` (or a bare `outline:`) **on the same selector**, with no `::before`/`::after` in the same block to carry the clip instead. This is a live finding today: `app/styles/06-ox/_primitives.scss:174-179`'s `ox-focus` mixin emits `outline` + `outline-offset`, and `clip-path` clips an element's outline, so `.ox-btn--s40/s44/s48` currently paint no visible focus ring at all |
 
 Wire it into the same place `check-rtl` and `check-motion` run.
+
+**Focus-visibility mechanism (3.4/`focus-clipped`).** A clipped element's
+outline is itself clipped — WCAG 2.4.7/2.4.11 need a ring that survives the
+cut. The fix: move the `clip-path` to a `::before` that paints the fill, and
+keep `outline`/`outline-offset` on the **unclipped** button box (or,
+equivalently, draw the ring as an `inset box-shadow` sized inside the clip).
+Either mechanism is legal; a rule that clips the element carrying the outline
+is not. **Residual hit area after a notch**, against DIRECTION 5's 44 × 44
+project rule (not 24): a corner cut of run `R` removes a right triangle of
+legs `R`/`lean` from one corner of the drawn box; the *hit area* is not
+reduced to match, because `ox-hit-area`'s `::after` already draws a
+rectangular 44 × 44 target independent of the visible clip — the drawn shape
+may be smaller than 44 × 44 at its cut corner, the tappable box never is.
 
 ### 7.2 Unit tests for the mark geometry
 
@@ -656,8 +884,15 @@ with no SVG library — the paths are `M x y L x y … Z` and nothing else.
 6. **Scale invariance**: mapping the 512 path with
    `x' = (x − 9.28)·0.0486539`, `y' = (y − 30)·0.0486539 + 1.393`
    reproduces the 24 path to ± 0.002 on every vertex.
-7. **Contract**: `OX_BRAND_ICON_NAMES` in `app/components/common/Icon.tsx`
-   contains `mark`, and `#ox-mark` exists in the sprite.
+7. **Contract**: `OX_ICON_NAMES` in `app/components/common/Icon.tsx` contains
+   `mark`, and `#ox-mark` exists in the sprite. (Not `OX_BRAND_ICON_NAMES`: the
+   mark is UI furniture drawn sparingly, not a category/trust symbol, so it
+   lives in `OX_UI_ICON_NAMES` — verified live, `Icon.tsx`'s brand list does
+   not contain it. An earlier draft of this test asserted the wrong list and
+   would fail against current code.) While here: `Icon.tsx`'s own comment
+   above `OX_UI_ICON_NAMES` calls the mark "29 straight-edged vertices"; 1.6's
+   path has **18** (5 + 5 + 4 + 4 across the four subpaths, matching "All 18
+   edges" in 1.4) — that comment is corrected in the same edit.
 
 ---
 
@@ -706,3 +941,100 @@ with no SVG library — the paths are `M x y L x y … Z` and nothing else.
    empty state needs new copy, the keys go in `locales/partials/xid.ar.json` and
    `xid.en.json` and identically in `locales/ar.json` and `locales/en.json`. No
    existing locale value is edited.
+
+---
+
+## 9. Judge changes applied (2026-09-22, session continuation)
+
+One line per judge finding. Arithmetic is shown where a finding is corrected;
+a reason is shown where a finding is refused or resolved by deletion instead
+of by adding a number.
+
+1. `--ox-bar-w` 0.225→**0.230** (113.50/493.28 = 0.2301); comment now says
+   "fraction of the mark's width (493.28)"; §1.5's line changed to "23.0 % of
+   the mark's width" (mean of §1.5's own %-column 23.3/23.8/22.2/22.7 = 23.0).
+   Applied in §2.1 and §1.5, and mirrored into `app/styles/tokens.css`.
+2. `--ox-step-j` now `calc(var(--ox-step-H) * 0.1924)`, driven off a new
+   `--ox-step-H` rather than off the clamped `--ox-step-h` — reproduces §3.1's
+   table exactly at every row (H44→8.5, H560→107.7), so the table was not
+   rebuilt, only the token. Applied in §2.1, confirmed against §3.1.
+3. §3.3's eight notches rewritten to `j = 3.49·t`; every `t3` raised to `t4`
+   (illegal below the clamp floor). Also states which `H` actually drove the
+   need card's pre-fix `t4/j12.3`/`t6.6/j23.1` (3.1's own `H=64`/`H=120` rows,
+   not the card's own 180–220 block-size) and flags, without silently
+   redesigning, that a spec-faithful read gives `t 9.9–12.1 / j 34.6–42.3`.
+4. RTL/LTR hero polygons swapped to match `ox-wedge($side: start)`,
+   `tokens.css:378-380` and DIRECTION 4.5. Applied in §2.5.
+5. The "does not have to be restated" sentence deleted (false: 864×500 gives
+   35.98°, not 34.00°, at the same two percentages); replaced with the
+   `/* identity: 34deg, run 202.4 of 864 */` pragma §7.1 requires and a
+   "valid only at pane 864×560" statement. Applied in §2.5.
+6. §4.3's 404/empty-state figure recomputed: 1.05/0.84068 = **1.2490:1**,
+   outside the 1.2 ceiling. Kept `#E6E6E5` and wrote an explicit, named
+   exemption rather than swapping to `#EFEFEF`, because the figure is the one
+   place the mark is drawn large and pale on purpose and a colour swap is a
+   visual change an arithmetic fix should not make unilaterally.
+7. §2.5 vs §5.2: deleted §5.2 entirely rather than making it animate.
+   The live `.ox-hero__edge` rule carries no `transition`/`animation` today,
+   so deletion matches the built code; §2.5's "never animates" stands.
+8. Resolved as a consequence of 7: with §5.2 gone, no above-the-fold element
+   mounts at `opacity: 0`, so §5.1's CLS/SSR claim in 5.1 no longer needs a
+   strap-specific carve-out.
+9. Added an explicit exemption to §2.3: a thin parallelogram **bar**'s run is
+   its own travel, not a bite out of its own inline-size, so the hero strap
+   (1687 %) and footer wedge bars (809 %/867 %) do not violate the 24 % budget.
+10. §3.2 rewritten to apply the floor to band/panel-scale cuts only, with a
+    named exception list (sized CTA buttons, footer wedge bars, the section
+    divider) verified against the live `_primitives.scss:441-443` rule the
+    original wording forbade. §7.1's rule table already matches (`small-angle`
+    already read "an angled primitive... below 158px", unchanged in substance,
+    now correctly scoped by 3.2's own text).
+11. §2.4's "old values" table re-verified live: `_b2-home.scss:1673,1890` are
+    `.ox-plan__cta` and an accent gradient, not `ox-angled(44px)`, which the
+    session-drifted file now carries at `:2121` — corrected, not copied
+    forward. Added the seven missing rows (`_primitives.scss` ×6,
+    `_b4-listing.scss:744`, `_b6-commerce.scss:560`, `_blocks.scss:32,96`) and
+    the live re-count of 18 `ox-angled` sites.
+12. `.ox-btn--s40/s44/s48` padding-inline rows added to the same table:
+    32→**43.0**, 34→**45.7**, 36→**48.4** (run + 16), `_primitives.scss:441-443`.
+13. §2.2's pair list relabelled "a selection" and `27:40` added by name (the
+    pair the build already ships, need cards and featured rail tiles at
+    320/390) alongside 25:37, 33:49, 52:77, 56:83, 64:95, 68:101.
+14. §1.2's NE/SW chamfer free-fit cells corrected to **+0.5000 (26.57°)** and
+    **+0.5643 (29.44°)**, replacing the wrong +0.325/blank and +0.7054/35.20°.
+15. §7.2 test 7 changed to assert `OX_ICON_NAMES` (the mark is in
+    `OX_UI_ICON_NAMES`, verified live against `Icon.tsx`, not
+    `OX_BRAND_ICON_NAMES`). `Icon.tsx:86`'s "29 straight-edged vertices"
+    corrected to 18, matching §1.6.
+16. §1.5's "1.75 bar thicknesses" corrected to **1.71** (194.20/113.50 =
+    1.7115) in §1.3, where the sentence actually lives. §1.5's ledge-run row
+    split into two distinct quantities (14.9 = NE ledge shortening; SW
+    chamfer's own horizontal extent = 34.32, not interchangeable with 14.9).
+17. §5's preamble, §5.1 and §4.2 trimmed back to the one reveal DIRECTION
+    7.1/7.2 and BUILD.md 3.4 already sanction (needs/goals grid), rather than
+    adding a new amendment clause claiming authority over both documents.
+18. §4.1's contrast table rewritten to drop every `--ox-accent` row (BUILD 3.1,
+    which this document's own preamble does not amend) in favour of
+    `--ox-ink`/`--ox-ink-on-dark`; §4.6 corrected to match. The live
+    `_b2-home.scss` `.ox-plan__watermark` violation this document caused is
+    named and handed to S2c in `docs/build/progress/XID.md` rather than edited
+    here (S2c's file, out of this batch's write scope).
+19. Added a named, enumerated amendment to BUILD.md 3.3's "no `clip-path`"
+    clause (the featured rail corner cut, the PDP `ox-angled` blocks and price
+    notch, the booking slot notch only) rather than stripping the PDP/Listing
+    rows, per owner note 4's own proposal.
+20. §4.4 dropped: BUILD 3.5 names chevrons as a `sallaicons` case by name, and
+    `Icon.tsx`'s own standing comment already closed this question the same
+    way. No new sprite symbol; the S2a handoff is closed, not pending.
+21. Added the render-path clause to §4.1 (`<use href="#ox-mark"/>` or a `mask-
+    image` with an inline `data:` SVG; never `url()`, never `<img>`, no new
+    render-blocking asset), resolving §8.6's unassigned-owner note.
+22. Added the focus-visibility clause to §3.4 and the `focus-clipped` rule to
+    §7.1, naming the live finding (`_primitives.scss:174-179`'s `ox-focus` on
+    a clipped `.ox-btn--sNN`) and the fix (clip on `::before`, outline on the
+    unclipped box, or an inset `box-shadow`), plus the residual-hit-area note
+    (`ox-hit-area`'s 44×44 target is independent of the visible clip).
+23. Added the browser-floor/reflow clause to §5.3: `-webkit-` twins plus an
+    `@supports not (clip-path: …)` fallback to a square box, Safari 14 as the
+    named floor, and a 200 % zoom / WCAG 1.4.10 statement at 320/390/640
+    effective width.

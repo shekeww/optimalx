@@ -8,14 +8,17 @@
 // ---------------------------------------------------------------------------
 // 1. The wedge (DIRECTION 4.5, A9)
 // ---------------------------------------------------------------------------
-// The angle is 22deg from vertical; run = band height * tan(22deg).
+// The angle is 34deg from vertical (X-IDENTITY-2026-09-22.md §2.1: re-derived
+// from the mark itself, was 22deg); run = band height * tan(34deg).
 // Polygons are declared for RTL (the document default) and mirrored under
 // [dir="ltr"]. The mixins never emit a transition or an animation: a wedge
 // is a static paint-time clip on an element that never animates.
-$ox-angle-tan: 0.404;
+$ox-angle-tan: 0.6745;
 
+// Rounds to 0.1px rather than 1px: at 34° an integer round costs up to 0.35°
+// on a 44px control, where 0.1px costs 0.02° (X-IDENTITY §2.1).
 @function ox-run($band-h) {
-  @return math.round(math.div($band-h, 1px) * $ox-angle-tan) * 1px;
+  @return math.div(math.round(math.div($band-h, 1px) * $ox-angle-tan * 10), 10) * 1px;
 }
 
 // A panel whose inner edge carries the angle, wider at the top than at the
@@ -436,11 +439,25 @@ $ox-angle-tan: 0.404;
   -webkit-tap-highlight-color: transparent;
 
   // The angle is the identity, so it is on by default for every sized CTA.
-  // The inline padding carries the run at each end (16px of breathing room
-  // plus the slant) so the label never sits on the cut.
-  &--s40 { block-size: 40px; padding-inline: 32px; @include ox-angled(40px); }
-  &--s44 { block-size: 44px; padding-inline: 34px; @include ox-angled(44px); }
-  &--s48 { block-size: 48px; padding-inline: 36px; @include ox-angled(48px); }
+  // The inline padding carries the run at each end (run + 16px of breathing
+  // room) so the label never sits on the cut — X-IDENTITY-2026-09-22.md §2.4:
+  // at 34° the run grew from 16/18/19 to 27.0/29.7/32.4, so the old
+  // 32/34/36 padding left the label only 4.3px clear of the cut.
+  &--s40 { block-size: 40px; padding-inline: 43px; @include ox-angled(40px); }
+  &--s44 { block-size: 44px; padding-inline: 45.7px; @include ox-angled(44px); }
+  &--s48 { block-size: 48px; padding-inline: 48.4px; @include ox-angled(48px); }
+
+  // clip-path clips the element's own outline, so `ox-focus`'s outline never
+  // painted on an angled button (X-IDENTITY §3.4/§7.1 `focus-clipped`, a live
+  // finding this fixes). An inset box-shadow paints inside the clipped box
+  // instead, so it survives the cut. `outline: none` here only ever reaches
+  // these three sized variants, never `--square` (unclipped, keeps the ring).
+  &--s40:focus-visible:not(.ox-btn--square),
+  &--s44:focus-visible:not(.ox-btn--square),
+  &--s48:focus-visible:not(.ox-btn--square) {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ox-focus);
+  }
 
   // THE ONLY OPT-OUT LEFT is the icon-only control, where a slanted square
   // reads as a mistake rather than as the motif and the cut corners eat into

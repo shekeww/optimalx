@@ -1,8 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
-import fs from 'node:fs';
-import path from 'node:path';
 import { renderWithProviders } from '../helpers/render';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
 import {
@@ -155,147 +153,17 @@ describe('OxCategories, the four shaker categories', () => {
 });
 
 // ---------------------------------------------------------------------------
-// The colours themselves, read out of the stylesheet and measured.
+// The shaker-tone stylesheet assertions that used to live here (the palette
+// declarations, the tile's contrast floors, the 150px box) were removed on
+// 2026-09-22 (S2b): `.ox-tile`/`.ox-tile--*`/`--ox-shaker-*` no longer exist
+// in `_b2-home.scss` - the home page's type grid is `OxNeeds`' types pane now
+// (`tests/home/OxNeeds.test.tsx` carries the equivalent tint-contrast
+// assertions for `.ox-need--*`). `OxCategories.tsx`/`CategoryTile.tsx`
+// themselves stay on disk unregistered (see `docs/build/progress/S2b.md`:
+// this batch's `rm` calls were denied by the harness), so the component
+// tests above this comment - which read the component's own DOM output, not
+// the stylesheet - still exercise real, if dead, code and still pass.
 // ---------------------------------------------------------------------------
-
-const ROOT = path.resolve(import.meta.dirname, '../..');
-const TOKENS_CSS = fs.readFileSync(path.join(ROOT, 'app/styles/tokens.css'), 'utf8');
-const SHEETS = [
-  TOKENS_CSS,
-  fs.readFileSync(path.join(ROOT, 'app/styles/06-ox/_b2-home.scss'), 'utf8'),
-].join('\n');
-
-/** Every `--name: value` in the source; the last declaration wins. */
-function declarations(source: string): Map<string, string> {
-  const out = new Map<string, string>();
-  for (const match of source.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;{}]+);/gi)) {
-    out.set(match[1], match[2].trim());
-  }
-  return out;
-}
-
-const DECLARED = declarations(SHEETS);
-/**
- * The root palette alone. Three of the four tone rules re-point --ox-accent,
- * so asking DECLARED for it returns whichever tone rule was written last
- * rather than the theme's orange, and the one tone that does NOT re-point it
- * would then be measured against a colour it never draws.
- */
-const BASE = declarations(TOKENS_CSS);
-
-/** Follow `var(--x)` until a literal hex falls out. */
-function hex(name: string, from: Map<string, string> = DECLARED): string {
-  let value = from.get(name);
-  expect(value, `${name} is not declared`).toBeDefined();
-  for (let hop = 0; hop < 8 && value; hop += 1) {
-    const alias = /^var\((--[a-z0-9-]+)\)$/i.exec(value.trim());
-    if (!alias) break;
-    value = DECLARED.get(alias[1]);
-  }
-  expect(value, `${name} does not resolve to a hex`).toMatch(/^#[0-9a-f]{6}$/i);
-  return (value as string).toUpperCase();
-}
-
-function channel(value: number): number {
-  const c = value / 255;
-  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-
-function luminance(value: string): number {
-  const n = value.replace('#', '');
-  const [r, g, b] = [0, 2, 4].map((i) => channel(parseInt(n.slice(i, i + 2), 16)));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-function contrast(a: string, b: string): number {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (hi + 0.05) / (lo + 0.05);
-}
-
-interface Tone {
-  tone: string;
-  ground: string;
-  edge: string;
-  type: string;
-}
-
-const TONES: Tone[] = [
-  { tone: 'blue', ground: '--ox-shaker-blue', edge: '--ox-shaker-blue-edge', type: '--ox-paper' },
-  { tone: 'green', ground: '--ox-shaker-green', edge: '--ox-shaker-green-edge', type: '--ox-ink' },
-  { tone: 'white', ground: '--ox-shaker-white', edge: '--ox-shaker-white-edge', type: '--ox-ink' },
-  {
-    tone: 'black',
-    ground: '--ox-shaker-black',
-    edge: '--ox-shaker-black-edge',
-    type: '--ox-ink-on-dark',
-  },
-];
-
-describe('the shaker palette', () => {
-  it('declares all eight values, and none of them is invented at the call site', () => {
-    for (const { ground, edge } of TONES) {
-      expect(hex(ground)).toMatch(/^#[0-9A-F]{6}$/);
-      expect(hex(edge)).toMatch(/^#[0-9A-F]{6}$/);
-    }
-    // Every hex in the tone rules is a var(), never a literal.
-    const rules = /\.ox-tile--(?:blue|green|white|black)\s*\{[^}]*\}/g;
-    for (const rule of SHEETS.match(rules) ?? []) {
-      expect(rule).not.toMatch(/#[0-9a-f]{3,6}/i);
-    }
-  });
-
-  it('carries its label at 4.5:1 on every tone', () => {
-    for (const { tone, ground, type } of TONES) {
-      expect(contrast(hex(type), hex(ground)), tone).toBeGreaterThanOrEqual(4.5);
-    }
-  });
-
-  it('gives every tile a boundary of at least 3:1 against the page', () => {
-    const page = hex('--ox-paper');
-    for (const { tone, ground, edge } of TONES) {
-      const boundary = Math.max(contrast(hex(ground), page), contrast(hex(edge), page));
-      expect(boundary, tone).toBeGreaterThanOrEqual(3);
-    }
-  });
-
-  it('holds the near-white tile with its border, because its ground cannot', () => {
-    // The near-white shaker is a step off the page and nothing more, so the
-    // tile would be a shape with no edge if the border were decorative.
-    expect(contrast(hex('--ox-shaker-white'), hex('--ox-paper'))).toBeLessThan(3);
-    expect(contrast(hex('--ox-shaker-white-edge'), hex('--ox-paper'))).toBeGreaterThanOrEqual(3);
-  });
-
-  it('never leaves the glyph accent below 3:1 on a coloured ground', () => {
-    // Each sprite symbol fills one element with --ox-accent. Orange is 1.35:1
-    // on the blue and 1.69:1 on the lime, so those two re-point it. A tone
-    // that does not re-point it inherits the root orange, which is why the
-    // fallback is read out of tokens.css and not out of the joined sheets.
-    const section = /\.ox-tile--(blue|green|white|black)\s*\{([^}]*)\}/g;
-    let measured = 0;
-    for (const [, tone, body] of SHEETS.matchAll(section)) {
-      const accent = /--ox-accent:\s*var\((--[a-z0-9-]+)\)/i.exec(body);
-      const ground = hex(`--ox-shaker-${tone}`);
-      const drawn = accent ? hex(accent[1]) : hex('--ox-accent', BASE);
-      expect(contrast(drawn, ground), tone).toBeGreaterThanOrEqual(3);
-      measured += 1;
-    }
-    expect(measured, 'all four tone rules were found').toBe(4);
-  });
-});
-
-describe('the tile box', () => {
-  it('stays at or above the 150px floor at desktop: colour does not shrink it', () => {
-    const section = SHEETS.slice(
-      SHEETS.indexOf('// 4. OxCategories and CategoryTile'),
-      SHEETS.indexOf('// 5. OxGoals and GoalCard')
-    );
-    const sizes = [...section.matchAll(/\.ox-tile\s*\{[^}]*?min-block-size:\s*(\d+)px/g)].map(
-      (match) => Number(match[1])
-    );
-    expect(sizes.length).toBeGreaterThan(0);
-    expect(Math.max(...sizes)).toBeGreaterThanOrEqual(150);
-  });
-});
 
 describe('the category map', () => {
   it('leaves ROOT_CATEGORY_SLUGS in catalogue order: this is a home arrangement', () => {

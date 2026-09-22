@@ -83,8 +83,9 @@ export const OX_UI_ICON_NAMES = [
   'shaker',
   'shaker-straw',
   'star',
-  // The logo's X, traced from public/assets/brand/optimalx-mark.png into 29
-  // straight-edged vertices. It is the mark, so it is used sparingly and only
+  // The logo's X, traced from public/assets/brand/optimalx-mark.png into 18
+  // straight-edged vertices (X-IDENTITY-2026-09-22.md §1.6). It is the mark,
+  // so it is used sparingly and only
   // where the brand is speaking: a section's corner cut, an empty state, the
   // scroll-to-top, a watermark behind a dark band. It is never a UI glyph and
   // never stands in for a chevron, a close or a tick.
