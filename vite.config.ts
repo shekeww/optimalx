@@ -83,6 +83,9 @@ export default defineConfig(async () => ({
       scss: { api: 'modern-compiler', silenceDeprecations: ['import'] } as any,
     },
   },
+  preview: {
+    allowedHosts: ['.trycloudflare.com'],
+  },
   build: {
     modulePreload: {
       resolveDependencies: (url: string, deps: string[]): string[] => {
