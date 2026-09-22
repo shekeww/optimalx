@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest';
+import type { Filter } from '@salla.sa/twilight-theme-engine/api/product';
 import {
   appliedFilterCount,
   facetKey,
   NON_FILTER_PARAMS,
+  brandFilter,
+  appliedBrandChips,
 } from '../../app/components/listing/appliedFilters';
 
 /**
@@ -77,5 +80,84 @@ describe('appliedFilterCount', () => {
     // The safe direction to be wrong in: a new facet makes the trigger say
     // the list is filtered, which it is.
     expect(appliedFilterCount('?some_future_facet=1')).toBe(1);
+  });
+});
+
+/**
+ * The brand facet (S2f item 6). A fixture payload stands in for the live
+ * store, which has no brands recorded yet (`fixtures/store/brands.json` is
+ * `[]`) and no `fixtures/store/overlay/brands.json` for the offline preview
+ * either — the same reason this suite, not a browser check, is the
+ * verification for the brand group today.
+ */
+describe('brandFilter', () => {
+  it('finds the filter group by its own key, not a guess', () => {
+    const filters: Filter[] = [
+      { key: 'price', label: 'السعر', type: 'range' },
+      { key: 'brand', label: 'Brand', type: 'list', values: [{ key: '7', value: 'Optimum Nutrition' }] },
+    ];
+    const found = brandFilter(filters);
+    expect(found?.key).toBe('brand');
+  });
+
+  it('matches the plural spelling too', () => {
+    const filters: Filter[] = [{ key: 'brands', label: 'Brands', type: 'list' }];
+    expect(brandFilter(filters)?.key).toBe('brands');
+  });
+
+  it('is null when the payload carries no brand-like key — the data gate', () => {
+    const filters: Filter[] = [{ key: 'price', label: 'السعر', type: 'range' }];
+    expect(brandFilter(filters)).toBeNull();
+    expect(brandFilter([])).toBeNull();
+    expect(brandFilter(undefined)).toBeNull();
+  });
+});
+
+describe('appliedBrandChips', () => {
+  const filter: Filter = {
+    key: 'brand',
+    label: 'Brand',
+    type: 'list',
+    values: [
+      { key: '7', value: 'Optimum Nutrition' },
+      { key: '9', value: 'MyProtein' },
+    ],
+  };
+
+  it('is empty with no filter, no search, or neither', () => {
+    expect(appliedBrandChips('?brand=7', null)).toEqual([]);
+    expect(appliedBrandChips('', filter)).toEqual([]);
+    expect(appliedBrandChips(undefined, filter)).toEqual([]);
+  });
+
+  it('reads the applied value back and labels it from the filter payload', () => {
+    const chips = appliedBrandChips('?brand=7', filter);
+    expect(chips).toEqual([{ param: 'brand', value: '7', label: 'Optimum Nutrition' }]);
+  });
+
+  it('carries a chip per repeated value, each independently clearable', () => {
+    const chips = appliedBrandChips('?brand=7&brand=9', filter);
+    expect(chips).toEqual([
+      { param: 'brand', value: '7', label: 'Optimum Nutrition' },
+      { param: 'brand', value: '9', label: 'MyProtein' },
+    ]);
+  });
+
+  it('falls back to the raw value when the payload names no label for it', () => {
+    const chips = appliedBrandChips('?brand=41', filter);
+    expect(chips).toEqual([{ param: 'brand', value: '41', label: '41' }]);
+  });
+
+  it('matches the bracketed and array spellings via facetKey, same as every other facet', () => {
+    expect(appliedBrandChips('?filters[brand]=7', filter)).toEqual([
+      { param: 'filters[brand]', value: '7', label: 'Optimum Nutrition' },
+    ]);
+    expect(appliedBrandChips('?brand[]=7', filter)).toEqual([
+      { param: 'brand[]', value: '7', label: 'Optimum Nutrition' },
+    ]);
+  });
+
+  it('ignores an unrelated facet and a cleared (empty) brand value', () => {
+    expect(appliedBrandChips('?flavour=chocolate&brand=', filter)).toEqual([]);
   });
 });

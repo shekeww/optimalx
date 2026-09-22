@@ -58,15 +58,84 @@ describe('VariantChips', () => {
     expect(faces[0].textContent).toBe('');
   });
 
-  it('falls back to a neutral circle with the first letter when nothing carries a fill', () => {
+  it('resolves a known colour NAME to its own swatch colour, never a letter', () => {
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
     );
     const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
-    // Value 2 ("أبيض") carries no colour and no image.
-    expect(faces[1].style.getPropertyValue('--ox-swatch')).toBe('');
-    expect(faces[1].style.backgroundImage).toBe('');
-    expect(faces[1].textContent).toBe('أ');
+    // Value 2 ("أبيض") carries no explicit colour or image, but its own name
+    // is a colour word: white, not a letter circle.
+    expect(faces[1].style.getPropertyValue('--ox-swatch')).toBe('#FFFFFF');
+    expect(faces[1].textContent).toBe('');
+  });
+
+  it('never renders a first-letter fallback, even for four names sharing one letter', () => {
+    const shaker = makeOption({
+      values: [
+        { id: 21, name: 'أسود' } as never,
+        { id: 22, name: 'أبيض' } as never,
+        { id: 23, name: 'أخضر' } as never,
+        { id: 24, name: 'أزرق' } as never,
+      ],
+    });
+    const { container } = renderWithProviders(
+      <VariantChips option={shaker} uid="oxcard-1" value={21} onChange={vi.fn()} />
+    );
+    const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
+    expect(faces).toHaveLength(4);
+    const colours = ['#111111', '#FFFFFF', '#16A34A', '#2563EB'];
+    faces.forEach((face, index) => {
+      expect(face.style.getPropertyValue('--ox-swatch')).toBe(colours[index]);
+      // Never a single letter, and never the same letter across four values.
+      expect(face.textContent).toBe('');
+    });
+  });
+
+  it('renders a non-colour value as a compact text pill, never a letter', () => {
+    const flavours = makeOption({
+      name: 'النكهة',
+      values: [
+        { id: 31, name: 'شوكولاتة' } as never,
+        { id: 32, name: 'فانيليا' } as never,
+      ],
+    });
+    const { container } = renderWithProviders(
+      <VariantChips option={flavours} uid="oxcard-1" value={31} onChange={vi.fn()} />
+    );
+    const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
+    expect(faces).toHaveLength(2);
+    expect(faces[0].classList.contains('ox-swatch__face--text')).toBe(true);
+    // The value's own full label, not a single letter.
+    expect(faces[0].textContent).toBe('شوكولاتة');
+    expect(faces[0].style.getPropertyValue('--ox-swatch')).toBe('');
+    expect(faces[1].textContent).toBe('فانيليا');
+  });
+
+  it('mixes colour swatches and text pills in one row, by value', () => {
+    const mixed = makeOption({
+      values: [
+        { id: 41, name: 'أحمر' } as never, // a colour name
+        { id: 42, name: '1 كجم' } as never, // a size, not a colour
+      ],
+    });
+    const { container } = renderWithProviders(
+      <VariantChips option={mixed} uid="oxcard-1" value={41} onChange={vi.fn()} />
+    );
+    const labels = container.querySelectorAll<HTMLElement>('.ox-swatch');
+    expect(labels[0].classList.contains('ox-swatch--text')).toBe(false);
+    expect(labels[1].classList.contains('ox-swatch--text')).toBe(true);
+    const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
+    expect(faces[0].style.getPropertyValue('--ox-swatch')).toBe('#DC2626');
+    expect(faces[1].textContent).toBe('1 كجم');
+  });
+
+  it('gives every swatch the value name as a title, for the mouse tooltip', () => {
+    const { container } = renderWithProviders(
+      <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+    );
+    const labels = container.querySelectorAll<HTMLLabelElement>('.ox-swatch');
+    expect(labels[0].title).toBe('أسود');
+    expect(labels[1].title).toBe('أبيض');
   });
 
   it('folds values past the fourth into a hidden count', () => {

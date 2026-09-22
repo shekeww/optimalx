@@ -310,6 +310,23 @@ this file. Client-side navigation from the home page, the header or
 `/categories` reaches every overlay category; a direct URL still needs
 `?storeId=1888890798`.
 
+### The brand overlay, in the same file (`fixtures/store/overlay/brands.json`)
+
+The live store also has zero brands, and the snapshot's `fixtures/store/brands.json`
+says so by default (`[]`): `OxBrands` renders nothing (S2e, 2026-09-22:
+`MIN_BRANDS` is 1, so even a single real brand would be enough). To see the
+strip locally before the store carries one, the same `OFFLINE_TAXONOMY=1`
+switch also serves `fixtures/store/overlay/brands.json` — four sample rows
+(Optimum Nutrition, MuscleTech, EVLution Nutrition, Dymatize; Latin names,
+`logo: null`, from `docs/build/research/FINAL-catalogue.md` §B) instead of the
+snapshot's empty one.
+
+Unlike `categories.json`/`menus.json`/`membership.json`, **`brands.json` is
+hand-written, not generated**: `gen-taxonomy-fixture.mjs` only knows the
+25-node taxonomy, and the store's four utility categories and fifteen product
+categories have no brand data of their own to derive one from. Edit it
+directly if the sample set ever needs to change.
+
 ## English locally (`OFFLINE_LANGS=ar,en`)
 
 The live store has English configured but disabled (`languages_list` on

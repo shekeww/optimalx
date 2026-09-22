@@ -299,17 +299,26 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
  * field is empty. A merchant who does pick one overrides it exactly the way
  * `ox-categories`' own `categories` field already overrides its default row.
  */
-export const DEFAULT_HOME_COMPONENTS: HomeComponentData[] = HOME_BLOCK_PATHS.flatMap((path) => {
-  if (path === 'ox-category-rail') {
-    return HOME_TYPE_SLUGS.map((slug) => ({
-      path,
-      key: `default-${path}-${slug}`,
-      rootSlug: slug,
-      ...HOME_BLOCK_FIELDS[path],
-    }));
+function buildDefaultComponents(): HomeComponentData[] {
+  const out: HomeComponentData[] = [];
+  for (const path of HOME_BLOCK_PATHS) {
+    if (path === 'ox-category-rail') {
+      for (const slug of HOME_TYPE_SLUGS) {
+        out.push({
+          path,
+          key: `default-${path}-${slug}`,
+          rootSlug: slug,
+          ...HOME_BLOCK_FIELDS[path],
+        } as HomeComponentData);
+      }
+      continue;
+    }
+    out.push({ path, key: `default-${path}`, ...HOME_BLOCK_FIELDS[path] } as HomeComponentData);
   }
-  return [{ path, key: `default-${path}`, ...HOME_BLOCK_FIELDS[path] }];
-}) as HomeComponentData[];
+  return out;
+}
+
+export const DEFAULT_HOME_COMPONENTS: HomeComponentData[] = buildDefaultComponents();
 
 /** `ox-hero` from a loader's component list: the C19 sr-only h1 depends on it. */
 export const HERO_PATH: HomeBlockPath = 'ox-hero';

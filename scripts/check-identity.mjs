@@ -408,7 +408,14 @@ function checkUnmirrored(file, stripped, rawLines) {
  * guard, not a fresh audit of every section, and the block-family mapping is
  * literal (verified against the working tree on 2026-09-22), not inferred.
  */
-export const HOME_SECTION_FAMILIES = ['ox-hero', 'ox-need', 'ox-goal', 'ox-plan', 'ox-bband', 'ox-tab', 'ox-footer'];
+// `ox-need` swapped for `ox-tile` (S2e, 2026-09-22): the owner reverted the
+// "shop by need" merge into two sections again, so the merged `OxNeeds`/
+// `NeedCard` component and every `.ox-need*` rule are gone from the corpus.
+// `ox-tile` (`CategoryTile.tsx`/`_b2-home.scss`) is the type grid's card
+// family now, the direct analogue of `ox-goal` for its own section - the
+// representative CARD family, not the `ox-cats` grid wrapper, matching how
+// this list already tracks `ox-goal` rather than `ox-goals`.
+export const HOME_SECTION_FAMILIES = ['ox-hero', 'ox-tile', 'ox-goal', 'ox-plan', 'ox-bband', 'ox-tab', 'ox-footer'];
 
 function checkSectionIdentity(blocksByFile) {
   const familyHasSignal = new Map(HOME_SECTION_FAMILIES.map((family) => [family, false]));

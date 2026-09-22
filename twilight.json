@@ -604,8 +604,8 @@
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d103",
       "title": {
-        "ar": "تسوق حسب احتياجك (الهدف)",
-        "en": "Shop by need (goal)"
+        "ar": "تسوق حسب هدفك",
+        "en": "Shop by goal"
       },
       "icon": "sicon-layout-grid-rearrange",
       "path": "home.ox-goals",
@@ -791,8 +791,8 @@
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d104",
       "title": {
-        "ar": "تسوق حسب احتياجك (النوع)",
-        "en": "Shop by need (type)"
+        "ar": "تصفح حسب النوع",
+        "en": "Browse by type"
       },
       "icon": "sicon-fabric-swatch",
       "path": "home.ox-categories",
@@ -816,6 +816,51 @@
           "required": false,
           "minLength": 4,
           "maxLength": 12
+        }
+      ]
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d10d",
+      "title": {
+        "ar": "شريط تصنيف",
+        "en": "Category rail"
+      },
+      "icon": "sicon-list-play",
+      "path": "home.ox-category-rail",
+      "is_default": false,
+      "fields": [
+        {
+          "id": "category",
+          "key": "b2f1d000-0000-4000-8000-000000000032",
+          "type": "items",
+          "format": "dropdown-list",
+          "label": "التصنيف",
+          "label_en": "Category",
+          "description": "اتركه فارغا لاستخدام أحد أنواع المتجر الثمانية الافتراضية",
+          "icon": "sicon-keyboard_arrow_down",
+          "source": "categories",
+          "multichoice": false,
+          "searchable": true,
+          "options": [],
+          "selected": [],
+          "value": [],
+          "required": false,
+          "minLength": 0,
+          "maxLength": 1
+        },
+        {
+          "id": "title",
+          "key": "b2f1d000-0000-4000-8000-000000000033",
+          "type": "string",
+          "format": "text",
+          "label": "العنوان",
+          "label_en": "Title",
+          "description": "اتركه فارغا لاستخدام اسم التصنيف",
+          "placeholder": null,
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
         }
       ]
     },

@@ -1519,5 +1519,7 @@
   "common.titles.tags": "Tags",
   "common.titles.brands": "Brands",
   "ox.home.needs_tab_goal": "By goal",
-  "ox.home.needs_tab_type": "By type"
+  "ox.home.needs_tab_type": "By type",
+  "ox.filter.brand_heading": "Brand",
+  "ox.filter.brand_remove": "Remove {{value}} from filters"
 }

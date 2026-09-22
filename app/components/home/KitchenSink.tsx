@@ -1,7 +1,8 @@
-import { useState, type ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { OxHero } from './OxHero';
-import { OxNeeds } from './OxNeeds';
+import { OxGoals } from './OxGoals';
+import { OxCategories } from './OxCategories';
+import { OxCategoryRail } from './OxCategoryRail';
 import { OxProducts } from './OxProducts';
 import { OxBrands } from './OxBrands';
 import { OxServices } from './OxServices';
@@ -30,20 +31,7 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-/**
- * `OxNeeds` claims a per-`QueryClient` slot so twilight.json's two registered
- * paths never draw the section twice on a real page (OxNeeds.tsx's
- * docblock). Two demo panels on the SAME kitchen-sink page would otherwise
- * share the ambient client and the second would render null, so each demo
- * gets its own fresh client - the same isolation a fresh page request gives
- * the real theme.
- */
-function NeedsDemo({ children }: { children: ReactNode }) {
-  const [client] = useState(() => new QueryClient());
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
-}
-
-/** The twelve home blocks (B2), each in the state DIRECTION 6.2 reserves for it. */
+/** The home blocks (B2), each in the state DIRECTION 6.2 reserves for it. */
 export function KitchenSink() {
   return (
     <div>
@@ -64,27 +52,31 @@ export function KitchenSink() {
         <OxHero data={block('ox-hero')} />
       </Panel>
 
-      <Panel title="OxNeeds, no merchant selection (goals pane default; live query decides count/image/missing-image per card)">
-        <NeedsDemo>
-          <OxNeeds data={block('ox-goals')} />
-        </NeedsDemo>
+      <Panel title="OxGoals (dark photo cards, six goals off the header menu)">
+        <OxGoals data={block('ox-goals')} />
       </Panel>
 
-      <Panel title="OxNeeds, merchant category selection on the legacy ox-categories slot (types pane, switch the toggle to see it)">
-        <NeedsDemo>
-          <OxNeeds
-            data={block('ox-categories', {
-              categories: [
-                { name: 'كرياتين', url: '/creatine/c9002', image: '' },
-                { name: 'واي بروتين', url: '/whey-protein/c9003', image: '' },
-              ],
-            })}
-          />
-        </NeedsDemo>
+      <Panel title="OxCategories, no merchant selection (default eight type tiles, live query decides count/image per tile)">
+        <OxCategories data={block('ox-categories')} />
+      </Panel>
+
+      <Panel title="OxCategories, merchant selection">
+        <OxCategories
+          data={block('ox-categories', {
+            categories: [
+              { name: 'كرياتين', url: '/creatine/c9002', image: '' },
+              { name: 'واي بروتين', url: '/whey-protein/c9003', image: '' },
+            ],
+          })}
+        />
       </Panel>
 
       <Panel title="OxProducts (latest, engine card through the registry)">
         <OxProducts data={block('ox-products')} />
+      </Panel>
+
+      <Panel title="OxCategoryRail (one per type root; hidden with no resolved category id, empty on this fixture)">
+        <OxCategoryRail data={block('ox-category-rail', { rootSlug: 'protein' })} />
       </Panel>
 
       <Panel title="OxBrands (hidden under four brands)">

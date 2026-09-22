@@ -1,8 +1,8 @@
 import { NotFoundError, RedirectError, UnauthorizedError } from '@salla.sa/twilight-theme-engine/providers';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
-import { Icon } from '../common/Icon';
 import { NotFound } from './NotFound';
+import { XMark } from '../common/XMark';
 
 /**
  * The engine's own error-to-status mapping, kept rather than replaced.
@@ -45,6 +45,9 @@ export interface ErrorStateProps {
  * The 404 variant drops the latest-products rail: an error boundary may be
  * rendering because a data source is down, and a second data-driven block is
  * the last thing to add to that page.
+ *
+ * The figure is the brand mark, `--ox-plate-2` not accent — see NotFound's
+ * doc comment (X-IDENTITY-2026-09-22.md §4.3/§6, BUILD 3.1).
  */
 export function ErrorState({ error, reset }: ErrorStateProps) {
   const { t } = useTranslation();
@@ -55,7 +58,7 @@ export function ErrorState({ error, reset }: ErrorStateProps) {
   return (
     <div className="ox-page ox-page--error" data-testid="ox-error-state">
       <section className="ox-state">
-        <Icon name="headset" size={32} className="ox-state__mark" />
+        <XMark size={64} tone="plate-2" className="ox-state__mark" />
         <h1 className="ox-state__title ox-h1">{t('ox.error.generic_title')}</h1>
         <p className="ox-state__body ox-lead">{t('ox.error.generic_body')}</p>
         <div className="ox-state__actions">

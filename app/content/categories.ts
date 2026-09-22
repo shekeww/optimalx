@@ -308,6 +308,27 @@ export const HOME_TYPE_SLUGS: string[] = CATEGORIES.filter(
   (category) => Boolean(category.cardLineKey)
 ).map((category) => category.slug);
 
+/**
+ * The pastel tint each type card carries (owner restyle 2026-09-22, the
+ * S2b run: seven tints plus the one black emphasis card). A NAME here, never
+ * a hex: every value lives once, in `_b2-home.scss` and `_b4-listing.scss`,
+ * as `--ox-need-tint-<name>`. Shared by the home grid (`OxCategories.tsx`)
+ * and the `/categories` index (`CategoriesIndex.tsx`) so a slug never carries
+ * two different colours on two pages. The two root slugs with no home tile
+ * (`snacks-bars`, `accessories`) fall back to the neutral `ash` tint at both
+ * call sites, since they were never assigned one of their own.
+ */
+export const HOME_TILE_TONES: Record<string, string> = {
+  protein: 'peach',
+  creatine: 'ash',
+  'pre-workout': 'mint',
+  'amino-acids': 'sand',
+  'omega-3': 'sky',
+  'vitamins-minerals': 'rose',
+  'daily-health': 'violet',
+  'collagen-beauty': 'black',
+};
+
 export function categoryBySlug(slug: string | undefined): CategoryContent | undefined {
   return CATEGORIES.find((category) => category.slug === slug);
 }

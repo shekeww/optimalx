@@ -108,15 +108,22 @@ describe('OxGuides', () => {
 });
 
 describe('OxBrands', () => {
-  it('hides the strip under four brands', async () => {
+  it('hides the strip with zero brands', async () => {
     for (const key of Object.keys(brandGroups)) delete brandGroups[key];
-    brandGroups.a = [{ id: '1', name: 'A', url: '/a', logo: '' }];
     const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
     await waitFor(() => expect(container).toBeTruthy());
     expect(container.querySelector('[data-testid="ox-brands"]')).toBeNull();
   });
 
-  it('renders the strip from four brands up', async () => {
+  it('renders the strip from one brand up (owner call, 2026-09-22: was four)', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [{ id: '1', name: 'A', url: '/a', logo: '' }];
+    renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+  });
+
+  it('renders the strip from four brands up too', async () => {
     for (const key of Object.keys(brandGroups)) delete brandGroups[key];
     brandGroups.a = [1, 2, 3, 4].map((n) => ({ id: String(n), name: `B${n}`, url: `/b${n}`, logo: '' }));
     renderWithProviders(<OxBrands data={data('ox-brands')} />);

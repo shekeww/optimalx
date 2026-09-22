@@ -424,6 +424,16 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding: var(--ox-2) var(--ox-4) var(--ox-4);
 }
 
+// The applied-brand chip row (S2f item 6, FiltersRail.tsx/FiltersDrawer.tsx):
+// one `Chip` per value currently selected on the URL, each with its own
+// clear control. Sits above the widget so it reads as "what is on" before
+// "what else is there"; the same hairline the head row uses closes it off.
+.ox-filters__applied {
+  padding: var(--ox-3) var(--ox-4) 0;
+  border-block-end: 1px solid var(--ox-bd);
+  padding-block-end: var(--ox-3);
+}
+
 // `salla-filters` is a platform web component whose light-DOM class names are
 // not in this repository, so it is given the surface and the type roles rather
 // than a per-class restyle it could rename out from under us.
@@ -1551,54 +1561,64 @@ nav.breadcrumbs .s-breadcrumb-item button {
   outline-offset: 2px;
 }
 
-// The solid CTA. ONE ORANGE FAMILY ON THE WHOLE SITE, and it is the logo's:
-// the card's buy button draws `--ox-accent-dark`, the same darker step the
-// rest of the theme already hovers accent buttons to and sets small accent
-// text in, rather than a second, unrelated colour.
+// THE SOLID CTA, RESTORED TO THE GLOBAL PRIMARY FACE (owner review,
+// 2026-09-22: the buy button and buy-now "look odd" against the rest of the
+// site). `.ox-btn--primary` and the PDP's own `.ox-buy__now` both draw
+// `ox-primary-face` with NO arguments — `--ox-accent`, white label, 19px/700
+// — and this button had drifted onto `--ox-accent-dark` with a 14px label
+// through two successive "10% smaller" passes. That is a second, unrelated
+// fill on the one control the identity says is singular; it is undone here so
+// the card's CTA is the same button as the hero's and the PDP's, not a
+// cousin of it.
 //
-// It briefly drew `--ox-accent` itself at a 19px label, because white on
-// `--ox-accent` measures only 3.59:1 (illegal below 18.67px bold) and 19px was
-// what kept it legal. The label is 10% smaller again now (owner call,
-// 2026-09-22: font-size × 0.9 site-wide on this control, ~14px), which drops
-// it well under the large-text exemption with no size left to spend on
-// contrast. So the fill is what moves instead: white on `--ox-accent-dark`
-// measures 4.90:1, clearing the 4.5:1 floor at any size, which is what lets
-// the label keep shrinking without opening a second known exception.
-//
-// The card can afford the full-width bar it has always been: the CTA is a
-// bar across the foot of the card, not a chip sharing a line with the outline
-// button, so a small label still reads as the card's one call to action.
+// CONTRAST, MEASURED, NOT ASSUMED: white (#FFFFFF) on `--ox-accent`
+// (#F54915) is 3.59:1, which clears WCAG AA only as large text (≥18.67px
+// bold, the 14pt-bold exemption). `--ox-on-accent` is white, not a dark ink,
+// so the "use the primary's own ink" escape does not apply here — the label
+// has to clear the size floor instead, and 19/700 is what the rest of the
+// site already uses to do it (see `.ox-btn--primary`, `.ox-buy__now`).
 .ox-card-product__buy {
   position: relative;
   z-index: 2;
-  // THE GLOBAL PRIMARY FACE, the same mixin the hero's "shop by your goal"
-  // uses, with the darker resting fill this label size now needs for AA (see
-  // above) and one step darker again on hover, so the two states stay in the
-  // same order the mixin's default (accent → accent-dark) always keeps.
-  @include ox-primary-face(var(--ox-accent-dark), var(--ox-accent-deep));
-  // 15.5 × 0.9 = 13.95, rounded to 14.
-  font-size: 14px;
+  // THE GLOBAL PRIMARY FACE, the same mixin and the same arguments (none:
+  // `--ox-accent` resting, `--ox-accent-dark` hover) the hero's "shop by your
+  // goal" and the PDP's buy-now both use. One definition; the three can no
+  // longer drift.
+  @include ox-primary-face;
+  // 19px is the floor for white on `--ox-accent` at 700, not a preference.
+  font-size: 19px;
+  // Cairo's Arabic descenders need about 1.6, not the flat 1.2 a one-line
+  // button label defaults to elsewhere in this file (S2f item 4's own fix,
+  // `--ox-lh-lead`): the block below is a fixed height with room to spare
+  // (44px against a ~30px line box), so this is precautionary, not a
+  // measured clip on this particular button, but it costs nothing and keeps
+  // every primary-face label in the theme on the same rule.
+  line-height: var(--ox-lh-lead);
   border-radius: 0;
-  // The box comes down with the label, so the button reads smaller rather than
-  // merely set smaller: 44 to 36, and the run follows the height to 15.
-  block-size: 36px;
+  // The box grows back with the label: 36 to 44, the run follows to 29.7
+  // (`ox-run(44px)`).
+  block-size: 44px;
   padding-inline: 20px;
   // INSET so the parallelogram's slanted end never runs under the card's own
-  // rounded corner (owner-reported defect, 2026-09-22): at `block-size: 36px`
-  // the skew run is `round(36 × tan(22°)) = round(36 × 0.404) = 15px` at the
-  // angled end, but the FLUSH end sits at 0 — exactly the card's own padding
-  // edge, with nothing between it and the 16px corner radius. 8px each side
-  // moves that flush point to 16 (card padding) + 8 = 24px from the card's
-  // outer edge, clear of the radius at both 390 and 1440 (the margin is a
-  // fixed px, not a percentage, so it does not move with the card's width).
+  // rounded corner (owner-reported defect, 2026-09-22): the FLUSH end sits at
+  // 0 — exactly the card's own padding edge, with nothing between it and the
+  // 16px corner radius. 8px each side moves that flush point to 16 (card
+  // padding) + 8 = 24px from the card's outer edge, clear of the radius at
+  // every width (the margin is a fixed px, not a percentage).
   margin-inline: 8px;
-  @include ox-angled(36px);
+  @include ox-angled(44px);
 }
 
-// THE PHONE CELL. At 390 the grid is two across, so a cell is about 173 and
-// its row about 141. The buy button is a full-width bar of its own row (not
-// sharing one with the add button), so it gets that whole 141 minus the 16px
-// the inset above now spends on each side — 109px.
+// THE PHONE CELL, RE-VERIFIED AT EVERY REQUIRED BREAKPOINT (S2f): the buy
+// button is a full-width bar of its own row, margin-inline 8px each side, so
+// its own box is the card's content width minus 16px. At the 2-up grid's
+// worst case, 320 (104px of content), the box is 88px; the icon is hidden at
+// this width (below) so padding-inline is cut from `--ox-3` (12px) to
+// `--ox-2` (8px) a side to give the 19px label the most room this box can
+// spare — 16px total padding, 72px left for the word. Text-width at 19px
+// bold Cairo could not be measured in this environment (no headless
+// renderer here); this is the most room the box's own arithmetic can give
+// it, and it is flagged in the S2f progress note for a live check.
 //
 // The bolt is decoration where the cart glyph on the outline button is a
 // signifier, so it is the one that goes at this width, not the type: the
@@ -1607,7 +1627,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-card-product__buy,
   .ox-card-product__buy--native .s-button-element,
   .ox-card-product__buy--native.s-button-element {
-    padding-inline: var(--ox-3);
+    padding-inline: var(--ox-2);
   }
 
   .ox-card-product__buy-icon {
@@ -1639,33 +1659,33 @@ nav.breadcrumbs .s-breadcrumb-item button {
   justify-content: center;
   gap: var(--ox-2);
   inline-size: 100%;
-  min-block-size: 36px;
+  min-block-size: 44px;
   padding-inline: 20px;
-  // Same darker resting fill as the Link variant and for the same reason: the
-  // label is 10% smaller now (below), which drops it under the large-text
-  // exemption white-on-`--ox-accent` needed. White on `--ox-accent-dark`
-  // measures 4.90:1, clearing the 4.5:1 floor at any size.
-  background: var(--ox-accent-dark);
-  border: 1px solid var(--ox-accent-dark);
+  // Same fill as the Link variant and for the same reason: the global
+  // primary face, `--ox-accent` resting, white label, 19/700 — the size the
+  // rest of the site already uses to keep that pairing legal (see the
+  // Link variant's own comment above).
+  background: var(--ox-accent);
+  border: 1px solid var(--ox-accent);
   color: var(--ox-on-accent);
   font-family: inherit;
   // This block restates the whole contract rather than inheriting it, so it
   // has to be kept in step with the Link variant by hand: the two would
-  // otherwise differ the day quick buy is switched on. Same fill, same size:
-  // 15.5 × 0.9 = 13.95, rounded to 14.
-  font-size: 14px;
+  // otherwise differ the day quick buy is switched on.
+  font-size: 19px;
   font-weight: var(--ox-w-title);
-  line-height: var(--ox-lh-flat);
+  // Cairo's Arabic descenders need about 1.6 (S2f item 4's own fix).
+  line-height: var(--ox-lh-lead);
   white-space: nowrap;
   border-radius: 0;
-  block-size: 36px;
-  @include ox-angled(36px);
+  block-size: 44px;
+  @include ox-angled(44px);
 }
 
 .ox-card-product__buy--native .s-button-element:hover,
 .ox-card-product__buy--native.s-button-element:hover {
-  background: var(--ox-accent-deep);
-  border-color: var(--ox-accent-deep);
+  background: var(--ox-accent-dark);
+  border-color: var(--ox-accent-dark);
   color: var(--ox-on-accent);
 }
 
@@ -1706,8 +1726,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // `container-type: inline-size` queries the CONTENT box, not the border box:
 // a 306px home-grid card with 16px of padding each side is a 274px container,
 // and a 251px related-rail card is 219px. 240 sits between them, so only the
-// rail's cards and the 390 two-up phone grid (173 outer, 141 content) fall
-// inside this query.
+// rail's cards and the 2-up phone grid fall inside this query.
 //
 // ICON-ONLY (owner call, 2026-09-22, replacing an ellipsis-truncated label
 // tried first and rejected — a partial "أضف للس…" reads as a broken control,
@@ -1717,11 +1736,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // sees instead is the same cart glyph the button already draws as a mask,
 // grown to 20px, in a fixed 44×40 box.
 //
-// Verified at the narrowest real case, the 390 two-up grid: content width
-// 141px. The stepper narrows to a fixed 88px (its own squares 32 → 28,
-// freeing the 8px the button below needs), the row's own gap stays 8, and the
-// icon-only button is a fixed 44 wide: 88 + 8 + 44 = 140, one pixel spare
-// inside 141.
+// RE-VERIFIED AT EVERY REQUIRED BREAKPOINT (S2f), not just 390. The 2-up
+// grid's content width is `(min(1296px, 100vw - 2×16px) - 16px) / 2 - 32px`
+// (`.ox-container`'s own gutter, the grid's own 16px gap, the card's own 16px
+// padding a side): 320 → 104px, 360 → 124px, 390 → 139px, 414 → 151px. The
+// PREVIOUS comment here rounded 390 up to "173 outer, 141 content" and
+// carried that approximation into the fixed math below (88 + 8 + 44 = 140,
+// "one pixel spare inside 141") — the true content width at 390 is 139px, one
+// pixel SHORT of that budget, and at 360 and 320 it is 17px and 36px short: a
+// real overflow this file shipped undetected, because it was only ever
+// checked at one rounded-up number. A second, narrower tier below fixes it;
+// this tier's own 140px budget is correct from 414 up (240 down to 140px of
+// content, verified against 414's 151px with 11px to spare).
 @container oxcard (max-width: 240px) {
   .ox-card-product__qty {
     flex: 0 0 88px;
@@ -1773,6 +1799,46 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-card-product__add:not(:has(.s-button-element))::after {
     inline-size: 20px;
     block-size: 20px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// THE SECOND, NARROWER TIER (S2f): the 2-up grid at 320/360/390 content-widths
+// (104/124/139px) is narrower than the 140px the tier above budgets, which
+// overflowed there undetected (see the correction above). Content ≤139px is
+// exactly the 390 case and everything narrower than it; 414's 151px already
+// clears the wider tier, so the boundary sits between the two.
+//
+// The stepper and the button both shrink again, and the row's own gap comes
+// down from `--ox-2` (8px) to `--ox-1` (4px) — a spacing TOKEN, not a magic
+// number. Budget at the worst real case, 320 (104px of content): stepper 56 +
+// gap 4 + button 40 = 100px, 4px spare. At 360 (124px) and 390 (139px) the
+// same 100px leaves 24px and 39px spare respectively — never tight enough to
+// need a third tier.
+@container oxcard (max-width: 139px) {
+  .ox-card-product__action {
+    gap: var(--ox-1);
+  }
+
+  .ox-card-product__qty {
+    flex: 0 0 56px;
+    inline-size: 56px;
+  }
+
+  .ox-card-product__qty-btn {
+    inline-size: 18px;
+  }
+
+  .ox-card-product__add-slot > * {
+    inline-size: 40px;
+  }
+
+  .ox-card-product__add,
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element,
+  .ox-card-product__add:not(:has(.s-button-element)) {
+    inline-size: 40px;
+    min-inline-size: 40px;
   }
 }
 
@@ -1847,9 +1913,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   block-size: 24px;
   border-radius: var(--ox-r-pill);
   border: 1px solid var(--ox-bd-2);
-  // Set from the value's own colour (`--ox-swatch`, inline style); the
-  // fallback keeps the circle visible when nothing carries one and the label
-  // beside it is drawing the letter instead.
+  // Set from the value's own colour (`--ox-swatch`, inline style), the
+  // engine's or `NAMED_COLORS`' (VariantChips.tsx); the fallback keeps the
+  // circle visible on the rare value that carries neither, which the
+  // component does not reach today (a value with no fill renders as the TEXT
+  // pill below instead).
   background: var(--ox-swatch, var(--ox-plate));
   background-size: cover;
   background-position: center;
@@ -1857,6 +1925,27 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-weight: var(--ox-w-ui);
   line-height: 1;
   color: var(--ox-fg-2);
+}
+
+// A value with no colour at all — a flavour, a size — is a compact TEXT pill
+// instead of a circle: never a letter, which cannot tell four colours
+// starting with the same Arabic letter apart, and never a guess at what
+// "شوكولاتة" or "1 كجم" might look like as a swatch. Same 24px block-size and
+// row baseline as a circle; the inline-size grows to the label instead.
+.ox-swatch--text {
+  inline-size: auto;
+}
+
+.ox-swatch__face--text {
+  inline-size: auto;
+  max-inline-size: 96px;
+  padding-inline: var(--ox-2);
+  border-radius: var(--ox-r-2);
+  background: var(--ox-plate);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // The ring on the chosen value. An outline, not a shadow, same as every other
@@ -1925,21 +2014,59 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-inline-size: 0;
 }
 
+// Tinted, icon-above-the-image (owner restyle 2026-09-22): the same
+// treatment the home grid's `CategoryTile` carries, off the same
+// `HOME_TILE_TONES` map, so a type never reads as one colour on the home
+// page and another here.
 .ox-cat-card {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: var(--ox-2);
   block-size: 100%;
-  padding: var(--ox-2);
-  background: var(--ox-card);
-  border: 1px solid var(--ox-bd);
+  padding: var(--ox-3);
+  background: var(--ox-fill);
+  border: 1px solid var(--ox-line-3);
   border-radius: var(--ox-r-2);
-  transition: transform var(--dur-base) var(--ease-out);
+  transition: border-color var(--dur-base) var(--ease-out);
+
+  // Border colour only (BUILD.md §3.4: no lift on hover, identity rule 1).
+  &:hover {
+    border-color: var(--ox-fg-3);
+  }
+}
+
+// Fallbacks match the `body` declaration in `_b2-home.scss`'s "4.
+// OxCategories and CategoryTile" section verbatim (check-tokens's own
+// documented convention for a cross-file read of a scoped token): that rule
+// stays the one place the ratios are measured and commented, this is a
+// safety net, never a second source of truth.
+.ox-cat-card--peach { background: var(--ox-need-tint-peach, #FDEEE8); }
+.ox-cat-card--ash { background: var(--ox-need-tint-ash, #F1F1F0); }
+.ox-cat-card--mint { background: var(--ox-need-tint-mint, #EAF2EF); }
+.ox-cat-card--sand { background: var(--ox-need-tint-sand, #F3EFE6); }
+.ox-cat-card--sky { background: var(--ox-need-tint-sky, #ECEFF5); }
+.ox-cat-card--rose { background: var(--ox-need-tint-rose, #F6EDF2); }
+.ox-cat-card--violet { background: var(--ox-need-tint-violet, #EFEAF5); }
+
+.ox-cat-card--black {
+  background: var(--ox-graphite-2);
+  border-color: var(--ox-graphite);
+  color: var(--ox-ink-on-dark);
 
   &:hover {
-    transform: translateY(-2px);
-    border-color: var(--ox-line-3);
+    border-color: var(--ox-line-2);
+  }
+
+  .ox-cat-card__name,
+  .ox-cat-card__icon {
+    color: var(--ox-ink-on-dark);
+  }
+
+  .ox-cat-card__desc,
+  .ox-cat-card__count {
+    color: var(--ox-ink-2-on-dark);
   }
 }
 
@@ -1960,34 +2087,36 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
+// The image slot: a `background-image`, never an `<img>`, so a 404 on a
+// merchant's `Category.image` leaves the tint showing instead of a broken-
+// image glyph, and the theme fallback (`--ox-need-image-<slug>`) or `none`
+// costs nothing to declare when it is absent. Sits BELOW the icon in source
+// order (the owner: "the icons to be above the images").
 .ox-cat-card__media {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 4 / 3;
   inline-size: 100%;
-  padding: var(--ox-3);
-  background: var(--ox-plate);
+  block-size: 96px;
+  background-size: cover;
+  background-position: center;
   border-radius: var(--ox-r-1);
-  color: var(--ox-fg);
-}
-
-.ox-cat-card__img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
 }
 
 .ox-cat-card__icon {
-  inline-size: 44px;
-  block-size: 44px;
+  flex: none;
+  inline-size: 32px;
+  block-size: 32px;
   stroke-width: 1.25;
+  color: var(--ox-fg);
 }
 
 .ox-cat-card__name {
   font-size: var(--ox-t-title);
   font-weight: var(--ox-w-title);
   line-height: var(--ox-lh-head);
+}
+
+.ox-cat-card__count {
+  font-size: var(--ox-t-small);
+  color: var(--ox-fg-3);
 }
 
 .ox-cat-card__desc {
@@ -2080,11 +2209,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-cat-index__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--ox-4);
-  }
-
-  .ox-cat-card {
-    gap: var(--ox-3);
-    padding: var(--ox-3);
   }
 
   .ox-cat-index__utility {

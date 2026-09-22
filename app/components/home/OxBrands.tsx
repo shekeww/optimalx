@@ -10,9 +10,12 @@ import { fieldList, fieldText, type OxBlockProps } from './defaults';
  * The brand strip (DIRECTION 6.2 row 6): a section header, logos on plates,
  * a scroller on mobile and eight per row on desktop.
  *
- * Hidden under four brands, because three logos in a row read as a claim about
- * the whole catalogue rather than as a strip. The strip is a `nav`-less list of
- * links inside a labelled region so a screen reader still knows what it is.
+ * Shown from ONE brand up (owner call, 2026-09-22; was four): the store
+ * carries real supplier brands today and a single logo still reads as a real
+ * strip, not a claim about "brands" plural the way three or fewer used to.
+ * The strip is a `nav`-less list of links inside a labelled region so a
+ * screen reader still knows what it is. The reserved height stays 0 while
+ * there are none (`HOME_BLOCK_HEIGHTS['ox-brands']`, `optionalBlocks.test.ts`).
  *
  * The manifest's `image` field (S2c, 2026-09-22) is the owner's generated
  * background, exposed as `--ox-band-image` and painted at low opacity behind
@@ -21,7 +24,7 @@ import { fieldList, fieldText, type OxBlockProps } from './defaults';
  * no image at all (the custom property's own fallback is `none`).
  */
 
-export const MIN_BRANDS = 4;
+export const MIN_BRANDS = 1;
 
 function isBrand(value: unknown): value is Brand {
   return Boolean(value) && typeof value === 'object' && typeof (value as Brand).name === 'string';

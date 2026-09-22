@@ -1519,5 +1519,7 @@
   "common.titles.tags": "الوسوم",
   "common.titles.brands": "العلامات التجارية",
   "ox.home.needs_tab_goal": "حسب الهدف",
-  "ox.home.needs_tab_type": "حسب النوع"
+  "ox.home.needs_tab_type": "حسب النوع",
+  "ox.filter.brand_heading": "العلامة التجارية",
+  "ox.filter.brand_remove": "إزالة {{value}} من التصفية"
 }

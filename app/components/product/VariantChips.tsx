@@ -67,15 +67,71 @@ function trimmed(value: unknown): string | null {
 }
 
 /**
- * The value's own fill, when the engine carries one.
+ * Colour names a merchant commonly types when Salla sends no colour code at
+ * all (the listing endpoint's `option.values[]` carries a value's NAME and
+ * nothing else — see the note on `swatchFill`). Matched against the value's
+ * own trimmed name, Arabic exact and English case-insensitive; a name that
+ * does not match — a flavour like "شوكولاتة" or a size like "1 كجم" — is not
+ * a colour, and never becomes one by guessing.
+ */
+// Data, not copy: a value's own name, matched against a merchant's option
+// value, never shown as UI text on its own (`ox-allow: arabic-literal` per
+// line, the same exemption `app/components/blocks/contentFallback.ts`'s
+// parser token tables use).
+const NAMED_COLORS: Record<string, string> = {
+  'أسود': '#111111', // ox-allow: arabic-literal
+  black: '#111111',
+  'أبيض': '#FFFFFF', // ox-allow: arabic-literal
+  white: '#FFFFFF',
+  'أخضر': '#16A34A', // ox-allow: arabic-literal
+  green: '#16A34A',
+  'أزرق': '#2563EB', // ox-allow: arabic-literal
+  blue: '#2563EB',
+  'أحمر': '#DC2626', // ox-allow: arabic-literal
+  red: '#DC2626',
+  'أصفر': '#FACC15', // ox-allow: arabic-literal
+  yellow: '#FACC15',
+  'برتقالي': '#F97316', // ox-allow: arabic-literal
+  orange: '#F97316',
+  'رمادي': '#9CA3AF', // ox-allow: arabic-literal
+  grey: '#9CA3AF',
+  gray: '#9CA3AF',
+  'بني': '#92400E', // ox-allow: arabic-literal
+  brown: '#92400E',
+  'وردي': '#EC4899', // ox-allow: arabic-literal
+  pink: '#EC4899',
+  'بنفسجي': '#7C3AED', // ox-allow: arabic-literal
+  purple: '#7C3AED',
+  'ذهبي': '#D4AF37', // ox-allow: arabic-literal
+  gold: '#D4AF37',
+  'فضي': '#C0C0C0', // ox-allow: arabic-literal
+  silver: '#C0C0C0',
+  'شفاف': 'transparent', // ox-allow: arabic-literal
+  clear: 'transparent',
+};
+
+/** A known colour name's own swatch colour, or null when the name is not one. */
+function namedColor(name: string): string | null {
+  const value = name.trim();
+  if (value.length === 0) return null;
+  return NAMED_COLORS[value] ?? NAMED_COLORS[value.toLowerCase()] ?? null;
+}
+
+/**
+ * The value's own fill, when the engine carries one, or when its NAME is a
+ * colour word this table recognises.
  *
  * `ProductOptionValue` - the shape the LISTING payload sends as
  * `option.values[]` - types only `image` / `image_url` today, never a colour:
  * the listing endpoint sends a value's NAME and no hex. `color` / `hex` are
  * read anyway, defensively, in case a future payload (or the `details[]`
- * shape a product-detail request carries) puts one there; the swatch simply
- * falls back to the value's own uploaded image, then to a neutral circle with
- * the value's first letter, when nothing above carries one.
+ * shape a product-detail request carries) puts one there. Failing both, the
+ * NAME itself is checked against `NAMED_COLORS`: a shaker whose four values
+ * are أسود/أبيض/أخضر/أزرق carries none of the above, and every one of those
+ * words is a real colour the swatch can paint. A name that matches nothing —
+ * a flavour, a size — returns null, and the swatch renders as a text pill
+ * instead: NEVER a letter, which cannot tell four colours starting with the
+ * same Arabic letter apart.
  */
 function swatchFill(value: ProductOptionValue): SwatchFill | null {
   const raw = value as unknown as Record<string, unknown>;
@@ -83,13 +139,9 @@ function swatchFill(value: ProductOptionValue): SwatchFill | null {
   if (color !== null) return { kind: 'color', value: color };
   const image = trimmed(value.image_url) ?? trimmed(value.image);
   if (image !== null) return { kind: 'image', value: image };
+  const named = namedColor(value.name ?? '');
+  if (named !== null) return { kind: 'color', value: named };
   return null;
-}
-
-/** The first character of a trimmed name, or '' when there is nothing to show. */
-function firstLetter(name: string): string {
-  const out = name.trim();
-  return out.length > 0 ? out[0] : '';
 }
 
 /**
@@ -135,8 +187,17 @@ export function VariantChips({ option, uid, value, onChange }: VariantChipsProps
         const id = `${uid}-${option.id}-${v.id}`;
         const fill = swatchFill(v);
         const checked = String(value) === String(v.id);
+        // A value with no colour — a flavour, a size — is a TEXT pill, never
+        // a letter circle: four values that all start with the same Arabic
+        // letter (أسود/أبيض/أخضر/أزرق) are not four different letters.
+        const isText = fill === null;
         return (
-          <label className="ox-swatch" key={v.id} htmlFor={id}>
+          <label
+            className={'ox-swatch' + (isText ? ' ox-swatch--text' : '')}
+            key={v.id}
+            htmlFor={id}
+            title={v.name}
+          >
             <input
               className="ox-swatch__input"
               type="radio"
@@ -149,7 +210,7 @@ export function VariantChips({ option, uid, value, onChange }: VariantChipsProps
               onChange={() => onChange(v.id)}
             />
             <span
-              className="ox-swatch__face"
+              className={'ox-swatch__face' + (isText ? ' ox-swatch__face--text' : '')}
               aria-hidden="true"
               style={
                 fill?.kind === 'color'
@@ -159,7 +220,7 @@ export function VariantChips({ option, uid, value, onChange }: VariantChipsProps
                     : undefined
               }
             >
-              {fill === null ? firstLetter(v.name) : null}
+              {isText ? v.name : null}
             </span>
             <span className="ox-sr-only">{v.name}</span>
           </label>

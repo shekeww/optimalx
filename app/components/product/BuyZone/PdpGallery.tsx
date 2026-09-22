@@ -4,7 +4,6 @@ import { Image } from '@salla.sa/twilight-theme-engine/common';
 import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { ProductGalleryProps } from '@salla.sa/twilight-theme-engine/product';
 import type { ProductImage } from '@salla.sa/twilight-theme-engine/types';
-import { Icon } from '../../common/Icon';
 import { PdpThumbRail } from './PdpThumbRail';
 import { promotionLabel } from '../lib/claims';
 
@@ -70,18 +69,35 @@ export function PdpGallery({ product }: ProductGalleryProps) {
       <div className="ox-gallery__plate">
         <span className="ox-gallery__band" aria-hidden="true" />
         <span className="ox-gallery__mark" aria-hidden="true" />
-        <Image
-          key={image.url}
-          src={image.url}
-          alt={image.alt || t('ox.pdp.gallery_image', { index: index + 1, total })}
-          aspectRatio="1/1"
-          objectFit="contain"
-          priority={index === 0}
-          noWrapper
-          srcSetWidths={GALLERY_WIDTHS}
-          sizes={GALLERY_SIZES}
-          className={'ox-gallery__img' + (zoomed ? ' is-zoomed' : '')}
-        />
+
+        {/* THE IMAGE ITSELF IS THE ZOOM CONTROL (S2f item 5, owner review
+            2026-09-22): a real `<button>` wrapping the plate's photograph, so
+            a tap or a click enlarges it directly, and Enter/Space do too for
+            free — a native button needs no keydown handler of its own for
+            either. The accessible name is the same `ox.pdp.zoom_label` the
+            old dedicated button carried, so nothing here invents new copy;
+            `ox.pdp.zoom` (that button's visible label) keeps its key even
+            though nothing renders it now, so it is not a silent removal. */}
+        <button
+          type="button"
+          className="ox-gallery__frame"
+          onClick={() => setZoomed((value) => !value)}
+          aria-pressed={zoomed}
+          aria-label={t('ox.pdp.zoom_label')}
+        >
+          <Image
+            key={image.url}
+            src={image.url}
+            alt={image.alt || t('ox.pdp.gallery_image', { index: index + 1, total })}
+            aspectRatio="1/1"
+            objectFit="contain"
+            priority={index === 0}
+            noWrapper
+            srcSetWidths={GALLERY_WIDTHS}
+            sizes={GALLERY_SIZES}
+            className={'ox-gallery__img' + (zoomed ? ' is-zoomed' : '')}
+          />
+        </button>
 
         {badge ? <p className="ox-gallery__badge">{badge}</p> : null}
 
@@ -93,17 +109,6 @@ export function PdpGallery({ product }: ProductGalleryProps) {
           aria-label={t('ox.a11y.wishlist_toggle')}
         >
           <i className="sicon-heart" aria-hidden="true" />
-        </button>
-
-        <button
-          type="button"
-          className="ox-gallery__zoom"
-          onClick={() => setZoomed((value) => !value)}
-          aria-pressed={zoomed}
-          aria-label={t('ox.pdp.zoom_label')}
-        >
-          <span className="ox-gallery__zoom-label">{t('ox.pdp.zoom')}</span>
-          <Icon name="expand" size={16} />
         </button>
       </div>
     </div>

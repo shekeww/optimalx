@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { HOME_BLOCK_PATHS } from '../../app/components/home/defaults';
+import { HOME_TYPE_SLUGS } from '../../app/content/categories';
 
 /**
  * The home route (PLAN-final B2): the default composition when the merchant has
@@ -84,11 +85,17 @@ function setSettings(next: Record<string, unknown>) {
 }
 
 describe('home route composition', () => {
-  it('renders the twelve DIRECTION 6.2 blocks, in order, when the merchant has none', () => {
+  it('renders the DIRECTION 6.2 blocks, in order, when the merchant has none', () => {
     setLoader({ components: [] });
     renderWithProviders(<HomeComponent />);
     const blocks = screen.getAllByTestId('home-block').map((node) => node.textContent);
-    expect(blocks).toEqual([...HOME_BLOCK_PATHS]);
+    // `ox-category-rail` is drawn once per `HOME_TYPE_SLUGS` root
+    // (defaults.ts's `DEFAULT_HOME_COMPONENTS` docblock); every other path
+    // appears exactly once, in `HOME_BLOCK_PATHS` order.
+    const expected = HOME_BLOCK_PATHS.flatMap((path) =>
+      path === 'ox-category-rail' ? HOME_TYPE_SLUGS.map(() => path) : [path]
+    );
+    expect(blocks).toEqual(expected);
   });
 
   it('renders the merchant composition untouched when there is one', () => {

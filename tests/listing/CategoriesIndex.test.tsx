@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { MENU, TAXONOMY, childrenOf } from '../../app/content/taxonomy';
+import { HOME_TILE_TONES } from '../../app/content/categories';
 
 /**
  * `/categories` (PLAN-ship Batch S1 step 6, Accept: "200 with 16 cards").
@@ -134,7 +135,10 @@ describe('CategoriesIndex', () => {
     expect(protein.querySelector('.ox-cat-card__link')?.getAttribute('href')).toBe(
       'https://optimalx.com.sa/protein/c9001'
     );
-    expect(protein.querySelector('img')?.getAttribute('src')).toBe('https://cdn.salla.sa/x/protein.jpg');
+    // The image slot is a background, never an `<img>` that can 404.
+    expect(protein.querySelector('img')).toBeNull();
+    const media = protein.querySelector('.ox-cat-card__media') as HTMLElement;
+    expect(media.style.backgroundImage).toContain('https://cdn.salla.sa/x/protein.jpg');
     // The nested child resolved through the flattened list; its siblings did not.
     const chips = Array.from(protein.querySelectorAll('.ox-cat-card__children a'));
     expect(chips[0].getAttribute('href')).toBe('https://optimalx.com.sa/whey-protein/c9011');
@@ -142,5 +146,25 @@ describe('CategoriesIndex', () => {
     // The other nine roots still fall back.
     expect(container.querySelectorAll('[data-testid="ox-type-card"][data-resolved="false"]')).toHaveLength(9);
     expect(TAXONOMY).toHaveLength(25);
+    // The count only prints on this live, positive products_count.
+    expect(protein.querySelector('.ox-cat-card__count')?.textContent).toContain('14');
+  });
+
+  it('tints every type card, off the same HOME_TILE_TONES map the home grid uses', () => {
+    const { container } = renderWithProviders(<CategoriesIndex />);
+    const cards = Array.from(container.querySelectorAll('[data-testid="ox-type-card"]'));
+    expect(cards).toHaveLength(10);
+    for (const card of cards) {
+      const slug = card.getAttribute('data-tone');
+      expect(slug).not.toBeNull();
+      expect(card.className).toMatch(/ox-cat-card--/);
+    }
+    const protein = cards.find((card) => card.querySelector('.ox-cat-card__name')?.textContent === t('ox.tax.protein.name'));
+    expect(protein?.getAttribute('data-tone')).toBe(HOME_TILE_TONES.protein);
+  });
+
+  it('prints no count while the category has not resolved', () => {
+    const { container } = renderWithProviders(<CategoriesIndex />);
+    expect(container.querySelectorAll('[data-testid="ox-type-card"] .ox-cat-card__count')).toHaveLength(0);
   });
 });

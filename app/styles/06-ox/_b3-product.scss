@@ -455,26 +455,30 @@
   }
 }
 
-.ox-gallery__zoom {
-  position: absolute;
-  inset-block-end: var(--ox-2);
-  inset-inline-start: var(--ox-2);
-  z-index: 2;
-  display: inline-flex;
+// THE IMAGE'S OWN FRAME, WHICH IS THE ZOOM CONTROL NOW (S2f item 5, owner
+// review 2026-09-22): a tap or a click anywhere on the photograph enlarges
+// it, so the separate labelled button this replaced (`.ox-gallery__zoom`,
+// bottom-start of the plate, "تكبير الصورة") no longer has anything to draw —
+// the whole plate is the tap target instead. `cursor: zoom-in` is the one
+// visible affordance a pointer gets; the accessible name (`ox.pdp.zoom_label`)
+// and `aria-pressed` carry the control for a keyboard or a screen reader.
+.ox-gallery__frame {
+  position: relative;
+  z-index: 1;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  min-block-size: 40px;
-  padding-inline: var(--ox-2);
-  font-size: 13px;
-  font-weight: var(--ox-w-quiet);
-  color: var(--ox-ink-4);
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
   background: none;
   border: 0;
-  cursor: pointer;
+  cursor: zoom-in;
 
   &:focus-visible {
     outline: var(--ox-focus-ring);
-    outline-offset: 0;
+    outline-offset: 2px;
   }
 }
 
@@ -2846,13 +2850,25 @@ label.ox-fbt__row {
   justify-content: center;
   gap: var(--ox-2);
   inline-size: 100%;
-  block-size: 52px;
+  // MIN, not a fixed block-size (S2f item 4, owner review 2026-09-22: the
+  // label was clipped at its bottom edge). `--ox-lh-flat` (1.2) is tight
+  // enough that Cairo's Arabic descenders — deeper than a Latin font's at the
+  // same size — can paint past a fixed box's bottom edge, which is exactly
+  // what a hard `clip-path` (`ox-angled`, below) then cuts off. `min-block-size`
+  // lets the box grow the few pixels a real descender needs instead of
+  // holding it to a height the glyph does not fit.
+  min-block-size: 52px;
   padding-inline: 38px;
   border: 0;
   border-radius: 0;
   font-family: inherit;
   font-size: 19px;
-  line-height: var(--ox-lh-flat);
+  // Cairo needs about 1.6 to clear its own Arabic descenders at 16-18px,
+  // not the flat 1.2 a one-line button label defaults to elsewhere: at 19px,
+  // 1.2 gives a 22.8px line box against Cairo's own deeper descent metric,
+  // which is the clip this fixes. 1.6 gives 30.4px, comfortably inside the
+  // 52px (48/56 responsive) box.
+  line-height: var(--ox-lh-lead);
   white-space: nowrap;
   cursor: pointer;
   @include ox-angled(52px);
@@ -2877,7 +2893,7 @@ label.ox-fbt__row {
 // disagrees about its own scale stops reading as a pair.
 @media (max-width: 639px) {
   .ox-buy__now {
-    block-size: 48px;
+    min-block-size: 48px;
     padding-inline: 26px;
     @include ox-angled(48px);
   }
@@ -2895,7 +2911,7 @@ label.ox-fbt__row {
 // buttons that disagree about their own scale stop reading as a pair.
 @media (min-width: 1024px) {
   .ox-buy__now {
-    block-size: 56px;
+    min-block-size: 56px;
     padding-inline: 40px;
     @include ox-angled(56px);
   }

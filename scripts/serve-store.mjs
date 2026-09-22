@@ -50,6 +50,11 @@ const HOST = arg('host', '127.0.0.1');
  * so those pages can be browser-verified before batch S5 writes the real
  * categories. It is a switch, not a default: nothing else about the snapshot
  * changes, and the honest-empty behaviour is one unset variable away.
+ *
+ * `fixtures/store/overlay/brands.json` (S2e, 2026-09-22) joined the same
+ * switch: the live store also has zero brands, so four sample rows there let
+ * `OxBrands` be seen locally the same way the overlay categories let the
+ * category pages be seen (see `docs/build/offline-preview.md`).
  */
 const OVERLAY = process.env.OFFLINE_TAXONOMY === '1';
 const OVERLAY_DIR = join(SNAPSHOT, 'overlay');
@@ -122,7 +127,11 @@ const snapshot = {
   products: load('products.json', []),
   details: load('product-details.json', {}),
   categories: loadTaxonomy('categories.json', []),
-  brands: load('brands.json', []),
+  // Overlay branch added (S2e, 2026-09-22) next to categories/menus: four
+  // sample brands under OFFLINE_TAXONOMY=1 so `OxBrands` (MIN_BRANDS 1) can
+  // be seen locally before the store carries a real one. The snapshot
+  // default stays `fixtures/store/brands.json`, still empty.
+  brands: loadTaxonomy('brands.json', []),
   menus: loadTaxonomy('menus.json', { header: [], footer: [] }),
   /** Overlay category id -> product ids; empty unless OFFLINE_TAXONOMY=1. */
   membership: OVERLAY ? loadTaxonomy('membership.json', {}) : {},
@@ -411,7 +420,7 @@ server.listen(PORT, HOST, () => {
   );
   console.log(
     OVERLAY
-      ? `[store-api] OFFLINE_TAXONOMY=1: serving ${flattenCategories(snapshot.categories).length} overlay categories and ${snapshot.menus.header?.length ?? 0} header menu items from fixtures/store/overlay/`
+      ? `[store-api] OFFLINE_TAXONOMY=1: serving ${flattenCategories(snapshot.categories).length} overlay categories, ${snapshot.menus.header?.length ?? 0} header menu items and ${snapshot.brands.length} overlay brands from fixtures/store/overlay/`
       : '[store-api] taxonomy overlay off (set OFFLINE_TAXONOMY=1 to serve fixtures/store/overlay/)'
   );
   console.log('[store-api] api.salla.dev is never contacted by this process.');

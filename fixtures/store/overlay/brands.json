@@ -1,0 +1,46 @@
+[
+  {
+    "id": "9101",
+    "url": "https://optimalx.com.sa/brands/optimum-nutrition",
+    "name": "Optimum Nutrition",
+    "label": "Optimum Nutrition",
+    "description": "",
+    "logo": null,
+    "status": true,
+    "ar_char": "O",
+    "en_char": "O"
+  },
+  {
+    "id": "9102",
+    "url": "https://optimalx.com.sa/brands/muscletech",
+    "name": "MuscleTech",
+    "label": "MuscleTech",
+    "description": "",
+    "logo": null,
+    "status": true,
+    "ar_char": "M",
+    "en_char": "M"
+  },
+  {
+    "id": "9103",
+    "url": "https://optimalx.com.sa/brands/evlution-nutrition",
+    "name": "EVLution Nutrition",
+    "label": "EVLution Nutrition",
+    "description": "",
+    "logo": null,
+    "status": true,
+    "ar_char": "E",
+    "en_char": "E"
+  },
+  {
+    "id": "9104",
+    "url": "https://optimalx.com.sa/brands/dymatize",
+    "name": "Dymatize",
+    "label": "Dymatize",
+    "description": "",
+    "logo": null,
+    "status": true,
+    "ar_char": "D",
+    "en_char": "D"
+  }
+]

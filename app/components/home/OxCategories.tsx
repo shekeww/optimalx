@@ -3,7 +3,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SectionHeader } from '../common/SectionHeader';
 import { useTaxonomyLinks, type TaxonomyLinks } from '../listing/useTaxonomyLinks';
 import { matchesSlug, searchFallback } from '../listing/resolve';
-import { CATEGORIES, HOME_TYPE_SLUGS } from '../../content/categories';
+import { CATEGORIES, HOME_TYPE_SLUGS, HOME_TILE_TONES } from '../../content/categories';
 import { nodeBySlug } from '../../content/taxonomy';
 import type { OxIconName } from '../common/Icon';
 import { CategoryTile, type CategoryTileTone } from './CategoryTile';
@@ -41,19 +41,11 @@ function fullRowCount(requested: number): number {
 }
 
 /**
- * The tint run, one per default tile, in tile order. A NAME here, never a
- * hex: every value lives once, in `_b2-home.scss`, as `--ox-need-tint-<name>`.
+ * The tint run, one per default tile, in tile order - `HOME_TILE_TONES`
+ * (`content/categories.ts`), shared with `/categories`' own type cards so a
+ * slug never carries two different colours on two pages.
  */
-const TYPE_TONE: Record<string, CategoryTileTone> = {
-  protein: 'peach',
-  creatine: 'ash',
-  'pre-workout': 'mint',
-  'amino-acids': 'sand',
-  'omega-3': 'sky',
-  'vitamins-minerals': 'rose',
-  'daily-health': 'violet',
-  'collagen-beauty': 'black',
-};
+const TYPE_TONE = HOME_TILE_TONES as Record<string, CategoryTileTone>;
 
 /** `cardLineKey`, by slug: the claims-clean list of product types the shelf stocks. */
 const TYPE_LINE_KEY: Record<string, string> = Object.fromEntries(

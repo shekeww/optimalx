@@ -2,6 +2,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { GOAL_CARD_LINES, goalPhoto } from '../../content/goals';
+import { HOME_TILE_TONES } from '../../content/categories';
 import { nodeBySlug } from '../../content/taxonomy';
 import { Icon } from '../common/Icon';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
@@ -133,19 +134,36 @@ interface CardProps {
   t: TFunction;
 }
 
+/**
+ * The type card (owner restyle 2026-09-22, same treatment as the home grid's
+ * `CategoryTile`): the icon above the image slot, a tinted ground
+ * (`HOME_TILE_TONES`, shared with `OxCategories`), and the count only on a
+ * live, positive `products_count`. The image slot is a `background-image`,
+ * never an `<img>`: a merchant's `Category.image` is an external URL that
+ * can 404, and a failed background paint just leaves the tint showing.
+ */
 function TypeCard({ link, t }: CardProps) {
   const description = descriptionOf(link, t);
+  const tone = HOME_TILE_TONES[link.slug] ?? 'ash';
+  const backgroundImage = link.image
+    ? `url("${link.image}")`
+    : `var(--ox-need-image-${link.slug}, none)`;
   return (
-    <div className="ox-cat-card" data-testid="ox-type-card" data-resolved={link.resolved ? 'true' : 'false'}>
+    <div
+      className={`ox-cat-card ox-cat-card--${tone}`}
+      data-testid="ox-type-card"
+      data-resolved={link.resolved ? 'true' : 'false'}
+      data-tone={tone}
+    >
       <Link to={link.to} className="ox-cat-card__link">
-        <span className="ox-cat-card__media" aria-hidden="true">
-          {link.image ? (
-            <img className="ox-cat-card__img" src={link.image} alt="" loading="lazy" decoding="async" />
-          ) : (
-            <Icon name={link.icon} size={44} className="ox-cat-card__icon" />
-          )}
-        </span>
+        <Icon name={link.icon} size={32} className="ox-cat-card__icon" />
+        <span className="ox-cat-card__media" aria-hidden="true" style={{ backgroundImage }} />
         <span className="ox-cat-card__name">{link.label}</span>
+        {link.count && link.count > 0 ? (
+          <span className="ox-cat-card__count">
+            {t('ox.home.need_count').replace('{{count}}', String(link.count))}
+          </span>
+        ) : null}
       </Link>
       {description ? <p className="ox-cat-card__desc ox-small">{description}</p> : null}
       {link.children.length > 0 ? (

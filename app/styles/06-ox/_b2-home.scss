@@ -1010,7 +1010,13 @@ button.ox-trust__btn:hover .ox-trust__title {
 // is written in `docs/build/progress/S2b.md`. `collagen-beauty` stays the
 // black emphasis card instead of taking a tint (`CategoryTileTone`'s
 // docblock in CategoryTile.tsx).
-.ox-cats {
+//
+// On `body`, not `.ox-cats` (S2e, 2026-09-22): `/categories`' own type cards
+// (`CategoriesIndex.tsx`'s `TypeCard`) carry the same tints, off the same
+// `HOME_TILE_TONES` map (`content/categories.ts`), and that page has no
+// `.ox-cats` ancestor. One declaration, every page, so a tint is never
+// re-measured in a second place.
+body {
   --ox-need-tint-peach: #FDEEE8; // 4.39:1
   --ox-need-tint-ash: #F1F1F0; // 4.39:1
   --ox-need-tint-mint: #EAF2EF; // 4.36:1
@@ -1036,6 +1042,11 @@ button.ox-trust__btn:hover .ox-trust__title {
 // the images") - the inverse of the row `.ox-need` used to draw before this
 // restyle. `min-block-size`, never a fixed one, so the card can grow for a
 // longer name or a two-line subline without clipping.
+// `.ox-tile` ITSELF stays unclipped: the notch below lives on `::before`
+// instead of on this element directly (check-identity's `focus-clipped`
+// rule - a `:focus-visible` outline drawn on a clipped box is cut off by its
+// own clip-path). Background, border and the one angled cut all move to the
+// pseudo; the real content stacks above it at `z-index: 1`.
 .ox-tile {
   position: relative;
   isolation: isolate;
@@ -1045,37 +1056,44 @@ button.ox-trust__btn:hover .ox-trust__title {
   gap: var(--ox-1);
   min-block-size: 158px;
   padding: var(--ox-3);
-  background: var(--ox-fill);
-  border: 1px solid var(--ox-line-3);
   color: var(--ox-fg);
   text-decoration: none;
   --ox-tile-arrow: var(--ox-accent-dark);
-  // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
-  // diagonal may exist only inside a sprite symbol, and the card sits right
-  // at that floor on the phone. The identity is carried by an axis-aligned
-  // bite out of the top inline-end corner instead - legal at any size
-  // (§3.2, `small-angle` gate). One cut, never two: the card's one angled
-  // gesture.
-  --ox-tile-notch-t: 4px;
-  --ox-tile-notch-j: 12px;
-  clip-path: polygon(
-    var(--ox-tile-notch-j) 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 var(--ox-tile-notch-t),
-    var(--ox-tile-notch-j) var(--ox-tile-notch-t)
-  );
-  transition: border-color var(--dur-base) var(--ease-out);
   @include ox-focus(2px);
 
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: var(--ox-fill);
+    border: 1px solid var(--ox-line-3);
+    transition: border-color var(--dur-base) var(--ease-out);
+    // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
+    // diagonal may exist only inside a sprite symbol, and the card sits
+    // right at that floor on the phone. The identity is carried by an
+    // axis-aligned bite out of the top inline-end corner instead - legal at
+    // any size (§3.2, `small-angle` gate). One cut, never two: the card's
+    // one angled gesture.
+    --ox-tile-notch-t: 4px;
+    --ox-tile-notch-j: 12px;
+    clip-path: polygon(
+      var(--ox-tile-notch-j) 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 var(--ox-tile-notch-t),
+      var(--ox-tile-notch-j) var(--ox-tile-notch-t)
+    );
+  }
+
   // Border colour only (BUILD.md §3.4: no lift on hover, identity rule 1).
-  &:hover {
+  &:hover::before {
     border-color: var(--ox-fg-3);
   }
 }
 
-[dir='ltr'] .ox-tile {
+[dir='ltr'] .ox-tile::before {
   clip-path: polygon(
     0 0,
     calc(100% - var(--ox-tile-notch-j)) 0,
@@ -1158,24 +1176,27 @@ button.ox-trust__btn:hover .ox-trust__title {
   color: var(--ox-tile-arrow);
 }
 
-.ox-tile--peach { background: var(--ox-need-tint-peach); }
-.ox-tile--ash { background: var(--ox-need-tint-ash); }
-.ox-tile--mint { background: var(--ox-need-tint-mint); }
-.ox-tile--sand { background: var(--ox-need-tint-sand); }
-.ox-tile--sky { background: var(--ox-need-tint-sky); }
-.ox-tile--rose { background: var(--ox-need-tint-rose); }
-.ox-tile--violet { background: var(--ox-need-tint-violet); }
+.ox-tile--peach::before { background: var(--ox-need-tint-peach); }
+.ox-tile--ash::before { background: var(--ox-need-tint-ash); }
+.ox-tile--mint::before { background: var(--ox-need-tint-mint); }
+.ox-tile--sand::before { background: var(--ox-need-tint-sand); }
+.ox-tile--sky::before { background: var(--ox-need-tint-sky); }
+.ox-tile--rose::before { background: var(--ox-need-tint-rose); }
+.ox-tile--violet::before { background: var(--ox-need-tint-violet); }
 
 // The one black emphasis card (`collagen-beauty`, `OxCategories.tsx`'s
 // `TYPE_TONE`). Same ground and edge the shaker black tile already used, so
 // the page carries one near-black rather than two that nearly match.
 .ox-tile--black {
-  background: var(--ox-graphite-2);
-  border-color: var(--ox-graphite);
   color: var(--ox-ink-on-dark);
   --ox-tile-arrow: var(--ox-accent);
 
-  &:hover {
+  &::before {
+    background: var(--ox-graphite-2);
+    border-color: var(--ox-graphite);
+  }
+
+  &:hover::before {
     border-color: var(--ox-line-2);
   }
 
@@ -1209,18 +1230,21 @@ button.ox-trust__btn:hover .ox-trust__title {
   .ox-tile {
     min-block-size: 220px;
     padding: var(--ox-4);
-    --ox-tile-lean: 64px;
-    --ox-tile-run: 43.2px;
-    clip-path: polygon(
-      var(--ox-tile-run) 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 var(--ox-tile-lean)
-    );
+
+    &::before {
+      --ox-tile-lean: 64px;
+      --ox-tile-run: 43.2px;
+      clip-path: polygon(
+        var(--ox-tile-run) 0,
+        100% 0,
+        100% 100%,
+        0 100%,
+        0 var(--ox-tile-lean)
+      );
+    }
   }
 
-  [dir='ltr'] .ox-tile {
+  [dir='ltr'] .ox-tile::before {
     clip-path: polygon(
       0 0,
       calc(100% - var(--ox-tile-run)) 0,
@@ -1342,6 +1366,10 @@ button.ox-trust__btn:hover .ox-trust__title {
   );
 }
 
+// A straight accent bar, not a lean (check-identity `small-angle`;
+// X-IDENTITY §3.2: an angled primitive is illegal below 158px, and this
+// mark is 92px tall). It carried `skewX(var(--ox-skew))` before this fix;
+// dropping the transform is the whole change, everything else unchanged.
 .ox-goal__slash {
   position: absolute;
   z-index: 2;
@@ -1350,7 +1378,6 @@ button.ox-trust__btn:hover .ox-trust__title {
   inline-size: 20px;
   block-size: 92px;
   background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
   pointer-events: none;
 }
 
@@ -1480,6 +1507,42 @@ button.ox-trust__btn:hover .ox-trust__title {
 // ---------------------------------------------------------------------------
 .ox-products {
   position: relative;
+}
+
+// ---------------------------------------------------------------------------
+// 6b. OxCategoryRail (S2e, 2026-09-22: one per type root with products)
+// ---------------------------------------------------------------------------
+// A plain `overflow-x: auto` scroller, not the Swiper-backed `.ox-rail`:
+// OxCategoryRail.tsx's own docblock has the reasoning. Card widths match the
+// figures `ProductsRailSkeleton`'s `.ox-skel-rail` already uses elsewhere on
+// this page, so a rail that DOES get a skeleton first (none of this block's
+// own instances do; see `CategoryRailSkeleton`) never disagrees with one
+// that renders straight in.
+.ox-cat-rail__scroller {
+  display: flex;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  padding-block-end: var(--ox-1);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  // No `scroll-behavior: smooth` anywhere in this rule: the browser's default
+  // instant jump is the reduced-motion-safe behaviour already, so there is no
+  // motion here to gate behind `prefers-reduced-motion`.
+}
+
+.ox-cat-rail__item {
+  flex: 0 0 auto;
+  inline-size: 172px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 1024px) {
+  .ox-cat-rail__item {
+    inline-size: 300px;
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -4,8 +4,8 @@ import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { ProductsSliderWrapper } from '../blocks/ProductsSliderWrapper';
 import { digitsOnly } from '../blocks/href';
 import { Button } from '../common/Button';
-import { Icon } from '../common/Icon';
 import { SearchField } from '../layout/Header/MainBar';
+import { XMark } from '../common/XMark';
 import { settingText } from '../product/lib/claims';
 
 export interface NotFoundProps {
@@ -25,6 +25,12 @@ export interface NotFoundProps {
  * the headline is the page's only h1. The search field is the same instance
  * the header uses, so a shopper who landed on a dead link can search without
  * scrolling back up. No humour, no mascot.
+ *
+ * The figure is the brand mark itself (X-IDENTITY-2026-09-22.md §4.3/§6:
+ * "404 | mark figure ... | accent on the figure [forbidden]"), in
+ * `--ox-plate-2` rather than accent — BUILD 3.1 reserves the accent for
+ * things people can click, and this document's own preamble says BUILD 3.1
+ * wins over X-IDENTITY wherever the two disagree.
  */
 export function NotFound({ showLatest = true }: NotFoundProps) {
   const { t } = useTranslation();
@@ -40,7 +46,7 @@ export function NotFound({ showLatest = true }: NotFoundProps) {
   return (
     <div className="ox-page ox-page--404" data-testid="ox-notfound">
       <section className="ox-state">
-        <Icon name="headset" size={32} className="ox-state__mark ox-state__mark--lg" />
+        <XMark size={96} tone="plate-2" className="ox-state__mark ox-state__mark--lg" />
         <h1 className="ox-state__title ox-display">{t('ox.error.404_title')}</h1>
         <p className="ox-state__body ox-lead">{t('ox.error.404_body')}</p>
 

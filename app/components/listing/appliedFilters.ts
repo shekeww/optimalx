@@ -37,6 +37,7 @@
  * Nothing here filters anything. It reads the address bar and returns an
  * integer.
  */
+import type { Filter } from '@salla.sa/twilight-theme-engine/api/product';
 
 /** Query parameters that are never a facet. */
 export const NON_FILTER_PARAMS = new Set([
@@ -107,4 +108,68 @@ export function appliedFilterCount(search: string | null | undefined): number {
     facets.add(key);
   }
   return facets.size;
+}
+
+// ---------------------------------------------------------------------------
+// The brand facet (S2f item 6). The listing loader's `filters` field is the
+// engine's own generic shape (`Filter { key, label, type, values }`,
+// `@salla.sa/twilight-theme-engine/api/product`) — the same array
+// `FiltersRail`/`FiltersDrawer` hand `salla-filters` whole. There is no fixed
+// spelling for "the brand one" published anywhere, so it is found by its OWN
+// `key` rather than guessed at from a URL param name, and everything below
+// reads back off that same key.
+// ---------------------------------------------------------------------------
+
+/** The spellings the payload's own `Filter.key` uses for the brand facet. */
+const BRAND_KEYS = new Set(['brand', 'brands']);
+
+/** The filter group carrying brand values, or null when the payload has none. */
+export function brandFilter(filters?: Filter[] | null): Filter | null {
+  if (!filters) return null;
+  for (const filter of filters) {
+    const key = (filter.key ?? '').trim().toLowerCase();
+    if (BRAND_KEYS.has(key)) return filter;
+  }
+  return null;
+}
+
+/** One brand value currently applied on the URL, and how to clear just it. */
+export interface AppliedBrandChip {
+  /** The exact query parameter name this value was read off, for clearing. */
+  param: string;
+  /** The exact raw value this chip clears, for clearing one of several. */
+  value: string;
+  /** The value's own label from the payload, or the raw value if unnamed. */
+  label: string;
+}
+
+/**
+ * The brand chips currently applied on the URL: one per query parameter that
+ * normalises (via `facetKey`, the same rule `appliedFilterCount` uses for
+ * every other facet) onto the brand filter's own key, labelled from the
+ * filter's own values when the payload names one.
+ */
+export function appliedBrandChips(
+  search: string | null | undefined,
+  filter: Filter | null
+): AppliedBrandChip[] {
+  if (!search || !filter) return [];
+  const key = (filter.key ?? '').trim().toLowerCase();
+  if (key === '') return [];
+  const raw = search.charAt(0) === '?' ? search.slice(1) : search;
+  if (raw === '') return [];
+
+  const labels = new Map<string, string>();
+  for (const item of filter.values ?? []) {
+    if (item.key !== undefined && item.value !== undefined) {
+      labels.set(String(item.key), item.value);
+    }
+  }
+
+  const chips: AppliedBrandChip[] = [];
+  for (const [name, value] of new URLSearchParams(raw)) {
+    if (value.trim() === '' || facetKey(name) !== key) continue;
+    chips.push({ param: name, value, label: labels.get(value) ?? value });
+  }
+  return chips;
 }

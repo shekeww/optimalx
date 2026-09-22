@@ -97,10 +97,14 @@ describe('OxCategories, the default eight', () => {
       image: 'https://cdn.example/protein.jpg',
     });
     renderWithProviders(<OxCategories data={data()} />);
-    const row = await tiles();
-    expect(row[0].querySelector('img')).toBeNull();
-    const image = row[0].querySelector('.ox-tile__image') as HTMLElement;
-    expect(image.style.backgroundImage).toContain('https://cdn.example/protein.jpg');
+    await tiles();
+    await waitFor(() =>
+      expect(
+        (screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__image') as HTMLElement)
+          .style.backgroundImage
+      ).toContain('https://cdn.example/protein.jpg')
+    );
+    expect(screen.getAllByTestId('ox-category-tile')[0].querySelector('img')).toBeNull();
   });
 
   it('falls back to the theme custom property when the live category has no image', async () => {
@@ -123,8 +127,13 @@ describe('OxCategories, the default eight', () => {
       { id: 2, name: 'كرياتين', url: `/${HOME_TYPE_SLUGS[1]}/c2`, products_count: 0, image: null }
     );
     renderWithProviders(<OxCategories data={data()} />);
-    const row = await tiles();
-    expect(row[0].querySelector('.ox-tile__count')?.textContent).toContain('14');
+    await tiles();
+    await waitFor(() =>
+      expect(
+        screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__count')?.textContent
+      ).toContain('14')
+    );
+    const row = screen.getAllByTestId('ox-category-tile');
     expect(row[1].querySelector('.ox-tile__count')).toBeNull();
     // The tiles the store has not resolved at all carry no count either.
     for (const tile of row.slice(2)) {
