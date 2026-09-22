@@ -108,6 +108,8 @@ export interface TaxonomyLink {
   /** False when no live category or menu entry matched and `to` is a search. */
   resolved: boolean;
   icon: OxIconName;
+  /** The live category's own numeric id (S2e, 2026-09-22: `OxCategoryRail`'s `source_value`), when one matched. */
+  id?: number;
   /** From the live category, when one matched. */
   count?: number;
   /** From the live category, when one matched. */
@@ -164,6 +166,7 @@ function resolveNode(
       to: liveMatch.url,
       resolved: true,
       icon: node.icon,
+      id: rawId(liveMatch),
       count: liveMatch.products_count,
       image: liveMatch.image ?? undefined,
       children: [],

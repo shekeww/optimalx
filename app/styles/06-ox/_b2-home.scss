@@ -976,24 +976,19 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
-// 4. OxNeeds and NeedCard (owner amendment 2026-09-22: replaces the separate
-//    OxCategories/CategoryTile row and OxGoals/GoalCard row with one section,
-//    two `role="tablist"` panes)
+// 4. OxCategories and CategoryTile ("Browse by type"; owner restyle
+//    2026-09-22 reverts the "shop by need" merge back into two sections.
+//    `OxGoals` keeps its dark photo cards - section 5 below, unchanged - and
+//    this is the other one, the type grid, restyled to the owner's
+//    reference: the sprite icon ABOVE the image slot, every tile on a
+//    tinted pastel ground, a two-line claims-clean subline and a count
+//    gated on a live, positive `products_count`.)
 // ---------------------------------------------------------------------------
-// One heading, one subline, a pill toggle between "goals" (default, six
-// cards) and "types" (eight), and identical row/card composition either way:
-// a 40px sprite glyph, a bold title, a two-line claims-clean subline, a count
-// gated on a live `products_count`, and an orange arrow. `register.ts` points
-// BOTH legacy block keys (`ox-goals`, `ox-categories`) at the one `OxNeeds`
-// component; `OxNeeds.tsx`'s docblock explains what stops the section
-// drawing twice when a composition still carries both.
-//
-// THE SECTION HEADING'S SUBLINE. `SectionHeader` gained an optional
-// `subline` slot for this section (additive; fourteen other callers pass
-// none and are unaffected). Its base style lives here rather than in
-// `_primitives.scss` because this is the first and, as of this batch, only
-// caller - a later section that wants one can lift this rule up without
-// this one losing anything.
+// THE SECTION HEADING'S SUBLINE. `SectionHeader`'s optional `subline` slot
+// (additive; most callers pass none and are unaffected) is now also used by
+// `AboutPage`, `FaqPage` and `ServicesHub`, outside this file's own section -
+// its base style stays here because this was the first caller, not because
+// it is the only one left.
 .ox-sh__subline {
   margin: var(--ox-2) 0 0;
   max-inline-size: 62ch;
@@ -1004,111 +999,72 @@ button.ox-trust__btn:hover .ox-trust__title {
 
 // THE PASTEL RUN (X-IDENTITY-2026-09-22.md §4.6; owner amendment: every pale
 // card is coloured, superseding the identity judges' four-ground limit).
+// Carried over verbatim from the retired `OxNeeds` section (S2b): the names
+// and the measured ratios do not change, only which section declares them.
 // Six of the seven tints are the ones that document measured against
 // `--ox-accent-dark` #D03709 for the arrow (graphical object, WCAG 1.4.11's
 // 3:1 floor, not the 4.5:1 text floor - the document is explicit that this
 // is the one place the run can silently fail AA if the colour is ever used
-// as text, which is why `--ox-need-arrow` never carries a label). The
-// seventh (violet) is this batch's own 12% tint, measured the same way; every
-// ratio is written in `docs/build/progress/S2b.md`. `collagen-beauty` (types)
-// and `goal-performance` (goals) stay the black emphasis card instead of
-// taking a tint (`NeedTone`'s docblock in NeedCard.tsx).
-.ox-needs {
+// as text, which is why `--ox-tile-arrow` never carries a label). The
+// seventh (violet) is S2b's own 12% tint, measured the same way; every ratio
+// is written in `docs/build/progress/S2b.md`. `collagen-beauty` stays the
+// black emphasis card instead of taking a tint (`CategoryTileTone`'s
+// docblock in CategoryTile.tsx).
+.ox-cats {
   --ox-need-tint-peach: #FDEEE8; // 4.39:1
   --ox-need-tint-ash: #F1F1F0; // 4.39:1
   --ox-need-tint-mint: #EAF2EF; // 4.36:1
   --ox-need-tint-sand: #F3EFE6; // 4.32:1
   --ox-need-tint-sky: #ECEFF5; // 4.31:1
   --ox-need-tint-rose: #F6EDF2; // 4.33:1
-  --ox-need-tint-violet: #EFEAF5; // 4.20:1, this batch's own tint
+  --ox-need-tint-violet: #EFEAF5; // 4.20:1
 }
 
-// THE PILL TOGGLE. A real `role="tablist"` (`Tabs.tsx`), restyled here from
-// the shared underline strip (`_primitives.scss` "11. Tabs") into a filled
-// segmented control: active state is carried by a background fill and a
-// weight change, never by colour alone, and the shape is two border-radii,
-// never a lean (X-IDENTITY §6 surface matrix: "a lean on the pill toggle" is
-// explicitly forbidden on this surface).
-.ox-needs__toggle.ox-tabs {
-  margin-block-end: var(--ox-6);
-
-  .ox-tabs__list {
-    display: inline-flex;
-    gap: 2px;
-    padding: 4px;
-    background: var(--ox-plate-2);
-    border-block-end: 0;
-    border-radius: var(--ox-r-pill);
-    overflow-x: visible;
-  }
-
-  .ox-tabs__tab {
-    min-block-size: 40px;
-    padding-inline: var(--ox-4);
-    border-radius: var(--ox-r-pill);
-    font-size: var(--ox-t-small);
-    font-weight: var(--ox-w-quiet);
-
-    &::after {
-      content: none;
-    }
-  }
-
-  .ox-tabs__tab[aria-selected='true'] {
-    background: var(--ox-ink);
-    color: var(--ox-ink-on-dark);
-    font-weight: var(--ox-w-title);
-  }
-
-  .ox-tabs__panel {
-    padding-block-start: 0;
-  }
-}
-
-.ox-needs__grid {
+// 2-up at 390 (container 358: two 171px columns and a 16px gap), 4-up from
+// 1280 (`.ox-cats__grid` media query below).
+.ox-cats__grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ox-3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-// ONE CARD SHAPE, at every width: a row (`grid-template-areas: 'icon title
-// arrow' 'icon line arrow'`), never a photograph (S2b brief: "eight supplier
-// packshots never read as one set" is exactly why the legacy CategoryTile
-// dropped `Category.image` - the owner's amendment restores an image slot,
-// but as a small corner packshot behind the row's own tint, not as the
-// card's ground).
-.ox-need {
+// ONE CARD SHAPE: a column, not a row, because the owner's reference draws
+// the glyph ABOVE the artwork rather than beside it ("the icons to be above
+// the images") - the inverse of the row `.ox-need` used to draw before this
+// restyle. `min-block-size`, never a fixed one, so the card can grow for a
+// longer name or a two-line subline without clipping.
+.ox-tile {
   position: relative;
   isolation: isolate;
-  display: grid;
-  grid-template-columns: 40px 1fr auto;
-  grid-template-areas: 'icon title arrow' 'icon line arrow';
-  align-items: center;
-  column-gap: var(--ox-3);
-  row-gap: 2px;
-  min-block-size: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
+  min-block-size: 158px;
   padding: var(--ox-3);
   background: var(--ox-fill);
   border: 1px solid var(--ox-line-3);
   color: var(--ox-fg);
   text-decoration: none;
-  --ox-need-arrow: var(--ox-accent-dark);
+  --ox-tile-arrow: var(--ox-accent-dark);
   // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
-  // diagonal may exist only inside a sprite symbol, and this row is 84px.
-  // The identity is carried by an axis-aligned bite out of the top
-  // inline-end corner instead - legal at any size (§3.2, `small-angle` gate).
-  --ox-need-notch-t: 4px;
-  --ox-need-notch-j: 12px;
+  // diagonal may exist only inside a sprite symbol, and the card sits right
+  // at that floor on the phone. The identity is carried by an axis-aligned
+  // bite out of the top inline-end corner instead - legal at any size
+  // (§3.2, `small-angle` gate). One cut, never two: the card's one angled
+  // gesture.
+  --ox-tile-notch-t: 4px;
+  --ox-tile-notch-j: 12px;
   clip-path: polygon(
-    var(--ox-need-notch-j) 0,
+    var(--ox-tile-notch-j) 0,
     100% 0,
     100% 100%,
     0 100%,
-    0 var(--ox-need-notch-t),
-    var(--ox-need-notch-j) var(--ox-need-notch-t)
+    0 var(--ox-tile-notch-t),
+    var(--ox-tile-notch-j) var(--ox-tile-notch-t)
   );
   transition: border-color var(--dur-base) var(--ease-out);
   @include ox-focus(2px);
@@ -1119,212 +1075,215 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 }
 
-[dir='ltr'] .ox-need {
+[dir='ltr'] .ox-tile {
   clip-path: polygon(
     0 0,
-    calc(100% - var(--ox-need-notch-j)) 0,
-    calc(100% - var(--ox-need-notch-j)) var(--ox-need-notch-t),
-    100% var(--ox-need-notch-t),
+    calc(100% - var(--ox-tile-notch-j)) 0,
+    calc(100% - var(--ox-tile-notch-j)) var(--ox-tile-notch-t),
+    100% var(--ox-tile-notch-t),
     100% 100%,
     0 100%
   );
 }
 
-// The corner packshot: a `background-image`, never an `<img>`, so a 404 on a
+.ox-tile__icon {
+  z-index: 1;
+  flex: none;
+  inline-size: 32px;
+  block-size: 32px;
+  color: var(--ox-fg);
+}
+
+// The image slot: a `background-image`, never an `<img>`, so a 404 on a
 // merchant's `Category.image` leaves the tint showing instead of a broken-
 // image glyph, and the theme fallback (`--ox-need-image-<slug>`, the owner's
 // generated art) or `none` costs nothing to declare when it is absent
-// (NeedCard.tsx's docblock).
-.ox-need__image {
-  position: absolute;
-  z-index: 0;
-  inset-block-start: 0;
-  inset-inline-end: 0;
-  inline-size: 44px;
-  block-size: 44px;
+// (CategoryTile.tsx's docblock). Sits BELOW the icon in source and paint
+// order, which is the owner's own instruction for this restyle.
+.ox-tile__image {
+  z-index: 1;
+  flex: none;
+  inline-size: 100%;
+  block-size: 56px;
   background-size: cover;
   background-position: center;
   pointer-events: none;
 }
 
-.ox-need__icon {
-  grid-area: icon;
+.ox-tile__name {
   z-index: 1;
-  align-self: start;
-  inline-size: 40px;
-  block-size: 40px;
-  color: var(--ox-fg);
-}
-
-.ox-need__title {
-  grid-area: title;
-  z-index: 1;
-  align-self: end;
   font-size: var(--ox-t-body);
   font-weight: var(--ox-w-title);
   color: var(--ox-fg);
 }
 
 // Two lines, clamped, and it has to fit at 320 without ellipsis on the
-// longest line (S2b brief; the eight type lines and six goal lines are all
-// measured against a 176px column at that width).
-.ox-need__line {
-  grid-area: line;
+// longest line: the 2-up grid halves the 358 container (minus the grid
+// gap), against roughly a 136px column at that width - narrower than the
+// single-column phone `.ox-need__line` used to measure against, so this
+// carries the smallest type-scale step, `--ox-t-micro`.
+.ox-tile__line {
   z-index: 1;
-  align-self: start;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: var(--ox-t-small);
-  line-height: 1.4;
+  font-size: var(--ox-t-micro);
+  line-height: 1.35;
   color: var(--ox-fg-2);
 }
 
-.ox-need__foot {
-  grid-area: arrow;
+.ox-tile__foot {
   z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--ox-1);
-  align-self: center;
+  inline-size: 100%;
+  margin-block-start: auto;
+  padding-block-start: var(--ox-1);
 }
 
-.ox-need__count {
+.ox-tile__count {
   font-size: var(--ox-t-small);
   color: var(--ox-fg-3);
 }
 
 // The one true accent element every card carries (identity rule 1):
-// `--ox-need-arrow` is `--ox-accent-dark` on every pastel tint (measured
-// 4.20 to 4.39:1 against it, the 3:1 graphical floor) and the section's one
+// `--ox-tile-arrow` is `--ox-accent-dark` on every pastel tint (measured
+// 4.20 to 4.39:1 against it, the 3:1 graphical floor) and the card's one
 // literal `--ox-accent` on the black card, below.
-.ox-need__arrow {
+.ox-tile__arrow {
+  margin-inline-start: auto;
   font-size: 18px;
-  color: var(--ox-need-arrow);
+  color: var(--ox-tile-arrow);
 }
 
-.ox-need--peach { background: var(--ox-need-tint-peach); }
-.ox-need--ash { background: var(--ox-need-tint-ash); }
-.ox-need--mint { background: var(--ox-need-tint-mint); }
-.ox-need--sand { background: var(--ox-need-tint-sand); }
-.ox-need--sky { background: var(--ox-need-tint-sky); }
-.ox-need--rose { background: var(--ox-need-tint-rose); }
-.ox-need--violet { background: var(--ox-need-tint-violet); }
+.ox-tile--peach { background: var(--ox-need-tint-peach); }
+.ox-tile--ash { background: var(--ox-need-tint-ash); }
+.ox-tile--mint { background: var(--ox-need-tint-mint); }
+.ox-tile--sand { background: var(--ox-need-tint-sand); }
+.ox-tile--sky { background: var(--ox-need-tint-sky); }
+.ox-tile--rose { background: var(--ox-need-tint-rose); }
+.ox-tile--violet { background: var(--ox-need-tint-violet); }
 
-// The one black emphasis card per pane (`collagen-beauty` on types,
-// `goal-performance` on goals - OxNeeds.tsx's `GOAL_TONE` docblock). Same
-// ground and edge the shaker black tile already used, so the page carries
-// one near-black rather than two that nearly match.
-.ox-need--black {
+// The one black emphasis card (`collagen-beauty`, `OxCategories.tsx`'s
+// `TYPE_TONE`). Same ground and edge the shaker black tile already used, so
+// the page carries one near-black rather than two that nearly match.
+.ox-tile--black {
   background: var(--ox-graphite-2);
   border-color: var(--ox-graphite);
   color: var(--ox-ink-on-dark);
-  --ox-need-arrow: var(--ox-accent);
+  --ox-tile-arrow: var(--ox-accent);
 
   &:hover {
     border-color: var(--ox-line-2);
   }
 
-  .ox-need__icon,
-  .ox-need__title {
+  .ox-tile__icon,
+  .ox-tile__name {
     color: var(--ox-ink-on-dark);
   }
 
-  .ox-need__line {
-    color: var(--ox-ink-2-on-dark);
-  }
-
-  .ox-need__count {
+  .ox-tile__line,
+  .ox-tile__count {
     color: var(--ox-ink-2-on-dark);
   }
 }
 
 @media (min-width: 640px) {
-  .ox-needs__grid {
+  .ox-cats__grid {
     gap: var(--ox-4);
   }
 }
 
-// 768 to 1279: two columns, a smaller glyph so the text measure never drops
-// below the single-column phone's (S2b brief).
-@media (min-width: 768px) and (max-width: 1279px) {
-  .ox-needs__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ox-need {
-    min-block-size: 96px;
-  }
-
-  .ox-need__icon {
-    inline-size: 24px;
-    block-size: 24px;
-  }
-}
-
-// From 1280: three columns for the goals pane, four for types, and the card
-// grows past X-IDENTITY §3.2's 158px floor, so its one angled gesture
-// upgrades from the notch to the mark's own corner cut (§3.3: lean 64,
-// run 43.2).
+// From 1280: four across, and the card grows past X-IDENTITY §3.2's 158px
+// floor, so its one angled gesture upgrades from the notch to the mark's
+// own corner cut (§3.3: lean 64, run 43.2 - tan 34° = 0.6745, 64 × 0.6745 =
+// 43.168, rounded; never a literal degree).
 @media (min-width: 1280px) {
-  .ox-needs__grid--goals {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .ox-needs__grid--types {
+  .ox-cats__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .ox-needs__grid {
     gap: var(--ox-6);
   }
 
-  .ox-need {
-    grid-template-columns: 40px 1fr auto;
-    min-block-size: 168px;
+  .ox-tile {
+    min-block-size: 220px;
     padding: var(--ox-4);
-    --ox-need-lean: 64px;
-    --ox-need-run: 43.2px;
+    --ox-tile-lean: 64px;
+    --ox-tile-run: 43.2px;
     clip-path: polygon(
-      var(--ox-need-run) 0,
+      var(--ox-tile-run) 0,
       100% 0,
       100% 100%,
       0 100%,
-      0 var(--ox-need-lean)
+      0 var(--ox-tile-lean)
     );
   }
 
-  [dir='ltr'] .ox-need {
+  [dir='ltr'] .ox-tile {
     clip-path: polygon(
       0 0,
-      calc(100% - var(--ox-need-run)) 0,
-      100% var(--ox-need-lean),
+      calc(100% - var(--ox-tile-run)) 0,
+      100% var(--ox-tile-lean),
       100% 100%,
       0 100%
     );
   }
 
-  .ox-need__icon {
-    inline-size: 40px;
-    block-size: 40px;
-  }
-
-  .ox-need__image {
-    inline-size: 64px;
-    block-size: 64px;
+  .ox-tile__image {
+    block-size: 96px;
   }
 }
 
 // ---------------------------------------------------------------------------
-// 5. GoalCard (kept: `app/components/listing/CategoriesIndex.tsx` - the
-//    `/categories` index page, outside this batch's file ownership - still
-//    imports the component directly for its own goal row. `OxGoals` itself,
-//    the HOME block that used to render these cards, is retired; its six
-//    cards live in `OxNeeds`' goals pane now (`NeedCard`, section 4 above).
-//    Unchanged from the block this replaced on the home page, so the
-//    `/categories` page's own goal row keeps its current design.)
+// 5. GoalCard (shared by two callers: `OxGoals`, the HOME block restored by
+//    the 2026-09-22 revert of the "shop by need" merge, and
+//    `app/components/listing/CategoriesIndex.tsx` - the `/categories` index
+//    page, outside this batch's file ownership - which still imports the
+//    component directly for its own goal row. Unchanged by this revert.
+//
+//    `.ox-goals__grid`'s own column rules below are RESTORED, not new: the
+//    "shop by need" merge deleted them along with `OxGoals.tsx`, which broke
+//    `_b4-listing.scss`'s "14. The categories index" section too - it
+//    documents consuming `.ox-goal`/`.ox-goals__grid` "unchanged from
+//    _b2-home.scss" and never redeclared its own copy.)
 // ---------------------------------------------------------------------------
+.ox-goals {
+  scroll-margin-block-start: calc(var(--ox-header-h, 96px) + var(--ox-4));
+}
+
+.ox-goals__grid {
+  display: grid;
+  // minmax(0, 1fr), never 1fr: `1fr` is `minmax(auto, 1fr)`, so a track
+  // holding a clamped or nowrap label takes that label's min-content width
+  // and the grid runs past the viewport.
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-goals__grid {
+    gap: var(--ox-4);
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-goals__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--ox-6);
+  }
+}
+
 .ox-goal {
   position: relative;
   isolation: isolate;
@@ -2350,35 +2309,37 @@ button.ox-trust__btn:hover .ox-trust__title {
   justify-content: center;
 }
 
-// `NeedsSkeleton` (HomeSkeleton.tsx): a heading bar, a toggle bar and six row
-// placeholders, matching `.ox-needs__grid`'s own breakpoints so the swap to
-// real cards shifts nothing.
-.ox-skel-needs {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-4);
+// `GoalsSkeleton` (HomeSkeleton.tsx): six dark cards, matching
+// `.ox-goals__grid`'s own breakpoints so the swap to real cards shifts
+// nothing.
+.ox-skel-grid--goals {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.ox-skel-needs__toggle {
-  max-inline-size: 220px;
-  border-radius: var(--ox-r-pill);
-}
-
-.ox-skel-grid--needs {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) and (max-width: 1279px) {
-  .ox-skel-grid--needs {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (min-width: 640px) {
+  .ox-skel-grid--goals {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1280px) {
-  .ox-skel-grid--needs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .ox-skel-grid--goals {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
+
+// `CategoriesSkeleton`: eight tiles, matching `.ox-cats__grid`'s own
+// breakpoints (2-up, 4-up from 1280).
+.ox-skel-grid--tiles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1280px) {
+  .ox-skel-grid--tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 
 @media (min-width: 1024px) {
   .ox-skel-grid--channels,

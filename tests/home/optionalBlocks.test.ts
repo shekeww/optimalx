@@ -29,11 +29,18 @@ import { BLOCK_SKELETONS } from '../../app/components/home/HomeSkeleton';
  * A store that later turns one of these on takes the shift on that block
  * instead, which is the smaller cost and affects nobody today.
  *
- * `ox-categories` joined this list on 2026-09-22 (S2b): it is `OxNeeds`'
- * OTHER registered slot (register.ts), and whichever of `ox-goals` /
- * `ox-categories` is not first in the composition renders null, which is
- * `ox-categories` in every default composition (`ox-goals` sits right after
- * the hero; `ox-categories` sits after `ox-products-secondary`).
+ * `ox-categories` joined this list on 2026-09-22 (S2b, "shop by need" merge)
+ * and left it again the same day, when the owner reverted the merge back
+ * into two separate blocks: `OxCategories` renders its own eight type tiles
+ * unconditionally, the same fallback-to-search contract it carried before
+ * S2b, so it reserves a real height again like every other ungated block.
+ *
+ * `ox-category-rail` joined the same day (S2e): unlike `OxCategories`, a
+ * product rail has no honest placeholder for a category that has not
+ * resolved to a real Salla id yet, so it renders null exactly like
+ * `ox-brands` does for zero brands - and the live store has zero categories
+ * today (`fixtures/store/categories.json`), so every one of the eight rail
+ * instances is in that state right now.
  */
 const GATED = [
   'ox-newsletter',
@@ -42,7 +49,7 @@ const GATED = [
   'ox-guides',
   'ox-poster',
   'ox-certifications',
-  'ox-categories',
+  'ox-category-rail',
 ] as const;
 
 describe('the gated home blocks', () => {

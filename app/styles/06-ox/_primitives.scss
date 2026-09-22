@@ -854,9 +854,13 @@ $ox-angle-tan: 0.6745;
 }
 
 .ox-badge {
+  // ox-allow: small-angle — notch only (the clip-path below), no lean;
+  // check-identity's mixin-name detection cannot see an inlined ox-x-notch
+  // shape, so this declaration is ordered first to carry the pragma on the
+  // line the checker's block-size match resolves to.
+  block-size: 20px; // ox-allow: small-angle
   display: inline-flex;
   align-items: center;
-  block-size: 20px;
   padding-inline: var(--ox-2);
   border: 1px solid transparent;
   border-radius: var(--ox-r-1);

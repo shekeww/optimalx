@@ -12,6 +12,7 @@ import {
   hasHeroBlock,
   type HomeBlockPath,
 } from '../../app/components/home/defaults';
+import { HOME_TYPE_SLUGS } from '../../app/content/categories';
 
 /**
  * PLAN-final C2: `virtual:twilight/schema` is empty in production, so the
@@ -48,7 +49,7 @@ function merchantFields(component: ManifestComponent): ManifestField[] {
 }
 
 describe('home block manifest', () => {
-  it('declares exactly the twelve DIRECTION 6.2 blocks, in order', () => {
+  it('declares exactly the DIRECTION 6.2 blocks, in order', () => {
     expect(manifest.components.map((component) => component.path)).toEqual(
       HOME_BLOCK_PATHS.map((blockName) => `home.${blockName}`)
     );
@@ -63,9 +64,14 @@ describe('home block manifest', () => {
     }
   });
 
-  it('turns every block on by default except the campaign banner', () => {
+  it('turns every block on by default except the campaign banner and the extra category rail', () => {
+    // `ox-category-rail` is `is_default: false` (S2e, 2026-09-22): the
+    // dashboard schema block is for a MERCHANT'S OWN extra rail, past the
+    // eight the theme's own default composition already draws (see
+    // `DEFAULT_HOME_COMPONENTS`'s docblock in defaults.ts).
+    const OFF = new Set(['home.ox-banner', 'home.ox-category-rail']);
     for (const component of manifest.components) {
-      const expected = component.path !== 'home.ox-banner';
+      const expected = !OFF.has(component.path ?? '');
       expect(component.is_default === true).toBe(expected);
     }
   });
@@ -106,16 +112,29 @@ describe('home block manifest', () => {
 });
 
 describe('default composition', () => {
-  it('is the twelve blocks in DIRECTION 6.2 order with their manifest defaults', () => {
-    expect(DEFAULT_HOME_COMPONENTS.map((component) => component.path)).toEqual([
-      ...HOME_BLOCK_PATHS,
-    ]);
+  it('is the DIRECTION 6.2 blocks in order with their manifest defaults, ox-category-rail drawn once per type root', () => {
+    // `ox-category-rail` is the one path drawn more than once (defaults.ts's
+    // own docblock): every OTHER path appears exactly once, in
+    // `HOME_BLOCK_PATHS` order, and `ox-category-rail` appears once per
+    // `HOME_TYPE_SLUGS` entry, right where its single path sits in the order.
+    const paths = DEFAULT_HOME_COMPONENTS.map((component) => component.path);
+    const expected = HOME_BLOCK_PATHS.flatMap((path) =>
+      path === 'ox-category-rail' ? HOME_TYPE_SLUGS.map(() => path) : [path]
+    );
+    expect(paths).toEqual(expected);
     for (const component of DEFAULT_HOME_COMPONENTS) {
       const blockName = component.path as HomeBlockPath;
       for (const [id, value] of Object.entries(HOME_BLOCK_FIELDS[blockName])) {
         expect(component[id]).toEqual(value);
       }
     }
+  });
+
+  it('gives each ox-category-rail instance a distinct rootSlug, one per HOME_TYPE_SLUGS entry', () => {
+    const rails = DEFAULT_HOME_COMPONENTS.filter((component) => component.path === 'ox-category-rail');
+    expect(rails.map((rail) => (rail as unknown as { rootSlug: string }).rootSlug)).toEqual(
+      HOME_TYPE_SLUGS
+    );
   });
 
   it('gives every default block a distinct render key', () => {

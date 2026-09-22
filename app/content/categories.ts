@@ -295,6 +295,19 @@ export const SHAKER_CATEGORY_SLUGS: string[] = CATEGORIES.filter(
   (category) => category.parent === null && category.tone !== null
 ).map((category) => category.slug);
 
+/**
+ * The eight type roots that carry a home tile and a product rail (S2b's
+ * `cardLineKey` run, `OxCategories.tsx`/`OxCategoryRail.tsx`): the ten root
+ * categories minus `snacks-bars` and `accessories`, left off so the type
+ * grid holds a full row at every breakpoint rather than a half-empty one.
+ * The single source both `OxCategories` and the home route's default
+ * composition (`defaults.ts`) read, so the two can never list a different
+ * eight.
+ */
+export const HOME_TYPE_SLUGS: string[] = CATEGORIES.filter(
+  (category) => Boolean(category.cardLineKey)
+).map((category) => category.slug);
+
 export function categoryBySlug(slug: string | undefined): CategoryContent | undefined {
   return CATEGORIES.find((category) => category.slug === slug);
 }

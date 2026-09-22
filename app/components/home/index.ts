@@ -1,10 +1,12 @@
 export { OxHero } from './OxHero';
-export { OxNeeds } from './OxNeeds';
-export { NeedCard } from './NeedCard';
-// `GoalCard` is no longer a home block (S2b merged it into `OxNeeds`/`NeedCard`),
-// but `app/components/listing/CategoriesIndex.tsx` (outside this batch's file
-// ownership) still imports the file directly for the `/categories` page's own
-// goal row, so the file and this re-export both stay.
+export { OxGoals } from './OxGoals';
+export { OxCategories } from './OxCategories';
+export { CategoryTile } from './CategoryTile';
+export { OxCategoryRail } from './OxCategoryRail';
+// `GoalCard` is shared by `OxGoals` (this home block) and
+// `app/components/listing/CategoriesIndex.tsx` (outside this batch's file
+// ownership), which imports the file directly for the `/categories` page's
+// own goal row, so the file and this re-export both stay.
 export { GoalCard } from './GoalCard';
 export { PlanCard } from './PlanCard';
 export { BandPhoto } from './BandPhoto';

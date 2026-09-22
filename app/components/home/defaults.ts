@@ -1,4 +1,5 @@
 import type { HomeComponentData } from '@salla.sa/twilight-theme-engine/types';
+import { HOME_TYPE_SLUGS } from '../../content/categories';
 
 /**
  * The twelve home blocks: their order, their reserved heights and the field
@@ -51,13 +52,14 @@ export const HOME_BLOCK_PATHS = [
   'ox-posters',
   'ox-products-secondary',
   'ox-categories',
-  // MOVED (S2c, 2026-09-22): directly after the needs section, ahead of the
-  // brand strip. `ox-categories` is the needs section's second pane today
-  // ("browse by type"); once S2b merges it with `ox-goals` into one `OxNeeds`
-  // block this still has to sit right after wherever that block lands — the
-  // needs grid asks "which one", this band answers "ask us", and the two
-  // belong next to each other more than either belongs next to the brand
-  // strip.
+  // MOVED (S2c, 2026-09-22): directly after the type grid, ahead of the
+  // brand strip - the grid asks "which one", this band answers "ask us", and
+  // the two belong next to each other more than either belongs next to the
+  // brand strip.
+  // One rail per type root with products (S2e, 2026-09-22): sits right after
+  // the type grid it answers, one registered path drawn up to eight times in
+  // `DEFAULT_HOME_COMPONENTS` below.
+  'ox-category-rail',
   'ox-services',
   'ox-brands',
   'ox-guides',
@@ -84,9 +86,12 @@ export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
  * - `ox-trust-strip` shrank: the cells are a glyph beside two lines now, not
  *   a glyph above them, and on a phone the row is one line of a sideways
  *   scroller rather than a two by two grid.
- * - `ox-categories` shrank a long way: the tile is a glyph over a name, with
- *   no 4:3 image plate under it, and the row is eight across on a desktop
- *   and two rows of four on a phone.
+ * - `ox-categories` shrank a long way at the time: the tile was a glyph over
+ *   a name, with no 4:3 image plate under it, eight across on a desktop and
+ *   two rows of four on a phone. Restyled again since (owner reverts the
+ *   "shop by need" merge, 2026-09-22): a tinted tile with an image slot
+ *   below the glyph, see the entry's own comment below for the current
+ *   number.
  * - `ox-goals` grew: the cards are dark photographic cards with a title, a
  *   line and an action, not 128px icon tiles.
  * - `ox-services` (re-measured again, S2c 2026-09-22): back on a dark band,
@@ -109,34 +114,37 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
   // a layout shift in the least forgivable direction: everything a shopper was
   // reading jumps upward under them.
-  // Rewritten for `OxNeeds` (S2b, 2026-09-22; the goal doors above are gone,
-  // replaced by the merged "shop by need" section - token arithmetic against
-  // `_b2-home.scss`'s "1. OxNeeds and NeedCard" section, not a live browser
-  // measurement; see docs/build/progress/S2b.md for the addition.
+  // RESTORED (owner reverts the "shop by need" merge, 2026-09-22): `OxGoals`'
+  // own dark-card row again, not `OxNeeds`' goals pane - token arithmetic
+  // against `_b2-home.scss`'s "5. GoalCard" section (the restored
+  // `.ox-goals__grid`/`.ox-goal` rules), not a live browser measurement.
   //
-  // Mobile (358 container): SectionHeader stack 106 (h2 ~30 + gap 8 + 2-line
-  // subline ~44 + margin-end 24, the same shape OxServices' own re-measure
-  // uses without its eyebrow row) + gap to the toggle 16 + pill toggle 48 +
-  // panel top padding 16 + the GOALS pane's grid, the default tab: 6 rows of
-  // 84 plus 5 gaps of 12 = 564. Total 750.
+  // Mobile (358 container, 2-up grid before the 640 breakpoint): SectionHeader
+  // stack 54 (h2 ~30 + margin-end 24, no subline on this block) + grid 624
+  // (3 rows of a 200 card + two 12 gaps). Total 678.
   //
-  // Desktop (1296 container, 3-up): header stack 107 (h2 40 + gap 8 + 1-line
-  // subline 27 + margin-end 32) + gap 16 + toggle 48 + panel padding 16 +
-  // grid 368 (2 rows of a 172 card + one 24 gap, six goals over three
-  // columns). Total 555.
-  'ox-goals': { mobile: 750, desktop: 555 },
+  // Desktop (1440 viewport, 6-up grid from 1280, card min-block-size 400):
+  // header stack 64 (h2 ~40 + margin-end 24) + grid 400 (one row, six goals
+  // over six columns). Total 464.
+  'ox-goals': { mobile: 678, desktop: 464 },
   // The largest single error in the old table, and in the opposite direction.
   // The rail became an eight-card grid and the reservation never followed, so
   // this block UNDER-reserved by 410px and jumped down on mount.
   'ox-products': { mobile: 1759, desktop: 1040 },
-  // `ox-categories` is the needs section's OTHER registered slot (S2b,
-  // 2026-09-22): both `home.ox-goals` and `home.ox-categories` render
-  // `OxNeeds`, and whichever is NOT first in the composition (today, always
-  // `ox-categories`: it sits after `ox-products-secondary` while `ox-goals`
-  // sits right after the hero) renders null, so this reserves nothing - the
-  // same reasoning `ox-brands`/`ox-guides` already follow below for a block
-  // that renders nothing by default.
-  'ox-categories': { mobile: 0, desktop: 0 },
+  // RESTORED AND RESTYLED (owner reverts the "shop by need" merge, 2026-09-22):
+  // `OxCategories`' own eight-tile grid again, restyled to the owner's
+  // reference (icon above the image, every tile tinted) - token arithmetic
+  // against `_b2-home.scss`'s "4. OxCategories and CategoryTile" section, not
+  // a live browser measurement.
+  //
+  // Mobile (358 container, 2-up grid): SectionHeader stack 84 (h2 ~30 + row-gap
+  // 8 + the view-all link row ~22 + margin-end 24) + grid 668 (4 rows of a
+  // 158 tile + three 12 gaps). Total 752.
+  //
+  // Desktop (1440 viewport, 4-up grid from 1280, tile min-block-size 220):
+  // header stack 96 (h2 ~40 + row-gap 8 + view-all ~24 + margin-end 24) + grid
+  // 464 (2 rows of a 220 tile + one 24 gap). Total 560.
+  'ox-categories': { mobile: 752, desktop: 560 },
   // The campaign poster is gated on a real campaign and renders null until
   // the merchant writes a headline, so it reserves nothing by default. A store
   // running one takes the shift on that block instead, which is the smaller
@@ -144,6 +152,13 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   'ox-poster': { mobile: 0, desktop: 0 },
   'ox-posters': { mobile: 362, desktop: 380 },
   'ox-products-secondary': { mobile: 924, desktop: 1040 },
+  // A product rail has no honest placeholder for a category that has not
+  // resolved to a real Salla id yet (`OxCategoryRail.tsx`), so it renders
+  // null, and the live store has zero categories today
+  // (`fixtures/store/categories.json`), so every one of the eight default
+  // instances is in that state right now. Same reasoning as `ox-brands`/
+  // `ox-guides` below.
+  'ox-category-rail': { mobile: 0, desktop: 0 },
   // Both of these render nothing today and reserving for them was pure shift:
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the newsletter and banner rows below.
@@ -237,6 +252,12 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   },
   'ox-goals': {},
   'ox-categories': { categories: [] },
+  // A single category picker (S2e, 2026-09-22), the same `source: categories`
+  // shape `ox-categories`' own field carries, clamped to one row instead of a
+  // multichoice - a merchant adding their own rail past the eight defaults
+  // picks exactly one category for it. `title` overrides the SectionHeader
+  // text; empty falls back to the resolved category's own name.
+  'ox-category-rail': { category: [], title: null },
   'ox-products': { title: null, products: [] },
   // The campaign poster's whole gate: no headline, no band.
   'ox-poster': { headline: null, eyebrow: null, line: null, image: null, cta_label: null, cta_url: null },
@@ -263,16 +284,32 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
 };
 
 /**
- * The default composition: the twelve blocks in DIRECTION 6.2 order, each
- * carrying its manifest defaults. `ox-banner` is present and renders nothing
- * until the merchant uploads an image, which is what "off in the default
- * composition" means in the 6.2 table (its row reserves 0 on both viewports).
+ * The default composition: the DIRECTION 6.2 blocks in order, each carrying
+ * its manifest defaults. `ox-banner` is present and renders nothing until the
+ * merchant uploads an image, which is what "off in the default composition"
+ * means in the 6.2 table (its row reserves 0 on both viewports).
+ *
+ * `ox-category-rail` is the one path this builds MORE than once (S2e,
+ * 2026-09-22, "create all categories sections needed in homepage"): one
+ * registered block, drawn once per `HOME_TYPE_SLUGS` root, each instance
+ * carrying its own `rootSlug` - not a manifest field (`HOME_BLOCK_FIELDS`
+ * above declares none), so it never shows up in the dashboard or the parity
+ * test, just this file's own signal for which category `OxCategoryRail`
+ * resolves through `useTaxonomyLinks` when the merchant's own `category`
+ * field is empty. A merchant who does pick one overrides it exactly the way
+ * `ox-categories`' own `categories` field already overrides its default row.
  */
-export const DEFAULT_HOME_COMPONENTS: HomeComponentData[] = HOME_BLOCK_PATHS.map((path) => ({
-  path,
-  key: `default-${path}`,
-  ...HOME_BLOCK_FIELDS[path],
-})) as HomeComponentData[];
+export const DEFAULT_HOME_COMPONENTS: HomeComponentData[] = HOME_BLOCK_PATHS.flatMap((path) => {
+  if (path === 'ox-category-rail') {
+    return HOME_TYPE_SLUGS.map((slug) => ({
+      path,
+      key: `default-${path}-${slug}`,
+      rootSlug: slug,
+      ...HOME_BLOCK_FIELDS[path],
+    }));
+  }
+  return [{ path, key: `default-${path}`, ...HOME_BLOCK_FIELDS[path] }];
+}) as HomeComponentData[];
 
 /** `ox-hero` from a loader's component list: the C19 sr-only h1 depends on it. */
 export const HERO_PATH: HomeBlockPath = 'ox-hero';

@@ -8,7 +8,9 @@ import { createElement } from 'react';
 import { HOME_BLOCK_HEIGHT_CSS, HOME_BLOCK_PATHS, type HomeBlockPath } from './defaults';
 import { BLOCK_SKELETONS } from './HomeSkeleton';
 import { OxHero } from './OxHero';
-import { OxNeeds } from './OxNeeds';
+import { OxGoals } from './OxGoals';
+import { OxCategories } from './OxCategories';
+import { OxCategoryRail } from './OxCategoryRail';
 import { OxProducts } from './OxProducts';
 import { OxPoster } from './OxPoster';
 import { OxPosters } from './OxPosters';
@@ -45,13 +47,14 @@ import { OxBanner } from './OxBanner';
 
 const BLOCKS: Record<HomeBlockPath, AnyHomeComponent> = {
   'ox-hero': OxHero,
-  // Both legacy block keys point at the SAME merged component (S2b, 2026-09-22):
-  // OxNeeds claims whichever slot the current composition renders first
-  // (`useClaimPrimaryNeedsSlot`) and the other renders null, so a store whose
-  // dashboard composition still carries both (twilight.json marks both
-  // `is_default: true`) draws the section once. See OxNeeds.tsx's docblock.
-  'ox-goals': OxNeeds,
-  'ox-categories': OxNeeds,
+  // Reverted (owner call, 2026-09-22): back to two separate blocks, each its
+  // own component, the way they were before S2b's "shop by need" merge.
+  'ox-goals': OxGoals,
+  'ox-categories': OxCategories,
+  // One rail per root type category on the home page (S2e, 2026-09-22): a
+  // single registered path, drawn multiple times in `DEFAULT_HOME_COMPONENTS`
+  // (defaults.ts), once per type root the merchant field does not override.
+  'ox-category-rail': OxCategoryRail,
   'ox-products': OxProducts,
   'ox-poster': OxPoster,
   'ox-posters': OxPosters,

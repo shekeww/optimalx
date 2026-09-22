@@ -37,6 +37,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
 vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
   category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => categories }) } },
 }));
+vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
+  menu: { queries: { header: () => ({ queryKey: ['menu', 'header'], queryFn: async () => [] }) } },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/api/brands', () => ({
   brand: { queries: { list: () => ({ queryKey: ['brands'], queryFn: async () => brandGroups }) } },
 }));
@@ -48,6 +51,7 @@ const { OxFaq } = await import('../../app/components/home/OxFaq');
 const { OxGuides } = await import('../../app/components/home/OxGuides');
 const { OxBrands } = await import('../../app/components/home/OxBrands');
 const { OxBanner } = await import('../../app/components/home/OxBanner');
+const { OxCategories } = await import('../../app/components/home/OxCategories');
 const { OxProducts, resolveSource } = await import('../../app/components/home/OxProducts');
 
 function data(path: keyof typeof HOME_BLOCK_FIELDS, extra: Record<string, unknown> = {}): OxBlockData {
@@ -146,6 +150,41 @@ describe('OxBanner', () => {
     // that number and no store data supplies it, so the band has no element
     // for it: a merchant asserting a figure does it in their own artwork.
     expect(screen.getByTestId('ox-banner').textContent).not.toMatch(/[0-9]+%/);
+  });
+});
+
+// Restored 2026-09-22 (owner reverts the "shop by need" merge): the fallback
+// contract this file's own docblock is about - the tiles it falls back to
+// while the store is still being filled in. The full behavioural contract
+// (tints, the icon-above-image order, the count gate) lives in its own
+// `tests/home/OxCategories.test.tsx`.
+describe('OxCategories', () => {
+  it('falls back to eight type tiles, each linking to a search until the category exists', async () => {
+    categories.length = 0;
+    renderWithProviders(<OxCategories data={data('ox-categories')} />);
+    await waitFor(() => expect(screen.getAllByTestId('ox-category-tile')).toHaveLength(8));
+    const tiles = screen.getAllByTestId('ox-category-tile');
+    expect(tiles[0].getAttribute('href')).toContain('/search?q=');
+    // No artwork yet: the sprite symbol stands in, never a broken image.
+    expect(tiles[0].querySelector('svg')).not.toBeNull();
+    expect(tiles[0].querySelector('img')).toBeNull();
+  });
+
+  it('uses the live category URL when the store has the category', async () => {
+    categories.length = 0;
+    categories.push({
+      id: 7,
+      name: 'بروتين',
+      url: `/${ROOT_CATEGORY_SLUGS[0]}/c7`,
+      products_count: 12,
+      image: null,
+    });
+    renderWithProviders(<OxCategories data={data('ox-categories')} />);
+    await waitFor(() =>
+      expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe(
+        `/${ROOT_CATEGORY_SLUGS[0]}/c7`
+      )
+    );
   });
 });
 
