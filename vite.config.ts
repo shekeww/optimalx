@@ -4,6 +4,12 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 export default defineConfig(async () => ({
+  // A production build re-runs the dependency optimizer and empties the cache
+  // directory the dev server is reading from, which took the running offline
+  // preview down with "node_modules/.vite/deps_ssr ... does not exist"
+  // (2026-09-22). `VITE_CACHE_DIR=.vite-build pnpm build` gives the build its
+  // own directory (git-ignored below) so a preview can stay up during a build.
+  cacheDir: process.env.VITE_CACHE_DIR || 'node_modules/.vite',
   plugins: [
     // twilightReact() registers and configures the SSR runtime, so a theme
     // configures no server runtime of its own.

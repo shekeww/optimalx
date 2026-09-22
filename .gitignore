@@ -37,3 +37,6 @@ app/routeTree.gen.ts
 
 # Reference imagery and mockups stay local; 83 files (128 MB) were committed by the owner tooling on 2026-09-22 and removed from the index
 references/
+
+# Build-time Vite cache (vite.config.ts cacheDir override)
+.vite-build/

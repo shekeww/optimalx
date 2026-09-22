@@ -6,10 +6,13 @@ That brings up the theme at **http://localhost:3210/** rendering the real
 OptimalX catalogue, with no request to `api.salla.dev` from any process it
 starts.
 
-**Open every direct URL with `?storeId=1888890798`**, for example
-`http://localhost:3210/latest-products?storeId=1888890798`. On a loopback
-host the engine has no store in the hostname, so unless the URL names one it
-reads the first path segment as the store's username whenever that segment
+**Open every direct URL under its locale prefix** (`/ar/...` or `/en/...`),
+for example `http://localhost:3210/ar/latest-products`; bare `/` redirects to
+`/ar`. Since 2026-09-23 `preview-offline.mjs` passes the snapshot's store id
+to the engine as `VITE_STORE_DOMAIN` (its last-resort identifier), so the
+`?storeId=1888890798` query is optional and harmless. What still bites is a
+URL with no locale prefix: on a loopback host the engine has no store in the
+hostname, so it reads the first path segment as the store's username whenever that segment
 matches `^[a-z0-9][a-z0-9_-]{0,62}$` (engine `resolveRequestStoreBase`), strips
 it, and renders the home for `/latest-products`, `/brands`, `/cart` and every
 other ASCII route. Arabic product slugs do not match the pattern, which is why
