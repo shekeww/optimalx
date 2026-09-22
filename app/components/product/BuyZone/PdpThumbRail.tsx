@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 import { Image } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { ProductImage } from '@salla.sa/twilight-theme-engine/types';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 
 export interface PdpThumbRailProps {
   images: ProductImage[];
@@ -47,7 +47,7 @@ export function PdpThumbRail({ images, activeIndex, onSelect }: PdpThumbRailProp
         tabIndex={scrollable ? 0 : -1}
         aria-hidden={!scrollable}
       >
-        <PdpIcon name="chevron-up" size={16} />
+        <i className="sicon-keyboard_arrow_up" aria-hidden="true" />
       </button>
       <ul className="ox-thumbs__list" ref={listRef}>
         {images.map((image, index) => (
@@ -81,7 +81,7 @@ export function PdpThumbRail({ images, activeIndex, onSelect }: PdpThumbRailProp
         tabIndex={scrollable ? 0 : -1}
         aria-hidden={!scrollable}
       >
-        <PdpIcon name="chevron-down" size={16} />
+        <Icon name="chevron-down" size={16} />
       </button>
     </div>
   );

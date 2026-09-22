@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import ar from '../locales/ar.json';
 import en from '../locales/en.json';
-import { checkCopy, DIALECT_WORDS } from '../scripts/check-copy.mjs';
+import { checkCopy, DIALECT_WORDS, DIALECT_PHRASES, DIACRITICS } from '../scripts/check-copy.mjs';
 import { collectPartials, flatten, parityErrors } from '../scripts/i18n-merge.mjs';
 
 const arEntries = Object.entries(ar as Record<string, string>);
@@ -113,8 +113,13 @@ describe('locales', () => {
     expect(extra).toEqual([]);
   });
 
-  it('has no Arabic diacritics (U+064B-U+0652, U+0670) in any ar value', () => {
-    const offenders = arEntries.filter(([, v]) => /[ً-ْٰ]/u.test(v));
+  // The SAME regex the gate uses, imported rather than retyped. The first
+  // version of this test carried its own narrower range (U+064B to U+0652)
+  // and the gate carried another, so a mark in the Quranic block would have
+  // passed one and failed the other. SEO-ENG-008 v1.2 names the full set and
+  // check-copy builds it from code points; this asserts against that object.
+  it('has no Arabic combining mark (SEO-ENG-008 P6) in any ar value', () => {
+    const offenders = arEntries.filter(([, v]) => DIACRITICS.test(v));
     expect(offenders).toEqual([]);
   });
 
@@ -123,9 +128,13 @@ describe('locales', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('has no dialect tokens as whole words in ar values', () => {
-    const pattern = new RegExp(`(?<![\\p{L}\\p{M}])(${DIALECT_WORDS.join('|')})(?![\\p{L}\\p{M}])`, 'u');
-    const offenders = arEntries.filter(([, v]) => pattern.test(v));
+  it('has no dialect tokens as whole words, nor dialect phrases, in ar values', () => {
+    const words = new RegExp(`(?<![\\p{L}\\p{M}])(${DIALECT_WORDS.join('|')})(?![\\p{L}\\p{M}])`, 'u');
+    const phrases = new RegExp(
+      `(?<![\\p{L}\\p{M}])(${DIALECT_PHRASES.map((p) => p.trim()).join('|')})(?![\\p{L}\\p{M}])`,
+      'u'
+    );
+    const offenders = arEntries.filter(([, v]) => words.test(v) || phrases.test(v));
     expect(offenders).toEqual([]);
   });
 
@@ -137,9 +146,26 @@ describe('locales', () => {
   it('check-copy catches each violation class', () => {
     const findings = checkCopy(
       'sample/ar.json',
-      JSON.stringify({ a: 'شكراً', b: 'نص — نص', c: 'وش تبي', d: 'موقع نظيف' })
+      JSON.stringify({
+        a: 'شكراً',
+        b: 'نص — نص',
+        c: 'وش تبي',
+        d: 'موقع نظيف',
+        // The machine-output tell, in each language, plus the stacked-question
+        // form that has no single token to grep for.
+        e: 'ليس مجرد مكمل، بل أسلوب حياة',
+        f: 'Unlock the seamless power of protein',
+        g: 'ماذا تأخذ؟ ومتى؟ وما الفرق؟',
+      })
     );
-    expect(findings.map((f) => f.rule).sort()).toEqual(['diacritic', 'dialect', 'em-dash']);
+    expect(findings.map((f) => f.rule).sort()).toEqual([
+      'ai-tell',
+      'ai-tell',
+      'ai-tell',
+      'diacritic',
+      'dialect',
+      'em-dash',
+    ]);
   });
 });
 

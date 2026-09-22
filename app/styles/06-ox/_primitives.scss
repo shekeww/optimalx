@@ -370,6 +370,11 @@ $ox-angle-tan: 0.404;
   fill: none;
   stroke: currentColor;
   overflow: visible;
+  // The weight law (BUILD.md 3.5): every symbol is drawn at stroke 1.8 on its
+  // own 24 grid, so a rendered size other than 24 (16, 44, ...) would
+  // otherwise scale the stroke along with the shape. This keeps the drawn
+  // line the same physical weight at every size the chrome asks for.
+  vector-effect: non-scaling-stroke;
   &--16 { inline-size: 16px; block-size: 16px; }
   &--20 { inline-size: 20px; block-size: 20px; }
   &--24 { inline-size: 24px; block-size: 24px; }

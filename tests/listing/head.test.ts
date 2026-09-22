@@ -5,15 +5,18 @@ import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head'
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { listingHeadExtend } from '../../app/components/listing/head';
 import { listingFaqItems } from '../../app/components/listing/faq';
+import { nodeBySlug } from '../../app/content/taxonomy';
 import { findDuplicateKeys } from '../../scripts/check-jsonld.mjs';
 import { createT } from '../helpers/i18n';
 
 /**
  * The listing head, built the way the routes build it: the engine's own
- * `ProductListing.head` supplies title, description and OG, and our `extend`
- * adds the C12 canonical correction, the robots rule and the two JSON-LD
- * nodes. The fixtures in tests/fixtures/jsonld are the documents that
- * composition produces, and `pnpm check:jsonld` scans them for duplicate keys.
+ * `ProductListing.head` supplies a default title, description and OG, and our
+ * `extend` adds the C12 canonical correction, the pagination-aware robots
+ * rule, the taxonomy title and description when the slug names a node, and
+ * the CollectionPage, ItemList, BreadcrumbList and FAQPage nodes. The
+ * fixtures in tests/fixtures/jsonld are the documents that composition
+ * produces, and `pnpm check:jsonld` scans them for duplicate keys.
  */
 
 const ORIGIN = 'https://optimalx.com.sa';
@@ -66,11 +69,7 @@ function engineHead(title: string, canonical: string): HeadDescriptor {
   };
 }
 
-/**
- * The nodes inside the one `@graph` document the head emits. The engine
- * `Breadcrumb` component emits its BreadcrumbList in a script of its own, so
- * it is deliberately not part of this document (C11).
- */
+/** The nodes inside the one `@graph` document the head emits. */
 function nodesOf(result: HeadDescriptor): Record<string, unknown>[] {
   const doc = result.jsonLd as Record<string, unknown> | undefined;
   if (!doc) return [];
@@ -117,13 +116,15 @@ describe('listing head extend', () => {
     expect(search.robots).toBe('noindex, follow');
   });
 
-  it('adds one ItemList of the loaded products and never a BreadcrumbList', () => {
+  it('adds one CollectionPage and one ItemList of the loaded products', () => {
     const result = listingHeadExtend()(
       engineHead('واي بروتين', ''),
       context('/whey-protein/c1'),
       loaderData()
     );
     const nodes = nodesOf(result);
+    const collectionPages = nodes.filter((node) => node['@type'] === 'CollectionPage');
+    expect(collectionPages).toHaveLength(1);
     const itemLists = nodes.filter((node) => node['@type'] === 'ItemList');
     expect(itemLists).toHaveLength(1);
     expect(itemLists[0].numberOfItems).toBe(2);
@@ -132,17 +133,36 @@ describe('listing head extend', () => {
       position: 1,
       name: 'Gold Standard Whey',
     });
-    // C11: the engine Breadcrumb component is the only BreadcrumbList source.
-    expect(nodes.some((node) => node['@type'] === 'BreadcrumbList')).toBe(false);
+    expect((collectionPages[0].mainEntity as Record<string, unknown>)['@id']).toBe(itemLists[0]['@id']);
   });
 
-  it('emits no ItemList for an empty result', () => {
+  it('adds a BreadcrumbList from the loader page.breadcrumbs, and only then', () => {
+    const withCrumbs = listingHeadExtend()(
+      engineHead('واي بروتين', ''),
+      context('/whey-protein/c1'),
+      loaderData()
+    );
+    const crumbs = nodesOf(withCrumbs).find((node) => node['@type'] === 'BreadcrumbList');
+    expect(crumbs).toBeDefined();
+    expect((crumbs?.itemListElement as unknown[]).length).toBe(2);
+
+    const noCrumbs = listingHeadExtend()(
+      engineHead('واي بروتين', ''),
+      context('/whey-protein/c1'),
+      loaderData({ page: { title: 'واي بروتين', slug: 'product.index', breadcrumbs: [] } })
+    );
+    expect(nodesOf(noCrumbs).some((node) => node['@type'] === 'BreadcrumbList')).toBe(false);
+  });
+
+  it('emits no ItemList, but still a CollectionPage, for an empty result', () => {
     const result = listingHeadExtend({ noindex: true })(
       engineHead('zzzz', ''),
       context('/search'),
       loaderData({ source: { type: 'search', value: 'zzzz' }, products: [] })
     );
-    expect(nodesOf(result).some((node) => node['@type'] === 'ItemList')).toBe(false);
+    const nodes = nodesOf(result);
+    expect(nodes.some((node) => node['@type'] === 'ItemList')).toBe(false);
+    expect(nodes.some((node) => node['@type'] === 'CollectionPage')).toBe(true);
   });
 
   it('adds the FAQPage of the slug the path carries, and only then', () => {
@@ -178,6 +198,64 @@ describe('listing head extend', () => {
     const faq = nodesOf(result).find((node) => node['@type'] === 'FAQPage');
     const first = (faq?.mainEntity as Record<string, unknown>[])[0];
     expect(first.name).toBe(t('ox.content.goals.performance.faq_1_q'));
+  });
+
+  it('replaces the title and description with the taxonomy node when the slug names one', () => {
+    const result = listingHeadExtend()(
+      engineHead('Whey Protein', ''),
+      context('/whey-protein/c1'),
+      loaderData()
+    );
+    const node = nodeBySlug('whey-protein')!;
+    expect(result.title).toBe(t(node.titleKey));
+    expect(result.description).toBe(t(node.descriptionKey));
+    expect(result.openGraph?.title).toBe(result.title);
+  });
+
+  it('keeps the engine title and description for a source with no taxonomy node', () => {
+    const result = listingHeadExtend()(
+      engineHead('أحدث المنتجات', ''),
+      context('/latest-products'),
+      loaderData({ source: { type: 'latest' } })
+    );
+    expect(result.title).toBe('أحدث المنتجات');
+    expect(result.description).toBe('Browse أحدث المنتجات');
+  });
+
+  it('gives a page past 1 a self-canonical with ?page=N and keeps it indexable', () => {
+    const result = listingHeadExtend()(
+      engineHead('واي بروتين', `${ORIGIN}/whey-protein/c1`),
+      { ...context('/whey-protein/c1'), location: { pathname: '/whey-protein/c1', search: { page: 2 } } },
+      loaderData()
+    );
+    expect(result.canonical).toBe(`${ORIGIN}/whey-protein/c1?page=2`);
+    expect(result.robots).toBe('index, follow');
+  });
+
+  it('noindexes and cleans the canonical when a query key other than page is present', () => {
+    const result = listingHeadExtend()(
+      engineHead('واي بروتين', `${ORIGIN}/whey-protein/c1`),
+      {
+        ...context('/whey-protein/c1'),
+        location: { pathname: '/whey-protein/c1', search: { sort: 'price_asc' } },
+      },
+      loaderData()
+    );
+    expect(result.canonical).toBe(`${ORIGIN}/whey-protein/c1`);
+    expect(result.robots).toBe('noindex, follow');
+  });
+
+  it('ignores storeId: the offline preview query param is not a real page variant', () => {
+    const result = listingHeadExtend()(
+      engineHead('واي بروتين', `${ORIGIN}/whey-protein/c1`),
+      {
+        ...context('/whey-protein/c1'),
+        location: { pathname: '/whey-protein/c1', search: { storeId: '1888890798' } },
+      },
+      loaderData()
+    );
+    expect(result.canonical).toBe(`${ORIGIN}/whey-protein/c1`);
+    expect(result.robots).toBe('index, follow');
   });
 });
 
@@ -229,11 +307,15 @@ describe('the emitted documents', () => {
     expect((result.jsonLd as Record<string, unknown>)['@context']).toBe('https://schema.org');
   });
 
-  it('emits no document at all when there is nothing to say', () => {
+  it('emits no document at all when the canonical cannot be built', () => {
     const result = listingHeadExtend({ noindex: true })(
       engineHead('zzzz', ''),
-      context('/search'),
-      loaderData({ source: { type: 'search', value: 'zzzz' }, products: [] })
+      { settings: {}, location: { pathname: '' }, locale: 'ar', i18n: { t } } as never,
+      loaderData({
+        source: { type: 'search', value: 'zzzz' },
+        products: [],
+        page: { title: 'zzzz', slug: 'search', breadcrumbs: [] },
+      })
     );
     expect(result.jsonLd).toBeUndefined();
   });

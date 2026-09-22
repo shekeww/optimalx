@@ -41,6 +41,19 @@ function arg(name, fallback) {
 const PORT = Number(arg('port', 5178));
 const HOST = arg('host', '127.0.0.1');
 
+/**
+ * THE TAXONOMY OVERLAY (PLAN-ship Batch S1 step 7). The live store has zero
+ * categories and an empty menu, and by default this snapshot says so: every
+ * category, goal and menu-tree page renders its fallback, which is what a
+ * visitor meets today. `OFFLINE_TAXONOMY=1` swaps in the 25-node taxonomy
+ * from `fixtures/store/overlay/` (written by scripts/gen-taxonomy-fixture.mjs)
+ * so those pages can be browser-verified before batch S5 writes the real
+ * categories. It is a switch, not a default: nothing else about the snapshot
+ * changes, and the honest-empty behaviour is one unset variable away.
+ */
+const OVERLAY = process.env.OFFLINE_TAXONOMY === '1';
+const OVERLAY_DIR = join(SNAPSHOT, 'overlay');
+
 /* ------------------------------------------------------------- snapshot */
 
 function load(name, fallback) {
@@ -50,6 +63,32 @@ function load(name, fallback) {
     return fallback;
   }
   return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+/** An overlay file when the switch is on, else the snapshot's own file. */
+function loadTaxonomy(name, fallback) {
+  if (!OVERLAY) return load(name, fallback);
+  const path = join(OVERLAY_DIR, name);
+  if (!existsSync(path)) {
+    console.warn(
+      `[store-api] OFFLINE_TAXONOMY=1 but fixtures/store/overlay/${name} is missing — run node scripts/gen-taxonomy-fixture.mjs; serving the snapshot instead`
+    );
+    return load(name, fallback);
+  }
+  return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+/** Every overlay category, children walked in, for lookups by id. */
+function flattenCategories(list) {
+  const out = [];
+  const walk = (items) => {
+    for (const item of items ?? []) {
+      out.push(item);
+      if (item.sub_categories?.length) walk(item.sub_categories);
+    }
+  };
+  walk(list);
+  return out;
 }
 
 /**
@@ -82,9 +121,11 @@ const snapshot = {
   settings: load('store-settings.json', { status: 200, success: true, data: null }),
   products: load('products.json', []),
   details: load('product-details.json', {}),
-  categories: load('categories.json', []),
+  categories: loadTaxonomy('categories.json', []),
   brands: load('brands.json', []),
-  menus: load('menus.json', { header: [], footer: [] }),
+  menus: loadTaxonomy('menus.json', { header: [], footer: [] }),
+  /** Overlay category id -> product ids; empty unless OFFLINE_TAXONOMY=1. */
+  membership: OVERLAY ? loadTaxonomy('membership.json', {}) : {},
   home: load('home-components.json', []),
   apps: load('apps.json', { snippets: [], settings: { apps: {} } }),
   translations: platformStrings(),
@@ -105,6 +146,8 @@ const empty = () => ok(null);
  * rank by. Inventing one would be a fabricated claim. `categories`, `brands`,
  * `tags` and `related` return nothing because the store genuinely has no
  * taxonomy and no curated relations — the empty rails are what a visitor meets.
+ * The one exception is `categories` under OFFLINE_TAXONOMY=1, answered from
+ * the overlay's membership map (the taxonomy's own SKU lists, by product id).
  */
 function selectProducts(source, values, keyword) {
   const all = snapshot.products;
@@ -112,6 +155,13 @@ function selectProducts(source, values, keyword) {
     case 'latest':
       // The Admin API's own default order, carried through unchanged.
       return all;
+    case 'categories': {
+      if (!OVERLAY) return [];
+      const wanted = new Set(
+        values.flatMap((id) => snapshot.membership[String(id)] ?? []).map(String)
+      );
+      return all.filter((p) => wanted.has(String(p.id)));
+    }
     case 'offers':
       return all.filter((p) => p.is_on_sale);
     case 'selected': {
@@ -204,11 +254,19 @@ function route(pathname, url) {
   }
 
   if (seg[0] === 'categories') {
-    if (seg.length === 1) return { body: ok(snapshot.categories), note: 'store has ZERO categories' };
-    const found = snapshot.categories.find((c) => String(c.id) === String(seg[1]));
+    const flat = flattenCategories(snapshot.categories);
+    const emptyNote = OVERLAY
+      ? `${flat.length} overlay categories (OFFLINE_TAXONOMY=1)`
+      : 'store has ZERO categories';
+    if (seg.length === 1) return { body: ok(snapshot.categories), note: emptyNote };
+    // Children are nested under their parent in the list, so the lookup walks
+    // the tree: `/protein/c9001` and `/whey-protein/c9011` both have to answer.
+    const found = flat.find(
+      (c) => String(c.id) === String(seg[1]) || (c.id_ !== undefined && String(c.id_) === String(seg[1]))
+    );
     return found
-      ? { body: ok(found), note: `category ${seg[1]}` }
-      : { body: { status: 404, success: false, error: { message: 'Category not found' } }, code: 404, note: 'store has ZERO categories' };
+      ? { body: ok(found), note: `category ${seg[1]} — ${found.name}` }
+      : { body: { status: 404, success: false, error: { message: 'Category not found' } }, code: 404, note: emptyNote };
   }
 
   if (seg[0] === 'brands') {
@@ -267,6 +325,35 @@ function route(pathname, url) {
   return { body: empty(), note: 'UNKNOWN PATH — empty envelope (200)', unknown: true };
 }
 
+/*
+ * OFFLINE_LANGS=ar,en adds English to the store's language list so the engine
+ * renders /en locally. The live store (1888890798) has English configured but
+ * disabled, and the snapshot mirrors that, so without this switch every /en
+ * URL is a 307 to /. Theme strings come from the bundled locales/en.json; the
+ * platform strings bundle stays the Arabic-derived one.
+ */
+const OFFLINE_LANGS = (process.env.OFFLINE_LANGS || '')
+  .split(',')
+  .map((code) => code.trim())
+  .filter(Boolean);
+if (OFFLINE_LANGS.includes('en') && snapshot.settings?.data && !snapshot.settings.data.languages?.en) {
+  snapshot.settings.data.languages = {
+    ...(snapshot.settings.data.languages || {}),
+    en: {
+      name: 'English',
+      code: 'en',
+      url: 'https://assets.salla.sa/images/flags/en.svg',
+      is_rtl: false,
+      country_code: 'US',
+    },
+  };
+  // The engine's generated {-$locale} route reads store.settings.is_multilingual:
+  // false sends every /en URL back to the bare path, true sends every bare
+  // path to /ar/... (the live behaviour once English is enabled).
+  if (snapshot.settings.data.store?.settings) snapshot.settings.data.store.settings.is_multilingual = true;
+  console.log('[store-api] OFFLINE_LANGS: English added to the store languages and is_multilingual=true (local only)');
+}
+
 /* ---------------------------------------------------------------- server */
 
 const CORS = {
@@ -321,6 +408,11 @@ server.listen(PORT, HOST, () => {
   console.log(`[store-api] listening on http://${HOST}:${PORT}/store/v1`);
   console.log(
     `[store-api] snapshot: ${counts.products ?? '?'} products, ${counts.categories ?? 0} categories, ${counts.brands ?? 0} brands, generated ${snapshot.meta.generated_at ?? 'unknown'}`
+  );
+  console.log(
+    OVERLAY
+      ? `[store-api] OFFLINE_TAXONOMY=1: serving ${flattenCategories(snapshot.categories).length} overlay categories and ${snapshot.menus.header?.length ?? 0} header menu items from fixtures/store/overlay/`
+      : '[store-api] taxonomy overlay off (set OFFLINE_TAXONOMY=1 to serve fixtures/store/overlay/)'
   );
   console.log('[store-api] api.salla.dev is never contacted by this process.');
 });

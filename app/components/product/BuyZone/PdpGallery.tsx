@@ -4,7 +4,7 @@ import { Image } from '@salla.sa/twilight-theme-engine/common';
 import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { ProductGalleryProps } from '@salla.sa/twilight-theme-engine/product';
 import type { ProductImage } from '@salla.sa/twilight-theme-engine/types';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 import { PdpThumbRail } from './PdpThumbRail';
 import { promotionLabel } from '../lib/claims';
 
@@ -103,7 +103,7 @@ export function PdpGallery({ product }: ProductGalleryProps) {
           aria-label={t('ox.pdp.zoom_label')}
         >
           <span className="ox-gallery__zoom-label">{t('ox.pdp.zoom')}</span>
-          <PdpIcon name="expand" size={16} />
+          <Icon name="expand" size={16} />
         </button>
       </div>
     </div>

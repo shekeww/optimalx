@@ -1,6 +1,7 @@
 import type { FaqPair } from '../../components/seo/jsonld';
 import { categoryBySlug } from '../../content/categories';
 import { goalBySlug } from '../../content/goals';
+import { nodeBySlug } from '../../content/taxonomy';
 import type { TFunction } from './types';
 
 /**
@@ -11,12 +12,20 @@ import type { TFunction } from './types';
  *
  * The rows come from the audited content maps only. A slug the maps do not
  * know has no FAQ, and none is written here.
+ *
+ * Three maps, in order: the goal map, the category map, then the taxonomy
+ * (S1 step 5). The first two cover the 21 nodes that carried researched copy
+ * before the ship program; the taxonomy points at those same keys for them,
+ * so the order changes nothing there, and it is what gives the four utility
+ * categories (bundles, services, digital library, gift cards) their rows,
+ * which live under `ox.tax.<key>.faq_*` and nowhere else.
  */
 export function listingFaqItems(t: TFunction | undefined, slug: string | undefined): FaqPair[] {
   if (!t || !slug) return [];
   const goal = goalBySlug(slug);
   const category = categoryBySlug(slug);
-  const rows = goal?.faq ?? category?.faq ?? [];
+  const node = nodeBySlug(slug);
+  const rows = goal?.faq ?? category?.faq ?? node?.faq ?? [];
   return rows
     .map((row) => ({ question: t(row.qKey), answer: t(row.aKey) }))
     .filter(

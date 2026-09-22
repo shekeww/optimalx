@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useRouterState } from '@tanstack/react-router';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
-import { useTwilight } from '@salla.sa/twilight-theme-engine';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { CountPill } from './Header/MainBar';
@@ -32,6 +32,29 @@ export function useBodyHasClass(names: string[]): boolean {
   return present;
 }
 
+/** A router state shaped only as much as this file reads it. */
+interface RouterLocationState {
+  location?: { pathname?: string };
+}
+
+/**
+ * The router's current pathname, filled in on both passes. `useTwilight()`'s
+ * own `location` is what used to drive `isHome`/`current()` here, and it is
+ * empty during SSR - the engine logs "[Twilight] Could not hydrate twilight
+ * context: no root match in router state" - then "/" once the client
+ * mounts, so the home tab's class disagreed between the server markup and
+ * the first client render (React's hydration-mismatch warning). TanStack's
+ * own router store does not have that gap: it is what `Link` itself reads to
+ * paint its `active`/`aria-current` state identically on both passes, so
+ * reading the same store here removes the mismatch at the source instead of
+ * papering over it.
+ */
+function useRouterPathname(): string {
+  return useRouterState({
+    select: (state) => (state as unknown as RouterLocationState).location?.pathname ?? '',
+  }) as unknown as string;
+}
+
 /**
  * The mobile bottom tab bar (DIRECTION 5.1 BottomTabBar, 10.2).
  *
@@ -43,7 +66,7 @@ export function useBodyHasClass(names: string[]): boolean {
 export function BottomTabBar() {
   const { t } = useTranslation();
   const { settings } = useTheme();
-  const { location } = useTwilight();
+  const path = useRouterPathname();
   // The SDK-backed count, not `useCartContext`: the engine never mounts the
   // cart provider, so the context reads null on every route (commerce
   // useCartCount). `null` means "not known yet" and renders an empty pill.
@@ -64,7 +87,6 @@ export function BottomTabBar() {
 
   if (!mounted) return null;
 
-  const path = location?.pathname ?? '';
   const isHome = path === '/' || /^\/[a-z]{2}\/?$/.test(path);
   const current = (match: string) => path.includes(match);
 

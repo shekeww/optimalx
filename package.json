@@ -18,11 +18,16 @@
     "check:rtl": "node scripts/check-rtl.mjs",
     "check:motion": "node scripts/check-motion.mjs",
     "check:strings": "node scripts/check-strings.mjs",
-    "check:all": "pnpm check:copy && pnpm check:jsonld && pnpm check:rtl && pnpm check:motion && pnpm check:strings",
+    "check:tokens": "node scripts/check-tokens.mjs",
+    "check:all": "pnpm check:copy && pnpm check:jsonld && pnpm check:rtl && pnpm check:motion && pnpm check:strings && pnpm check:claims && pnpm check:tokens",
     "gen:salla-ids": "node scripts/gen-salla-ids.mjs",
     "snapshot:store": "node scripts/snapshot-store.mjs",
     "serve:store": "node scripts/serve-store.mjs",
-    "preview:offline": "node scripts/preview-offline.mjs"
+    "preview:offline": "node scripts/preview-offline.mjs",
+    "check:claims": "node scripts/check-claims.mjs",
+    "gen:taxonomy-ids": "node scripts/gen-taxonomy-ids.mjs",
+    "gen:icon-mask": "node scripts/gen-icon-mask.mjs",
+    "gen:taxonomy-fixture": "node scripts/gen-taxonomy-fixture.mjs"
   },
   "dependencies": {
     "@salla.sa/twilight-components-react": "^3.0.0-beta.1",

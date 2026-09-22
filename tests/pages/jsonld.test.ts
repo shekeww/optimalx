@@ -48,11 +48,20 @@ describe('branchFromSettings', () => {
     expect(withAddress.geo).toEqual(BRANCH_GEO);
     expect(withAddress.locality).toBe(t('ox.branch.locality'));
     expect(withAddress.region).toBe(t('ox.branch.region'));
+  });
 
-    const without = branchFromSettings({}, 'ar', t);
+  it('falls back to the claims-backed street address when the merchant has not set one', () => {
+    const fallback = branchFromSettings({}, 'ar', t);
+    expect(fallback.address).toBe(t('ox.seo.branch.street'));
+    expect(fallback.geo).toEqual(BRANCH_GEO);
+    expect(fallback.locality).toBe(t('ox.branch.locality'));
+  });
+
+  it('publishes no address, geo or locality without a translator to resolve the fallback', () => {
+    const without = branchFromSettings({}, 'ar');
+    expect(without.address).toBeUndefined();
     expect(without.geo).toBeUndefined();
     expect(without.locality).toBeUndefined();
-    expect(without.address).toBeUndefined();
   });
 
   it('publishes no openingHours when the setting is empty or unparsable', () => {
@@ -95,6 +104,28 @@ describe('siteJsonLd', () => {
     });
     expect(local.openingHours).toEqual(['Su-Th 16:00-23:00', 'Fr 16:00-23:00']);
     expect(local.hasMap).toBe('https://maps.example/branch');
+  });
+
+  it('prefers google_place_url over branch_map_url for hasMap and sameAs', () => {
+    const withPlace = { ...SETTINGS, google_place_url: 'https://maps.google.com/place/1' };
+    const doc = JSON.parse(siteJsonLd(store, 'ar', withPlace, t) as string);
+    const [organization, , local] = doc['@graph'] as Array<Record<string, unknown>>;
+    expect(local.hasMap).toBe('https://maps.google.com/place/1');
+    expect(organization.sameAs).toContain('https://maps.google.com/place/1');
+  });
+
+  it('gives the Organization node an alternateName, areaServed and contactPoint', () => {
+    const doc = JSON.parse(siteJsonLd(store, 'ar', SETTINGS, t) as string);
+    const organization = (doc['@graph'] as Array<Record<string, unknown>>)[0];
+    expect(organization.alternateName).toBe(t('ox.seo.brand.alt_name'));
+    expect(organization.areaServed).toBe('SA');
+    expect(organization.contactPoint).toEqual({
+      '@type': 'ContactPoint',
+      telephone: '0500000000',
+      email: 'hi@optimalx.sa',
+      contactType: 'customer service',
+      areaServed: 'SA',
+    });
   });
 
   it('escapes every character that could close the script tag', () => {

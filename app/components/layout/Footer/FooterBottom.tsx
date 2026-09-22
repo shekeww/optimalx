@@ -4,7 +4,6 @@ import { Copyright } from '@salla.sa/twilight-theme-engine/layout';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { Icon } from '../../common/Icon';
 
 /**
  * The bottom strip: the copyright at the inline-start, the Latin line at the
@@ -43,7 +42,18 @@ export function FooterBottom() {
         {showTagline ? (
           <p className="ox-footer__en" lang="en" dir="ltr" data-testid="ox-footer-en-tagline">
             <span className="ox-latin-track">{t('ox.footer.en_tagline')}</span>
-            <Icon name="chevron-double" size={14} />
+            {/* This line is always `dir="ltr"` (an English tagline), so the
+                chevron always points at its own reading end, right, and never
+                mirrors under the page's `[dir="rtl"]`: the old sprite glyph
+                had no such guard and mirrored with the page instead, pointing
+                away from the text it followed. `.ox-footer__en .ox-icon`
+                (_b1-layout.scss, owned elsewhere) painted this accent, so the
+                colour moves inline with the icon itself. */}
+            <i
+              className="sicon-keyboard_arrow_right"
+              aria-hidden="true"
+              style={{ color: 'var(--ox-accent)', fontSize: '14px' }}
+            />
           </p>
         ) : null}
       </div>

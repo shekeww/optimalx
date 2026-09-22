@@ -2,7 +2,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../../common/Bdi';
 import { Wordmark } from '../../common/Wordmark';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 import { bandBadges } from '../lib/bandBadges';
 import { bandCopyFor, type BandCopy } from '../../../content/band';
 
@@ -60,7 +60,7 @@ export function BrandBand({ product, categorySlug }: BrandBandProps) {
             {badges.map((badge) => (
               <li className="ox-bband__badge" key={badge.id}>
                 <span className="ox-bband__ring">
-                  <PdpIcon name={badge.glyph} size={16} />
+                  <Icon name={badge.glyph} size={16} />
                 </span>
                 <span className="ox-bband__badge-text">
                   <span className="ox-bband__badge-ar">{t(badge.labelKey)}</span>

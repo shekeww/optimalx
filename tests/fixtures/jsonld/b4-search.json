@@ -2,6 +2,16 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "CollectionPage",
+      "@id": "https://optimalx.com.sa/search#webpage",
+      "url": "https://optimalx.com.sa/search",
+      "name": "واي",
+      "description": "Browse واي",
+      "mainEntity": {
+        "@id": "https://optimalx.com.sa/search#itemlist"
+      }
+    },
+    {
       "@type": "ItemList",
       "@id": "https://optimalx.com.sa/search#itemlist",
       "url": "https://optimalx.com.sa/search",

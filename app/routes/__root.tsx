@@ -12,6 +12,7 @@ import { ErrorState } from '../components/pages/ErrorState';
 import { NotFound } from '../components/pages/NotFound';
 import { dropBaseCanonical, stopDarkMode } from '../components/pages/rootHead';
 import { offlineApiBootScript } from '../dev/offline-api';
+import { useHydrated } from '../components/common/useHydrated';
 import '../styles/app.css';
 
 // Dev-only: reads the theme's local twilight.json (settings + components),
@@ -69,6 +70,10 @@ const offlineApiScript = offlineApiBootScript();
 
 function RootComponent({ children }: { children?: ReactNode }) {
   const ctx = getTwilightContext();
+  // The two dev widgets mount on the client only; rendering them during
+  // hydration is the one remaining mismatch React reported on the home page
+  // (the server never draws them), which made it regenerate the whole tree.
+  const hydrated = useHydrated();
 
   // The live store serves `<body class="... color-mode-dark">` from a store or
   // SDK setting; this theme has one light palette and no dark token set
@@ -118,12 +123,12 @@ function RootComponent({ children }: { children?: ReactNode }) {
         <TwilightProvider translations={themeTranslations} layout={OptimalXLayout}>
           {children}
         </TwilightProvider>
-        {RouterDevtools && (
+        {hydrated && RouterDevtools && (
           <Suspense fallback={null}>
             <RouterDevtools position="bottom-right" />
           </Suspense>
         )}
-        {DevSettingsWidget && (
+        {hydrated && DevSettingsWidget && (
           <Suspense fallback={null}>
             <DevSettingsWidget schema={devSchema} />
           </Suspense>

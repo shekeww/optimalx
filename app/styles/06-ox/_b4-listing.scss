@@ -1847,3 +1847,229 @@ nav.breadcrumbs .s-breadcrumb-item button {
     font-size: 11.5px;
   }
 }
+
+// ---------------------------------------------------------------------------
+// 14. The categories index, /categories (PLAN-ship Batch S1 step 6)
+//
+// Three sections under one page head: ten type cards, the six goal cards
+// (the home page's `.ox-goal` and `.ox-goals__grid`, consumed unchanged from
+// _b2-home.scss), and a row of the four utility categories.
+//
+// The type card is a plate, a name and a paragraph. The plate holds the live
+// category's product photograph once the store has one, contained with 12 of
+// air so the packaging never touches the edge (DIRECTION 5.2 CategoryTile),
+// and the sprite glyph until then; both states are finished, neither is a
+// placeholder. The whole card is one target through the link's stretched
+// pseudo-element, while the link's own text stays the category name, so the
+// accessible name is a name and not the paragraph. Protein's five children
+// sit above that stretched layer as chips of their own, at 44 tall.
+//
+// Two columns at 390, three at 640, five from 1024: ten cards fill two rows
+// exactly at every step, so the grid never ends on a half row.
+// ---------------------------------------------------------------------------
+.ox-cat-index__section {
+  min-inline-size: 0;
+}
+
+.ox-cat-index__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+.ox-cat-index__item {
+  min-inline-size: 0;
+}
+
+.ox-cat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  block-size: 100%;
+  padding: var(--ox-2);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  transition: transform var(--dur-base) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--ox-line-3);
+  }
+}
+
+.ox-cat-card__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  color: var(--ox-fg);
+  text-decoration: none;
+  @include ox-focus(2px);
+
+  // The stretched layer: the card is the target, the name is the link text.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+}
+
+.ox-cat-card__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  inline-size: 100%;
+  padding: var(--ox-3);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-1);
+  color: var(--ox-fg);
+}
+
+.ox-cat-card__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-cat-card__icon {
+  inline-size: 44px;
+  block-size: 44px;
+  stroke-width: 1.25;
+}
+
+.ox-cat-card__name {
+  font-size: var(--ox-t-title);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-head);
+}
+
+.ox-cat-card__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+// Above the stretched link, so each chip is its own target.
+.ox-cat-card__children {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-cat-card__chip {
+  min-block-size: 44px;
+  padding-inline: var(--ox-3);
+}
+
+.ox-cat-index__utility {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ox-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-cat-index__utility-item {
+  min-inline-size: 0;
+}
+
+.ox-cat-index__util {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-3);
+  block-size: 100%;
+  min-block-size: 44px;
+  padding: var(--ox-3);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+  color: var(--ox-fg);
+  text-decoration: none;
+  transition: transform var(--dur-base) var(--ease-out);
+  @include ox-focus(2px);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--ox-line-3);
+  }
+}
+
+.ox-cat-index__util-icon {
+  flex: none;
+  margin-block-start: 2px;
+}
+
+.ox-cat-index__util-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  min-inline-size: 0;
+}
+
+.ox-cat-index__util-name {
+  font-size: var(--ox-t-title);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-head);
+}
+
+.ox-cat-index__util-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: var(--ox-fg-2);
+}
+
+@media (min-width: 640px) {
+  .ox-cat-index__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-4);
+  }
+
+  .ox-cat-card {
+    gap: var(--ox-3);
+    padding: var(--ox-3);
+  }
+
+  .ox-cat-index__utility {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ox-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cat-index__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .ox-cat-index__utility {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-cat-card,
+  .ox-cat-index__util {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}

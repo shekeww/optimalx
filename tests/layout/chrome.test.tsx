@@ -6,11 +6,21 @@ import { renderWithProviders } from '../helpers/render';
 const themeSettings: Record<string, unknown> = {};
 const storeValue: Record<string, unknown> = { name: 'اوبتيمال اكس', contacts: {}, apps: {}, settings: {} };
 const twilight: Record<string, unknown> = { location: { pathname: '/' }, store: { settings: {} } };
+// BottomTabBar reads the router's own store, not the Twilight context (that
+// context is empty during SSR - see BottomTabBar.tsx's useRouterPathname),
+// so its tests drive the active tab through this instead of `twilight`.
+const routerLocation: Record<string, unknown> = { pathname: '/' };
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
 );
 vi.mock('@salla.sa/twilight-theme-engine', () => ({ useTwilight: () => twilight }));
+vi.mock('@tanstack/react-router', () => ({
+  useRouterState: (options?: { select?: (state: unknown) => unknown }) => {
+    const state = { location: routerLocation };
+    return options?.select ? options.select(state) : state;
+  },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({
   HookSlot: ({ name, fallback }: { name: string; fallback?: React.ReactNode }) => (
     <span data-hook-slot={name}>{fallback}</span>
@@ -65,6 +75,7 @@ beforeEach(() => {
   storeValue.settings = {};
   document.body.className = '';
   twilight.location = { pathname: '/' };
+  routerLocation.pathname = '/';
 });
 
 describe('SkipLink', () => {
@@ -84,6 +95,29 @@ describe('BottomTabBar', () => {
     expect(bar.getAttribute('aria-label')).toBe('تنقل سريع');
     expect(bar.querySelectorAll('li')).toHaveLength(5);
     await waitFor(() => expect(document.body.classList.contains('ox-has-tabbar')).toBe(true));
+  });
+
+  it('marks the home tab active from the router state, not the Twilight context', () => {
+    // Twilight's own location is deliberately wrong here: the fix this
+    // guards is BottomTabBar reading the router's store instead (Twilight's
+    // is empty during SSR, which is the hydration mismatch the bug report
+    // caught on this exact tab).
+    twilight.location = { pathname: '' };
+    routerLocation.pathname = '/';
+    renderWithProviders(<BottomTabBar />);
+    const home = screen.getByText('الرئيسية').closest('a');
+    expect(home?.className).toBe('ox-tab is-active');
+    expect(home?.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('does not mark the home tab active on another route', () => {
+    routerLocation.pathname = '/search';
+    renderWithProviders(<BottomTabBar />);
+    const home = screen.getByText('الرئيسية').closest('a');
+    expect(home?.className).toBe('ox-tab');
+    expect(home?.hasAttribute('aria-current')).toBe(false);
+    const search = screen.getByText('البحث').closest('a');
+    expect(search?.className).toBe('ox-tab is-active');
   });
 
   it('is gone while the body carries menu-opened', async () => {

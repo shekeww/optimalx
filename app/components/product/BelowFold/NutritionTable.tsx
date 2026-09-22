@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Table, TableWrap, type TableColumn } from '../../common/Table';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 import type { NutritionRow, NutritionTable as NutritionData } from '../lib/nutritionTable';
 
 export interface NutritionTableProps {
@@ -102,7 +102,7 @@ export function NutritionTable({ data, servingSize }: NutritionTableProps) {
             aria-controls={bodyId}
             aria-label={t(open ? 'ox.pdp.nutrition_collapse' : 'ox.pdp.nutrition_show_all')}
           >
-            <PdpIcon name="chevron-down" size={18} />
+            <Icon name="chevron-down" size={18} />
           </button>
         ) : null}
       </div>
@@ -127,7 +127,7 @@ export function NutritionTable({ data, servingSize }: NutritionTableProps) {
             aria-controls={bodyId}
           >
             <span className="ox-nutrition__more-icon" aria-hidden="true">
-              <PdpIcon name={open ? 'minus' : 'plus'} size={14} />
+              <Icon name={open ? 'minus' : 'plus'} size={14} />
             </span>
             <span>{t(open ? 'ox.pdp.nutrition_show_less' : 'ox.pdp.nutrition_show_all')}</span>
           </button>

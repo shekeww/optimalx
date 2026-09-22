@@ -6,7 +6,7 @@ import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../../common/Bdi';
 import { Button } from '../../common/Button';
 import { Price } from '../../common/Price';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 import { effectivePrice } from '../lib/claims';
 import { isAddable, useCatalogueProducts } from '../lib/catalogue';
 import { bundlesForProduct, idsForSkus, SHOW_SAMPLE_BUNDLES, type OxBundle } from '../../../content/bundles';
@@ -142,7 +142,7 @@ export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
               {members.map((member, index) => (
                 <li className="ox-bundle-offer__strip-item" key={member.id}>
                   {index > 0 ? (
-                    <PdpIcon name="plus" size={14} className="ox-bundle-offer__plus" />
+                    <Icon name="plus" size={14} className="ox-bundle-offer__plus" />
                   ) : null}
                   <span className="ox-bundle-offer__thumb">
                     <Image
@@ -205,7 +205,7 @@ export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
                   loaderPosition="center"
                   className="ox-bundle-offer__add"
                 >
-                  <PdpIcon name="cart" size={16} className="ox-bundle-offer__add-icon" />
+                  <Icon name="cart" size={16} className="ox-bundle-offer__add-icon" />
                   {addLabel}
                 </SallaAddProductButton>
                 <Button to={head.url} variant="secondary" size={44} className="ox-bundle-offer__view">

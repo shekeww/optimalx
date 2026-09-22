@@ -86,20 +86,37 @@ function isoDate(input: ArticleDetail['created_at']): string | undefined {
 
 export function organization({
   store,
+  alternateName,
   sameAs = [],
 }: {
   store: Store;
+  /** The brand's other-script form (keywords-ar.md §7.1), for entity matching. */
+  alternateName?: string;
   sameAs?: readonly (string | undefined | null)[];
 }): JsonLdNode {
   const origin = originOf(store.url);
+  const phone = store.contacts?.phone ?? store.contacts?.mobile;
   return compact({
     '@type': 'Organization',
     '@id': organizationId(origin),
     name: store.name,
+    alternateName,
     url: `${origin}/`,
     logo: store.logo,
     email: store.contacts?.email,
-    telephone: store.contacts?.phone ?? store.contacts?.mobile,
+    telephone: phone,
+    // The store trades in one country today (BUILD.md, conductor §1): Medina,
+    // shipping nationwide, never a wider claim than the market it serves.
+    areaServed: 'SA',
+    contactPoint: phone
+      ? compact({
+          '@type': 'ContactPoint',
+          telephone: phone,
+          email: store.contacts?.email,
+          contactType: 'customer service',
+          areaServed: 'SA',
+        })
+      : undefined,
     sameAs: nonEmpty(sameAs),
   });
 }
@@ -149,6 +166,34 @@ export function localBusiness({ store, branch }: { store: Store; branch: BranchI
       : undefined,
     openingHours: branch.hours?.length ? [...branch.hours] : undefined,
     hasMap: branch.mapUrl,
+    currenciesAccepted: 'SAR',
+  });
+}
+
+/**
+ * The `WebPage` node for a listing or index page (SEO-ENG-006 hierarchy:
+ * Organization -> WebSite -> WebPage -> primary entity). `mainEntity` points
+ * at the page's own `ItemList` by `@id` rather than nesting it, so the graph
+ * stays one flat list of nodes with stable ids.
+ */
+export function collectionPage({
+  url,
+  name,
+  description,
+  itemListId,
+}: {
+  url: string;
+  name: string;
+  description?: string;
+  itemListId?: string;
+}): JsonLdNode {
+  return compact({
+    '@type': 'CollectionPage',
+    '@id': `${url}#webpage`,
+    url,
+    name,
+    description,
+    mainEntity: itemListId ? { '@id': itemListId } : undefined,
   });
 }
 

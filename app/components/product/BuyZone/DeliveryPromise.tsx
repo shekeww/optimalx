@@ -1,7 +1,6 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon } from '../../common/Icon';
 import { Price } from '../../common/Price';
-import { PdpIcon } from '../PdpIcon';
 import {
   deliveryCity,
   deliveryWindow,
@@ -58,27 +57,27 @@ export function DeliveryPromise({ settings, currency, shippable, storeCity }: De
       {window ? (
         changeUrl ? (
           <a className="ox-delivery__row ox-delivery__row--action" href={changeUrl}>
-            <Icon name="shipping" size={20} className="ox-delivery__truck" />
+            <Icon name="truck" size={20} className="ox-delivery__truck" />
             <span className="ox-delivery__text">{estimate}</span>
             <span className="ox-delivery__change">{t('ox.pdp.change_city')}</span>
-            <PdpIcon name="chevron-end" size={16} className="ox-delivery__chev" />
+            <i className="sicon-keyboard_arrow_left ox-delivery__chev" aria-hidden="true" />
           </a>
         ) : (
           <p className="ox-delivery__row">
-            <Icon name="shipping" size={20} className="ox-delivery__truck" />
+            <Icon name="truck" size={20} className="ox-delivery__truck" />
             <span className="ox-delivery__text">{estimate}</span>
           </p>
         )
       ) : null}
       {promise ? (
         <p className="ox-delivery__row">
-          <Icon name="shipping" size={20} className="ox-delivery__truck" />
+          <Icon name="truck" size={20} className="ox-delivery__truck" />
           <span className="ox-delivery__text">{promise}</span>
         </p>
       ) : null}
       {threshold !== null ? (
         <p className="ox-delivery__row">
-          <Icon name="shipping" size={20} className="ox-delivery__truck" />
+          <Icon name="truck" size={20} className="ox-delivery__truck" />
           <span className="ox-delivery__text">
             {t('ox.pdp.free_shipping_prefix')} <Price amount={threshold} currency={currency} />
           </span>

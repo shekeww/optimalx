@@ -322,18 +322,27 @@
 }
 
 .ox-hero__dot {
-  @include ox-hit-area;
+  // `ox-hit-area`'s ::after does not grow the element's own box, which is
+  // what a tap-target audit measures - so it read as 8x8 regardless. Real
+  // padding does, with an equal negative margin so the flex row keeps
+  // spacing the visible dots exactly `--ox-2` apart as before, and
+  // `background-clip: content-box` so the fill still paints only the 8x8
+  // circle and not the full 44x44 hit area. `background-color`, not the
+  // `background` shorthand, in both states below: the shorthand resets
+  // `background-clip` to its border-box default on every state it touches.
   inline-size: 8px;
   block-size: 8px;
-  padding: 0;
+  padding: 18px;
+  margin: -18px;
+  background-clip: content-box;
   border: 0;
   border-radius: var(--ox-r-pill);
-  background: rgba(255, 255, 255, 0.45);
+  background-color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   transition: transform var(--dur-fast) var(--ease-out);
 
   &[data-active] {
-    background: var(--ox-accent);
+    background-color: var(--ox-accent);
     transform: scale(1.4);
   }
 

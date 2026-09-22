@@ -222,6 +222,8 @@ Salla already loads `sallaicons` from its CDN, and every native component expect
 
 The custom sprite is for **category and trust icons only** — the ones `sallaicons` does not have: protein · vitamin · mineral · creatine · omega · pre-workout · beauty · daily health · authenticity · expiry · plan · points · gift · referral. One inline SVG sprite, derived from the mark: `stroke-linejoin: miter`, `stroke-linecap: square`, 1.8px stroke, one orange fill element per icon. No rounded terminals — that is the generic-wellness tell.
 
+Any structural diagonal a new or redrawn symbol draws sits at 34° from vertical (the mark's bars), never 45°.
+
 ### 3.6 Trust surface
 
 The brand claim is credibility, so trust is a design system component, not a footer note.

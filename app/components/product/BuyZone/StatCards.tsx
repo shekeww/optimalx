@@ -1,6 +1,6 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Bdi } from '../../common/Bdi';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 import type { StatCell } from '../lib/stats';
 
 export interface StatCardsProps {
@@ -27,7 +27,7 @@ export function StatCards({ cells }: StatCardsProps) {
         <li className="ox-stats__cell" key={cell.id}>
           <p className="ox-stats__value">
             {cell.glyph ? (
-              <PdpIcon name={cell.glyph} size={24} className="ox-stats__glyph" />
+              <Icon name={cell.glyph} size={24} className="ox-stats__glyph" />
             ) : (
               <Bdi>{cell.value}</Bdi>
             )}

@@ -122,6 +122,14 @@ export function MainBar() {
                   cart was amber where the heart and the account glyph were
                   white. A drawn path cannot fall back. */}
               <PdpIcon name="cart" size={22} />
+              {/* The component's own anchor (`.s-cart-summary-wrapper`) gets no
+                  name of its own: `cartLabel` is internal state, only ever
+                  painted when `show-cart-label` is set, and the icon slot is
+                  the only content of ours the component renders. Slotted
+                  content is part of the flattened tree the accessible-name
+                  computation walks, so this text reaches the anchor even
+                  though it never appears there visually. */}
+              <span className="ox-sr-only">{t('ox.header.cart')}</span>
             </span>
           </SallaCartSummary>
         </Suspense>

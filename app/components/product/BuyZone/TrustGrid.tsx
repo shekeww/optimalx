@@ -61,13 +61,13 @@ export function TrustGrid({ settings, digital = false, payments }: TrustGridProp
         }
       : {
           key: 'shipping',
-          icon: 'shipping',
+          icon: 'truck',
           title: t('ox.pdp.trust_ships_kingdom'),
           line: tracking ? t('ox.pdp.trust_track_order') : null,
         },
     {
       key: 'authentic',
-      icon: 'authentic',
+      icon: 'shield-check',
       title: authenticity ? (
         <Link to={authenticity} className="ox-trust-grid__link">
           {t('ox.trust.authentic')}

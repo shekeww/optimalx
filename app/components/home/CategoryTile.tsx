@@ -51,7 +51,7 @@ export function CategoryTile({ label, to, icon, tone, className }: CategoryTileP
       {/* Drawn large: at this size the symbol is the tile's artwork rather
           than an interface control sitting above a word. The stylesheet
           scales it per viewport, which the inline width and height cannot. */}
-      <Icon name={icon} size={44} className="ox-tile__icon" />
+      <Icon name={icon} size={36} className="ox-tile__icon" />
       <span className="ox-tile__label">{label}</span>
     </Link>
   );

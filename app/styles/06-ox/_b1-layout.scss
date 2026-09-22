@@ -1008,6 +1008,12 @@ a.ox-util__trust-link {
 .ox-tabbar__list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  // A zero-width column gap put every tab flush against its neighbour: two
+  // 82x56 targets with no offset between them, which a pointer-target audit
+  // flags even though each one already clears the 24px floor on its own
+  // (`.ox-footer__link` below sets the same "comfortably over the 24px
+  // floor" precedent for the spacing itself, not just the target size).
+  column-gap: var(--ox-1);
   margin: 0;
   padding: 0;
   list-style: none;

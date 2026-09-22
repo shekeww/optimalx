@@ -9,7 +9,7 @@ import { WebComponentBoundary } from '../common/WebComponentBoundary';
 import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
-import { PdpIcon } from './PdpIcon';
+import { Icon } from '../common/Icon';
 import { VariantChips, cardOption, defaultValueId } from './VariantChips';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
@@ -298,7 +298,7 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
               onClick={decrease}
               disabled={quantity <= 1}
             >
-              <PdpIcon name="minus" size={16} />
+              <Icon name="minus" size={16} />
             </button>
             {/* `output` is a live region by default, so the new figure is
                 announced without an explicit aria-live on a card in a grid. */}
@@ -310,7 +310,7 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
               onClick={increase}
               disabled={max !== null && quantity >= max}
             >
-              <PdpIcon name="plus" size={16} />
+              <Icon name="plus" size={16} />
             </button>
           </div>
         ) : null}
@@ -396,7 +396,7 @@ function BuyNow({ product }: { product: Product }) {
           className="ox-card-product__buy ox-card-product__buy--native"
           {...(product.is_require_shipping ? { requiredShipping: true } : {})}
         >
-          <BoltGlyph />
+          <Icon name="bolt" size={16} className="ox-card-product__buy-icon" />
           {label}
         </SallaAddProductButtonCore>
       </WebComponentBoundary>
@@ -405,7 +405,7 @@ function BuyNow({ product }: { product: Product }) {
 
   return (
     <Link to={product.url} className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy">
-      <BoltGlyph />
+      <Icon name="bolt" size={16} className="ox-card-product__buy-icon" />
       {label}
     </Link>
   );
@@ -516,31 +516,6 @@ function AddButton({
   );
 }
 
-/**
- * The bolt on the buy CTA. It is drawn here rather than added to
- * `ox-sprite.svg` because that file belongs to the chrome batch; the geometry
- * is the sprite's house style (24 box, stroke 1.5, round joins, currentColor)
- * so it can move there unchanged.
- */
-function BoltGlyph() {
-  return (
-    <svg
-      className="ox-card-product__buy-icon"
-      width={16}
-      height={16}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M13.4 2.5 5.6 13.6h5.3L10.6 21.5l7.8-11.1h-5.3z" />
-    </svg>
-  );
-}
 
 /** A trimmed non-empty string, or null. */
 function trimmedText(value: unknown): string | null {

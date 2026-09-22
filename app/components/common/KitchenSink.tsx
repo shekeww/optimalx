@@ -144,7 +144,7 @@ export function KitchenSink() {
           >
             أضف إلى السلة
           </Button>
-          <Button iconStart={<Icon name="shipping" size={20} />}>with icon</Button>
+          <Button iconStart={<Icon name="truck" size={20} />}>with icon</Button>
           <Button href="https://example.com">as anchor</Button>
         </Row>
         <div style={{ marginBlockStart: 12 }}>

@@ -762,12 +762,17 @@
   line-height: var(--ox-lh-flat);
   color: var(--ox-fg);
 
+  // The mark is small text (0.6em of 20px), so the 4.5:1 floor applies, not
+  // the 3:1 large-text one the hero mark uses. --ox-accent fails at 3.44:1 on
+  // the (white) card ground; --ox-accent-dark is the token the system already
+  // documents for exactly this - small accent text at 4.59:1 - and it still
+  // reads as the accent colour, just a step darker than the hero mark.
   .ox-price__mark,
   i,
   .sicon-sar {
     font-size: 0.6em;
     font-weight: var(--ox-w-quiet);
-    color: var(--ox-accent);
+    color: var(--ox-accent-dark);
   }
 }
 
@@ -1359,10 +1364,11 @@
 
   // The cart glyph the approved image draws before the label. The product
   // card puts the same icon in as a child, but this button is the engine's
-  // and takes no children, so it is a mask on a pseudo element: the exact
-  // paths `PdpIcon` draws for `cart`, on the same 24 grid, at stroke 1.5,
-  // inheriting the button's own colour. Decorative, and out of the
-  // accessibility tree, because the button already says what it does.
+  // and takes no children, so it is a mask on a pseudo element: the sprite's
+  // `ox-cart` symbol (the same bag `<Icon name="cart">` draws everywhere
+  // else), generated into the token below by `scripts/gen-icon-mask.mjs`, at
+  // stroke 1.8, inheriting the button's own colour. Decorative, and out of
+  // the accessibility tree, because the button already says what it does.
   .sticky-product-bar salla-add-product-button .s-button-text::before,
   .sticky-product-bar__btn.s-button-element .s-button-text::before {
     content: '';
@@ -1379,11 +1385,10 @@
   }
 }
 
-// One copy of the glyph, so the sticky bar and anything else that needs it
-// read the same file. `stroke` and no `fill`, exactly as `PdpIcon` renders it.
-:root {
-  --ox-cart-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.8 3.6h2.4l2.3 10.6h9.5l2.2-7.7H6.2'/%3E%3Cpath d='M9.4 19.1a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z'/%3E%3Cpath d='M16.6 19.1a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z'/%3E%3C/svg%3E");
-}
+// The token itself now lives in app/styles/tokens.css, generated from the
+// sprite by `pnpm gen:icon-mask` (scripts/gen-icon-mask.mjs), so the sticky
+// bar and anything else that needs it read one file that changes with the
+// sprite instead of a hand-copied second one that silently drifts from it.
 
 // The scaffold also pads the page for its fixed bar; ours is not fixed, and
 // the page's own bottom padding already clears B1's tab bar.

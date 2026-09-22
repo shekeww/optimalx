@@ -215,7 +215,7 @@
       "format": "text",
       "label": "حد الشحن المجاني (بالريال)",
       "icon": "sicon-format-text-alt",
-      "value": "299",
+      "value": "",
       "required": false,
       "placeholder": null,
       "description": "المبلغ الذي يصبح الشحن مجانيا عنده؛ يظهر في السلة وصفحة المنتج"

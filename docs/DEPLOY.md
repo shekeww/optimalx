@@ -6,14 +6,14 @@ The theme is built, tested and pushed. What is left needs a person logged in to 
 
 ## What is already done
 
-- The theme code is on GitHub at `shekeww/optimalx`, branch `docs/engine-defect-and-spec-trueup`, which is the default branch of that repository.
-- The theme is registered in your Partners account as **optimalx**, id **10165682**, status development.
+- The theme code is on GitHub at `shekeww/optimalx`, branch `main`, which is the default and only branch of that repository.
+- The theme is registered in your Partners account as **optimalx**, id **1938498306**, status development.
 - The store already holds the 47 mock products with photos, and the theme reads them live.
 - Checks at the last build: 606 tests pass, the production build passes, and the copy, structured-data, right-to-left, motion and string checks are clean.
 
 ## Step 1: point the Partners theme at the repository
 
-Open https://salla.partners, go to My Themes, open **optimalx**, and in its settings connect the GitHub repository `shekeww/optimalx` and the branch `docs/engine-defect-and-spec-trueup`. Salla reads `twilight.json` from the repository on every push, which is where the theme name, the dashboard settings and the twelve home blocks are declared.
+Open https://salla.partners, go to My Themes, open **optimalx**, and in its settings connect the GitHub repository `shekeww/optimalx` and the branch `main`. Salla reads `twilight.json` from the repository on every push, which is where the theme name, the dashboard settings and the twelve home blocks are declared.
 
 If the repository is already connected, press the button that re-syncs it so Salla picks up today's commits.
 

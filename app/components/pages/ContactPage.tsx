@@ -77,7 +77,7 @@ export function ContactPage() {
   if (phone) {
     rows.push({
       id: 'phone',
-      icon: 'help',
+      icon: 'headset',
       labelKey: 'ox.form.phone',
       lineKey: 'ox.pages.contact.phone_line',
       value: phone,

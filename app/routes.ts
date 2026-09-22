@@ -46,4 +46,7 @@ export const routes = [
   route('/about', 'about.tsx'),
   route('/contact', 'contact.tsx'),
   route('/tools/converter', 'tools.converter.tsx'),
+  // The taxonomy index (PLAN-ship Batch S1 step 6). The home page's category
+  // row has linked "عرض الكل" here since B2; until this line it was a 404.
+  route('/categories', 'categories.tsx'),
 ];

@@ -275,3 +275,55 @@ None of them is introduced by the snapshot; all of them are visible live too.
 - `.offline-preview.log` is gitignored. `fixtures/store/` is not — the
   snapshot is meant to be committed so a teammate can run the preview without
   MCP access.
+
+## The taxonomy overlay (`OFFLINE_TAXONOMY=1`)
+
+The live store has zero categories and an empty menu, and the snapshot says
+so by default: every category, goal and menu-tree page renders its search
+fallback, which is what a visitor meets today. To browser-verify those pages
+before batch S5 writes the real categories, start the preview with the
+overlay switched on:
+
+```
+OFFLINE_TAXONOMY=1 pnpm preview:offline
+```
+
+`scripts/serve-store.mjs` then serves `fixtures/store/overlay/` instead of the
+snapshot's `categories.json` and `menus.json`: the 25-node taxonomy as
+storefront categories (ids `9000 + order`, so `/protein/c9001`,
+`/whey-protein/c9011`, `/goal-energy/c9020`), the same tree as a header menu,
+and `products?source=categories` answered from the taxonomy's own SKU lists
+(`membership.json`). Nothing else about the snapshot changes.
+
+The three files are generated, never edited:
+
+```
+node scripts/gen-taxonomy-fixture.mjs           # rewrite from taxonomy.json, products.json, tax.ar.json
+node scripts/gen-taxonomy-fixture.mjs --check   # exit 1 when they are stale
+```
+
+The category URLs carry the store origin (`https://optimalx.com.sa/...`), the
+same one the fixture's product URLs carry, on purpose: the engine only
+client-routes an anchor whose origin equals `store.url`, so a localhost URL
+would be a full page load into the `?storeId=` trap described at the top of
+this file. Client-side navigation from the home page, the header or
+`/categories` reaches every overlay category; a direct URL still needs
+`?storeId=1888890798`.
+
+## English locally (`OFFLINE_LANGS=ar,en`)
+
+The live store has English configured but disabled (`languages_list` on
+2026-09-22: `ar` enabled, `en` disabled), and the snapshot's store settings
+carry only `ar`, so the engine answers every `/en/...` URL with a 307 to `/`.
+To render the English storefront locally:
+
+```
+OFFLINE_LANGS=ar,en pnpm preview:offline
+```
+
+`scripts/serve-store.mjs` then adds `en` to the store's language list. Theme
+strings come from the bundled `locales/en.json`; the platform-string bundle
+(`js/translations.json`) stays the Arabic-derived one, so engine chrome such
+as breadcrumb labels still reads Arabic until Salla serves the English
+bundle on the live store. Combine with the overlay: `OFFLINE_TAXONOMY=1
+OFFLINE_LANGS=ar,en pnpm preview:offline`.

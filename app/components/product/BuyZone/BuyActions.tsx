@@ -1,6 +1,7 @@
 import { useCallback, useRef, type RefObject } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
+import { Icon } from '../../common/Icon';
 
 export interface BuyActionsProps {
   product: Product;
@@ -101,25 +102,10 @@ export function BuyActions({ product, anchorRef }: BuyActionsProps) {
   return (
     <div className="ox-buy__actions">
       <button type="button" className="ox-buy__now" onClick={buyNow}>
-        {/* The same bolt the product card's buy CTA carries, drawn rather than
-            sprited for the same reason it is there: the geometry is the
-            sprite's house style (24 box, stroke 1.5, round joins,
-            currentColor) so it can move into the sprite unchanged. */}
-        <svg
-          className="ox-buy__now-icon"
-          width={18}
-          height={18}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path d="M13.4 2.5 5.6 13.6h5.3L10.6 21.5l7.8-11.1h-5.3z" />
-        </svg>
+        {/* The same bolt the product card's buy CTA carries, now the
+            sprite's ox-bolt (S2a, 2026-09-22): one symbol instead of two
+            hand-copied ones drifting apart. */}
+        <Icon name="bolt" size={18} className="ox-buy__now-icon" />
         {t('ox.pdp.buy_now')}
       </button>
     </div>

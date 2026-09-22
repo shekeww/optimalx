@@ -1,81 +1,52 @@
 {
   "ox.home.brands_label": "العلامات التجارية",
-
-  "ox.home.categories_intro": "بروتين، كرياتين، فيتامينات وغيرها، مصنفة بطريقة تسهّل عليك الاختيار.",
+  "ox.home.categories_intro": "بروتين وكرياتين وفيتامينات وغيرها، مرتبة لتصل إلى ما تبحث عنه مباشرة.",
   "ox.home.categories_title": "تصفح حسب النوع",
-
-  "ox.home.goal_line_energy": "ما قبل التمرين، أحماض أمينية",
+  "ox.home.goal_line_energy": "ما قبل التمرين، إلكتروليت",
   "ox.home.goal_line_general_health": "ملتي فيتامين، أوميغا 3، فيتامين د",
   "ox.home.goal_line_hair_skin": "كولاجين، بيوتين، زنك",
   "ox.home.goal_line_ideal_weight": "ماس جينر، بروتين، سناكات",
   "ox.home.goal_line_performance": "بروتين، كرياتين، ما قبل التمرين",
   "ox.home.goal_line_recovery": "بروتين، كازين، مغنيسيوم",
-
-  "ox.home.goals_intro": "حدد هدفك، ونوصلك إلى المنتجات المناسبة له.",
+  "ox.home.goals_intro": "اختر هدفك، ونوجهك إلى المنتجات المرتبطة به.",
   "ox.home.goals_title": "تسوق حسب هدفك",
-
-  "ox.home.guides_intro": "اعرف متى تستخدم الكرياتين، وكم تحتاج من البروتين، وما الفرق بين الإيزوليت والكونسنتريت.",
-  "ox.home.guides_title": "أدلة تساعدك على الاختيار",
-
+  "ox.home.guides_intro": "ماذا تأخذ، ومتى، وما الفرق بين الأنواع. أدلة واضحة بلا تعقيد.",
+  "ox.home.guides_title": "أدلة تشرح لك بوضوح",
   "ox.home.h1": "اوبتيمال اكس: متجر مكملات غذائية ورياضية أصلية",
-
   "ox.home.hero_accent": "هدفك.",
-
   "ox.home.hero_cta_primary": "تسوق حسب هدفك",
   "ox.home.hero_cta_secondary": "اسأل قبل أن تشتري",
-
   "ox.home.hero_headline": "ما هدفك اليوم؟",
-
   "ox.home.hero_latin": "Performance Nutrition & Training",
-
-  "ox.home.hero_line_1": "مكملات رياضية، تغذية",
-  "ox.home.hero_line_2": "وخطط تساعدك توصل لهدفك",
-
+  "ox.home.hero_line_1": "مكملات رياضية وتغذية",
+  "ox.home.hero_line_2": "مرتبة حسب",
   "ox.home.hero_slide_n": "الصورة {n}",
   "ox.home.hero_slides_label": "صور الواجهة",
-
-  "ox.home.hero_subline": "مكملات غذائية ورياضية أصلية، خطط تغذية وتمرين، ومساعدة في اختيار ما يناسب هدفك واحتياجك.",
-
+  "ox.home.hero_subline": "مكملات رياضية ومنتجات تغذية مختارة بعناية، مع معلومات واضحة ومساعدة مجانية إذا احتجت.",
   "ox.home.hero_video_pause": "إيقاف الفيديو",
   "ox.home.hero_video_play": "تشغيل الفيديو",
-
-  "ox.home.offers_title": "تصفح المزيد من المنتجات",
-
-  "ox.home.plan_advisory_line": "20 دقيقة تسأل فيها وتعرف ما يناسبك قبل الشراء.",
-  "ox.home.plan_advisory_title": "استشارة قبل الشراء",
-  "ox.home.plan_cta": "احجز استشارتك",
-
-  "ox.home.plan_nutrition_line": "نعرف هدفك أولاً، ثم نحدد من أين تبدأ وما الذي تحتاجه.",
-  "ox.home.plan_nutrition_title": "خطط التغذية والمكملات",
-
-  "ox.home.plan_training_line": "جلسة شخصية في المدينة المنورة، أو عبر مكالمة مرئية.",
-  "ox.home.plan_training_title": "خطط التمرين والتدريب",
-
-  "ox.home.plans_intro": "خطة تغذية، خطة تمرين، أو استشارة تساعدك تبدأ بالطريقة المناسبة لهدفك.",
-  "ox.home.plans_title": "برامج وخطط التغذية",
-
+  "ox.home.offers_title": "تصفح المزيد",
+  "ox.home.plan_advisory_line": "20 دقيقة تسأل فيها قبل أن تشتري.",
+  "ox.home.plan_advisory_title": "استشارة مرئية",
+  "ox.home.plan_cta": "اعرف أكثر",
+  "ox.home.plan_nutrition_line": "افهم من أين تبدأ وما الذي تحتاجه فعلا.",
+  "ox.home.plan_nutrition_title": "التغذية والمكملات",
+  "ox.home.plan_training_line": "جلسة شخصية في المدينة المنورة أو عبر مكالمة مرئية.",
+  "ox.home.plan_training_title": "التمرين والتدريب",
+  "ox.home.plans_intro": "جانب المساعدة في المتجر: استشارة، أو تدريب، أو خطة تساعدك على ترتيب روتينك.",
+  "ox.home.plans_title": "برامج وخدمات",
   "ox.home.products_title": "أحدث المنتجات",
-
   "ox.home.services_eyebrow": "الخدمات",
-  "ox.home.services_intro": "سؤال مكتوب مجاني، استشارة مرئية، أو زيارة للفرع في المدينة المنورة.",
-  "ox.home.services_reply": "نرد على سؤالك المكتوب خلال {{hours}} ساعة عمل.",
+  "ox.home.services_intro": "سؤال مكتوب مجاني، أو استشارة مرئية، أو زيارة لفرعنا في المدينة المنورة.",
+  "ox.home.services_reply": "نرد على السؤال المكتوب خلال {{hours}} ساعة عمل.",
   "ox.home.services_title": "اسأل قبل أن تشتري",
-
   "ox.home.shop_now": "تسوق الآن",
-
   "ox.home.tile_count": "{{count}} منتج",
-
-  "ox.home.trust_authentic_def": "منتجات أصلية ببيانات واضحة تشمل عدد الحصص، حجم الحصة، تاريخ الصلاحية والحقائق الغذائية.",
-
+  "ox.home.trust_authentic_def": "نوضح لك عدد الحصص وحجم الحصة والصلاحية، ونشرح لك الأرقام الموجودة على ملصق المنتج.",
   "ox.home.trust_distributors": "موزعون رسميون",
-
-  "ox.home.trust_help_def": "نساعدك تفهم المنتج وتختار ما يناسب هدفك واحتياجك، بدون وعود مبالغ فيها.",
-
+  "ox.home.trust_help_def": "نساعدك على اختيار مكمل يناسب هدفك، بلا تشخيص ولا وعد بنتيجة.",
   "ox.home.trust_payment_marks": "طرق الدفع المتاحة",
-
   "ox.home.trust_region": "لماذا اوبتيمال اكس",
-
-  "ox.home.trust_shipping_def": "بدأنا من الخالدية في المدينة المنورة بفريق صغير، واليوم نشحن منتجاتنا إلى جميع مناطق السعودية ونساعدك في اختيار ما يناسبك.",
-
+  "ox.home.trust_shipping_def": "بدأنا من الخالدية في المدينة المنورة، ونشحن إلى كل مدن السعودية. وإذا كنت قريبا، استلم طلبك من الفرع مجانا.",
   "ox.home.whatsapp_float": "راسلنا على واتساب"
 }

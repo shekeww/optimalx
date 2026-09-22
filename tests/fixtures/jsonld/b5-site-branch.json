@@ -5,10 +5,19 @@
       "@type": "Organization",
       "@id": "https://optimalx.sa/#organization",
       "name": "اوبتيمال اكس",
+      "alternateName": "OptimalX",
       "url": "https://optimalx.sa/",
       "logo": "https://cdn.salla.sa/logo.png",
       "email": "hi@optimalx.sa",
       "telephone": "0500000000",
+      "areaServed": "SA",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "0500000000",
+        "email": "hi@optimalx.sa",
+        "contactType": "customer service",
+        "areaServed": "SA"
+      },
       "sameAs": ["https://instagram.com/optimalx"]
     },
     {
@@ -44,7 +53,8 @@
         "longitude": 39.653138015
       },
       "openingHours": ["Su-Th 16:00-23:00", "Fr 16:00-23:00"],
-      "hasMap": "https://maps.example/branch"
+      "hasMap": "https://maps.example/branch",
+      "currenciesAccepted": "SAR"
     }
   ]
 }

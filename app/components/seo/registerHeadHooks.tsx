@@ -44,6 +44,17 @@ function localized(value: unknown, locale: string): string | undefined {
 /** The branch city and region, published with the address (FINAL-content 5). */
 const BRANCH_LOCALITY = 'ox.branch.locality';
 const BRANCH_REGION = 'ox.branch.region';
+/**
+ * The street line for the site-wide `#localbusiness` node when the merchant
+ * has not filled `branch_address` yet (FINAL-claims-source.md:7: street شارع
+ * جبار بن صخر, حي الخالدية, المدينة المنورة). This is a structured-data-only
+ * fallback: the visible branch page still prints nothing without the setting
+ * (`content/branch.ts`), because a shopper reading the page needs the
+ * merchant's own words, but a search engine reading the graph is better served
+ * by the one claims-backed address the audit already verified than by no
+ * address at all.
+ */
+const BRANCH_STREET_FALLBACK = 'ox.seo.branch.street';
 
 /**
  * Branch facts for the one `#localbusiness` node the site graph declares
@@ -58,29 +69,35 @@ const BRANCH_REGION = 'ox.branch.region';
  *
  * The geo point is the branch's published coordinate pair from the claims
  * source, and it is emitted only alongside a real address: a pin with no
- * street is a pin a shopper cannot use.
+ * street is a pin a shopper cannot use. The address itself falls back to the
+ * claims-backed street line above when the merchant setting is empty, so the
+ * geo point (a fixed constant, not a setting) is no longer gated on a setting
+ * that starts empty on every fresh install.
  */
 export function branchFromSettings(
   settings: Record<string, unknown> | undefined,
   locale: string,
   t?: (key: string) => string
 ): BranchInfo {
-  const address = localized(settings?.branch_address, locale);
-  const hours = toSchemaOpeningHours(parseBranchHours(localized(settings?.branch_hours, locale)));
   const label = (key: string): string | undefined => {
     const value = t?.(key);
     return value && value !== key ? value : undefined;
   };
+  const address = localized(settings?.branch_address, locale) ?? label(BRANCH_STREET_FALLBACK);
+  const hours = toSchemaOpeningHours(parseBranchHours(localized(settings?.branch_hours, locale)));
   return {
     address,
     locality: address ? label(BRANCH_LOCALITY) : undefined,
     region: address ? label(BRANCH_REGION) : undefined,
     hours: hours.length ? hours : undefined,
     phone: localized(settings?.whatsapp_number, locale),
-    mapUrl: localized(settings?.branch_map_url, locale),
+    mapUrl: localized(settings?.google_place_url, locale) ?? localized(settings?.branch_map_url, locale),
     geo: address ? BRANCH_GEO : undefined,
   };
 }
+
+/** The store's Latin brand form (keywords-ar.md §7.1 conventions), for `alternateName`. */
+const BRAND_ALT_NAME = 'ox.seo.brand.alt_name';
 
 /**
  * Site-wide Organization + WebSite + LocalBusiness JSON-LD, built from the
@@ -97,8 +114,14 @@ export function siteJsonLd(
   const origin = tryOriginOf(store?.url);
   if (!store || !origin) return null;
   const prefix = store.settings?.is_multilingual ? locale : null;
+  const placeUrl = localized(settings?.google_place_url, locale);
+  const alternateName = t?.(BRAND_ALT_NAME);
   const doc = graph(
-    organization({ store, sameAs: socialLinks(store) }),
+    organization({
+      store,
+      alternateName: alternateName && alternateName !== BRAND_ALT_NAME ? alternateName : undefined,
+      sameAs: [...socialLinks(store), placeUrl],
+    }),
     website({ store, searchUrl: currentUrl(origin, prefix, '/search') }),
     localBusiness({ store, branch: branchFromSettings(settings, locale, t) })
   );

@@ -7,18 +7,21 @@ import { DefaultHome } from '../components/home/DefaultHome';
 import { OxWhatsApp } from '../components/home/OxWhatsApp';
 import { HomeSkeleton } from '../components/home/HomeSkeleton';
 import { hasHeroBlock, hasOxBlock } from '../components/home/defaults';
-import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
+import { homeHeadExtend } from '../components/seo/routeHeads';
 
 /**
  * Home (PLAN-final B2).
  *
  * The loader and the head stay the engine's: `Home.loader` fetches the
- * merchant's block list and `Home.head` builds the title, description, OG block
- * and the WebSite JSON-LD. `extend` applies the C12 correction only, the same
- * one every owned route applies: the engine's canonical is `origin + path` with
- * no locale prefix while og:url and hreflang carry one, so both are rebuilt
- * with `canonicalFor`, which adds the prefix only on a multilingual store. A
- * single-language store emits no hreflang cluster at all.
+ * merchant's block list and `Home.head` builds the OG block and the WebSite
+ * JSON-LD. `homeHeadExtend` (seo/routeHeads.ts) applies the C12 canonical
+ * correction every owned route applies (the engine's canonical is
+ * `origin + path` with no locale prefix while og:url and hreflang carry one,
+ * so both are rebuilt with `canonicalFor`, which adds the prefix only on a
+ * multilingual store; a single-language store emits no hreflang cluster at
+ * all) and replaces the title and description with the researched pair
+ * (keywords-ar.md H01, `ox.seo.home.*`), since the store's own dictionary
+ * does not carry the engine's default keys.
  *
  * Composition: the merchant's blocks when the dashboard has any, the twelve
  * DIRECTION 6.2 blocks otherwise (C2). A merchant may delete the hero block, so
@@ -31,23 +34,7 @@ import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
  */
 export const Route = createFileRoute('/{-$locale}/')({
   loader: ({ params }): Promise<HomeLoaderData> => Home.loader({ locale: params.locale }),
-  head: withHead(Home, (result, ctx) => {
-    const origin = tryOriginOf(ctx.settings?.store?.url);
-    const path = ctx.location?.pathname ?? '';
-    const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
-    const canonical =
-      origin && path
-        ? canonicalFor(origin, multilingual ? ctx.locale : null, path)
-        : result.canonical;
-
-    return {
-      ...result,
-      robots: robots(false),
-      canonical,
-      openGraph: { ...result.openGraph, url: canonical },
-      alternateLanguages: multilingual ? result.alternateLanguages : undefined,
-    };
-  }),
+  head: withHead(Home, homeHeadExtend()),
   pendingComponent: () => <HomeSkeleton />,
   component: HomeComponent,
 });

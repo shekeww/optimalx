@@ -55,7 +55,7 @@ export function ErrorState({ error, reset }: ErrorStateProps) {
   return (
     <div className="ox-page ox-page--error" data-testid="ox-error-state">
       <section className="ox-state">
-        <Icon name="help" size={32} className="ox-state__mark" />
+        <Icon name="headset" size={32} className="ox-state__mark" />
         <h1 className="ox-state__title ox-h1">{t('ox.error.generic_title')}</h1>
         <p className="ox-state__body ox-lead">{t('ox.error.generic_body')}</p>
         <div className="ox-state__actions">

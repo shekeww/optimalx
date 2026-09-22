@@ -80,6 +80,15 @@ describe('commerceHeadExtend', () => {
     expect(result.alternateLanguages).toHaveLength(1);
   });
 
+  it('carries the /en prefix at locale en on a multilingual store', () => {
+    const result = commerceHeadExtend()(
+      engineHead('Guides', `${ORIGIN}/blog`),
+      { ...context('/en/blog', true), locale: 'en' } as never
+    );
+    expect(result.canonical).toBe(`${ORIGIN}/en/blog`);
+    expect(result.openGraph?.url).toBe(`${ORIGIN}/en/blog`);
+  });
+
   it('emits no JSON-LD of its own', () => {
     const result = commerceHeadExtend()(engineHead('سياسة', `${ORIGIN}/x/page-1`), context('/x/page-1'));
     expect(result.jsonLd).toBeUndefined();

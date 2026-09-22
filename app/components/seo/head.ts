@@ -90,6 +90,20 @@ export function stripLocale(path: string, languages: readonly string[]): string 
   return rest === '' ? '/' : rest;
 }
 
+/**
+ * Whether a breadcrumb label is still an i18n lookup key rather than a word
+ * (mirrors `common/OxBreadcrumb.tsx`'s `isUnresolvedKey`, which exists because
+ * the engine's own breadcrumb builder sometimes hands back its home crumb
+ * unresolved). Deliberately narrow: dotted lowercase ASCII segments only, so
+ * no real Arabic or English label can match.
+ */
+const UNRESOLVED_KEY = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$/;
+
+/** A breadcrumb `name` resolved through `t` when it still looks like a key. */
+export function resolvedLabel(name: string, t: (key: string) => string): string {
+  return UNRESOLVED_KEY.test(name.trim()) ? t(name) : name;
+}
+
 export interface HreflangLink {
   hreflang: string;
   href: string;

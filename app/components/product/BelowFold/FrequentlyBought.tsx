@@ -6,7 +6,7 @@ import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../../common/Bdi';
 import { Button } from '../../common/Button';
 import { Price } from '../../common/Price';
-import { PdpIcon } from '../PdpIcon';
+import { Icon } from '../../common/Icon';
 import { effectivePrice } from '../lib/claims';
 import { isAddable, useCatalogueProducts } from '../lib/catalogue';
 import { WebComponentBoundary } from '../../common/WebComponentBoundary';
@@ -284,7 +284,7 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
         {rows.map((row, index) => (
           <li className="ox-fbt__strip-item" key={row.id}>
             {index > 0 ? (
-              <PdpIcon name="plus" size={14} className="ox-fbt__plus" />
+              <Icon name="plus" size={14} className="ox-fbt__plus" />
             ) : null}
             <span className="ox-fbt__thumb">
               <Image

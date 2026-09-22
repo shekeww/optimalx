@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { PdpIcon } from '../PdpIcon';
 import { Alternatives } from './Alternatives';
 
 export interface RelatedRailProps {
@@ -103,7 +102,7 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
             onClick={() => nudge(-1)}
             aria-label={t('ox.pdp.rail_prev')}
           >
-            <PdpIcon name="chevron-end" size={16} />
+            <i className="sicon-keyboard_arrow_left" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -111,7 +110,7 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
             onClick={() => nudge(1)}
             aria-label={t('ox.pdp.rail_next')}
           >
-            <PdpIcon name="chevron-end" size={16} />
+            <i className="sicon-keyboard_arrow_left" aria-hidden="true" />
           </button>
         </div>
       </div>

@@ -40,7 +40,7 @@ export function NotFound({ showLatest = true }: NotFoundProps) {
   return (
     <div className="ox-page ox-page--404" data-testid="ox-notfound">
       <section className="ox-state">
-        <Icon name="help" size={32} className="ox-state__mark ox-state__mark--lg" />
+        <Icon name="headset" size={32} className="ox-state__mark ox-state__mark--lg" />
         <h1 className="ox-state__title ox-display">{t('ox.error.404_title')}</h1>
         <p className="ox-state__body ox-lead">{t('ox.error.404_body')}</p>
 

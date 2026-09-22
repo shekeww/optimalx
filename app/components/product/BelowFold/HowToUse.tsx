@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Bdi } from '../../common/Bdi';
-import { PdpIcon, type PdpIconName } from '../PdpIcon';
+import { Icon, type OxIconName } from '../../common/Icon';
 import { splitStep } from '../lib/steps';
 
 export interface HowToUseProps {
@@ -12,7 +12,7 @@ export interface HowToUseProps {
 }
 
 /** One glyph per step, at the step's inline start. */
-const GLYPHS: PdpIconName[] = ['scoop-cup', 'shaker', 'shaker-straw'];
+const GLYPHS: OxIconName[] = ['scoop-cup', 'shaker', 'shaker-straw'];
 
 /**
  * The method of use panel (design region 37): numbered steps, one outline
@@ -38,7 +38,7 @@ export function HowToUse({ steps, footer }: HowToUseProps) {
           const parts = splitStep(step);
           return (
             <li className="ox-howto__step" key={String(index) + step.slice(0, 12)}>
-              <PdpIcon
+              <Icon
                 name={GLYPHS[index] ?? GLYPHS[GLYPHS.length - 1]}
                 size={44}
                 className="ox-howto__glyph"

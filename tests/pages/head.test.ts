@@ -8,10 +8,11 @@ import { convert, formatAmount, UNIT_IDS } from '../../app/components/pages/conv
 import { createT } from '../helpers/i18n';
 
 const t = createT('ar');
+const tEn = createT('en');
 
-function context(multilingual: boolean): TwilightContext {
+function context(multilingual: boolean, locale: 'ar' | 'en' = 'ar'): TwilightContext {
   return {
-    locale: 'ar',
+    locale,
     i18n: { t: (key: string) => t(key) },
     settings: {
       store: {
@@ -95,6 +96,17 @@ describe('pageHead', () => {
       descriptionKey: 'ox.services.meta_description',
     })(context(true));
     expect(without.jsonLd).toBeUndefined();
+  });
+
+  it('renders the English title, description and /en canonical at locale en', () => {
+    const head = pageHead({
+      path: '/services',
+      titleKey: 'ox.services.meta_title',
+      descriptionKey: 'ox.services.meta_description',
+    })(context(true, 'en'));
+    expect(head.title).toBe(tEn('ox.services.meta_title'));
+    expect(head.description).toBe(tEn('ox.services.meta_description'));
+    expect(head.canonical).toBe('https://optimalx.sa/en/services');
   });
 });
 

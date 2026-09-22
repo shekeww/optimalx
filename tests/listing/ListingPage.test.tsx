@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 
@@ -88,8 +88,14 @@ vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
 vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
   menu: { queries: { header: () => ({ queryKey: ['menu', 'header'], queryFn: async () => [] }) } },
 }));
+// The live category list, per test: empty by default (the store today), so
+// every taxonomy link falls back to a search; a test pushes categories in to
+// see the resolved URL win.
+const liveCategories: unknown[] = [];
 vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
-  category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
+  category: {
+    queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => liveCategories }) },
+  },
 }));
 
 const { ListingPage } = await import('../../app/components/listing/ListingPage');
@@ -122,6 +128,7 @@ function data(overrides: Partial<ProductListLoaderData> = {}): ProductListLoader
 }
 
 beforeEach(() => {
+  liveCategories.length = 0;
   itemsListProps.mockClear();
   historyPush.mockClear();
   storeSettings.product = { filters: true };
@@ -244,7 +251,10 @@ describe('ListingPage, category variant', () => {
 
   it('navigates with ?sort= and drops the page cursor, as the engine does', () => {
     renderWithProviders(<ListingPage {...data()} slug="whey-protein" />);
-    const select = screen.getByLabelText('ترتيب حسب') as HTMLSelectElement;
+    // The label is read through the dictionary, not retyped: the value moved
+    // from "ترتيب حسب" to "رتب حسب" at HEAD and this assertion kept the old
+    // text, so the case failed on wording while the behaviour it pins held.
+    const select = screen.getByLabelText(t('ox.sort.label')) as HTMLSelectElement;
     select.value = 'priceFromLowToTop';
     select.dispatchEvent(new Event('change', { bubbles: true }));
     expect(historyPush).toHaveBeenCalledTimes(1);
@@ -381,12 +391,15 @@ describe('ListingPage, brand and static variants', () => {
         })}
       />
     );
+    // Read through the dictionary, not retyped: the wording is the copy
+    // gate's business (tests/i18n.test.ts, check:copy); this case pins that
+    // the offers intro key, and only it, renders here.
     expect(container.querySelector('.ox-listing__intro-text')?.textContent).toBe(
-      'المنتجات هنا بسعر أقل من سعرها المعتاد. السعر السابق يظهر بجانب السعر الحالي، والفرق بينهما بالريال.'
+      t('ox.listing.intro_offers')
     );
     const empty = container.querySelector('.ox-listing__empty');
     expect(empty).not.toBeNull();
-    expect(empty?.querySelector('.ox-empty__title')?.textContent).toBe('لا عروض سارية الآن');
+    expect(empty?.querySelector('.ox-empty__title')?.textContent).toBe(t('ox.listing.empty_offers'));
     // Two routes out: the goals page and the whole range.
     expect(empty?.querySelectorAll('.ox-empty__actions a')).toHaveLength(2);
   });
@@ -408,7 +421,7 @@ describe('ListingPage, brand and static variants', () => {
       />
     );
     expect(container.querySelector('.ox-empty__title')?.textContent).toBe(
-      'لا منتجات لهذه العلامة الآن'
+      t('ox.listing.empty_brand')
     );
     const hrefs = Array.from(container.querySelectorAll('.ox-empty__actions a')).map((node) =>
       node.getAttribute('href')
@@ -430,8 +443,119 @@ describe('ListingPage, brand and static variants', () => {
     expect(container.querySelector('.ox-listing__faq')).toBeNull();
     expect(container.querySelector('.ox-listing__chips')).toBeNull();
     expect(container.querySelector('.ox-listing__intro-text')?.textContent).toBe(
-      'آخر ما أضفناه إلى المتجر، الأحدث أولا.'
+      t('ox.listing.intro_latest')
     );
     expect(screen.getByTestId('items-list')).toBeTruthy();
+  });
+});
+
+describe('ListingPage, taxonomy head region (S1 step 5)', () => {
+  it('renders the researched h1 for a taxonomy slug, and the dashboard name for any other', () => {
+    // `page.title` is the dashboard name ("واي بروتين" in the fixture); the
+    // protein node's h1 is the researched head term, which differs from it.
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="protein" />);
+    expect(container.querySelector('h1')?.textContent).toBe(t('ox.content.categories.protein.h1'));
+    expect(t('ox.content.categories.protein.h1')).not.toBe('واي بروتين');
+
+    const { container: unknown } = renderWithProviders(
+      <ListingPage
+        {...data({ page: { title: 'قسم المالك', slug: 'product.index', breadcrumbs: [] } })}
+        slug="owner-made"
+      />
+    );
+    expect(unknown.querySelector('h1')?.textContent).toBe('قسم المالك');
+  });
+
+  it('never borrows a node heading for a brand whose slug matches a taxonomy slug', () => {
+    const { container } = renderWithProviders(
+      <ListingPage
+        {...data({
+          page: { title: 'Protein Co', slug: 'brands.index', breadcrumbs: [] },
+          source: { type: 'brands', value: '7', entity: { id: '7', name: 'Protein Co', url: `${ORIGIN}/protein/b7` } },
+          filters: undefined,
+        })}
+        slug="protein"
+      />
+    );
+    expect(container.querySelector('h1')?.textContent).toBe('Protein Co');
+  });
+
+  it('clamps the intro to two lines behind the show-more toggle, keeping the whole paragraph in the DOM', () => {
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="protein" />);
+    const intro = container.querySelector('.ox-listing__intro-text') as HTMLElement;
+    expect(intro.classList.contains('is-clamped')).toBe(true);
+    expect(intro.textContent).toBe(t('ox.content.categories.protein.intro'));
+    const toggle = container.querySelector('.ox-listing__intro-toggle') as HTMLButtonElement;
+    expect(toggle.textContent).toBe(t('ox.common.show_more'));
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(toggle.getAttribute('aria-controls')).toBe(intro.id);
+    fireEvent.click(toggle);
+    expect(intro.classList.contains('is-clamped')).toBe(false);
+    expect(toggle.textContent).toBe(t('ox.common.show_less'));
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('links a child chip to its live category when the store has one, and to a search until then', async () => {
+    liveCategories.push({
+      id: 9011,
+      id_: 9011,
+      name: 'واي بروتين',
+      url: `${ORIGIN}/whey-protein/c9011`,
+    });
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="protein" />);
+    await waitFor(() =>
+      expect(
+        Array.from(container.querySelectorAll('.ox-listing__chips a')).map((a) => a.getAttribute('href'))
+      ).toContain(`${ORIGIN}/whey-protein/c9011`)
+    );
+    const hrefs = Array.from(container.querySelectorAll('.ox-listing__chips a')).map((a) =>
+      a.getAttribute('href')
+    );
+    expect(hrefs).toHaveLength(5);
+    expect(hrefs[0]).toBe(`${ORIGIN}/whey-protein/c9011`);
+    for (const href of hrefs.slice(1)) expect(href).toMatch(/^\/search\?q=/);
+  });
+
+  it('prefers the live children on the entity over the taxonomy', () => {
+    const { container } = renderWithProviders(
+      <ListingPage
+        {...data({
+          source: {
+            type: 'categories',
+            value: '9001',
+            entity: {
+              id: 9001,
+              name: 'بروتين',
+              url: `${ORIGIN}/protein/c9001`,
+              sub_categories: [
+                { id: 9011, name: 'واي بروتين', url: `${ORIGIN}/whey-protein/c9011` },
+                { id: 9012, name: 'واي بروتين ايزوليت', url: `${ORIGIN}/whey-isolate/c9012` },
+              ],
+            },
+          },
+        })}
+        slug="protein"
+      />
+    );
+    const hrefs = Array.from(container.querySelectorAll('.ox-listing__chips a')).map((a) =>
+      a.getAttribute('href')
+    );
+    expect(hrefs).toEqual([`${ORIGIN}/whey-protein/c9011`, `${ORIGIN}/whey-isolate/c9012`]);
+  });
+
+  it('gives a utility category its h1, intro and FAQ from the taxonomy', () => {
+    const { container } = renderWithProviders(
+      <ListingPage
+        {...data({
+          page: { title: 'الحزم', slug: 'product.index', breadcrumbs: [] },
+          source: { type: 'categories', value: '9016', entity: { id: 9016, name: 'الحزم', url: `${ORIGIN}/bundles/c9016` } },
+        })}
+        slug="bundles"
+      />
+    );
+    expect(container.querySelector('h1')?.textContent).toBe(t('ox.tax.bundles.h1'));
+    expect(container.querySelector('.ox-listing__intro-text')?.textContent).toBe(t('ox.tax.bundles.intro'));
+    expect(container.querySelectorAll('.ox-listing__faq .ox-acc__trigger')).toHaveLength(3);
+    expect(container.querySelector('.ox-listing__chips')).toBeNull();
   });
 });

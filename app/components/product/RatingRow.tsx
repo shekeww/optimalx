@@ -1,5 +1,5 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { PdpIcon } from './PdpIcon';
+import { Icon } from '../common/Icon';
 
 export interface RatingRowProps {
   /** The product's own average, 0 to 5. */
@@ -44,12 +44,12 @@ export function RatingRow({ stars, count, href, size = 14, className }: RatingRo
       >
         <span className="ox-rating__row ox-rating__row--base" aria-hidden="true">
           {STARS.map((n) => (
-            <PdpIcon key={n} name="star" size={size} />
+            <Icon key={n} name="star" size={size} />
           ))}
         </span>
         <span className="ox-rating__row ox-rating__row--fill" aria-hidden="true">
           {STARS.map((n) => (
-            <PdpIcon key={n} name="star" size={size} filled />
+            <Icon key={n} name="star" size={size} style={{ fill: 'currentColor' }} />
           ))}
         </span>
       </span>

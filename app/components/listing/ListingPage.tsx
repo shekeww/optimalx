@@ -25,7 +25,8 @@ import { ListEnd, LoadMore } from './LoadMore';
 import { ProductGrid } from './ProductGrid';
 import { RelatedGuides } from './RelatedGuides';
 import { listingSourceCopy } from './listingCopy';
-import { categoryEntity, listingCategory, listingGoal, listingSlug, listingVariant } from './resolve';
+import { categoryEntity, listingGoal, listingSlug, listingVariant } from './resolve';
+import { nodeBySlug } from '../../content/taxonomy';
 import { currentSort, sortOptions } from './sortOptions';
 import { ListingHeader } from './ListingHeader';
 import { ListingToolbar } from './ListingToolbar';
@@ -76,7 +77,11 @@ export function ListingPage(props: ListingPageProps) {
   const variant = props.variant ?? listingVariant(props, routeSlug);
   const slug = listingSlug(props, routeSlug);
   const goal = variant === 'goal' ? listingGoal(props, routeSlug) : undefined;
-  const category = listingCategory(props, routeSlug);
+  // The taxonomy node behind a category listing, or undefined for a category
+  // the owner created outside the 25-node map (S1 step 5). Only a category
+  // source consults it: a brand or a static listing has a slug too, and a
+  // brand whose slug happened to equal a node's must not borrow its copy.
+  const node = source.type === 'categories' ? nodeBySlug(slug) : undefined;
   const entity = categoryEntity(props);
   const brand = variant === 'brand' ? (source.entity as Brand | undefined) : undefined;
 
@@ -109,21 +114,34 @@ export function ListingPage(props: ListingPageProps) {
   const queryText = isSearch ? String(source.value ?? '') : '';
   const isZero = isSearch && products.length === 0;
 
+  // THE H1 IS THE RESEARCHED HEAD TERM, NOT THE DASHBOARD NAME. The loader's
+  // `page.title` is whatever the merchant typed into the category form
+  // ("بروتين"); the node's `h1Key` is the head query the cluster ranks on
+  // ("بروتين باودر", keywords-ar.md C01), written once and audited. The page
+  // used to render the dashboard name and leave the researched key unread
+  // (PLAN-ship §1 item 2a). The dashboard name still wins for a category the
+  // map does not know, and for a key that fails to resolve, so an owner-made
+  // category never shows a raw key as its heading.
+  const researched = node ? t(node.h1Key) : '';
   const title = isSearch ? (
     <>
       {t('ox.search.results_prefix')} <Bdi lang={null}>{queryText}</Bdi>
     </>
+  ) : researched && researched !== node?.h1Key ? (
+    researched
   ) : (
     page.title
   );
 
   // Each source states its own line and its own empty state; the card, the
-  // grid and the toolbar are the same on every one of them.
+  // grid and the toolbar are the same on every one of them. The intro comes
+  // from the node, which covers the 21 researched categories and goals with
+  // the keys they already had and the four utility categories with theirs.
   const copy = listingSourceCopy(source.type, variant);
   const intro = brand ? (
     <BrandIntro brand={brand} />
-  ) : category ? (
-    <CategoryIntro introKey={category.introKey} />
+  ) : node ? (
+    <CategoryIntro introKey={node.introKey} />
   ) : copy.introKey ? (
     <CategoryIntro introKey={copy.introKey} clamp={false} />
   ) : null;
