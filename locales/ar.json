@@ -732,4 +732,70 @@
   "ox.content.categories.protein.faq_2_q": "وش الفرق بين أنواع البروتين؟",
   "ox.content.categories.creatine.faq_1_q": "متى أستخدم الكرياتين؟",
   "ox.content.categories.protein.faq_3_q": "كم حصة بروتين أحتاج؟"
+  
+  
+,
+"ox.a11y.skip": "تخطي إلى المحتوى",
+"ox.header.contact_us": "تواصل معنا",
+"ox.trust.authentic_100": "منتجات أصلية 100%",
+"ox.trust.payment_secure": "دفع آمن",
+"ox.trust.ships_kingdom": "شحن داخل المملكة",
+
+"ox.nav.products": "المنتجات",
+"ox.nav.supplements": "المكملات",
+"ox.nav.more": "المزيد",
+
+"ox.common.view_all": "عرض الكل",
+"ox.common.sar": "ريال",
+
+"ox.home.hero_eyebrow": "تغذية رياضية تناسب هدفك",
+"ox.home.posters_title": "اكتشف ما يناسبك",
+
+"ox.home.poster.snacks_eyebrow": "سناكات وبروتين",
+"ox.home.poster.snacks_title": "خيارات خفيفة لباقي يومك",
+"ox.home.poster.snacks_line": "بروتين بار وسناكات عملية تناسب يومك.",
+
+"ox.home.poster.strength_eyebrow": "القوة والأداء",
+"ox.home.poster.strength_title": "استعد لتمرينك",
+"ox.home.poster.strength_line": "بروتين، كرياتين وما قبل التمرين.",
+
+"ox.home.poster.cardio_eyebrow": "التمارين والكارديو",
+"ox.home.poster.cardio_title": "خلك جاهز للتمرين",
+"ox.home.poster.cardio_line": "خيارات للترطيب والطاقة أثناء نشاطك.",
+
+"ox.home.poster.advisory_eyebrow": "قبل ما تشتري",
+"ox.home.poster.advisory_title": "اسألنا أول",
+"ox.home.poster.advisory_line": "نساعدك تفهم خياراتك قبل الشراء.",
+
+"ox.home.poster.branch_eyebrow": "من المدينة المنورة",
+"ox.home.poster.branch_title": "مر علينا في الفرع",
+"ox.home.poster.branch_line": "شوف المنتجات واستلم طلبك واسأل فريقنا.",
+
+"ox.content.services.written_title": "سؤال مكتوب",
+"ox.content.services.written_badge": "مجاني",
+"ox.content.services.written_meta": "رد خلال ساعات العمل",
+"ox.content.services.written_desc": "اكتب سؤالك ونساعدك تفهم المنتج قبل ما تشتري.",
+
+"ox.content.services.video_title": "استشارة مرئية 20 دقيقة",
+"ox.content.services.video_meta": "مكالمة مباشرة",
+"ox.content.services.video_desc": "ناقش هدفك وخياراتك واسأل عن المنتجات قبل الشراء.",
+
+"ox.content.services.visit_title": "زيارة الفرع",
+"ox.content.services.visit_badge": "مجاني",
+"ox.content.services.visit_meta": "الخالدية، المدينة المنورة",
+"ox.content.services.visit_desc": "مر علينا في الفرع، شوف المنتجات واسأل فريقنا.",
+
+"ox.home.plans_tier_title": "اختر الطريقة اللي تناسبك",
+"ox.content.services.card_footer": "اسأل قبل ما تشتري",
+
+"ox.footer.about": "عن أوبتيمال اكس",
+"ox.footer.customer_service": "خدمة العملاء",
+"ox.footer.contact": "تواصل معنا",
+"ox.footer.whatsapp": "واتساب",
+"ox.footer.faq": "الأسئلة الشائعة",
+"ox.footer.products": "المنتجات",
+"ox.header.logo_alt": "أوبتيمال اكس",
+"ox.footer.tagline": "مكملات أصلية. اختيار أوضح.",
+"ox.footer.tagline_2": "نساعدك تختار ما يناسب هدفك.",
+"ox.footer.tagline_2_goal": "تسوق حسب هدفك"
 }
