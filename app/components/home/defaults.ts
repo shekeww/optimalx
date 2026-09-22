@@ -51,8 +51,15 @@ export const HOME_BLOCK_PATHS = [
   'ox-posters',
   'ox-products-secondary',
   'ox-categories',
-  'ox-brands',
+  // MOVED (S2c, 2026-09-22): directly after the needs section, ahead of the
+  // brand strip. `ox-categories` is the needs section's second pane today
+  // ("browse by type"); once S2b merges it with `ox-goals` into one `OxNeeds`
+  // block this still has to sit right after wherever that block lands — the
+  // needs grid asks "which one", this band answers "ask us", and the two
+  // belong next to each other more than either belongs next to the brand
+  // strip.
   'ox-services',
+  'ox-brands',
   'ox-guides',
   'ox-branch',
   'ox-certifications',
@@ -82,8 +89,10 @@ export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
  *   and two rows of four on a phone.
  * - `ox-goals` grew: the cards are dark photographic cards with a title, a
  *   line and an action, not 128px icon tiles.
- * - `ox-services` shrank a long way: it is three cards on the page ground
- *   now, not three channel cards inside a 704px band.
+ * - `ox-services` (re-measured again, S2c 2026-09-22): back on a dark band,
+ *   but a single tier now — an eyebrow, a title, a subline, the three
+ *   photographic doors and one CTA under the row, not the two-tier band that
+ *   also carried the three channel cards (those moved to `/services`).
  * - `ox-faq` grew: the block carries the secondary rail beside the accordion,
  *   which is a column of its own on a desktop and a second stack on a phone.
  *   The number reserves for the rail HAVING products, because the live store
@@ -120,7 +129,17 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the newsletter and banner rows below.
   'ox-brands': { mobile: 0, desktop: 0 },
-  'ox-services': { mobile: 796, desktop: 342 },
+  // Re-measured for the single-tier band (S2c, 2026-09-22; token arithmetic,
+  // not a live browser measurement — see docs/build/progress/S2c.md).
+  // Mobile (358 container, --ox-12 padding): 48 pad-top + head stack 141
+  // (eyebrow row 20 + gap 8 + h2 30 + gap 8 + 2-line subline 51, margin-end
+  // 24) + plans row 246 (232 card floor + 6/8 scroller focus padding) + 24
+  // gap + 44 CTA + 16 gap + 20 note + 48 pad-bottom = 588 (brief's "no
+  // taller than ~600 on the phone" floor holds).
+  // Desktop (--ox-16 padding, 1296 container, 3-up row): 64 + head stack 135
+  // (eyebrow 20 + gap 8 + h2 40 + gap 8 + 1-line subline 27, margin-end 32)
+  // + 280 card row + 32 gap + 44 CTA + 16 gap + 20 note + 64 = 655.
+  'ox-services': { mobile: 588, desktop: 655 },
   'ox-guides': { mobile: 0, desktop: 0 },
   'ox-branch': { mobile: 268, desktop: 184 },
   // No certification holds the per-product evidence a badge needs, so the
@@ -135,6 +154,10 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // says the banner's row reserves 0 on both viewports; the map simply did not
   // agree with it. A store that does turn one on takes a shift on that block
   // instead, which is the smaller of the two costs and affects nobody today.
+  // `ox-newsletter` is the CTA band's slot too now (OxCtaBand, S2c 2026-09-22):
+  // the headline, line and CTA ship behind the same `show_newsletter` gate as
+  // the form, so this block is still fully off or fully on, never a headline
+  // with no reserved room for the form beneath it. See OxCtaBand's docblock.
   'ox-newsletter': { mobile: 0, desktop: 0 },
   'ox-banner': { mobile: 0, desktop: 0 },
 };
@@ -206,14 +229,17 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   // with no reference is not evidence and the resolver drops it, so an empty
   // reference cannot turn a badge on.
   'ox-certifications': { certifications: [], photo: null },
-  'ox-brands': { brands: [] },
+  // `image` (S2c, 2026-09-22): the owner's generated background, exposed as
+  // `--ox-band-image`. Optional; the strip looks finished without it.
+  'ox-brands': { brands: [], image: null },
   'ox-services': { image: null, title: null },
   'ox-guides': { title: null },
   'ox-branch': {},
   'ox-faq': { items: [] },
-  // No fields: the shared newsletter block renders `ox.newsletter.*` and takes
-  // no title or body prop, so a dashboard field could not reach the markup.
-  'ox-newsletter': {},
+  // Rebuilt as the CTA band (S2c, 2026-09-22): an image slot plus a headline
+  // and line that fall back to `ox.home.cta_*`, still behind the one
+  // `show_newsletter` gate the bare form used alone (OxCtaBand's docblock).
+  'ox-newsletter': { image: null, headline: null, line: null },
   'ox-banner': { image: null, url: null, line: null },
 };
 

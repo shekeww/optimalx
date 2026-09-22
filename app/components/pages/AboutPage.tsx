@@ -11,6 +11,9 @@ import { settingText } from '../product/lib/claims';
 import {
   ABOUT_FACTS,
   ABOUT_FACTS_ENABLED,
+  ABOUT_HOW,
+  ABOUT_HOW_LINES,
+  ABOUT_OWN,
   ABOUT_REGISTRATION,
   ABOUT_STORY,
   ABOUT_WHY,
@@ -19,18 +22,22 @@ import { SERVICE_PHOTOS } from '../../content/services';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /**
- * `/about` (DIRECTION 6.15, FINAL-content 6.1).
+ * `/about` (DIRECTION 6.15, FINAL-content 6.1, voice-ksa.md section 7).
  *
- * The page is built from four parts of the shared system and introduces none
- * of its own: the dark band carries the h1 and the lead, the statistic strip
- * carries the three facts the store can prove, four panels carry the reasons,
- * and a plate panel carries the registration numbers once they exist.
+ * The dark band carries the h1 and the factual lead, the statistic strip
+ * carries the three facts the store can prove, then the founders' story
+ * (voice-ksa.md 7.2/7.3, owner-authored and 7.4 claims-audited): the "قصة
+ * اوبتيمال اكس" section, the "كيف نعمل؟" section, the "ما نملكه اليوم واضح:"
+ * list and the closing tagline. After the story, the page returns to the
+ * existing system: four panels carry the summary reasons, and a plate panel
+ * carries the registration numbers once they exist, closing on the mandated
+ * medical line.
  *
  * What the page may say is decided by the claims source, not by the designer:
  * no founding year, no customer count, no years of training, no titles and no
  * portraits. The team is "two partners" in one sentence inside the story and
- * in one statistic cell, and the fourth paragraph says outright that there are
- * no reviews and no sales numbers yet.
+ * in one statistic cell, and the story says outright that the store is at its
+ * beginning and invents no ratings or numbers.
  *
  * The reference's "100+ Personalized Plans / 5+ Expert Specialists / 98%
  * Client Satisfaction" strip is three invented statistics and is not built;
@@ -78,6 +85,48 @@ export function AboutPage() {
 
       <StatStrip cells={cells} className="ox-page--about__stats" />
 
+      <section className="ox-about-story" aria-labelledby="ox-about-story-title">
+        <h2 id="ox-about-story-title" className="ox-h2">
+          {t('ox.pages.about.story_title')}
+        </h2>
+        {ABOUT_STORY.map((key) => (
+          <p key={key} className="ox-about-story__p ox-body">
+            {t(key)}
+          </p>
+        ))}
+      </section>
+
+      <section className="ox-about-story" aria-labelledby="ox-about-how-title">
+        <h2 id="ox-about-how-title" className="ox-h2">
+          {t('ox.pages.about.how_title')}
+        </h2>
+        {ABOUT_HOW.map((key) => (
+          <p key={key} className="ox-about-story__p ox-body">
+            {t(key)}
+          </p>
+        ))}
+        {ABOUT_HOW_LINES.map((key) => (
+          <p key={key} className="ox-about-story__p ox-small">
+            {t(key)}
+          </p>
+        ))}
+      </section>
+
+      <div className="ox-about-own">
+        <p className="ox-about-story__p ox-body">{t('ox.pages.about.own_title')}</p>
+        <ul className="ox-about-own__list">
+          {ABOUT_OWN.map((key) => (
+            <li key={key} className="ox-body">
+              {t(key)}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <p className="ox-about-closing ox-display" data-testid="ox-about-closing">
+        {t('ox.pages.about.closing')}
+      </p>
+
       <section className="ox-about-why" aria-labelledby="ox-about-why-title">
         <h2 id="ox-about-why-title" className="ox-h2">
           {t('ox.pages.about.why_title')}
@@ -89,20 +138,6 @@ export function AboutPage() {
             </Panel>
           ))}
         </div>
-      </section>
-
-      <section className="ox-about-story" aria-labelledby="ox-about-story-title">
-        <h2 id="ox-about-story-title" className="ox-h2">
-          {t('ox.pages.about.story_title')}
-        </h2>
-        {ABOUT_STORY.map((key) => (
-          <p key={key} className="ox-about-story__p ox-body">
-            {t(key)}
-          </p>
-        ))}
-        <p className="ox-about-story__p ox-small" data-testid="ox-medical-line">
-          {t('ox.services.medical_line')}
-        </p>
       </section>
 
       {showsRegistration ? (
@@ -126,6 +161,10 @@ export function AboutPage() {
           ))}
         </Panel>
       ) : null}
+
+      <p className="ox-about-story__p ox-small" data-testid="ox-medical-line">
+        {t('ox.services.medical_line')}
+      </p>
 
       <div className="ox-about-out">
         <Button to="/services" size={48} variant="primary">

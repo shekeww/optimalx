@@ -142,24 +142,30 @@ export function Header() {
     return () => window.removeEventListener(DRAWER_OPEN_EVENT, onOpen);
   }, []);
 
-  // Not sticky unless the merchant switches it on. The identity has the bar
-  // scroll away with the page (owner call, 2026-09-22); the earlier `!== false`
-  // made every store without the setting sticky, which is what the Partners
-  // demo stores showed.
-  const sticky = (settings as Record<string, unknown> | undefined)?.header_is_sticky === true;
+  // FIXED at every width, regardless of this setting (owner call,
+  // 2026-09-22, superseding the same-day "not sticky unless the merchant
+  // switches it on" call this used to gate on it): the header never scrolls
+  // with the page, on desktop or mobile — `_b1-layout.scss`'s `.ox-header`
+  // sets `position: fixed` unconditionally now. The setting is still read
+  // and carried onto the element as `data-header-sticky-setting`, so a
+  // merchant's own dashboard toggle keeps being visible in the markup even
+  // though it no longer changes anything here.
+  const headerStickySetting =
+    (settings as Record<string, unknown> | undefined)?.header_is_sticky === true;
   const withSearchRow = SEARCH_ROW_ROUTES.has(routeId) || SEARCH_ROW_ROUTES.has(leafRouteId);
 
-  const classes = [
-    'store-header',
-    'ox-header',
-    sticky ? 'is-sticky' : null,
-    withSearchRow ? 'has-search-row' : null,
-  ]
+  const classes = ['store-header', 'ox-header', withSearchRow ? 'has-search-row' : null]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <header ref={headerRef} className={classes} suppressHydrationWarning data-testid="ox-header">
+    <header
+      ref={headerRef}
+      className={classes}
+      suppressHydrationWarning
+      data-testid="ox-header"
+      data-header-sticky-setting={headerStickySetting}
+    >
       <HookSlot name="header:start" />
 
       <div className="advertisement-slot" ref={adSlotRef}>

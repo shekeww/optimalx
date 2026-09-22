@@ -49,6 +49,7 @@ const addButtonStub = ({ children, ...rest }: Record<string, unknown>) => (
     data-amount={rest.amount === undefined ? 'unset' : String(rest.amount)}
     data-required-shipping={rest.requiredShipping ? 'yes' : 'no'}
     className={String(rest.className ?? '')}
+    aria-label={rest['aria-label'] as string | undefined}
   >
     {children as React.ReactNode}
   </button>
@@ -255,6 +256,22 @@ describe('OxProductCard', () => {
     expect(screen.getByTestId('add-button').textContent).toContain('اطلب الآن');
   });
 
+  it('carries the label as aria-label too, so a narrow card that hides the text keeps its name', () => {
+    // Below the 240px container query (_b4-listing.scss) the visible label
+    // collapses to a fixed-size icon button; the accessible name cannot then
+    // depend on text a screen reader would not see, so it is set here
+    // unconditionally rather than only for the narrow case CSS alone cannot
+    // express in a jsdom test.
+    const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    expect(screen.getByTestId('add-button').getAttribute('aria-label')).toBe(t('ox.card.add'));
+    plain.unmount();
+
+    renderWithProviders(<OxProductCard product={makeProduct({ has_options: true })} />);
+    expect(screen.getByTestId('add-button').getAttribute('aria-label')).toBe(
+      t('ox.card.choose_options')
+    );
+  });
+
   it('toggles the wishlist through the engine hook', () => {
     renderWithProviders(<OxProductCard product={makeProduct()} />);
     screen.getByLabelText(t('ox.a11y.wishlist_toggle')).click();
@@ -368,6 +385,32 @@ describe('OxProductCard', () => {
     // Salla's option modal on the product page is the only thing that selects.
     expect(real.container.querySelector('.ox-card-product__swatches button')).toBeNull();
     expect(real.container.querySelector('.ox-card-product__swatches input')).toBeNull();
+  });
+
+  it('reserves the variant row on every card so a grid keeps one baseline', () => {
+    // No option at all: the row is still there, empty, holding its own height.
+    const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const plainRow = plain.container.querySelector('.ox-card-product__variants');
+    expect(plainRow).not.toBeNull();
+    expect(plainRow?.querySelector('input')).toBeNull();
+    plain.unmount();
+
+    // A chippable option: the same row now carries real, keyboard-reachable
+    // swatches, radio semantics intact.
+    const withOption = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          options: [
+            { id: 1, type: 'color', values: [{ id: 1, name: 'Lime' }, { id: 2, name: 'Black' }] },
+          ],
+        })}
+      />
+    );
+    const row = withOption.container.querySelector('.ox-card-product__variants');
+    expect(row).not.toBeNull();
+    const inputs = row?.querySelectorAll<HTMLInputElement>('.ox-swatch__input') ?? [];
+    expect(inputs.length).toBe(2);
+    expect(inputs[0].getAttribute('name')).toBe('options[1]');
   });
 
   it('feeds the stepper value into the Salla button quantity instead of faking it', () => {

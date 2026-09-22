@@ -4,9 +4,9 @@ import type { Order } from '@salla.sa/twilight-theme-engine/routes/account';
 import { Icon } from '../common/Icon';
 import { Button } from '../common/Button';
 import { THANKYOU, thankYouLines } from '../../content/thankyou';
-import { isPickupOrder, orderCategorySlugs } from './order';
+import { isPickupOrder, isServiceOnlyOrder, orderCategorySlugs, orderServiceChannel } from './order';
 
-export { isPickupOrder, orderCategorySlugs } from './order';
+export { isPickupOrder, isServiceOnlyOrder, orderCategorySlugs, orderServiceChannel } from './order';
 import { settingText } from '../product/lib/claims';
 
 export interface ThankYouBlocksProps {
@@ -26,6 +26,16 @@ export interface ThankYouBlocksProps {
  * services nudge carries no reply-time promise (PLAN-final 5.1: a reply time
  * renders only where `reply_sla_hours` is set, and the thank-you page is not
  * one of those places).
+ *
+ * The booking branch (S6, FINAL-content 4.6): an order whose every item is a
+ * service/booking product (`isServiceOnlyOrder`) swaps the "how to start
+ * using it" card, which assumes a physical product, for the confirmed or
+ * question-received block. `orderServiceChannel` reads the order's own item
+ * SKU to tell the written-question path (`question_received_*`) from a
+ * slot-based one (`confirmed_*`); an unrecognised or missing channel (the
+ * training session, OX-047) defaults to the slot-based block, which is still
+ * true for an appointment it does not name a channel for. Never a slot
+ * picker: the slot itself was chosen in Salla checkout.
  */
 export function ThankYouBlocks({
   order,
@@ -39,10 +49,23 @@ export function ThankYouBlocks({
   const hasItems = (order?.items?.length ?? 0) > 0;
   const branchAddress = settingText(settings as Record<string, unknown> | undefined, 'branch_address');
   const pickup = isPickupOrder(order) && branchAddress !== null;
+  const serviceOnly = isServiceOnlyOrder(order);
+  const channel = orderServiceChannel(order);
+  const written = channel?.id === 'written';
+  const changeRuleKey =
+    channel?.id === 'visit'
+      ? 'ox.booking.change_rule_visit'
+      : channel?.id === 'video'
+        ? 'ox.booking.change_rule_video'
+        : null;
+  const bookingLines = [
+    ...(written ? [] : [t('ox.booking.add_calendar')]),
+    ...(changeRuleKey ? [`${t('ox.booking.change_cancel')}: ${t(changeRuleKey)}`] : []),
+  ];
 
   return (
     <div className="ox-ty" data-testid="ox-thankyou-blocks">
-      {hasItems ? (
+      {hasItems && !serviceOnly ? (
         <section className="ox-ty__card ox-ty__steps" aria-labelledby="ox-ty-steps-title">
           <h2 className="ox-h3" id="ox-ty-steps-title">
             <Icon name={THANKYOU.icon} size={24} />
@@ -69,6 +92,31 @@ export function ThankYouBlocks({
             </ul>
           ) : null}
           <p className="ox-small ox-ty__storage">{t(THANKYOU.storageKey)}</p>
+        </section>
+      ) : null}
+
+      {hasItems && serviceOnly ? (
+        <section className="ox-ty__card ox-ty__steps" aria-labelledby="ox-ty-booking-title" data-testid="ox-ty-booking">
+          <h2 className="ox-h3" id="ox-ty-booking-title">
+            <Icon name={THANKYOU.icon} size={24} />
+            {t(written ? 'ox.booking.question_received_title' : 'ox.booking.confirmed_title')}
+          </h2>
+          <p className="ox-body ox-ty__intro">
+            {t(written ? 'ox.booking.question_received_body' : 'ox.booking.confirmed_body')}
+          </p>
+          {bookingLines.length > 0 ? (
+            <ol className="ox-ty__list">
+              {bookingLines.map((line, index) => (
+                <li key={line}>
+                  <span className="ox-ty__num" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <span className="ox-body">{line}</span>
+                </li>
+              ))}
+            </ol>
+          ) : null}
+          <p className="ox-small ox-ty__storage">{t('ox.booking.no_purchase_note')}</p>
         </section>
       ) : null}
 

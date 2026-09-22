@@ -744,12 +744,17 @@
   line-height: var(--ox-lh-tight);
   color: var(--ox-accent);
 
-  .ox-price__mark,
-  i,
-  .sicon-sar {
+  .ox-price__mark {
     font-size: 0.55em;
     font-weight: var(--ox-w-quiet);
     color: inherit;
+
+    // The glyph is always a child of the mark (see _primitives.scss), so it
+    // inherits this size instead of re-scaling by 0.55em a second time.
+    .sicon-sar {
+      font-size: inherit;
+      color: inherit;
+    }
   }
 }
 
@@ -767,12 +772,15 @@
   // the (white) card ground; --ox-accent-dark is the token the system already
   // documents for exactly this - small accent text at 4.59:1 - and it still
   // reads as the accent colour, just a step darker than the hero mark.
-  .ox-price__mark,
-  i,
-  .sicon-sar {
+  .ox-price__mark {
     font-size: 0.6em;
     font-weight: var(--ox-w-quiet);
     color: var(--ox-accent-dark);
+
+    .sicon-sar {
+      font-size: inherit;
+      color: inherit;
+    }
   }
 }
 

@@ -31,16 +31,76 @@ function setSettings(next: Record<string, unknown>) {
 beforeEach(() => setSettings({}));
 
 describe('AboutPage', () => {
-  it('renders one h1 and the four story paragraphs', () => {
+  it('renders one h1 and the seven founders-story paragraphs', () => {
     renderWithProviders(<AboutPage />);
     const headings = screen.getAllByRole('heading', { level: 1 });
     expect(headings).toHaveLength(1);
     expect(headings[0].textContent).toBe(t('ox.pages.about.h1'));
-    expect(screen.getByText(t('ox.pages.about.story_1'))).toBeTruthy();
-    expect(screen.getByText(t('ox.pages.about.story_4'))).toBeTruthy();
+    for (const n of [1, 2, 3, 4, 5, 6, 7]) {
+      expect(screen.getByText(t(`ox.pages.about.story_${n}`))).toBeTruthy();
+    }
   });
 
-  it('carries the medical line verbatim', () => {
+  it('names the story section after the store, not "the store\'s story"', () => {
+    renderWithProviders(<AboutPage />);
+    const heading = screen.getByRole('heading', { level: 2, name: t('ox.pages.about.story_title') });
+    expect(heading).toBeTruthy();
+  });
+
+  it('renders the "how we work" section: three paragraphs and five short lines', () => {
+    renderWithProviders(<AboutPage />);
+    expect(
+      screen.getByRole('heading', { level: 2, name: t('ox.pages.about.how_title') })
+    ).toBeTruthy();
+    for (const n of [1, 2, 3]) {
+      expect(screen.getByText(t(`ox.pages.about.how_${n}`))).toBeTruthy();
+    }
+    for (const n of [1, 2, 3, 4, 5]) {
+      expect(screen.getByText(t(`ox.pages.about.how_line_${n}`))).toBeTruthy();
+    }
+  });
+
+  it('renders "what we have today" as a five-item list', () => {
+    renderWithProviders(<AboutPage />);
+    expect(screen.getByText(t('ox.pages.about.own_title'))).toBeTruthy();
+    const items = screen.getAllByRole('listitem').filter((li) =>
+      [1, 2, 3, 4, 5].some((n) => li.textContent === t(`ox.pages.about.own_${n}`))
+    );
+    expect(items).toHaveLength(5);
+  });
+
+  it('renders the closing tagline as a display line', () => {
+    renderWithProviders(<AboutPage />);
+    expect(screen.getByTestId('ox-about-closing').textContent).toBe(t('ox.pages.about.closing'));
+  });
+
+  it('orders the story before how-we-work before the own list before the closing tagline before the why panels', () => {
+    renderWithProviders(<AboutPage />);
+    const body = document.body;
+    const at = (text: string): number => {
+      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      let index = 0;
+      while (node) {
+        if (node.textContent === text) return index;
+        index += 1;
+        node = walker.nextNode();
+      }
+      return -1;
+    };
+    const storyAt = at(t('ox.pages.about.story_title'));
+    const howAt = at(t('ox.pages.about.how_title'));
+    const ownAt = at(t('ox.pages.about.own_title'));
+    const closingAt = at(t('ox.pages.about.closing'));
+    const whyAt = at(t('ox.pages.about.why_title'));
+    expect(storyAt).toBeGreaterThanOrEqual(0);
+    expect(storyAt).toBeLessThan(howAt);
+    expect(howAt).toBeLessThan(ownAt);
+    expect(ownAt).toBeLessThan(closingAt);
+    expect(closingAt).toBeLessThan(whyAt);
+  });
+
+  it('carries the medical line verbatim, once', () => {
     renderWithProviders(<AboutPage />);
     expect(screen.getByTestId('ox-medical-line').textContent).toBe(t('ox.services.medical_line'));
   });

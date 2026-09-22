@@ -1419,6 +1419,46 @@ button.ox-trust__btn:hover .ox-trust__title {
 // ---------------------------------------------------------------------------
 // 7. OxBrands (DIRECTION 6.2 row 6)
 // ---------------------------------------------------------------------------
+// The manifest's `image` field (S2c, 2026-09-22): a generated background the
+// owner can drop in, exposed as `--ox-band-image` and painted at low opacity
+// behind the header and the strip. The logo plates stay opaque regardless, so
+// legibility never depends on it, and the fallback is `none`: the section
+// looks finished with no image at all.
+.ox-brands {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--ox-band-image, none);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.14;
+    pointer-events: none;
+  }
+}
+
+.ox-brands__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  margin-block-end: var(--ox-4);
+}
+
+// The section's one true accent element and its one angled edge, in a single
+// shape (identity rule): a skewed orange rule, the same gesture the needs
+// section's cards draw at the reading start of their own tint.
+.ox-brands__accent {
+  flex: none;
+  inline-size: 3px;
+  block-size: 20px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+}
+
 .ox-brands__strip {
   position: relative;
   display: flex;
@@ -1476,59 +1516,21 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
-// 8. OxServices: the advisory row (homepage-spec section 7)
+// 8. OxServices: the advisory band, one tier (S2 design-audit 2026-09-22)
 // ---------------------------------------------------------------------------
-// Three dark cards on the light ground, one per programme. They were three
-// cards floating on one band photograph until the reference showed this;
-// three cards on the page read as three things the store sells, which is what
-// this half of the business needs.
+// Flat `--ox-graphite` plus ONE skewed ground motif — never per-card slashes,
+// which is the identity rule (one angled band edge per section) the two-tier
+// build broke by drawing five skewed elements in one section. Three
+// photographic doors, and the band's one filled CTA sits under the row.
 .ox-services {
   position: relative;
 }
 
-// The opt-in band the manifest's "Band image" field turns on. Off by default,
-// so the section is three cards on the page ground, which is what the
-// reference draws and what keeps the advisory row reading as three things the
-// store sells rather than one decorated stripe.
 .ox-services--banded {
   isolation: isolate;
   overflow: hidden;
   padding-block: var(--ox-12);
-}
-
-.ox-services__photo,
-.ox-services__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  inline-size: 100%;
-  block-size: 100%;
-}
-
-.ox-services__photo {
-  object-fit: cover;
-  object-position: center;
-}
-
-// One flat gradient, never a blur (render budget rule 2).
-.ox-services__scrim {
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(12, 14, 18, 0.82) 0%,
-    rgba(12, 14, 18, 0.92) 55%,
-    rgba(12, 14, 18, 0.97) 100%
-  );
-}
-
-.ox-services__inner {
-  position: relative;
-  z-index: 1;
-}
-
-// A dark card on a dark band needs the next step up or it disappears into it.
-.ox-services--banded .ox-plan {
-  background: var(--ox-graphite-3);
+  background: var(--ox-bg);
 }
 
 @media (min-width: 1024px) {
@@ -1537,31 +1539,164 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 }
 
-.ox-plans {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--ox-4);
-  align-items: stretch;
+// The merchant's optional band photograph (manifest "Band image" field). FULL
+// PAGE WIDTH, NOT FULL BLEED (owner-reported defect, 2026-09-22): the band
+// stays edge to edge, the photograph spans exactly the measure `.ox-container`
+// gives the text over it.
+.ox-services__photo,
+.ox-services__scrim {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0;
+  z-index: 0;
+  inline-size: min(var(--ox-container), 100% - 2 * var(--ox-gutter));
+  block-size: 100%;
+  margin-inline: auto;
 }
 
+.ox-services__photo {
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--ox-r-3);
+}
+
+.ox-services__scrim {
+  pointer-events: none;
+  border-radius: var(--ox-r-3);
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 14, 18, 0.82) 0%,
+    rgba(12, 14, 18, 0.92) 55%,
+    rgba(12, 14, 18, 0.97) 100%
+  );
+}
+
+// The ground motif: a skewed accent wash plus a hairline, bleeding off the
+// reading end, behind everything. The section's one angled band edge — the
+// only diagonal this band draws outside the CTA's own shape.
+.ox-services__motif {
+  position: absolute;
+  z-index: 0;
+  inset-block: -8%;
+  inset-inline-end: -48px;
+  inline-size: 132px;
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--ox-accent-rgb), 0) 0%,
+    rgba(var(--ox-accent-rgb), 0.16) 42%,
+    rgba(var(--ox-accent-rgb), 0) 100%
+  );
+}
+
+.ox-services__motif--hair {
+  inset-inline-end: 96px;
+  inline-size: 4px;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--ox-accent-rgb), 0) 0%,
+    rgba(var(--ox-accent-rgb), 0.55) 42%,
+    rgba(var(--ox-accent-rgb), 0) 100%
+  );
+}
+
+.ox-services__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.ox-services__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  margin-block-end: var(--ox-6);
+  text-align: start;
+}
+
+// Ink-on-dark, not orange type (§3.1: accent is reserved for things people
+// can click). The 24x2 accent bar carries the orange instead — a rule, not a
+// label.
+.ox-services__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg);
+}
+
+.ox-services__eyebrow-bar {
+  flex: none;
+  inline-size: 24px;
+  block-size: 2px;
+  background: var(--ox-accent);
+}
+
+.ox-services__title {
+  margin: 0;
+  color: var(--ox-fg);
+}
+
+.ox-services__subline {
+  margin: 0;
+  max-inline-size: 56ch;
+  color: var(--ox-fg-3);
+}
+
+// The mobile snap scroller (rule 2: overflow-x, never overflow-inline).
+.ox-plans {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 74%;
+  gap: var(--ox-4);
+  margin: 0;
+  padding-block: 6px 8px;
+  padding-inline: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  scroll-padding-inline: var(--ox-4);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-plans__slide {
+  min-inline-size: 0;
+  scroll-snap-align: start;
+}
+
+// One photographic door. Hover: 1px accent inset ring, no translate
+// (BUILD.md §3.4). No slash of its own: the band's one angle is the motif
+// above.
 .ox-plan {
   position: relative;
   isolation: isolate;
   display: block;
-  block-size: 100%;
-  min-block-size: 200px;
+  inline-size: 100%;
+  min-block-size: 232px;
   overflow: hidden;
   border-radius: var(--ox-r-3);
-  background: var(--ox-graphite-2);
-  color: var(--ox-ink-on-dark);
-  transition: transform var(--dur-base) var(--ease-out);
+  background: var(--ox-graphite-3);
+  color: var(--ox-fg);
+  text-decoration: none;
+  transition: box-shadow var(--dur-fast) var(--ease-out);
   @include ox-focus(2px);
 
   &:hover {
-    transform: translateY(-2px);
+    box-shadow: inset 0 0 0 1px var(--ox-accent);
   }
 }
 
+// FADED photographic background (owner amendment, 2026-09-22 evening): the
+// `SERVICE_PHOTOS` frame at low opacity. `BandPhoto` renders nothing on a
+// missing frame, so a card with no photograph is still a finished dark card.
 .ox-plan__photo {
   position: absolute;
   inset: 0;
@@ -1570,42 +1705,28 @@ button.ox-trust__btn:hover .ox-trust__title {
   block-size: 100%;
   object-fit: cover;
   object-position: center;
+  opacity: 0.4;
 }
 
-// Softened alongside the goal card's: the photograph now sits at 0.48 and the
-// scrim multiplies with it, so the old values stacked to near-black and threw
-// the picture away. The plan card carries more type than a goal tile (a name,
-// a price, a meta line, a paragraph and an action), so its floor stays a
-// little heavier than the goal row's.
+// The scrim, angled on the identity's own skew (var(--ox-skew), never a
+// literal degree) rather than a flat top-to-bottom fade: opaque under the
+// bottom text stack, open through the middle so the athlete stays visible.
 .ox-plan__scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(
-    to bottom,
-    rgba(12, 14, 18, 0.12) 0%,
-    rgba(12, 14, 18, 0.38) 40%,
-    rgba(12, 14, 18, 0.82) 80%,
-    rgba(12, 14, 18, 0.93) 100%
+    calc(180deg - var(--ox-skew)),
+    rgba(14, 16, 20, 0.55) 0%,
+    rgba(14, 16, 20, 0.88) 55%,
+    rgba(14, 16, 20, 0.96) 100%
   );
-}
-
-.ox-plan__slash {
-  position: absolute;
-  z-index: 2;
-  inset-block-start: -26px;
-  inset-inline-end: -4px;
-  inline-size: 24px;
-  block-size: 104px;
-  background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
-  pointer-events: none;
 }
 
 .ox-plan__body {
   position: relative;
-  z-index: 3;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1615,78 +1736,89 @@ button.ox-trust__btn:hover .ox-trust__title {
   padding: 20px;
 }
 
-.ox-plan__icon {
-  flex: none;
-  color: var(--ox-paper);
-  margin-block-end: var(--ox-2);
-}
-
 .ox-plan__title {
-  color: var(--ox-paper);
+  color: var(--ox-fg);
 }
 
 .ox-plan__line {
-  color: var(--ox-ink-2-on-dark);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-inline-size: 40ch;
+  color: var(--ox-fg-2);
 }
 
-// Filled, not outlined: the goal cards are a row of six and want a quiet
-// action; these are three and they are the page's ask.
-//
-// THE BRAND PRIMARY, not a look-alike. This drew the shape with `skewX` on a
-// `::before` and an unskewed label above it, which lands in the same place as
-// the clip but is a second way of saying the same thing — and it let the
-// button set its own size, 13px on an accent fill, where white measures
-// 3.58:1 and needs 4.5:1 at that size. It takes the shared face and the shared
-// size now, which fixes the contrast as a side effect of fixing the identity.
+.ox-plan__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin-block-start: var(--ox-2);
+}
+
+// Flat orange through the `--ox-icon-mono` per-context override (the sprite's
+// default is a white stroke plus one orange fleck; here both become the same
+// orange, one accent note rather than two).
+.ox-plan__icon {
+  flex: none;
+  color: var(--ox-accent);
+}
+
 .ox-plan__cta {
-  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--ox-2);
-  block-size: 44px;
-  margin-block-start: var(--ox-3);
-  padding-inline: 34px;
-  font-size: 19px;
-  @include ox-primary-face;
-  @include ox-angled(44px);
+  gap: var(--ox-1);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg);
 }
 
-.ox-plan__cta-label,
-.ox-plan__cta i {
-  position: relative;
+.ox-plan__arrow {
+  color: var(--ox-accent);
+  font-size: 18px;
 }
 
-.ox-plan:hover .ox-plan__cta {
-  background: var(--ox-accent-dark);
-}
-
-.ox-services__notes {
+// The band's ONE filled CTA, under the row — not one per card.
+.ox-services__cta {
   display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  margin-block-start: var(--ox-4);
-  max-inline-size: 78ch;
+  margin-block-start: var(--ox-6);
 }
 
-.ox-services__reply,
 .ox-services__note {
-  margin: 0;
+  margin: var(--ox-4) 0 0;
+  max-inline-size: 78ch;
   color: var(--ox-fg-3);
 }
 
 @media (min-width: 768px) {
   .ox-plans {
+    grid-auto-flow: row;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-columns: auto;
     gap: var(--ox-6);
+    overflow-x: visible;
+    scroll-snap-type: none;
+    padding-block: 0;
   }
 
   .ox-plan {
-    min-block-size: 232px;
+    min-block-size: 260px;
   }
 
   .ox-plan__body {
     padding: var(--ox-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-services__motif {
+    inset-inline-end: -56px;
+    inline-size: 220px;
+  }
+
+  .ox-services__motif--hair {
+    inset-inline-end: 184px;
+    inline-size: 6px;
   }
 }
 

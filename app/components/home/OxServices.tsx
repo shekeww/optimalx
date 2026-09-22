@@ -1,69 +1,47 @@
-import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Button } from '../common/Button';
 import { SectionHeader } from '../common/SectionHeader';
 import { PlanCard } from './PlanCard';
-import { ChannelCard } from '../blocks/ChannelCard';
-import { HOME_PLANS, SERVICES_HUB, SERVICE_CHANNELS } from '../../content/services';
+import { HOME_PLANS, SERVICES_HUB } from '../../content/services';
 import { useSectionReveal } from './useSectionReveal';
 import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 
 /**
- * The advisory row, `برامج وخطط التغذية` (homepage-spec section 7).
+ * The advisory band: one tier, three photographic doors (S2 design-audit
+ * 2026-09-22, `# propose:2` folded with the identity/claims/a11y judges'
+ * required changes, plus the owner's evening amendments).
  *
- * IT IS THE ADVISORY SECTION FOR THE WHOLE SITE NOW, not only for the home
- * page. `/services` used to open with a bare `اختر القناة التي تناسبك` list —
- * the same three channel cards on the page ground, with no band, no plans tier
- * and no motif — which meant the advisory half of the business was presented
- * better on the home page than on its own page. That list is gone and this
- * section stands in its place, with `routeOut` off so the header does not link
- * the reader to the page they are already on.
+ * IT SITS DIRECTLY AFTER THE NEEDS SECTION (the needs grid asks "which one",
+ * this band answers "ask us"). It used to carry SIX cards: three "ask before
+ * you buy" `ChannelCard`s plus these three plan doors. The channels moved to
+ * `/services` (top of that page, `ServicesHub` mounts them directly) — a
+ * reference draws three cards here, not six, and six in one row read as six
+ * equivalent things, which is the confusion this rebuild removes. The written
+ * question is still one click away: the header's route-out and the trust
+ * strip's fourth cell both point at it.
  *
- * One component, two surfaces, on purpose: a second copy would drift, and the
- * channels and the plans have to be described identically wherever they are
- * read, since the prices and the free/paid split are claims.
+ * Ground: flat `--ox-graphite` plus ONE skewed motif (never a card slash: the
+ * identity rule is one angled band edge per section, not scattered wedges).
+ * The eyebrow is ink-on-dark with the accent bar, never orange type (§3.1:
+ * accent is reserved for things people can click). ONE filled `ox-angled()`
+ * CTA sits under the row — the band's one button, not three — because "the
+ * band has no button" is the sentence that lost the identity review.
  *
- * This block used to be the home page's one dark band: a photograph under a
- * gradient with the three "ask before you buy" channels sitting on it. The
- * reference puts something different here and it is the better call for this
- * business. Three dark cards on the light ground, one per programme, read as
- * three things the store offers; three cards floating on a photograph read as
- * one decorated stripe, and the advisory half of the business then reads as
- * an afterthought attached to the shop rather than half of what is for sale.
- *
- * The three are the ones `docs/build/image-brief.md` sections 9 to 11 name
- * and `HOME_PLANS` holds: nutrition plans, training, and the video
- * consultation. The two channels that are not programmes, the free written
- * question and the branch visit, stay on `/services`, which the section
- * header's route-out link points at, and the free written question is also
- * the trust strip's fourth cell. Neither leaves the page.
- *
- * The manifest's `image` field is labelled "Band image" in the dashboard, and
- * it still does what it says: setting it puts the section back on a dark
- * photographic band, with the three cards lifted a step so they read on it.
- * It is off unless the merchant fills it, because a dashboard control that
- * changes nothing is worse than one that is not there. The theme ships no
- * default for it: the design the reference draws is the cards on the page.
- *
- * Claims gate, unchanged: the reply-time sentence renders only when
- * `reply_sla_hours` is set and interpolates it. Nothing here promises a
- * result, a timeframe or an outcome, and no card names a professional title.
+ * Claims: this band STOPS RENDERING `ox.home.plans_title`, `plans_tier_title`
+ * and `plan_cta` (the first is a retired section title, the second an
+ * individualised-prescription tier heading with no tier left to head now
+ * the channels are gone, the third a generic per-card CTA label). The
+ * headline is the live `ox.services.title`; the per-card copy is the
+ * existing, already-reviewed `ox.home.plan_*` strings (rule 4: their values
+ * are never touched here). The reply-time line moved with the written
+ * question to the channels section on `/services`.
  */
-
-function settingValue(settings: unknown, key: string): string {
-  if (!settings || typeof settings !== 'object') return '';
-  const value = (settings as Record<string, unknown>)[key];
-  return typeof value === 'string' ? value.trim() : typeof value === 'number' ? String(value) : '';
-}
-
-/** The reference band behind the advisory row (image brief section 9). */
-export const DEFAULT_SERVICES_BAND = '/assets/images/services-band.jpg';
 
 export interface OxServicesProps extends Partial<OxBlockProps> {
   /**
-   * The "view all" route-out in the section header. It is on for the home
-   * page, where the section is a trailer for `/services`, and off on
-   * `/services` itself, where it would point the reader at the page they are
-   * already reading.
+   * The one filled CTA under the row, to `/services`. On for the home page,
+   * where the band is a trailer for the full page; off on `/services` itself,
+   * where the row already sits on the page the CTA would point to.
    */
   routeOut?: boolean;
   className?: string;
@@ -71,26 +49,23 @@ export interface OxServicesProps extends Partial<OxBlockProps> {
 
 export function OxServices({ data, routeOut = true, className }: OxServicesProps) {
   const { t } = useTranslation();
-  const { settings } = useTheme();
-  const rowRef = useSectionReveal<HTMLDivElement>();
+  const rowRef = useSectionReveal<HTMLUListElement>();
   // The block registry always passes `data`; `/services` mounts the section
-  // directly and has no merchant block behind it, so it passes none and the
-  // section falls back to its own defaults for the title and the band.
+  // directly and passes none, so the section falls back to its own defaults.
   const fields: OxBlockData = data ?? { path: 'ox-services' };
 
-  const title = fieldText(fields, 'title') || t('ox.home.plans_title');
-  // The band is ON by default now, on the owner's reference frame. It used to
-  // be opt-in and therefore never on, so the section rendered as three cards
-  // on the page ground while the approved design is a photographic band with
-  // the cards lifted onto it. A merchant who uploads their own still wins.
-  const band = fieldText(fields, 'image') || DEFAULT_SERVICES_BAND;
-  const replyHours = settingValue(settings, SERVICES_HUB.replyTimeSetting);
+  const title = fieldText(fields, 'title') || t('ox.services.title');
+  // No default band photograph any more: the reference's ground is flat
+  // near-black plus the motif, not a photograph. The manifest's "Band image"
+  // field still works for a merchant who uploads one.
+  const band = fieldText(fields, 'image');
 
   return (
     <section
-      className={['ox-services', band ? 'ox-services--banded ox-band-dark' : null, className]
+      className={['ox-services', 'ox-services--banded', 'ox-band-dark', className]
         .filter(Boolean)
         .join(' ')}
+      aria-labelledby="ox-services-title"
       data-testid="ox-services"
     >
       {band ? (
@@ -99,46 +74,42 @@ export function OxServices({ data, routeOut = true, className }: OxServicesProps
           <span className="ox-services__scrim" aria-hidden="true" />
         </>
       ) : null}
+      {/* The one angled band edge: a skewed accent motif plus a hairline,
+          behind everything, never a per-card slash. */}
+      <span className="ox-services__motif" aria-hidden="true" />
+      <span className="ox-services__motif ox-services__motif--hair" aria-hidden="true" />
+
       <div className="ox-container ox-services__inner">
-        <SectionHeader title={title} viewAll={routeOut ? { to: '/services' } : undefined} />
+        <header className="ox-services__head">
+          <p className="ox-services__eyebrow">
+            <span className="ox-services__eyebrow-bar" aria-hidden="true" />
+            {t('ox.home.band_eyebrow')}
+          </p>
+          <h2 id="ox-services-title" className="ox-services__title ox-h2">
+            {title}
+          </h2>
+          <p className="ox-services__subline">{t('ox.home.band_subline')}</p>
+        </header>
 
-        {/* TWO TIERS, and the order is the point.
-            The channels are how a shopper ASKS: free or nearly so, no
-            commitment, and therefore the cheapest yes on the page. The plans
-            are what the asking LEADS TO, and they are paid. Putting the six in
-            one flat row would make them read as six equivalent things and lose
-            that, which is the confusion the brief exists to prevent. They are
-            not mirrored either: two identical rows is what makes a section
-            read as a template. They share the motif and differ in treatment. */}
-        <div className="ox-services__tier">
-          <h3 className="ox-services__tier-title">{t('ox.services.channels_title')}</h3>
-          <div className="ox-channels ox-services__channels">
-            {SERVICE_CHANNELS.map((channel) => (
-              <ChannelCard channel={channel} key={channel.id} />
-            ))}
+        <ul className="ox-plans ox-reveal" role="list" ref={rowRef}>
+          {HOME_PLANS.map((plan, index) => (
+            <li className="ox-plans__slide" key={plan.id} style={{ ['--i' as string]: String(index) }}>
+              <PlanCard plan={plan} />
+            </li>
+          ))}
+        </ul>
+
+        {routeOut ? (
+          <div className="ox-services__cta">
+            <Button to="/services" size={44} variant="primary">
+              {t('ox.common.view_all')}
+            </Button>
           </div>
-        </div>
+        ) : null}
 
-        <span className="ox-services__rule" aria-hidden="true" />
-
-        <div className="ox-services__tier">
-          <h3 className="ox-services__tier-title">{t('ox.home.plans_tier_title')}</h3>
-          <div className="ox-plans ox-reveal" ref={rowRef}>
-            {HOME_PLANS.map((plan, index) => (
-              <PlanCard plan={plan} key={plan.id} index={index} />
-            ))}
-          </div>
-        </div>
-        <div className="ox-services__notes">
-          {replyHours ? (
-            <p className="ox-services__reply ox-small" data-testid="ox-services-reply">
-              {t('ox.home.services_reply', { hours: replyHours })}
-            </p>
-          ) : null}
-          {/* The limit-of-our-work line. It renders on every advisory surface
-              and it is the reason none of the copy above has to hedge. */}
-          <p className="ox-services__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
-        </div>
+        {/* The limit-of-our-work line. It renders on every advisory surface
+            and it is the reason none of the copy above has to hedge. */}
+        <p className="ox-services__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
       </div>
     </section>
   );

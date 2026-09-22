@@ -17,7 +17,7 @@ import type { OxIconName } from '../components/common/Icon';
  *
  *  - one branch in Al Khalidiyah, Madinah   (`ox.pages.about.lead`, `why_4_body`)
  *  - shipping to every city in Saudi Arabia (`ox.pages.about.lead`, `why_4_body`)
- *  - a team of two partners                 (`ox.pages.about.story_1`, `why_4_body`)
+ *  - a team of two partners                 (`ox.pages.about.story_2`, `why_4_body`)
  *
  * Nothing here is a count of customers, orders, reviews, years or plans, and
  * no cell carries a percentage. `ABOUT_FACTS_ENABLED` is the single switch: a
@@ -64,8 +64,23 @@ export const ABOUT_WHY = [1, 2, 3, 4].map((n) => ({
   bodyKey: `ox.pages.about.why_${n}_body`,
 }));
 
-/** The story, in order (DIRECTION 6.15 block 5). */
-export const ABOUT_STORY = [1, 2, 3, 4].map((n) => `ox.pages.about.story_${n}`);
+/**
+ * The founders' story, in order (voice-ksa.md 7.2/7.3, owner-authored
+ * persona source, 7.4 claims-audited). Seven paragraphs under the "قصة
+ * اوبتيمال اكس" heading, ending on the "ما الذي تحتاجه فعلا؟" question.
+ */
+export const ABOUT_STORY = [1, 2, 3, 4, 5, 6, 7].map((n) => `ox.pages.about.story_${n}`);
+
+/**
+ * "كيف نعمل؟": three paragraphs describing the work, then five short
+ * declarative lines (voice-ksa.md 7.2), the last of which is the honesty
+ * statement 7.1 calls out ("لن نخترع تقييمات أو أرقاما لا نملكها").
+ */
+export const ABOUT_HOW = [1, 2, 3].map((n) => `ox.pages.about.how_${n}`);
+export const ABOUT_HOW_LINES = [1, 2, 3, 4, 5].map((n) => `ox.pages.about.how_line_${n}`);
+
+/** "ما نملكه اليوم واضح:" the five things the store owns today, as a list. */
+export const ABOUT_OWN = [1, 2, 3, 4, 5].map((n) => `ox.pages.about.own_${n}`);
 
 /**
  * The registration panel's rows. It renders only when ALL THREE settings are

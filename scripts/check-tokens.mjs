@@ -82,8 +82,13 @@ function main() {
   for (const file of useFiles) {
     const text = fs.readFileSync(file, 'utf8');
     const lines = text.split(/\r?\n/);
+    // A property declared in the same file it is read from is a scoped token
+    // (a card's --ox-need-arrow, a section's --ox-shaker-*): legitimate, and
+    // the typo this gate exists for cannot hide behind it, because a typo has
+    // no declaration anywhere.
+    const local = new Set(findDefinitions(text));
     for (const use of findUses(text)) {
-      if (use.hasFallback || defined.has(use.name)) continue;
+      if (use.hasFallback || defined.has(use.name) || local.has(use.name)) continue;
       const lineIndex = lines.findIndex((line) => line.includes(use.name));
       const lineNumber = lineIndex >= 0 ? lineIndex + 1 : '?';
       problems++;

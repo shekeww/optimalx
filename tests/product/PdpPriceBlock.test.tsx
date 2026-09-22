@@ -95,11 +95,14 @@ describe('PdpPriceBlock', () => {
     expect(container.querySelectorAll('.ox-pdp__badges .ox-badge')).toHaveLength(1);
   });
 
-  it('writes the riyal as the Arabic mark, never the ligature glyph', () => {
+  it('keeps the engine riyal glyph visible, with the Arabic mark for screen readers', () => {
     const { container } = renderWithProviders(<PdpPriceBlock product={product} />);
     const hero = container.querySelector('.ox-price--hero');
-    expect(hero?.querySelector('.ox-price__mark')?.textContent).toBe('ر.س');
-    expect(hero?.querySelector('.sicon-sar')).toBeNull();
+    const mark = hero?.querySelector('.ox-price__mark');
+    expect(mark?.textContent).toBe('ر.س');
+    const icon = mark?.querySelector('i.sicon-sar');
+    expect(icon).not.toBeNull();
+    expect(icon?.getAttribute('aria-hidden')).toBe('true');
     expect(hero?.textContent ?? '').not.toContain('﷼');
   });
 

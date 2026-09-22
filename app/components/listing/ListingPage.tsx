@@ -13,6 +13,8 @@ import { BrandHeader, BrandIntro } from './BrandHeader';
 import { CategoryFaq } from './CategoryFaq';
 import { CategoryIntro } from './CategoryIntro';
 import { ChildChips } from './ChildChips';
+import { ExploreLinks } from './ExploreLinks';
+import { FeaturedRail } from './FeaturedRail';
 import { FiltersDrawer } from './FiltersDrawer';
 import { FiltersRail } from './FiltersRail';
 import { GoalHero } from './GoalLanding/GoalHero';
@@ -113,6 +115,10 @@ export function ListingPage(props: ListingPageProps) {
   const isSearch = variant === 'search';
   const queryText = isSearch ? String(source.value ?? '') : '';
   const isZero = isSearch && products.length === 0;
+  // The featured rail and the explore block are a type or goal category's own
+  // rows (owner amendment 2026-09-22, "New: S2d"); a brand, a search and the
+  // three static sources keep the page they had.
+  const isTypeOrGoalListing = variant === 'category' || variant === 'goal';
 
   // THE H1 IS THE RESEARCHED HEAD TERM, NOT THE DASHBOARD NAME. The loader's
   // `page.title` is whatever the merchant typed into the category form
@@ -223,6 +229,8 @@ export function ListingPage(props: ListingPageProps) {
       <HookSlot name="product:list.start" />
 
       <div className="ox-container ox-listing__body">
+        {isTypeOrGoalListing ? <FeaturedRail products={products} /> : null}
+
         {goal ? (
           <>
             <GoalIntro goal={goal} />
@@ -268,6 +276,7 @@ export function ListingPage(props: ListingPageProps) {
           </div>
         )}
 
+        {isTypeOrGoalListing ? <ExploreLinks node={node} /> : null}
         <CategoryFaq slug={slug} />
         <RelatedGuides slug={slug} />
         {goal ? <NeedHelp goal={goal} /> : null}

@@ -6,9 +6,11 @@ import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { Accordion } from '../common/Accordion';
 import { Band } from '../common/Band';
 import { Button } from '../common/Button';
+import { ChannelCard } from '../blocks/ChannelCard';
 import { replySlaHours } from '../product/lib/claims';
 import { pathForSku } from '../../content/salla-ids';
 import {
+  SERVICE_CHANNELS,
   SERVICE_PAGES,
   SERVICE_PHOTOS,
   SERVICE_STEPS,
@@ -37,10 +39,13 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  *
  * Composition, top to bottom: breadcrumb, the FULL-BLEED band carrying the
  * page's only h1 and its one primary action, the intro in the text measure,
- * the advisory section (`OxServices`, the same one the home page draws, and
- * also full bleed), the five services side by side in one comparison grid, the
- * scope panel, the anchor strip, the five service sections, the three steps,
- * the FAQ and a contact row.
+ * the three channel cards (S2c, 2026-09-22: moved here from the home page's
+ * advisory band, so the page that used to open on a bare list now opens on
+ * the same cards with a heading and the section's own reply-time line), the
+ * plan doors (`OxServices`, the same band the home page draws, and also full
+ * bleed), the five services side by side in one comparison grid, the scope
+ * panel, the anchor strip, the five service sections, the three steps, the
+ * FAQ and a contact row.
  *
  * ## Two structural decisions worth the reader's time
  *
@@ -59,11 +64,11 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  * system prescribes for a page longer than one screen.
  *
  * ## Claims gates (PLAN-final 5.1)
- *  - the medical line renders verbatim under the scope panel and again under
- *    every channel card;
- *  - the consultation credit renders only through `ChannelCard`, which the
- *    advisory section draws, from the `consultation_credit_note` setting,
- *    verbatim and only when it is set;
+ *  - the medical line renders verbatim once directly under the plan doors
+ *    (covering the channel cards above them and the doors themselves) and
+ *    again under the scope panel;
+ *  - the consultation credit renders only through `ChannelCard`, from the
+ *    `consultation_credit_note` setting, verbatim and only when it is set;
  *  - a reply-time promise renders only when `reply_sla_hours` is set, and
  *    interpolates it. With the setting empty nothing about reply time is said;
  *  - no price is typed anywhere. Every card and every section reads its own
@@ -112,18 +117,32 @@ export function ServicesHub() {
         ) : null}
       </section>
 
-      {/* THE ADVISORY SECTION, the same component the home page draws, in
-          place of the bare channel list this page used to open with. That list
-          was the three channel cards on the page ground under a plain h2: no
-          band, no plans tier, none of the identity, and a worse presentation
-          of the advisory offer than the home page gives it. The channels are
-          still here — they are its first tier — and the plans join them, which
-          is the whole offer in one place at the top of its own page.
+      {/* THE THREE CHANNEL CARDS, at the top of the page (S2c, 2026-09-22:
+          moved from the home page's advisory band, which now carries only the
+          three plan doors below). This is how a shopper ASKS: free or nearly
+          so, no commitment, the cheapest yes on the page, so it comes first,
+          ahead of what the asking leads to. */}
+      <section className="ox-hub__section ox-hub__channels" aria-labelledby="ox-hub-channels-title">
+        <h2 id="ox-hub-channels-title" className="ox-h2">
+          {t('ox.services.channels_title')}
+        </h2>
+        <div className="ox-channels">
+          {SERVICE_CHANNELS.map((channel) => (
+            <div className="ox-hub__channel" key={channel.id}>
+              <ChannelCard channel={channel} />
+            </div>
+          ))}
+        </div>
+        {replyHours ? (
+          <p className="ox-hub__card-note ox-small" data-testid="ox-services-reply">
+            {t('ox.home.services_reply', { hours: replyHours })}
+          </p>
+        ) : null}
+      </section>
 
-          The five sections below it are the long form of the three plans, so
-          there is deliberate overlap: this is the summary a visitor can act on
-          without scrolling, and `ServiceCompare` next answers which of the
-          five the summary points them to. */}
+      {/* THE PLAN DOORS, the same band the home page draws (`OxServices`,
+          full bleed). `routeOut={false}`: the header carries no CTA to
+          `/services` here, since the row already sits on that page. */}
       <OxServices className="ox-page__bleed ox-hub__advisory" routeOut={false} />
 
       <p className="ox-hub__medical ox-small" data-testid="ox-medical-line">

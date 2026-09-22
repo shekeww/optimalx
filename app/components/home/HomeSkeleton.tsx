@@ -108,7 +108,7 @@ export function ProductsGridSkeleton({ count = 8 }: { count?: number } = {}) {
       aria-hidden="true"
     >
       {rows(count).map((index) => (
-        <SkeletonBlock key={index} height="var(--ox-skel-card)" />
+        <SkeletonBlock key={index} height="var(--ox-skel-card, 380px)" />
       ))}
     </div>
   );

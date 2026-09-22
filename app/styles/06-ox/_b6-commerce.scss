@@ -1981,3 +1981,13 @@ body.ox-sticky-bar .s-add-product-toast {
     animation-duration: var(--dur-fast);
   }
 }
+
+// The platform's centred account/brands title, hidden without relying on the
+// `body.ox-account` class: in the server render the body carries no class yet
+// (useDocumentClass syncs on the client), so a crawler saw two h1s on every
+// account page (S6 finding 2, 2026-09-22). The engine's h1 is the previous
+// sibling of our shell, which `:has()` can express directly.
+.main-content > h1:has(~ .ox-acct),
+.main-content > h1:has(~ .ox-brands) {
+  display: none;
+}

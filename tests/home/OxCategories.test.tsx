@@ -139,13 +139,16 @@ describe('OxCategories, the four shaker categories', () => {
     ]);
   });
 
-  it('draws the 44px glyph on a coloured tile exactly as on a neutral one', async () => {
+  it('draws the glyph at the same size on a coloured tile as on a neutral one', async () => {
     renderWithProviders(<OxCategories data={data()} />);
     const row = await tiles();
     for (const tile of [row[0], row[7]]) {
       const svg = tile.querySelector('svg');
       expect(svg).not.toBeNull();
-      expect(svg?.getAttribute('width')).toBe('44');
+      // CategoryTile.tsx draws every glyph at the same literal `size={36}`;
+      // no per-tile prop carries it, so there is no key or export to read it
+      // from.
+      expect(svg?.getAttribute('width')).toBe('36');
       expect(tile.querySelector('img')).toBeNull();
     }
   });

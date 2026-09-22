@@ -326,9 +326,30 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
     </>
   );
 
-  // No option to choose: the card stays exactly as it was, with no form around
-  // it. A form that wraps nothing chooseable is markup for its own sake.
-  if (!option) return controls;
+  // The row reserves its own height whether or not there is anything to
+  // choose (VariantChips returns an empty box for `option === null`), so
+  // every card in a grid keeps the same row count regardless of which one
+  // product actually carries a chippable option.
+  const variantsRow = (
+    <VariantChips
+      option={option}
+      uid={`oxcard-${product.id}`}
+      value={valueId}
+      onChange={setValueId}
+    />
+  );
+
+  // No option to choose: the row above is the empty reservation, and the rest
+  // of the card stays exactly as it was, with no form around it. A form that
+  // wraps nothing chooseable is markup for its own sake.
+  if (!option) {
+    return (
+      <>
+        {variantsRow}
+        {controls}
+      </>
+    );
+  }
 
   return (
     <form
@@ -339,12 +360,7 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
     >
       {/* Salla reads the product from the form, not from the button. */}
       <input type="hidden" name="id" value={String(product.id)} />
-      <VariantChips
-        option={option}
-        uid={`oxcard-${product.id}`}
-        value={valueId}
-        onChange={setValueId}
-      />
+      {variantsRow}
       {/* The stepper above is a React control, so the number it holds has to be
           put into the form as a field of its own for FormData to see it. */}
       <input type="hidden" name="quantity" value={String(showsStepper ? quantity : 1)} />
@@ -488,6 +504,16 @@ function AddButton({
         fill="outline"
         loaderPosition="center"
         className="ox-card-product__add"
+        // ALWAYS SET, not only on the narrow card that needs it. Below the
+        // 240px container query (`_b4-listing.scss`) the label's own text is
+        // hidden and only the cart glyph shows, in a fixed 44px box — an
+        // icon has no name of its own, so `aria-label` is what keeps the
+        // button's accessible name the same word a wide card prints. Setting
+        // it here too, identically to the visible label, costs nothing on a
+        // wide card (Label in Name still holds, since the two strings match)
+        // and means the accessible name never depends on which CSS rule
+        // happens to be in effect.
+        aria-label={label}
         // `type="submit"` makes the component render a real submit button and
         // return early from its own click handler, so the FORM adds the
         // product — with the chosen option in the payload — instead of the

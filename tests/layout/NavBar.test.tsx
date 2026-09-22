@@ -2,7 +2,11 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
+import { MENU } from '../../app/content/taxonomy';
+import { SECONDARY_NAV } from '../../app/content/nav';
 
+const ar = loadDictionary('ar');
 const themeSettings: Record<string, unknown> = {};
 const twilight: Record<string, unknown> = { routeId: '/{-$locale}/', location: { pathname: '/branch' } };
 const menuItems = [
@@ -173,9 +177,15 @@ describe('NavBar', () => {
     fireEvent.click(button);
     const panel = await screen.findByTestId('ox-nav-more-panel');
     const links = Array.from(panel.querySelectorAll('a')).map((a) => a.textContent);
-    expect(links).toEqual(
-      expect.arrayContaining(['الحزم', 'الاستشارات والخدمات', 'المكتبة الرقمية', 'بطاقات الهدايا', 'الأدلة', 'عن اوبتيمال اكس', 'فرع المدينة المنورة', 'اتصل بنا'])
-    );
+    // The four utility categories (unresolved in this mock, so each falls
+    // back to its taxonomy name key) followed by the standing pages, both
+    // read from the same content maps and locale keys the component reads
+    // (app/content/taxonomy.ts MENU.utility, app/content/nav.ts SECONDARY_NAV).
+    const expectedMoreLinks = [
+      ...MENU.utility.map((node) => ar[node.nameKey]),
+      ...SECONDARY_NAV.map((entry) => ar[entry.labelKey]),
+    ];
+    expect(links).toEqual(expect.arrayContaining(expectedMoreLinks));
   });
 
   it('moves the trailing items into the automatic overflow control on a narrow row', async () => {

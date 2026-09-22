@@ -1,4 +1,16 @@
 {
+  "ox.home.band_card_cta": "اعرف التفاصيل",
+  "ox.home.band_eyebrow": "قبل أن تشتري",
+  "ox.home.band_subline": "نشرح المنتج وطريقة استخدامه والجرعة المطبوعة على الملصق. لا نكتب أنظمة غذائية ولا نفسر تحاليل.",
+  "ox.home.brands_title": "تسوق حسب العلامة",
+  "ox.home.cta_headline": "لديك سؤال قبل الشراء؟",
+  "ox.home.cta_line": "فريق المتجر يرد على سؤال مكتوب لمساعدتك على الاختيار.",
   "ox.trust.authentic_short": "منتجات أصلية",
-  "ox.trust.authentic_expiry": "صلاحية واضحة على كل منتج"
+  "ox.trust.authentic_expiry": "صلاحية واضحة على كل منتج",
+  "ox.listing.featured_title": "منتجات مختارة",
+  "ox.listing.featured_cta": "عرض المنتج",
+  "ox.listing.explore_title": "استكشف المزيد",
+  "ox.listing.explore_siblings_label": "فئات مشابهة",
+  "ox.listing.explore_goals_label": "أهداف ذات صلة",
+  "ox.listing.explore_types_label": "أنواع ضمن هذا الهدف"
 }

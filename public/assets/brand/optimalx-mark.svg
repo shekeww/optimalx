@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none" role="img" aria-label="OptimalX">
+<!--
+  The OptimalX mark, traced from optimalx-mark-512.png and locked to the
+  identity angle (docs/build/X-IDENTITY-2026-09-22.md section 1).
+
+  Four parallelogram arms, every long edge 34 degrees from vertical
+  (tan 34 = 0.6745085), every other edge horizontal. No curves, no other angle.
+  NE + SE fuse into one chevron, NW + SW into the opposite one; the two never
+  touch. The channel between them is a constant 18.3px wide and jogs 83.8px on
+  a 24px horizontal ledge at the crossing - that jog is the mark.
+
+  Geometry is 1:1 with the PNG (bbox 9.28..502.56 by 30..466). Colour is the
+  caller's: currentColor, so a header sets it with `color`. Do not add a
+  stroke, do not round a terminal, do not taper the channel.
+-->
+<path fill="currentColor" fill-rule="nonzero" d="M320.37 30 L459.23 30 L329.72 222 L205.71 222 L198.29 210.99 Z M180.02 246 L287.37 246 L304.53 271.44 L173.3 466 L31.63 466 Z M9.28 154 L141.45 154 L225.09 278 L92.92 278 Z M273.21 198 L408.13 198 L502.56 338 L367.64 338 Z"/>
+</svg>

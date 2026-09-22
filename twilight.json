@@ -820,37 +820,6 @@
       ]
     },
     {
-      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d106",
-      "title": {
-        "ar": "شريط العلامات التجارية",
-        "en": "Brand strip"
-      },
-      "icon": "sicon-award-ribbon",
-      "path": "home.ox-brands",
-      "is_default": true,
-      "fields": [
-        {
-          "id": "brands",
-          "key": "b2f1d000-0000-4000-8000-000000000018",
-          "type": "items",
-          "format": "dropdown-list",
-          "label": "العلامات التجارية",
-          "label_en": "Brands",
-          "description": "يختفي الشريط إذا قل عددها عن أربع",
-          "icon": "sicon-keyboard_arrow_down",
-          "source": "brands",
-          "multichoice": true,
-          "searchable": true,
-          "options": [],
-          "selected": [],
-          "value": [],
-          "required": false,
-          "minLength": 4,
-          "maxLength": 24
-        }
-      ]
-    },
-    {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d107",
       "title": {
         "ar": "اسأل قبل أن تشتري",
@@ -885,6 +854,50 @@
           "icon": "sicon-format-text-alt",
           "value": null,
           "multilanguage": true,
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d106",
+      "title": {
+        "ar": "شريط العلامات التجارية",
+        "en": "Brand strip"
+      },
+      "icon": "sicon-award-ribbon",
+      "path": "home.ox-brands",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "brands",
+          "key": "b2f1d000-0000-4000-8000-000000000018",
+          "type": "items",
+          "format": "dropdown-list",
+          "label": "العلامات التجارية",
+          "label_en": "Brands",
+          "description": "يختفي الشريط إذا قل عددها عن أربع",
+          "icon": "sicon-keyboard_arrow_down",
+          "source": "brands",
+          "multichoice": true,
+          "searchable": true,
+          "options": [],
+          "selected": [],
+          "value": [],
+          "required": false,
+          "minLength": 4,
+          "maxLength": 24
+        },
+        {
+          "id": "image",
+          "key": "b2f1d000-0000-4000-8000-000000000301",
+          "type": "string",
+          "format": "image",
+          "label": "صورة الخلفية",
+          "label_en": "Background image",
+          "description": "خلفية خفيفة خلف الشريط؛ اتركها فارغة فلا تظهر صورة",
+          "placeholder": "e.g. https://hostname.com/image.jpg",
+          "icon": "sicon-image",
+          "value": null,
           "required": false
         }
       ]
@@ -1059,7 +1072,49 @@
       "icon": "sicon-format-text-alt",
       "path": "home.ox-newsletter",
       "is_default": true,
-      "fields": []
+      "fields": [
+        {
+          "id": "image",
+          "key": "b2f1d000-0000-4000-8000-000000000302",
+          "type": "string",
+          "format": "image",
+          "label": "صورة الشريط",
+          "label_en": "Band image",
+          "description": "المقاس المناسب 1600 في 600 بكسل",
+          "placeholder": "e.g. https://hostname.com/image.jpg",
+          "icon": "sicon-image",
+          "value": null,
+          "required": false
+        },
+        {
+          "id": "headline",
+          "key": "b2f1d000-0000-4000-8000-000000000303",
+          "type": "string",
+          "format": "text",
+          "label": "العنوان",
+          "label_en": "Headline",
+          "description": "اتركه فارغا لاستخدام نص المتجر",
+          "placeholder": "اتركه فارغا لاستخدام نص المتجر",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        },
+        {
+          "id": "line",
+          "key": "b2f1d000-0000-4000-8000-000000000304",
+          "type": "string",
+          "format": "text",
+          "label": "السطر",
+          "label_en": "Line",
+          "description": "اتركه فارغا لاستخدام نص المتجر",
+          "placeholder": "اتركه فارغا لاستخدام نص المتجر",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        }
+      ]
     },
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d10c",

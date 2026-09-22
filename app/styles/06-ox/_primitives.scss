@@ -382,9 +382,19 @@ $ox-angle-tan: 0.404;
 }
 // Exactly one element per symbol is the accent: a fill with no stroke, except
 // ox-tick whose stroke is the accent (the only icon drawn that way).
+//
+// `--ox-icon-mono` is an indirection, not a new rule (S2c, 2026-09-22): `<use
+// href="#ox-...">` clones the symbol into a shadow tree a descendant selector
+// cannot reach, but an inherited custom property can. The fallback keeps
+// every existing caller painting the fixed brand orange; `.ox-icon--mono`
+// below is the one opt-in, a PER-CONTEXT override (the advisory band's
+// bottom-stack glyph today), never the default.
 .ox-icon__accent {
-  fill: var(--ox-accent);
+  fill: var(--ox-icon-mono, var(--ox-accent));
   stroke: none;
+}
+.ox-icon--mono {
+  --ox-icon-mono: currentColor;
 }
 .ox-icon__accent--stroke {
   fill: none;
@@ -956,19 +966,26 @@ $ox-angle-tan: 0.404;
   font-variant-numeric: tabular-nums;
   color: var(--ox-fg);
   white-space: nowrap;
-  // The written riyal mark Price.tsx puts in place of the engine's icon
-  // glyph, plus the glyph itself for any node the theme did not render.
+  // The accessible wrapper Price.tsx puts around the engine's icon glyph:
+  // the glyph itself stays visible (verified against the live font - it
+  // draws Salla's current Saudi Riyal symbol, not the old ﷼ ligature), and an
+  // .ox-sr-only child inside .ox-price__mark carries the text a screen reader
+  // or crawler needs.
   //
   // The mark drops to Quiet: a heavy figure against a light unit is what
   // makes a price read as a price rather than as a heading, and it is the
-  // clearest place in the theme to see the ladder working. line-height: 1 is
-  // safe on it although the mark is Arabic, because ر.س has no tall form:
-  // its ink runs 500 down to -248, 0.748em inside a 1em box.
-  .ox-price__mark,
-  .sicon-sar {
+  // clearest place in the theme to see the ladder working.
+  .ox-price__mark {
     font-size: 0.85em;
     font-weight: var(--ox-w-quiet);
     line-height: var(--ox-lh-num);
+
+    // withWrittenCurrency() always nests the glyph inside this span now, so
+    // it only ever needs to inherit the mark's own size - a second em-scale
+    // on .sicon-sar here would compound (0.85em of 0.85em).
+    .sicon-sar {
+      font-size: inherit;
+    }
   }
   // Size modifiers only: the weight is the base Figure step and does not
   // change with the size. The one exception is --small, where Cairo's digits

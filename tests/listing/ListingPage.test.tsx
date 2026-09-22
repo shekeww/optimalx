@@ -49,6 +49,22 @@ vi.mock('@salla.sa/twilight-theme-engine/hooks/HookSlot', () => ({
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useStore', () => ({
   useStore: () => ({ settings: storeSettings }),
 }));
+// `FeaturedRail` prices its cards through `Price`, which reads this hook;
+// mirrors the engine's own SAR rendering the same way tests/common/
+// primitives.test.tsx does.
+vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
+  useMoney: () => ({
+    format: (amount: number | string | undefined) =>
+      React.createElement(
+        React.Fragment,
+        null,
+        Number(amount ?? 0).toFixed(2),
+        React.createElement('i', { className: 'sicon-sar', 'aria-hidden': 'true' })
+      ),
+    parse: (value: string) => Number(value),
+    isValid: () => true,
+  }),
+}));
 vi.mock('@salla.sa/twilight-theme-engine/product', () => ({
   ProductCard: ({ product }: { product: { name: string } }) => (
     <article data-testid="engine-product-card">{product.name}</article>

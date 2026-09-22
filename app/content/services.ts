@@ -326,11 +326,15 @@ export const SERVICE_PAGE_SLUGS: string[] = SERVICE_PAGES.map((page) => page.slu
  * holds, each pointing at the surface that already sells it.
  *
  * The two entry channels that are not plans, the free written question and the
- * branch visit, stay on `/services`, which the section header links to. They
- * are also the trust strip's fourth cell, so neither disappears from the page.
+ * branch visit, moved to `/services` (top of that page): `ServicesHub` mounts
+ * them directly now, ahead of this row, so the "ask" and the "get a plan"
+ * questions each get their own place instead of six cards in one row.
  *
- * Every card is finished without its photograph: none of the three files
- * exists yet and `PlanCard` renders the flat dark ground until they do.
+ * Each plan's `photo` is the SAME frame its own destination page already
+ * wears (`SERVICE_PHOTOS`): the card is a door onto a surface that already
+ * carries that picture, so clicking through agrees with what was clicked.
+ * `PlanCard` still renders the flat dark ground and is finished without a
+ * photograph, so a future frame swap costs nothing here.
  */
 export interface HomePlan {
   id: string;
@@ -361,13 +365,19 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'plan',
     titleKey: 'ox.home.plan_nutrition_title',
     lineKey: 'ox.home.plan_nutrition_line',
+    // The destination page's own band frame: the card is a door onto the
+    // surface that already wears this photograph, so the two agree.
+    photo: SERVICE_PHOTOS.nutrition,
   },
   {
     id: 'training',
     to: pathForSku('OX-047') ?? '/services#personal-training',
-    icon: 'form',
+    // 'form' drew a wedge/ramp, the wrong glyph for a training session.
+    // 'goal-performance' is the dumbbell already in the sprite.
+    icon: 'goal-performance',
     titleKey: 'ox.home.plan_training_title',
     lineKey: 'ox.home.plan_training_line',
+    photo: SERVICE_PHOTOS.training,
   },
   {
     id: 'advisory',
@@ -375,5 +385,6 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'video-consult',
     titleKey: 'ox.home.plan_advisory_title',
     lineKey: 'ox.home.plan_advisory_line',
+    photo: SERVICE_PHOTOS.services,
   },
 ];

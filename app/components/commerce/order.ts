@@ -1,6 +1,10 @@
 import type { Order } from '@salla.sa/twilight-theme-engine/routes/account';
 import { CATEGORIES } from '../../content/categories';
 import { SALLA_IDS } from '../../content/salla-ids';
+import { channelByCode, type ServiceChannel } from '../../content/services';
+
+/** The four service/booking catalogue codes (FINAL-catalogue A.2, OX-044 to OX-047). */
+const SERVICE_SKUS = ['OX-044', 'OX-045', 'OX-046', 'OX-047'];
 
 /**
  * Product id to category slug, built once from the two content maps.
@@ -15,6 +19,12 @@ import { SALLA_IDS } from '../../content/salla-ids';
  * A child category overwrites its parent deliberately: `CATEGORIES` lists
  * parents first, so the last write for a product is its most specific
  * category.
+ *
+ * The four service/booking SKUs are a utility category (FINAL-catalogue A.2)
+ * that `CATEGORIES` deliberately excludes (`content/categories.ts`'s own
+ * header), so they are mapped to `'services'` here directly; this is what
+ * lets `THANKYOU_LINE_BY_CATEGORY.services` and the thank-you page's booking
+ * branch ever match a real order.
  */
 const CATEGORY_BY_PRODUCT_ID: ReadonlyMap<number, string> = (() => {
   const map = new Map<number, string>();
@@ -23,6 +33,10 @@ const CATEGORY_BY_PRODUCT_ID: ReadonlyMap<number, string> = (() => {
       const ref = (SALLA_IDS as Record<string, { id: number } | undefined>)[sku];
       if (ref) map.set(ref.id, category.slug);
     }
+  }
+  for (const sku of SERVICE_SKUS) {
+    const ref = (SALLA_IDS as Record<string, { id: number } | undefined>)[sku];
+    if (ref) map.set(ref.id, 'services');
   }
   return map;
 })();
@@ -36,6 +50,33 @@ export function orderCategorySlugs(order: Order | undefined): string[] {
     if (slug && !slugs.includes(slug)) slugs.push(slug);
   }
   return slugs;
+}
+
+/**
+ * True when every category the order touches is `'services'`: the order is
+ * one or more of OX-044 to OX-047 and nothing else, so the thank-you page's
+ * booking branch renders instead of the "how to start using it" card that
+ * assumes a physical product (S6, FINAL-content 4.6).
+ */
+export function isServiceOnlyOrder(order: Order | undefined): boolean {
+  const slugs = orderCategorySlugs(order);
+  return slugs.length === 1 && slugs[0] === 'services';
+}
+
+/**
+ * The service channel of the first recognisable service/booking item in the
+ * order, read off the order item's own `sku` (engine
+ * routes/account/types.d.ts `OrderItem.sku`) rather than the product id, so
+ * no second id map is needed. `undefined` for an unrecognised or missing sku
+ * (the training session, OX-047, is not a channel): the thank-you page falls
+ * back to the slot-based confirmation rather than guessing a change rule.
+ */
+export function orderServiceChannel(order: Order | undefined): ServiceChannel | undefined {
+  for (const item of order?.items ?? []) {
+    const channel = channelByCode(item.sku ?? undefined);
+    if (channel) return channel;
+  }
+  return undefined;
 }
 
 /**

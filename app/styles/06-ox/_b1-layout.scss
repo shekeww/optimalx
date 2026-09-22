@@ -29,6 +29,15 @@ body {
 
 .app-inner {
   background: var(--ox-bg);
+  // Reserves the fixed header's own height (`.ox-header` below) so `main`,
+  // the first in-flow child once the header is taken out of flow, never
+  // loads under it. `--ox-header-h` (tokens.css) carries a real per-breakpoint
+  // default, so this is correct on the very first, unhydrated paint; the
+  // client-only `ResizeObserver` in `useHeaderHeightVar` overwrites the same
+  // property inline on `<html>` the moment it can measure the real box (a
+  // route with no announcement bar, for instance), and an inline style beats
+  // this declaration with no flash back the other way.
+  padding-block-start: var(--ox-header-h);
 }
 
 // ---------------------------------------------------------------------------
@@ -77,15 +86,21 @@ body {
   // mobile bar, so it is visible at every width; this file loads after that
   // one, so the same-specificity declaration wins.
   display: block;
-  position: relative;
+  // FIXED, unconditionally, at every width (owner call, 2026-09-22,
+  // superseding the same-day "not sticky unless the merchant switches it on"
+  // call this file used to read `header_is_sticky` for): the header never
+  // scrolls with the page, on desktop or mobile. Header.tsx still reads
+  // `header_is_sticky` and carries it as `data-header-sticky-setting`, so the
+  // merchant's own dashboard toggle keeps meaning something, but it no longer
+  // branches this rule — fixed is the only state `.ox-header` has now.
+  // `.app-inner`'s `padding-block-start` (above) reserves the space this
+  // takes out of the document flow.
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
   z-index: var(--ox-z-sticky);
   background: var(--ox-band-header);
   color: var(--ox-ink-on-dark);
-
-  &.is-sticky {
-    position: sticky;
-    inset-block-start: 0;
-  }
 
   // No raised state: the design has no shadow, and a scroll shadow under a
   // near-black bar on cream is a grey smear, not a lift.
@@ -220,15 +235,18 @@ a.ox-util__trust-link {
   }
 }
 
-// The three trust items on paper, under the mobile header. Same component,
-// same copy, a snap scroller instead of a centred row.
+// The three trust items UNDER the mobile header, on the SAME dark band as the
+// desktop utility strip (owner-reported defect, 2026-09-22: this used to sit
+// on paper, the one place the strip broke from the header's dark identity).
+// Same component, same copy, same band tokens, a snap scroller instead of a
+// centred row.
 .ox-util__trust--scroller {
   display: flex;
   gap: var(--ox-6);
   block-size: var(--ox-h-trust);
   padding-inline: var(--ox-gutter);
-  background: var(--ox-paper);
-  border-block-end: 1px solid var(--ox-line);
+  background: var(--ox-band-header);
+  border-block-end: 1px solid var(--ox-line-on-dark);
   overflow-x: auto;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
@@ -242,8 +260,11 @@ a.ox-util__trust-link {
     scroll-snap-align: start;
   }
 
+  // Same resting colour the desktop bar variant uses (`.ox-util__trust-link`
+  // above): #8A8D8E on #0E1115 measures 5.66:1, clearing the 4.5:1 floor for
+  // this row's 12px text with room to spare.
   .ox-util__trust-link {
-    color: var(--ox-ink-3);
+    color: var(--ox-ink-3-on-dark);
     font-size: 12px;
   }
 }
@@ -1424,4 +1445,12 @@ body.ox-has-tabbar {
   to {
     opacity: 1;
   }
+}
+
+// Salla's own preview bar (#s-theme_preview_bar, injected only in the
+// dashboard preview) is a static 52px strip before .app-inner. With the header
+// fixed at 0 it would sit over that bar and leave a 52px blank band under the
+// header; on the live store the bar does not exist. Measured 2026-09-22.
+#s-theme_preview_bar ~ .app-inner .ox-header {
+  inset-block-start: 52px;
 }

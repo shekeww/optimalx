@@ -14,6 +14,7 @@ export { OxGuides } from './OxGuides';
 export { OxBranchBlock } from './OxBranchBlock';
 export { OxFaq } from './OxFaq';
 export { OxNewsletterBlock } from './OxNewsletterBlock';
+export { OxCtaBand } from './OxCtaBand';
 export { OxBanner } from './OxBanner';
 export { DefaultHome } from './DefaultHome';
 export { HomeSkeleton } from './HomeSkeleton';

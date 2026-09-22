@@ -11,6 +11,7 @@ import { StatStrip, type StatCellData } from '../common/StatStrip';
 import { replySlaHours } from '../product/lib/claims';
 import { idForSku, pathForSku } from '../../content/salla-ids';
 import type { ServicePage } from '../../content/services';
+import { BandPhoto } from '../home/BandPhoto';
 
 /** `Product.price` is `number | string` in the engine types. */
 function priceNumber(value: number | string | undefined): number | undefined {
@@ -118,6 +119,14 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
       data-testid={`ox-service-${page.slug}`}
     >
       <header className="ox-service__head">
+        {/* FADED photographic background (owner amendment, S2c 2026-09-22):
+            the same frame the band above already carries, at low opacity
+            under an angled scrim on the identity's own skew, never a literal
+            degree. `BandPhoto` disappears rather than breaking when a frame
+            is missing, so the header is finished with plain plate colour
+            either way. */}
+        <BandPhoto src={page.photo} className="ox-service__photo" />
+        <span className="ox-service__scrim" aria-hidden="true" />
         <Icon name={page.icon} size={32} className="ox-service__icon" />
         <h2 id={titleId} className="ox-service__title ox-h2">
           {t(page.titleKey)}

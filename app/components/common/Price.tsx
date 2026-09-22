@@ -34,15 +34,23 @@ function hasSarGlyphClass(value: unknown): boolean {
 }
 
 /**
- * Swaps the engine's SAR glyph for the written mark, anywhere in the node the
- * money formatter returned.
+ * Wraps the engine's SAR glyph node so it stays the visible mark while still
+ * carrying real text, anywhere in the node the money formatter returned.
  *
- * `useMoney().format()` renders the riyal as `<i class="sicon-sar" />`, an icon
- * font codepoint that resolves to the U+FDFC ligature
- * (theme-engine dist/chunk-DTWFNS3F.js:359-364). Three things are wrong with
- * that here: the approved design writes `ر.س`, the ligature falls back to a
- * tofu box on several Android system fonts, and an icon glyph is not text, so
- * it cannot be copied and a screen reader reads nothing.
+ * `useMoney().format()` renders the riyal as `<i class="sicon-sar" />`, drawn
+ * from the `sallaicons` icon font (theme-engine dist/chunk-UR7G7GK2.js:363).
+ * Verified 2026-09-22 against the live font (`cdn.assets.salla.network/
+ * static/fonts/lib/sallaicons/sallaicons.ttf`, codepoint U+E9BC, rasterised
+ * and inspected): the glyph draws Salla's current official Saudi Riyal
+ * symbol, not the old `﷼` (U+FDFC) ligature, so it is the platform's correct
+ * visible mark and the right thing to keep on screen. What it cannot do alone
+ * is speak: an icon-font glyph is not text, so it cannot be copied and a
+ * screen reader announces nothing. This wraps it in a `role="img"` span with
+ * an `aria-label`, plus a genuinely-selectable `ox-sr-only` text node, so
+ * bots, crawlers and screen readers all get the written mark while sighted
+ * users keep Salla's own symbol. `use_sar_symbol` (`store.settings`) does not
+ * gate this: the engine's own `useMoney().format()` always returns the icon
+ * for SAR regardless of that setting, so this wrap always applies too.
  *
  * The walk is generic rather than a match on the exact fragment shape, so a
  * release that wraps or reorders the symbol keeps working. This is the one
@@ -57,8 +65,9 @@ function withWrittenCurrency(node: ReactNode, mark: string): ReactNode {
   const element = node as ReactElement<{ className?: unknown; children?: ReactNode }>;
   if (hasSarGlyphClass(element.props.className)) {
     return (
-      <span className="ox-price__mark" key={element.key ?? undefined}>
-        {mark}
+      <span className="ox-price__mark" role="img" aria-label={mark} key={element.key ?? undefined}>
+        <i className="sicon-sar" aria-hidden="true" />
+        <span className="ox-sr-only">{mark}</span>
       </span>
     );
   }

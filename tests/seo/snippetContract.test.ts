@@ -68,8 +68,6 @@ type Locale = 'ar' | 'en';
 const ALLOWLIST: Record<string, string> = {
   // S1 owns ox.tax.index.title (CATEGORIES_INDEX_KEYS, app/routes/categories.tsx).
   'ar:categories.title': 'S1 content, request filed in progress/S3.md',
-  // S4 owns ox.pages.about.meta_description values (locales voice sweep).
-  'en:about.description': 'S4 content, request filed in progress/S3.md',
   // S4 owns every ox.tax.*.description EN value (locales/partials/tax.en.json).
   'en:tax.creatine.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.pre_workout.description': 'S4 content, request filed in progress/S3.md',
@@ -78,7 +76,6 @@ const ALLOWLIST: Record<string, string> = {
   'en:tax.vitamins_minerals.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.collagen_beauty.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.daily_health.description': 'S4 content, request filed in progress/S3.md',
-  'en:tax.snacks_bars.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.whey_isolate.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.casein.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.plant_protein.description': 'S4 content, request filed in progress/S3.md',
@@ -90,7 +87,6 @@ const ALLOWLIST: Record<string, string> = {
   'en:tax.goal_performance.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.goal_recovery.title': 'S4 content, request filed in progress/S3.md',
   'en:tax.goal_recovery.description': 'S4 content, request filed in progress/S3.md',
-  'en:tax.goal_hair_skin.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.goal_ideal_weight.description': 'S4 content, request filed in progress/S3.md',
 };
 

@@ -2,9 +2,12 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
 import { HOME_FAQ, PRICE_FAQ } from '../../app/content/faq';
 import { ROOT_CATEGORY_SLUGS } from '../../app/content/categories';
+
+const ar = loadDictionary('ar');
 
 /**
  * The blocks whose contract is a gate: what hides them, and what they fall back
@@ -62,7 +65,7 @@ describe('OxFaq', () => {
     const rows = container.querySelectorAll('.ox-acc__row');
     expect(rows).toHaveLength(HOME_FAQ.length);
     expect(rows[0].id).toBe(PRICE_FAQ.id);
-    expect(rows[0].textContent).toContain('كيف تختار أوبتيمال إكس المنتجات التي تناسبني؟');
+    expect(rows[0].textContent).toContain(ar[PRICE_FAQ.qKey]);
   });
 
   it('puts the rows in a panel, which is the unit for structured content', () => {

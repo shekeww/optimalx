@@ -115,19 +115,25 @@ describe('SectionHeader', () => {
 });
 
 describe('Price', () => {
-  it('writes the riyal mark instead of the engine icon glyph, inside the isolate wrapper', () => {
+  it('keeps the engine icon glyph visible, wrapped for bots and screen readers', () => {
     const { container } = renderWithProviders(<Price amount={349} size="h2" />);
     const wrapper = container.querySelector('.ox-price') as HTMLElement;
     expect(wrapper).not.toBeNull();
     expect(wrapper.classList.contains('ox-price--h2')).toBe(true);
-    // The icon font codepoint resolves to the U+FDFC ligature, which the
-    // approved design does not use and which falls back to a box on several
-    // Android system fonts. It is replaced by real text, so it is selectable
-    // and a screen reader reads it.
-    expect(wrapper.querySelector('i.sicon-sar')).toBeNull();
     const mark = wrapper.querySelector('.ox-price__mark') as HTMLElement;
     expect(mark).not.toBeNull();
-    expect(mark.textContent).toBe(t('ox.common.sar'));
+    // Verified 2026-09-22 against the live sallaicons font (codepoint
+    // U+E9BC): the glyph draws Salla's current Saudi Riyal symbol, not the
+    // old U+FDFC ligature, so it stays the visible mark rather than being
+    // replaced by text.
+    const icon = mark.querySelector('i.sicon-sar') as HTMLElement;
+    expect(icon).not.toBeNull();
+    expect(icon.getAttribute('aria-hidden')).toBe('true');
+    // Bots, crawlers and screen readers get the written mark two ways: the
+    // wrapper's accessible name, and a genuinely-selectable sr-only node.
+    expect(mark.getAttribute('role')).toBe('img');
+    expect(mark.getAttribute('aria-label')).toBe(t('ox.common.sar'));
+    expect(mark.querySelector('.ox-sr-only')?.textContent).toBe(t('ox.common.sar'));
     expect(mark.textContent).toBe('ر.س');
     expect(wrapper.textContent).toContain('349.00');
     expect(wrapper.textContent).not.toContain(String.fromCharCode(0xfdfc));

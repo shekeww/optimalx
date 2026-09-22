@@ -81,8 +81,15 @@ describe('the three static route titles', () => {
   });
 
   it('never titles /most-sales-products by sales while order data is zero', () => {
-    expect(ar[STATIC_TITLE_KEYS.sales]).toBe('المنتجات');
-    expect(en[STATIC_TITLE_KEYS.sales]).toBe('Products');
+    // The negative rule is what this test is actually for: whatever copy the
+    // catalogue title carries, it must never read as a sales claim.
+    expect(ar[STATIC_TITLE_KEYS.sales]).not.toContain('مبيعا');
+    expect(en[STATIC_TITLE_KEYS.sales].toLowerCase()).not.toContain('sales');
+    expect(en[STATIC_TITLE_KEYS.sales].toLowerCase()).not.toContain('best sellers');
+    // Pinned to today's locale value so a copy edit is a visible diff here,
+    // not a silent pass.
+    expect(ar[STATIC_TITLE_KEYS.sales]).toBe('كل المنتجات');
+    expect(en[STATIC_TITLE_KEYS.sales]).toBe('All products');
   });
 });
 

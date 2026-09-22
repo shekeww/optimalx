@@ -338,6 +338,18 @@
   /* The mobile trust scroller that the utility bar's three items become
      below 1024 (the nav row is gone: it merged into the main bar). */
   --ox-h-trust: 40px;
+  /* The fixed header's own height (Header.tsx, _b1-layout.scss `.ox-header`),
+     so `.app-inner` can reserve the same space with zero layout shift on
+     first paint - a real SCSS default rather than a `var(..., fallback)`
+     placeholder, refined in place by `useHeaderHeightVar`'s ResizeObserver
+     the moment the client can measure the real box (inline styles on <html>
+     beat this declaration, same precedent as the dashboard's brand colour).
+     Mobile: announce(40) + mobilebar(--ox-h-bar, 64) + trust(--ox-h-trust,
+     40) = 144. Assumes the announcement bar is present (`announcement_text`
+     or `free_shipping_threshold` set) - the safer default, since a fallback
+     that is briefly too TALL only closes a gap, where one that is too SHORT
+     hides content under the header. */
+  --ox-header-h: 144px;
   --ox-h-tabbar: calc(56px + env(safe-area-inset-bottom, 0px));
   --ox-h-sticky: 64px;
   --ox-z-raised: 10;
@@ -405,6 +417,10 @@ textarea {
   :root {
     --ox-gutter: 32px;
     --ox-h-bar: 88px;
+    /* The trust scroller is gone (its three items move into the utility
+       strip) and the announcement bar drops to 36px at this width: announce
+       (36) + utility (--ox-h-util, 48) + mainbar (--ox-h-bar, 88) = 172. */
+    --ox-header-h: 172px;
   }
 }
 

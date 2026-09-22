@@ -348,3 +348,54 @@ Dialect tokens removed and their MSA forms (all from §3.3): احنا→نحن،
   متجر مكملات من المدينة المنورة أسسه شريكان يتمرنان. نشرح لك ما على الملصق،
   ونرشح ما يناسب هدفك، ونقول لك إن كنت لا تحتاج المنتج." (measure before
   shipping).
+
+### 6.1 Claims judgement for rewriters (adopted 2026-09-22 from the owner's draft, audited)
+
+The lexicon in the sweep brief (يعالج، يشفي، يقي، يحمي، مضمون، يضمن، ضمان،
+الأفضل، رقم 1، الأكثر مبيعا، أسرع، 100%، موثوق، موزع رسمي) is the gate's
+**introduce-ban**: a rewrite may never add one of these as a claim. It is not a
+blanket word ban on existing text. The rules a rewriter applies, in order:
+
+1. Do not invent, strengthen, exaggerate, or turn ordinary product or service
+   language into a guaranteed claim. Never change a factual statement into a
+   stronger one while rewriting.
+2. Preserve the meaning and intent of the source. The job is clearer, more
+   natural Arabic in the brand voice, not the removal of normal persuasive or
+   customer-facing language.
+3. Never introduce, unsupported: medical or therapeutic claims; guaranteed
+   outcomes; absolute or unnamed-comparative superiority; quantified health,
+   performance or commercial outcomes; professional credentials or
+   official-status claims; certainty, trust, ranking or market-leadership
+   claims; **delivery-time promises; individualised prescription, diagnosis or
+   meal-plan language; invented statistics, ratings or social proof; named
+   competitor retailers** (the four additions come from FINAL-claims-source §3
+   and were missing from the draft).
+4. A listed word may remain when it is part of an existing statement that the
+   claims source approves (an allowed or conditional row in
+   `docs/build/research/FINAL-claims-source.md`, or an owner-initialed line) or
+   a product specification copied from the label. "It was already on the site"
+   is not approval: the 2026-09-21 audit removed "بأفضل سعر" from 14 live
+   titles and "ليس مضرا" from a live FAQ for exactly that reason.
+5. If the source carries a legitimate factual claim, keep its meaning; do not
+   weaken it for comfort. Label facts (grams, servings, expiry) stay as facts.
+6. When uncertain, use the least-claiming natural wording that keeps the
+   original intent, and set `flag` so the reviewer sees the judgement.
+
+Where the sweep brief and this section differ, this section governs the
+judgement and the brief's list governs the gate (`scripts/check-claims.mjs`
+with its per-key allowlist and reasons).
+
+### 6.2 The hero H1 and dialect (owner note, 2026-09-22)
+
+The owner preferred the dialect hero "وش هدفك اليوم؟" over the shipped
+"ما هدفك اليوم؟". KOS SEO-ENG-008 v1.1 Principle 5 is explicit: colloquial
+Arabic is not acceptable on any surface, headings included, and "natural and
+colloquial are not synonyms"; v1.0's "Gulf-natural" clause was withdrawn
+because it produced published dialect. Dialect is regional: Gulf Ammiyya reads
+as foreign to the Levantine, Egyptian and North African shoppers who live in
+Saudi Arabia and whom the owner names as a target audience. The one sanctioned
+place for "وش" is input understanding: the search synonym list should carry
+"وش هدفك" and "وش احتاج" so a shopper who types dialect is understood and
+answered in MSA. The H1 therefore stays "ما هدفك اليوم؟". Overriding this is
+an owner decision to record here as an initialed exception with a per-key
+allowlist entry in `check-copy`; the conductor recommends against it.

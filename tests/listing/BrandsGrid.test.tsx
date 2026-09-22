@@ -2,7 +2,10 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
 import type { BrandsPageProps } from '@salla.sa/twilight-theme-engine/routes/brands';
+
+const ar = loadDictionary('ar');
 
 /**
  * The brands index (DIRECTION 6.14) and the state the live store is in today:
@@ -62,7 +65,7 @@ describe('BrandsGrid', () => {
       <BrandsGrid {...props({ page: { title: '', slug: 'brands.index' }, brands: {} })} />
     );
     expect(container.querySelectorAll('h1')).toHaveLength(1);
-    expect(container.querySelector('h1')?.textContent).toBe('العلامات');
+    expect(container.querySelector('h1')?.textContent).toBe(ar['ox.nav.brands']);
     expect(container.querySelector('.ox-empty')).not.toBeNull();
     expect(container.querySelector('.ox-brands__grid')).toBeNull();
     expect(container.querySelector('.ox-empty__actions a')?.getAttribute('href')).toBe(

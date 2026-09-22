@@ -464,23 +464,72 @@
   border-block-start: 1px solid var(--ox-bd);
 }
 
+// FADED photographic background (owner amendment, S2c 2026-09-22): the same
+// frame the page's own band already wears, at low opacity, with an angled
+// scrim opaque over the text corner and opening toward the far end so the
+// photograph still reads as a picture. The scrim's angle is the identity's
+// own skew (`var(--ox-skew)`), never a literal degree, so it follows the
+// token if the identity workflow re-derives it. `.ox-service__photo` and
+// `.ox-service__scrim` paint at z-index 0; the icon/title/sub sit at 1.
 .ox-service__head {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   column-gap: var(--ox-4);
   row-gap: var(--ox-2);
   align-items: center;
   max-inline-size: var(--ox-container-text);
+  padding: var(--ox-4);
+  border-radius: var(--ox-r-2);
+  background: var(--ox-plate);
+}
+
+.ox-service__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.18;
+  border-radius: inherit;
+}
+
+.ox-service__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  // Fully opaque plate colour under the text corner (0 to 60%): the text's
+  // contrast never depends on the photograph at all there. It opens to 60%
+  // plate (40% see-through) only past that, where no text sits.
+  background: linear-gradient(
+    calc(180deg - var(--ox-skew)),
+    var(--ox-plate) 0%,
+    var(--ox-plate) 60%,
+    rgba(241, 241, 240, 0.6) 100%
+  );
 }
 
 .ox-service__icon {
+  position: relative;
+  z-index: 1;
   grid-row: span 2;
   align-self: start;
   color: var(--ox-fg-2);
 }
 
 .ox-service__title,
-.ox-service__sub,
+.ox-service__sub {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
 .ox-service__lead {
   margin: 0;
 }
@@ -781,6 +830,27 @@
   padding-block-start: var(--ox-3);
   color: var(--ox-fg-2);
   border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-about-own {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-about-own__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-about-closing {
+  margin: 0;
+  max-inline-size: var(--ox-container-text);
 }
 
 .ox-about-reg {

@@ -2,7 +2,9 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
 
+const ar = loadDictionary('ar');
 const themeSettings: Record<string, unknown> = {};
 const storeValue: Record<string, unknown> = { contacts: {}, settings: {} };
 
@@ -121,7 +123,7 @@ describe('MobileDrawer', () => {
     expect(labels.filter((label) => label === 'اسأل قبل أن تشتري')).toHaveLength(1);
     expect(labels).toContain('الأدلة');
     expect(labels).toContain('فرع المدينة المنورة');
-    expect(labels).toContain('اتصل بنا');
+    expect(labels).toContain(ar['ox.nav.contact']);
     unmount();
   });
 

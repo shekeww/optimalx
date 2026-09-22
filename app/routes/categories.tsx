@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { useDocumentClass } from '@salla.sa/twilight-theme-engine/hooks';
-import { pageHead } from '../components/pages/head';
+import { categoriesHeadExtend } from '../components/seo/routeHeads';
 import { CATEGORIES_INDEX_KEYS, CategoriesIndex } from '../components/listing/CategoriesIndex';
 
 /**
@@ -21,7 +21,7 @@ import { CATEGORIES_INDEX_KEYS, CategoriesIndex } from '../components/listing/Ca
 export const Route = createFileRoute('/{-$locale}/categories')({
   loader: () => ({ path: '/categories' }),
   head: withHead({
-    head: pageHead({
+    head: categoriesHeadExtend({
       path: '/categories',
       titleKey: CATEGORIES_INDEX_KEYS.title,
       descriptionKey: CATEGORIES_INDEX_KEYS.description,

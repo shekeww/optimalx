@@ -37,7 +37,7 @@ function NotificationsComponent() {
     >
       {empty ? (
         <AccountEmpty
-          icon="help"
+          icon="headset"
           titleKey="ox.empty.notifications_title"
           bodyKey="ox.empty.notifications_body"
           primaryTo="/account/orders"
