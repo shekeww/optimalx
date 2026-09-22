@@ -174,7 +174,10 @@ describe('OxCategories', () => {
     expect(tiles[0].getAttribute('href')).toContain('/search?q=');
     // No artwork yet: the sprite symbol stands in, never a broken image.
     expect(tiles[0].querySelector('svg')).not.toBeNull();
-    expect(tiles[0].querySelector('img')).toBeNull();
+    // The only <img> is the curated local artwork (2026-09-23); the live
+    // image slot, the one that could 404, is never rendered on an art tile.
+    expect(tiles[0].querySelector('img.ox-tile__art')).not.toBeNull();
+    expect(tiles[0].querySelector('.ox-tile__image')).toBeNull();
   });
 
   it('uses the live category URL when the store has the category', async () => {

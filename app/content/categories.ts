@@ -111,6 +111,7 @@ function base(
 export const CATEGORIES: CategoryContent[] = [
   {
     ...base('protein', 'protein', null, 'protein', 'blue'),
+    backgroundImage: '/categories/protein.webp',
     cardLineKey: `${KEY}.protein.card_line`,
     chipKeys: chips('protein', 6),
     relatedGuides: [
@@ -247,6 +248,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('daily-health', 'daily_health', null, 'daily-health'),
+    backgroundImage: '/categories/daily_health.webp',
     cardLineKey: `${KEY}.daily_health.card_line`,
     chipKeys: chips('daily_health', 3),
     relatedGuides: [

@@ -123,12 +123,13 @@ describe('CategoriesIndex', () => {
     }
   });
 
-  it('renders the curated art tile for creatine, and no <img> for protein (no curated art yet)', () => {
+  it('renders the curated art tile for creatine, and the tinted card for snacks-bars (no curated art)', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
     const creatine = container.querySelector('[data-testid="ox-type-card"][data-category="creatine"]') as HTMLElement;
-    const protein = container.querySelector('[data-testid="ox-type-card"][data-category="protein"]') as HTMLElement;
+    const snacks = container.querySelector('[data-testid="ox-type-card"][data-category="snacks-bars"]') as HTMLElement;
     expect(ART_CATEGORY_SLUGS).toContain('creatine');
-    expect(ART_CATEGORY_SLUGS).not.toContain('protein');
+    expect(ART_CATEGORY_SLUGS).toContain('protein');
+    expect(ART_CATEGORY_SLUGS).not.toContain('snacks-bars');
 
     const art = creatine.querySelector('.ox-cat-card__art') as HTMLImageElement;
     expect(art).not.toBeNull();
@@ -140,9 +141,9 @@ describe('CategoriesIndex', () => {
     expect(art.getAttribute('alt')).toBe('');
     expect(creatine.className).toMatch(/ox-cat-card--art/);
 
-    expect(protein.querySelector('.ox-cat-card__art')).toBeNull();
-    expect(protein.querySelector('.ox-cat-card__media')).not.toBeNull();
-    expect(protein.className).not.toMatch(/ox-cat-card--art/);
+    expect(snacks.querySelector('.ox-cat-card__art')).toBeNull();
+    expect(snacks.querySelector('.ox-cat-card__media')).not.toBeNull();
+    expect(snacks.className).not.toMatch(/ox-cat-card--art/);
   });
 
   it('scopes the art card body to its own link, with the frame classes and desc/children as siblings outside it (S2i)', () => {
@@ -193,10 +194,10 @@ describe('CategoriesIndex', () => {
     expect(protein.querySelector('.ox-cat-card__link')?.getAttribute('href')).toBe(
       'https://optimalx.com.sa/protein/c9001'
     );
-    // The image slot is a background, never an `<img>` that can 404.
-    expect(protein.querySelector('img')).toBeNull();
-    const media = protein.querySelector('.ox-cat-card__media') as HTMLElement;
-    expect(media.style.backgroundImage).toContain('https://cdn.salla.sa/x/protein.jpg');
+    // Protein carries curated artwork (2026-09-23), which wins over the live
+    // image: the card is an art card with no live-image slot.
+    expect(protein.querySelector('img.ox-cat-card__art')?.getAttribute('src')).toBe('/categories/protein.webp');
+    expect(protein.querySelector('.ox-cat-card__media')).toBeNull();
     // The nested child resolved through the flattened list; its siblings did not.
     const chips = Array.from(protein.querySelectorAll('.ox-cat-card__children a'));
     expect(chips[0].getAttribute('href')).toBe('https://optimalx.com.sa/whey-protein/c9011');

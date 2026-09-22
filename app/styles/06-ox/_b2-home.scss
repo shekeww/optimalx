@@ -239,37 +239,54 @@
   // is the only reason it worked and the scrim did not.
   // 53%, DOWN FROM 60% (owner review 2026-09-23, item 2): the black panel's
   // edge pushed 7% of the hero's own width (0.07 * 1440 = 100.8px) further
-  // toward the page's left, inside the 6-8% range asked for. The pane's own
-  // box shrinks by that amount (864px -> 763.2px at 1440) rather than the
-  // polygon being re-cut within the old 864px box: the lean stays 300px (the
-  // band's height is unchanged, so the vertical breakpoint stays 46.43%) and
-  // the run stays the same 202.4px absolute (run = lean * tan(34deg), and lean
-  // did not change) — only its expression AS A PERCENTAGE OF THE NARROWER BOX
-  // changes, 202.4 / 763.2 = 26.52% (was 202.4 / 864 = 23.43%), which is what
-  // keeps the cut at exactly 34deg after the box resizes (re-cutting the old
-  // 864px box's polygon instead would have left the top of the cut in place
-  // and only dragged the foot left, steepening the angle past 34).
+  // toward the page's left, inside the 6-8% range asked for.
+  //
+  // OWNER REVIEW 2026-09-23, ITEM 1: the vertical-then-lean edge above (the
+  // mark's own §2.3 construction) is replaced by ONE straight 34deg diagonal
+  // over the FULL band height, so the cut reads as one line with the strap
+  // instead of showing a black wedge above it where the old vertical run met
+  // the strap's own lean. `.ox-hero`'s block-size is 520px from 640 to 1023
+  // (min-block-size, §2g's own assumption that content never grows past it)
+  // — H below is that 520.
+  //
+  // The strap's own near (inline-end/physical-left) edge is `inset-inline-end:
+  // 53%` on `.ox-hero__edge` — a POSITION, not a centre: `inset-inline-end`
+  // pins that element's OWN inline-end edge (its physical-left edge in this
+  // RTL-default file) at 53% of the band, and the strap's `inline-size: 20px`
+  // extends from there toward inline-start (physically right). So the near
+  // edge sits at exactly 53% of the band, flush with the pane's own edge
+  // below — matching this file's own §2 note that the strap "sits exactly on
+  // the pane's own vertical edge." The photo's cut must sit 16px inside
+  // (physically left of) that same 53% line, at every height, so pane
+  // inline-size = 53% − 16px + half the run (the box's own right edge is
+  // still a half-run further out than the diagonal's 16px-inside midpoint,
+  // since the diagonal recedes symmetrically about the band's mid-height):
+  // 520 * 0.33725 = 175.37, so inline-size = calc(53% - 16px + 175.37px).
+  // (A 26px offset was floated for this figure treating the 53% mark as the
+  // strap's CENTRE; per the CSS above it is the strap's own near EDGE, so 26
+  // double-counts the strap's own 10px half-width — 16px is what actually
+  // lands the cut 16px off the strap, verified in docs/build/progress/S3b.md.)
   .ox-hero__photo {
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: 53%;
-    // X-IDENTITY-2026-09-22.md §2.3/§2.5: at 34deg a full-height diagonal is
-    // impossible on a hero-scale band (run would be 43.7% of this 864-wide
-    // pane, over the 24% budget and eating the subject). The edge is now
-    // vertical to 46.43% of the block-size, then a 34deg lean to the foot,
-    // run 202.4 — the mark's own construction (section 1.3), not a
-    // compromise. Valid only at the pane's 763.2x560 aspect (§2.5); a
-    // percentage pair's angle depends on the box, so this carries the pragma
-    // §7.1's `polygon-slope` rule requires.
-    /* identity: 34deg, run 202.4 of 763.2 */
-    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 73.48% 100%, 0 100%);
+    inline-size: calc(53% - 16px + 175.37px);
+    // X-IDENTITY-2026-09-22.md §2.3's full-height-diagonal budget is
+    // deliberately overridden here by the owner's explicit 2026-09-23 review
+    // (item 1: "aligned exactly with the orange strap"), which needs one
+    // continuous 34deg line, not the mark's vertical-then-lean construction.
+    // run = H * tan(34deg) = 520 * 0.6745 = 350.7 (ox-run(520px)); the box's
+    // own width does not enter the slope at all (both polygon vertices at
+    // y=0/y=100% move by the same fixed px run regardless of the box's own
+    // inline-size), so the pragma below names run against H, not the box.
+    /* identity: 34deg, run 350.7 of 520 */
+    clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__photo {
     inset-inline-end: auto;
     inset-inline-start: 0;
-    /* identity: 34deg, run 202.4 of 763.2 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 26.52% 100%, 0 46.43%);
+    /* identity: 34deg, run 350.7 of 520 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(520px)} 100%);
   }
 }
 
@@ -463,18 +480,20 @@
     // side, and laid its wash over the copy panel instead of the picture.
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: 53%;
-    // Same fix as the photo above, same reason (X-IDENTITY §2.3/§2.5): the
-    // scrim shares the photo's box exactly, so it shares its polygon exactly.
-    /* identity: 34deg, run 202.4 of 763.2 */
-    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 73.48% 100%, 0 100%);
+    inline-size: calc(53% - 16px + 175.37px);
+    // Same fix as the photo above, same reason (owner review 2026-09-23,
+    // item 1): the scrim shares the photo's box exactly, so it shares its
+    // full-height 34deg polygon exactly. H 520, run 350.7 — see the photo
+    // rule above for the full derivation.
+    /* identity: 34deg, run 350.7 of 520 */
+    clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__scrim {
     inset-inline-end: auto;
     inset-inline-start: 0;
-    /* identity: 34deg, run 202.4 of 763.2 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 26.52% 100%, 0 46.43%);
+    /* identity: 34deg, run 350.7 of 520 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(520px)} 100%);
   }
 }
 
@@ -777,6 +796,24 @@
 @media (min-width: 1024px) {
   .ox-hero {
     min-block-size: 560px;
+  }
+
+  // H changes to 560 here (was 520 below 1024, §2 above), so the photo/scrim
+  // pane and its full-height 34deg cut must be recomputed against the new H:
+  // half-run = 560 * 0.33725 = 188.86, run = ox-run(560px) = 377.7. Verified
+  // at 1024/1280/1440/1920 in docs/build/progress/S3b.md — both figures are
+  // pure px, so neither varies with the viewport once >= 1024.
+  .ox-hero__photo,
+  .ox-hero__scrim {
+    inline-size: calc(53% - 16px + 188.86px);
+    /* identity: 34deg, run 377.7 of 560 */
+    clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(560px)}) 100%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-hero__photo,
+  [dir='ltr'] .ox-hero__scrim {
+    /* identity: 34deg, run 377.7 of 560 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(560px)} 100%);
   }
 
   .ox-hero__inner {
@@ -1308,6 +1345,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  // Owner call 2026-09-23: the text block sits at the BOTTOM left of the
+  // artwork, the count and arrow row directly under it, so the packshot in
+  // the upper half of every photograph stays clear.
+  justify-content: flex-end;
   gap: var(--ox-1);
   color: var(--ox-fg);
 
@@ -1322,7 +1363,7 @@ body {
     z-index: -1;
     inset: calc(var(--ox-3) * -1);
     background: radial-gradient(
-      ellipse at top left,
+      ellipse at bottom left,
       rgba(255, 255, 255, 0.35) 0%,
       rgba(255, 255, 255, 0) 70%
     );
@@ -1347,6 +1388,12 @@ body {
 // `--black` above, so at equal specificity this wins for every art card;
 // `vitamins-minerals`'s own dark-ground override, below, is more specific
 // again and wins over this in turn for that one slug only.
+.ox-tile--art .ox-tile__foot {
+  // Inside the overlay column the foot no longer needs to fall to the far
+  // edge (the column itself is bottom-aligned): one step under the subline.
+  margin-block-start: var(--ox-2);
+}
+
 .ox-tile--art .ox-tile__icon,
 .ox-tile--art .ox-tile__name {
   color: var(--ox-fg);
@@ -1519,6 +1566,19 @@ body {
   }
 }
 
+// Owner review 2026-09-23, item 2: "cut in an angle from the top left and
+// bottom left" — the mark's own arm-foot cut, taken at both the physical top-
+// left AND bottom-left corners, never mirrored under [dir='ltr'] (the
+// reference composition, like the art tiles, S2h). lean 40 / run 27.0 at the
+// 390 probe: 15.6% of the 173px card (2-col grid, container 358, gap 12 —
+// X-IDENTITY-2026-09-22.md §2.4's own figure for this exact card width), well
+// inside the 24% budget. Scales at the ≥640 and ≥1280 breakpoints below.
+//
+// The focus ring moves from `ox-focus`'s outline (clipped along with
+// everything else once `clip-path` lands — §3.4/§7.1 `focus-clipped`) to an
+// inset box-shadow, the second of §7.1's two legal mechanisms and the same
+// one `_primitives.scss`'s `.ox-btn--s40/s44/s48` already ships for the same
+// reason.
 .ox-goal {
   position: relative;
   isolation: isolate;
@@ -1530,7 +1590,12 @@ body {
   background: var(--ox-graphite-2);
   color: var(--ox-ink-on-dark);
   transition: transform var(--dur-base) var(--ease-out);
-  @include ox-focus(2px);
+  clip-path: polygon(0 40px, #{ox-run(40px)} 0, 100% 0, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ox-focus);
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -1577,19 +1642,30 @@ body {
   );
 }
 
-// A straight accent bar, not a lean (check-identity `small-angle`;
-// X-IDENTITY §3.2: an angled primitive is illegal below 158px, and this
-// mark is 92px tall). It carried `skewX(var(--ox-skew))` before this fix;
-// dropping the transform is the whole change, everything else unchanged.
+// Owner review 2026-09-23, item 2: "the orange straps on cards should always
+// be angled" — a 34deg parallelogram again (it carried `skewX(var(--ox-skew))`
+// before the 2026-09-23 `small-angle` fix dropped it), sized to sit inside the
+// top-left corner cut above so the two read as one gesture. `block-size`
+// ordered first with the pragma on its own line — `.ox-plan__arrow`'s own
+// comment in this file traces the checker's multi-line match issue this
+// avoids. Control-scale (92px tall), the same named 3.2 exception
+// `.ox-iconbtn--angled` and the sized CTA buttons already carry, not a band-
+// or panel-scale cut.
 .ox-goal__slash {
+  block-size: 92px; // ox-allow: small-angle
   position: absolute;
   z-index: 2;
-  inset-block-start: -24px;
+  inset-block-start: -4px;
   inset-inline-end: -4px;
   inline-size: 20px;
-  block-size: 92px;
   background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
   pointer-events: none;
+}
+
+[dir='ltr'] .ox-goal__slash {
+  inset-inline-end: auto;
+  inset-inline-start: -4px;
 }
 
 .ox-goal__body {
@@ -1655,6 +1731,9 @@ body {
 @media (min-width: 640px) {
   .ox-goal {
     min-block-size: 228px;
+    // lean 56 / run 37.8 at the 768 probe: 3-col grid, container 720 (gutter
+    // 24), gap 16 -> card (720 - 32) / 3 = 229.3px; 37.8 / 229.3 = 16.5%.
+    clip-path: polygon(0 56px, #{ox-run(56px)} 0, 100% 0, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
   }
 
   .ox-goal__body {
@@ -1675,6 +1754,13 @@ body {
 @media (min-width: 1280px) {
   .ox-goal {
     min-block-size: 400px;
+    // lean 64 / run 43.2 at the 1440 probe: 6-col grid, container 1296
+    // (capped), gap 24 -> card (1296 - 120) / 6 = 196px; 43.2 / 196 = 22.0%
+    // — inside the 24% budget (X-IDENTITY §2.3) but nearer the ceiling than
+    // the other two tiers, because the 6-up track narrows the card at this
+    // width more than a "1440" tier elsewhere in the theme assumes. Flagged
+    // in docs/build/progress/S3b.md rather than silently sized down.
+    clip-path: polygon(0 64px, #{ox-run(64px)} 0, 100% 0, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
   }
 
   .ox-goal__body {
@@ -2910,6 +2996,13 @@ body {
 @media (min-width: 640px) {
   // 1.4 cards of the next one showing, the middle of the spec's 1.3 to 1.5.
   .ox-posters__track { grid-auto-columns: 46%; }
+
+  // lean 56 / run 37.8 at the 768 probe (item 3, same tier `GoalCard` picks
+  // at this breakpoint): track row ~= 768 - 24 start padding = 744px, card
+  // 46% of that = 342.2px; 37.8 / 342.2 = 11.0%.
+  .ox-pcard {
+    clip-path: polygon(0 56px, #{ox-run(56px)} 0, 100% 0, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
+  }
 }
 
 @media (min-width: 1024px) {
@@ -2918,8 +3011,29 @@ body {
 
 @media (min-width: 1280px) {
   .ox-posters__track { grid-auto-columns: 27%; }
+
+  // lean 64 / run 43.2 at the 1440 probe: row ~= 1440 - 32 start padding =
+  // 1408px, card 27% of that = 380.2px; 43.2 / 380.2 = 11.4%.
+  .ox-pcard {
+    clip-path: polygon(0 64px, #{ox-run(64px)} 0, 100% 0, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
+  }
 }
 
+// Owner review 2026-09-23, item 3: the same treatment `GoalCard` carries (its
+// own comment above `.ox-goal`, item 2), adapted to this card's size and
+// content — two physical corner cuts (top-left and bottom-left, never
+// mirrored under [dir='ltr']) plus the angled strap, the rest of the card
+// (photo, scrim, body, title, line, cta) unchanged. Reuses the identical
+// lean/run tiers `GoalCard` picked (390/768/1440) so the two card families
+// read as one system; this card is wider at every one of those probes (see
+// the per-breakpoint comments below), so the same tiers sit further inside
+// the 24% budget here than they do on `GoalCard`.
+//
+// The focus ring moves to an inset box-shadow for the same `focus-clipped`
+// reason `.ox-goal` documents above; `.ox-pcard` had no explicit focus style
+// before this (only the global `a:focus{outline:none}` reset, 02-generic/
+// reset.scss), so this also closes a pre-existing gap rather than trading one
+// ring for another.
 .ox-pcard {
   position: relative;
   display: flex;
@@ -2933,6 +3047,14 @@ body {
   background: var(--ox-graphite-2);
   color: var(--ox-paper);
   text-decoration: none;
+  // lean 40 / run 27.0 at the 390 probe: track 74% of a ~374px row (358
+  // container + 16 start padding) = 276.8px card; 27.0 / 276.8 = 9.8%.
+  clip-path: polygon(0 40px, #{ox-run(40px)} 0, 100% 0, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ox-focus);
+  }
 }
 
 .ox-pcard__photo,
@@ -2942,6 +3064,27 @@ body {
   z-index: 0;
   inline-size: 100%;
   block-size: 100%;
+}
+
+// Same construction as `.ox-goal__slash` (item 2): a 34deg parallelogram
+// sitting inside the top-left cut above so the two read as one gesture.
+// `block-size` ordered first with the pragma on its own line, same reason
+// `.ox-goal__slash` and `.ox-plan__arrow` give.
+.ox-pcard__slash {
+  block-size: 92px; // ox-allow: small-angle
+  position: absolute;
+  z-index: 2;
+  inset-block-start: -4px;
+  inset-inline-end: -4px;
+  inline-size: 20px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+[dir='ltr'] .ox-pcard__slash {
+  inset-inline-end: auto;
+  inset-inline-start: -4px;
 }
 
 // The treatment the goal and plan cards already use: the frame sits low

@@ -2280,6 +2280,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  // Owner call 2026-09-23: bottom-left text block, matching the home tile.
+  justify-content: flex-end;
   gap: var(--ox-1);
   color: var(--ox-fg);
 
@@ -2292,11 +2294,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
     z-index: -1;
     inset: calc(var(--ox-3) * -1);
     background: radial-gradient(
-      ellipse at top left,
+      ellipse at bottom left,
       rgba(255, 255, 255, 0.35) 0%,
       rgba(255, 255, 255, 0) 70%
     );
   }
+}
+
+.ox-cat-card--art .ox-cat-card__foot {
+  margin-block-start: var(--ox-2);
 }
 
 [dir='rtl'] .ox-cat-card__body {

@@ -76,19 +76,20 @@ describe('OxCategories, the default eight', () => {
     expect(row.filter((tile) => tile.getAttribute('data-tone') === 'black')).toHaveLength(1);
   });
 
-  it('draws the icon before the image slot in source order (owner: icons above the images)', async () => {
+  it('paints the icon above the artwork (owner: icons above the images): the overlay column follows the photograph in DOM order', async () => {
     renderWithProviders(<OxCategories data={data()} />);
     const row = await tiles();
-    const svg = row[0].querySelector('svg');
-    const image = row[0].querySelector('.ox-tile__image');
-    expect(svg).not.toBeNull();
-    expect(image).not.toBeNull();
-    // DOM order is paint/reading order for this non-grid, non-absolute pair.
+    const art = row[0].querySelector('img.ox-tile__art');
+    const body = row[0].querySelector('.ox-tile__body');
+    expect(art).not.toBeNull();
+    expect(body).not.toBeNull();
+    expect(body!.querySelector('svg')).not.toBeNull();
+    // The later sibling paints on top: the icon, name and line sit over the photo.
     const children = Array.from(row[0].children);
-    expect(children.indexOf(svg as Element)).toBeLessThan(children.indexOf(image as Element));
+    expect(children.indexOf(art as Element)).toBeLessThan(children.indexOf(body as Element));
   });
 
-  it('never renders an <img> for the image slot: a background only, so a 404 never paints a broken glyph', async () => {
+  it('lets the curated artwork win over the live image on an art tile (protein, 2026-09-23)', async () => {
     liveCategories.push({
       id: 1,
       name: 'بروتين',
@@ -98,20 +99,17 @@ describe('OxCategories, the default eight', () => {
     });
     renderWithProviders(<OxCategories data={data()} />);
     await tiles();
+    // Protein carries the owner's curated artwork since 2026-09-23, which wins
+    // over the live image: the tile is an art card and has no live-image slot.
     await waitFor(() =>
       expect(
-        (screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__image') as HTMLElement)
-          .style.backgroundImage
-      ).toContain('https://cdn.example/protein.jpg')
+        screen.getAllByTestId('ox-category-tile')[0].querySelector('img.ox-tile__art')?.getAttribute('src')
+      ).toBe('/categories/protein.webp')
     );
-    expect(screen.getAllByTestId('ox-category-tile')[0].querySelector('img')).toBeNull();
+    expect(screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__image')).toBeNull();
   });
 
-  it('falls back to the theme custom property when the live category has no image', async () => {
-    // `daily-health` (index 7): the other home tile with no curated art, so
-    // the live-image background slot still governs it (`creatine`, index 1,
-    // now always carries its own curated art regardless of the live image -
-    // covered by the art tests below).
+  it('renders the curated artwork for daily-health even when the live category has no image (2026-09-23)', async () => {
     const dailyHealthIndex = HOME_TYPE_SLUGS.indexOf('daily-health');
     liveCategories.push({
       id: 2,
@@ -122,18 +120,19 @@ describe('OxCategories, the default eight', () => {
     });
     renderWithProviders(<OxCategories data={data()} />);
     const row = await tiles();
-    const image = row[dailyHealthIndex].querySelector('.ox-tile__image') as HTMLElement;
-    expect(image.style.backgroundImage).toContain(`--ox-need-image-${HOME_TYPE_SLUGS[dailyHealthIndex]}`);
+    const art = row[dailyHealthIndex].querySelector('img.ox-tile__art') as HTMLImageElement;
+    expect(art).not.toBeNull();
+    expect(art.getAttribute('src')).toBe('/categories/daily_health.webp');
+    expect(row[dailyHealthIndex].querySelector('.ox-tile__image')).toBeNull();
   });
 
-  it('renders the curated art tile for creatine, and no <img> for protein (no curated art yet)', async () => {
+  it('renders every home tile as a curated art tile (all eight roots carry artwork since 2026-09-23)', async () => {
     renderWithProviders(<OxCategories data={data()} />);
     const row = await tiles();
-    const creatineIndex = HOME_TYPE_SLUGS.indexOf('creatine');
-    const proteinIndex = HOME_TYPE_SLUGS.indexOf('protein');
-    expect(ART_CATEGORY_SLUGS).toContain('creatine');
-    expect(ART_CATEGORY_SLUGS).not.toContain('protein');
+    for (const slug of HOME_TYPE_SLUGS) expect(ART_CATEGORY_SLUGS).toContain(slug);
+    expect(ART_CATEGORY_SLUGS).not.toContain('snacks-bars');
 
+    const creatineIndex = HOME_TYPE_SLUGS.indexOf('creatine');
     const art = row[creatineIndex].querySelector('.ox-tile__art') as HTMLImageElement;
     expect(art).not.toBeNull();
     expect(art.getAttribute('src')).toBe('/categories/creatine.webp');
@@ -142,11 +141,16 @@ describe('OxCategories, the default eight', () => {
     expect(art.getAttribute('width')).toBe('1024');
     expect(art.getAttribute('height')).toBe('1536');
     expect(art.getAttribute('alt')).toBe('');
-    expect(row[creatineIndex].className).toMatch(/ox-tile--art/);
 
-    expect(row[proteinIndex].querySelector('.ox-tile__art')).toBeNull();
-    expect(row[proteinIndex].querySelector('.ox-tile__image')).not.toBeNull();
-    expect(row[proteinIndex].className).not.toMatch(/ox-tile--art/);
+    for (const tile of row) {
+      expect(tile.className).toMatch(/ox-tile--art/);
+      expect(tile.querySelector('.ox-tile__art')).not.toBeNull();
+      expect(tile.querySelector('.ox-tile__image')).toBeNull();
+      // The text block and the foot live in one bottom-aligned overlay column.
+      const body = tile.querySelector('.ox-tile__body') as HTMLElement;
+      expect(body).not.toBeNull();
+      expect(body.querySelector('.ox-tile__foot')).not.toBeNull();
+    }
   });
 
   it('prints the count only on a live, positive products_count', async () => {
