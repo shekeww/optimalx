@@ -1041,6 +1041,7 @@ a.ox-util__trust-link {
 }
 
 .ox-tab {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1058,6 +1059,21 @@ a.ox-util__trust-link {
 
   &.is-active {
     color: var(--ox-accent);
+
+    // X-IDENTITY-2026-09-22.md §3.3/§6: the active tab's own 4px accent bar,
+    // notch only (no lean — the bar is 56 tall, under the 158 law, and §3.2's
+    // named exception list does not reach the tab bar). A pseudo rather than
+    // new markup: this batch's footer/tabbar scope is _b1-layout.scss rules
+    // only.
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline: 0;
+      block-size: 4px;
+      background: var(--ox-accent);
+      @include ox-x-notch(4px, 14px);
+    }
   }
 
   &.is-active .ox-tab__label {

@@ -2840,7 +2840,6 @@ label.ox-fbt__row {
 }
 
 .ox-buy__now {
-  @include ox-focus(2px);
   @include ox-primary-face;
   display: inline-flex;
   align-items: center;
@@ -2857,6 +2856,16 @@ label.ox-fbt__row {
   white-space: nowrap;
   cursor: pointer;
   @include ox-angled(52px);
+
+  // clip-path clips the element's own outline, so ox-focus's outline never
+  // painted here (X-IDENTITY-2026-09-22.md §3.4/§7.1 `focus-clipped`, the
+  // same live finding `_primitives.scss`'s `.ox-btn--s40/s44/s48` fix
+  // already names). An inset box-shadow paints inside the clipped box
+  // instead, so it survives the cut.
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ox-focus);
+  }
 }
 
 .ox-buy__now-icon {

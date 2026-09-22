@@ -189,7 +189,7 @@ confirmed clear.
 
 | Key | ar | en |
 |---|---|---|
-| `ox.home.band_eyebrow` | قبل أن تشتري | Before you buy |
+| `ox.home.band_eyebrow` |  الاستشارة  | Before you buy |
 | `ox.home.band_subline` | نشرح المنتج وطريقة استخدامه والجرعة المطبوعة على الملصق. لا نكتب أنظمة غذائية ولا نفسر تحاليل. | We explain the product, how to use it, and the dose printed on the label. We do not write diet plans and we do not interpret lab results. |
 | `ox.home.band_card_cta` | اعرف التفاصيل | See the details |
 | `ox.home.brands_title` | تسوق حسب العلامة | Shop by brand |

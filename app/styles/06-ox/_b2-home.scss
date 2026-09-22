@@ -490,14 +490,20 @@
   .ox-hero__scrim {
     inset: 0;
     inline-size: 100%;
-    // The cut runs along the floor of the band, leaning the same way as every
-    // other wedge in the theme.
-    clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+    // X-IDENTITY-2026-09-22.md §2.4: a corner cut (lean 96, run 64.8 — the
+    // 320 row, used for the whole sub-640 bucket: the run is px-derived via
+    // ox-run(), so the edge stays exactly 34deg from vertical at every width
+    // in it, unlike the retired `100% 88%` construction, which was never
+    // angle-derived — a diagonal spanning the panel's full (fluid) width
+    // over 12% of a 300px panel is nowhere near 34deg). Same corner as the
+    // desktop pane (§2.5): the inline-end edge is cut, vertical for most of
+    // the panel, leaning only the foot.
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 96px), calc(100% - #{ox-run(96px)}) 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__photo,
   [dir='ltr'] .ox-hero__scrim {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 88%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(96px)} 100%, 0 calc(100% - 96px));
   }
 
   .ox-hero__inner {

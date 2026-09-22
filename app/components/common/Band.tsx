@@ -31,7 +31,9 @@ export interface BandProps {
 
 /**
  * The dark full-width section break the whole site shares: a photograph under
- * two flat overlays, the wedge at the brand's 22 degrees, a one or two line
+ * two flat overlays, the wedge at the brand's 34 degrees (X-IDENTITY-2026-09-22.md
+ * §2.1, was 22 — `.ox-bband__wedge`'s `skewX(var(--ox-skew))` re-derives
+ * automatically), a one or two line
  * statement, an optional badge row and the lockup.
  *
  * It emits exactly the `.ox-bband` markup the product page's `BrandBand`

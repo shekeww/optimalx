@@ -40,8 +40,9 @@ $ox-angle-tan: 0.6745;
   }
 }
 
-// The angled call to action: a parallelogram on the same 22 degrees as every
-// other angled edge in the identity, leaning top-inline-end to
+// The angled call to action: a parallelogram on the same 34 degrees (was 22
+// — X-IDENTITY-2026-09-22.md §2.1) as every other angled edge in the
+// identity, leaning top-inline-end to
 // bottom-inline-start so it matches the wedge and the hero split.
 //
 // clip-path rather than transform: skewX. A skew would slant the label with
@@ -863,6 +864,18 @@ $ox-angle-tan: 0.6745;
   font-weight: var(--ox-w-title);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
+  // X-IDENTITY-2026-09-22.md §3.3: "Price tag / saving badge" and "Badge
+  // (الأكثر طلبا, جديد)" both read notch only, t4/j14.0, no lean — this is
+  // the one class both share. A notch is axis-aligned, so it is legal at any
+  // size (§3.2) and costs nothing in RTL. Inlined rather than
+  // `@include ox-x-notch(4px, 14px)`: `_x-motif.scss` is imported *after*
+  // this file (`_index.scss`'s load order is load-bearing — `_x-motif.scss`
+  // itself calls this file's `ox-run()`), so the mixin is not yet defined at
+  // this point in the merged Sass source.
+  clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
+  [dir='ltr'] & {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%, 14px 4px, 0 4px);
+  }
   // Never orange, never a shadow (orange is for pressable things).
   &--popular { background: var(--ox-graphite); color: var(--ox-paper); }
   &--new { background: var(--ox-card); border-color: var(--ox-line-2); color: var(--ox-fg); }
