@@ -13,7 +13,8 @@ import { ART_CATEGORY_SLUGS, HOME_TYPE_SLUGS } from '../../app/content/categorie
  *   2. the icon renders above the image slot in source order (the owner:
  *      "the icons to be above the images");
  *   3. the image slot is a background, never an `<img>` that can 404;
- *   4. the count only prints on a live, positive `products_count`;
+ *   4. no tile ever prints a products count (coordinator addendum, owner
+ *      review 2026-09-23: the foot keeps the angled arrow only);
  *   5. a merchant selection overrides the default eight.
  */
 
@@ -153,23 +154,20 @@ describe('OxCategories, the default eight', () => {
     }
   });
 
-  it('prints the count only on a live, positive products_count', async () => {
+  it('never prints a count, even on a live, positive products_count (coordinator addendum, owner review 2026-09-23)', async () => {
     liveCategories.push(
       { id: 1, name: 'بروتين', url: `/${HOME_TYPE_SLUGS[0]}/c1`, products_count: 14, image: null },
       { id: 2, name: 'كرياتين', url: `/${HOME_TYPE_SLUGS[1]}/c2`, products_count: 0, image: null }
     );
     renderWithProviders(<OxCategories data={data()} />);
-    await tiles();
-    await waitFor(() =>
-      expect(
-        screen.getAllByTestId('ox-category-tile')[0].querySelector('.ox-tile__count')?.textContent
-      ).toContain('14')
-    );
-    const row = screen.getAllByTestId('ox-category-tile');
-    expect(row[1].querySelector('.ox-tile__count')).toBeNull();
-    // The tiles the store has not resolved at all carry no count either.
-    for (const tile of row.slice(2)) {
+    const row = await tiles();
+    // The live query has settled (both categories resolved to a real url)
+    // and still no tile ever renders a count: the foot carries the angled
+    // arrow only.
+    await waitFor(() => expect(row[0].getAttribute('href')).toBe(`/${HOME_TYPE_SLUGS[0]}/c1`));
+    for (const tile of row) {
       expect(tile.querySelector('.ox-tile__count')).toBeNull();
+      expect(tile.querySelector('.ox-tile__arrow')).not.toBeNull();
     }
   });
 

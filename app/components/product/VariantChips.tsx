@@ -73,21 +73,29 @@ function trimmed(value: unknown): string | null {
  * own trimmed name, Arabic exact and English case-insensitive; a name that
  * does not match — a flavour like "شوكولاتة" or a size like "1 كجم" — is not
  * a colour, and never becomes one by guessing.
+ *
+ * Exported (owner review, 2026-09-23, item 3): one table, and
+ * `VariantChips.test.tsx` walks every Arabic key in it so a name this build
+ * ships can never silently stop resolving.
  */
 // Data, not copy: a value's own name, matched against a merchant's option
 // value, never shown as UI text on its own (`ox-allow: arabic-literal` per
 // line, the same exemption `app/components/blocks/contentFallback.ts`'s
 // parser token tables use).
-const NAMED_COLORS: Record<string, string> = {
+export const NAMED_COLORS: Record<string, string> = {
   'أسود': '#111111', // ox-allow: arabic-literal
+  'اسود': '#111111', // ox-allow: arabic-literal (common variant, hamza dropped)
   black: '#111111',
   'أبيض': '#FFFFFF', // ox-allow: arabic-literal
+  'ابيض': '#FFFFFF', // ox-allow: arabic-literal (common variant, hamza dropped)
   white: '#FFFFFF',
   'أخضر': '#16A34A', // ox-allow: arabic-literal
   green: '#16A34A',
   'أزرق': '#2563EB', // ox-allow: arabic-literal
+  'ازرق': '#2563EB', // ox-allow: arabic-literal (common variant, hamza dropped)
   blue: '#2563EB',
   'أحمر': '#DC2626', // ox-allow: arabic-literal
+  'احمر': '#DC2626', // ox-allow: arabic-literal (common variant, hamza dropped)
   red: '#DC2626',
   'أصفر': '#FACC15', // ox-allow: arabic-literal
   yellow: '#FACC15',
@@ -111,7 +119,7 @@ const NAMED_COLORS: Record<string, string> = {
 };
 
 /** A known colour name's own swatch colour, or null when the name is not one. */
-function namedColor(name: string): string | null {
+export function namedColor(name: string): string | null {
   const value = name.trim();
   if (value.length === 0) return null;
   return NAMED_COLORS[value] ?? NAMED_COLORS[value.toLowerCase()] ?? null;

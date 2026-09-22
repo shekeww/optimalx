@@ -152,18 +152,21 @@ interface CardProps {
 /**
  * The type card (owner restyle 2026-09-22, same treatment as the home grid's
  * `CategoryTile`): the icon above the image slot, a tinted ground
- * (`HOME_TILE_TONES`, shared with `OxCategories`), and the count only on a
- * live, positive `products_count`. The image slot is a `background-image`,
- * never an `<img>`: a merchant's `Category.image` is an external URL that
- * can 404, and a failed background paint just leaves the tint showing.
+ * (`HOME_TILE_TONES`, shared with `OxCategories`). The products count is
+ * dropped from the card entirely (coordinator addendum, owner review
+ * 2026-09-23 — the same removal `CategoryTile`'s own docblock records). The
+ * image slot is a `background-image`, never an `<img>`: a merchant's
+ * `Category.image` is an external URL that can 404, and a failed background
+ * paint just leaves the tint showing.
  *
  * ART VARIANT (`ART_BY_SLUG`, S2h 2026-09-23): the same six slugs the home
  * grid's `CategoryTile` gives an art tile skip the tinted ground here too -
- * the `<img>` IS the whole card (`.ox-cat-card--art`, `_b4-listing.scss`),
- * icon/name/line/count/arrow stacking in a content column
- * (`.ox-cat-card__body`) overlaid on the card's PHYSICAL LEFT in both
- * languages. The meta-description paragraph below stays outside the card
- * either way, unchanged - it is never painted over the photograph.
+ * the `<img>` IS the whole card (`.ox-cat-card--art`, `_b4-listing.scss`,
+ * a plain rectangle, no clip-path — same addendum), icon/name/line/arrow
+ * stacking in a content column (`.ox-cat-card__body`) overlaid on the card's
+ * PHYSICAL LEFT in both languages. The meta-description paragraph below
+ * stays outside the card either way, unchanged - it is never painted over
+ * the photograph.
  */
 function TypeCard({ link, t }: CardProps) {
   const description = descriptionOf(link, t);
@@ -201,11 +204,6 @@ function TypeCard({ link, t }: CardProps) {
                 <span className="ox-cat-card__line">{t(LINE_BY_SLUG[link.slug])}</span>
               ) : null}
               <span className="ox-cat-card__foot">
-                {link.count && link.count > 0 ? (
-                  <span className="ox-cat-card__count">
-                    {t('ox.home.need_count').replace('{{count}}', String(link.count))}
-                  </span>
-                ) : null}
                 <i
                   className="sicon-keyboard_arrow_right ox-cat-card__arrow ox-mirror ox-iconbtn--angled"
                   aria-hidden="true"
@@ -218,11 +216,6 @@ function TypeCard({ link, t }: CardProps) {
             <Icon name={link.icon} size={32} className="ox-cat-card__icon" />
             <span className="ox-cat-card__media" aria-hidden="true" style={{ backgroundImage }} />
             <span className="ox-cat-card__name">{link.label}</span>
-            {link.count && link.count > 0 ? (
-              <span className="ox-cat-card__count">
-                {t('ox.home.need_count').replace('{{count}}', String(link.count))}
-              </span>
-            ) : null}
           </>
         )}
       </Link>

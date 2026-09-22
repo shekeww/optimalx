@@ -4,7 +4,12 @@ import { fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import type { ProductOption } from '@salla.sa/twilight-theme-engine/types';
 
-const { VariantChips } = await import('../../app/components/product/VariantChips');
+const { VariantChips, NAMED_COLORS, namedColor } = await import(
+  '../../app/components/product/VariantChips'
+);
+
+/** Every Arabic key the table holds — a run/script check, not a fixed list. */
+const ARABIC_COLOR_NAMES = Object.keys(NAMED_COLORS).filter((key) => /[؀-ۿ]/.test(key));
 
 function makeOption(overrides: Partial<ProductOption> = {}): ProductOption {
   return {
@@ -163,5 +168,48 @@ describe('VariantChips', () => {
     const inputs = container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
     fireEvent.click(inputs[1]);
     expect(onChange).toHaveBeenCalledWith(12);
+  });
+
+  describe('NAMED_COLORS (owner review, 2026-09-23, item 3)', () => {
+    it('holds every canonical Arabic colour name the catalogue uses', () => {
+      const required = [
+        'أزرق',
+        'أخضر',
+        'أبيض',
+        'أسود',
+        'أحمر',
+        'وردي',
+        'رمادي',
+        'بنفسجي',
+        'برتقالي',
+        'أصفر',
+        'بني',
+        'ذهبي',
+        'فضي',
+      ];
+      required.forEach((name) => expect(NAMED_COLORS[name]).toBeDefined());
+    });
+
+    it('resolves every Arabic name in the table to a real CSS colour', () => {
+      expect(ARABIC_COLOR_NAMES.length).toBeGreaterThan(0);
+      const hexOrKeyword = /^(#[0-9A-Fa-f]{6}|transparent)$/;
+      ARABIC_COLOR_NAMES.forEach((name) => {
+        expect(namedColor(name)).toBe(NAMED_COLORS[name]);
+        expect(NAMED_COLORS[name]).toMatch(hexOrKeyword);
+      });
+    });
+
+    it('resolves the hamza-free common variants to the same colour as the canonical spelling', () => {
+      expect(namedColor('اسود')).toBe(namedColor('أسود'));
+      expect(namedColor('ابيض')).toBe(namedColor('أبيض'));
+      expect(namedColor('احمر')).toBe(namedColor('أحمر'));
+      expect(namedColor('ازرق')).toBe(namedColor('أزرق'));
+    });
+
+    it('returns null for a name that is not a colour, never a guess', () => {
+      expect(namedColor('شوكولاتة')).toBeNull();
+      expect(namedColor('1 كجم')).toBeNull();
+      expect(namedColor('')).toBeNull();
+    });
   });
 });

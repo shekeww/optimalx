@@ -532,13 +532,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-grid-products {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--ox-6);
-    // A listing cell is 306 wide where the product page's carousel card is
-    // 211, so the card's default plate cap leaves the photograph filling about
-    // a third of the cell with dead space either side. The card reads the cap
-    // from this property, so raising it here scales the image with the cell
-    // without redefining anything the card owns. Below 1024 the cells are
-    // narrow enough that the default is already correct.
-    --ox-card-plate-max: 184px;
+    // No `--ox-card-plate-max` here any more (owner review, 2026-09-23, item
+    // 3): the plate is a plain 1:1 `aspect-ratio` now, so it already scales
+    // with the cell — a 306-wide cell at this grid gives a 274-wide, 274-tall
+    // square (card content width, 306 minus the card's own 16px padding a
+    // side), not the 274×184 rectangle the old flat cap held it to.
   }
   .ox-grid-products--with-rail {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -567,13 +565,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 .ox-card-skeleton__plate {
+  // A plain 1:1 square, matching the loaded card's own plate (owner review,
+  // 2026-09-23, item 3: neither carries a `max-block-size` cap any more), so
+  // the swap from loading to loaded still shifts nothing.
   aspect-ratio: 1 / 1;
-  // The card reads its plate cap from this property and the grid raises it to
-  // 184 from 1024 up (line 498). The skeleton renders inside that same grid,
-  // so it has to read the property too: hardcoding 132 made every placeholder
-  // 52px shorter than the card that replaced it, which is the shift the
-  // skeleton exists to prevent.
-  max-block-size: var(--ox-card-plate-max, 132px);
   border-radius: var(--ox-r-2);
   margin-block-end: var(--ox-1);
 }
@@ -1292,23 +1287,25 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // `aria-label` unconditionally, so the accessible name is the same word
 // either way.
 // ---------------------------------------------------------------------------
+// A GRID, not a flex row plus a sibling (owner review, 2026-09-23, item 2):
+// buy-now is a grid item of this same container now (OxProductCard.tsx),
+// which is what lets it regroup with the add button on a row of its own
+// below 768 without becoming a different element's child. At 768 and up the
+// two rows read exactly as the flex version did: qty and add share the
+// first, buy-now fills the second.
 .ox-card-product__action {
   position: relative;
   z-index: 2;
-  display: flex;
-  // NOWRAP, unconditionally now. The stepper and the add button share one
-  // line at every card width instead of stacking below a container-query
-  // threshold, which is what keeps a row of cards the same height without
-  // the row itself growing a second line on the cards that carry a stepper.
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'qty add' 'buy buy';
+  column-gap: var(--ox-2);
+  row-gap: var(--ox-2);
   align-items: stretch;
-  gap: var(--ox-2);
-  // 44 × 0.9 = 39.6, floored up to the 40px touch-target minimum the owner
-  // asked to keep rather than let the row round below it.
-  min-block-size: 40px;
 }
 
 .ox-card-product__qty {
+  grid-area: qty;
   display: inline-flex;
   // LTR on purpose. The DOM order is decrease, value, increase, which under
   // the document's RTL laid the control out as "+ 1 -" with the plus on the
@@ -1367,6 +1364,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 .ox-card-product__add-slot {
+  grid-area: add;
   display: flex;
   // TEN PER CENT NARROWER than the space it is given, on the owner's ask. The
   // slot still takes the rest of the row so the stepper's position does not
@@ -1607,13 +1605,16 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-card-product__buy {
   position: relative;
   z-index: 2;
+  // Buy-now's own grid item, full width, below the stepper/add row (owner
+  // review, 2026-09-23, item 2) — see `.ox-card-product__action` above.
+  grid-area: buy;
   // THE GLOBAL PRIMARY FACE, the same mixin and the same arguments (none:
   // `--ox-accent` resting, `--ox-accent-dark` hover) the hero's "shop by your
   // goal" and the PDP's buy-now both use. One definition; the three can no
   // longer drift.
   @include ox-primary-face;
-  // 19px is the floor for white on `--ox-accent` at 700, not a preference.
-  font-size: 19px;
+  // Label size: the mixin above now sets `--ox-btn-primary-size` (owner
+  // review, 2026-09-23, item 2) — no separate literal here to drift from it.
   // Cairo's Arabic descenders need about 1.6, not the flat 1.2 a one-line
   // button label defaults to elsewhere in this file (S2f item 4's own fix,
   // `--ox-lh-lead`): the block below is a fixed height with room to spare
@@ -1639,26 +1640,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // THE PHONE CELL, RE-VERIFIED AT EVERY REQUIRED BREAKPOINT (S2f): the buy
 // button is a full-width bar of its own row, margin-inline 8px each side, so
 // its own box is the card's content width minus 16px. At the 2-up grid's
-// worst case, 320 (104px of content), the box is 88px; the icon is hidden at
-// this width (below) so padding-inline is cut from `--ox-3` (12px) to
-// `--ox-2` (8px) a side to give the 19px label the most room this box can
-// spare — 16px total padding, 72px left for the word. Text-width at 19px
-// bold Cairo could not be measured in this environment (no headless
-// renderer here); this is the most room the box's own arithmetic can give
-// it, and it is flagged in the S2f progress note for a live check.
-//
-// The bolt is decoration where the cart glyph on the outline button is a
-// signifier, so it is the one that goes at this width, not the type: the
-// label is what holds the CTA's meaning and it never drops.
+// worst case, 320 (104px of content), the box is 88px, so padding-inline is
+// cut from `--ox-3` (12px) to `--ox-2` (8px) a side to give the label the
+// most room this box can spare — 16px total padding, 72px left for the word.
+// Text-width at this label size could not be measured in this environment
+// (no headless renderer here); this is the most room the box's own
+// arithmetic can give it, and it is flagged in the S2f progress note for a
+// live check. TEXT ONLY now (owner review, 2026-09-23): the button carries
+// no bolt at any width, so there is nothing left to hide here.
 @media (max-width: 639px) {
   .ox-card-product__buy,
   .ox-card-product__buy--native .s-button-element,
   .ox-card-product__buy--native.s-button-element {
     padding-inline: var(--ox-2);
-  }
-
-  .ox-card-product__buy-icon {
-    display: none;
   }
 }
 
@@ -1669,6 +1663,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // component's light DOM never sees. Every value is the primitive's own.
 .ox-card-product__buy--native {
   display: block;
+  grid-area: buy;
   // Same 8px-each-side inset as the Link variant, and the same reason: the
   // flush end of the angled fill would otherwise sit exactly on the card's
   // padding edge with nothing between it and the 16px corner radius.
@@ -1698,8 +1693,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-family: inherit;
   // This block restates the whole contract rather than inheriting it, so it
   // has to be kept in step with the Link variant by hand: the two would
-  // otherwise differ the day quick buy is switched on.
-  font-size: 19px;
+  // otherwise differ the day quick buy is switched on. The token this host
+  // cannot inherit from the mixin (it is a Salla web component's own light
+  // DOM, never a descendant of an `ox-primary-face` element) gets the same
+  // fallback value directly, so it reads one owner-set ratio either way.
+  font-size: var(--ox-btn-primary-size, calc(19px * 0.9));
   font-weight: var(--ox-w-title);
   // Cairo's Arabic descenders need about 1.6 (S2f item 4's own fix).
   line-height: var(--ox-lh-lead);
@@ -1722,10 +1720,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   outline-offset: 2px;
 }
 
-.ox-card-product__buy-icon {
-  flex: none;
-}
-
 // ---------------------------------------------------------------------------
 // 13. Reduced motion (DIRECTION 7.1, 9.6)
 // ---------------------------------------------------------------------------
@@ -1738,6 +1732,69 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-brand-tile:hover .ox-brand-tile__plate {
     transform: none;
   }
+}
+
+// ---------------------------------------------------------------------------
+// The action row below 768 (owner review, 2026-09-23, item 2): the stepper
+// takes its own row, compact, at the reading start, and the next row holds
+// the add button as an icon-only control at 40% of the row, beside buy-now
+// for the remaining width. At 768 and up nothing here applies — the
+// container-query tiers further down keep doing their own, narrower job
+// (a card square enough to need it even on a wide viewport, e.g. the
+// related-products rail), scoped below to the same 768 floor so the two
+// systems never compete for the same card.
+// ---------------------------------------------------------------------------
+@media (max-width: 767px) {
+  .ox-card-product__action {
+    grid-template-columns: 40% 1fr;
+    grid-template-areas: 'qty qty' 'add buy';
+  }
+
+  // Compact, at the reading start: `justify-self` overrides the grid's own
+  // stretch, so the stepper keeps the fixed width the base rule already
+  // gives it instead of filling the row it now has to itself.
+  .ox-card-product__qty {
+    justify-self: start;
+  }
+
+  // At least 44px tall (the owner's own floor), run to match: 40px's own
+  // 16px run (`ox-angled(40px)`, the base rule) would otherwise cut a 44px
+  // box at the wrong angle.
+  .ox-card-product__add,
+  .ox-card-product__add .s-button-element,
+  .ox-card-product__add.s-button-element,
+  .ox-card-product__add:not(:has(.s-button-element)) {
+    min-block-size: 44px;
+    padding-inline: 0;
+    @include ox-angled(44px);
+  }
+
+  // ICON-ONLY: the glyph already paints as a mask on `.s-button-text::before`
+  // (and the un-upgraded state's own `::after`), the same technique the
+  // narrower container-query tier below already uses; this hides only the
+  // word. `font-size: 0` leaves the text node in the accessibility tree
+  // regardless of its painted size, so the button's accessible name —
+  // `AddButton` (OxProductCard.tsx) sets `aria-label` unconditionally — never
+  // depends on it, and no separate `sr-only` span is needed.
+  .ox-card-product__add .s-button-text,
+  .ox-card-product__add-label {
+    font-size: 0;
+  }
+
+  .ox-card-product__add .s-button-text {
+    gap: 0;
+  }
+
+  .ox-card-product__add .s-button-text::before,
+  .ox-card-product__add:not(:has(.s-button-element))::after {
+    inline-size: 20px;
+    block-size: 20px;
+  }
+
+  // Buy-now keeps its own 8px inset on both sides (the base rule, above):
+  // one edge still sits near the card's own rounded corner exactly as
+  // before, and the other now reads as the gap between it and the add
+  // button rather than as a second corner clearance — safe either way.
 }
 
 // ---------------------------------------------------------------------------
@@ -1775,57 +1832,67 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // checked at one rounded-up number. A second, narrower tier below fixes it;
 // this tier's own 140px budget is correct from 414 up (240 down to 140px of
 // content, verified against 414's 151px with 11px to spare).
-@container oxcard (max-width: 240px) {
-  .ox-card-product__qty {
-    flex: 0 0 88px;
-    inline-size: 88px;
-  }
+//
+// SCOPED TO 768 AND UP (owner review, 2026-09-23, item 2): below that the
+// stepper no longer shares this row at all — its own `@media (max-width:
+// 767px)` block above moves it to a row of its own — so this tier's job (a
+// one-row squeeze for a narrow CONTAINER) is now only ever needed on a wide
+// viewport with a narrow card, e.g. the related-products rail at 1024+.
+@media (min-width: 768px) {
+  @container oxcard (max-width: 240px) {
+    .ox-card-product__qty {
+      flex: 0 0 88px;
+      inline-size: 88px;
+    }
 
-  .ox-card-product__qty-btn {
-    inline-size: 28px;
-  }
+    .ox-card-product__qty-btn {
+      inline-size: 28px;
+    }
 
-  // The slot itself is untouched (still `flex: 1 1 0`, taking the rest of
-  // the row); only its child stops growing to fill that space, so the button
-  // sits at its own fixed size instead of stretching into empty slot width.
-  .ox-card-product__add-slot > * {
-    flex: none;
-    inline-size: 44px;
-  }
+    // The slot itself is untouched (still `flex: 1 1 0`, taking the rest of
+    // the row); only its child stops growing to fill that space, so the
+    // button sits at its own fixed size instead of stretching into empty
+    // slot width.
+    .ox-card-product__add-slot > * {
+      flex: none;
+      inline-size: 44px;
+    }
 
-  .ox-card-product__add,
-  .ox-card-product__add .s-button-element,
-  .ox-card-product__add.s-button-element,
-  .ox-card-product__add:not(:has(.s-button-element)) {
-    inline-size: 44px;
-    min-inline-size: 44px;
-    padding-inline: 0;
-  }
+    .ox-card-product__add,
+    .ox-card-product__add .s-button-element,
+    .ox-card-product__add.s-button-element,
+    .ox-card-product__add:not(:has(.s-button-element)) {
+      inline-size: 44px;
+      min-inline-size: 44px;
+      padding-inline: 0;
+    }
 
-  // Collapses the rendered WORD to nothing while leaving the icon alone: the
-  // icon's own box is set in absolute px below, which does not scale with
-  // font-size, so this hides only the text. The upgraded state's label is a
-  // bare text node inside `.s-button-text` once Salla's SDK rebuilds it — no
-  // element of ours survives that rebuild to hang an `ox-sr-only` class on —
-  // so a zero font-size is the one rule that reaches it from here; the
-  // un-upgraded state's real `.ox-card-product__add-label` span picks up the
-  // same rule for the same reason, so both states hide identically. The gap
-  // that used to sit between the icon and the word goes to 0 too, or the icon
-  // sits off-centre against the (now zero-width but still gapped) text node.
-  .ox-card-product__add .s-button-text,
-  .ox-card-product__add:not(:has(.s-button-element)) {
-    gap: 0;
-  }
+    // Collapses the rendered WORD to nothing while leaving the icon alone:
+    // the icon's own box is set in absolute px below, which does not scale
+    // with font-size, so this hides only the text. The upgraded state's
+    // label is a bare text node inside `.s-button-text` once Salla's SDK
+    // rebuilds it — no element of ours survives that rebuild to hang an
+    // `ox-sr-only` class on — so a zero font-size is the one rule that
+    // reaches it from here; the un-upgraded state's real
+    // `.ox-card-product__add-label` span picks up the same rule for the
+    // same reason, so both states hide identically. The gap that used to
+    // sit between the icon and the word goes to 0 too, or the icon sits
+    // off-centre against the (now zero-width but still gapped) text node.
+    .ox-card-product__add .s-button-text,
+    .ox-card-product__add:not(:has(.s-button-element)) {
+      gap: 0;
+    }
 
-  .ox-card-product__add .s-button-text,
-  .ox-card-product__add-label {
-    font-size: 0;
-  }
+    .ox-card-product__add .s-button-text,
+    .ox-card-product__add-label {
+      font-size: 0;
+    }
 
-  .ox-card-product__add .s-button-text::before,
-  .ox-card-product__add:not(:has(.s-button-element))::after {
-    inline-size: 20px;
-    block-size: 20px;
+    .ox-card-product__add .s-button-text::before,
+    .ox-card-product__add:not(:has(.s-button-element))::after {
+      inline-size: 20px;
+      block-size: 20px;
+    }
   }
 }
 
@@ -1842,30 +1909,36 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // gap 4 + button 40 = 100px, 4px spare. At 360 (124px) and 390 (139px) the
 // same 100px leaves 24px and 39px spare respectively — never tight enough to
 // need a third tier.
-@container oxcard (max-width: 139px) {
-  .ox-card-product__action {
-    gap: var(--ox-1);
-  }
+//
+// Also scoped to 768 and up, for the same reason as the tier above: a 2-up
+// PHONE grid never reaches this container width on the phone itself any
+// more (its stepper left this row below 768), only a rail card can.
+@media (min-width: 768px) {
+  @container oxcard (max-width: 139px) {
+    .ox-card-product__action {
+      gap: var(--ox-1);
+    }
 
-  .ox-card-product__qty {
-    flex: 0 0 56px;
-    inline-size: 56px;
-  }
+    .ox-card-product__qty {
+      flex: 0 0 56px;
+      inline-size: 56px;
+    }
 
-  .ox-card-product__qty-btn {
-    inline-size: 18px;
-  }
+    .ox-card-product__qty-btn {
+      inline-size: 18px;
+    }
 
-  .ox-card-product__add-slot > * {
-    inline-size: 40px;
-  }
+    .ox-card-product__add-slot > * {
+      inline-size: 40px;
+    }
 
-  .ox-card-product__add,
-  .ox-card-product__add .s-button-element,
-  .ox-card-product__add.s-button-element,
-  .ox-card-product__add:not(:has(.s-button-element)) {
-    inline-size: 40px;
-    min-inline-size: 40px;
+    .ox-card-product__add,
+    .ox-card-product__add .s-button-element,
+    .ox-card-product__add.s-button-element,
+    .ox-card-product__add:not(:has(.s-button-element)) {
+      inline-size: 40px;
+      min-inline-size: 40px;
+    }
   }
 }
 
@@ -2091,8 +2164,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
     color: var(--ox-ink-on-dark);
   }
 
-  .ox-cat-card__desc,
-  .ox-cat-card__count {
+  .ox-cat-card__desc {
     color: var(--ox-ink-2-on-dark);
   }
 }
@@ -2139,11 +2211,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-size: var(--ox-t-title);
   font-weight: var(--ox-w-title);
   line-height: var(--ox-lh-head);
-}
-
-.ox-cat-card__count {
-  font-size: var(--ox-t-small);
-  color: var(--ox-fg-3);
 }
 
 .ox-cat-card__desc {
@@ -2201,23 +2268,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
 //    card alike, art or tinted, and `__children` above absorbs any leftover
 //    row height) and its 1px `--ox-line-3` frame (the tinted card's own
 //    border/background, untouched below - only `padding` goes to 0 so the
-//    artwork runs edge to edge, and `border-radius` too, since the artwork's
-//    own clip-path draws square/notched corners flush against it - a rounded
-//    frame around a square-cornered artwork would show the artwork's corner
-//    past the curve); `.ox-cat-card--art .ox-cat-card__link`, below, gets
-//    `position: relative` so `__body` scopes to the artwork alone.
+//    artwork runs edge to edge, and `border-radius` too, so a square-
+//    cornered artwork (coordinator addendum, owner review 2026-09-23: no
+//    clip-path on the artwork at any tier - see `.ox-cat-card__art` below)
+//    sits flush inside a square-cornered frame, not a rounded one showing
+//    the artwork's own corner past the curve); `.ox-cat-card--art
+//    .ox-cat-card__link`, below, gets `position: relative` so `__body`
+//    scopes to the artwork alone.
 // ---------------------------------------------------------------------------
 .ox-cat-card--art {
   padding: 0;
   border-radius: 0;
   color: var(--ox-fg); // resets `--black`'s light ink for collagen-beauty -
                         // see "the collagen-beauty conflict" note, below.
-  // Promoted to the card so `.ox-cat-card__art` can share them (never a
-  // second, duplicated pair of magic numbers) - the same mechanism
-  // `_b2-home.scss`'s `.ox-tile` promotes its own notch custom properties to
-  // `.ox-tile__art` (S2h, 2026-09-23).
-  --ox-cat-notch-t: 4px;
-  --ox-cat-notch-j: 12px;
 }
 
 // Scopes `.ox-cat-card__body`'s `position: absolute` (below) to the artwork
@@ -2230,11 +2293,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // floor - the same reasoning as `.ox-tile__art` (`_b2-home.scss` section 4b),
 // which this mirrors; this grid's own 2/3/5-column rhythm (below) does not
 // match the home grid's 2/4, so only the one shared floor is carried here
-// rather than a second, page-specific measured checkpoint. Clipped to the
-// card's own notch below 1024 (X-IDENTITY §3.2's 158px small-angle floor) or
-// the mark's corner cut from 1024 (§3.3's 4-up lean/run, below) -
-// `border-radius` dropped in favour of it, since a `polygon()` clip-path
-// already overrides any rounding.
+// rather than a second, page-specific measured checkpoint. Coordinator
+// addendum, owner review 2026-09-23: no `clip-path` at any tier — a plain
+// rectangle, the card's own square corners (`.ox-cat-card--art`'s own
+// `border-radius: 0`, above).
 .ox-cat-card__art {
   position: relative;
   z-index: 0;
@@ -2244,25 +2306,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-block-size: 260px;
   object-fit: cover;
   object-position: center;
-  clip-path: polygon(
-    var(--ox-cat-notch-j) 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 var(--ox-cat-notch-t),
-    var(--ox-cat-notch-j) var(--ox-cat-notch-t)
-  );
-}
-
-[dir='ltr'] .ox-cat-card__art {
-  clip-path: polygon(
-    0 0,
-    calc(100% - var(--ox-cat-notch-j)) 0,
-    calc(100% - var(--ox-cat-notch-j)) var(--ox-cat-notch-t),
-    100% var(--ox-cat-notch-t),
-    100% 100%,
-    0 100%
-  );
 }
 
 .ox-cat-card--art .ox-cat-card__icon {
@@ -2341,7 +2384,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // Reset, not an addition: `.ox-cat-card--black`'s own descendant rules above
-// match `.ox-cat-card__icon`/`__name`/`__desc`/`__count` at any nesting
+// match `.ox-cat-card__icon`/`__name`/`__desc` at any nesting
 // depth, which now includes `collagen-beauty` - the one slug that carries
 // BOTH `--black` (its shaker-era tone) and `--art` (its own photograph,
 // measured pastel, not the black card's graphite). `--art` is declared after
@@ -2353,10 +2396,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-cat-card--art .ox-cat-card__icon,
 .ox-cat-card--art .ox-cat-card__name {
   color: var(--ox-fg);
-}
-
-.ox-cat-card--art .ox-cat-card__count {
-  color: var(--ox-fg-3);
 }
 
 .ox-cat-card--art .ox-cat-card__desc {
@@ -2388,8 +2427,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
     color: var(--ox-ink-on-dark);
   }
 
-  .ox-cat-card__line,
-  .ox-cat-card__count {
+  .ox-cat-card__line {
     color: var(--ox-ink-2-on-dark);
   }
 }
@@ -2475,36 +2513,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  // The card grows past X-IDENTITY §3.2's 158px floor at this tier (measured
-  // 234px wide at 1440, art head ~351px tall), so the art head's one angled
-  // gesture upgrades from the notch to the mark's own corner cut - the exact
-  // lean/run `_b2-home.scss`'s `.ox-tile` uses at its own 4-up tier (§3.3:
-  // lean 64, run 43.2 - tan 34° = 0.6745, 64 × 0.6745 = 43.168, rounded;
-  // never a literal degree).
-  .ox-cat-card--art {
-    --ox-cat-lean: 64px;
-    --ox-cat-run: 43.2px;
-  }
-
-  .ox-cat-card__art {
-    clip-path: polygon(
-      var(--ox-cat-run) 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 var(--ox-cat-lean)
-    );
-  }
-
-  [dir='ltr'] .ox-cat-card__art {
-    clip-path: polygon(
-      0 0,
-      calc(100% - var(--ox-cat-run)) 0,
-      100% var(--ox-cat-lean),
-      100% 100%,
-      0 100%
-    );
-  }
+  // The art head's one angled gesture used to upgrade from the notch to the
+  // mark's own corner cut at this tier; coordinator addendum, owner review
+  // 2026-09-23, removes it here too (see `.ox-cat-card__art`'s own comment
+  // above) — no clip-path, no `--ox-cat-lean`/`-run`, at this breakpoint or
+  // any other.
 }
 
 @media (prefers-reduced-motion: reduce) {

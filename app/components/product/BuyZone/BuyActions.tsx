@@ -1,7 +1,6 @@
 import { useCallback, useRef, type RefObject } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
-import { Icon } from '../../common/Icon';
 
 export interface BuyActionsProps {
   product: Product;
@@ -102,10 +101,9 @@ export function BuyActions({ product, anchorRef }: BuyActionsProps) {
   return (
     <div className="ox-buy__actions">
       <button type="button" className="ox-buy__now" onClick={buyNow}>
-        {/* The same bolt the product card's buy CTA carries, now the
-            sprite's ox-bolt (S2a, 2026-09-22): one symbol instead of two
-            hand-copied ones drifting apart. */}
-        <Icon name="bolt" size={18} className="ox-buy__now-icon" />
+        {/* TEXT ONLY, centred (owner review, 2026-09-23): the bolt this
+            button carried is gone from every "اشتر الآن" control, here and
+            on the card and the sticky bar. */}
         {t('ox.pdp.buy_now')}
       </button>
     </div>

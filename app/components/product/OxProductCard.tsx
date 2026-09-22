@@ -286,44 +286,47 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
     salla?.form?.onSubmit?.('cart.addItem', e.nativeEvent);
   }, []);
 
+  // ONE grid, not a row plus a sibling (owner review, 2026-09-23, item 2):
+  // below 768 the stepper takes its own row and the add button joins
+  // buy-now on the next one, which needs all three as grid items of one
+  // container — buy-now used to be a plain sibling after this div, which
+  // cannot regroup across a breakpoint on its own.
   const controls = (
-    <>
-      <div className="ox-card-product__action">
-        {showsStepper ? (
-          <div className="ox-card-product__qty" role="group" aria-label={t('ox.pdp.quantity')}>
-            <button
-              type="button"
-              className="ox-card-product__qty-btn"
-              aria-label={t('ox.pdp.quantity_decrease')}
-              onClick={decrease}
-              disabled={quantity <= 1}
-            >
-              <Icon name="minus" size={16} />
-            </button>
-            {/* `output` is a live region by default, so the new figure is
-                announced without an explicit aria-live on a card in a grid. */}
-            <output className="ox-card-product__qty-value">{quantity}</output>
-            <button
-              type="button"
-              className="ox-card-product__qty-btn"
-              aria-label={t('ox.pdp.quantity_increase')}
-              onClick={increase}
-              disabled={max !== null && quantity >= max}
-            >
-              <Icon name="plus" size={16} />
-            </button>
-          </div>
-        ) : null}
-        <div className="ox-card-product__add-slot">
-          <AddButton
-            product={product}
-            quantity={showsStepper ? quantity : null}
-            submit={Boolean(option)}
-          />
+    <div className="ox-card-product__action">
+      {showsStepper ? (
+        <div className="ox-card-product__qty" role="group" aria-label={t('ox.pdp.quantity')}>
+          <button
+            type="button"
+            className="ox-card-product__qty-btn"
+            aria-label={t('ox.pdp.quantity_decrease')}
+            onClick={decrease}
+            disabled={quantity <= 1}
+          >
+            <Icon name="minus" size={16} />
+          </button>
+          {/* `output` is a live region by default, so the new figure is
+              announced without an explicit aria-live on a card in a grid. */}
+          <output className="ox-card-product__qty-value">{quantity}</output>
+          <button
+            type="button"
+            className="ox-card-product__qty-btn"
+            aria-label={t('ox.pdp.quantity_increase')}
+            onClick={increase}
+            disabled={max !== null && quantity >= max}
+          >
+            <Icon name="plus" size={16} />
+          </button>
         </div>
+      ) : null}
+      <div className="ox-card-product__add-slot">
+        <AddButton
+          product={product}
+          quantity={showsStepper ? quantity : null}
+          submit={Boolean(option)}
+        />
       </div>
       {outOfStock ? null : <BuyNow product={product} />}
-    </>
+    </div>
   );
 
   // The row reserves its own height whether or not there is anything to
@@ -412,7 +415,8 @@ function BuyNow({ product }: { product: Product }) {
           className="ox-card-product__buy ox-card-product__buy--native"
           {...(product.is_require_shipping ? { requiredShipping: true } : {})}
         >
-          <Icon name="bolt" size={16} className="ox-card-product__buy-icon" />
+          {/* TEXT ONLY, centred (owner review, 2026-09-23): the bolt this
+              button carried is gone from every "اشتر الآن" control. */}
           {label}
         </SallaAddProductButtonCore>
       </WebComponentBoundary>
@@ -421,7 +425,6 @@ function BuyNow({ product }: { product: Product }) {
 
   return (
     <Link to={product.url} className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy">
-      <Icon name="bolt" size={16} className="ox-card-product__buy-icon" />
       {label}
     </Link>
   );

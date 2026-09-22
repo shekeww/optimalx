@@ -1,5 +1,4 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
-import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon, type OxIconName } from '../common/Icon';
 
 /**
@@ -26,7 +25,11 @@ export interface CategoryTileProps {
   /** Two-line, claims-clean: the product types the shelf stocks (`cardLineKey`). */
   line: string;
   to: string;
-  /** Only rendered when the live category carries a real, positive count. */
+  /**
+   * No longer rendered (coordinator addendum, owner review 2026-09-23: the
+   * foot keeps the angled arrow only). Kept on the prop/interface so the
+   * taxonomy plumbing that resolves it for other consumers is undisturbed.
+   */
   count?: number;
   /** `Category.image` when the API has one; the CSS fallback covers the rest. */
   image?: string;
@@ -47,7 +50,8 @@ export interface CategoryTileProps {
  * One type tile (owner restyle 2026-09-22, reverting the "shop by need"
  * merge): the icon ABOVE the image slot (the owner: "the icons to be above
  * the images"), every tile on a tinted pastel ground, the two-line subline
- * and the count gated on a live, positive `products_count`.
+ * and a foot that carries the angled arrow only (the products count was
+ * dropped from the tile entirely, coordinator addendum 2026-09-23).
  *
  * The image slot is a `background-image`, never an `<img>`: a merchant's
  * `Category.image` is an external URL that can 404, and a failed background
@@ -64,12 +68,12 @@ export interface CategoryTileProps {
  * (`.ox-tile__body`) overlaid on the card's PHYSICAL LEFT in both languages,
  * matching the reference composition the owner supplied for these six.
  *
- * The card's one angled gesture is the corner cut on `.ox-tile` itself
- * (`_b2-home.scss`), the same notch/lean technique the type tiles carried
- * under `OxNeeds` - no extra element here for it. The footer arrow shares
- * `_primitives.scss`'s `.ox-iconbtn--angled` (S2g) with `GoalCard`'s own CTA
- * arrow, on both the tinted and the art card, so every type/goal tile draws
- * the same arrow.
+ * The card carries no angled cut of its own (coordinator addendum, owner
+ * review 2026-09-23, removed the notch/corner-cut `.ox-tile::before` and
+ * `.ox-tile__art` used to share — plain rectangles now, at every tier). The
+ * footer arrow shares `_primitives.scss`'s `.ox-iconbtn--angled` (S2g) with
+ * `GoalCard`'s own CTA arrow, on both the tinted and the art card, so every
+ * type/goal tile draws the same arrow.
  */
 export function CategoryTile({
   slug,
@@ -78,21 +82,20 @@ export function CategoryTile({
   label,
   line,
   to,
-  count,
   image,
   art,
   index = 0,
   className,
 }: CategoryTileProps) {
-  const { t } = useTranslation();
   const backgroundImage = image ? `url("${image}")` : `var(--ox-need-image-${slug}, none)`;
   const hasArt = Boolean(art);
 
+  // Coordinator addendum, owner review 2026-09-23: the products count is
+  // dropped from the tile entirely (the foot keeps the angled arrow only).
+  // `count` stays a prop (the merchant/taxonomy plumbing still resolves it
+  // for other consumers) but is no longer read here.
   const foot = (
     <span className="ox-tile__foot">
-      {count && count > 0 ? (
-        <span className="ox-tile__count">{t('ox.home.need_count', { count })}</span>
-      ) : null}
       <i
         className="sicon-keyboard_arrow_right ox-tile__arrow ox-mirror ox-iconbtn--angled"
         aria-hidden="true"

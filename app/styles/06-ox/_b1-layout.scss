@@ -551,7 +551,15 @@ a.ox-util__trust-link {
   input[type='text'] {
     inline-size: 100%;
     block-size: 40px;
-    padding-inline: 20px 52px;
+    // The icon side (below: inset-inline-start 25px) needs the offset plus
+    // its own 16px (Salla's fixed `.s-search-icon svg`) plus one gap
+    // (--ox-2) clear before the placeholder can start — 25 + 16 + 8 = 49px.
+    // The old 20px/52px pair had the icon's own side backwards: Salla's
+    // `.s-search-icon-wrap` sits at the reading start in Arabic (its own
+    // `:where([dir=rtl])` default), so the 20px start padding this rule used
+    // to carry left "بحث" starting under the glyph instead of beside it
+    // (owner review, 2026-09-23, item 4) — the far side never held anything.
+    padding-inline: calc(25px + 16px + var(--ox-2)) 20px;
     background: var(--ox-search);
     border: 0;
     border-radius: var(--ox-r-pill);
@@ -572,9 +580,14 @@ a.ox-util__trust-link {
     }
   }
 
+  // At the reading start, matching Salla's own default side for this glyph
+  // (`:where([dir=rtl]) { right: 1rem }` in the component's own stylesheet) —
+  // `inset-inline-end` here previously fought that default's physical `right`
+  // rather than replacing it, which is what let the glyph and "بحث" land on
+  // the same edge (owner review, 2026-09-23, item 4).
   .s-search-icon-wrap,
   .s-search-icon {
-    inset-inline-end: 25px;
+    inset-inline-start: 25px;
     color: var(--ox-ink-3-on-dark);
     font-size: 18px;
   }

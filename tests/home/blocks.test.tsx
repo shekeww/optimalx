@@ -163,7 +163,7 @@ describe('OxBanner', () => {
 // Restored 2026-09-22 (owner reverts the "shop by need" merge): the fallback
 // contract this file's own docblock is about - the tiles it falls back to
 // while the store is still being filled in. The full behavioural contract
-// (tints, the icon-above-image order, the count gate) lives in its own
+// (tints, the icon-above-image order, the no-count foot) lives in its own
 // `tests/home/OxCategories.test.tsx`.
 describe('OxCategories', () => {
   it('falls back to eight type tiles, each linking to a search until the category exists', async () => {

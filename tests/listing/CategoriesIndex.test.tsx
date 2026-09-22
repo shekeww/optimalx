@@ -156,7 +156,7 @@ describe('CategoriesIndex', () => {
     const body = creatine.querySelector('.ox-cat-card__body') as HTMLElement;
     const desc = creatine.querySelector('.ox-cat-card__desc') as HTMLElement;
 
-    // `.ox-cat-card__body` (and its foot, the count + arrow) must sit inside
+    // `.ox-cat-card__body` (and its foot, the arrow) must sit inside
     // the SAME element the artwork does, `.ox-cat-card__link` - the
     // positioning scope the S2i fix relies on so the foot lands at the
     // bottom of the artwork, not past the description below it.
@@ -205,8 +205,10 @@ describe('CategoriesIndex', () => {
     // The other nine roots still fall back.
     expect(container.querySelectorAll('[data-testid="ox-type-card"][data-resolved="false"]')).toHaveLength(9);
     expect(TAXONOMY).toHaveLength(25);
-    // The count only prints on this live, positive products_count.
-    expect(protein.querySelector('.ox-cat-card__count')?.textContent).toContain('14');
+    // No count ever prints, even on this live, positive products_count
+    // (coordinator addendum, owner review 2026-09-23: the foot keeps the
+    // angled arrow only).
+    expect(protein.querySelector('.ox-cat-card__count')).toBeNull();
   });
 
   it('tints every type card, off the same HOME_TILE_TONES map the home grid uses', () => {
@@ -222,8 +224,13 @@ describe('CategoriesIndex', () => {
     expect(protein?.getAttribute('data-tone')).toBe(HOME_TILE_TONES.protein);
   });
 
-  it('prints no count while the category has not resolved', () => {
+  it('never prints a count, resolved or not (coordinator addendum, owner review 2026-09-23)', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
     expect(container.querySelectorAll('[data-testid="ox-type-card"] .ox-cat-card__count')).toHaveLength(0);
+    const cards = container.querySelectorAll('[data-testid="ox-type-card"]');
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of Array.from(cards)) {
+      expect(card.querySelector('.ox-cat-card__count')).toBeNull();
+    }
   });
 });

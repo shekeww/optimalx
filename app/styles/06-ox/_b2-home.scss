@@ -1107,11 +1107,12 @@ body {
 // the images") - the inverse of the row `.ox-need` used to draw before this
 // restyle. `min-block-size`, never a fixed one, so the card can grow for a
 // longer name or a two-line subline without clipping.
-// `.ox-tile` ITSELF stays unclipped: the notch below lives on `::before`
-// instead of on this element directly (check-identity's `focus-clipped`
-// rule - a `:focus-visible` outline drawn on a clipped box is cut off by its
-// own clip-path). Background, border and the one angled cut all move to the
-// pseudo; the real content stacks above it at `z-index: 1`.
+// COORDINATOR ADDENDUM, owner review 2026-09-23: the notch this card's
+// `::before` (and the art tile's `.ox-tile__art`, below) used to carry is
+// REMOVED — no `clip-path` on either at any tier, a plain rectangle with the
+// card's own square corners. `--ox-tile-notch-t/-j` and, at the 1280 tier,
+// `--ox-tile-lean/-run` are removed with it: both were declared only to feed
+// the clip-path this owns.
 .ox-tile {
   position: relative;
   isolation: isolate;
@@ -1124,17 +1125,6 @@ body {
   color: var(--ox-fg);
   text-decoration: none;
   --ox-tile-arrow: var(--ox-accent-dark);
-  // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
-  // diagonal may exist only inside a sprite symbol, and the card sits right
-  // at that floor on the phone. The identity is carried by an axis-aligned
-  // bite out of the top inline-end corner instead - legal at any size
-  // (§3.2, `small-angle` gate). One cut, never two: the card's one angled
-  // gesture. On `.ox-tile` itself, not only inside `::before` (moved here
-  // S2h, 2026-09-23): `.ox-tile__art`, the art tile's full-bleed photograph
-  // below, shares this exact clip-path and needs both custom properties in
-  // scope to do it without a second, duplicated pair of magic numbers.
-  --ox-tile-notch-t: 4px;
-  --ox-tile-notch-j: 12px;
   @include ox-focus(2px);
 
   &::before {
@@ -1151,32 +1141,6 @@ body {
   &:hover::before {
     border-color: var(--ox-fg-3);
   }
-}
-
-// Shared with `.ox-tile__art` (never duplicated): the art tile's photograph
-// is cut to the exact same notch as every other card's `::before`.
-.ox-tile::before,
-.ox-tile__art {
-  clip-path: polygon(
-    var(--ox-tile-notch-j) 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 var(--ox-tile-notch-t),
-    var(--ox-tile-notch-j) var(--ox-tile-notch-t)
-  );
-}
-
-[dir='ltr'] .ox-tile::before,
-[dir='ltr'] .ox-tile__art {
-  clip-path: polygon(
-    0 0,
-    calc(100% - var(--ox-tile-notch-j)) 0,
-    calc(100% - var(--ox-tile-notch-j)) var(--ox-tile-notch-t),
-    100% var(--ox-tile-notch-t),
-    100% 100%,
-    0 100%
-  );
 }
 
 .ox-tile__icon {
@@ -1236,11 +1200,6 @@ body {
   padding-block-start: var(--ox-1);
 }
 
-.ox-tile__count {
-  font-size: var(--ox-t-small);
-  color: var(--ox-fg-3);
-}
-
 // The one true accent element every card carries (identity rule 1):
 // `--ox-tile-arrow` is `--ox-accent-dark` on every pastel tint (measured
 // 4.20 to 4.39:1 against it, the 3:1 graphical floor) and the card's one
@@ -1280,8 +1239,7 @@ body {
     color: var(--ox-ink-on-dark);
   }
 
-  .ox-tile__line,
-  .ox-tile__count {
+  .ox-tile__line {
     color: var(--ox-ink-2-on-dark);
   }
 }
@@ -1381,7 +1339,7 @@ body {
 }
 
 // Reset, not an addition: `.ox-tile--black`'s own descendant rules above
-// match `.ox-tile__icon`/`__name`/`__line`/`__count` at any nesting depth,
+// match `.ox-tile__icon`/`__name`/`__line` at any nesting depth,
 // which now includes `collagen-beauty` - the one slug that carries BOTH
 // `--black` (its shaker-era tone) and `--art` (its own photograph, measured
 // pastel, not the black card's graphite). `--art` is declared after
@@ -1401,10 +1359,6 @@ body {
 
 .ox-tile--art .ox-tile__line {
   color: var(--ox-fg-2);
-}
-
-.ox-tile--art .ox-tile__count {
-  color: var(--ox-fg-3);
 }
 
 .ox-tile--art {
@@ -1434,8 +1388,7 @@ body {
     color: var(--ox-ink-on-dark);
   }
 
-  .ox-tile__line,
-  .ox-tile__count {
+  .ox-tile__line {
     color: var(--ox-ink-2-on-dark);
   }
 }
@@ -1446,10 +1399,11 @@ body {
   }
 }
 
-// From 1280: four across, and the card grows past X-IDENTITY §3.2's 158px
-// floor, so its one angled gesture upgrades from the notch to the mark's
-// own corner cut (§3.3: lean 64, run 43.2 - tan 34° = 0.6745, 64 × 0.6745 =
-// 43.168, rounded; never a literal degree).
+// From 1280: four across. The card's one angled gesture used to upgrade from
+// the notch to the mark's own corner cut here; coordinator addendum, owner
+// review 2026-09-23, removes it at this tier too (see `.ox-tile`'s own
+// comment above) — no clip-path, no `--ox-tile-lean`/`-run`, at this
+// breakpoint or any other.
 @media (min-width: 1280px) {
   .ox-cats__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1459,8 +1413,6 @@ body {
   .ox-tile {
     min-block-size: 220px;
     padding: var(--ox-4);
-    --ox-tile-lean: 64px;
-    --ox-tile-run: 43.2px;
   }
 
   // The art card keeps its edge-to-edge photograph at this tier too: the
@@ -1469,30 +1421,6 @@ body {
   // artwork by 16px inside a visible frame (seen at 1440, 2026-09-23).
   .ox-tile--art {
     padding: 0;
-  }
-
-  // Shared with `.ox-tile__art` (never duplicated), same reason as the base
-  // rule above.
-  .ox-tile::before,
-  .ox-tile__art {
-    clip-path: polygon(
-      var(--ox-tile-run) 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 var(--ox-tile-lean)
-    );
-  }
-
-  [dir='ltr'] .ox-tile::before,
-  [dir='ltr'] .ox-tile__art {
-    clip-path: polygon(
-      0 0,
-      calc(100% - var(--ox-tile-run)) 0,
-      100% var(--ox-tile-lean),
-      100% 100%,
-      0 100%
-    );
   }
 
   .ox-tile__image {
@@ -1566,13 +1494,15 @@ body {
   }
 }
 
-// Owner review 2026-09-23, item 2: "cut in an angle from the top left and
-// bottom left" — the mark's own arm-foot cut, taken at both the physical top-
-// left AND bottom-left corners, never mirrored under [dir='ltr'] (the
-// reference composition, like the art tiles, S2h). lean 40 / run 27.0 at the
-// 390 probe: 15.6% of the 173px card (2-col grid, container 358, gap 12 —
-// X-IDENTITY-2026-09-22.md §2.4's own figure for this exact card width), well
-// inside the 24% budget. Scales at the ≥640 and ≥1280 breakpoints below.
+// Owner review 2026-09-23, item 2, revised by the coordinator's addendum
+// (same day): the two corner cuts move to the DIAGONAL corners — physical
+// top-right and bottom-left, never mirrored under [dir='ltr'] (still
+// physical, the reference composition, like the art tiles, S2h) — and the
+// card's corners are sharp everywhere else (`border-radius: 0`, no rounding
+// on this card at all). lean 40 / run 27.0 at the 390 probe: 15.6% of the
+// 173px card (2-col grid, container 358, gap 12 — X-IDENTITY-2026-09-22.md
+// §2.4's own figure for this exact card width), well inside the 24% budget.
+// Scales at the ≥640 and ≥1280 breakpoints below, same tiers as before.
 //
 // The focus ring moves from `ox-focus`'s outline (clipped along with
 // everything else once `clip-path` lands — §3.4/§7.1 `focus-clipped`) to an
@@ -1586,11 +1516,11 @@ body {
   block-size: 100%;
   min-block-size: 200px;
   overflow: hidden;
-  border-radius: var(--ox-r-3);
+  border-radius: 0;
   background: var(--ox-graphite-2);
   color: var(--ox-ink-on-dark);
   transition: transform var(--dur-base) var(--ease-out);
-  clip-path: polygon(0 40px, #{ox-run(40px)} 0, 100% 0, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+  clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
 
   &:focus-visible {
     outline: none;
@@ -1644,13 +1574,15 @@ body {
 
 // Owner review 2026-09-23, item 2: "the orange straps on cards should always
 // be angled" — a 34deg parallelogram again (it carried `skewX(var(--ox-skew))`
-// before the 2026-09-23 `small-angle` fix dropped it), sized to sit inside the
-// top-left corner cut above so the two read as one gesture. `block-size`
-// ordered first with the pragma on its own line — `.ox-plan__arrow`'s own
-// comment in this file traces the checker's multi-line match issue this
-// avoids. Control-scale (92px tall), the same named 3.2 exception
-// `.ox-iconbtn--angled` and the sized CTA buttons already carry, not a band-
-// or panel-scale cut.
+// before the 2026-09-23 `small-angle` fix dropped it). Coordinator addendum,
+// same day: the corner cuts moved to the diagonal (top-right/bottom-left)
+// corners above, so the strap at the physical top-left no longer sits inside
+// a cut — it is its own independent 34deg band, not derived from one.
+// `block-size` ordered first with the pragma on its own line —
+// `.ox-plan__arrow`'s own comment in this file traces the checker's
+// multi-line match issue this avoids. Control-scale (92px tall), the same
+// named 3.2 exception `.ox-iconbtn--angled` and the sized CTA buttons already
+// carry, not a band- or panel-scale cut.
 .ox-goal__slash {
   block-size: 92px; // ox-allow: small-angle
   position: absolute;
@@ -1733,7 +1665,7 @@ body {
     min-block-size: 228px;
     // lean 56 / run 37.8 at the 768 probe: 3-col grid, container 720 (gutter
     // 24), gap 16 -> card (720 - 32) / 3 = 229.3px; 37.8 / 229.3 = 16.5%.
-    clip-path: polygon(0 56px, #{ox-run(56px)} 0, 100% 0, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
+    clip-path: polygon(0 0, calc(100% - #{ox-run(56px)}) 0, 100% 56px, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
   }
 
   .ox-goal__body {
@@ -1760,7 +1692,7 @@ body {
     // the other two tiers, because the 6-up track narrows the card at this
     // width more than a "1440" tier elsewhere in the theme assumes. Flagged
     // in docs/build/progress/S3b.md rather than silently sized down.
-    clip-path: polygon(0 64px, #{ox-run(64px)} 0, 100% 0, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
+    clip-path: polygon(0 0, calc(100% - #{ox-run(64px)}) 0, 100% 64px, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
   }
 
   .ox-goal__body {
@@ -3001,7 +2933,7 @@ body {
   // at this breakpoint): track row ~= 768 - 24 start padding = 744px, card
   // 46% of that = 342.2px; 37.8 / 342.2 = 11.0%.
   .ox-pcard {
-    clip-path: polygon(0 56px, #{ox-run(56px)} 0, 100% 0, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
+    clip-path: polygon(0 0, calc(100% - #{ox-run(56px)}) 0, 100% 56px, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
   }
 }
 
@@ -3015,19 +2947,22 @@ body {
   // lean 64 / run 43.2 at the 1440 probe: row ~= 1440 - 32 start padding =
   // 1408px, card 27% of that = 380.2px; 43.2 / 380.2 = 11.4%.
   .ox-pcard {
-    clip-path: polygon(0 64px, #{ox-run(64px)} 0, 100% 0, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
+    clip-path: polygon(0 0, calc(100% - #{ox-run(64px)}) 0, 100% 64px, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
   }
 }
 
-// Owner review 2026-09-23, item 3: the same treatment `GoalCard` carries (its
-// own comment above `.ox-goal`, item 2), adapted to this card's size and
-// content — two physical corner cuts (top-left and bottom-left, never
-// mirrored under [dir='ltr']) plus the angled strap, the rest of the card
-// (photo, scrim, body, title, line, cta) unchanged. Reuses the identical
-// lean/run tiers `GoalCard` picked (390/768/1440) so the two card families
-// read as one system; this card is wider at every one of those probes (see
-// the per-breakpoint comments below), so the same tiers sit further inside
-// the 24% budget here than they do on `GoalCard`.
+// Owner review 2026-09-23, item 3, revised by the coordinator's addendum
+// (same day): the same treatment `GoalCard` carries (its own comment above
+// `.ox-goal`, item 2), adapted to this card's size and content — two
+// physical corner cuts on the DIAGONAL corners (top-right and bottom-left,
+// never mirrored under [dir='ltr']), sharp everywhere else
+// (`border-radius: 0`), plus the angled strap at the top-left (independent
+// of the cuts now that top-left is sharp) — the rest of the card (photo,
+// scrim, body, title, line, cta) unchanged. Reuses the identical lean/run
+// tiers `GoalCard` picked (390/768/1440) so the two card families read as
+// one system; this card is wider at every one of those probes (see the
+// per-breakpoint comments below), so the same tiers sit further inside the
+// 24% budget here than they do on `GoalCard`.
 //
 // The focus ring moves to an inset box-shadow for the same `focus-clipped`
 // reason `.ox-goal` documents above; `.ox-pcard` had no explicit focus style
@@ -3043,13 +2978,13 @@ body {
   overflow: hidden;
   block-size: 300px;
   padding: var(--ox-6);
-  border-radius: var(--ox-r-4);
+  border-radius: 0;
   background: var(--ox-graphite-2);
   color: var(--ox-paper);
   text-decoration: none;
   // lean 40 / run 27.0 at the 390 probe: track 74% of a ~374px row (358
   // container + 16 start padding) = 276.8px card; 27.0 / 276.8 = 9.8%.
-  clip-path: polygon(0 40px, #{ox-run(40px)} 0, 100% 0, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+  clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
 
   &:focus-visible {
     outline: none;
@@ -3066,10 +3001,10 @@ body {
   block-size: 100%;
 }
 
-// Same construction as `.ox-goal__slash` (item 2): a 34deg parallelogram
-// sitting inside the top-left cut above so the two read as one gesture.
-// `block-size` ordered first with the pragma on its own line, same reason
-// `.ox-goal__slash` and `.ox-plan__arrow` give.
+// Same construction as `.ox-goal__slash` (item 2): a 34deg parallelogram at
+// the physical top-left, independent of the (now diagonal) corner cuts
+// above. `block-size` ordered first with the pragma on its own line, same
+// reason `.ox-goal__slash` and `.ox-plan__arrow` give.
 .ox-pcard__slash {
   block-size: 92px; // ox-allow: small-angle
   position: absolute;

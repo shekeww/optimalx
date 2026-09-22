@@ -71,11 +71,23 @@ $ox-angle-tan: 0.6745;
 //
 // `$fill` therefore exists for reversed grounds, where the accent itself is
 // the thing that fails — not for buttons that would like a smaller label.
+//
+// THE LABEL SIZE IS ONE TOKEN (owner review, 2026-09-23, item 2): every
+// primary button — the hero CTA, the PDP and card buy-now, the sticky bar,
+// cart checkout, the sized `ox-angled()` primaries — reads its font-size from
+// `--ox-btn-primary-size` rather than repeating `19px` at each call site, so
+// the one owner-set ratio (0.9 of the 19px floor) reaches all of them from
+// here. Block-size, the parallelogram and the one-line rule are untouched:
+// none of them are driven by this token.
 @mixin ox-primary-face($fill: var(--ox-accent), $hover: var(--ox-accent-dark)) {
   background: #{$fill};
   border-color: #{$fill};
   color: var(--ox-on-accent);
   font-weight: var(--ox-w-title);
+  // 19px is still the documented floor for white on `--ox-accent` (large-text
+  // exemption); 0.9 of it is the owner's own instruction, not a new floor.
+  --ox-btn-primary-size: calc(19px * 0.9);
+  font-size: var(--ox-btn-primary-size);
 
   &:hover {
     background: #{$hover};
@@ -491,9 +503,10 @@ $ox-angle-tan: 0.6745;
   // 19/700: at the shipped 15/600 the white on accent measures under 4.5:1 for
   // the size and reads thin against the fill.
   &--primary {
+    // Label size comes from the mixin's own `--ox-btn-primary-size` token
+    // now (owner review, 2026-09-23, item 2); no separate literal here to
+    // drift from it.
     @include ox-primary-face;
-    // 19px is the floor for this fill, not a preference: see the mixin.
-    font-size: 19px;
   }
   // The clip removes the border on the cut edges, so the outline is painted:
   // the element itself is the edge colour and ::before is the fill, inset by

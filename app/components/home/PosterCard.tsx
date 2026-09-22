@@ -26,11 +26,13 @@ export interface PosterCardProps {
  * and the ground showing through, so a row of five unrelated shots still
  * reads as one set.
  *
- * The shape is the identity's, not a rounded rectangle: the corner at the
- * reading start of the floor is CUT on the same 22 degrees as every other
- * angled edge in the system, drawn as a clip-path so the cut is the card's
- * real silhouette and the photograph is cut with it. A rounded rectangle here
- * is exactly the "close enough" the owner ruled out.
+ * The shape is the identity's, not a rounded rectangle: the physical top-left
+ * and bottom-left corners are CUT on the same 34 degrees as every other
+ * angled edge in the system (X-IDENTITY-2026-09-22.md §2), drawn as a
+ * clip-path so the cut is the card's real silhouette and the photograph is
+ * cut with it, with an angled accent strap sitting inside the top cut (owner
+ * review 2026-09-23, item 3 — the same treatment `GoalCard` carries). A
+ * rounded rectangle here is exactly the "close enough" the owner ruled out.
  *
  * The whole card is one link and the action is a span, never a nested button.
  */
@@ -57,6 +59,7 @@ export function PosterCard({
     >
       <BandPhoto src={photo} className="ox-pcard__photo" width={photoWidth} height={photoHeight} />
       <span className="ox-pcard__scrim" aria-hidden="true" />
+      <span className="ox-pcard__slash" aria-hidden="true" />
       <span className="ox-pcard__body">
         <span className="ox-pcard__top">
           <Icon name={icon} size={24} className="ox-pcard__icon" />
