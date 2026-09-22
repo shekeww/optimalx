@@ -50,6 +50,16 @@ export interface CategoryContent {
   descriptionKey: string;
   /** The home needs-card subline (S2b, 2026-09-22): a claims-clean list of the product types the shelf stocks; only the eight home cards carry one. */
   cardLineKey?: string;
+  /**
+   * The owner's own curated packshot photograph (S2h, 2026-09-23): the
+   * card's WHOLE background on the home grid and the `/categories` index,
+   * `/categories/<file>.webp`, 1024x1536 (portrait 2:3). Only the six root
+   * slugs the owner has supplied art for carry one; every other category
+   * (including the two home tiles without one, `protein`/`daily-health`)
+   * keeps the tinted-ground + icon card until `public/categories/<slug>.webp`
+   * exists for it.
+   */
+  backgroundImage?: string;
   /** The 60 to 90 word paragraph above the grid. */
   introKey: string;
   /** Filter chip labels, in order. A chip is a label, not a live filter id. */
@@ -166,6 +176,7 @@ export const CATEGORIES: CategoryContent[] = [
   {
     ...base('creatine', 'creatine', null, 'creatine', 'green'),
     cardLineKey: `${KEY}.creatine.card_line`,
+    backgroundImage: '/categories/creatine.webp',
     chipKeys: chips('creatine', 3),
     relatedGuides: [
       'guides/how-to-take-creatine',
@@ -177,6 +188,7 @@ export const CATEGORIES: CategoryContent[] = [
   {
     ...base('pre-workout', 'pre_workout', null, 'pre-workout'),
     cardLineKey: `${KEY}.pre_workout.card_line`,
+    backgroundImage: '/categories/pre-workout.webp',
     chipKeys: chips('pre_workout', 4),
     relatedGuides: [
       'guides/what-is-pre-workout',
@@ -188,6 +200,7 @@ export const CATEGORIES: CategoryContent[] = [
   {
     ...base('amino-acids', 'amino_acids', null, 'amino-acids'),
     cardLineKey: `${KEY}.amino_acids.card_line`,
+    backgroundImage: '/categories/amino_acids.webp',
     chipKeys: chips('amino_acids', 5),
     relatedGuides: [
       'guides/creatine-vs-protein',
@@ -199,6 +212,7 @@ export const CATEGORIES: CategoryContent[] = [
   {
     ...base('omega-3', 'omega_3', null, 'omega-3'),
     cardLineKey: `${KEY}.omega_3.card_line`,
+    backgroundImage: '/categories/omega_3.webp',
     chipKeys: chips('omega_3', 3),
     relatedGuides: [
       'guides/supplements-for-beginners',
@@ -210,6 +224,7 @@ export const CATEGORIES: CategoryContent[] = [
   {
     ...base('vitamins-minerals', 'vitamins_minerals', null, 'vitamins-minerals', 'white'),
     cardLineKey: `${KEY}.vitamins_minerals.card_line`,
+    backgroundImage: '/categories/multivitamins.webp',
     chipKeys: chips('vitamins_minerals', 5),
     relatedGuides: [
       'guides/supplements-for-beginners',
@@ -221,6 +236,7 @@ export const CATEGORIES: CategoryContent[] = [
   {
     ...base('collagen-beauty', 'collagen_beauty', null, 'collagen-beauty', 'black'),
     cardLineKey: `${KEY}.collagen_beauty.card_line`,
+    backgroundImage: '/categories/collagen.webp',
     chipKeys: chips('collagen_beauty', 4),
     relatedGuides: [
       'guides/creatine-for-women',
@@ -328,6 +344,18 @@ export const HOME_TILE_TONES: Record<string, string> = {
   'daily-health': 'violet',
   'collagen-beauty': 'black',
 };
+
+/**
+ * The six root slugs whose home/type tile carries the owner's own curated
+ * packshot photograph (`backgroundImage`, S2h 2026-09-23) as the card's
+ * whole background, in place of the tinted ground + icon every other root
+ * still carries. Read by `CategoryTile.tsx`/`OxCategories.tsx` and
+ * `CategoriesIndex.tsx` off `backgroundImage` directly; exported here so a
+ * test never has to hardcode the same six slugs a second time.
+ */
+export const ART_CATEGORY_SLUGS: string[] = CATEGORIES.filter(
+  (category) => Boolean(category.backgroundImage)
+).map((category) => category.slug);
 
 export function categoryBySlug(slug: string | undefined): CategoryContent | undefined {
   return CATEGORIES.find((category) => category.slug === slug);

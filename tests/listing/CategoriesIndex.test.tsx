@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { MENU, TAXONOMY, childrenOf } from '../../app/content/taxonomy';
-import { HOME_TILE_TONES } from '../../app/content/categories';
+import { ART_CATEGORY_SLUGS, HOME_TILE_TONES } from '../../app/content/categories';
 
 /**
  * `/categories` (PLAN-ship Batch S1 step 6, Accept: "200 with 16 cards").
@@ -110,9 +110,39 @@ describe('CategoriesIndex', () => {
     for (const link of links) expect(link.getAttribute('href')).toMatch(/^\/search\?q=/);
     for (const card of container.querySelectorAll('[data-testid="ox-type-card"]')) {
       expect(card.getAttribute('data-resolved')).toBe('false');
-      expect(card.querySelector('img')).toBeNull();
       expect(card.querySelector('.ox-cat-card__icon')).not.toBeNull();
+      // Six of the ten type roots carry the owner's own curated art
+      // (`ART_CATEGORY_SLUGS`, S2h 2026-09-23) and render an `<img>` for it;
+      // the other four still fall back to the tinted background, no `<img>`.
+      const slug = card.getAttribute('data-category');
+      if (slug && ART_CATEGORY_SLUGS.includes(slug)) {
+        expect(card.querySelector('img')).not.toBeNull();
+      } else {
+        expect(card.querySelector('img')).toBeNull();
+      }
     }
+  });
+
+  it('renders the curated art tile for creatine, and no <img> for protein (no curated art yet)', () => {
+    const { container } = renderWithProviders(<CategoriesIndex />);
+    const creatine = container.querySelector('[data-testid="ox-type-card"][data-category="creatine"]') as HTMLElement;
+    const protein = container.querySelector('[data-testid="ox-type-card"][data-category="protein"]') as HTMLElement;
+    expect(ART_CATEGORY_SLUGS).toContain('creatine');
+    expect(ART_CATEGORY_SLUGS).not.toContain('protein');
+
+    const art = creatine.querySelector('.ox-cat-card__art') as HTMLImageElement;
+    expect(art).not.toBeNull();
+    expect(art.getAttribute('src')).toBe('/categories/creatine.webp');
+    expect(art.getAttribute('loading')).toBe('lazy');
+    expect(art.getAttribute('decoding')).toBe('async');
+    expect(art.getAttribute('width')).toBe('1024');
+    expect(art.getAttribute('height')).toBe('1536');
+    expect(art.getAttribute('alt')).toBe('');
+    expect(creatine.className).toMatch(/ox-cat-card--art/);
+
+    expect(protein.querySelector('.ox-cat-card__art')).toBeNull();
+    expect(protein.querySelector('.ox-cat-card__media')).not.toBeNull();
+    expect(protein.className).not.toMatch(/ox-cat-card--art/);
   });
 
   it('resolves a card to the live category, with its image, once one exists', async () => {

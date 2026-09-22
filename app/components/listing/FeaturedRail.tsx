@@ -113,7 +113,10 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                 </span>
                 <span className="ox-featured__cta">
                   {t('ox.listing.featured_cta')}
-                  <i className="sicon-keyboard_arrow_left ox-mirror" aria-hidden="true" />
+                  <i
+                    className="sicon-keyboard_arrow_left ox-mirror ox-iconbtn--angled"
+                    aria-hidden="true"
+                  />
                 </span>
               </Link>
             </li>

@@ -237,31 +237,39 @@
   // sits LOWER in this file than this block, so setting the scrim's inset here
   // was silently undone. The photograph's base rule is above this one, which
   // is the only reason it worked and the scrim did not.
-  // 60%, BACK WHERE IT WAS. This width is the boundary between the photograph
-  // and the graphite, so widening it to 68% shrank the black shape rather than
-  // moving the orange strap — the strap is `.ox-hero__edge`, a separate bar,
-  // and it did not move at all. Reverted: the black extends to the left again.
+  // 53%, DOWN FROM 60% (owner review 2026-09-23, item 2): the black panel's
+  // edge pushed 7% of the hero's own width (0.07 * 1440 = 100.8px) further
+  // toward the page's left, inside the 6-8% range asked for. The pane's own
+  // box shrinks by that amount (864px -> 763.2px at 1440) rather than the
+  // polygon being re-cut within the old 864px box: the lean stays 300px (the
+  // band's height is unchanged, so the vertical breakpoint stays 46.43%) and
+  // the run stays the same 202.4px absolute (run = lean * tan(34deg), and lean
+  // did not change) — only its expression AS A PERCENTAGE OF THE NARROWER BOX
+  // changes, 202.4 / 763.2 = 26.52% (was 202.4 / 864 = 23.43%), which is what
+  // keeps the cut at exactly 34deg after the box resizes (re-cutting the old
+  // 864px box's polygon instead would have left the top of the cut in place
+  // and only dragged the foot left, steepening the angle past 34).
   .ox-hero__photo {
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: 60%;
+    inline-size: 53%;
     // X-IDENTITY-2026-09-22.md §2.3/§2.5: at 34deg a full-height diagonal is
     // impossible on a hero-scale band (run would be 43.7% of this 864-wide
     // pane, over the 24% budget and eating the subject). The edge is now
     // vertical to 46.43% of the block-size, then a 34deg lean to the foot,
     // run 202.4 — the mark's own construction (section 1.3), not a
-    // compromise. Valid only at the pane's 864x560 aspect (§2.5); a
+    // compromise. Valid only at the pane's 763.2x560 aspect (§2.5); a
     // percentage pair's angle depends on the box, so this carries the pragma
     // §7.1's `polygon-slope` rule requires.
-    /* identity: 34deg, run 202.4 of 864 */
-    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 76.57% 100%, 0 100%);
+    /* identity: 34deg, run 202.4 of 763.2 */
+    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 73.48% 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__photo {
     inset-inline-end: auto;
     inset-inline-start: 0;
-    /* identity: 34deg, run 202.4 of 864 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 23.43% 100%, 0 46.43%);
+    /* identity: 34deg, run 202.4 of 763.2 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 26.52% 100%, 0 46.43%);
   }
 }
 
@@ -310,12 +318,23 @@
 // about 727, which is 51% of the band. At 42% the bar was sitting 120px inside
 // the photograph, drawing a bright line across the athlete instead of along the
 // edge it exists to mark.
+// 53%, UP FROM 51% (owner review 2026-09-23, item 2): flush with the pane's
+// own vertical edge, not a floating average any more. The pane's top-of-cut
+// (the vertical run, unchanged for the upper 46.43% of the band) sits exactly
+// at the pane's own inline-size, so once that shrank to 53% (above) the strap
+// is placed at that same 53% to sit directly on it. `inset-inline-end` is
+// measured from the reading END (the left edge in RTL), so a LARGER number
+// moves this bar toward the right — the 51 the file previously carried was
+// itself stale, computed off the pre-X-IDENTITY 22deg polygon and never
+// re-derived when the 34deg cut shipped.
 .ox-hero__edge {
   position: absolute;
   z-index: 2;
   inset-block: -12%;
-  inset-inline-end: 51%;
-  inline-size: 10px;
+  inset-inline-end: 53%;
+  // 20px, DOUBLED FROM 10 (owner review 2026-09-23, item 2: "double the
+  // strap's weight").
+  inline-size: 20px;
   background: var(--ox-accent);
   transform: skewX(var(--ox-skew));
   pointer-events: none;
@@ -323,7 +342,7 @@
 
 [dir='ltr'] .ox-hero__edge {
   inset-inline-end: auto;
-  inset-inline-start: 51%;
+  inset-inline-start: 53%;
 }
 
 .ox-hero__dots {
@@ -444,18 +463,18 @@
     // side, and laid its wash over the copy panel instead of the picture.
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: 60%;
+    inline-size: 53%;
     // Same fix as the photo above, same reason (X-IDENTITY §2.3/§2.5): the
     // scrim shares the photo's box exactly, so it shares its polygon exactly.
-    /* identity: 34deg, run 202.4 of 864 */
-    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 76.57% 100%, 0 100%);
+    /* identity: 34deg, run 202.4 of 763.2 */
+    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 73.48% 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__scrim {
     inset-inline-end: auto;
     inset-inline-start: 0;
-    /* identity: 34deg, run 202.4 of 864 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 23.43% 100%, 0 46.43%);
+    /* identity: 34deg, run 202.4 of 763.2 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 26.52% 100%, 0 46.43%);
   }
 }
 
@@ -1037,6 +1056,15 @@ body {
   list-style: none;
 }
 
+// The two tinted cards (protein, daily-health: no curated artwork yet) fill
+// the row the six art cards set at 2:3 instead of stopping at their own
+// content height beside a card half again as tall (seen 2026-09-23). The
+// list item is stretched by the grid already; the link inside it is what has
+// to take that height (its foot already carries `margin-block-start: auto`).
+.ox-cats__grid > * > .ox-tile:not(.ox-tile--art) {
+  block-size: 100%;
+}
+
 // ONE CARD SHAPE: a column, not a row, because the owner's reference draws
 // the glyph ABOVE the artwork rather than beside it ("the icons to be above
 // the images") - the inverse of the row `.ox-need` used to draw before this
@@ -1059,6 +1087,17 @@ body {
   color: var(--ox-fg);
   text-decoration: none;
   --ox-tile-arrow: var(--ox-accent-dark);
+  // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
+  // diagonal may exist only inside a sprite symbol, and the card sits right
+  // at that floor on the phone. The identity is carried by an axis-aligned
+  // bite out of the top inline-end corner instead - legal at any size
+  // (§3.2, `small-angle` gate). One cut, never two: the card's one angled
+  // gesture. On `.ox-tile` itself, not only inside `::before` (moved here
+  // S2h, 2026-09-23): `.ox-tile__art`, the art tile's full-bleed photograph
+  // below, shares this exact clip-path and needs both custom properties in
+  // scope to do it without a second, duplicated pair of magic numbers.
+  --ox-tile-notch-t: 4px;
+  --ox-tile-notch-j: 12px;
   @include ox-focus(2px);
 
   &::before {
@@ -1069,22 +1108,6 @@ body {
     background: var(--ox-fill);
     border: 1px solid var(--ox-line-3);
     transition: border-color var(--dur-base) var(--ease-out);
-    // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
-    // diagonal may exist only inside a sprite symbol, and the card sits
-    // right at that floor on the phone. The identity is carried by an
-    // axis-aligned bite out of the top inline-end corner instead - legal at
-    // any size (§3.2, `small-angle` gate). One cut, never two: the card's
-    // one angled gesture.
-    --ox-tile-notch-t: 4px;
-    --ox-tile-notch-j: 12px;
-    clip-path: polygon(
-      var(--ox-tile-notch-j) 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 var(--ox-tile-notch-t),
-      var(--ox-tile-notch-j) var(--ox-tile-notch-t)
-    );
   }
 
   // Border colour only (BUILD.md §3.4: no lift on hover, identity rule 1).
@@ -1093,7 +1116,22 @@ body {
   }
 }
 
-[dir='ltr'] .ox-tile::before {
+// Shared with `.ox-tile__art` (never duplicated): the art tile's photograph
+// is cut to the exact same notch as every other card's `::before`.
+.ox-tile::before,
+.ox-tile__art {
+  clip-path: polygon(
+    var(--ox-tile-notch-j) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 var(--ox-tile-notch-t),
+    var(--ox-tile-notch-j) var(--ox-tile-notch-t)
+  );
+}
+
+[dir='ltr'] .ox-tile::before,
+[dir='ltr'] .ox-tile__art {
   clip-path: polygon(
     0 0,
     calc(100% - var(--ox-tile-notch-j)) 0,
@@ -1211,6 +1249,150 @@ body {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 4b. The art tile (S2h, 2026-09-23): the owner's own curated packshot
+//    photograph as the card's WHOLE background, for the six root slugs
+//    `content/categories.ts` gives a `backgroundImage` for (`CategoryTile.tsx`'s
+//    `art` prop) - creatine, pre-workout, amino-acids, omega-3,
+//    vitamins-minerals, collagen-beauty. `protein` and `daily-health`, the
+//    other two home tiles, carry no curated art yet and keep the tinted-
+//    ground card above unchanged.
+// ---------------------------------------------------------------------------
+// `padding: 0`: the photograph runs edge to edge, clipped to the same notch
+// `.ox-tile__art` shares with `::before` above; `::before` itself stays
+// (border, hover, focus all still resolve through it) but its fill goes
+// transparent so the photograph is what shows.
+.ox-tile--art {
+  padding: 0;
+
+  &::before {
+    background: transparent;
+  }
+}
+
+// `aspect-ratio`, never a fixed `block-size` (the brief): the card's real
+// height tracks its own rendered inline size at the asset's native 2:3
+// (1024x1536), so it stays correct at every width the grid renders rather
+// than only at the two measured checkpoints below. `min-block-size` is the
+// floor under that - insurance so the subline still has room at the
+// narrowest supported width (320) rather than the true sizing mechanism.
+// Measured: 173x260 at the 2-up 390 checkpoint (container 358, `--ox-3` gap,
+// (358-12)/2 = 173, x1.5 = 259.5); 306x459 at the 4-up 1280+ checkpoint
+// (container capped at 1296, `--ox-6` gap, (1296-72)/4 = 306, x1.5 = 459).
+.ox-tile__art {
+  position: relative;
+  z-index: 0;
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 2 / 3;
+  min-block-size: 260px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ox-tile--art .ox-tile__icon {
+  inline-size: 36px;
+  block-size: 36px;
+}
+
+// The content column: pinned to the card's PHYSICAL LEFT in BOTH languages
+// (the reference's own composition, not a reading-direction mirror - the
+// packshot itself always sits in the artwork's lower/right half), so it is
+// written with `[dir]` selectors rather than a single logical inset that
+// would flip to the other side under LTR.
+.ox-tile__body {
+  position: absolute;
+  z-index: 1;
+  inset-block: var(--ox-3);
+  inline-size: 62%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
+  color: var(--ox-fg);
+
+  // A soft white radial scrim behind the text - insurance, not the primary
+  // contrast strategy: five of the six grounds measure 10.46:1-17.84:1
+  // against `--ox-fg` unaided (docs/build/progress/S2h.md), so this only
+  // widens an already-passing margin there. `vitamins-minerals` is the one
+  // exception and turns the scrim off below instead of relying on it.
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: calc(var(--ox-3) * -1);
+    background: radial-gradient(
+      ellipse at top left,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0) 70%
+    );
+  }
+}
+
+[dir='rtl'] .ox-tile__body {
+  inset-inline-end: var(--ox-3);
+  text-align: end;
+}
+
+[dir='ltr'] .ox-tile__body {
+  inset-inline-start: var(--ox-3);
+  text-align: start;
+}
+
+// Reset, not an addition: `.ox-tile--black`'s own descendant rules above
+// match `.ox-tile__icon`/`__name`/`__line`/`__count` at any nesting depth,
+// which now includes `collagen-beauty` - the one slug that carries BOTH
+// `--black` (its shaker-era tone) and `--art` (its own photograph, measured
+// pastel, not the black card's graphite). `--art` is declared after
+// `--black` above, so at equal specificity this wins for every art card;
+// `vitamins-minerals`'s own dark-ground override, below, is more specific
+// again and wins over this in turn for that one slug only.
+.ox-tile--art .ox-tile__icon,
+.ox-tile--art .ox-tile__name {
+  color: var(--ox-fg);
+}
+
+.ox-tile--art .ox-tile__line {
+  color: var(--ox-fg-2);
+}
+
+.ox-tile--art .ox-tile__count {
+  color: var(--ox-fg-3);
+}
+
+.ox-tile--art {
+  --ox-tile-arrow: var(--ox-accent-dark);
+}
+
+// `vitamins-minerals`'s own photograph (multivitamins.webp) measures near-
+// black (`#0F0F0F`) at the top-left, not the flat pastel every other ground
+// here measures (docs/build/progress/S2h.md): `--ox-fg` ink is 1.07:1 raw
+// against it and only 3.00:1 with the white scrim above, short of the 4.5:1
+// text floor. Light ink instead - the same swap `.ox-tile--black` already
+// makes two blocks up (17.46:1 measured here) - so the scrim is switched off
+// rather than stacked uselessly behind text it can no longer help.
+.ox-tile--art[data-category='vitamins-minerals'] {
+  --ox-tile-arrow: var(--ox-accent);
+
+  .ox-tile__body {
+    color: var(--ox-ink-on-dark);
+
+    &::before {
+      background: none;
+    }
+  }
+
+  .ox-tile__icon,
+  .ox-tile__name {
+    color: var(--ox-ink-on-dark);
+  }
+
+  .ox-tile__line,
+  .ox-tile__count {
+    color: var(--ox-ink-2-on-dark);
+  }
+}
+
 @media (min-width: 640px) {
   .ox-cats__grid {
     gap: var(--ox-4);
@@ -1230,21 +1412,33 @@ body {
   .ox-tile {
     min-block-size: 220px;
     padding: var(--ox-4);
-
-    &::before {
-      --ox-tile-lean: 64px;
-      --ox-tile-run: 43.2px;
-      clip-path: polygon(
-        var(--ox-tile-run) 0,
-        100% 0,
-        100% 100%,
-        0 100%,
-        0 var(--ox-tile-lean)
-      );
-    }
+    --ox-tile-lean: 64px;
+    --ox-tile-run: 43.2px;
   }
 
-  [dir='ltr'] .ox-tile::before {
+  // The art card keeps its edge-to-edge photograph at this tier too: the
+  // `padding: var(--ox-4)` just above would otherwise beat section 4b's
+  // `padding: 0` (same specificity, later media block) and inset the
+  // artwork by 16px inside a visible frame (seen at 1440, 2026-09-23).
+  .ox-tile--art {
+    padding: 0;
+  }
+
+  // Shared with `.ox-tile__art` (never duplicated), same reason as the base
+  // rule above.
+  .ox-tile::before,
+  .ox-tile__art {
+    clip-path: polygon(
+      var(--ox-tile-run) 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 var(--ox-tile-lean)
+    );
+  }
+
+  [dir='ltr'] .ox-tile::before,
+  [dir='ltr'] .ox-tile__art {
     clip-path: polygon(
       0 0,
       calc(100% - var(--ox-tile-run)) 0,
@@ -1256,6 +1450,23 @@ body {
 
   .ox-tile__image {
     block-size: 96px;
+  }
+
+  // 306x459 (measured above): the art tile's own floor at the 4-up tier.
+  .ox-tile__art {
+    min-block-size: 459px;
+  }
+
+  [dir='rtl'] .ox-tile__body {
+    inset-inline-end: var(--ox-4);
+  }
+
+  [dir='ltr'] .ox-tile__body {
+    inset-inline-start: var(--ox-4);
+  }
+
+  .ox-tile__body {
+    inset-block: var(--ox-4);
   }
 }
 
@@ -1273,7 +1484,7 @@ body {
 //    _b2-home.scss" and never redeclared its own copy.)
 // ---------------------------------------------------------------------------
 .ox-goals {
-  scroll-margin-block-start: calc(var(--ox-header-h, 96px) + var(--ox-4));
+  scroll-margin-block-start: var(--ox-4); // header is in flow (2026-09-23)
 }
 
 .ox-goals__grid {
@@ -1422,34 +1633,23 @@ body {
   color: var(--ox-ink-2-on-dark);
 }
 
+// The pill's own skewed border is retired (owner review 2026-09-23, item 4):
+// the card's one angled gesture now lives on the arrow alone
+// (`.ox-iconbtn--angled`, `_primitives.scss`, applied directly in
+// `GoalCard.tsx`), so the label sits beside it as plain text rather than
+// sharing a second angled box with it.
 .ox-goal__cta {
-  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--ox-1);
-  block-size: 26px;
+  gap: var(--ox-2);
   margin-block-start: var(--ox-2);
-  padding-inline: 14px;
   font-size: 11.5px;
   font-weight: var(--ox-w-ui);
   color: var(--ox-accent);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--ox-accent);
-    transform: skewX(var(--ox-skew));
-  }
 }
 
-.ox-goal__cta-label,
-.ox-goal__cta i {
-  position: relative;
-}
-
-.ox-goal:hover .ox-goal__cta::before {
-  background: rgba(var(--ox-accent-rgb), 0.16);
+.ox-goal:hover .ox-goal__cta .ox-iconbtn--angled {
+  background: rgba(var(--ox-accent-rgb), 0.22);
 }
 
 @media (min-width: 640px) {
@@ -1877,16 +2077,22 @@ body {
 }
 
 // The watermark (§4.6: a dark plan card takes the mark, never a corner cut).
-// Accent at 0.12 on `--ox-band-util`, the measured ceiling for that pairing
-// (§4.1); sized down from the section-level table for a card-scale device,
-// in the corner the scrim leaves open (past 72%, where no text sits).
+// `--ox-ink-on-dark` at 0.06, NOT `--ox-accent` at 0.12 (owner review
+// 2026-09-23, coordinator addendum; `check-identity.mjs`'s `watermark-
+// contrast` rule flagged both): §4.1's own judge fix (X-IDENTITY §9, item 18)
+// already dropped every `--ox-accent` row from the contrast table — BUILD 3.1
+// reserves accent for things people can click, and this document's preamble
+// does not amend that rule — in favour of `--ox-ink`/`--ox-ink-on-dark`, and
+// 0.06 is the ceiling every §4.1 row ships at, not 0.12. Sized down from the
+// section-level table for a card-scale device, in the corner the scrim
+// leaves open (past 72%, where no text sits).
 .ox-plan__watermark {
   position: absolute;
   z-index: 1;
   inset-block-end: -8%;
   inset-inline-end: -6%;
-  color: var(--ox-accent);
-  opacity: 0.12;
+  color: var(--ox-ink-on-dark);
+  opacity: 0.06;
   pointer-events: none;
 }
 
@@ -1939,9 +2145,29 @@ body {
   color: var(--ox-fg);
 }
 
+// The same small angled icon-button `.ox-iconbtn--angled` draws (owner
+// review 2026-09-23, item 4), reproduced here rather than the class itself:
+// `PlanCard.tsx` is another builder's file (S2 brief's do-not-touch list)
+// and cannot take a new class in markup, but `.ox-plan__arrow` already names
+// the icon, so the shape lands on the existing selector instead.
+// `ox-x-corner()` is available here (`_x-motif.scss` loads before this
+// file), unlike `_primitives.scss`'s own copy of this construction.
 .ox-plan__arrow {
+  // ox-allow: small-angle — ordered first (checker's multi-line match bug,
+  // `.ox-badge` in `_primitives.scss` traces it).
+  block-size: 24px; // ox-allow: small-angle
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  background: rgba(var(--ox-accent-rgb), 0.16);
   color: var(--ox-accent);
   font-size: 18px;
+  @include ox-x-corner(8px);
+}
+
+.ox-plan:hover .ox-plan__arrow {
+  background: rgba(var(--ox-accent-rgb), 0.26);
 }
 
 // The band's ONE filled CTA, under the row — not one per card.

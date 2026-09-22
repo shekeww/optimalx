@@ -808,6 +808,17 @@ $ox-angle-tan: 0.6745;
       background: var(--ox-ink);
       border-color: var(--ox-ink);
       color: var(--ox-paper);
+      // The step motif on the ACTIVE state only (owner review 2026-09-23,
+      // item 5; X-IDENTITY §3.3/§6, "filter and sort chips: notch t4/j14.0").
+      // Inlined rather than `@include ox-x-notch(4px, 14px)`: same reason
+      // `.ox-badge` above gives, `_x-motif.scss` loads after this file. No
+      // pragma needed: `block-size` lives on `&--filter` (above), a
+      // different selector from this one, so `small-angle`'s same-selector
+      // match never fires here.
+      clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
+      [dir='ltr'] & {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%, 14px 4px, 0 4px);
+      }
     }
     &:disabled,
     &[aria-disabled='true'] {
@@ -893,6 +904,47 @@ $ox-angle-tan: 0.6745;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--ox-1);
+}
+
+// Owner review 2026-09-23, item 4: the OptimalX angled button shape
+// (`ox-angled()`), scaled down as a small "a bit angled" icon-button for a
+// card's arrow affordance — the goal/type-tile arrow, the featured-rail
+// cover CTA, the plan-card CTA arrow. `ox-angled()` itself is unusable at
+// this size: §2.4's own "any control narrower than run / 0.24 loses the
+// parallelogram" rule puts the floor at 67.5px for a 44px-tall run, and this
+// is a 24px SQUARE. A single small corner cut (the mark's own arm-foot
+// construction, §3.3) reads as "a bit angled" at this scale instead of a full
+// parallelogram; inlined via `ox-run()` rather than `@include ox-x-corner()`
+// for the reason `.ox-badge` above already gives: `_x-motif.scss` loads
+// after this file, so its mixins are not yet defined here.
+//
+// This is the shared class other builders attach in markup — handed off to
+// CategoryTile.tsx/OxCategories.tsx's owner per docs/build/progress/S2g.md,
+// since this batch does not edit those two files. `.ox-goal__cta`'s and
+// `.ox-plan__arrow`'s own rules (`_b2-home.scss`) and `.ox-featured__cta`'s
+// (`_b4-listing.scss`) reuse the same construction directly, since those
+// files load after `_x-motif.scss` and can call `ox-x-corner()` proper.
+//
+// `ox-allow: small-angle`: a raw inlined `clip-path` is not the `ox-angled()`
+// mixin `check-identity.mjs` exempts by name (§3.2), and this is a 24px
+// control, so the pragma sits on the `block-size` line the checker's
+// `small-angle` rule resolves to, the same placement `.ox-badge` uses.
+.ox-iconbtn--angled {
+  // ox-allow: small-angle — ordered first (`.ox-badge` above already traces
+  // why: the checker's own multi-line match bug otherwise loses the pragma
+  // when block-size is not a block's first declaration).
+  block-size: 24px; // ox-allow: small-angle
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  flex: none;
+  background: rgba(var(--ox-accent-rgb), 0.12);
+  color: inherit;
+  clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
+  [dir='ltr'] & {
+    clip-path: polygon(0 0, calc(100% - #{ox-run(8px)}) 0, 100% 8px, 100% 100%, 0 100%);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1094,8 +1146,9 @@ $ox-angle-tan: 0.6745;
   border-block-start: 1px solid var(--ox-bd);
   &__row {
     border-block-end: 1px solid var(--ox-bd);
-    // A deep link (#faq-2) lands under the sticky header, not behind it.
-    scroll-margin-block-start: calc(var(--ox-header-h, 64px) + var(--ox-4));
+    // A deep link (#faq-2) lands a breath below the viewport top; the header
+    // is in flow (2026-09-23), so no header offset is needed.
+    scroll-margin-block-start: var(--ox-4);
   }
   // The row title is a heading so the section has an outline; the control
   // inside it carries the label, the state and aria-controls (DIRECTION 9.2).

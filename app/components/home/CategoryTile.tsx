@@ -30,6 +30,14 @@ export interface CategoryTileProps {
   count?: number;
   /** `Category.image` when the API has one; the CSS fallback covers the rest. */
   image?: string;
+  /**
+   * The owner's own curated packshot photograph (`CategoryContent.backgroundImage`,
+   * S2h, 2026-09-23), `/categories/<file>.webp`, 1024x1536, portrait 2:3.
+   * When present it replaces the whole card: the tint and the `image` slot
+   * both go unused. An `<img>`, never a CSS background - this is a design
+   * asset the theme ships, not a merchant URL that can 404.
+   */
+  art?: string;
   /** DOM index, consumed by the reveal stagger (`--stagger-step` times index). */
   index?: number;
   className?: string;
@@ -49,9 +57,19 @@ export interface CategoryTileProps {
  * `--ox-need-image-<slug>` (undefined until the owner fills it) and then to
  * `none`.
  *
+ * ART VARIANT (`art`, S2h 2026-09-23): the six root slugs the owner has
+ * supplied a curated packshot photograph for skip that tinted-ground card
+ * entirely - the `<img>` IS the whole card (`.ox-tile--art`, `_b2-home.scss`
+ * section 4b), and the icon/name/line/foot stack in a content column
+ * (`.ox-tile__body`) overlaid on the card's PHYSICAL LEFT in both languages,
+ * matching the reference composition the owner supplied for these six.
+ *
  * The card's one angled gesture is the corner cut on `.ox-tile` itself
  * (`_b2-home.scss`), the same notch/lean technique the type tiles carried
- * under `OxNeeds` - no extra element here for it.
+ * under `OxNeeds` - no extra element here for it. The footer arrow shares
+ * `_primitives.scss`'s `.ox-iconbtn--angled` (S2g) with `GoalCard`'s own CTA
+ * arrow, on both the tinted and the art card, so every type/goal tile draws
+ * the same arrow.
  */
 export function CategoryTile({
   slug,
@@ -62,31 +80,64 @@ export function CategoryTile({
   to,
   count,
   image,
+  art,
   index = 0,
   className,
 }: CategoryTileProps) {
   const { t } = useTranslation();
   const backgroundImage = image ? `url("${image}")` : `var(--ox-need-image-${slug}, none)`;
+  const hasArt = Boolean(art);
+
+  const foot = (
+    <span className="ox-tile__foot">
+      {count && count > 0 ? (
+        <span className="ox-tile__count">{t('ox.home.need_count', { count })}</span>
+      ) : null}
+      <i
+        className="sicon-keyboard_arrow_right ox-tile__arrow ox-mirror ox-iconbtn--angled"
+        aria-hidden="true"
+      />
+    </span>
+  );
 
   return (
     <Link
       to={to}
-      className={['ox-tile', `ox-tile--${tone}`, className].filter(Boolean).join(' ')}
+      className={['ox-tile', `ox-tile--${tone}`, hasArt ? 'ox-tile--art' : null, className]
+        .filter(Boolean)
+        .join(' ')}
       data-testid="ox-category-tile"
       data-tone={tone}
       data-category={slug}
       style={{ ['--i' as string]: String(index) }}
     >
-      <Icon name={icon} size={32} className="ox-tile__icon" />
-      <span className="ox-tile__image" aria-hidden="true" style={{ backgroundImage }} />
-      <span className="ox-tile__name">{label}</span>
-      <span className="ox-tile__line">{line}</span>
-      <span className="ox-tile__foot">
-        {count && count > 0 ? (
-          <span className="ox-tile__count">{t('ox.home.need_count', { count })}</span>
-        ) : null}
-        <i className="sicon-keyboard_arrow_right ox-tile__arrow ox-mirror" aria-hidden="true" />
-      </span>
+      {hasArt ? (
+        <>
+          <img
+            className="ox-tile__art"
+            src={art}
+            loading="lazy"
+            decoding="async"
+            width={1024}
+            height={1536}
+            alt=""
+          />
+          <span className="ox-tile__body">
+            <Icon name={icon} size={36} className="ox-tile__icon" />
+            <span className="ox-tile__name">{label}</span>
+            <span className="ox-tile__line">{line}</span>
+            {foot}
+          </span>
+        </>
+      ) : (
+        <>
+          <Icon name={icon} size={32} className="ox-tile__icon" />
+          <span className="ox-tile__image" aria-hidden="true" style={{ backgroundImage }} />
+          <span className="ox-tile__name">{label}</span>
+          <span className="ox-tile__line">{line}</span>
+          {foot}
+        </>
+      )}
     </Link>
   );
 }

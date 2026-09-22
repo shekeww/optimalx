@@ -29,15 +29,10 @@ body {
 
 .app-inner {
   background: var(--ox-bg);
-  // Reserves the fixed header's own height (`.ox-header` below) so `main`,
-  // the first in-flow child once the header is taken out of flow, never
-  // loads under it. `--ox-header-h` (tokens.css) carries a real per-breakpoint
-  // default, so this is correct on the very first, unhydrated paint; the
-  // client-only `ResizeObserver` in `useHeaderHeightVar` overwrites the same
-  // property inline on `<html>` the moment it can measure the real box (a
-  // route with no announcement bar, for instance), and an inline style beats
-  // this declaration with no flash back the other way.
-  padding-block-start: var(--ox-header-h);
+  // No reserved space: the header is in the document flow (see `.ox-header`
+  // below), so `main` starts under it naturally. `--ox-header-h` is still
+  // published by `useHeaderHeightVar` for a merchant who later re-enables a
+  // pinned header, but nothing here reads it any more (owner call 2026-09-23).
 }
 
 // ---------------------------------------------------------------------------
@@ -86,18 +81,16 @@ body {
   // mobile bar, so it is visible at every width; this file loads after that
   // one, so the same-specificity declaration wins.
   display: block;
-  // FIXED, unconditionally, at every width (owner call, 2026-09-22,
-  // superseding the same-day "not sticky unless the merchant switches it on"
-  // call this file used to read `header_is_sticky` for): the header never
-  // scrolls with the page, on desktop or mobile. Header.tsx still reads
-  // `header_is_sticky` and carries it as `data-header-sticky-setting`, so the
-  // merchant's own dashboard toggle keeps meaning something, but it no longer
-  // branches this rule — fixed is the only state `.ox-header` has now.
-  // `.app-inner`'s `padding-block-start` (above) reserves the space this
-  // takes out of the document flow.
-  position: fixed;
-  inset-block-start: 0;
-  inset-inline: 0;
+  // IN FLOW at every width (owner call, 2026-09-23, with a screenshot of the
+  // pinned header sitting over the category tiles mid-scroll: "it should be
+  // at the top of the screen, not sticky"). This supersedes the 2026-09-22
+  // "fixed at every width" reading of the same words. The header is the
+  // first block of the page and scrolls away with it, on desktop and mobile;
+  // nothing is reserved under it and no offset is needed for Salla's preview
+  // bar. Header.tsx still reads `header_is_sticky` and carries it as
+  // `data-header-sticky-setting`, but no rule branches on it. `z-index` stays
+  // so the mega panel and dropdowns (absolute children) layer over `main`.
+  position: relative;
   z-index: var(--ox-z-sticky);
   background: var(--ox-band-header);
   color: var(--ox-ink-on-dark);
@@ -1463,10 +1456,3 @@ body.ox-has-tabbar {
   }
 }
 
-// Salla's own preview bar (#s-theme_preview_bar, injected only in the
-// dashboard preview) is a static 52px strip before .app-inner. With the header
-// fixed at 0 it would sit over that bar and leave a 52px blank band under the
-// header; on the live store the bar does not exist. Measured 2026-09-22.
-#s-theme_preview_bar ~ .app-inner .ox-header {
-  inset-block-start: 52px;
-}

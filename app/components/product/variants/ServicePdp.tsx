@@ -77,10 +77,23 @@ export function ServicePdp({ product, spec, settings }: ServiceBuyZoneProps) {
         <h3 id="ox-service-next-title" className="ox-h3">
           {t('ox.booking.what_next')}
         </h3>
-        <ol className="ox-body">
-          {booking ? <li>{t('ox.booking.pick_slot')}</li> : null}
-          <li>{t(booking ? 'ox.booking.confirmed_body' : 'ox.booking.question_received_body')}</li>
-          {booking ? <li>{t('ox.booking.add_calendar')}</li> : null}
+        <ol className="ox-body ox-service__steps">
+          {booking ? (
+            <li className="ox-service__step">
+              <span className="ox-x-bullet" aria-hidden="true" />
+              {t('ox.booking.pick_slot')}
+            </li>
+          ) : null}
+          <li className="ox-service__step">
+            <span className="ox-x-bullet" aria-hidden="true" />
+            {t(booking ? 'ox.booking.confirmed_body' : 'ox.booking.question_received_body')}
+          </li>
+          {booking ? (
+            <li className="ox-service__step">
+              <span className="ox-x-bullet" aria-hidden="true" />
+              {t('ox.booking.add_calendar')}
+            </li>
+          ) : null}
         </ol>
         {booking ? (
           <p className="ox-service__slot-note">

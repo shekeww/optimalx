@@ -60,7 +60,7 @@ export function GoalCard({ slug, label, line, icon, to, photo, index = 0 }: Goal
         {line ? <span className="ox-goal__line">{line}</span> : null}
         <span className="ox-goal__cta">
           <span className="ox-goal__cta-label">{t('ox.home.shop_now')}</span>
-          <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+          <i className="sicon-keyboard_arrow_right ox-mirror ox-iconbtn--angled" aria-hidden="true" />
         </span>
       </span>
     </Link>

@@ -3,7 +3,8 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 
 /**
- * Every `/assets/...` path written into `app/` must exist in `public/`.
+ * Every `/assets/...` or `/categories/...` path written into `app/` must
+ * exist in `public/`.
  *
  * This has now been the same bug twice. `GOAL_PHOTOS` pointed six goal cards
  * at frames from the image brief that were never shot, and every home page
@@ -17,13 +18,18 @@ import { describe, it, expect } from 'vitest';
  * only the network tab knows. A rendering test cannot catch that. Reading the
  * filesystem can.
  *
+ * `/categories/...` (S2h, 2026-09-23) joined the pattern for the same reason:
+ * `CategoryContent.backgroundImage` is an `<img src>`, not a CSS background
+ * with a tint fallback, so a missing file there is a broken-image glyph on
+ * the card every sibling tile shares, not a silently-absent paint.
+ *
  * The rule is deliberately one-directional. An asset in `public/` that nothing
  * references is harmless dead weight; a reference to an asset that is not
  * there is a request on every page load for something that can never arrive.
  * Only the second is a failure.
  */
 
-const ASSET_REF = /['"`](\/assets\/[A-Za-z0-9_./-]+)['"`]/g;
+const ASSET_REF = /['"`](\/(?:assets|categories)\/[A-Za-z0-9_./-]+)['"`]/g;
 
 /** Placeholders and tokens that are not real files. */
 const NOT_A_FILE = new Set(['/assets/', '/assets/images/']);

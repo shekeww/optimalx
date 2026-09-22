@@ -140,10 +140,16 @@ export function ServicesHub() {
         ) : null}
       </section>
 
-      {/* THE PLAN DOORS, the same band the home page draws (`OxServices`,
-          full bleed). `routeOut={false}`: the header carries no CTA to
-          `/services` here, since the row already sits on that page. */}
-      <OxServices className="ox-page__bleed ox-hub__advisory" routeOut={false} />
+      {/* THE PLAN DOORS, the same band `OxServices` draws on the home page —
+          but NOT full bleed here (owner review 2026-09-23, item 3): the home
+          page opens on nothing else dark, while this page already opened on
+          the full-bleed hero band above, and a second full-width near-black
+          band directly under the channel cards read as one long band rather
+          than two sections. `.ox-hub__advisory` (`_b5-pages.scss`) sits it
+          inside the page's own container instead, with its own radius.
+          `routeOut={false}`: the header carries no CTA to `/services` here,
+          since the row already sits on that page. */}
+      <OxServices className="ox-hub__advisory" routeOut={false} />
 
       <p className="ox-hub__medical ox-small" data-testid="ox-medical-line">
         {t('ox.services.medical_line')}

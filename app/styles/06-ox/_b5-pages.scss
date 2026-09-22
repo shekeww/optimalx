@@ -304,6 +304,21 @@
   max-inline-size: 420px;
 }
 
+// The advisory band on `/services` (owner review 2026-09-23, item 3): it is
+// a regular (non-`.ox-page__bleed`) child of `.ox-page--bleed`, so the page
+// wrapper's own default rule (above) already gives it `max-inline-size:
+// var(--ox-container)`. `OxServices` wraps its own content in
+// `.ox-container.ox-services__inner` (needed for its OTHER, full-bleed
+// caller, the home page), so the wrapper's `padding-inline` is dropped here
+// rather than kept, or the two containers would inset the row twice. The
+// radius reads it as a card sitting inside the page rather than a strip
+// spanning it; `.ox-services--banded` already carries `overflow: hidden` to
+// clip its own ground motif, so the radius clips cleanly with it.
+.ox-page--bleed > .ox-hub__advisory {
+  padding-inline: 0;
+  border-radius: var(--ox-r-3);
+}
+
 // ---------------------------------------------------------------------------
 // 4b. The service comparison grid
 // ---------------------------------------------------------------------------

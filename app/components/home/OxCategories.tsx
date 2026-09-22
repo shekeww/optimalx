@@ -61,6 +61,8 @@ interface TileVM {
   to: string;
   count?: number;
   image?: string;
+  /** `CategoryContent.backgroundImage` (S2h, 2026-09-23): the curated art tile. */
+  art?: string;
 }
 
 /** The merchant's own `categories` selection, read unchanged from before the merge. */
@@ -82,6 +84,7 @@ function buildSelectedTiles(rows: unknown[], t: (key: string) => string): TileVM
         line: slug && TYPE_LINE_KEY[slug] ? t(TYPE_LINE_KEY[slug]) : '',
         to: url || searchFallback(label),
         image: image || undefined,
+        art: content?.backgroundImage,
       } satisfies TileVM;
     })
     .filter((tile) => tile.label !== '')
@@ -103,6 +106,7 @@ function buildDefaultTiles(taxonomy: TaxonomyLinks, t: (key: string) => string):
       to: link?.to ?? searchFallback(title),
       count: link?.count,
       image: link?.image,
+      art: content?.backgroundImage,
     } satisfies TileVM;
   });
 }
@@ -136,6 +140,7 @@ export function OxCategories({ data }: OxBlockProps) {
                 to={tile.to}
                 count={tile.count}
                 image={tile.image}
+                art={tile.art}
                 index={index}
               />
             </li>

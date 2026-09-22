@@ -16,7 +16,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { createWriteStream, mkdirSync } from 'node:fs';
+import { createWriteStream, mkdirSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { get } from 'node:http';
@@ -26,6 +26,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const API_PORT = Number(process.env.OFFLINE_API_PORT ?? 5178);
 const API_HOST = process.env.OFFLINE_API_HOST ?? '127.0.0.1';
 const DEV_PORT = Number(process.env.OFFLINE_DEV_PORT ?? 3210);
+const SNAPSHOT_STORE_ID = (() => {
+  try {
+    return JSON.parse(readFileSync(join(ROOT, 'fixtures', 'store', 'meta.json'), 'utf8')).store.id;
+  } catch {
+    return 1888890798;
+  }
+})();
 const API_BASE = `http://${API_HOST}:${API_PORT}`;
 const LOG_PATH = process.env.OFFLINE_LOG ?? join(ROOT, '.offline-preview.log');
 
@@ -138,6 +145,13 @@ start('[vite]', process.execPath, [join(ROOT, 'node_modules', 'vite', 'bin', 'vi
   // sends the browser's Salla calls to this base, and 127.0.0.1 only resolves
   // on this machine. Added 2026-09-22 to share the build before Salla builds it.
   VITE_API_URL: process.env.OFFLINE_API_PUBLIC_URL || API_BASE,
+  // The engine resolves the store from `?storeId=` on the URL, else from the
+  // host, else from this variable (the last fallback in its
+  // resolveStoreIdentifier). Off Salla's hosts a bare http://localhost:3210/
+  // has none of the first two, so without this every unparameterised URL
+  // answered 500 "No store identifier available" (owner report 2026-09-23).
+  // The snapshot's own store id is the identifier the API mock already answers for.
+  VITE_STORE_DOMAIN: process.env.VITE_STORE_DOMAIN || String(SNAPSHOT_STORE_ID),
   // Belt and braces: if the redirect ever fails to install, a call to
   // api.salla.dev fails locally and loudly instead of re-arming the
   // Cloudflare mitigation on this connection.

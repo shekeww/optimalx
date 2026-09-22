@@ -2,7 +2,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { GOAL_CARD_LINES, goalPhoto } from '../../content/goals';
-import { HOME_TILE_TONES } from '../../content/categories';
+import { CATEGORIES, HOME_TILE_TONES } from '../../content/categories';
 import { nodeBySlug } from '../../content/taxonomy';
 import { Icon } from '../common/Icon';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
@@ -23,6 +23,21 @@ export const CATEGORIES_INDEX_KEYS = {
   intro: 'ox.tax.index.intro',
   utilityTitle: 'ox.tax.index.utility_title',
 } as const;
+
+/**
+ * `CategoryContent.backgroundImage`/`cardLineKey`, by slug (S2h, 2026-09-23):
+ * the SAME two maps `OxCategories.tsx` builds for the home grid, rebuilt here
+ * rather than threaded through `useTaxonomyLinks`/`TaxonomyLink`, because
+ * that hook is shared by the header and the listing page and this batch does
+ * not extend its shape - `HOME_TILE_TONES` right above is read the same way,
+ * by `link.slug`, for exactly this reason.
+ */
+const ART_BY_SLUG: Record<string, string> = Object.fromEntries(
+  CATEGORIES.filter((entry) => entry.backgroundImage).map((entry) => [entry.slug, entry.backgroundImage as string])
+);
+const LINE_BY_SLUG: Record<string, string> = Object.fromEntries(
+  CATEGORIES.filter((entry) => entry.cardLineKey).map((entry) => [entry.slug, entry.cardLineKey as string])
+);
 
 /**
  * `/categories`: the index of the 25-node taxonomy (PLAN-ship Batch S1 step
@@ -141,29 +156,75 @@ interface CardProps {
  * live, positive `products_count`. The image slot is a `background-image`,
  * never an `<img>`: a merchant's `Category.image` is an external URL that
  * can 404, and a failed background paint just leaves the tint showing.
+ *
+ * ART VARIANT (`ART_BY_SLUG`, S2h 2026-09-23): the same six slugs the home
+ * grid's `CategoryTile` gives an art tile skip the tinted ground here too -
+ * the `<img>` IS the whole card (`.ox-cat-card--art`, `_b4-listing.scss`),
+ * icon/name/line/count/arrow stacking in a content column
+ * (`.ox-cat-card__body`) overlaid on the card's PHYSICAL LEFT in both
+ * languages. The meta-description paragraph below stays outside the card
+ * either way, unchanged - it is never painted over the photograph.
  */
 function TypeCard({ link, t }: CardProps) {
   const description = descriptionOf(link, t);
   const tone = HOME_TILE_TONES[link.slug] ?? 'ash';
+  const art = ART_BY_SLUG[link.slug];
   const backgroundImage = link.image
     ? `url("${link.image}")`
     : `var(--ox-need-image-${link.slug}, none)`;
   return (
     <div
-      className={`ox-cat-card ox-cat-card--${tone}`}
+      className={['ox-cat-card', `ox-cat-card--${tone}`, art ? 'ox-cat-card--art' : null]
+        .filter(Boolean)
+        .join(' ')}
       data-testid="ox-type-card"
       data-resolved={link.resolved ? 'true' : 'false'}
       data-tone={tone}
+      data-category={link.slug}
     >
       <Link to={link.to} className="ox-cat-card__link">
-        <Icon name={link.icon} size={32} className="ox-cat-card__icon" />
-        <span className="ox-cat-card__media" aria-hidden="true" style={{ backgroundImage }} />
-        <span className="ox-cat-card__name">{link.label}</span>
-        {link.count && link.count > 0 ? (
-          <span className="ox-cat-card__count">
-            {t('ox.home.need_count').replace('{{count}}', String(link.count))}
-          </span>
-        ) : null}
+        {art ? (
+          <>
+            <img
+              className="ox-cat-card__art"
+              src={art}
+              loading="lazy"
+              decoding="async"
+              width={1024}
+              height={1536}
+              alt=""
+            />
+            <span className="ox-cat-card__body">
+              <Icon name={link.icon} size={36} className="ox-cat-card__icon" />
+              <span className="ox-cat-card__name">{link.label}</span>
+              {LINE_BY_SLUG[link.slug] ? (
+                <span className="ox-cat-card__line">{t(LINE_BY_SLUG[link.slug])}</span>
+              ) : null}
+              <span className="ox-cat-card__foot">
+                {link.count && link.count > 0 ? (
+                  <span className="ox-cat-card__count">
+                    {t('ox.home.need_count').replace('{{count}}', String(link.count))}
+                  </span>
+                ) : null}
+                <i
+                  className="sicon-keyboard_arrow_right ox-cat-card__arrow ox-mirror ox-iconbtn--angled"
+                  aria-hidden="true"
+                />
+              </span>
+            </span>
+          </>
+        ) : (
+          <>
+            <Icon name={link.icon} size={32} className="ox-cat-card__icon" />
+            <span className="ox-cat-card__media" aria-hidden="true" style={{ backgroundImage }} />
+            <span className="ox-cat-card__name">{link.label}</span>
+            {link.count && link.count > 0 ? (
+              <span className="ox-cat-card__count">
+                {t('ox.home.need_count').replace('{{count}}', String(link.count))}
+              </span>
+            ) : null}
+          </>
+        )}
       </Link>
       {description ? <p className="ox-cat-card__desc ox-small">{description}</p> : null}
       {link.children.length > 0 ? (

@@ -260,8 +260,14 @@
 }
 
 @media (min-width: 768px) {
+  // `repeat(auto-fit, minmax(280px, 1fr))`, not a fixed `repeat(3, ...)`
+  // (owner review 2026-09-23, item 3): with only three `SERVICE_CHANNELS`
+  // items the row never grows past three columns (there is nothing to fill a
+  // fourth), but between 768 and roughly 872px (3 * 280px + 2 gaps) a rigid
+  // three-column track was squeezing each card under the 280px floor rather
+  // than dropping to two; `auto-fit` reflows instead of cramming.
   .ox-channels {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 
   .ox-channel {

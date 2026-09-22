@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
-import { HOME_TYPE_SLUGS } from '../../app/content/categories';
+import { ART_CATEGORY_SLUGS, HOME_TYPE_SLUGS } from '../../app/content/categories';
 
 /**
  * "Browse by type" (owner restyle 2026-09-22, reverting the "shop by need"
@@ -108,17 +108,45 @@ describe('OxCategories, the default eight', () => {
   });
 
   it('falls back to the theme custom property when the live category has no image', async () => {
+    // `daily-health` (index 7): the other home tile with no curated art, so
+    // the live-image background slot still governs it (`creatine`, index 1,
+    // now always carries its own curated art regardless of the live image -
+    // covered by the art tests below).
+    const dailyHealthIndex = HOME_TYPE_SLUGS.indexOf('daily-health');
     liveCategories.push({
       id: 2,
-      name: 'كرياتين',
-      url: `/${HOME_TYPE_SLUGS[1]}/c2`,
+      name: 'الصحة اليومية',
+      url: `/${HOME_TYPE_SLUGS[dailyHealthIndex]}/c2`,
       products_count: 3,
       image: null,
     });
     renderWithProviders(<OxCategories data={data()} />);
     const row = await tiles();
-    const image = row[1].querySelector('.ox-tile__image') as HTMLElement;
-    expect(image.style.backgroundImage).toContain(`--ox-need-image-${HOME_TYPE_SLUGS[1]}`);
+    const image = row[dailyHealthIndex].querySelector('.ox-tile__image') as HTMLElement;
+    expect(image.style.backgroundImage).toContain(`--ox-need-image-${HOME_TYPE_SLUGS[dailyHealthIndex]}`);
+  });
+
+  it('renders the curated art tile for creatine, and no <img> for protein (no curated art yet)', async () => {
+    renderWithProviders(<OxCategories data={data()} />);
+    const row = await tiles();
+    const creatineIndex = HOME_TYPE_SLUGS.indexOf('creatine');
+    const proteinIndex = HOME_TYPE_SLUGS.indexOf('protein');
+    expect(ART_CATEGORY_SLUGS).toContain('creatine');
+    expect(ART_CATEGORY_SLUGS).not.toContain('protein');
+
+    const art = row[creatineIndex].querySelector('.ox-tile__art') as HTMLImageElement;
+    expect(art).not.toBeNull();
+    expect(art.getAttribute('src')).toBe('/categories/creatine.webp');
+    expect(art.getAttribute('loading')).toBe('lazy');
+    expect(art.getAttribute('decoding')).toBe('async');
+    expect(art.getAttribute('width')).toBe('1024');
+    expect(art.getAttribute('height')).toBe('1536');
+    expect(art.getAttribute('alt')).toBe('');
+    expect(row[creatineIndex].className).toMatch(/ox-tile--art/);
+
+    expect(row[proteinIndex].querySelector('.ox-tile__art')).toBeNull();
+    expect(row[proteinIndex].querySelector('.ox-tile__image')).not.toBeNull();
+    expect(row[proteinIndex].className).not.toMatch(/ox-tile--art/);
   });
 
   it('prints the count only on a live, positive products_count', async () => {
