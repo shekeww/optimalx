@@ -155,7 +155,7 @@ describe('OxCategories, the four shaker categories', () => {
 // The colours themselves, read out of the stylesheet and measured.
 // ---------------------------------------------------------------------------
 
-const ROOT = path.resolve(__dirname, '../..');
+const ROOT = path.resolve(import.meta.dirname, '../..');
 const TOKENS_CSS = fs.readFileSync(path.join(ROOT, 'app/styles/tokens.css'), 'utf8');
 const SHEETS = [
   TOKENS_CSS,

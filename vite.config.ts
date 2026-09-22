@@ -28,7 +28,7 @@ export default defineConfig(async () => ({
   },
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, './'),
+      '~': path.resolve(import.meta.dirname, './'),
     },
     // Singleton libs whose React context must be shared between the app and the
     // engine's bundled screens/components (they call useSuspenseQuery /
