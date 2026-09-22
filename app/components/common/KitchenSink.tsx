@@ -312,7 +312,7 @@ export function KitchenSink() {
 
       <Block title="EmptyState and Tooltip" note="The tooltip never appears on touch.">
         <EmptyState
-          icon="help"
+          icon="headset"
           title="سلتك فارغة"
           body="ابدأ من هدفك، أو تصفح حسب النوع."
           primary={<Button>تسوق حسب هدفك</Button>}

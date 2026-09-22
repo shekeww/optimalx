@@ -23,9 +23,9 @@ interface TrustItem {
  * third item in particular must never gain a sub-line about tracking (B17).
  */
 const TRUST_ITEMS: TrustItem[] = [
-  { key: 'authentic', icon: 'authentic', labelKey: 'ox.trust.authentic_100' },
+  { key: 'authentic', icon: 'shield-check', labelKey: 'ox.trust.authentic_short' },
   { key: 'payment', icon: 'secure-payment', labelKey: 'ox.trust.payment_secure' },
-  { key: 'shipping', icon: 'shipping', labelKey: 'ox.trust.ships_kingdom' },
+  { key: 'shipping', icon: 'truck', labelKey: 'ox.trust.ships_kingdom' },
 ];
 
 /**

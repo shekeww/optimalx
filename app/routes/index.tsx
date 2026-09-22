@@ -8,6 +8,13 @@ import { OxWhatsApp } from '../components/home/OxWhatsApp';
 import { HomeSkeleton } from '../components/home/HomeSkeleton';
 import { hasHeroBlock, hasOxBlock } from '../components/home/defaults';
 import { homeHeadExtend } from '../components/seo/routeHeads';
+import {
+  loadTaxonomyData,
+  type TaxonomyLoaderData,
+} from '../components/listing/useTaxonomyLinks';
+
+/** `HomeLoaderData` plus the taxonomy pair `useTaxonomyLinks` reads first. */
+export type HomeRouteLoaderData = HomeLoaderData & { taxonomy: TaxonomyLoaderData };
 
 /**
  * Home (PLAN-final B2).
@@ -33,7 +40,18 @@ import { homeHeadExtend } from '../components/seo/routeHeads';
  * statement, which the reference does not have.
  */
 export const Route = createFileRoute('/{-$locale}/')({
-  loader: ({ params }): Promise<HomeLoaderData> => Home.loader({ locale: params.locale }),
+  // `ensureQueryData`s the category list and the header menu into the
+  // router's own query client alongside the engine's own loader, so the goal
+  // and type links `OxNeeds` (and the header) render have already resolved on
+  // the server (owner amendment 2026-09-22, "SSR/client consistency"; see
+  // `useTaxonomyLinks.ts`'s `loadTaxonomyData` docblock).
+  loader: async ({ params, context }): Promise<HomeRouteLoaderData> => {
+    const [homeData, taxonomy] = await Promise.all([
+      Home.loader({ locale: params.locale }),
+      loadTaxonomyData(context.queryClient),
+    ]);
+    return { ...homeData, taxonomy };
+  },
   head: withHead(Home, homeHeadExtend()),
   pendingComponent: () => <HomeSkeleton />,
   component: HomeComponent,

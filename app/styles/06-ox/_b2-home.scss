@@ -952,460 +952,343 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 // ---------------------------------------------------------------------------
-// 4. OxCategories and CategoryTile (homepage-spec section 3)
+// 4. OxNeeds and NeedCard (owner amendment 2026-09-22: replaces the separate
+//    OxCategories/CategoryTile row and OxGoals/GoalCard row with one section,
+//    two `role="tablist"` panes)
 // ---------------------------------------------------------------------------
-// Eight tiles: two rows of four on a phone, one row of eight from 1024. Card,
-// hairline, a large line glyph over a centred name, and nothing else.
+// One heading, one subline, a pill toggle between "goals" (default, six
+// cards) and "types" (eight), and identical row/card composition either way:
+// a 40px sprite glyph, a bold title, a two-line claims-clean subline, a count
+// gated on a live `products_count`, and an orange arrow. `register.ts` points
+// BOTH legacy block keys (`ox-goals`, `ox-categories`) at the one `OxNeeds`
+// component; `OxNeeds.tsx`'s docblock explains what stops the section
+// drawing twice when a composition still carries both.
 //
-// THE FOUR SHAKER COLOURS. The owner's product photography is four branded
-// shakers and they asked for four categories to carry those colours. Every
-// value below was sampled from references/shakers.png on 2026-09-20 (median of
-// four flat strips per bottle, away from the highlight and away from the white
-// logo), then moved only as far as contrast forced it. They are declared once,
-// here, and referenced by name: a component never writes one of these hexes.
-//
-//   name     photograph   shipped      why it moved
-//   blue     #0078DF      #0072D0      a white label was 4.42:1 on the sampled
-//                                      blue. Two steps darker buys 4.86:1 and
-//                                      the hue does not move.
-//   green    #7FC501      #7FC501      unchanged: ink on it is 8.47:1.
-//   white    #DCE2E5      #DCE2E5      unchanged.
-//   black    #151414      #14181F      the brand already owns this black
-//                                      (--ox-graphite-2). One black on the
-//                                      page, not two that nearly match.
-//
-// The EDGE is the second half of the job and it is not decoration. A tile's
-// boundary against the page has to clear 3:1 (WCAG 1.4.11). Blue (4.86:1) and
-// black (17.79:1) clear it on their ground alone; the lime is 2.12:1 against
-// white and the near-white is 1.31:1, so those two are held by their border
-// and would otherwise be a shape with no edge on a white page.
-//
-// The GLYPH ACCENT moves with the ground. Each sprite symbol carries one
-// element filled with --ox-accent, and orange measures 1.35:1 on the blue and
-// 1.69:1 on the lime: it disappears. On those two the accent becomes the
-// tile's own type colour, so the glyph reads as one drawing. On the near-black
-// the orange holds at 4.95:1 and stays, which is how every other dark band on
-// this page draws it, and the near-white takes --ox-accent-dark to clear 3:1.
-.ox-tile {
-  // The four, named. --ox-shaker-white-edge and the two blacks are aliases on
-  // purpose: the neutral 3:1 boundary and the chrome black already exist and
-  // must not be forked here.
-  --ox-shaker-blue: #0072D0;
-  --ox-shaker-blue-edge: #005BAF;
-  --ox-shaker-green: #7FC501;
-  --ox-shaker-green-edge: #5C9200;
-  --ox-shaker-white: #DCE2E5;
-  --ox-shaker-white-edge: var(--ox-line-3);
-  --ox-shaker-black: var(--ox-graphite-2);
-  --ox-shaker-black-edge: var(--ox-graphite);
+// THE SECTION HEADING'S SUBLINE. `SectionHeader` gained an optional
+// `subline` slot for this section (additive; fourteen other callers pass
+// none and are unaffected). Its base style lives here rather than in
+// `_primitives.scss` because this is the first and, as of this batch, only
+// caller - a later section that wants one can lift this rule up without
+// this one losing anything.
+.ox-sh__subline {
+  margin: var(--ox-2) 0 0;
+  max-inline-size: 62ch;
+  color: var(--ox-fg-2);
+  font-size: var(--ox-t-body);
+  line-height: 1.5;
 }
 
-.ox-cats__grid {
+// THE PASTEL RUN (X-IDENTITY-2026-09-22.md §4.6; owner amendment: every pale
+// card is coloured, superseding the identity judges' four-ground limit).
+// Six of the seven tints are the ones that document measured against
+// `--ox-accent-dark` #D03709 for the arrow (graphical object, WCAG 1.4.11's
+// 3:1 floor, not the 4.5:1 text floor - the document is explicit that this
+// is the one place the run can silently fail AA if the colour is ever used
+// as text, which is why `--ox-need-arrow` never carries a label). The
+// seventh (violet) is this batch's own 12% tint, measured the same way; every
+// ratio is written in `docs/build/progress/S2b.md`. `collagen-beauty` (types)
+// and `goal-performance` (goals) stay the black emphasis card instead of
+// taking a tint (`NeedTone`'s docblock in NeedCard.tsx).
+.ox-needs {
+  --ox-need-tint-peach: #FDEEE8; // 4.39:1
+  --ox-need-tint-ash: #F1F1F0; // 4.39:1
+  --ox-need-tint-mint: #EAF2EF; // 4.36:1
+  --ox-need-tint-sand: #F3EFE6; // 4.32:1
+  --ox-need-tint-sky: #ECEFF5; // 4.31:1
+  --ox-need-tint-rose: #F6EDF2; // 4.33:1
+  --ox-need-tint-violet: #EFEAF5; // 4.20:1, this batch's own tint
+}
+
+// THE PILL TOGGLE. A real `role="tablist"` (`Tabs.tsx`), restyled here from
+// the shared underline strip (`_primitives.scss` "11. Tabs") into a filled
+// segmented control: active state is carried by a background fill and a
+// weight change, never by colour alone, and the shape is two border-radii,
+// never a lean (X-IDENTITY §6 surface matrix: "a lean on the pill toggle" is
+// explicitly forbidden on this surface).
+.ox-needs__toggle.ox-tabs {
+  margin-block-end: var(--ox-6);
+
+  .ox-tabs__list {
+    display: inline-flex;
+    gap: 2px;
+    padding: 4px;
+    background: var(--ox-plate-2);
+    border-block-end: 0;
+    border-radius: var(--ox-r-pill);
+    overflow-x: visible;
+  }
+
+  .ox-tabs__tab {
+    min-block-size: 40px;
+    padding-inline: var(--ox-4);
+    border-radius: var(--ox-r-pill);
+    font-size: var(--ox-t-small);
+    font-weight: var(--ox-w-quiet);
+
+    &::after {
+      content: none;
+    }
+  }
+
+  .ox-tabs__tab[aria-selected='true'] {
+    background: var(--ox-ink);
+    color: var(--ox-ink-on-dark);
+    font-weight: var(--ox-w-title);
+  }
+
+  .ox-tabs__panel {
+    padding-block-start: 0;
+  }
+}
+
+.ox-needs__grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--ox-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  align-items: stretch;
-}
-
-.ox-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--ox-2);
-  block-size: 100%;
-  min-block-size: 104px;
-  padding: var(--ox-2);
-  // Three role tokens, one set per tone to re-point. The fallback IS the
-  // neutral card, so a tile with no tone is exactly what it was before.
-  background: var(--ox-tile-bg, var(--ox-fill));
-  border: 1px solid var(--ox-tile-bd, var(--ox-bd));
-  border-radius: var(--ox-r-2);
-  color: var(--ox-tile-fg, var(--ox-fg));
-  text-align: center;
-  transition: transform var(--dur-base) var(--ease-out);
-  @include ox-focus(2px);
-
-  &:hover {
-    transform: translateY(-2px);
-    // A coloured tile keeps its own edge on hover: a grey hairline appearing
-    // over lime is a colour change, and colour is not a state this page
-    // animates. The neutral tile behaves exactly as it did.
-    border-color: var(--ox-tile-bd-hover, var(--ox-line-3));
-  }
-}
-
-// The four tones. Each sets a ground, a boundary and a type colour, and
-// nothing else: the box, the glyph size and the spacing belong to the tile and
-// do not move with the colour. The measured contrast is on the line that
-// earns it.
-.ox-tile--blue {
-  --ox-tile-bg: var(--ox-shaker-blue);
-  --ox-tile-bd: var(--ox-shaker-blue-edge);
-  --ox-tile-bd-hover: var(--ox-shaker-blue-edge);
-  --ox-tile-fg: var(--ox-paper); // 4.86:1 on the blue; the ground is 4.86:1 on the page
-  --ox-accent: var(--ox-paper); // orange is 1.35:1 here
-}
-
-.ox-tile--green {
-  --ox-tile-bg: var(--ox-shaker-green);
-  --ox-tile-bd: var(--ox-shaker-green-edge);
-  --ox-tile-bd-hover: var(--ox-shaker-green-edge);
-  --ox-tile-fg: var(--ox-ink); // 8.47:1 on the lime; the edge is 3.77:1 on the page
-  --ox-accent: var(--ox-ink); // orange is 1.69:1 here
-}
-
-.ox-tile--white {
-  --ox-tile-bg: var(--ox-shaker-white);
-  --ox-tile-bd: var(--ox-shaker-white-edge);
-  --ox-tile-bd-hover: var(--ox-shaker-white-edge);
-  --ox-tile-fg: var(--ox-ink); // 13.76:1 on it; the edge is 3.63:1 on the page
-  --ox-accent: var(--ox-accent-dark); // 3.79:1 here, where the lighter orange is 2.75:1
-}
-
-.ox-tile--black {
-  --ox-tile-bg: var(--ox-shaker-black);
-  --ox-tile-bd: var(--ox-shaker-black-edge);
-  --ox-tile-bd-hover: var(--ox-shaker-black-edge);
-  --ox-tile-fg: var(--ox-ink-on-dark); // 16.21:1 on it; the ground is 17.79:1 on the page
-  // The accent stays orange: 4.95:1 on this black, the same relationship it
-  // has on every other dark band in the theme.
-}
-
-// The drawn size is an inline width and height on the svg, which no class
-// can override without also setting the box, so the box is set here per
-// viewport: the glyph is the tile's artwork and it has to grow with the tile.
-//
-// `inherit` rather than --ox-ink: the glyph takes the tile's own type colour,
-// so the white line art on the blue and the light line art on the black are
-// the same declaration as the dark line art on the neutral card.
-.ox-tile__icon {
-  flex: none;
-  inline-size: 34px;
-  block-size: 34px;
-  color: inherit;
-  stroke-width: 1.25;
-}
-
-.ox-tile__label {
-  font-size: 11px;
-  font-weight: var(--ox-w-title);
-  line-height: 1.35;
-}
-
-@media (min-width: 640px) {
-  .ox-cats__grid {
-    gap: var(--ox-4);
-  }
-
-  .ox-tile {
-    min-block-size: 132px;
-    gap: var(--ox-3);
-    padding: var(--ox-3);
-  }
-
-  .ox-tile__icon {
-    inline-size: 42px;
-    block-size: 42px;
-  }
-
-  .ox-tile__label {
-    font-size: 13px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .ox-cats__grid {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-  }
-
-  .ox-tile {
-    // 124 shrank the tile at the width where there is most room for it, the
-    // same inversion the goal card had. homepage-scale-spec asks for at least
-    // 150 with a 44px glyph, which the component already draws.
-    //
-    // Colour does not buy a smaller tile. 156 is the floor here, and eight
-    // columns inside the 1296 measure put the drawn box at 148 by 156, which
-    // is what it measured before the four took a ground.
-    min-block-size: 156px;
-  }
-
-  .ox-tile__icon {
-    inline-size: 48px;
-    block-size: 48px;
-  }
-
-  .ox-tile__label {
-    font-size: 13.5px;
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 5. OxGoals and GoalCard (homepage-spec section 4)
-// ---------------------------------------------------------------------------
-// Six dark photographic cards. This is the largest visual block on the page,
-// so the composition is fixed rather than content driven: identical heights,
-// the glyph at the same optical position, the line clamped to one, and one
-// accent slash per card at the top corner.
-.ox-goals {
-  scroll-margin-block-start: calc(var(--ox-header-h, 96px) + var(--ox-4));
-}
-
-.ox-goals__grid {
-  display: grid;
-  // minmax(0, 1fr), never 1fr: `1fr` is `minmax(auto, 1fr)`, so a track
-  // holding a clamped or nowrap label takes that label's min-content width
-  // and the grid runs past the viewport.
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--ox-3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.ox-goal {
+// ONE CARD SHAPE, at every width: a row (`grid-template-areas: 'icon title
+// arrow' 'icon line arrow'`), never a photograph (S2b brief: "eight supplier
+// packshots never read as one set" is exactly why the legacy CategoryTile
+// dropped `Category.image` - the owner's amendment restores an image slot,
+// but as a small corner packshot behind the row's own tint, not as the
+// card's ground).
+.ox-need {
   position: relative;
   isolation: isolate;
-  display: block;
-  block-size: 100%;
-  // 168 was the compressed value the owner objected to. homepage-scale-spec
-  // asks for 260 at desktop; the phone and tablet steps below climb to it
-  // rather than jumping, and the card is a door rather than a chip at every
-  // width.
-  min-block-size: 200px;
-  overflow: hidden;
-  border-radius: var(--ox-r-3);
-  // The ground the card is finished on before any photograph exists.
-  background: var(--ox-graphite-2);
-  color: var(--ox-ink-on-dark);
-  transition: transform var(--dur-base) var(--ease-out);
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  grid-template-areas: 'icon title arrow' 'icon line arrow';
+  align-items: center;
+  column-gap: var(--ox-3);
+  row-gap: 2px;
+  min-block-size: 84px;
+  padding: var(--ox-3);
+  background: var(--ox-fill);
+  border: 1px solid var(--ox-line-3);
+  color: var(--ox-fg);
+  text-decoration: none;
+  --ox-need-arrow: var(--ox-accent-dark);
+  // NOTCH, not the mark's corner cut: below X-IDENTITY §3.2's 158px law a
+  // diagonal may exist only inside a sprite symbol, and this row is 84px.
+  // The identity is carried by an axis-aligned bite out of the top
+  // inline-end corner instead - legal at any size (§3.2, `small-angle` gate).
+  --ox-need-notch-t: 4px;
+  --ox-need-notch-j: 12px;
+  clip-path: polygon(
+    var(--ox-need-notch-j) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 var(--ox-need-notch-t),
+    var(--ox-need-notch-j) var(--ox-need-notch-t)
+  );
+  transition: border-color var(--dur-base) var(--ease-out);
   @include ox-focus(2px);
 
+  // Border colour only (BUILD.md §3.4: no lift on hover, identity rule 1).
   &:hover {
-    transform: translateY(-2px);
+    border-color: var(--ox-fg-3);
   }
 }
 
-// Invisible until it reports a load. Ten of the sixteen frames the brief
-// lists are not shot yet, and a sized img that 404s paints a broken-image
-// glyph in the corner of its box even with an empty alt. This way the
-// server's HTML shows the card's dark ground, a visitor with scripting off
-// never sees one, and the photograph appears the moment it is real. No
-// transition: a photograph fading in under a heading is motion nobody asked
-// for.
-.ox-goal__photo,
-.ox-plan__photo {
-  opacity: 0;
-}
-
-// The photograph reads as a texture behind the card, not as the card. At full
-// strength it fought the label and every one of the six tiles looked like a
-// different design; held back it does what it is there for, which is to give
-// each goal a physical sense without becoming the subject. The card's own
-// graphite ground shows through underneath, which is what keeps the six
-// reading as one set even though the frames are unrelated shots.
-.ox-goal__photo[data-ready] {
-  opacity: 0.42;
-}
-
-.ox-plan__photo[data-ready] {
-  opacity: 0.48;
-}
-
-.ox-goal__photo {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-// Painted whether or not a photograph loaded under it: it is what guarantees
-// the type's contrast on the frame the owner has not shot yet.
-.ox-goal__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  // Softer than it was, because the photograph is now held at 0.42 and the
-  // two multiply. The floor still rises to near-opaque under the label: the
-  // title and its line sit there and they are the only thing on the card that
-  // must never lose contrast, whatever the frame turns out to be.
-  background: linear-gradient(
-    to bottom,
-    rgba(12, 14, 18, 0.1) 0%,
-    rgba(12, 14, 18, 0.32) 42%,
-    rgba(12, 14, 18, 0.78) 78%,
-    rgba(12, 14, 18, 0.92) 100%
+[dir='ltr'] .ox-need {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ox-need-notch-j)) 0,
+    calc(100% - var(--ox-need-notch-j)) var(--ox-need-notch-t),
+    100% var(--ox-need-notch-t),
+    100% 100%,
+    0 100%
   );
 }
 
-// The accent slash at the card's top corner. It mirrors with the document,
-// unlike the hero's pair: this one is pure geometry and geometry belongs to
-// the reading direction (tokens.css, `--ox-skew`). It never animates (A9).
-.ox-goal__slash {
+// The corner packshot: a `background-image`, never an `<img>`, so a 404 on a
+// merchant's `Category.image` leaves the tint showing instead of a broken-
+// image glyph, and the theme fallback (`--ox-need-image-<slug>`, the owner's
+// generated art) or `none` costs nothing to declare when it is absent
+// (NeedCard.tsx's docblock).
+.ox-need__image {
   position: absolute;
-  z-index: 2;
-  inset-block-start: -24px;
-  inset-inline-end: -4px;
-  inline-size: 20px;
-  block-size: 92px;
-  background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
+  z-index: 0;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inline-size: 44px;
+  block-size: 44px;
+  background-size: cover;
+  background-position: center;
   pointer-events: none;
 }
 
-.ox-goal__body {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  gap: 4px;
-  block-size: 100%;
-  padding: var(--ox-3);
+.ox-need__icon {
+  grid-area: icon;
+  z-index: 1;
+  align-self: start;
+  inline-size: 40px;
+  block-size: 40px;
+  color: var(--ox-fg);
 }
 
-.ox-goal__icon {
-  flex: none;
-  color: var(--ox-paper);
-  margin-block-end: var(--ox-1);
+.ox-need__title {
+  grid-area: title;
+  z-index: 1;
+  align-self: end;
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
 }
 
-.ox-goal__label {
+// Two lines, clamped, and it has to fit at 320 without ellipsis on the
+// longest line (S2b brief; the eight type lines and six goal lines are all
+// measured against a 176px column at that width).
+.ox-need__line {
+  grid-area: line;
+  z-index: 1;
+  align-self: start;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 15px;
-  font-weight: var(--ox-w-stmt);
-  line-height: 1.3;
-  color: var(--ox-paper);
-}
-
-// Two lines, clamped. The line lists the product types behind the goal and
-// most of those lists do not fit a 171px card on one line; ellipsing them
-// after the second word makes the card say less than the icon does.
-.ox-goal__line {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  inline-size: 100%;
-  font-size: 11.5px;
-  font-weight: var(--ox-w-quiet);
+  font-size: var(--ox-t-small);
   line-height: 1.4;
-  color: var(--ox-ink-2-on-dark);
+  color: var(--ox-fg-2);
 }
 
-// The small outline parallelogram. The card is one link, so this is a span;
-// the shape is a skewed pseudo element behind an upright label.
-.ox-goal__cta {
-  position: relative;
-  display: inline-flex;
+.ox-need__foot {
+  grid-area: arrow;
+  z-index: 1;
+  display: flex;
   align-items: center;
   gap: var(--ox-1);
-  block-size: 26px;
-  margin-block-start: var(--ox-2);
-  padding-inline: 14px;
-  font-size: 11.5px;
-  font-weight: var(--ox-w-ui);
-  color: var(--ox-accent);
+  align-self: center;
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--ox-accent);
-    transform: skewX(var(--ox-skew));
+.ox-need__count {
+  font-size: var(--ox-t-small);
+  color: var(--ox-fg-3);
+}
+
+// The one true accent element every card carries (identity rule 1):
+// `--ox-need-arrow` is `--ox-accent-dark` on every pastel tint (measured
+// 4.20 to 4.39:1 against it, the 3:1 graphical floor) and the section's one
+// literal `--ox-accent` on the black card, below.
+.ox-need__arrow {
+  font-size: 18px;
+  color: var(--ox-need-arrow);
+}
+
+.ox-need--peach { background: var(--ox-need-tint-peach); }
+.ox-need--ash { background: var(--ox-need-tint-ash); }
+.ox-need--mint { background: var(--ox-need-tint-mint); }
+.ox-need--sand { background: var(--ox-need-tint-sand); }
+.ox-need--sky { background: var(--ox-need-tint-sky); }
+.ox-need--rose { background: var(--ox-need-tint-rose); }
+.ox-need--violet { background: var(--ox-need-tint-violet); }
+
+// The one black emphasis card per pane (`collagen-beauty` on types,
+// `goal-performance` on goals - OxNeeds.tsx's `GOAL_TONE` docblock). Same
+// ground and edge the shaker black tile already used, so the page carries
+// one near-black rather than two that nearly match.
+.ox-need--black {
+  background: var(--ox-graphite-2);
+  border-color: var(--ox-graphite);
+  color: var(--ox-ink-on-dark);
+  --ox-need-arrow: var(--ox-accent);
+
+  &:hover {
+    border-color: var(--ox-line-2);
   }
-}
 
-// Positioned, so they paint above the positioned pseudo element that draws
-// the shape. Without this the outline covers its own label.
-.ox-goal__cta-label,
-.ox-goal__cta i {
-  position: relative;
-}
+  .ox-need__icon,
+  .ox-need__title {
+    color: var(--ox-ink-on-dark);
+  }
 
-.ox-goal:hover .ox-goal__cta::before {
-  background: rgba(var(--ox-accent-rgb), 0.16);
+  .ox-need__line {
+    color: var(--ox-ink-2-on-dark);
+  }
+
+  .ox-need__count {
+    color: var(--ox-ink-2-on-dark);
+  }
 }
 
 @media (min-width: 640px) {
-  .ox-goals__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .ox-needs__grid {
     gap: var(--ox-4);
-  }
-
-  .ox-goal {
-    min-block-size: 228px;
-  }
-
-  .ox-goal__body {
-    padding: var(--ox-4);
   }
 }
 
-@media (min-width: 1024px) {
-  .ox-goals__grid {
-    gap: var(--ox-4);
+// 768 to 1279: two columns, a smaller glyph so the text measure never drops
+// below the single-column phone's (S2b brief).
+@media (min-width: 768px) and (max-width: 1279px) {
+  .ox-needs__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .ox-goal {
-    min-block-size: 248px;
+  .ox-need {
+    min-block-size: 96px;
   }
 
-  .ox-goal__label {
-    font-size: 16px;
+  .ox-need__icon {
+    inline-size: 24px;
+    block-size: 24px;
   }
 }
 
-// Six across only from 1280, where the container is wide enough that a cell is
-// about 203 and the card reads as a door. This rule used to sit at 1024 with
-// a 190px card, which made the row SHORTER on a wider screen: the measured
-// 203x190 that the owner called compressed, twice.
-//
-// THE DOORS ARE TALL NOW, and that is the point of the section rather than a
-// preference. "تسوق حسب هدفك" is how this store expects to be navigated — the
-// shopper does not arrive knowing they want creatine, they arrive knowing they
-// want to recover — so the goal row is the primary way into the catalogue and
-// it was being given less height than a product card. At 203 wide a 260 card is
-// a landscape tile that reads as a banner strip; a 400 card is a portrait door
-// that reads as a place to go, and the photography behind it finally has room
-// to be a photograph rather than a texture.
+// From 1280: three columns for the goals pane, four for types, and the card
+// grows past X-IDENTITY §3.2's 158px floor, so its one angled gesture
+// upgrades from the notch to the mark's own corner cut (§3.3: lean 64,
+// run 43.2).
 @media (min-width: 1280px) {
-  .ox-goals__grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  .ox-needs__grid--goals {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ox-needs__grid--types {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ox-needs__grid {
     gap: var(--ox-6);
   }
 
-  .ox-goal {
-    min-block-size: 400px;
+  .ox-need {
+    grid-template-columns: 40px 1fr auto;
+    min-block-size: 168px;
+    padding: var(--ox-4);
+    --ox-need-lean: 64px;
+    --ox-need-run: 43.2px;
+    clip-path: polygon(
+      var(--ox-need-run) 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 var(--ox-need-lean)
+    );
   }
 
-  // The plate grows with the card: at 260 the body sat on roughly a third of
-  // the face, and at 400 that same padding leaves the type floating. It keeps
-  // the copy anchored to the foot where the eye lands after the picture.
-  .ox-goal__body {
-    padding: var(--ox-6);
+  [dir='ltr'] .ox-need {
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--ox-need-run)) 0,
+      100% var(--ox-need-lean),
+      100% 100%,
+      0 100%
+    );
   }
 
-  .ox-goal__label {
-    font-size: 19px;
+  .ox-need__icon {
+    inline-size: 40px;
+    block-size: 40px;
   }
-}
 
-// From 1536 the container stops growing but the section can still breathe.
-@media (min-width: 1536px) {
-  .ox-goal {
-    min-block-size: 440px;
+  .ox-need__image {
+    inline-size: 64px;
+    block-size: 64px;
   }
 }
 
@@ -1448,15 +1331,18 @@ button.ox-trust__btn:hover .ox-trust__title {
   margin-block-end: var(--ox-4);
 }
 
-// The section's one true accent element and its one angled edge, in a single
-// shape (identity rule): a skewed orange rule, the same gesture the needs
-// section's cards draw at the reading start of their own tint.
+// The section's one true accent element. NOT skewed: X-IDENTITY-2026-09-22.md
+// §3.2's 158px law reserves the 34° angle for elements at or above that
+// block-size — below it an angle may live only inside a sprite symbol, never
+// a `clip-path`/`skew`/`rotate` on a layout box, and this bar is 20px. A
+// plain accent-coloured rule carries the identity's one required colour;
+// the section's angled primitive is pending its own compliant device (see
+// docs/build/progress/S2c.md).
 .ox-brands__accent {
   flex: none;
   inline-size: 3px;
   block-size: 20px;
   background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
 }
 
 .ox-brands__strip {
@@ -1640,7 +1526,13 @@ button.ox-trust__btn:hover .ox-trust__title {
   color: var(--ox-fg);
 }
 
+// Clamped to 2 lines (rule 2: never 1, and the reserved height at 320 is
+// only correct if this cannot grow past what 390 measures).
 .ox-services__subline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   margin: 0;
   max-inline-size: 56ch;
   color: var(--ox-fg-3);
@@ -1694,9 +1586,9 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 }
 
-// FADED photographic background (owner amendment, 2026-09-22 evening): the
-// `SERVICE_PHOTOS` frame at low opacity. `BandPhoto` renders nothing on a
-// missing frame, so a card with no photograph is still a finished dark card.
+// FADED photographic background (X-IDENTITY-2026-09-22.md §4.5). Position and
+// sizing live here; the opacity itself is `.ox-plan__photo[data-ready]` in
+// section 5 (the shared `BandPhoto` reveal rule, S2b's), now 0.55.
 .ox-plan__photo {
   position: absolute;
   inset: 0;
@@ -1705,23 +1597,51 @@ button.ox-trust__btn:hover .ox-trust__title {
   block-size: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.4;
 }
 
-// The scrim, angled on the identity's own skew (var(--ox-skew), never a
-// literal degree) rather than a flat top-to-bottom fade: opaque under the
-// bottom text stack, open through the middle so the athlete stays visible.
+// The scrim: perpendicular to the mark's own 34° bars, never a flat
+// top-to-bottom fade or a `rotate` (§4.5's own literal gradient angles — a
+// `linear-gradient()` direction is outside `--ox-angle`/`--ox-skew`'s reach,
+// so 236/124 are correct here, declared as two rules). Darkest (0.94) at 0%,
+// which is why the content block below sits at the top-inline-start corner:
+// only the 0-72% zone clears the measured 4.5:1 floor for `--ox-ink-on-dark`
+// over a worst-case white pixel.
 .ox-plan__scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(
-    calc(180deg - var(--ox-skew)),
-    rgba(14, 16, 20, 0.55) 0%,
-    rgba(14, 16, 20, 0.88) 55%,
-    rgba(14, 16, 20, 0.96) 100%
+    236deg,
+    rgba(14, 16, 20, 0.94) 0%,
+    rgba(14, 16, 20, 0.78) 38%,
+    rgba(14, 16, 20, 0.6) 72%,
+    rgba(14, 16, 20, 0.46) 100%
   );
+}
+
+[dir='ltr'] .ox-plan__scrim {
+  background: linear-gradient(
+    124deg,
+    rgba(14, 16, 20, 0.94) 0%,
+    rgba(14, 16, 20, 0.78) 38%,
+    rgba(14, 16, 20, 0.6) 72%,
+    rgba(14, 16, 20, 0.46) 100%
+  );
+}
+
+// The watermark (§4.6: a dark plan card takes the mark, never a corner cut).
+// Accent at 0.12 on `--ox-band-util`, the measured ceiling for that pairing
+// (§4.1); sized down from the section-level table for a card-scale device,
+// in the corner the scrim leaves open (past 72%, where no text sits).
+.ox-plan__watermark {
+  position: absolute;
+  z-index: 1;
+  inset-block-end: -8%;
+  inset-inline-end: -6%;
+  color: var(--ox-accent);
+  opacity: 0.12;
+  pointer-events: none;
 }
 
 .ox-plan__body {
@@ -1730,7 +1650,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: var(--ox-1);
   block-size: 100%;
   padding: 20px;
@@ -2071,16 +1991,12 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ox-tile,
-  .ox-goal,
   .ox-plan,
   .ox-campaign__inner,
   .ox-wa {
     transition: none;
   }
 
-  .ox-tile:hover,
-  .ox-goal:hover,
   .ox-plan:hover,
   .ox-campaign__inner:hover,
   .ox-wa:hover {
@@ -2210,22 +2126,37 @@ button.ox-trust__btn:hover .ox-trust__title {
   justify-content: center;
 }
 
-// Two rows of four on a phone, matching the tile grid it stands in for.
-.ox-skel-grid--tiles {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+// `NeedsSkeleton` (HomeSkeleton.tsx): a heading bar, a toggle bar and six row
+// placeholders, matching `.ox-needs__grid`'s own breakpoints so the swap to
+// real cards shifts nothing.
+.ox-skel-needs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
 }
 
-@media (min-width: 1024px) {
-  .ox-skel-grid--tiles {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+.ox-skel-needs__toggle {
+  max-inline-size: 220px;
+  border-radius: var(--ox-r-pill);
+}
+
+.ox-skel-grid--needs {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .ox-skel-grid--needs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-skel-grid--needs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .ox-skel-grid--goals {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
   .ox-skel-grid--channels,
   .ox-skel-grid--guides {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2730,92 +2661,100 @@ button.ox-trust__btn:hover .ox-trust__title {
 .ox-certs__legal-en { display: block; }
 
 // ---------------------------------------------------------------------------
-// 18. The advisory section, as two tiers
-//
-// It was one row of three plan cards on a photograph: 470px tall, three plain
-// 416x232 rounded rectangles, and nothing in it that a supplements shop could
-// not have bought from a template. It now carries the whole advisory offer,
-// which is the channel chooser that used to live only on /services plus the
-// plans it leads to, and it is given the room that needs.
-//
-// WHY TWO TIERS AND NOT SIX CARDS. The two rows answer different questions.
-// The channels are how a shopper ASKS: free or nearly so, no commitment, the
-// cheapest yes on the page, so they go first. The plans are what the asking
-// LEADS TO, and they are paid. Six cards in one row would read as six
-// equivalent things and lose that distinction, which is the confusion the
-// whole brief is written against.
-//
-// WHY NOT MIRRORED. Repeating one card shape twice is precisely what makes a
-// section feel like a template. The two tiers share the identity (the accent
-// slash, the angled call to action, the same dark ground) and differ in
-// treatment: a channel card is an upright brief with a price, a plan card is a
-// photographic door.
-//
-// WHY THE CARDS ARE NOT PARALLELOGRAMS. The angle belongs on the CTA, the
-// slash and the divider, where it is decoration. Clipping a card that holds a
-// paragraph cuts the corners off the paragraph, so the motif would cost the
-// section its readability to prove a point about itself.
+// 19. OxCtaBand: the closing CTA band (S2c, 2026-09-22)
 // ---------------------------------------------------------------------------
-.ox-services__inner {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-8);
+// Shares the `ox-newsletter` registry slot and its `show_newsletter` gate
+// (OxCtaBand's own docblock has the reason). One angled band edge — the
+// motif below — and the accent lives on the one filled CTA.
+.ox-cta-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--ox-12);
+  background: var(--ox-bg);
+  background-image: var(--ox-band-image, none);
+  background-size: cover;
+  background-position: center;
 }
 
-.ox-services__tier {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-4);
-}
-
-.ox-services__tier-title {
-  margin: 0;
-  font-size: var(--ox-t-lead);
-  font-weight: var(--ox-w-ui);
-  color: var(--ox-fg);
-}
-
-// The divider between the tiers: the theme's own lean, drawn as a thin
-// parallelogram rather than a rule, so the break between "ask" and "get a
-// plan" carries the identity instead of a hairline.
-.ox-services__rule {
-  align-self: stretch;
-  block-size: 2px;
+// A scrim under the merchant's optional photograph, so type stays readable
+// whatever the owner drops in; harmless (transparent black) with no image.
+.ox-cta-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background: linear-gradient(
-    to left,
+    to bottom,
+    rgba(14, 16, 20, 0.35) 0%,
+    rgba(14, 16, 20, 0.72) 100%
+  );
+}
+
+.ox-cta-band__motif {
+  position: absolute;
+  z-index: 0;
+  inset-block: -8%;
+  inset-inline-start: -48px;
+  inline-size: 132px;
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
     rgba(var(--ox-accent-rgb), 0) 0%,
-    rgba(var(--ox-accent-rgb), 0.55) 22%,
-    rgba(var(--ox-accent-rgb), 0.55) 78%,
+    rgba(var(--ox-accent-rgb), 0.16) 42%,
     rgba(var(--ox-accent-rgb), 0) 100%
   );
-  transform: skewX(var(--ox-skew));
 }
 
-.ox-services__channels {
-  grid-template-columns: 1fr;
+.ox-cta-band__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
 }
 
-@media (min-width: 640px) {
-  .ox-services__channels {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.ox-cta-band__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  max-inline-size: var(--ox-container-text);
+}
+
+.ox-cta-band__title,
+.ox-cta-band__line {
+  margin: 0;
+}
+
+.ox-cta-band__line {
+  color: var(--ox-fg-3);
+}
+
+.ox-cta-band__cta {
+  margin-block-start: var(--ox-2);
+}
+
+.ox-cta-band__newsletter {
+  padding: 0;
+  background: none;
 }
 
 @media (min-width: 1024px) {
-  .ox-services__channels {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .ox-cta-band {
+    padding-block: var(--ox-16);
   }
 
-  // The plan cards grow with the section. At 232 they read as captions under
-  // the channel row rather than as the paid outcome it leads to.
-  .ox-services--banded .ox-plan {
-    min-block-size: 260px;
+  .ox-cta-band__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ox-8);
   }
-}
 
-// The band needs the room the second tier asks for.
-@media (min-width: 1024px) {
-  .ox-services--banded {
-    padding-block: var(--ox-24);
+  .ox-cta-band__motif {
+    inline-size: 220px;
   }
 }

@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { OxHero } from './OxHero';
-import { OxGoals } from './OxGoals';
-import { OxCategories } from './OxCategories';
+import { OxNeeds } from './OxNeeds';
 import { OxProducts } from './OxProducts';
 import { OxBrands } from './OxBrands';
 import { OxServices } from './OxServices';
@@ -30,6 +30,19 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
+/**
+ * `OxNeeds` claims a per-`QueryClient` slot so twilight.json's two registered
+ * paths never draw the section twice on a real page (OxNeeds.tsx's
+ * docblock). Two demo panels on the SAME kitchen-sink page would otherwise
+ * share the ambient client and the second would render null, so each demo
+ * gets its own fresh client - the same isolation a fresh page request gives
+ * the real theme.
+ */
+function NeedsDemo({ children }: { children: ReactNode }) {
+  const [client] = useState(() => new QueryClient());
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+}
+
 /** The twelve home blocks (B2), each in the state DIRECTION 6.2 reserves for it. */
 export function KitchenSink() {
   return (
@@ -51,12 +64,23 @@ export function KitchenSink() {
         <OxHero data={block('ox-hero')} />
       </Panel>
 
-      <Panel title="OxGoals (settle runs once when 30% in view)">
-        <OxGoals data={block('ox-goals')} />
+      <Panel title="OxNeeds, no merchant selection (goals pane default; live query decides count/image/missing-image per card)">
+        <NeedsDemo>
+          <OxNeeds data={block('ox-goals')} />
+        </NeedsDemo>
       </Panel>
 
-      <Panel title="OxCategories (eight tiles, sprite while artwork is missing)">
-        <OxCategories data={block('ox-categories')} />
+      <Panel title="OxNeeds, merchant category selection on the legacy ox-categories slot (types pane, switch the toggle to see it)">
+        <NeedsDemo>
+          <OxNeeds
+            data={block('ox-categories', {
+              categories: [
+                { name: 'كرياتين', url: '/creatine/c9002', image: '' },
+                { name: 'واي بروتين', url: '/whey-protein/c9003', image: '' },
+              ],
+            })}
+          />
+        </NeedsDemo>
       </Panel>
 
       <Panel title="OxProducts (latest, engine card through the registry)">

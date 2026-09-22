@@ -9,22 +9,33 @@ export interface PlanCardProps {
 }
 
 /**
- * One photographic door in the advisory band (S2 design-audit 2026-09-22).
+ * One photographic door in the advisory band (S2 design-audit 2026-09-22,
+ * reworked to `docs/build/X-IDENTITY-2026-09-22.md` §4.5-4.6).
  *
- * FADED photographic background (owner amendment 2026-09-22 evening): the
- * frame sits at low opacity, and a scrim angled on the identity's own skew
- * (`var(--ox-skew)`, never a literal degree) darkens the text end while
- * leaving the middle open enough that the photograph still reads as a
- * picture, not as a black rectangle with a caption. `BandPhoto` swallows a
- * missing frame, so a card with no photograph is still a finished dark card.
+ * FADED photographic background: the frame sits at `opacity: 0.55`, under a
+ * scrim whose gradient runs perpendicular to the mark's own 34° bars —
+ * `linear-gradient(236deg, …)` in RTL, `124deg` in LTR (§4.5's own literal
+ * values, declared as two rules rather than a `rotate`; a gradient angle is
+ * outside `--ox-angle`/`--ox-skew`'s reach, so this is the one place a
+ * literal degree is correct). The 0% stop is the darkest (0.94) and sits at
+ * the card's top-inline-start corner, which is why the whole content block
+ * lives there now instead of at the foot: §4.5 measures the floor at
+ * alpha >= 0.60 for `--ox-ink-on-dark` on a worst-case white pixel, and only
+ * the 0-72% zone of the gradient clears it. Past 72% the card carries no
+ * text, only the watermark.
+ *
+ * §4.6: a dark plan card takes the watermark and no corner cut (the pastel
+ * need cards take the corner cut and no watermark) — the two rows read as a
+ * pair rather than the same card twice. The mark sits at accent 0.12 on
+ * `--ox-band-util`, the measured ceiling for that pairing.
  *
  * The card carries no slash of its own: the identity rule spends the
  * section's one angled band edge on `OxServices`'s ground motif, so a second
  * angle here would be the "scattered wedges as texture" the rule forbids.
  * Hover is a 1px accent inset ring, never a lift (BUILD.md §3.4: border
- * colour only). The glyph sits in the bottom stack, painted flat orange
- * through the `--ox-icon-mono` per-context override rather than the sprite's
- * default two-tone (white stroke, orange fleck) — one accent note, not two.
+ * colour only). The glyph is painted flat orange through the
+ * `--ox-icon-mono` per-context override rather than the sprite's default
+ * two-tone (white stroke, orange fleck) — one accent note, not two.
  */
 export function PlanCard({ plan }: PlanCardProps) {
   const { t } = useTranslation();
@@ -32,6 +43,7 @@ export function PlanCard({ plan }: PlanCardProps) {
     <Link to={plan.to} className="ox-plan" data-testid="ox-plan-card" data-plan={plan.id}>
       {plan.photo ? <BandPhoto src={plan.photo} className="ox-plan__photo" /> : null}
       <span className="ox-plan__scrim" aria-hidden="true" />
+      <Icon name="mark" size={96} className="ox-plan__watermark" />
       <span className="ox-plan__body">
         <span className="ox-plan__title ox-h3">{t(plan.titleKey)}</span>
         <span className="ox-plan__line ox-small">{t(plan.lineKey)}</span>

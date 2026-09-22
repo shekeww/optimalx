@@ -3,7 +3,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SearchField } from './MainBar';
 import { Logo } from './Logo';
 import { useCartCountPill } from './useCartCountPill';
-import { PdpIcon } from '../../product/PdpIcon';
+import { Icon } from '../../common/Icon';
 
 const SallaCartSummary = lazy(() =>
   import('@salla.sa/twilight-components-react/cart-summary').then((m) => ({
@@ -66,7 +66,7 @@ export function MobileHeader({ menuOpen, onToggleMenu, withSearchRow, drawerId }
                     and painted a colour bag beside two currentColor strokes: the
                     cart was amber where the heart and the account glyph were
                     white. A drawn path cannot fall back. */}
-                <PdpIcon name="cart" size={22} />
+                <Icon name="cart" size={22} />
                 {/* The component's own anchor (`.s-cart-summary-wrapper`) gets no
                     name of its own: `cartLabel` is internal state, only ever
                     painted when `show-cart-label` is set, and the icon slot is

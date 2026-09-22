@@ -121,10 +121,16 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
       <header className="ox-service__head">
         {/* FADED photographic background (owner amendment, S2c 2026-09-22):
             the same frame the band above already carries, at low opacity
-            under an angled scrim on the identity's own skew, never a literal
-            degree. `BandPhoto` disappears rather than breaking when a frame
-            is missing, so the header is finished with plain plate colour
-            either way. */}
+            under an angled scrim on the identity's own skew (var(--ox-skew),
+            never a literal degree). This is the LIGHT-ground header of a
+            long-form section, not the dark advisory band X-IDENTITY-2026-09-
+            22.md §4.5 measures (`.ox-plan`, section 8 of _b2-home.scss) — its
+            own opaque-plate-to-40%-see-through scrim keeps the same 0-60% "no
+            photograph under the text" floor by construction rather than by
+            the §4.5 formula, since that formula is a dark-ground (--ox-band-
+            util) composite. `BandPhoto` disappears rather than breaking when
+            a frame is missing, so the header is finished with plain plate
+            colour either way. */}
         <BandPhoto src={page.photo} className="ox-service__photo" />
         <span className="ox-service__scrim" aria-hidden="true" />
         <Icon name={page.icon} size={32} className="ox-service__icon" />

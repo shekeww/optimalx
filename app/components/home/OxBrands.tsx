@@ -46,9 +46,10 @@ export function OxBrands({ data }: OxBlockProps) {
     >
       <div className="ox-container">
         <div className="ox-brands__head">
-          {/* The section's one true accent element and its one angled edge,
-              in a single shape (identity rule): the accent bar the needs
-              section's cards already draw, skewed on the shared token. */}
+          {/* The section's one true accent element. Not skewed (X-IDENTITY
+              §3.2's 158px law: an angle below that block-size may live only
+              inside a sprite symbol) — see _b2-home.scss for the note and
+              the pending angled primitive this section still owes. */}
           <span className="ox-brands__accent" aria-hidden="true" />
           <SectionHeader title={t('ox.home.brands_title')} titleId="ox-brands-title" as="h2" />
         </div>

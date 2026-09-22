@@ -69,9 +69,9 @@ interface RawNode {
  * file added here (owner-checklist, shared-file conflicts table).
  */
 const UTILITY_ICON: Record<string, OxIconName> = {
-  bundles: 'form',
+  bundles: 'bundles',
   services: 'video-consult',
-  digital_library: 'plan',
+  digital_library: 'digital-library',
   gift_cards: 'gift',
 };
 

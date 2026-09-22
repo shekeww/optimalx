@@ -41,7 +41,7 @@ export function ZeroResults({ query, className }: ZeroResultsProps) {
     <div className={['ox-zero', className].filter(Boolean).join(' ')}>
       <EmptyState
         className="ox-zero__state"
-        icon="help"
+        icon="headset"
         title={
           <>
             {t('ox.search.no_results_prefix')} <Bdi lang={null}>{query}</Bdi>

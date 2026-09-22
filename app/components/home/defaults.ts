@@ -109,15 +109,34 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // 4287px of real content, so the page SHRANK by 703px as it loaded, which is
   // a layout shift in the least forgivable direction: everything a shopper was
   // reading jumps upward under them.
-  // Desktop was 332 when the goal door was 260 tall. The door is 400 from 1280
-  // now, so this follows it: reserving the old number would hand the block a
-  // 140px jump on mount, which is the layout shift this table exists to stop.
-  'ox-goals': { mobile: 678, desktop: 472 },
+  // Rewritten for `OxNeeds` (S2b, 2026-09-22; the goal doors above are gone,
+  // replaced by the merged "shop by need" section - token arithmetic against
+  // `_b2-home.scss`'s "1. OxNeeds and NeedCard" section, not a live browser
+  // measurement; see docs/build/progress/S2b.md for the addition.
+  //
+  // Mobile (358 container): SectionHeader stack 106 (h2 ~30 + gap 8 + 2-line
+  // subline ~44 + margin-end 24, the same shape OxServices' own re-measure
+  // uses without its eyebrow row) + gap to the toggle 16 + pill toggle 48 +
+  // panel top padding 16 + the GOALS pane's grid, the default tab: 6 rows of
+  // 84 plus 5 gaps of 12 = 564. Total 750.
+  //
+  // Desktop (1296 container, 3-up): header stack 107 (h2 40 + gap 8 + 1-line
+  // subline 27 + margin-end 32) + gap 16 + toggle 48 + panel padding 16 +
+  // grid 368 (2 rows of a 172 card + one 24 gap, six goals over three
+  // columns). Total 555.
+  'ox-goals': { mobile: 750, desktop: 555 },
   // The largest single error in the old table, and in the opposite direction.
   // The rail became an eight-card grid and the reservation never followed, so
   // this block UNDER-reserved by 410px and jumped down on mount.
   'ox-products': { mobile: 1759, desktop: 1040 },
-  'ox-categories': { mobile: 337, desktop: 228 },
+  // `ox-categories` is the needs section's OTHER registered slot (S2b,
+  // 2026-09-22): both `home.ox-goals` and `home.ox-categories` render
+  // `OxNeeds`, and whichever is NOT first in the composition (today, always
+  // `ox-categories`: it sits after `ox-products-secondary` while `ox-goals`
+  // sits right after the hero) renders null, so this reserves nothing - the
+  // same reasoning `ox-brands`/`ox-guides` already follow below for a block
+  // that renders nothing by default.
+  'ox-categories': { mobile: 0, desktop: 0 },
   // The campaign poster is gated on a real campaign and renders null until
   // the merchant writes a headline, so it reserves nothing by default. A store
   // running one takes the shift on that block instead, which is the smaller

@@ -8,8 +8,7 @@ import { createElement } from 'react';
 import { HOME_BLOCK_HEIGHT_CSS, HOME_BLOCK_PATHS, type HomeBlockPath } from './defaults';
 import { BLOCK_SKELETONS } from './HomeSkeleton';
 import { OxHero } from './OxHero';
-import { OxGoals } from './OxGoals';
-import { OxCategories } from './OxCategories';
+import { OxNeeds } from './OxNeeds';
 import { OxProducts } from './OxProducts';
 import { OxPoster } from './OxPoster';
 import { OxPosters } from './OxPosters';
@@ -46,8 +45,13 @@ import { OxBanner } from './OxBanner';
 
 const BLOCKS: Record<HomeBlockPath, AnyHomeComponent> = {
   'ox-hero': OxHero,
-  'ox-goals': OxGoals,
-  'ox-categories': OxCategories,
+  // Both legacy block keys point at the SAME merged component (S2b, 2026-09-22):
+  // OxNeeds claims whichever slot the current composition renders first
+  // (`useClaimPrimaryNeedsSlot`) and the other renders null, so a store whose
+  // dashboard composition still carries both (twilight.json marks both
+  // `is_default: true`) draws the section once. See OxNeeds.tsx's docblock.
+  'ox-goals': OxNeeds,
+  'ox-categories': OxNeeds,
   'ox-products': OxProducts,
   'ox-poster': OxPoster,
   'ox-posters': OxPosters,

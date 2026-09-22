@@ -28,6 +28,12 @@ import { BLOCK_SKELETONS } from '../../app/components/home/HomeSkeleton';
  *
  * A store that later turns one of these on takes the shift on that block
  * instead, which is the smaller cost and affects nobody today.
+ *
+ * `ox-categories` joined this list on 2026-09-22 (S2b): it is `OxNeeds`'
+ * OTHER registered slot (register.ts), and whichever of `ox-goals` /
+ * `ox-categories` is not first in the composition renders null, which is
+ * `ox-categories` in every default composition (`ox-goals` sits right after
+ * the hero; `ox-categories` sits after `ox-products-secondary`).
  */
 const GATED = [
   'ox-newsletter',
@@ -36,6 +42,7 @@ const GATED = [
   'ox-guides',
   'ox-poster',
   'ox-certifications',
+  'ox-categories',
 ] as const;
 
 describe('the gated home blocks', () => {

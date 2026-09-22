@@ -121,7 +121,7 @@ export default function KitchenSink() {
         primaryKey="ox.account.orders"
       />
       <AccountEmpty
-        icon="help"
+        icon="headset"
         titleKey="ox.empty.notifications_title"
         bodyKey="ox.empty.notifications_body"
         primaryTo="/account/orders"
@@ -133,7 +133,7 @@ export default function KitchenSink() {
         bodyKey="ox.empty.loyalty_body"
       />
       <EmptyState
-        icon="help"
+        icon="headset"
         title={t('ox.empty.testimonials_title')}
         body={t('ox.empty.testimonials_body')}
         primary={<Button to="/latest-products">{t('ox.empty.cta_shop')}</Button>}

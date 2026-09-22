@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type QueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import { category } from '@salla.sa/twilight-theme-engine/api/category';
 import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import type { Category, MenuItem } from '@salla.sa/twilight-theme-engine/types';
@@ -9,6 +10,71 @@ import { TAXONOMY_IDS } from '../../content/taxonomy-ids';
 import { flattenMenu } from '../layout/navLinks';
 import type { OxIconName } from '../common/Icon';
 import { matchesSlug, searchFallback } from './resolve';
+
+/**
+ * The two lists `useTaxonomyLinks` resolves against, threaded through a route
+ * loader instead of a bare client query (owner amendment 2026-09-22, "SSR/
+ * client consistency").
+ *
+ * Before this, `useTaxonomyLinks` ran `useQuery(category.queries.list())` and
+ * `useQuery(menu.queries.header())` with nothing prefetching either on the
+ * server: the SSR HTML always carried the `/search?q=` fallback (`resolved:
+ * false`), the client's first real render carried the live category URL, and
+ * React logged a hydration mismatch on every goal and type link. Home's loader
+ * (`app/routes/index.tsx`) and the category listing's loader
+ * (`app/routes/$slug.c$id.tsx`) now call {@link loadTaxonomyData} and return
+ * its result as `taxonomy` loader data, so the server already has both lists
+ * before it renders a single link.
+ */
+export interface TaxonomyLoaderData {
+  categories: Category[];
+  menuItems: MenuItem[];
+}
+
+/**
+ * Prefetches both lists into the router's query client and returns them for a
+ * route loader to attach as `taxonomy`. `ensureQueryData` reads the SAME query
+ * options (`category.queries.list()`, `menu.queries.header()`) `useTaxonomyLinks`
+ * itself queries with, so the two share one cache entry per list: a route that
+ * calls this never fetches either list twice.
+ */
+export async function loadTaxonomyData(queryClient: QueryClient): Promise<TaxonomyLoaderData> {
+  const [categories, menuItems] = await Promise.all([
+    queryClient.ensureQueryData(category.queries.list()),
+    queryClient.ensureQueryData(menu.queries.header()),
+  ]);
+  return { categories, menuItems };
+}
+
+/** True when `value` is loader data carrying the taxonomy pair. */
+function hasTaxonomy(value: unknown): value is { taxonomy: TaxonomyLoaderData } {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    'taxonomy' in value &&
+    !!(value as { taxonomy?: unknown }).taxonomy
+  );
+}
+
+/**
+ * The taxonomy pair a route loader in the CURRENT match tree already fetched,
+ * or `undefined` when none did. Reads `useRouter` rather than `useLoaderData`
+ * for a specific route: `useTaxonomyLinks` is called from the header, the
+ * needs section and the listing page, which sit under different route matches
+ * on different pages, and this has to serve all of them with the one loader
+ * that actually ran. `useRouter({ warn: false })` never throws with no
+ * `<RouterProvider>` ancestor (every existing component test renders bare,
+ * with no router) - it returns `undefined` and this falls through to the
+ * plain query below, which is the pre-existing behaviour.
+ */
+function useTaxonomyLoaderData(): TaxonomyLoaderData | undefined {
+  const router = useRouter({ warn: false });
+  if (!router) return undefined;
+  for (const match of router.state.matches) {
+    if (hasTaxonomy(match.loaderData)) return match.loaderData.taxonomy;
+  }
+  return undefined;
+}
 
 /**
  * The one runtime resolver for the 25-node taxonomy (PLAN-ship Contract C):
@@ -120,8 +186,21 @@ function resolveNode(
 
 export function useTaxonomyLinks(): TaxonomyLinks {
   const { t } = useTranslation();
-  const { data: liveCategories, isPending: categoriesPending } = useQuery(category.queries.list());
-  const { data: menuItems, isPending: menuPending } = useQuery(menu.queries.header());
+  const loaderData = useTaxonomyLoaderData();
+  // Disabled, not just ignored, when a loader already supplied the pair: an
+  // enabled query with no prefetch is exactly the bug this fixes, so a route
+  // that DID prefetch never re-issues either request on mount.
+  const { data: queriedCategories, isPending: categoriesPending } = useQuery({
+    ...category.queries.list(),
+    enabled: !loaderData,
+  });
+  const { data: queriedMenuItems, isPending: menuPending } = useQuery({
+    ...menu.queries.header(),
+    enabled: !loaderData,
+  });
+  const liveCategories = loaderData?.categories ?? queriedCategories;
+  const menuItems = loaderData?.menuItems ?? queriedMenuItems;
+  const isPending = loaderData ? false : categoriesPending || menuPending;
 
   const linkBySlug = useMemo(() => {
     const liveFlat = flattenCategories(liveCategories);
@@ -145,8 +224,8 @@ export function useTaxonomyLinks(): TaxonomyLinks {
       goals: MENU.goals.map((node) => linkBySlug.get(node.slug)).filter(Boolean) as TaxonomyLink[],
       utility: MENU.utility.map((node) => linkBySlug.get(node.slug)).filter(Boolean) as TaxonomyLink[],
       bySlug: (slug: string) => linkBySlug.get(slug),
-      isLoading: categoriesPending || menuPending,
+      isLoading: isPending,
     }),
-    [linkBySlug, categoriesPending, menuPending]
+    [linkBySlug, isPending]
   );
 }

@@ -45,24 +45,34 @@ export function HeroSkeleton() {
   );
 }
 
-export function GoalsSkeleton() {
+/**
+ * `OxNeeds` (S2b, 2026-09-22): a heading bar, a pill-toggle bar and six row
+ * placeholders - the goals pane, the default tab, is what a visitor sees
+ * before the block mounts either way.
+ */
+export function NeedsSkeleton() {
   return (
-    <BlockSkeleton path="ox-goals" className="ox-skel-grid ox-skel-grid--goals">
-      {rows(6).map((index) => (
-        <SkeletonBlock key={index} height="100%" className="ox-skel-dark" />
-      ))}
+    <BlockSkeleton path="ox-goals" className="ox-skel-needs">
+      <SkeletonBar width="40%" height={30} />
+      <SkeletonBar width="70%" />
+      <SkeletonBlock height={48} className="ox-skel-needs__toggle" />
+      <div className="ox-skel-grid ox-skel-grid--needs">
+        {rows(6).map((index) => (
+          <SkeletonBlock key={index} height="100%" />
+        ))}
+      </div>
     </BlockSkeleton>
   );
 }
 
+/**
+ * `ox-categories` is `OxNeeds`' other registered slot (register.ts) and
+ * renders null whenever `ox-goals` already claimed the section, which is
+ * every default composition (`HOME_BLOCK_HEIGHTS['ox-categories']` reserves
+ * 0 to match). Same reasoning as `BrandsSkeleton`/`GuidesSkeleton` below.
+ */
 export function CategoriesSkeleton() {
-  return (
-    <BlockSkeleton path="ox-categories" className="ox-skel-grid ox-skel-grid--tiles">
-      {rows(8).map((index) => (
-        <SkeletonBlock key={index} height="100%" />
-      ))}
-    </BlockSkeleton>
-  );
+  return null;
 }
 
 /** The rail placeholder the slider itself shows while its first page loads. */
@@ -227,7 +237,7 @@ export function HomeSkeleton() {
   return (
     <div className="ox-home-skeleton" data-testid="ox-home-skeleton">
       <HeroSkeleton />
-      <GoalsSkeleton />
+      <NeedsSkeleton />
     </div>
   );
 }
@@ -235,7 +245,7 @@ export function HomeSkeleton() {
 /** Every block's placeholder, keyed by registry path (registerHomeComponentConfig). */
 export const BLOCK_SKELETONS: Record<HomeBlockPath, () => ReactNode> = {
   'ox-hero': HeroSkeleton,
-  'ox-goals': GoalsSkeleton,
+  'ox-goals': NeedsSkeleton,
   'ox-categories': CategoriesSkeleton,
   'ox-products': ProductsSkeleton,
   'ox-brands': BrandsSkeleton,

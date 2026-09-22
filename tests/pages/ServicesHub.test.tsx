@@ -95,6 +95,18 @@ describe('ServicesHub', () => {
     expect(line.textContent).toContain('24');
   });
 
+  it('states no written-question reply time under the channel cards until reply_sla_hours is set', () => {
+    renderWithProviders(<ServicesHub />);
+    expect(screen.queryByTestId('ox-services-reply')).toBeNull();
+  });
+
+  it('carries the ox.home.services_reply line under the channel cards once reply_sla_hours is set', () => {
+    setSettings({ reply_sla_hours: '24' });
+    renderWithProviders(<ServicesHub />);
+    const line = screen.getByTestId('ox-services-reply');
+    expect(line.textContent).toBe(t('ox.home.services_reply', { hours: '24' }));
+  });
+
   it('shows the three channel cards and the scope list', () => {
     renderWithProviders(<ServicesHub />);
     expect(screen.getAllByTestId('ox-channel-card')).toHaveLength(3);

@@ -14,6 +14,13 @@ export interface SectionHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 't
    * Never a decorative label.
    */
   eyebrow?: ReactNode;
+  /**
+   * Rendered under the title only when given (additive: 15 sections share
+   * this component and none of them pass it today). A sentence, never a
+   * decorative label - the needs section's "شحن مجاني للطلبات فوق..." sibling
+   * copy belongs here, not in the title itself.
+   */
+  subline?: ReactNode;
   /** The "view all" link at the end of the title row; label defaults to ox.common.view_all. */
   viewAll?: { to: string; label?: ReactNode };
   /** Desktop-only slot at the end of the title row (slider arrows). */

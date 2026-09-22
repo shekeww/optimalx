@@ -43,7 +43,7 @@ export function CartTrust({ cart: cartProp }: CartTrustProps) {
       {state ? (
         <div className={`ox-ship${state.reached ? ' is-reached' : ''}`}>
           <p className="ox-ship__line ox-small">
-            <Icon name={state.reached ? 'tick' : 'shipping'} size={16} />
+            <Icon name={state.reached ? 'tick' : 'truck'} size={16} />
             <span>
               {state.reached
                 ? t('ox.cart.free_shipping_reached')

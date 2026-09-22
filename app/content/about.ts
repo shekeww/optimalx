@@ -45,7 +45,7 @@ export const ABOUT_FACTS: AboutFact[] = [
   },
   {
     id: 'shipping',
-    glyph: 'shipping',
+    glyph: 'truck',
     labelKey: 'ox.pages.about.stat_shipping_label',
     subKey: 'ox.pages.about.stat_shipping_sub',
   },
