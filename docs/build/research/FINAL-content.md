@@ -1271,7 +1271,7 @@ Rules: one flat object per language, identical keys, values are the only text a 
   "ox.pdp.flavor": "النكهة",
   "ox.pdp.size": "الحجم",
   "ox.pdp.quantity": "الكمية",
-  "ox.pdp.buy_now": "اشتر الآن",
+  "ox.pdp.buy_now": "اشتري الآن",
   "ox.pdp.nutrition_title": "الحقائق الغذائية",
   "ox.pdp.nutrition_per_serving": "في الحصة الواحدة",
   "ox.pdp.nutrition_meaning": "ماذا يعني الرقم",
