@@ -6,7 +6,7 @@ import { Tabs, type TabItem } from '../common/Tabs';
 import { useTaxonomyLinks, type TaxonomyLinks } from '../listing/useTaxonomyLinks';
 import { matchesSlug, searchFallback } from '../listing/resolve';
 import { GOALS, GOAL_CARD_LINES } from '../../content/goals';
-import { categoryBySlug } from '../../content/categories';
+import { CATEGORIES, categoryBySlug } from '../../content/categories';
 import { nodeBySlug } from '../../content/taxonomy';
 import type { OxIconName } from '../common/Icon';
 import { NeedCard, type NeedTone } from './NeedCard';
@@ -134,16 +134,9 @@ const TYPE_PANE_SLUGS = [
  * electrolyte tablet and a liquid chlorophyll - three different shelves, so
  * the line names all three rather than picking one).
  */
-const TYPE_LINE_KEY: Record<string, string> = {
-  protein: 'ox.content.categories.protein.card_line',
-  creatine: 'ox.content.categories.creatine.card_line',
-  'pre-workout': 'ox.content.categories.pre_workout.card_line',
-  'amino-acids': 'ox.content.categories.amino_acids.card_line',
-  'omega-3': 'ox.content.categories.omega_3.card_line',
-  'vitamins-minerals': 'ox.content.categories.vitamins_minerals.card_line',
-  'collagen-beauty': 'ox.content.categories.collagen_beauty.card_line',
-  'daily-health': 'ox.content.categories.daily_health.card_line',
-};
+const TYPE_LINE_KEY: Record<string, string> = Object.fromEntries(
+  CATEGORIES.filter((entry) => entry.cardLineKey).map((entry) => [entry.slug, entry.cardLineKey as string])
+);
 
 interface NeedCardVM {
   slug: string;

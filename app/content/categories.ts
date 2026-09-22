@@ -48,6 +48,8 @@ export interface CategoryContent {
   titleKey: string;
   /** Meta description, 120 to 155 characters, answer-first (Contract B). */
   descriptionKey: string;
+  /** The home needs-card subline (S2b, 2026-09-22): a claims-clean list of the product types the shelf stocks; only the eight home cards carry one. */
+  cardLineKey?: string;
   /** The 60 to 90 word paragraph above the grid. */
   introKey: string;
   /** Filter chip labels, in order. A chip is a label, not a live filter id. */
@@ -99,6 +101,7 @@ function base(
 export const CATEGORIES: CategoryContent[] = [
   {
     ...base('protein', 'protein', null, 'protein', 'blue'),
+    cardLineKey: `${KEY}.protein.card_line`,
     chipKeys: chips('protein', 6),
     relatedGuides: [
       'guides/protein-dose',
@@ -162,6 +165,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('creatine', 'creatine', null, 'creatine', 'green'),
+    cardLineKey: `${KEY}.creatine.card_line`,
     chipKeys: chips('creatine', 3),
     relatedGuides: [
       'guides/how-to-take-creatine',
@@ -172,6 +176,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('pre-workout', 'pre_workout', null, 'pre-workout'),
+    cardLineKey: `${KEY}.pre_workout.card_line`,
     chipKeys: chips('pre_workout', 4),
     relatedGuides: [
       'guides/what-is-pre-workout',
@@ -182,6 +187,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('amino-acids', 'amino_acids', null, 'amino-acids'),
+    cardLineKey: `${KEY}.amino_acids.card_line`,
     chipKeys: chips('amino_acids', 5),
     relatedGuides: [
       'guides/creatine-vs-protein',
@@ -192,6 +198,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('omega-3', 'omega_3', null, 'omega-3'),
+    cardLineKey: `${KEY}.omega_3.card_line`,
     chipKeys: chips('omega_3', 3),
     relatedGuides: [
       'guides/supplements-for-beginners',
@@ -202,6 +209,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('vitamins-minerals', 'vitamins_minerals', null, 'vitamins-minerals', 'white'),
+    cardLineKey: `${KEY}.vitamins_minerals.card_line`,
     chipKeys: chips('vitamins_minerals', 5),
     relatedGuides: [
       'guides/supplements-for-beginners',
@@ -212,6 +220,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('collagen-beauty', 'collagen_beauty', null, 'collagen-beauty', 'black'),
+    cardLineKey: `${KEY}.collagen_beauty.card_line`,
     chipKeys: chips('collagen_beauty', 4),
     relatedGuides: [
       'guides/creatine-for-women',
@@ -222,6 +231,7 @@ export const CATEGORIES: CategoryContent[] = [
   },
   {
     ...base('daily-health', 'daily_health', null, 'daily-health'),
+    cardLineKey: `${KEY}.daily_health.card_line`,
     chipKeys: chips('daily_health', 3),
     relatedGuides: [
       'guides/supplements-for-beginners',

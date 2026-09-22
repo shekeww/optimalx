@@ -29,7 +29,10 @@
 
 // Mobile: a paper corner cut over the photo instead of the full angled edge.
 .ox-branch__corner {
-  @include ox-wedge-corner(64px, 158px);
+  // X-IDENTITY-2026-09-22.md §2.4: manual re-derive, ox-wedge-corner's $w is
+  // an explicit leg, not a run() computation: 158 * 0.6745 = 106.571, rounded
+  // 106.6 (was 64, the 22deg-era value).
+  @include ox-wedge-corner(106.6px, 158px);
   background: var(--ox-bg);
 }
 

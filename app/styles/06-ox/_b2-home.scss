@@ -120,16 +120,18 @@
 // 1c. The two call-to-action shapes the reference introduces
 // ---------------------------------------------------------------------------
 // The parallelogram is the detail that ties a button to the brand: it is the
-// wedge, at button scale, on the same 22 degrees. It is drawn as a clip-path
+// wedge, at button scale, on the identity's 34 degrees (X-IDENTITY-2026-09-22.md
+// §2.1, re-derived from the mark, was 22deg). It is drawn as a clip-path
 // rather than a skew so the label stays upright and so `:active`'s 1px
 // translate is not fighting a transform for the same slot.
 //
-// The run is the height times tan(22deg). A 48px control gives 19px, and the
-// inline padding carries that much extra so a label never touches the cut.
+// The run is the height times tan(34deg). §2.4's CTA row: 44px gives 29.7px,
+// 48px gives 32.4px — both padding-inline 16px + run (45.7 / 48.4), the
+// clearance the identity spec requires so a label never touches the cut.
 .ox-cta-wedge {
-  // 18px at the 44px height a phone gets, 19px at the 48px a desktop gets:
-  // the run has to track the height or the cut stops being 22 degrees.
-  --ox-cta-run: 18px;
+  // 29.7px at the 44px height a phone gets, 32.4px at the 48px a desktop
+  // gets: the run has to track the height or the cut stops being 34 degrees.
+  --ox-cta-run: 29.7px;
   border-radius: 0;
   padding-inline: calc(16px + var(--ox-cta-run));
   clip-path: polygon(
@@ -157,8 +159,10 @@
 
 @media (min-width: 640px) {
   .ox-cta-wedge {
-    --ox-cta-run: 19px;
-    padding-inline: calc(24px + var(--ox-cta-run));
+    // X-IDENTITY §2.4: 48 / 32.4 / 48.4 — the base rule's 16px + run formula
+    // already lands on 48.4 at 32.4px of run, so the padding override is
+    // dropped rather than kept in step with a second base by hand.
+    --ox-cta-run: 32.4px;
   }
 }
 
@@ -241,13 +245,23 @@
     inset-inline-end: 0;
     inset-inline-start: auto;
     inline-size: 60%;
-    clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
+    // X-IDENTITY-2026-09-22.md §2.3/§2.5: at 34deg a full-height diagonal is
+    // impossible on a hero-scale band (run would be 43.7% of this 864-wide
+    // pane, over the 24% budget and eating the subject). The edge is now
+    // vertical to 46.43% of the block-size, then a 34deg lean to the foot,
+    // run 202.4 — the mark's own construction (section 1.3), not a
+    // compromise. Valid only at the pane's 864x560 aspect (§2.5); a
+    // percentage pair's angle depends on the box, so this carries the pragma
+    // §7.1's `polygon-slope` rule requires.
+    /* identity: 34deg, run 202.4 of 864 */
+    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 76.57% 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__photo {
     inset-inline-end: auto;
     inset-inline-start: 0;
-    clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
+    /* identity: 34deg, run 202.4 of 864 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 23.43% 100%, 0 46.43%);
   }
 }
 
@@ -431,13 +445,17 @@
     inset-inline-end: 0;
     inset-inline-start: auto;
     inline-size: 60%;
-    clip-path: polygon(0 0, 96.7% 0, 73.3% 100%, 0 100%);
+    // Same fix as the photo above, same reason (X-IDENTITY §2.3/§2.5): the
+    // scrim shares the photo's box exactly, so it shares its polygon exactly.
+    /* identity: 34deg, run 202.4 of 864 */
+    clip-path: polygon(0 0, 100% 0, 100% 46.43%, 76.57% 100%, 0 100%);
   }
 
   [dir='ltr'] .ox-hero__scrim {
     inset-inline-end: auto;
     inset-inline-start: 0;
-    clip-path: polygon(3.3% 0, 100% 0, 100% 100%, 26.7% 100%);
+    /* identity: 34deg, run 202.4 of 864 */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 23.43% 100%, 0 46.43%);
   }
 }
 

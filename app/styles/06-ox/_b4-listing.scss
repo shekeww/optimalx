@@ -741,7 +741,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // The tonal edge, not the orange stroke: DIRECTION 5.3 builds this hero as the
 // home hero "without the stroke", so the goal page spends no accent here.
 .ox-goal-hero__corner {
-  @include ox-wedge-corner(64px, 158px);
+  // X-IDENTITY-2026-09-22.md §2.4: ox-wedge-corner takes an explicit $w leg,
+  // not a run() computation, so it needs a manual re-derive: 158 * 0.6745 =
+  // 106.571, rounded 106.6 (was 64, the 22deg-era value).
+  @include ox-wedge-corner(106.6px, 158px);
   background: var(--ox-graphite-2);
   z-index: 1;
 }

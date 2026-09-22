@@ -553,11 +553,14 @@ body.ox-sticky-bar .ox-cart {
     background: var(--ox-band-brand);
     overflow: hidden;
 
-    // The wedge: the same 22 degree pair the brand band and the footer carry,
-    // at the top inline-end corner, drawn once per screen.
+    // The wedge: the same 34 degree pair the brand band and the footer carry
+    // (X-IDENTITY-2026-09-22.md §2.1, re-derived from the mark, was 22deg), at
+    // the top inline-end corner, drawn once per screen. ox-wedge-corner takes
+    // an explicit $w leg, not a run() computation: 138 * 0.6745 = 93.081,
+    // rounded 93.1 (was 56, the 22deg-era value).
     &::after {
       content: '';
-      @include ox-wedge-corner(56px, 138px);
+      @include ox-wedge-corner(93.1px, 138px);
       background: var(--ox-accent);
       z-index: 1;
     }
