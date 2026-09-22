@@ -145,6 +145,34 @@ describe('CategoriesIndex', () => {
     expect(protein.className).not.toMatch(/ox-cat-card--art/);
   });
 
+  it('scopes the art card body to its own link, with the frame classes and desc/children as siblings outside it (S2i)', () => {
+    const { container } = renderWithProviders(<CategoriesIndex />);
+    const creatine = container.querySelector(
+      '[data-testid="ox-type-card"][data-category="creatine"]'
+    ) as HTMLElement;
+    const link = creatine.querySelector('.ox-cat-card__link') as HTMLElement;
+    const art = creatine.querySelector('.ox-cat-card__art') as HTMLElement;
+    const body = creatine.querySelector('.ox-cat-card__body') as HTMLElement;
+    const desc = creatine.querySelector('.ox-cat-card__desc') as HTMLElement;
+
+    // `.ox-cat-card__body` (and its foot, the count + arrow) must sit inside
+    // the SAME element the artwork does, `.ox-cat-card__link` - the
+    // positioning scope the S2i fix relies on so the foot lands at the
+    // bottom of the artwork, not past the description below it.
+    expect(link.contains(art)).toBe(true);
+    expect(link.contains(body)).toBe(true);
+    expect(body.querySelector('.ox-cat-card__foot')).not.toBeNull();
+    // The description stays a sibling OUTSIDE the link, same place as the
+    // tinted card's own - never nested inside the artwork's positioning
+    // scope, and never inside the stretched click target either.
+    expect(desc).not.toBeNull();
+    expect(link.contains(desc)).toBe(false);
+    // The outer card keeps the tinted card's own 1px frame class hook: the
+    // same `ox-cat-card` root, carrying `--art` as a modifier, not a
+    // replacement.
+    expect(creatine.className).toMatch(/\box-cat-card\b/);
+  });
+
   it('resolves a card to the live category, with its image, once one exists', async () => {
     liveCategories.push({
       id: 9001,

@@ -2155,7 +2155,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
   color: var(--ox-fg-2);
 }
 
-// Above the stretched link, so each chip is its own target.
+// Above the stretched link, so each chip is its own target. `margin-block-
+// start: auto` (S2i, 2026-09-23) is the "chips region takes the slack"
+// rule: once every card shares its row's height (`.ox-cat-index__grid`'s
+// `align-items: stretch`, restored below for the art variant), a card
+// shorter than its row-mate needs somewhere to put the difference - the
+// chips block, the last thing in the column, absorbs it rather than
+// leaving a gap between `__desc` and the card's own bottom edge.
 .ox-cat-card__children {
   position: relative;
   z-index: 1;
@@ -2163,6 +2169,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   flex-wrap: wrap;
   gap: var(--ox-2);
   margin: 0;
+  margin-block-start: auto;
   padding: 0;
   list-style: none;
 }
@@ -2173,28 +2180,61 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // ---------------------------------------------------------------------------
-// 14b. The art type card (S2h, 2026-09-23): the same full-bleed packshot
-//    photograph treatment `_b2-home.scss`'s `.ox-tile--art` carries on the
-//    home grid, mirrored here for the six root slugs `content/categories.ts`
-//    gives a `backgroundImage` for (`ART_BY_SLUG`, `CategoriesIndex.tsx`).
-//    `.ox-cat-index__grid` stretches every card to its row's tallest sibling
-//    (`align-items: stretch`); the art card opts out (`align-self: start`)
-//    so its own height tracks its photograph's 2:3 ratio instead.
+// 14b. The art type card (S2h 2026-09-23, corrected S2i 2026-09-23): the
+//    same full-bleed packshot photograph treatment `_b2-home.scss`'s
+//    `.ox-tile--art` carries on the home grid, mirrored here for the six
+//    root slugs `content/categories.ts` gives a `backgroundImage` for
+//    (`ART_BY_SLUG`, `CategoriesIndex.tsx`).
+//
+//    S2h's version opted this card OUT of the row stretch
+//    (`align-self: start`, `block-size: auto`) and dropped its own frame
+//    (`border: 0`) - a row could mix a 509px tinted card (protein, tall from
+//    its own children chips) against 426px art cards top-aligned beside it,
+//    ragged gaps between them. It also left `.ox-cat-card__body`'s
+//    `position: absolute` (below) resolving against the WHOLE card
+//    (`.ox-cat-card`, the nearest positioned ancestor - `.ox-cat-card__link`
+//    itself carried no `position` of its own), so its foot (the count and
+//    the arrow) landed near the card's true bottom, past `__desc`, instead
+//    of near the bottom of the artwork alone - the description and the foot
+//    collided. Fixed here: the card keeps the base rule's `block-size: 100%`
+//    (so `.ox-cat-index__grid`'s own `align-items: stretch` applies to every
+//    card alike, art or tinted, and `__children` above absorbs any leftover
+//    row height) and its 1px `--ox-line-3` frame (the tinted card's own
+//    border/background, untouched below - only `padding` goes to 0 so the
+//    artwork runs edge to edge, and `border-radius` too, since the artwork's
+//    own clip-path draws square/notched corners flush against it - a rounded
+//    frame around a square-cornered artwork would show the artwork's corner
+//    past the curve); `.ox-cat-card--art .ox-cat-card__link`, below, gets
+//    `position: relative` so `__body` scopes to the artwork alone.
 // ---------------------------------------------------------------------------
 .ox-cat-card--art {
-  align-self: start;
-  block-size: auto;
   padding: 0;
-  background: none;
-  border: 0;
-  color: var(--ox-fg);
+  border-radius: 0;
+  color: var(--ox-fg); // resets `--black`'s light ink for collagen-beauty -
+                        // see "the collagen-beauty conflict" note, below.
+  // Promoted to the card so `.ox-cat-card__art` can share them (never a
+  // second, duplicated pair of magic numbers) - the same mechanism
+  // `_b2-home.scss`'s `.ox-tile` promotes its own notch custom properties to
+  // `.ox-tile__art` (S2h, 2026-09-23).
+  --ox-cat-notch-t: 4px;
+  --ox-cat-notch-j: 12px;
+}
+
+// Scopes `.ox-cat-card__body`'s `position: absolute` (below) to the artwork
+// alone - see the S2i note above for the defect this closes.
+.ox-cat-card--art .ox-cat-card__link {
+  position: relative;
 }
 
 // `aspect-ratio`, never a fixed `block-size`, `min-block-size` only as the
 // floor - the same reasoning as `.ox-tile__art` (`_b2-home.scss` section 4b),
 // which this mirrors; this grid's own 2/3/5-column rhythm (below) does not
 // match the home grid's 2/4, so only the one shared floor is carried here
-// rather than a second, page-specific measured checkpoint.
+// rather than a second, page-specific measured checkpoint. Clipped to the
+// card's own notch below 1024 (X-IDENTITY §3.2's 158px small-angle floor) or
+// the mark's corner cut from 1024 (§3.3's 4-up lean/run, below) -
+// `border-radius` dropped in favour of it, since a `polygon()` clip-path
+// already overrides any rounding.
 .ox-cat-card__art {
   position: relative;
   z-index: 0;
@@ -2204,7 +2244,25 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-block-size: 260px;
   object-fit: cover;
   object-position: center;
-  border-radius: var(--ox-r-2);
+  clip-path: polygon(
+    var(--ox-cat-notch-j) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 var(--ox-cat-notch-t),
+    var(--ox-cat-notch-j) var(--ox-cat-notch-t)
+  );
+}
+
+[dir='ltr'] .ox-cat-card__art {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ox-cat-notch-j)) 0,
+    calc(100% - var(--ox-cat-notch-j)) var(--ox-cat-notch-t),
+    100% var(--ox-cat-notch-t),
+    100% 100%,
+    0 100%
+  );
 }
 
 .ox-cat-card--art .ox-cat-card__icon {
@@ -2409,6 +2467,37 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
   .ox-cat-index__utility {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  // The card grows past X-IDENTITY §3.2's 158px floor at this tier (measured
+  // 234px wide at 1440, art head ~351px tall), so the art head's one angled
+  // gesture upgrades from the notch to the mark's own corner cut - the exact
+  // lean/run `_b2-home.scss`'s `.ox-tile` uses at its own 4-up tier (§3.3:
+  // lean 64, run 43.2 - tan 34° = 0.6745, 64 × 0.6745 = 43.168, rounded;
+  // never a literal degree).
+  .ox-cat-card--art {
+    --ox-cat-lean: 64px;
+    --ox-cat-run: 43.2px;
+  }
+
+  .ox-cat-card__art {
+    clip-path: polygon(
+      var(--ox-cat-run) 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 var(--ox-cat-lean)
+    );
+  }
+
+  [dir='ltr'] .ox-cat-card__art {
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--ox-cat-run)) 0,
+      100% var(--ox-cat-lean),
+      100% 100%,
+      0 100%
+    );
   }
 }
 
