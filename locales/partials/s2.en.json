@@ -23,5 +23,7 @@
   "ox.listing.explore_title": "Explore more",
   "ox.listing.explore_siblings_label": "Similar categories",
   "ox.listing.explore_goals_label": "Related goals",
-  "ox.listing.explore_types_label": "Types within this goal"
+  "ox.listing.explore_types_label": "Types within this goal",
+  "ox.home.needs_tab_goal": "By goal",
+  "ox.home.needs_tab_type": "By type"
 }

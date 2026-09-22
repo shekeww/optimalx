@@ -83,6 +83,11 @@ export default defineConfig(async () => ({
       scss: { api: 'modern-compiler', silenceDeprecations: ['import'] } as any,
     },
   },
+  // Cloudflare quick tunnels (public previews for the owner) reach both the dev
+  // server and the workerd preview; Vite blocks unknown Host headers otherwise.
+  server: {
+    allowedHosts: ['.trycloudflare.com'],
+  },
   preview: {
     allowedHosts: ['.trycloudflare.com'],
   },

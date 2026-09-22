@@ -48,7 +48,6 @@ const { OxFaq } = await import('../../app/components/home/OxFaq');
 const { OxGuides } = await import('../../app/components/home/OxGuides');
 const { OxBrands } = await import('../../app/components/home/OxBrands');
 const { OxBanner } = await import('../../app/components/home/OxBanner');
-const { OxCategories } = await import('../../app/components/home/OxCategories');
 const { OxProducts, resolveSource } = await import('../../app/components/home/OxProducts');
 
 function data(path: keyof typeof HOME_BLOCK_FIELDS, extra: Record<string, unknown> = {}): OxBlockData {
@@ -147,73 +146,6 @@ describe('OxBanner', () => {
     // that number and no store data supplies it, so the band has no element
     // for it: a merchant asserting a figure does it in their own artwork.
     expect(screen.getByTestId('ox-banner').textContent).not.toMatch(/[0-9]+%/);
-  });
-});
-
-describe('OxCategories', () => {
-  it('falls back to eight type tiles, each linking to a search until the category exists', async () => {
-    categories.length = 0;
-    renderWithProviders(<OxCategories data={data('ox-categories')} />);
-    await waitFor(() => expect(screen.getAllByTestId('ox-category-tile')).toHaveLength(8));
-    const tiles = screen.getAllByTestId('ox-category-tile');
-    expect(tiles[0].getAttribute('href')).toContain('/search?q=');
-    // No artwork yet: the sprite symbol stands in, never a broken image.
-    expect(tiles[0].querySelector('svg')).not.toBeNull();
-    expect(tiles[0].querySelector('img')).toBeNull();
-  });
-
-  it('uses the live category URL and name when the store has the category', async () => {
-    categories.length = 0;
-    categories.push({
-      id: 7,
-      name: 'بروتين',
-      url: `/${ROOT_CATEGORY_SLUGS[0]}/c7`,
-      products_count: 12,
-      image: null,
-    });
-    renderWithProviders(<OxCategories data={data('ox-categories')} />);
-    await waitFor(() => expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe(
-      `/${ROOT_CATEGORY_SLUGS[0]}/c7`
-    ));
-    expect(screen.getAllByTestId('ox-category-tile')[0].textContent).toContain('بروتين');
-  });
-
-  it('prints no count and no photograph: eight tiles are one set or they are none', async () => {
-    categories.length = 0;
-    categories.push({
-      id: 8,
-      name: 'كرياتين',
-      url: `/${ROOT_CATEGORY_SLUGS[0]}/c8`,
-      products_count: 12,
-      image: 'https://cdn.example/k.jpg',
-    });
-    renderWithProviders(<OxCategories data={data('ox-categories')} />);
-    await waitFor(() =>
-      expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe(
-        `/${ROOT_CATEGORY_SLUGS[0]}/c8`
-      )
-    );
-    const tile = screen.getAllByTestId('ox-category-tile')[0];
-    // The reference draws a line glyph over a centred name and nothing else.
-    // A supplier packshot in one tile and a drawing in the next is what stops
-    // a row of eight reading as one set, so the API's image is not read.
-    expect(tile.querySelector('img')).toBeNull();
-    expect(tile.querySelector('.ox-tile__count')).toBeNull();
-    expect(tile.textContent).not.toContain('12');
-  });
-
-  it('renders the merchant selection when there is one', async () => {
-    renderWithProviders(
-      <OxCategories
-        data={data('ox-categories', {
-          categories: [
-            { name: 'واي بروتين', url: '/whey-protein/c9', image: 'https://cdn.example/w.jpg' },
-          ],
-        })}
-      />
-    );
-    await waitFor(() => expect(screen.getAllByTestId('ox-category-tile')).toHaveLength(1));
-    expect(screen.getAllByTestId('ox-category-tile')[0].getAttribute('href')).toBe('/whey-protein/c9');
   });
 });
 

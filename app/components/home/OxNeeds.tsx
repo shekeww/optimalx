@@ -273,12 +273,12 @@ export function OxNeeds({ data }: OxBlockProps) {
   const items: TabItem[] = [
     {
       id: 'goals',
-      label: t('ox.home.goals_title'),
+      label: t('ox.home.needs_tab_goal'),
       children: <NeedsGrid cards={goalCards} variant="goals" />,
     },
     {
       id: 'types',
-      label: t('ox.home.categories_title'),
+      label: t('ox.home.needs_tab_type'),
       children: <NeedsGrid cards={typeCards} variant="types" />,
     },
   ];

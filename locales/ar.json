@@ -1517,5 +1517,7 @@
   "common.titles.search": "نتائج البحث",
   "common.titles.offers": "العروض",
   "common.titles.tags": "الوسوم",
-  "common.titles.brands": "العلامات التجارية"
+  "common.titles.brands": "العلامات التجارية",
+  "ox.home.needs_tab_goal": "حسب الهدف",
+  "ox.home.needs_tab_type": "حسب النوع"
 }

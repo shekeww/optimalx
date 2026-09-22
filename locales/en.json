@@ -1517,5 +1517,7 @@
   "common.titles.search": "Search results",
   "common.titles.offers": "Offers",
   "common.titles.tags": "Tags",
-  "common.titles.brands": "Brands"
+  "common.titles.brands": "Brands",
+  "ox.home.needs_tab_goal": "By goal",
+  "ox.home.needs_tab_type": "By type"
 }

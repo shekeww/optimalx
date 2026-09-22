@@ -1,0 +1,233 @@
+// The X identity motif (X-IDENTITY-2026-09-22.md §§2-4). Mixins and classes
+// that carry the mark's own construction — a 34° lean terminated by a
+// horizontal ledge, never a full-height diagonal (§2.3) — onto layout
+// surfaces. Nothing here animates a `clip-path` (check-motion's
+// `wedge-motion` rule) and nothing here sets an angle other than
+// `--ox-angle`/`--ox-angle-tan` (check-identity's `angle-value`/`angle-tan`
+// rules). RTL-safe: every polygon carries an explicit `[dir='ltr']` mirror
+// rather than a logical rewrite, because `clip-path` takes no logical values
+// (the same reasoning `_primitives.scss`'s wedge section already documents).
+@use 'sass:math';
+
+// ---------------------------------------------------------------------------
+// 1. ox-x-corner — the mark's arm-foot corner cut (§3.3: need card, plan
+//    card, featured rail tile, branch photo panel).
+// ---------------------------------------------------------------------------
+// A 34° cut into one top corner of a layout box, `$lean` tall, run derived by
+// `ox-run()` so it always recomputes with `$ox-angle-tan`. Logical terms match
+// `_primitives.scss`'s `ox-wedge` exactly (this theme's Conventions line:
+// inline-start is the right edge in the RTL document default): `$side: end`
+// cuts the top inline-END corner — RTL: top-LEFT, LTR: top-right (the need
+// card's treatment, §3.3); `$side: start` mirrors it to the top inline-START
+// corner — RTL: top-right, LTR: top-left (the dark plan card, §4.6). This is
+// the simple two-edge corner cut (the same construction `ox-wedge-corner`
+// already draws elsewhere in this theme); the mark's own foot ledge (§1.3) is
+// a finer embellishment `ox-x-step` carries where a surface asks for it
+// explicitly, not folded into every corner cut.
+@mixin ox-x-corner($lean, $side: end) {
+  $run: ox-run($lean);
+  @if $side == end {
+    clip-path: polygon(0 #{$lean}, #{$run} 0, 100% 0, 100% 100%, 0 100%);
+    [dir='ltr'] & {
+      clip-path: polygon(0 0, calc(100% - #{$run}) 0, 100% #{$lean}, 100% 100%, 0 100%);
+    }
+  } @else {
+    clip-path: polygon(0 0, calc(100% - #{$run}) 0, 100% #{$lean}, 100% 100%, 0 100%);
+    [dir='ltr'] & {
+      clip-path: polygon(0 #{$lean}, #{$run} 0, 100% 0, 100% 100%, 0 100%);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. ox-x-step — a 34° edge stepped once: lean `$a`, a horizontal ledge `$t`
+//    tall, then the remainder of `$h` vertical (§3.1, §3.4 `ox-step-edge`).
+// ---------------------------------------------------------------------------
+// `$h` is the full block-size the edge runs over; `$a` is how much of it
+// leans (never the whole height — §2.3, the full-height diagonal is
+// impossible at 34°); `$t` is the ledge height and `$j` (the jog) is derived
+// at the locked 3.49 ratio, never passed in (owner note 5: non-negotiable).
+@mixin ox-x-step($h, $a, $t) {
+  $run: ox-run($a);
+  $j: $t * 3.49;
+  $vert: $h - $a;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% #{$vert},
+    calc(100% - #{$run}) #{$vert + $a},
+    calc(100% - #{$run} - #{$j}) #{$vert + $a},
+    calc(100% - #{$run} - #{$j}) #{$h},
+    0 #{$h}
+  );
+  [dir='ltr'] & {
+    clip-path: polygon(
+      0 #{$vert},
+      #{$run} #{$vert + $a},
+      #{$run + $j} #{$vert + $a},
+      #{$run + $j} #{$h},
+      100% #{$h},
+      100% 0,
+      0 0
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. ox-x-notch — a horizontal notch in a straight edge. No angle, so it is
+//    legal at any size (§3.2's 158px law only reaches an angled primitive).
+// ---------------------------------------------------------------------------
+@mixin ox-x-notch($t, $j, $corner: end-start) {
+  @if $corner == end-start {
+    clip-path: polygon(0 0, calc(100% - #{$j}) 0, calc(100% - #{$j}) #{$t}, 100% #{$t}, 100% 100%, 0 100%);
+    [dir='ltr'] & {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, #{$j} 100%, #{$j} #{$t}, 0 #{$t});
+    }
+  } @else {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, #{$j} 100%, #{$j} #{$t}, 0 #{$t});
+    [dir='ltr'] & {
+      clip-path: polygon(0 0, calc(100% - #{$j}) 0, calc(100% - #{$j}) #{$t}, 100% #{$t}, 100% 100%, 0 100%);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. ox-x-watermark — the mark as a picture, never a cut (§4.1).
+// ---------------------------------------------------------------------------
+// Positioning and contrast only: the mark itself is drawn by the caller as
+// `<svg aria-hidden="true"><use href="#ox-mark"/></svg>` (the pattern
+// `app/components/home/PlanCard.tsx:46` already uses) — never a `url()`
+// image request, never an `<img>` (§4.1's render-path clause). `--ox-x-wm-w`/
+// `--ox-x-wm-h` are set per breakpoint by the caller (§4.1: 200×176.8 /
+// 240×212.1 / 420×371.2). Colour is `--ox-ink` on a light ground or
+// `--ox-ink-on-dark` on a dark one, opacity capped at 0.06 — never
+// `--ox-accent` (BUILD 3.1; the judge fix to §4.1 dropped every accent row).
+.ox-x-watermark {
+  position: absolute;
+  inset-block-start: -8%;
+  inset-inline-end: -10%;
+  inline-size: var(--ox-x-wm-w, 200px);
+  block-size: var(--ox-x-wm-h, 176.8px);
+  color: var(--ox-ink);
+  opacity: 0.06;
+  pointer-events: none;
+  overflow: visible;
+
+  svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  &--on-dark {
+    color: var(--ox-ink-on-dark);
+    inset-block-start: -12%;
+    inset-inline-end: -8%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. ox-x-scrim — the 34° scrim for faded photographic cards (§4.5).
+// ---------------------------------------------------------------------------
+// The iso-lines run parallel to the mark's bars, so the gradient direction is
+// perpendicular to them. This is a literal degree, not `--ox-angle`/
+// `--ox-skew`: a `linear-gradient()` angle is not reachable through either
+// (they feed `skewX()`/`clip-path`), so the two values below are declared as
+// literals, per §4.5 itself ("Declared as two rules, never as a `rotate`").
+.ox-x-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    236deg,
+    rgba(14, 16, 20, 0.94) 0%,
+    rgba(14, 16, 20, 0.78) 38%,
+    rgba(14, 16, 20, 0.6) 72%,
+    rgba(14, 16, 20, 0.46) 100%
+  );
+
+  [dir='ltr'] & {
+    background: linear-gradient(
+      124deg,
+      rgba(14, 16, 20, 0.94) 0%,
+      rgba(14, 16, 20, 0.78) 38%,
+      rgba(14, 16, 20, 0.6) 72%,
+      rgba(14, 16, 20, 0.46) 100%
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. .ox-x-divider — the full-width band-to-band divider, stepped once at
+//    62% of the container (§3.3).
+// ---------------------------------------------------------------------------
+// Simplified to an axis-aligned raised tab rather than the literal 34°-leaned
+// wedge §3.3 describes: a hairline divider is the wrong scale to risk an
+// unverified angled `clip-path` on (no visual tooling in this environment),
+// and the flat tab still reads as "a divider with a step" at the sizes this
+// class ships at. Flagged as a simplification in docs/build/progress/XID.md,
+// not silently presented as the full geometry.
+.ox-x-divider {
+  position: relative;
+  inline-size: 100%;
+  block-size: 1px;
+  background: var(--ox-line);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 62%;
+    inline-size: 14px;
+    block-size: 4px;
+    background: var(--ox-line);
+  }
+
+  @media (min-width: 1024px) {
+    &::after {
+      inline-size: 20.9px;
+      block-size: 6px;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. .ox-x-bullet — the list-bullet device. Axis-aligned only: §4.4's chevron
+//    sprite was dropped (BUILD 3.5 reserves chevrons for sallaicons, and
+//    `Icon.tsx`'s own standing note already closed that door), so this is a
+//    small notch, not a diagonal — legal at any size under §3.2 because it
+//    carries no angle at all.
+// ---------------------------------------------------------------------------
+.ox-x-bullet {
+  flex: none;
+  display: inline-block;
+  inline-size: 10px;
+  block-size: 10px;
+  background: var(--ox-accent-dark);
+  @include ox-x-notch(3px, 4px);
+
+  &--plain {
+    background: var(--ox-fg-3);
+  }
+
+  @media (min-width: 1024px) {
+    inline-size: 12px;
+    block-size: 12px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. .ox-x-loader — the route-level loading mark. Static only: §4.2's
+//    earlier "sweep" amendment is removed (it was a second moving wedge
+//    DIRECTION 7.1/7.2 and BUILD.md 3.4 do not sanction — see
+//    X-IDENTITY-2026-09-22.md §9, judge fix 17). This is a static 4px
+//    accent ledge across the top of a full-page skeleton, present at first
+//    paint, never transitioned or animated.
+// ---------------------------------------------------------------------------
+.ox-x-loader {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 4px;
+  background: var(--ox-accent);
+  @include ox-x-notch(4px, 14px);
+}
