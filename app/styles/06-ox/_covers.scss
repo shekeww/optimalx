@@ -1,0 +1,298 @@
+// The branch cover system (S9c, creative director G2 direction 2026-09-24;
+// owner brief the same day, with a screenshot of the branch page's shelf
+// photo sitting beside a flat white card: "integrate the cover image with
+// the content instead of being separate sections... angled rectangle like
+// the primary button angled shape... premium overlay and cinematic premium
+// gradient... conversion-maximized, premium, customized brand identity").
+//
+// ONE shape family for `OxBranch`'s own ground and the four `BranchGallery`
+// tiles (any future branch surface draws from it too): `ox-angled($lean)`
+// cuts the WHOLE card, photograph and content together, never a photo panel
+// beside a separate flat card. The lean ladder reuses
+// `.ox-branch-gallery__item--cut`'s own proven numbers: 40px below 768 (run
+// 27.0), 48px from 768 (run 32.4), 64px from 1024 (run 43.2) — X-IDENTITY
+// §2.3's 24% run/inline-size budget; the rendered percentages against the
+// real widths are recorded in docs/build/progress/S9c.md.
+//
+// FOCUS IS NEVER CLIPPED, provably rather than patched. `ox-run()` removes at
+// most $run px from ONE inline edge at each of the two block ends (the cut
+// tapers to 0 toward the opposite edge — the same geometry `_plates.scss`'s
+// own `ox-plate()` documents for its dampened lean), so `.ox-cover__body`'s
+// `padding-inline` of `run + var(--ox-4)` at every tier clears the diagonal
+// at ANY block position: the top row's clearance and the bottom row's
+// clearance come from the one rule, because the two cuts sit on opposite
+// inline sides. No descendant control is ever laid out inside the cut wedge,
+// so no focus ring needs to escape a clip at render time — the same
+// "unclipped box carries the interactive state" idiom `_b4-listing.scss`
+// uses for `.ox-brand-tile`/`.ox-featured__arrow` (X-IDENTITY §7.1
+// `focus-clipped`), applied here to a whole card's own `:focus-visible`
+// (the `.ox-pcard` inset box-shadow construction, `_b2-home.scss` §17.2)
+// rather than to a nested icon face. `outline: none` only ever fires on an
+// element that is itself focusable (the four gallery links); the block
+// wrapper is never a focus target, so the same declaration is inert there.
+//
+// The photo, the scrim and the glow sit absolutely inset under the in-flow
+// `.ox-cover__body`, so the card's own height is always the CONTENT's height
+// — never a fixed aspect-ratio a data-heavy surface (`OxBranch`'s title,
+// rating, offer, address, hours table, actions and pickup note) would
+// overflow. `min-block-size` only approximates the 16:10 the direction names
+// at each tier's own container width, a floor rather than a ceiling. The
+// four gallery tiles are simple enough (a statement, a line, an arrow) to
+// hold the literal ratio (`.ox-cover--tile`).
+//
+// `.ox-band-dark` (tokens.css) on `.ox-cover` itself re-declares the role
+// tokens for the whole subtree: every existing component inside — `Button`,
+// `HoursTable`'s `.ox-table`, `StoreRating`'s `.ox-gr` — repaints itself for
+// the photograph ground with no cover-specific override, and `--ox-focus`
+// becomes `--ox-paper` so the card's own focus ring reads against the photo.
+
+.ox-cover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 0;
+  background: var(--ox-plate);
+  text-decoration: none;
+  @include ox-angled(40px);
+
+  // The block's own floor: the container width * 10 / 16 at each tier
+  // (358, 720, 960, 1296 — S9c log), so the photograph always has a real
+  // presence even when the content above it is short.
+  min-block-size: 224px;
+
+  // The whole card is the clipped element (`.ox-pcard`'s own construction):
+  // `clip-path` clips a live outline, so the ring paints inside the box
+  // instead and survives the cut at every width. Inert on the block variant,
+  // which is never itself a focus target.
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ox-focus);
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-cover {
+    @include ox-angled(48px);
+    min-block-size: 450px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cover {
+    @include ox-angled(64px);
+    min-block-size: 600px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-cover {
+    min-block-size: 810px;
+  }
+}
+
+// The four gallery tiles: the literal 16:10 the direction names, since their
+// content (one statement, one line, one arrow) never outgrows it.
+.ox-cover--tile {
+  aspect-ratio: 16 / 10;
+  min-block-size: 0;
+  cursor: pointer;
+}
+
+.ox-cover__photo {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: var(--ox-cover-position, center);
+}
+
+// Two gradients (bottom, reading-start), never a flat scrim: stops tuned per
+// photograph by the `--ox-cover-*` custom properties the slug modifiers
+// below set, so one rule serves every cover and the generic default stays
+// legible against any photograph a future surface hands it.
+.ox-cover__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0, 88%), transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1, 38%), transparent) 45%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to left,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0, 55%), transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-s1, 12%), transparent) 55%,
+      transparent 100%
+    );
+
+  [dir='ltr'] & {
+    background:
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0, 88%), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1, 38%), transparent) 45%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0, 55%), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-s1, 12%), transparent) 55%,
+        transparent 100%
+      );
+  }
+}
+
+// The accent glow: a radial gradient feathered from the top reading-end cut
+// corner (diagonally opposite the overlay text), 0.12 to 0.18 of `--ox-accent`.
+.ox-cover__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 100% 0%,
+    rgba(var(--ox-accent-rgb), var(--ox-cover-glow, 0.14)) 0%,
+    transparent 55%
+  );
+
+  [dir='ltr'] & {
+    background: radial-gradient(
+      circle at 0% 0%,
+      rgba(var(--ox-accent-rgb), var(--ox-cover-glow, 0.14)) 0%,
+      transparent 55%
+    );
+  }
+}
+
+// Placement: bottom-inline-end, the one uncut corner of the parallelogram
+// (`ox-angled()`'s own lean runs top-inline-end to bottom-inline-start, so
+// the surviving full corners are top-inline-start and bottom-inline-end —
+// `_primitives.scss`'s own `ox-angled` doc comment). `padding-inline` below
+// is `run + var(--ox-4)` at each tier, which is what actually keeps every
+// row clear of the cut regardless of which corner a reader expects.
+.ox-cover__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  padding-block: var(--ox-4);
+  padding-inline: 43px; // ox-run(40px) 27.0 + --ox-4 16
+}
+
+@media (min-width: 768px) {
+  .ox-cover__body {
+    padding-inline: 48.4px; // ox-run(48px) 32.4 + 16
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cover__body {
+    padding-inline: 59.2px; // ox-run(64px) 43.2 + 16
+    padding-block: var(--ox-6);
+  }
+}
+
+.ox-cover__statement {
+  margin: 0;
+  @apply text-h3 font-title;
+  color: var(--ox-fg);
+}
+
+// The line and the arrow share one row, the arrow immediately after the
+// text (direction §3): a single group, not a caption under the statement.
+.ox-cover__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+}
+
+.ox-cover__line {
+  margin: 0;
+  @apply text-body font-read;
+  color: var(--ox-fg-2);
+}
+
+// The plan card's small angled chip construction (`.ox-iconbtn--angled`,
+// `_primitives.scss`); this rule only adds the accent colour and the
+// colour-only hover.
+.ox-cover__arrow {
+  flex: none;
+  color: var(--ox-accent);
+  transition:
+    background var(--dur-fast) var(--ease-in),
+    border-color var(--dur-fast) var(--ease-in),
+    color var(--dur-fast) var(--ease-in);
+}
+
+// Colour-only hover, fine pointer only (direction §4): no transform anywhere
+// on the cover, no entrance fade.
+@media (hover: hover) and (pointer: fine) {
+  .ox-cover:hover .ox-cover__arrow {
+    background: var(--ox-accent);
+    border-color: var(--ox-accent);
+    color: var(--ox-on-accent);
+  }
+
+  .ox-cover:hover .ox-cover__glow {
+    --ox-cover-glow: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-cover__arrow {
+    transition: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Per-photograph tuning (direction §2). advisory-room is lit centrally
+// through the frosted door, so darkness stays low; storefront is bright at
+// night (the sign, the coloured uplighting), so only the bottom strip
+// darkens; waiting-area is warm-toned already, so the glow reads stronger
+// against it; shelves crops to the top so the labelled shelf row survives
+// the 16:10 cut; store-wide (the block's own ground) carries the most text
+// of any cover, so its scrim is the strongest.
+// ---------------------------------------------------------------------------
+.ox-cover--advisory-room {
+  --ox-cover-b0: 70%;
+  --ox-cover-b1: 22%;
+  --ox-cover-s0: 45%;
+  --ox-cover-s1: 8%;
+}
+
+.ox-cover--storefront {
+  --ox-cover-b0: 92%;
+  --ox-cover-b1: 30%;
+  --ox-cover-s0: 20%;
+  --ox-cover-s1: 0%;
+}
+
+.ox-cover--waiting-area {
+  --ox-cover-b0: 78%;
+  --ox-cover-b1: 30%;
+  --ox-cover-s0: 48%;
+  --ox-cover-s1: 10%;
+  --ox-cover-glow: 0.18;
+}
+
+.ox-cover--shelves {
+  --ox-cover-position: top;
+  --ox-cover-b0: 80%;
+  --ox-cover-b1: 32%;
+  --ox-cover-s0: 50%;
+  --ox-cover-s1: 10%;
+}
+
+.ox-cover--store-wide {
+  --ox-cover-b0: 94%;
+  --ox-cover-b1: 42%;
+  --ox-cover-s0: 60%;
+  --ox-cover-s1: 15%;
+}

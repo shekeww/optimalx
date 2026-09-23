@@ -1615,5 +1615,19 @@
   "ox.content.branch.map_view": "View the map",
   "ox.content.branch.map_directions": "Directions",
   "ox.content.branch.map_open_google": "Open in Google Maps",
-  "ox.content.branch.mark_wall_alt": "The OptimalX mark on the branch wall"
+  "ox.content.branch.mark_wall_alt": "The OptimalX mark on the branch wall",
+  "ox.content.branch.cover_advisory_statement": "Advice before you buy",
+  "ox.content.branch.cover_advisory_line": "We listen, then recommend what fits your goal.",
+  "ox.content.branch.cover_waiting_statement_on": "A visit that includes an InBody measurement",
+  "ox.content.branch.cover_waiting_line_on": "We set aside time for your goal, from advice to measurement.",
+  "ox.content.branch.cover_waiting_statement_off": "A visit for your goal",
+  "ox.content.branch.cover_waiting_line_off": "Time we set aside for you before you decide.",
+  "ox.content.branch.cover_storefront_statement": "Visit our branch in Madinah",
+  "ox.content.branch.cover_storefront_line": "One address, and a map that takes you straight there.",
+  "ox.content.branch.cover_shelves_statement": "A limited range we know well",
+  "ox.content.branch.cover_shelves_line": "We choose it with care, and explain everything you need to know about it.",
+  "ox.header.lang_switch_en": "EN",
+  "ox.header.lang_switch_ar": "العربية",
+  "ox.header.switch_language_en": "Switch language to English",
+  "ox.header.switch_language_ar": "Switch language to Arabic"
 }

@@ -25,6 +25,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     height,
     srcSet,
     sizes,
+    className,
   }: {
     alt: string;
     src?: string;
@@ -32,7 +33,10 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     height?: number;
     srcSet?: string;
     sizes?: string;
-  }) => <img alt={alt} src={src} width={width} height={height} srcSet={srcSet} sizes={sizes} />,
+    className?: string;
+  }) => (
+    <img alt={alt} src={src} width={width} height={height} srcSet={srcSet} sizes={sizes} className={className} />
+  ),
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
 }));
@@ -61,42 +65,44 @@ describe('OxBranch', () => {
     expect(screen.queryByRole('table')).toBeNull();
   });
 
-  it('renders no photo panel at all until a real photograph is supplied', () => {
+  it('renders no cover at all until a real photograph is supplied', () => {
     setSettings({});
     const { container } = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
-    // An angled plate with nothing in it reads as a failed upload, and the
-    // theme may not ship an invented shopfront captioned as this branch.
-    expect(container.querySelector('.ox-branch__photo')).toBeNull();
-    expect(container.querySelector('.ox-branch')?.classList.contains('ox-branch--flat')).toBe(true);
+    // An angled cover with nothing in it reads as a failed upload, and the
+    // theme may not ship an invented shopfront captioned as this branch: the
+    // same content stack renders on a plain card instead.
+    expect(container.querySelector('.ox-cover')).toBeNull();
+    expect(container.querySelector('.ox-branch__content--flat')).not.toBeNull();
     // The booking and directions actions are unconditional (VISIT-2026-09-24
-    // §4.1), so the flat card always carries a second column's worth of
-    // content, even with no other setting filled.
-    expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('full');
+    // §4.1), so the flat card always carries a second group of controls, even
+    // with no other setting filled.
+    expect(container.querySelectorAll('.ox-branch__actions a').length).toBeGreaterThan(0);
   });
 
-  it('takes the photo panel and the two column card once the facts exist', () => {
+  it('takes the cover once the facts exist', () => {
     setSettings({ whatsapp_number: '+966 50 123 4567' });
     const { container } = renderWithProviders(
       <OxBranch photo="https://cdn.example/branch.jpg" now={THURSDAY_NOON} />
     );
-    expect(container.querySelector('.ox-branch__photo img')?.getAttribute('src')).toBe(
+    expect(container.querySelector('.ox-cover img')?.getAttribute('src')).toBe(
       'https://cdn.example/branch.jpg'
     );
-    expect(container.querySelector('.ox-branch')?.classList.contains('ox-branch--flat')).toBe(false);
-    expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('full');
+    expect(container.querySelector('.ox-cover')).not.toBeNull();
+    expect(container.querySelector('.ox-branch__content--flat')).toBeNull();
   });
 
-  it('builds the photo panel from the store-wide manifest entry, srcset included', () => {
+  it('builds the cover photo from the store-wide manifest entry, srcset included, with the slug-tuned gradient', () => {
     setSettings({});
     const branchPhoto = STORE_PHOTOS['store-wide'];
     const { container } = renderWithProviders(
       <OxBranch photo={branchPhoto.photo} now={THURSDAY_NOON} />
     );
-    const img = container.querySelector('.ox-branch__photo img');
+    const img = container.querySelector('.ox-cover__photo');
     expect(img?.getAttribute('src')).toBe(branchPhoto.photo);
     expect(img?.getAttribute('width')).toBe(String(branchPhoto.width));
     expect(img?.getAttribute('height')).toBe(String(branchPhoto.height));
     expect(img?.getAttribute('srcset')).toBe(storePhotoSrcSet(branchPhoto));
+    expect(container.querySelector('.ox-cover')?.className).toContain('ox-cover--store-wide');
   });
 
   it('marks the row covering today and shows the live status chip', () => {

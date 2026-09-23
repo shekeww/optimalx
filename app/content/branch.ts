@@ -300,15 +300,44 @@ export const BRANCH = {
     directionsKey: `${KEY}.map_directions`,
     openGoogleKey: `${KEY}.map_open_google`,
   },
-  /** The gallery's own label and the four other photographs' captions
-   *  (VISIT §4.4 item 2); `store-wide` is `OxBranch`'s own panel, never
-   *  captioned here. */
+  /** The gallery's own label; `store-wide` is `OxBranch`'s own ground, never
+   *  a tile here. The four caption keys below (VISIT §4.4 item 2) are
+   *  retired from rendering by the S9c cover system (their `<figcaption>`
+   *  is gone) but stay registered so the keys remain valid locale entries. */
   gallery: {
     labelKey: `${KEY}.gallery_label`,
     storefrontCaptionKey: `${KEY}.photo_storefront`,
     shelvesCaptionKey: `${KEY}.photo_shelves`,
     advisoryCaptionKey: `${KEY}.photo_advisory`,
     waitingCaptionKey: `${KEY}.photo_waiting`,
+  },
+  /**
+   * The four gallery covers' overlay text (S9c: the branch cover system,
+   * creative director direction 2026-09-24 §5). Two noun-phrase statements,
+   * two imperatives; the waiting-area cover carries two variants gated on
+   * `inbodyIncluded(settings)`.
+   */
+  covers: {
+    advisory: {
+      statementKey: `${KEY}.cover_advisory_statement`,
+      lineKey: `${KEY}.cover_advisory_line`,
+    },
+    waitingOn: {
+      statementKey: `${KEY}.cover_waiting_statement_on`,
+      lineKey: `${KEY}.cover_waiting_line_on`,
+    },
+    waitingOff: {
+      statementKey: `${KEY}.cover_waiting_statement_off`,
+      lineKey: `${KEY}.cover_waiting_line_off`,
+    },
+    storefront: {
+      statementKey: `${KEY}.cover_storefront_statement`,
+      lineKey: `${KEY}.cover_storefront_line`,
+    },
+    shelves: {
+      statementKey: `${KEY}.cover_shelves_statement`,
+      lineKey: `${KEY}.cover_shelves_line`,
+    },
   },
   /** The masthead band's photo of the branch's own wall mark (conductor
    *  addendum, gated on `STORE_PHOTOS['mark-wall']` existing). */

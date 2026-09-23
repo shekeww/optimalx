@@ -68,7 +68,7 @@ describe('the angled card arrow, one size everywhere', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps its consumers: ten sites, both constructions (the content poster card joins in S8a item 4)', () => {
+  it('keeps its consumers: eleven sites, both constructions (the branch gallery cover joins in S9c)', () => {
     const direct: string[] = [];
     const wrapped: string[] = [];
     for (const file of tsxFiles(COMPONENTS)) {
@@ -78,6 +78,7 @@ describe('the angled card arrow, one size everywhere', () => {
     }
     expect(direct.sort()).toEqual(['CategoriesIndex.tsx', 'CategoryTile.tsx', 'FeaturedRail.tsx', 'GoalCard.tsx']);
     expect(wrapped.sort()).toEqual([
+      'BranchGallery.tsx',
       'FeaturedRail.tsx',
       'OxBrands.tsx',
       'OxCategoryRail.tsx',

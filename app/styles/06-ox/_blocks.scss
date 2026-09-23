@@ -5,61 +5,20 @@
 // (DIRECTION 4.5 rules, amendment A9).
 
 // ---------------------------------------------------------------------------
-// 1. OxBranch (DIRECTION 5.2, 4.5 branch row, 6.12)
+// 1. OxBranch (S9c: the store-wide photograph is the block itself, not a
+//    panel beside one — `.ox-cover`/`.ox-cover__*`, `_covers.scss` — retiring
+//    the split-panel grid this section drew under DIRECTION 5.2/6.12/4.5)
 // ---------------------------------------------------------------------------
-.ox-branch {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--ox-6);
-  align-items: stretch;
-}
 
-.ox-branch__photo {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
-
-  img {
-    inline-size: 100%;
-    block-size: 100%;
-  }
-}
-
-// Mobile: a paper corner cut over the photo instead of the full angled edge.
-.ox-branch__corner {
-  // X-IDENTITY-2026-09-22.md §2.4: manual re-derive, ox-wedge-corner's $w is
-  // an explicit leg, not a run() computation: 158 * 0.6745 = 106.571, rounded
-  // 106.6 (was 64, the 22deg-era value).
-  @include ox-wedge-corner(106.6px, 158px);
-  background: var(--ox-bg);
-}
-
-.ox-branch__card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-4);
-  padding: var(--ox-4);
-  background: var(--ox-surface);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
-}
-
+// The single content stack — title, rating, offer, address, hours, actions,
+// pickup note — in the SAME composition at every width (S9c direction §6):
+// no two-column split, on the cover or off it.
 .ox-branch__head,
 .ox-branch__meta {
   display: flex;
   flex-direction: column;
   gap: var(--ox-4);
   min-inline-size: 0;
-}
-
-// Without a photograph the block is one column: an angled plate with nothing
-// in it reads as a failed upload, and the store may not caption an invented
-// shopfront as this branch. The card takes the row and splits its own content
-// instead, so the section is finished either way.
-.ox-branch--flat {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .ox-branch__eyebrow {
@@ -79,11 +38,19 @@
   margin: 0;
 }
 
+// The hours table's own flat translucent ink plate (S9c direction §2): a
+// data table needs a flat ground under it regardless of what the cinematic
+// gradient behind it is doing at that point in the photograph.
+.ox-branch__hours-plate {
+  padding: var(--ox-4);
+  background: color-mix(in srgb, var(--ox-ink) 60%, transparent);
+  border-radius: var(--ox-r-2);
+}
+
 .ox-branch__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--ox-3);
-  margin-block-start: auto;
 }
 
 .ox-branch__pickup {
@@ -91,59 +58,22 @@
   margin: 0;
 }
 
+// No photograph: the theme never invents a shopfront captioned as this
+// branch (a statement about a specific real place), so the same content
+// stack renders on a plain card instead of the cover.
+.ox-branch__content--flat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+  padding: var(--ox-6);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-2);
+}
+
 @media (min-width: 1024px) {
-  .ox-branch {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--ox-8);
-    min-block-size: 480px;
-  }
-
-  .ox-branch__photo {
-    // The photo takes the end side and its inner edge carries the 22deg cut.
-    order: 2;
-    aspect-ratio: auto;
-    @include ox-wedge(480px, start);
-    border-radius: 0;
-  }
-
-  .ox-branch__corner {
-    display: none;
-  }
-
-  .ox-branch__card {
-    order: 1;
-    padding: var(--ox-6);
-  }
-
-  // Declared again inside the query: the desktop `.ox-branch` rule above sets
-  // the 7/5 split at the same specificity and would otherwise win on order.
-  .ox-branch--flat {
-    grid-template-columns: minmax(0, 1fr);
-    min-block-size: 0;
-  }
-
-  .ox-branch--flat .ox-branch__card {
+  .ox-branch__content--flat {
     padding: var(--ox-8);
-  }
-
-  .ox-branch--flat .ox-branch__card[data-meta='full'] {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--ox-8);
-    align-items: start;
-  }
-
-  // One column: the measure stops a three line card from running the full
-  // width of a 1296 container, which no reader wants to track across.
-  .ox-branch--flat .ox-branch__card[data-meta='bare'] .ox-branch__head,
-  .ox-branch--flat .ox-branch__card[data-meta='bare'] .ox-branch__meta {
-    max-inline-size: var(--ox-container-text);
-  }
-
-  // The actions stop pushing to the foot of a tall card: in the flat layout
-  // they sit under the hours, where they belong.
-  .ox-branch--flat .ox-branch__actions {
-    margin-block-start: 0;
   }
 }
 

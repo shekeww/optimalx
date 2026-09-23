@@ -71,27 +71,28 @@ function readSetting(settings: unknown, key: string): string {
 
 /**
  * The branch block (DIRECTION 5.2 OxBranch, 4.5 branch polygon, 6.12;
- * VISIT-2026-09-24 §4.1 turns it into the visit offer). Shared by the home
- * page and `/branch`: a photo panel whose inner edge carries the 34deg cut,
- * `StoreRating` under the title, and an address card with the hours table,
- * the booking and directions actions and the pickup note. Every string is a
- * locale key and every fact (address, hours, number, pickup hours) comes from
- * theme settings, so an unset setting removes its row instead of printing a
- * promise.
+ * VISIT-2026-09-24 §4.1 turns it into the visit offer; S9c, creative
+ * director direction 2026-09-24, turns the split photo-panel-beside-a-card
+ * into one integrated cover). Shared by the home page and `/branch`: the
+ * store-wide photograph is the block itself, `ox-angled()`-cut and carrying
+ * a cinematic gradient (`.ox-cover`/`.ox-cover__*`, `_covers.scss`), with the
+ * title, `StoreRating`, the offer line, the address, the hours table (its own
+ * translucent ink plate), the booking and directions actions and the pickup
+ * note all inside the frame on paper text — one composition at every width,
+ * never a two-column split. Every string is a locale key and every fact
+ * (address, hours, number, pickup hours) comes from theme settings, so an
+ * unset setting removes its row instead of printing a promise.
  *
  * The photograph is gated on the `photo` prop, and the theme ships no default
  * for it here: a shopfront captioned as this branch at Al Khalidiyah is a
  * statement about a specific real place, and the only picture that may carry
- * it is a photograph of that place, so an unset `photo` renders flat rather
- * than an invented one. The caller passes `STORE_PHOTOS['store-wide'].photo`
- * once a real photograph exists (it does, since VISIT-2026-09-24); the flat
- * card takes the whole row and lays its content out in two columns, which is
- * a finished composition rather than an empty plate waiting for an upload.
+ * it is a photograph of that place, so an unset `photo` renders the same
+ * content stack on a plain card instead of an invented cover.
  *
  * The booking ("احجز زيارتك") and directions actions are unconditional: the
  * visit channel always resolves and `BRANCH_LISTING.directionsUrl` is a fixed
- * constant, so the card's second column always has content and the old
- * `branch_map_url`-gated map button is retired in its favour.
+ * constant, so the content stack always carries a second group of controls
+ * and the old `branch_map_url`-gated map button is retired in its favour.
  */
 export function OxBranch({
   headingLevel: Heading = 'h2',
@@ -127,103 +128,115 @@ export function OxBranch({
     : undefined;
   const visit = channelById('visit');
   const showsOffer = showOfferLine && inbodyIncluded(themeSettings as Settings);
-  // The manifest entry `photo` belongs to, so the panel's srcset and intrinsic
-  // size come from disk; a photo this batch does not recognise (a test
-  // fixture URL) falls back to the previous static numbers rather than
-  // rendering with none at all.
+  // The manifest entry `photo` belongs to, so the cover's srcset and
+  // intrinsic size come from disk, and its slug-tuned gradient (S9c
+  // `.ox-cover--store-wide`) only applies to the real photograph; a photo
+  // this batch does not recognise (a test fixture URL) falls back to the
+  // previous static numbers and the generic scrim rather than rendering with
+  // none at all.
   const photoEntry = photo === BRANCH_PHOTO.photo ? BRANCH_PHOTO : undefined;
 
-  const classes = ['ox-branch', photo ? '' : 'ox-branch--flat', className]
-    .filter(Boolean)
-    .join(' ');
+  const content = (
+    <>
+      <div className="ox-branch__head">
+        {showEyebrow ? (
+          <p className="ox-branch__eyebrow ox-small">{t('ox.blocks.branch.eyebrow')}</p>
+        ) : null}
+        <Heading className={Heading === 'h1' ? 'ox-h1' : 'ox-h2'}>
+          {t('ox.blocks.branch.title')}
+        </Heading>
+        <StoreRating variant="rail" />
+        {showsOffer ? (
+          <p className="ox-branch__offer ox-body">{t(SERVICES_HUB.inbodyKey)}</p>
+        ) : null}
+        <p className="ox-branch__address ox-body">{intro ?? address}</p>
+      </div>
 
-  // The booking and directions actions are unconditional now (VISIT-2026-09-24
-  // §4.1: primary and secondary both always render), so the flat card always
-  // carries a second column's worth of content.
-  const meta = 'full';
+      <div className="ox-branch__meta">
+        {rows.length > 0 ? (
+          <div className="ox-branch__hours-plate">
+            <HoursTable rows={rows} now={now} status={status} />
+          </div>
+        ) : null}
+
+        <div className="ox-branch__actions">
+          <Button to={visit?.to ?? '/services'} size={48} variant="primary">
+            {t('ox.content.services.visit_cta_short')}
+          </Button>
+          <Button
+            href={BRANCH_LISTING.directionsUrl}
+            size={48}
+            variant="secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+            iconStart={<Icon name="map-pin" size={20} />}
+          >
+            {t('ox.blocks.branch.directions')}
+          </Button>
+          {whatsappHref ? (
+            <Button
+              href={whatsappHref}
+              variant="link"
+              target="_blank"
+              rel="noopener noreferrer"
+              iconStart={<Icon name="whatsapp" size={20} />}
+            >
+              {t('ox.blocks.branch.whatsapp')}
+            </Button>
+          ) : null}
+          {/* The home block was a 184px card whose only control was
+              WhatsApp, with no route to the branch page at all
+              (UX-2026-09-24 P0-7): the store's one named proof was one
+              message away and no clicks away from being read about. The
+              branch page itself never renders this, because it is the
+              page. */}
+          {showPageLink ? (
+            <Button to="/branch" size={48} variant="secondary">
+              {t('ox.branch.view_page')}
+            </Button>
+          ) : null}
+        </div>
+
+        <p className="ox-branch__pickup ox-small">
+          {pickupHours
+            ? t('ox.blocks.branch.pickup_note_timed', { hours: pickupHours })
+            : t('ox.blocks.branch.pickup_note')}
+        </p>
+      </div>
+    </>
+  );
 
   return (
-    <section className={classes} data-testid="ox-branch">
+    <section className={['ox-branch', className].filter(Boolean).join(' ')} data-testid="ox-branch">
       {photo ? (
-        <div className="ox-branch__photo">
+        <div
+          className={[
+            'ox-cover',
+            'ox-band-dark',
+            photoEntry ? 'ox-cover--store-wide' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <Image
+            className="ox-cover__photo"
             src={photo}
             alt={t('ox.blocks.branch.photo_wide_alt')}
             width={photoEntry?.width ?? 760}
             height={photoEntry?.height ?? 480}
             srcSet={photoEntry ? storePhotoSrcSet(photoEntry) : undefined}
             srcSetWidths={photoEntry ? undefined : [380, 760, 1160]}
-            sizes="(min-width: 1024px) 58vw, 100vw"
+            sizes="100vw"
             objectFit="cover"
             noWrapper
           />
-          <span className="ox-branch__corner" aria-hidden="true" />
+          <span className="ox-cover__scrim" aria-hidden="true" />
+          <span className="ox-cover__glow" aria-hidden="true" />
+          <div className="ox-cover__body">{content}</div>
         </div>
-      ) : null}
-
-      <div className="ox-branch__card" data-meta={meta}>
-        <div className="ox-branch__head">
-          {showEyebrow ? (
-            <p className="ox-branch__eyebrow ox-small">{t('ox.blocks.branch.eyebrow')}</p>
-          ) : null}
-          <Heading className={Heading === 'h1' ? 'ox-h1' : 'ox-h2'}>
-            {t('ox.blocks.branch.title')}
-          </Heading>
-          <StoreRating variant="rail" />
-          {showsOffer ? (
-            <p className="ox-branch__offer ox-body">{t(SERVICES_HUB.inbodyKey)}</p>
-          ) : null}
-          <p className="ox-branch__address ox-body">{intro ?? address}</p>
-        </div>
-
-        <div className="ox-branch__meta">
-          <HoursTable rows={rows} now={now} status={status} />
-
-          <div className="ox-branch__actions">
-            <Button to={visit?.to ?? '/services'} size={48} variant="primary">
-              {t('ox.content.services.visit_cta_short')}
-            </Button>
-            <Button
-              href={BRANCH_LISTING.directionsUrl}
-              size={48}
-              variant="secondary"
-              target="_blank"
-              rel="noopener noreferrer"
-              iconStart={<Icon name="map-pin" size={20} />}
-            >
-              {t('ox.blocks.branch.directions')}
-            </Button>
-            {whatsappHref ? (
-              <Button
-                href={whatsappHref}
-                variant="link"
-                target="_blank"
-                rel="noopener noreferrer"
-                iconStart={<Icon name="whatsapp" size={20} />}
-              >
-                {t('ox.blocks.branch.whatsapp')}
-              </Button>
-            ) : null}
-            {/* The home block was a 184px card whose only control was
-                WhatsApp, with no route to the branch page at all
-                (UX-2026-09-24 P0-7): the store's one named proof was one
-                message away and no clicks away from being read about. The
-                branch page itself never renders this, because it is the
-                page. */}
-            {showPageLink ? (
-              <Button to="/branch" size={48} variant="secondary">
-                {t('ox.branch.view_page')}
-              </Button>
-            ) : null}
-          </div>
-
-          <p className="ox-branch__pickup ox-small">
-            {pickupHours
-              ? t('ox.blocks.branch.pickup_note_timed', { hours: pickupHours })
-              : t('ox.blocks.branch.pickup_note')}
-          </p>
-        </div>
-      </div>
+      ) : (
+        <div className="ox-branch__content--flat">{content}</div>
+      )}
     </section>
   );
 }

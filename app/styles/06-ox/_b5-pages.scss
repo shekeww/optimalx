@@ -218,6 +218,36 @@
 // carries no `ox-page--bleed` either.
 .ox-page--branch__band {
   margin-block-start: var(--ox-2);
+  // The masthead's own ground (S9e item 2, owner brief 2026-09-24, an
+  // about-page screenshot: "the other grey space caused by the angle is to
+  // be the same colour as the page background, not grey"). `.ox-bband`'s own
+  // dark background (`_b3-product.scss` §12, PDP's `BrandBand` — a
+  // different component that only shares this CSS, per `Band.tsx`'s own
+  // docblock, and stays out of scope here) and `.ox-bband__wash`'s flat
+  // `inset: 0` tint together painted the rectangle `ox-angled()`'s own two
+  // uncut corners (X-IDENTITY §2.5) leave showing once the plate's diagonal
+  // cut removes the photograph from them — the plate covers only the
+  // photograph, never the whole band, so those two triangles showed the
+  // fill rather than the page. These four page-hero callers alone drop
+  // both, at every tier (not only >=1024, where this already ran).
+  background: transparent;
+
+  .ox-bband__wash {
+    background: transparent;
+  }
+}
+
+// Both tones of the lockup render (`Band.tsx`'s own two-`Wordmark` markup,
+// S9e item 2): the reversed cream file is the default everywhere `.ox-bband`
+// appears — matching what PDP's own `BrandBand` still ships, unmodified —
+// and the page-ink file stays inert until a caller's own tier rule (below)
+// says otherwise.
+.ox-bband__lockup-mark--dark {
+  display: inline-flex;
+}
+
+.ox-bband__lockup-mark--light {
+  display: none;
 }
 
 // 2a. The plate cut (owner item 2026-09-24: contain the masthead in the page
@@ -264,8 +294,53 @@
   .ox-page--faq__band,
   .ox-page--branch__band {
     min-block-size: 360px;
-    background: transparent;
+    // `background: transparent` moved to the base rule above (S9e item 2):
+    // it now applies at every tier, not only this one.
     padding-inline: calc(#{ox-run(360px)} + var(--ox-6));
+  }
+}
+
+// Below 1024 the text sits BELOW the 160px photo strip (`.ox-bband`'s own
+// `padding-block-start: 184px`), genuinely off the photograph and now on the
+// page's own ground (above) rather than the dark rectangle that used to sit
+// under it, so the shipped reversed ink fails contrast there. Page ink
+// instead — one legible outcome per tier, the brief's own instruction: from
+// 1024 the plate covers the block's full height and the text sits on the
+// photograph again, on `.ox-bband__scrim`'s own darkening gradient, so the
+// reversed ink is correct there and nothing in this block reaches that tier.
+@media (max-width: 1023px) {
+  .ox-page--services__band,
+  .ox-page--about__band,
+  .ox-page--faq__band,
+  .ox-page--branch__band {
+    .ox-bband__headline {
+      color: var(--ox-fg);
+    }
+
+    .ox-bband__sub {
+      color: var(--ox-fg-2);
+    }
+
+    .ox-bband__badge-ar {
+      color: var(--ox-fg);
+    }
+
+    .ox-bband__badge-latin {
+      color: var(--ox-fg-3);
+    }
+
+    .ox-bband__ring {
+      color: var(--ox-fg);
+      border-color: var(--ox-bd);
+    }
+
+    .ox-bband__lockup-mark--dark {
+      display: none;
+    }
+
+    .ox-bband__lockup-mark--light {
+      display: inline-flex;
+    }
   }
 }
 
@@ -892,14 +967,16 @@
   }
 }
 
-// The four other photographs (VISIT §4.4 item 2): two-up from 640px, a
-// scroll-snap rail below it — the plain fallback the direction names, not
-// `.ox-rail` (`_rail.scss`), whose chevron cue and progress strap are built
-// for a carousel longer than four static tiles.
+// The four other photographs, now integrated covers (S9c: one shared shape
+// with `OxBranch`'s own ground, `.ox-cover`/`.ox-cover__*` in `_covers.scss`,
+// each tile the whole clickable card) — two-up from 640px, a scroll-snap
+// rail below it, the plain fallback the direction names, not `.ox-rail`
+// (`_rail.scss`), whose chevron cue and progress strap are built for a
+// carousel longer than four static tiles. Every tile now carries the same
+// angled cut (S9c direction §1: "all images... the same size and... angled
+// rectangle"), retiring the old first-tile-only corner cut.
 .ox-branch-gallery__list {
-  // Positioned: the scroller's own containing block (G2, DIRECTION 10.1),
-  // so nothing under it can ever escape to the document even though every
-  // child here is a static figure/caption today.
+  // Positioned: the scroller's own containing block (G2, DIRECTION 10.1).
   position: relative;
   display: flex;
   gap: var(--ox-4);
@@ -924,30 +1001,6 @@
   scroll-snap-align: start;
 }
 
-.ox-branch-gallery__figure {
-  margin: 0;
-  border-radius: 0;
-  overflow: hidden;
-}
-
-.ox-branch-gallery__photo {
-  display: block;
-  inline-size: 100%;
-  block-size: auto;
-  object-fit: cover;
-}
-
-.ox-branch-gallery__caption {
-  margin: var(--ox-2) 0 0;
-  color: var(--ox-fg-2);
-}
-
-// The mark's own corner cut, first tile only (VISIT §4.4 item 2), the same
-// lean ladder the brand tile plate and the poster rail use.
-.ox-branch-gallery__item--cut .ox-branch-gallery__figure {
-  @include ox-x-corner(40px);
-}
-
 @media (min-width: 640px) {
   .ox-branch-gallery__list {
     display: grid;
@@ -958,18 +1011,6 @@
   .ox-branch-gallery__item {
     inline-size: auto;
     max-inline-size: none;
-  }
-}
-
-@media (min-width: 768px) {
-  .ox-branch-gallery__item--cut .ox-branch-gallery__figure {
-    @include ox-x-corner(48px);
-  }
-}
-
-@media (min-width: 1024px) {
-  .ox-branch-gallery__item--cut .ox-branch-gallery__figure {
-    @include ox-x-corner(64px);
   }
 }
 
