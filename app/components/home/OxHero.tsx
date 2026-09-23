@@ -87,7 +87,6 @@ export const DEFAULT_HERO_MOBILE = '/assets/images/hero-home-mobile.jpg';
  */
 export const DEFAULT_HERO_SLIDES = [
   DEFAULT_HERO,
-  '/assets/images/hero-shakers.webp',
   '/assets/images/hero-home.jpg',
   '/assets/images/hero-athlete.webp',
 ];
