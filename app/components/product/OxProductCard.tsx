@@ -1,8 +1,7 @@
 import { memo, useCallback, useContext, useMemo, useState } from 'react';
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
-import type { Product } from '@salla.sa/twilight-theme-engine/types';
+import type { Product, ProductOption } from '@salla.sa/twilight-theme-engine/types';
 import type { ProductCardProps } from '@salla.sa/twilight-theme-engine/product';
 import { SallaAddProductButtonCore } from '@salla.sa/twilight-components-react/add-product-button';
 import { WebComponentBoundary } from '../common/WebComponentBoundary';
@@ -12,36 +11,47 @@ import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
 import { Icon } from '../common/Icon';
-import { VariantChips, cardOption, defaultValueId } from './VariantChips';
+import { VariantChips, cardOption, defaultValueId, valueImageUrl } from './VariantChips';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
-import { cardSpecLine, descriptionExcerpt } from './lib/cardSpec';
+import { cardSpecLine } from './lib/cardSpec';
 import { ListingCategoryContext, productTypeOf } from './lib/productType';
 import { bandBadges } from './lib/bandBadges';
 import { useHoverCapable } from './lib/useHoverCapable';
 import { monthsUntilExpiry } from './lib/supply';
-import { bundleMembers, variantOf } from './lib/variant';
+import { bundleMembers } from './lib/variant';
 import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
 
 /**
  * OptimalX's product card, registered over the engine's `product:card` key so
  * every listing, slider and wishlist grid gets it (PLAN-final C1), rebuilt to
- * the owner's attached target ("the exact ui/ux design for product cards").
+ * the owner's attached target ("the exact ui/ux design for product cards"),
+ * then made compact on the owner's 2026-09-24 review of the home rail: the
+ * wishlist heart and the free-consultation link are gone outright, the
+ * variant chooser moved onto the plate so it costs the body no height, and
+ * the plate's own ground now carries the PDP gallery's grey band and orange
+ * mark behind the packshot (`ox-plate-band`/`ox-plate-mark`, `_primitives.scss`).
  *
  * It never renders the engine `ProductCard`: that component performs the
  * registry lookup itself, so calling it from here would recurse on every card.
  *
- * The target, and what each part is gated on (CARD-2026-09-23):
+ * The target, and what each part is gated on (CARD-2026-09-23, as amended):
  *
- *   wishlist heart   reading-start corner of the plate
- *   badge stack      the opposite corner, at most two, in priority order:
- *                    out of stock (suppresses every other one), a real
- *                    bundle, saving, new, a real dietary tag, expiry within
- *                    6 months
+ *   plate ground     the gallery's own grey band and orange mark, scaled
+ *                    down (percentage-based, so no separate numbers)
+ *   badge stack      one corner, at most two, in priority order: out of
+ *                    stock (suppresses every other one), a real bundle,
+ *                    saving, new, a real dietary tag, expiry within 6 months
  *   colour swatches  the trailing edge of the plate, ONLY when the product
  *                    carries real option colours (see `colourSwatches`) AND
  *                    the card's own chip row is not already choosing the
  *                    same colour axis
+ *   variant chooser  bottom-start of the plate, over the image, NOT below it
+ *                    (owner review, 2026-09-24): reserves zero body height;
+ *                    a chosen value with its own photograph swaps the plate
+ *                    image (`valueImageUrl`, not observably live on this
+ *                    catalogue today); absent while sold out or on a bundle,
+ *                    which never offers a card-composed add either
  *   brand line       ONLY when `product.brand?.name` is set; not reserved
  *   title            two lines, ellipsised
  *   spec line        "<type> · <subcategory>" for a typed product, "باقة ·
@@ -49,15 +59,7 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  *                    fact the product carries (`cardSpecLine`); the type
  *                    from `productTypeOf`, never guessed; always reserved;
  *                    never the servings count again (S8g item 1)
- *   excerpt line     the first sentence of the description's own prose
- *                    paragraph (`descriptionExcerpt`); restored on the
- *                    coordinator's 2026-09-23 addendum; always reserved
  *   price row        the amount, plus the struck regular price on a sale
- *   consult link     "استشارة مجانية قبل الشراء" (S8g item 1), a small text
- *                    link to the free written-question service, on every
- *                    boxed or bundle product — never a service, digital or
- *                    gift product, which is not something a shopper is
- *                    asking a supplements question about
  *   stock line       ONLY on a live `can_show_remained_quantity` quantity
  *                    of 1 to 5; the number itself never prints
  *   action row       quantity stepper + Salla's own add button, outlined —
@@ -99,12 +101,10 @@ export const OxProductCard = memo(function OxProductCard({
   sizes,
 }: ProductCardProps) {
   const { t } = useTranslation();
-  const wishlist = useWishlist();
   const spec = useMemo(() => parseSpecLine(product.description), [product.description]);
   const swatches = useMemo(() => colourSwatches(product), [product]);
   const hoverCapable = useHoverCapable();
 
-  const inWishlist = wishlist.has(product.id);
   const outOfStock = product.is_out_of_stock || product.status === 'out';
   const saving = savingOf(product);
   const percent = savingPercent(product);
@@ -174,27 +174,26 @@ export const OxProductCard = memo(function OxProductCard({
     () => cardSpecLine(product, spec, t, typeInfo, bundleMemberCount),
     [product, spec, t, typeInfo, bundleMemberCount]
   );
-  // THE FREE-CONSULTATION CUE (owner item 2026-09-24, S8g item 1): a
-  // universal, conversion-oriented cue available on any boxed or bundle
-  // product without inventing data — the written-question channel really is
-  // free in the catalogue (FINAL-claims-source.md row 6, services.ts). Never
-  // on a service, digital or gift product, which is not a "before you buy"
-  // question about a physical good.
-  const consultVariant = variantOf(product.type);
-  const showsFreeConsult = consultVariant === 'physical' || consultVariant === 'bundle';
 
-  /**
-   * THE DESCRIPTION EXCERPT (coordinator addendum, 2026-09-23), restored
-   * under the type+facts line above: the first sentence of the product's own
-   * prose paragraph, never the spec line's own label/value pairs.
-   */
-  const excerpt = useMemo(() => descriptionExcerpt(product.description), [product.description]);
+  // THE VARIANT CHOOSER, ON THE PLATE NOW (owner review, 2026-09-24): never
+  // sold out, and never a bundle — a bundle's own add path is a link to its
+  // page (`BuyControls`'s early return below), never a card-composed add, so
+  // the plate never offers a chooser it cannot honour. `option` feeds both
+  // this row and the passive preview-dot suppression below, computed once.
+  const option = outOfStock || isBundle ? null : cardOption(product);
+  const formId = `oxcard-form-${product.id}`;
+  const [valueId, setValueId] = useState<number | string | null>(() =>
+    option ? defaultValueId(option) : null
+  );
+  // A chosen value with its own photograph swaps the plate image; a colour
+  // alone never does (`valueImageUrl`'s own comment — painting a photograph
+  // from a hex would be a guess this file already refuses to make).
+  const variantImageUrl = useMemo(() => valueImageUrl(option, valueId), [option, valueId]);
 
   // ONE axis, one control and one preview, never both (section 3.7): when the
   // card's own chip row already lets a shopper choose a colour, the plate's
   // preview dots for that same axis are redundant and are suppressed.
-  const chipOption = outOfStock ? null : cardOption(product);
-  const showSwatchDots = swatches.length > 0 && chipOption?.type !== 'color';
+  const showSwatchDots = swatches.length > 0 && option?.type !== 'color';
 
   // THE BADGE STACK, capped at two, in the priority section 6.2 sets. A real
   // out-of-stock flag suppresses every other one on its own (rendered
@@ -233,12 +232,23 @@ export const OxProductCard = memo(function OxProductCard({
     <article className={classes} data-ox-product={product.id}>
       <div className="ox-card-product__plate">
         {/* The plate is not a second link: the card has one stretched title
-            link for navigation, plus the wishlist, the quantity stepper, the
-            add button and the buy CTA. The swatches are deliberately NOT
-            raised above the stretched link, so a tap on one opens the product
-            page, which is where Salla's own option chooser lives. */}
+            link for navigation, plus the variant chooser, the quantity
+            stepper, the add button and the buy CTA. The passive preview dots
+            are deliberately NOT raised above the stretched link, so a tap on
+            one opens the product page, which is where Salla's own option
+            modal lives; the chooser below IS raised, because it is a real
+            control of its own. */}
+        {/* THE PLATE GROUND (owner review, 2026-09-24): the PDP gallery's own
+            grey band and orange mark, off the shared `ox-plate-band`/
+            `ox-plate-mark` mixins (`_primitives.scss`) so the two surfaces
+            read off one definition. Rendered before the image so paint order
+            alone keeps them behind the packshot, with no z-index to manage. */}
+        <span className="ox-card-product__band" aria-hidden="true" />
+        <span className="ox-card-product__mark" aria-hidden="true" />
         <Image
-          src={product.image?.url}
+          // A chosen value with its own photograph swaps the plate image
+          // (`variantImageUrl`); a colour alone never does.
+          src={variantImageUrl ?? product.image?.url}
           alt={product.image?.alt ?? product.name}
           aspectRatio="1/1"
           objectFit="contain"
@@ -293,15 +303,6 @@ export const OxProductCard = memo(function OxProductCard({
             <Badge tone="note">{t('ox.card.expiry', { date: expiryDate })}</Badge>
           ) : null}
         </BadgeStack>
-        <button
-          type="button"
-          className={'ox-card-product__wish' + (inWishlist ? ' is-active' : '')}
-          aria-label={t('ox.a11y.wishlist_toggle')}
-          aria-pressed={inWishlist}
-          onClick={() => wishlist.toggle(product.id)}
-        >
-          <Icon name="heart" size={20} />
-        </button>
         {showSwatchDots ? (
           <ul className="ox-card-product__swatches" aria-label={t('ox.card.colours')}>
             {swatches.slice(0, MAX_SWATCHES).map((swatch) => (
@@ -320,6 +321,23 @@ export const OxProductCard = memo(function OxProductCard({
             ))}
           </ul>
         ) : null}
+        {/* THE VARIANT CHOOSER, ON THE PLATE (owner review, 2026-09-24, item
+            3): bottom-start, over the image, so it costs the body zero
+            height. Never sold out, never a bundle — see `option`'s own
+            comment above. `option === null` still renders (an empty,
+            `:not(:empty)`-gated box in `_b4-listing.scss`), so the DOM shape
+            does not depend on which one product in a grid happens to carry
+            options; a sold-out or bundle card renders nothing here at all,
+            matching `BuyControls`'s own early returns for both. */}
+        {!outOfStock && !isBundle ? (
+          <VariantChips
+            option={option}
+            uid={`oxcard-${product.id}`}
+            value={valueId}
+            onChange={setValueId}
+            formId={formId}
+          />
+        ) : null}
       </div>
 
       <div className="ox-card-product__body">
@@ -337,7 +355,6 @@ export const OxProductCard = memo(function OxProductCard({
           </Link>
         </h3>
         <p className="ox-card-product__chips">{specLine ? <Bdi>{specLine}</Bdi> : null}</p>
-        <p className="ox-card-product__excerpt">{excerpt ? <Bdi>{excerpt}</Bdi> : null}</p>
         {/* The WRAPPER is conditional too, not just its contents.
             `RatingRow` already renders null below a real review count, but the
             box around it kept `min-block-size: 20px`, so every card on this
@@ -367,18 +384,22 @@ export const OxProductCard = memo(function OxProductCard({
         </div>
         {/* No savings line under the price (owner call, 2026-09-22): the pill
             in the image corner already states the saving, and the extra row
-            stretched every card for a figure printed twice. */}
-        {showsFreeConsult ? (
-          <Link to="/services" className="ox-card-product__consult">
-            <Icon name="written-question" size={16} />
-            {t('ox.card.free_consult')}
-          </Link>
-        ) : null}
+            stretched every card for a figure printed twice. The
+            free-consultation link that used to sit here is gone outright
+            (owner review, 2026-09-24: "not necessary... taking unnecessary
+            space"); `ox.card.free_consult` stays in the locale files unused,
+            per the brief, rather than retired with it. */}
         {showsLimitedQty ? (
           <p className="ox-card-product__stock">{t('ox.card.limited_qty')}</p>
         ) : null}
         {withoutAddButton ? null : (
-          <BuyControls product={product} outOfStock={outOfStock} bundle={isBundle} />
+          <BuyControls
+            product={product}
+            outOfStock={outOfStock}
+            bundle={isBundle}
+            option={option}
+            formId={formId}
+          />
         )}
       </div>
     </article>
@@ -404,29 +425,31 @@ export const OxProductCard = memo(function OxProductCard({
  * single coloured product can, so it gets no stepper and no add button
  * either — only a link to its own page, unless `can_add` says the platform
  * itself allows adding it from here.
+ *
+ * **The chooser itself lives on the plate now** (owner review, 2026-09-24,
+ * item 3), a sibling this component never renders; `option` and `formId`
+ * arrive as props from `OxProductCard`, which mounts the one `VariantChips`
+ * instance both this form and the plate's own row share.
  */
 function BuyControls({
   product,
   outOfStock,
   bundle,
+  option,
+  formId,
 }: {
   product: Product;
   outOfStock: boolean;
   /** A real bundle (S8g item 3), not merely a product with options. */
   bundle: boolean;
+  /** The plate's own chooser, resolved once by the parent (never on a bundle). */
+  option: ProductOption | null;
+  /** The `<form>` id below, and the id the plate's own radios `form=` back to. */
+  formId: string;
 }) {
   const { t } = useTranslation();
   const max = maxQuantity(product);
   const [quantity, setQuantity] = useState(1);
-
-  // THE CARD CHOOSES THE VARIANT NOW, when the product has exactly one simple
-  // option. Before this, a product with options showed "اختر الخيارات" and the
-  // add button opened Salla's chooser — which never appeared on a grid, so the
-  // control read as broken. The shaker's four colours are the whole case today.
-  const option = outOfStock ? null : cardOption(product);
-  const [valueId, setValueId] = useState<number | string | null>(() =>
-    option ? defaultValueId(option) : null
-  );
 
   // The stepper is suppressed on a product with options ONLY while the card
   // cannot choose them. Once it can, quantity is meaningful again.
@@ -529,41 +552,28 @@ function BuyControls({
     </div>
   );
 
-  // The row reserves its own height whether or not there is anything to
-  // choose (VariantChips returns an empty box for `option === null`), so
-  // every card in a grid keeps the same row count regardless of which one
-  // product actually carries a chippable option.
-  const variantsRow = (
-    <VariantChips
-      option={option}
-      uid={`oxcard-${product.id}`}
-      value={valueId}
-      onChange={setValueId}
-    />
-  );
-
-  // No option to choose: the row above is the empty reservation, and the rest
-  // of the card stays exactly as it was, with no form around it. A form that
-  // wraps nothing chooseable is markup for its own sake.
+  // No option to choose: nothing here needs a `<form>` around it. A form
+  // that wraps nothing chooseable is markup for its own sake; the plate's own
+  // `VariantChips` still rendered its empty reservation box, off in the
+  // plate, entirely on its own.
   if (!option) {
-    return (
-      <>
-        {variantsRow}
-        {controls}
-      </>
-    );
+    return controls;
   }
 
   return (
     <form
+      id={formId}
       className="ox-card-product__form"
       method="post"
       encType="multipart/form-data"
       onSubmit={onSubmit}
     >
-      {/* Salla reads the product from the form, not from the button. */}
+      {/* Salla reads the product from the form, not from the button. The
+          chosen value itself comes from the plate's own radios, associated
+          with this form by `form={formId}` (VariantChips.tsx) even though
+          they render outside it in the DOM — the standard HTML mechanism a
+          `<button form="…">` uses, so `new FormData(form)` still carries it. */}
       <input type="hidden" name="id" value={String(product.id)} />
-      {variantsRow}
       {/* The stepper above is a React control, so the number it holds has to be
           put into the form as a field of its own for FormData to see it. */}
       <input type="hidden" name="quantity" value={String(showsStepper ? quantity : 1)} />

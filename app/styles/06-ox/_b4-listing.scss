@@ -1408,14 +1408,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
 //   (section 3.1's own recorded departure from DIRECTION 5.3).
 // ---------------------------------------------------------------------------
 
-// The corners swap: the heart takes the reading start, the badge column the
-// opposite corner. Both rules re-point an inset the base file set the other
-// way, so both sides are stated rather than left to inherit.
-.ox-card-product__wish {
-  inset-inline-start: calc(var(--ox-1) * -1);
-  inset-inline-end: auto;
-}
-
+// The badge column takes the reading-end corner (the wishlist heart that
+// used to take the opposite one is gone outright, owner review, 2026-09-24 —
+// see `_b3-product.scss`'s own note on `.ox-card-product__wish`). This
+// override re-points an inset the base file set the other way, so it stays
+// stated rather than left to inherit.
 .ox-card-product__badges {
   inset-inline-start: auto;
   inset-inline-end: 0;
@@ -2318,35 +2315,58 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // form's POST is byte-for-byte the product page's. The styling is ours; the
 // contract is not.
 //
-// FIXED 32px, on EVERY card, whether or not it has anything to choose
-// (VariantChips.tsx returns an empty box for `option === null`). A text-label
-// chip row grew taller than its neighbours on the one product with options and
-// made the grid ragged; a 24px circle row at a flat height does not, and
-// reserving it even when empty is what keeps a plain card and a
-// four-colour one on the same baseline.
+// ON THE PLATE NOW, bottom-start, over the image (owner review, 2026-09-24:
+// the row used to sit below the image and grew every card that had one
+// taller than its neighbours). `OxProductCard.tsx` mounts it inside
+// `.ox-card-product__plate`, so it costs the body zero height on every card,
+// whether or not that card has anything to choose.
+//
+// The `:not(:empty)` split carries the visible chrome: `VariantChips.tsx`
+// returns a genuinely empty `<div>` for `option === null` (most cards), and
+// an `:empty` element paints nothing here at all — no translucent strip
+// floating over a packshot with nothing to choose. The real chooser (a
+// `<fieldset>` with a `<legend>` and swatch labels) is never empty, so it
+// alone gets the strip, the padding and the radius.
 //
 // One row, overflow hidden rather than scrolling or wrapping: a second row or
 // a scrollbar would either grow the card or hide values behind a gesture a
 // grid does not invite. `MAX_VISIBLE` in the component already caps what
 // renders to what the row's own width can hold, so the hidden ones fold into
-// a "+N" pill instead.
+// a "+N" pill instead. `max-inline-size` keeps the row inside the plate's own
+// inset even at its widest, so it never reaches the centre of the packshot.
 // ---------------------------------------------------------------------------
 .ox-card-product__form {
   display: contents;
 }
 
 .ox-card-product__variants {
-  position: relative;
+  position: absolute;
+  inset-block-end: var(--ox-2);
+  inset-inline-start: var(--ox-2);
   z-index: 2;
   display: flex;
   align-items: center;
   gap: var(--ox-1);
-  block-size: 32px;
-  margin: 0 0 var(--ox-2);
+  max-inline-size: calc(100% - (var(--ox-2) * 2));
+  margin: 0;
   padding: 0;
   border: 0;
   min-inline-size: 0;
   overflow-x: hidden;
+  // Empty (no option): paints nothing, and lets a tap fall through to
+  // whatever sits under it on the plate.
+  pointer-events: none;
+
+  // The real chooser only: the translucent strip a busy packshot needs
+  // behind the swatches' own hairline ring (`.ox-swatch__face`'s 1px border)
+  // to stay legible on any product photograph.
+  &:not(:empty) {
+    block-size: 32px;
+    padding-inline: var(--ox-2);
+    background: color-mix(in srgb, var(--ox-card) 78%, transparent);
+    border-radius: var(--ox-r-1);
+    pointer-events: auto;
+  }
 }
 
 .ox-swatch {
@@ -2355,6 +2375,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  // The 44px touch target on a chooser now living on the packshot itself
+  // (owner review, 2026-09-24, item 3): the painted circle stays 24px, the
+  // mixin's own `::after` extends the tappable box past it, same mechanism
+  // the quantity stepper's buttons already use.
+  @include ox-hit-area;
   inline-size: 24px;
   block-size: 24px;
   border-radius: var(--ox-r-pill);

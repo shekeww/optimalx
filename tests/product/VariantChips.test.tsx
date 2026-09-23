@@ -4,7 +4,7 @@ import { fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import type { ProductOption } from '@salla.sa/twilight-theme-engine/types';
 
-const { VariantChips, NAMED_COLORS, namedColor } = await import(
+const { VariantChips, NAMED_COLORS, namedColor, valueImageUrl } = await import(
   '../../app/components/product/VariantChips'
 );
 
@@ -168,6 +168,46 @@ describe('VariantChips', () => {
     const inputs = container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
     fireEvent.click(inputs[1]);
     expect(onChange).toHaveBeenCalledWith(12);
+  });
+
+  it('carries no form attribute by default, and the given one on every radio when a formId is passed (owner review, 2026-09-24: the chooser renders on the plate now, outside the card\'s own form)', () => {
+    const bare = renderWithProviders(
+      <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+    );
+    const bareInputs = bare.container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
+    bareInputs.forEach((input) => expect(input.hasAttribute('form')).toBe(false));
+    bare.unmount();
+
+    const withForm = renderWithProviders(
+      <VariantChips
+        option={makeOption()}
+        uid="oxcard-1"
+        value={11}
+        onChange={vi.fn()}
+        formId="oxcard-form-1"
+      />
+    );
+    const formInputs = withForm.container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
+    formInputs.forEach((input) => expect(input.getAttribute('form')).toBe('oxcard-form-1'));
+  });
+
+  describe('valueImageUrl (owner review, 2026-09-24, item 3: the plate swaps to a chosen value\'s own photograph)', () => {
+    it('returns the value\'s own image when it carries one', () => {
+      const withImage = makeOption({
+        values: [{ id: 13, name: 'أخضر', image: 'https://cdn.test/green.jpg' } as never],
+      });
+      expect(valueImageUrl(withImage, 13)).toBe('https://cdn.test/green.jpg');
+    });
+
+    it('never invents a photograph from a colour alone', () => {
+      expect(valueImageUrl(makeOption(), 11)).toBeNull();
+    });
+
+    it('returns null with no option, no matching value, or no value chosen', () => {
+      expect(valueImageUrl(null, 11)).toBeNull();
+      expect(valueImageUrl(makeOption(), 999)).toBeNull();
+      expect(valueImageUrl(makeOption(), null)).toBeNull();
+    });
   });
 
   describe('NAMED_COLORS (owner review, 2026-09-23, item 3)', () => {

@@ -187,6 +187,38 @@ $ox-angle-tan: 0.6745;
   }
 }
 
+// The plate ground: the PDP gallery's own grey band and orange mark behind a
+// product photograph (owner review, 2026-09-24: the card's own plate now
+// carries the same ground, scaled down). Two mixins, one definition each, so
+// the gallery and the card read off the same rule and cannot drift apart —
+// `_b3-product.scss`'s `.ox-gallery__band`/`.ox-gallery__mark` and
+// `.ox-card-product__band`/`.ox-card-product__mark` both `@include` these.
+// Every value is a percentage of the plate itself, so the same rule scales
+// from a 137px card plate to a 580px gallery plate with no second set of
+// numbers to keep in step. `--ox-skew` is the identity's own 34deg
+// (`X-IDENTITY-2026-09-22.md` §2.1), consumed rather than re-derived.
+@mixin ox-plate-band {
+  position: absolute;
+  inset-block: -10%;
+  inset-inline-start: 22%;
+  inline-size: 46%;
+  background: var(--ox-plate-2);
+  opacity: 0.55;
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
+@mixin ox-plate-mark {
+  position: absolute;
+  inset-block-end: 22%;
+  inset-inline-end: 8%;
+  inline-size: 4.5%;
+  block-size: 19%;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+  pointer-events: none;
+}
+
 // ---------------------------------------------------------------------------
 // 2. Focus, hit area, visually hidden, containers, type
 // ---------------------------------------------------------------------------

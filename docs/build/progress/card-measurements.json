@@ -1,0 +1,92 @@
+{
+  "390-after": {
+    "count": 14,
+    "card": {
+      "w": 171,
+      "h": 387
+    },
+    "plate": {
+      "w": 137,
+      "h": 137
+    },
+    "band": {
+      "w": 173.9,
+      "h": 164.4
+    },
+    "mark": {
+      "w": 23.7,
+      "h": 26
+    },
+    "variants": {
+      "w": 0,
+      "h": 0
+    },
+    "name": {
+      "w": 137,
+      "h": 44
+    },
+    "chips": {
+      "w": 137,
+      "h": 18
+    },
+    "price": {
+      "w": 137,
+      "h": 30
+    },
+    "action": {
+      "w": 137,
+      "h": 88
+    },
+    "hasWish": false,
+    "hasConsult": false,
+    "hasExcerpt": false,
+    "outerHTML_len": 3708,
+    "cardX": 203,
+    "cardY": 1009
+  },
+  "1440-after": {
+    "count": 14,
+    "card": {
+      "w": 306,
+      "h": 528
+    },
+    "plate": {
+      "w": 272,
+      "h": 272
+    },
+    "band": {
+      "w": 345.3,
+      "h": 326.4
+    },
+    "mark": {
+      "w": 47.1,
+      "h": 51.7
+    },
+    "variants": {
+      "w": 0,
+      "h": 0
+    },
+    "name": {
+      "w": 272,
+      "h": 46
+    },
+    "chips": {
+      "w": 272,
+      "h": 18
+    },
+    "price": {
+      "w": 272,
+      "h": 30
+    },
+    "action": {
+      "w": 272,
+      "h": 92
+    },
+    "hasWish": false,
+    "hasConsult": false,
+    "hasExcerpt": false,
+    "outerHTML_len": 4258,
+    "cardX": 1055,
+    "cardY": 1242
+  }
+}

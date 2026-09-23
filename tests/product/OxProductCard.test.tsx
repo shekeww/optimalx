@@ -4,18 +4,10 @@ import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { createT } from './i18n-mock';
 
-const toggle = vi.fn();
-const wishlistIds: number[] = [];
-
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () => (await import('./i18n-mock')).i18nModuleMock('ar'));
-vi.mock('@salla.sa/twilight-theme-engine/hooks/useWishlist', () => ({
-  useWishlist: () => ({
-    ids: wishlistIds,
-    count: wishlistIds.length,
-    has: (id: number) => wishlistIds.includes(id),
-    toggle,
-  }),
-}));
+// No `useWishlist` mock any more: the card's own wishlist heart is gone
+// outright (owner review, 2026-09-24), and `OxProductCard.tsx` no longer
+// imports the hook at all.
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
   useMoney: () => ({
     format: (amount: unknown) => <span data-testid="money">{String(amount)}</span>,
@@ -144,7 +136,6 @@ describe('OxProductCard', () => {
     for (const cls of [
       '.ox-card-product__name',
       '.ox-card-product__chips',
-      '.ox-card-product__excerpt',
       '.ox-card-product__price',
       '.ox-card-product__action',
     ]) {
@@ -319,7 +310,7 @@ describe('OxProductCard', () => {
     expect(ambiguous.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
   });
 
-  it('restores the description excerpt under the spec line, as the description\'s own prose sentence (coordinator addendum, 2026-09-23)', () => {
+  it('renders no description excerpt any more (owner review, 2026-09-24: it repeated the title)', () => {
     const { container } = renderWithProviders(
       <OxProductCard
         product={makeProduct({
@@ -327,30 +318,8 @@ describe('OxProductCard', () => {
         })}
       />
     );
-    // Only the FIRST sentence, never the whole paragraph and never the spec
-    // line's own label/value pairs.
-    const excerpt = container.querySelector('.ox-card-product__excerpt')?.textContent ?? '';
-    expect(excerpt).toBe('حزمة البداية تجمع ثلاثة منتجات أساسية.');
-    expect(excerpt).not.toContain('مناسبة للمبتدئين');
-    expect(excerpt).not.toContain('الحصص');
-  });
-
-  it('reads the first paragraph directly as the excerpt when it is not a spec line', () => {
-    const { container } = renderWithProviders(
-      <OxProductCard product={makeProduct({ description: '<p>وصف عام بدون بيانات محددة.</p>' })} />
-    );
-    expect(container.querySelector('.ox-card-product__excerpt')?.textContent).toBe(
-      'وصف عام بدون بيانات محددة.'
-    );
-  });
-
-  it('keeps the excerpt row reserved and empty when the description carries no prose paragraph', () => {
-    const { container } = renderWithProviders(
-      <OxProductCard product={makeProduct({ description: SPEC })} />
-    );
-    const excerpt = container.querySelector('.ox-card-product__excerpt');
-    expect(excerpt).not.toBeNull();
-    expect(excerpt?.textContent).toBe('');
+    expect(container.querySelector('.ox-card-product__excerpt')).toBeNull();
+    expect(container.textContent).not.toContain('حزمة البداية تجمع ثلاثة منتجات أساسية');
   });
 
   it('invents no stars on a store with no reviews (B28)', () => {
@@ -427,20 +396,13 @@ describe('OxProductCard', () => {
     expect(hidden.container.querySelector('.ox-card-product__stock')).toBeNull();
   });
 
-  it('shows the free-consultation cue on a boxed product, under the price row (S8g item 1)', () => {
+  it('renders no free-consultation link any more (owner review, 2026-09-24: "not necessary")', () => {
+    // The link and its rule are gone outright; the locale key stays unused
+    // in the files per the brief, so this only proves the card stopped
+    // rendering it, not that the key was deleted.
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
-    const link = container.querySelector('.ox-card-product__consult');
-    expect(link).not.toBeNull();
-    expect(link?.textContent).toContain(t('ox.card.free_consult'));
-    expect(link?.getAttribute('href')).toBe('/services');
-  });
-
-  it('hides the free-consultation cue on a service, digital or gift product', () => {
-    for (const type of ['service', 'booking', 'digital', 'codes']) {
-      const view = renderWithProviders(<OxProductCard product={makeProduct({ type })} />);
-      expect(view.container.querySelector('.ox-card-product__consult'), type).toBeNull();
-      view.unmount();
-    }
+    expect(container.querySelector('.ox-card-product__consult')).toBeNull();
+    expect(container.textContent).not.toContain(t('ox.card.free_consult'));
   });
 
   it('suppresses the plate colour dots when the chip row already chooses that axis (CARD 3.7)', () => {
@@ -512,10 +474,10 @@ describe('OxProductCard', () => {
     );
   });
 
-  it('toggles the wishlist through the engine hook', () => {
-    renderWithProviders(<OxProductCard product={makeProduct()} />);
-    screen.getByLabelText(t('ox.a11y.wishlist_toggle')).click();
-    expect(toggle).toHaveBeenCalledWith(1996831868);
+  it('renders no wishlist heart any more (owner review, 2026-09-24: header audit, delete what Shopify cannot carry)', () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    expect(container.querySelector('.ox-card-product__wish')).toBeNull();
+    expect(screen.queryByLabelText(t('ox.a11y.wishlist_toggle'))).toBeNull();
   });
 
   // -------------------------------------------------------------------------
@@ -653,16 +615,21 @@ describe('OxProductCard', () => {
     expect(real.container.querySelector('.ox-card-product__swatches input')).toBeNull();
   });
 
-  it('reserves the variant row on every card so a grid keeps one baseline', () => {
-    // No option at all: the row is still there, empty, holding its own height.
+  it('renders the variant chooser on the plate, not below it, so it costs the body no height (owner review, 2026-09-24, item 3)', () => {
+    // No option at all: the row is still there, on the plate, empty.
     const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
-    const plainRow = plain.container.querySelector('.ox-card-product__variants');
+    const plate = plain.container.querySelector('.ox-card-product__plate');
+    const plainRow = plate?.querySelector('.ox-card-product__variants');
     expect(plainRow).not.toBeNull();
     expect(plainRow?.querySelector('input')).toBeNull();
+    // Never in the body, where it used to add height below the image.
+    expect(
+      plain.container.querySelector('.ox-card-product__body .ox-card-product__variants')
+    ).toBeNull();
     plain.unmount();
 
-    // A chippable option: the same row now carries real, keyboard-reachable
-    // swatches, radio semantics intact.
+    // A chippable option: the same row, still on the plate, now carries
+    // real, keyboard-reachable swatches, radio semantics intact.
     const withOption = renderWithProviders(
       <OxProductCard
         product={makeProduct({
@@ -672,11 +639,66 @@ describe('OxProductCard', () => {
         })}
       />
     );
-    const row = withOption.container.querySelector('.ox-card-product__variants');
+    const row = withOption.container.querySelector(
+      '.ox-card-product__plate .ox-card-product__variants'
+    );
     expect(row).not.toBeNull();
     const inputs = row?.querySelectorAll<HTMLInputElement>('.ox-swatch__input') ?? [];
     expect(inputs.length).toBe(2);
     expect(inputs[0].getAttribute('name')).toBe('options[1]');
+  });
+
+  it('associates the plate\'s own radios with the card\'s form by the standard HTML form attribute, since they no longer nest inside it', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          options: [
+            { id: 1, type: 'color', values: [{ id: 1, name: 'Lime' }, { id: 2, name: 'Black' }] },
+          ],
+        })}
+      />
+    );
+    const form = container.querySelector('form.ox-card-product__form');
+    expect(form).not.toBeNull();
+    const formId = form?.getAttribute('id');
+    expect(formId).toBeTruthy();
+    const inputs = container.querySelectorAll<HTMLInputElement>(
+      '.ox-card-product__plate .ox-swatch__input'
+    );
+    expect(inputs.length).toBe(2);
+    inputs.forEach((input) => expect(input.getAttribute('form')).toBe(formId));
+  });
+
+  it('swaps the plate photograph when the chosen value carries one of its own, never for a colour alone', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          options: [
+            {
+              id: 1,
+              type: 'image',
+              values: [
+                { id: 1, name: 'Lime', image_url: 'https://cdn.test/lime.jpg' },
+                { id: 2, name: 'Black' },
+              ],
+            },
+          ],
+        })}
+      />
+    );
+    const img = container.querySelector<HTMLImageElement>('.ox-card-product__img');
+    // The first value is the default and carries its own photograph.
+    expect(img?.getAttribute('src')).toBe('https://cdn.test/lime.jpg');
+
+    const secondInput = container.querySelectorAll<HTMLInputElement>(
+      '.ox-card-product__plate .ox-swatch__input'
+    )[1];
+    fireEvent.click(secondInput);
+    // The second value carries no image of its own: the packshot falls back
+    // to the product's own default photograph, never a guess from a colour.
+    expect(
+      container.querySelector<HTMLImageElement>('.ox-card-product__img')?.getAttribute('src')
+    ).toBe('https://cdn.test/a.jpg');
   });
 
   it('feeds the stepper value into the Salla button quantity instead of faking it', () => {
@@ -830,6 +852,9 @@ describe('OxProductCard', () => {
     const { container } = renderWithProviders(<OxProductCard product={bundleProduct()} />);
     expect(container.querySelector('.ox-card-product__qty')).toBeNull();
     expect(screen.queryByTestId('add-button')).toBeNull();
+    // The plate never offers a chooser the bundle's own link-only add path
+    // cannot honour (owner review, 2026-09-24, item 3).
+    expect(container.querySelector('.ox-card-product__variants')).toBeNull();
     const buy = container.querySelector('a.ox-card-product__buy');
     expect(buy).not.toBeNull();
     expect(buy?.getAttribute('href')).toBe('/p1141798217');

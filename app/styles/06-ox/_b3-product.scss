@@ -61,6 +61,16 @@
   // never needed for CLS, only a stand-in for it.
   aspect-ratio: 1 / 1;
   overflow: hidden;
+  // THE PLATE GROUND (owner review, 2026-09-24): the PDP gallery's own page
+  // ground, so the band and mark below have a surface to sit on. `--ox-bg`
+  // equals `--ox-card` in light mode (both `#FFFFFF`), so this is a
+  // no-visible-difference declaration against the card's own white surface —
+  // section 3.1's recorded departure from a grey plate (a lossy photograph's
+  // own baked-in white ground reading as a rectangle inside a grey box) still
+  // holds, because the ground here is white, not grey; only the band and the
+  // mark carry colour, at the same low contrast the gallery already proved
+  // keeps a white tub legible.
+  background: var(--ox-bg);
 
   // The engine's own `<Image>` wraps the `<img>` in its own `position:
   // relative` div carrying its OWN `aspect-ratio: 1/1` (inline style,
@@ -69,8 +79,8 @@
   // the plate, so its square could disagree with the plate's own and —
   // through `overflow: hidden` on that same wrapper — clip whatever the
   // mismatch cut off. Pinning it flush to the plate (the same box every
-  // other direct child here already sits in — the badges, the wishlist
-  // button, the swatch column are all `position: absolute` too) removes the
+  // other direct child here already sits in — the badges, the swatch column
+  // and the variant chooser are all `position: absolute` too) removes the
   // ambiguity and, as a second effect, is what actually makes the hover
   // image's own wrapper land exactly over the resting one instead of beside
   // it in the flex row. `:has()` reaches this wrapper specifically — it
@@ -78,7 +88,22 @@
   > :has(> .ox-card-product__img) {
     position: absolute;
     inset: 0;
+    z-index: 1;
   }
+}
+
+// Off the shared `ox-plate-band`/`ox-plate-mark` mixins (`_primitives.scss`),
+// the same definition the PDP gallery's own `.ox-gallery__band`/
+// `.ox-gallery__mark` use, so the two surfaces cannot drift apart. Rendered
+// before the image in `OxProductCard.tsx`, so plain DOM paint order — no
+// z-index of their own needed — keeps them behind the packshot; the image
+// wrapper above takes `z-index: 1` to sit above them explicitly.
+.ox-card-product__band {
+  @include ox-plate-band;
+}
+
+.ox-card-product__mark {
+  @include ox-plate-mark;
 }
 
 .ox-card-product__img {
@@ -121,32 +146,10 @@
   z-index: 1;
 }
 
-.ox-card-product__wish {
-  position: absolute;
-  inset-block-start: calc(var(--ox-1) * -1);
-  inset-inline-end: calc(var(--ox-1) * -1);
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 44px;
-  block-size: 44px;
-  padding: 0;
-  font-size: 20px;
-  color: var(--ox-fg);
-  background: none;
-  border: 0;
-  cursor: pointer;
-
-  &.is-active {
-    color: var(--ox-accent);
-  }
-
-  &:focus-visible {
-    outline: var(--ox-focus-ring);
-    outline-offset: -4px;
-  }
-}
+// `.ox-card-product__wish` is gone outright (owner review, 2026-09-24: "if
+// anything can't be integrated in Shopify, delete it" — the header audit's
+// own ruling, extended to the card's heart the same day). The PDP gallery
+// keeps its own wishlist control (`.ox-gallery__wish`), a separate decision.
 
 .ox-card-product__body {
   display: flex;
@@ -217,50 +220,14 @@
   text-overflow: ellipsis;
 }
 
-// The description excerpt (coordinator addendum, 2026-09-23): the former
-// merchant pitch line, restored under the type+facts line above it — the
-// first sentence of the description's own prose paragraph
-// (`descriptionExcerpt()`, cardSpec.ts), never the spec line's label/value
-// pairs, which the row above already owns. Reserved at two lines
-// (`-webkit-line-clamp`), same as `.ox-card-product__chips`'s own
-// always-reserved row, so a short sentence and a long one keep one baseline
-// across a mixed grid; `--ox-w-quiet`/`--ox-fg-3` read as prose rather than
-// as a fact, the same distinction the spec line's own comment above draws
-// against the weight this rule used to carry.
-// The free-consultation cue under the price row (S8g, 2026-09-24): one line,
-// the written-question glyph and a text link to /services; micro size, the
-// accent-dark ink the card's other links use, no fill, reserved 20px so the
-// row never shifts. Absent on service, booking, digital and gift products.
-.ox-card-product__consult {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-1);
-  min-block-size: 20px;
-  margin-block-start: var(--ox-1);
-  font-size: var(--ox-t-micro);
-  font-weight: var(--ox-w-ui);
-  color: var(--ox-accent-dark);
-  text-decoration: none;
-
-  &:hover,
-  &:focus-visible {
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-}
-
-.ox-card-product__excerpt {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  min-block-size: 36px;
-  margin: 0;
-  overflow: hidden;
-  font-size: 13px;
-  font-weight: var(--ox-w-quiet);
-  line-height: 18px;
-  color: var(--ox-fg-3);
-}
+// `.ox-card-product__consult` (the free-consultation link) and
+// `.ox-card-product__excerpt` (the description excerpt) are both gone
+// outright (owner review, 2026-09-24: the consult link was "not necessary...
+// taking unnecessary space"; the excerpt repeated the title on the owner's
+// own screenshot and the spec line above already carries the type).
+// `ox.card.free_consult` stays in the locale files unused, per the brief;
+// `descriptionExcerpt()` is retired from `cardSpec.ts` since nothing else
+// read it.
 
 .ox-card-product__rating {
   display: flex;
@@ -313,20 +280,25 @@
 }
 
 // Equal height in a mixed row (CARD-2026-09-23 section 5, DIRECTION 4.4): a
-// sold-out card drops the variant chips row and the quantity row entirely
-// rather than merely emptying them, which would make it 92px shorter than an
-// in-stock neighbour on the same row. The body reserves the live card's own
-// height instead — 252 at 390 (title 44 + spec 18 + price 30 + chips 32 +
-// gaps + the one 44px control), 260 from 1024 up (title 46) — and the notify
-// control keeps `margin-block-start: auto` (`_b4-listing.scss`) to sit flush
-// with the bottom regardless.
+// sold-out card drops the quantity row entirely rather than merely emptying
+// it, which would make it shorter than an in-stock neighbour on the same
+// row. RECOMPUTED (owner review, 2026-09-24): the variant chooser moved onto
+// the plate and the excerpt/consult rows are gone outright, both of which
+// shrank the live body itself, so the reservation shrinks with it — measured
+// live (`getBoundingClientRect`) on the catalogue's own listing: **204** at
+// 390 (title 44 + chips 18 + price 30 + action 88, three 8px gaps) against a
+// sold-out body's own natural 160 (title + chips + price + one 44px
+// control), a 44px difference; **210** at 1440 (title 46), against 162
+// natural, a 48px difference. The notify control keeps
+// `margin-block-start: auto` (`_b4-listing.scss`) to sit flush with the
+// bottom regardless.
 .ox-card-product.is-out .ox-card-product__body {
-  min-block-size: 252px;
+  min-block-size: 204px;
 }
 
 @media (min-width: 1024px) {
   .ox-card-product.is-out .ox-card-product__body {
-    min-block-size: 260px;
+    min-block-size: 210px;
   }
 }
 
@@ -482,15 +454,11 @@
   border-radius: var(--ox-r-4, 16px);
 }
 
+// Off the shared `ox-plate-band` mixin now (`_primitives.scss`): the card's
+// own plate draws the identical shape at its own scale (owner review,
+// 2026-09-24), so the definition lives once and the two cannot drift.
 .ox-gallery__band {
-  position: absolute;
-  inset-block: -10%;
-  inset-inline-start: 22%;
-  inline-size: 46%;
-  background: var(--ox-plate-2);
-  opacity: 0.55;
-  transform: skewX(var(--ox-skew));
-  pointer-events: none;
+  @include ox-plate-band;
 }
 
 // The accent bar on the plate, measured off the approved image rather than
@@ -501,15 +469,9 @@
 // heavy orange triangle in the plate's bottom corner, which is the single
 // loudest thing in the fold and is not in the image at all. Everything is a
 // percentage so the same bar holds its proportion on a 343 wide phone plate.
+// Off the shared `ox-plate-mark` mixin now, same reason as the band above.
 .ox-gallery__mark {
-  position: absolute;
-  inset-block-end: 22%;
-  inset-inline-end: 8%;
-  inline-size: 4.5%;
-  block-size: 19%;
-  background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
-  pointer-events: none;
+  @include ox-plate-mark;
 }
 
 .ox-gallery__img {

@@ -55,6 +55,15 @@ export interface VariantChipsProps {
   uid: string;
   value: number | string | null;
   onChange: (valueId: number | string) => void;
+  /**
+   * The card's own `<form>` id (owner review, 2026-09-24: the chooser now
+   * renders on the plate, outside that form in the DOM, so each radio
+   * carries the standard HTML `form` attribute to stay part of its
+   * submission — the same mechanism a native `<button form="…">` uses, no
+   * hidden mirror field needed). Omitted where the card renders no form at
+   * all (no option to submit).
+   */
+  formId?: string;
 }
 
 type SwatchFill = { kind: 'color'; value: string } | { kind: 'image'; value: string };
@@ -153,6 +162,30 @@ function swatchFill(value: ProductOptionValue): SwatchFill | null {
 }
 
 /**
+ * The plate photograph a chosen value points to, when it carries one of its
+ * own (owner review, 2026-09-24: the chooser now sits on the plate itself,
+ * so picking a value should show what it looks like). Only an `image`-kind
+ * fill ever swaps the packshot — a colour swatch is a preview circle, not a
+ * second photograph, and painting one from a hex would be exactly the guess
+ * `swatchFill`'s own comment above already refuses to make. Not observably
+ * live on this catalogue today: no processed fixture carries a per-value
+ * image (`swatchFill`'s own comment), the same defensively-coded,
+ * not-yet-exercised category `OxProductCard.tsx`'s bundle `can_add` path
+ * already documents.
+ */
+export function valueImageUrl(
+  option: ProductOption | null,
+  valueId: number | string | null
+): string | null {
+  if (!option || valueId === null) return null;
+  const values: ProductOptionValue[] = option.values ?? [];
+  const value = values.find((v) => String(v.id) === String(valueId));
+  if (!value) return null;
+  const fill = swatchFill(value);
+  return fill?.kind === 'image' ? fill.value : null;
+}
+
+/**
  * The card's variant chooser: one row of swatch circles carrying SALLA'S OWN
  * field names, so the choice reaches the cart through Salla's own path.
  *
@@ -175,7 +208,7 @@ function swatchFill(value: ProductOptionValue): SwatchFill | null {
  * carrying `aria-checked` alongside its native `checked`, under a real
  * `<label>` - never a `<button>` standing in for one.
  */
-export function VariantChips({ option, uid, value, onChange }: VariantChipsProps) {
+export function VariantChips({ option, uid, value, onChange, formId }: VariantChipsProps) {
   if (option === null) {
     return <div className="ox-card-product__variants" aria-hidden="true" />;
   }
@@ -216,6 +249,7 @@ export function VariantChips({ option, uid, value, onChange }: VariantChipsProps
               checked={checked}
               aria-checked={checked}
               onChange={() => onChange(v.id)}
+              {...(formId ? { form: formId } : {})}
             />
             <span
               className={'ox-swatch__face' + (isText ? ' ox-swatch__face--text' : '')}
