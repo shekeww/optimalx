@@ -254,9 +254,12 @@ $ox-angle-tan: 0.6745;
 
 // Plain links with no rule of their own (cart item titles, policy links, the
 // contact page's channels) lost their focus ring to the scaffold reset's
-// `a:focus { outline: none }` (2026-09-24, W6 RTL review P1-7). A zero
-// specificity fallback under every component's own `ox-focus` rule.
-:where(a[href]):focus-visible {
+// `a:focus { outline: none }` (2026-09-24, W6 RTL review P1-7). The rule must
+// outrank that reset (0,1,1), so it is written at (0,2,1) rather than inside
+// `:where()`: the zero-specificity form lost to the reset and never painted
+// (W7 verify P1-2, 2026-09-25). Every component's own `ox-focus` rule is a
+// class plus the pseudo-class (0,3,0) and still wins.
+a[href]:focus-visible {
   outline: 2px solid var(--ox-focus);
   outline-offset: 2px;
 }
