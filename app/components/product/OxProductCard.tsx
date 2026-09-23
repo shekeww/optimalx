@@ -42,6 +42,8 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  *   spec line        servings, then the pack size, off the product's own
  *                    parsed description (`cardSpecLine`); always reserved
  *   price row        the amount, plus the struck regular price on a sale
+ *   stock line       ONLY on a live `can_show_remained_quantity` quantity
+ *                    of 1 to 5; the number itself never prints
  *   action row       quantity stepper + Salla's own add button, outlined
  *   buy row          a full-width accent CTA: Salla's own quick buy where
  *                    `can_quick_buy` is on, otherwise a link to the product
