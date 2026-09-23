@@ -285,6 +285,19 @@ describe('ProductPage: the physical composition', () => {
     );
   });
 
+  it('mounts the advisory CTA after the related rail, and never on a service or booking page', () => {
+    const physical = renderPage();
+    const advisory = physical.container.querySelector('[data-testid="ox-pdp-advisory"]');
+    expect(advisory).not.toBeNull();
+    const order = Array.from(physical.container.querySelectorAll('.ox-sticky, [data-testid="ox-pdp-advisory"]'));
+    expect(order[0]?.getAttribute('data-testid')).toBe('ox-pdp-advisory');
+
+    const service = renderPage({ type: 'service', description: '<p>المدة: 20 دقيقة</p>' });
+    expect(service.container.querySelector('[data-testid="ox-pdp-advisory"]')).toBeNull();
+    const booking = renderPage({ type: 'booking', description: '<p>المدة: 20 دقيقة</p>' });
+    expect(booking.container.querySelector('[data-testid="ox-pdp-advisory"]')).toBeNull();
+  });
+
   it('leaves the cross-sell slot out entirely until there is something in it', async () => {
     // The live store answers `related` with nothing and puts no product in a
     // category, so the honest render of this region is no region: no

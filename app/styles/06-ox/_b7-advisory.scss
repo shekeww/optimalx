@@ -1,0 +1,69 @@
+// S8c: the free advisory + InBody CTA at the foot of every boxed product page
+// (owner brief 2026-09-24). `AdvisoryCta.tsx` carries the same identity plate
+// the services offer strip does (S7c, `_b2-home.scss` section 8:
+// `--ox-graphite-3`, the mark's own corner cut, full-width 48px buttons), but
+// the rules below are its own rather than a reuse of `.ox-offer__*`: this
+// block's heading and closing line live INSIDE the plate (the offer strip's
+// heading is the band's own h2, outside it) and its buttons switch to a row
+// at 768 where the offer strip's switch at 640 — the same class at two
+// widths would have meant two different layouts on one selector.
+// `_b2-home.scss` is owned by other builders and stays untouched; this is the
+// one new partial the plan reserves for this batch.
+
+.ox-advisory {
+  margin-block: var(--ox-8);
+}
+
+.ox-advisory__plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
+  padding: var(--ox-6);
+  background: var(--ox-graphite-3);
+  // No block-size/min-block-size here (check-identity's `small-angle` rule):
+  // the plate is sized by its own content, which clears the 158px floor for
+  // a panel-scale cut at every width the block ships at.
+  @include ox-x-corner(40px, start);
+}
+
+.ox-advisory__title {
+  margin: 0;
+}
+
+.ox-advisory__line {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+.ox-advisory__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-advisory__action {
+  inline-size: 100%;
+}
+
+// The reused closing scope line: one step quieter than the line above it,
+// matching how the services band's own closing note reads under its band.
+.ox-advisory__note {
+  margin: 0;
+  color: var(--ox-fg-3);
+}
+
+@media (min-width: 768px) {
+  .ox-advisory__plate {
+    padding: var(--ox-8);
+  }
+
+  .ox-advisory__actions {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .ox-advisory__action {
+    inline-size: auto;
+  }
+}

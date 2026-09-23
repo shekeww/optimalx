@@ -24,6 +24,7 @@ import { BuyActions } from './BuyZone/BuyActions';
 import { TrustGrid } from './BuyZone/TrustGrid';
 import { StickyBar } from './BuyZone/StickyBar';
 import { BrandBand } from './BelowFold/BrandBand';
+import { AdvisoryCta } from './BelowFold/AdvisoryCta';
 import { AnchorStrip, type AnchorItem } from './BelowFold/AnchorStrip';
 import { InfoPanels } from './BelowFold/InfoPanels';
 import { DetailsPanel } from './BelowFold/DetailsPanel';
@@ -389,6 +390,16 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
       </RenderWhenVisible>
       <HookSlot name="product:related.end" context={hookContext} />
       <HookSlot name="product:end" context={hookContext} />
+
+      {/* The free advisory + InBody CTA (owner brief 2026-09-24): after the
+          related rail and the FAQ, before the footer. Never on a service or
+          booking product — that page IS one of the advisory channels, and it
+          would be selling itself. */}
+      {isService ? null : (
+        <div className="ox-container">
+          <AdvisoryCta productName={product.name} settings={settings} />
+        </div>
+      )}
 
       {isService ? null : <StickyBar product={product} anchorRef={buyZoneRef} />}
     </div>
