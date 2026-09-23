@@ -1,4 +1,5 @@
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
+import { toInternalPath } from '../navLinks';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon } from '../../common/Icon';
@@ -36,7 +37,7 @@ export function MegaPromo({ onNavigate }: MegaPromoProps) {
   return (
     <section className="ox-mega__col ox-mega__col-c" aria-label={t('ox.nav.promo_label')}>
       <h3 className="ox-mega__heading">{t('ox.nav.promo_label')}</h3>
-      <Link to={url} className="ox-mega__promo" onClick={onNavigate} data-testid="ox-mega-promo">
+      <Link to={toInternalPath(url)} className="ox-mega__promo" onClick={onNavigate} data-testid="ox-mega-promo">
         <Image src={image} alt="" width={312} height={226} className="ox-mega__promo-image" />
         {title ? <span className="ox-mega__promo-title">{title}</span> : null}
         <span className="ox-mega__promo-link">

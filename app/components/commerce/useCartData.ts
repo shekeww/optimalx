@@ -56,7 +56,7 @@ export function useCartData(): CartData {
     };
   }, []);
 
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     ...cartApi.queries.detail(cartId as number),
     enabled: typeof cartId === 'number',
   });
@@ -68,8 +68,15 @@ export function useCartData(): CartData {
     if (typeof count === 'number') setCartCount(count);
   }, [count]);
 
-  // Loading is "we have not finished asking", never "there is nothing":
-  // a visitor with no cart (`cartId === null`) is resolved, and the page owes
-  // them the empty state.
-  return { cart: data, loading: cartId === undefined || (typeof cartId === 'number' && !data) };
+  // Loading is "we have not finished asking", never "there is nothing" and
+  // never "the request failed". A visitor with no cart (`cartId === null`) is
+  // resolved, and a request that ERRORED is resolved too: react-query leaves
+  // `data` undefined in both cases, and reading that as "still loading" is
+  // what left the cart under a permanent skeleton at 1440 in the offline
+  // preview. `isPending` is the question actually being asked, and it stays
+  // true for ever on a disabled query, which is why the id is tested first.
+  return {
+    cart: data,
+    loading: cartId === undefined || (typeof cartId === 'number' && isPending),
+  };
 }

@@ -1,18 +1,14 @@
 import { useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { category } from '@salla.sa/twilight-theme-engine/api/category';
-import type { Category } from '@salla.sa/twilight-theme-engine/types';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
-import { matchesSlug, useHeaderMenu } from '../layout/Header/useHeaderMenu';
 import { useRailProgress } from '../common/hooks/useRailProgress';
 import { useReducedMotion } from '../common/hooks/useReducedMotion';
-import { CATEGORIES } from '../../content/categories';
-import { POSTER_CARDS } from '../../content/posters';
+import { useTaxonomyLinks } from '../listing/useTaxonomyLinks';
+import { POSTER_CARDS, posterHref } from '../../content/posters';
 import { PosterCard } from './PosterCard';
 import { useSectionReveal } from './useSectionReveal';
-import type { OxBlockProps } from './defaults';
+import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 
 /**
  * The number of cards visible at 1024 (owner review 2026-09-23 late night,
@@ -23,10 +19,9 @@ import type { OxBlockProps } from './defaults';
 const STEP_AT_DESKTOP = 3;
 
 /**
- * The poster carousel (homepage-scale-spec section 7).
- *
- * The connective tissue between the page's two full stops: five secondary
- * posters, now a carousel on the shared rail primitive (owner review
+ * The poster carousel (owner brief 2026-09-24): six marketing posters, each
+ * an image the owner supplies with its own baked-in headline, offer and CTA
+ * (docs/build/progress/S7a.md), on the shared rail primitive (owner review
  * 2026-09-23 late night, item 2), sized so 1.15 of a card shows at 390 (a
  * peek of the next one), 2 at 768, 3 at 1024, 4 at 1440 — see the width
  * arithmetic in `_b2-home.scss` §17.2. A scroller that ends flush at the
@@ -49,16 +44,17 @@ const STEP_AT_DESKTOP = 3;
  * header (title and, from 1024, the arrow pair) stays inside `.ox-container`
  * above it, same split `OxBrands` uses for its own full-bleed background.
  *
- * Destinations resolve the same way the rest of the page resolves them, so a
- * goal or a type links to one place on the whole page: goals through the
- * header menu, types through the live category list, and both falling back
- * to a search for their own label while the taxonomy does not exist
- * (PLAN-final C15).
+ * **Destinations, merchant field first, content map second.** Each poster's
+ * `image_N`/`link_N`/`alt_N` merchant field (`twilight.json`, `home.ox-posters`)
+ * overrides the content map's own `photo`/`to`/`altKey` when the owner has
+ * filled it from the dashboard; with none, `posterHref()` resolves the
+ * default (a live category for the one poster that needs it, `/offers`
+ * elsewhere). `label`/`label_en` override the section's own title the same
+ * way, per the active locale.
  */
-export function OxPosters(_props: OxBlockProps) {
-  const { t } = useTranslation();
-  const { goals } = useHeaderMenu();
-  const { data: live } = useQuery(category.queries.list());
+export function OxPosters({ data }: OxBlockProps) {
+  const { t, locale } = useTranslation();
+  const { bySlug } = useTaxonomyLinks();
   const reducedMotion = useReducedMotion();
   const revealRef = useSectionReveal<HTMLUListElement>();
   const trackRef = useRef<HTMLUListElement>(null);
@@ -66,27 +62,26 @@ export function OxPosters(_props: OxBlockProps) {
   const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
   const [startIndex, setStartIndex] = useState(0);
 
-  const cards = useMemo(() => {
-    const all: Category[] = live ?? [];
-    return POSTER_CARDS.map((card) => {
-      let to = card.to ?? '';
-      if (!to && card.goalSlug) {
-        to = goals.find((goal) => goal.slug === card.goalSlug)?.to ?? '';
-      }
-      if (!to && card.categorySlug) {
-        const slug = card.categorySlug;
-        const content = CATEGORIES.find((candidate) => candidate.slug === slug);
-        const label = content ? t(content.h1Key) : slug;
-        const match = all.find(
-          (item) => typeof item.url === 'string' && matchesSlug(item.url, slug)
-        );
-        to = match?.url ?? `/search?q=${encodeURIComponent(label)}`;
-      }
-      return { card, to };
-    }).filter((entry) => entry.to !== '');
-  }, [goals, live, t]);
+  const fields: OxBlockData = data ?? { path: 'ox-posters' };
 
-  if (cards.length === 0) return null;
+  const cards = useMemo(
+    () =>
+      POSTER_CARDS.map((card, index) => {
+        const n = index + 1;
+        return {
+          card,
+          photo: fieldText(fields, `image_${n}`) || card.photo,
+          to: fieldText(fields, `link_${n}`) || posterHref(card, 'home', (slug) => bySlug(slug)),
+          alt: fieldText(fields, `alt_${n}`) || t(card.altKey),
+        };
+      }),
+    [fields, bySlug, t]
+  );
+
+  const label =
+    locale === 'en'
+      ? fieldText(fields, 'label_en') || fieldText(fields, 'label') || t('ox.home.posters_title')
+      : fieldText(fields, 'label') || t('ox.home.posters_title');
 
   const maxStart = Math.max(0, cards.length - STEP_AT_DESKTOP);
   const showNav = cards.length > STEP_AT_DESKTOP;
@@ -105,11 +100,11 @@ export function OxPosters(_props: OxBlockProps) {
     <section className="ox-posters" data-testid="ox-posters">
       <div className="ox-container">
         <SectionHeader
-          // The carousel and the offers grid below it both read
-          // `تصفح المزيد`, one after the other, so neither said what it was
+          // The carousel and the offers grid below it both read "تصفح
+          // المزيد", one after the other, so neither said what it was
           // (UX-2026-09-24 P0-11). This one names what these tiles are:
           // short doors into the goals, the types and the advisory.
-          title={t('ox.home.posters_title')}
+          title={label}
           subline={t('ox.home.posters_lead')}
           actions={
             showNav ? (
@@ -158,10 +153,10 @@ export function OxPosters(_props: OxBlockProps) {
           role="list"
           aria-roledescription={t('ox.listing.featured_carousel_role')}
         >
-          {cards.map(({ card, to }, index) => (
+          {cards.map(({ card, photo, to, alt }, index) => (
             <li
               className="ox-posters__slide"
-              key={card.id}
+              key={card.slug}
               style={{ ['--i' as string]: String(index) }}
               ref={(node) => {
                 itemRefs.current[index] = node;
@@ -173,16 +168,13 @@ export function OxPosters(_props: OxBlockProps) {
               })}
             >
               <PosterCard
-                id={card.id}
-                photo={card.photo}
-                photoWidth={card.width}
-                photoHeight={card.height}
-                eyebrow={t(card.eyebrowKey)}
-                title={t(card.titleKey)}
-                line={t(card.lineKey)}
-                icon={card.icon}
+                slug={card.slug}
+                photo={photo}
+                srcSet={card.srcSet}
                 to={to}
-                index={index}
+                alt={alt}
+                available={card.available}
+                loading={index < 2 ? 'eager' : 'lazy'}
               />
             </li>
           ))}

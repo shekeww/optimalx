@@ -3515,77 +3515,24 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   font-size: 16px;
 }
 
-@media (min-width: 640px) {
-  // lean 56 / run 37.8 at the 768 probe (item 3, same tier `GoalCard` picks
-  // at this breakpoint): track row ~= 768 - 24 start padding = 744px, card
-  // 46% of that = 342.2px; 37.8 / 342.2 = 11.0%.
-  .ox-pcard {
-    clip-path: polygon(0 0, calc(100% - #{ox-run(56px)}) 0, 100% 56px, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
-  }
-
-  // Strap re-derived from this tier's own lean/run, same as `GoalCard`'s;
-  // length stays 135px (`.ox-pcard`'s own block-size never changes).
-  .ox-pcard__slash {
-    inset-inline-start: ox-strap-inset(ox-run(56px), 6px);
-    inline-size: ox-strap-width(11px);
-  }
-
-  [dir='ltr'] .ox-pcard__slash {
-    inset-inline-end: ox-strap-inset(ox-run(56px), 6px);
-  }
-}
-
-@media (min-width: 1280px) {
-  // lean 64 / run 43.2 at the 1440 probe: row ~= 1440 - 32 start padding =
-  // 1408px, card 27% of that = 380.2px; 43.2 / 380.2 = 11.4%.
-  .ox-pcard {
-    clip-path: polygon(0 0, calc(100% - #{ox-run(64px)}) 0, 100% 64px, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
-  }
-
-  .ox-pcard__slash {
-    inset-inline-start: ox-strap-inset(ox-run(64px), 6px);
-    inline-size: ox-strap-width(12px);
-  }
-
-  [dir='ltr'] .ox-pcard__slash {
-    inset-inline-end: ox-strap-inset(ox-run(64px), 6px);
-  }
-}
-
-// Owner review 2026-09-23, item 3, revised by the coordinator's addendum
-// (same day): the same treatment `GoalCard` carries (its own comment above
-// `.ox-goal`, item 2), adapted to this card's size and content — two
-// physical corner cuts on the DIAGONAL corners (top-right and bottom-left,
-// never mirrored under [dir='ltr']), sharp everywhere else
-// (`border-radius: 0`), plus the angled strap at the top-left (independent
-// of the cuts now that top-left is sharp) — the rest of the card (photo,
-// scrim, body, title, line, cta) unchanged. Reuses the identical lean/run
-// tiers `GoalCard` picked (390/768/1440) so the two card families read as
-// one system; this card is wider at every one of those probes (see the
-// per-breakpoint comments below), so the same tiers sit further inside the
-// 24% budget here than they do on `GoalCard`.
-//
-// The focus ring moves to an inset box-shadow for the same `focus-clipped`
-// reason `.ox-goal` documents above; `.ox-pcard` had no explicit focus style
-// before this (only the global `a:focus{outline:none}` reset, 02-generic/
-// reset.scss), so this also closes a pre-existing gap rather than trading one
-// ring for another.
+// Owner brief 2026-09-24 (docs/build/progress/S7a.md): the poster carousel's
+// six cards are now IMAGES, each carrying its own baked-in headline, offer
+// and CTA. The diagonal corner cuts S3b/S4a gave this card, and the three
+// per-tier clip-path/strap-width overrides that used to sit above this rule,
+// are GONE, not shrunk: a `clip-path` written today cannot see where the
+// owner's logo (top-left) or vertical tagline (top-right) will land in a file
+// that does not exist on disk yet, and only a zero-cut card is provably safe
+// for artwork this theme has not inspected. Sharp corners (`border-radius:
+// 0`) stay — S3b's own sharp-corner reset was never only about the cut.
 .ox-pcard {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  isolation: isolate;
+  display: block;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-  block-size: 300px;
-  padding: var(--ox-6);
   border-radius: 0;
   background: var(--ox-graphite-2);
   color: var(--ox-paper);
   text-decoration: none;
-  // lean 40 / run 27.0 at the 390 probe: track 74% of a ~374px row (358
-  // container + 16 start padding) = 276.8px card; 27.0 / 276.8 = 9.8%.
-  clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
 
   &:focus-visible {
     outline: none;
@@ -3593,27 +3540,48 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   }
 }
 
-.ox-pcard__photo,
-.ox-pcard__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+.ox-pcard__photo {
+  display: block;
   inline-size: 100%;
   block-size: 100%;
+  object-fit: cover;
 }
 
-// Same construction as `.ox-goal__slash` (item 2, and the two 2026-09-23
-// later corrections — `ox-strap-inset()`/`ox-strap-width()`, defined once
-// above `.ox-goal__slash`, reused here): a long skewed bar starting 6px
-// inside the top-right cut and leaning AWAY from the card's own edge as it
-// runs down, the one direction that stays inside for any length. `.ox-pcard`
-// is a fixed 300px tall at every tier (no `min-block-size`, unlike
-// `.ox-goal`), so the length target (~45% of card height) is the SAME
-// 135px at 390/768/1440 — only the starting inset and thickness change with
-// the tier's own lean/run. See `.ox-goal__slash`'s own comment for the full
-// reasoning and docs/build/progress/S4a.md for the per-tier numbers.
+// The unavailable state (owner brief 2026-09-24, item g): until the owner's
+// file lands in `public/assets/posters/`, `PosterCard` renders this tinted
+// plate with the alt text as a caption instead of asking the browser for a
+// file that is not there yet — the same "no broken image" outcome `BandPhoto`
+// keeps for the theme's other photo-optional cards, decided at build time
+// from the content map's own `available` flag rather than guessed at render
+// time from a failed request.
+.ox-pcard__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: var(--ox-4);
+  text-align: center;
+}
+
+.ox-pcard__caption {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 0.78);
+}
+
+// The angled strap stays (the brief is explicit) at the smallest lean/run
+// pair the identity ladder has (40/27, the "small arm-foot" size `GoalCard`'s
+// own 390 tier uses, `ox-strap-inset()`/`ox-strap-width()` defined once above
+// `.ox-goal__slash`) — there is no clip left to size a bigger strap against,
+// and a small corner accent risks less against artwork this theme has not
+// seen than the longer 135px bar the goal and plan cards carry. A residual,
+// honest risk, not a solved one: a real file whose tagline runs to within a
+// few pixels of the physical top-right edge can still sit under this strap;
+// flagged in docs/build/progress/S7a.md for the visual QA pass once the
+// owner's six files land.
 .ox-pcard__slash {
-  block-size: 135px; // ox-allow: small-angle
+  block-size: 90px; // ox-allow: small-angle
   position: absolute;
   z-index: 2;
   inset-block-start: 3.3552px;
@@ -3628,89 +3596,6 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 [dir='ltr'] .ox-pcard__slash {
   inset-inline-start: auto;
   inset-inline-end: ox-strap-inset(ox-run(40px), 6px);
-}
-
-// The treatment the goal and plan cards already use: the frame sits low
-// enough that the card's own dark ground shows through, so a row of unrelated
-// photographs still reads as one set.
-.ox-pcard__photo {
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 600ms var(--ease-out);
-}
-
-.ox-pcard__photo[data-ready] { opacity: 0.46; }
-
-.ox-pcard__scrim {
-  background: linear-gradient(
-    to top,
-    rgb(14 16 20 / 0.92) 0%,
-    rgb(14 16 20 / 0.55) 46%,
-    rgb(14 16 20 / 0.15) 100%
-  );
-}
-
-.ox-pcard__top {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--ox-3);
-  margin-block-end: auto;
-}
-
-.ox-pcard__icon { color: var(--ox-accent); }
-
-.ox-pcard__body {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-}
-
-.ox-pcard__eyebrow {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--ox-accent);
-  text-transform: uppercase;
-}
-
-.ox-pcard__title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.25;
-  // Stated, not inherited. The card sets `color: var(--ox-paper)` on itself,
-  // but a global heading rule has higher specificity on the heading element
-  // and was painting these near-black on a near-black photograph.
-  color: var(--ox-paper);
-}
-
-.ox-pcard__line {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: rgb(255 255 255 / 0.78);
-}
-
-.ox-pcard__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-1);
-  margin-block-start: var(--ox-2);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ox-paper);
-}
-
-.ox-pcard__cta-label { text-decoration: underline; }
-
-@media (prefers-reduced-motion: reduce) {
-  .ox-pcard__photo { transition: none; }
 }
 
 // 17.3 The certification band (certification-band-spec)

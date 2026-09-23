@@ -3132,3 +3132,39 @@ nav.breadcrumbs .s-breadcrumb-item button {
   max-inline-size: var(--ox-container-narrow);
   border-block-start: 1px solid var(--ox-bd);
 }
+
+// 16. The offers page's own poster grid (owner brief 2026-09-24: the same six
+//    marketing posters the home carousel carries, above the product grid;
+//    docs/build/progress/S7a.md). `.ox-pcard`/`.ox-pcard__*` are `_b2-home.scss`
+//    rules, reused verbatim (the card is the same component on both pages);
+//    only the GRID that lays six of them out is new, here, since it exists on
+//    no other listing page.
+.ox-offers-posters {
+  margin-block-end: var(--ox-8);
+}
+
+.ox-offers-posters__title {
+  margin: 0 0 var(--ox-4);
+}
+
+// 1-up below 768, 2-up from 768, 3-up from 1280 (owner brief, verbatim).
+.ox-offers-posters__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .ox-offers-posters__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-offers-posters__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

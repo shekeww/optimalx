@@ -33,12 +33,51 @@ import { currentSort, sortOptions } from './sortOptions';
 import { ListingHeader } from './ListingHeader';
 import { ListingToolbar } from './ListingToolbar';
 import { useNextPage } from './useNextPage';
+import { useTaxonomyLinks } from './useTaxonomyLinks';
 import { ZeroResults } from './ZeroResults';
 import type { ListingPageProps } from './types';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
+import { PosterCard } from '../home/PosterCard';
+import { POSTER_CARDS, posterHref } from '../../content/posters';
 
 const GRID_ID = 'listing-grid';
 const GRID_TITLE_ID = 'listing-grid-title';
+const OFFERS_GRID_ID = 'offers-grid';
+
+/**
+ * The offers page's own poster grid (owner brief 2026-09-24, docs/build/
+ * progress/S7a.md): the same six marketing posters the home carousel shows,
+ * above the product grid, so an offer, a bundle or a subscription a plain
+ * product card cannot show gets its own tile. `weekly-picks`'s own link
+ * resolves to `#offers-grid` here (`posterHref`'s `'offers'` context) rather
+ * than `/offers` — a poster cannot usefully link to the page it is already
+ * on — which is why this grid, not `OxPosters`, owns `OFFERS_GRID_ID`.
+ */
+function OffersPosterGrid() {
+  const { t } = useTranslation();
+  const { bySlug } = useTaxonomyLinks();
+
+  return (
+    <div className="ox-offers-posters">
+      <h2 className="ox-offers-posters__title ox-h2">{t('ox.offers.posters_title')}</h2>
+      <ul className="ox-offers-posters__grid" role="list">
+        {POSTER_CARDS.map((card) => (
+          <li key={card.slug}>
+            <PosterCard
+              slug={card.slug}
+              photo={card.photo}
+              srcSet={card.srcSet}
+              to={posterHref(card, 'offers', (slug) => bySlug(slug))}
+              alt={t(card.altKey)}
+              available={card.available}
+              loading="lazy"
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 /**
  * One page for every product list (PLAN-final C3): category, goal landing,
@@ -119,6 +158,10 @@ export function ListingPage(props: ListingPageProps) {
   // rows (owner amendment 2026-09-22, "New: S2d"); a brand, a search and the
   // three static sources keep the page they had.
   const isTypeOrGoalListing = variant === 'category' || variant === 'goal';
+  // Only the offers static source gets the poster grid (owner brief
+  // 2026-09-24): `variant` collapses every static source to `'static'`, so
+  // this checks `source.type` directly, the same way `listingSourceCopy` does.
+  const isOffers = source.type === 'offers';
 
   // THE H1 IS THE RESEARCHED HEAD TERM, NOT THE DASHBOARD NAME. The loader's
   // `page.title` is whatever the merchant typed into the category form
@@ -229,6 +272,7 @@ export function ListingPage(props: ListingPageProps) {
       <HookSlot name="product:list.start" />
 
       <div className="ox-container ox-listing__body">
+        {isOffers ? <OffersPosterGrid /> : null}
         {isTypeOrGoalListing ? <FeaturedRail products={products} /> : null}
 
         {goal ? (
@@ -252,7 +296,7 @@ export function ListingPage(props: ListingPageProps) {
         {isZero ? (
           <ZeroResults query={queryText} />
         ) : (
-          <div className="ox-listing__catalogue">
+          <div className="ox-listing__catalogue" id={isOffers ? OFFERS_GRID_ID : undefined}>
             <div id={GRID_ID} className="ox-listing__grid-head">
               {goal ? (
                 <ListingHeader title={t('ox.goal.grid_title')} as="h2" titleId={GRID_TITLE_ID} />

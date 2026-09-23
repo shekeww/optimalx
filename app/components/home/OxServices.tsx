@@ -229,6 +229,10 @@ interface BandRowProps {
   titleKey: string;
   noteKey: string;
   children: ReactNode;
+  /** The plans row's own anchor (owner brief 2026-09-24: `/services#plans`,
+   *  the weight-subscription poster's fallback while no subscription product
+   *  exists). Absent on row one, which nothing links to by anchor. */
+  id?: string;
 }
 
 /**
@@ -248,11 +252,11 @@ interface BandRowProps {
  * line is the offer strip's second fact and the reply time is the line under
  * the strip's buttons, each said once on the band.
  */
-function BandRow({ titleKey, noteKey, children }: BandRowProps) {
+function BandRow({ titleKey, noteKey, children, id }: BandRowProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="ox-services__row">
+    <div className="ox-services__row" id={id}>
       <div className="ox-services__row-head">
         <h3 className="ox-services__row-title ox-title">{t(titleKey)}</h3>
         <p className="ox-services__row-note ox-small">{t(noteKey)}</p>
@@ -355,7 +359,11 @@ export function OxServices({ data, routeOut = true, className }: OxServicesProps
           ))}
         </BandRow>
 
-        <BandRow titleKey="ox.home.band_row_plans_title" noteKey="ox.home.band_row_plans_note">
+        <BandRow
+          titleKey="ox.home.band_row_plans_title"
+          noteKey="ox.home.band_row_plans_note"
+          id="plans"
+        >
           {HOME_PLANS.map((plan) => (
             <li className="ox-plans__slide" key={plan.id}>
               <PlanCard plan={plan} />

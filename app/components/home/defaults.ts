@@ -150,13 +150,14 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // running one takes the shift on that block instead, which is the smaller
   // cost and affects nobody today.
   'ox-poster': { mobile: 0, desktop: 0 },
-  // Re-measured by delta (owner review 2026-09-23 late night, item 2: the
-  // carousel adopts the shared rail primitive): the track's own bottom
-  // padding (`--ox-2`, 8px) is gone, replaced by the rail's progress strap
-  // (`--ox-3` margin + 3px, 15px) — `.ox-pcard`'s own block-size (300px at
-  // every tier) is unchanged, so this is the only height this batch moves.
-  // Net +7px on both viewports: 362 -> 369, 380 -> 387.
-  'ox-posters': { mobile: 369, desktop: 387 },
+  // Re-measured by delta AGAIN (owner brief 2026-09-24: the posters become
+  // image-only 4:5 cards, docs/build/progress/S7a.md): `.ox-pcard` traded its
+  // flat `block-size: 300px` for `aspect-ratio: 4 / 5` on the SAME slide
+  // widths S5a's own table already computed (309.2px at the 390 tier, 312.0px
+  // at the 1440 tier) — nothing else in the block moved, so only the card
+  // term of the previous total changes: mobile 369 - 300 + (309.2 * 1.25) =
+  // 455.5 -> 456; desktop 387 - 300 + (312.0 * 1.25) = 477.0 -> 477.
+  'ox-posters': { mobile: 456, desktop: 477 },
   'ox-products-secondary': { mobile: 924, desktop: 1040 },
   // A product rail has no honest placeholder for a category that has not
   // resolved to a real Salla id yet (`OxCategoryRail.tsx`), so it renders
@@ -284,9 +285,34 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   'ox-products': { title: null, products: [] },
   // The campaign poster's whole gate: no headline, no band.
   'ox-poster': { headline: null, eyebrow: null, line: null, image: null, cta_label: null, cta_url: null },
-  // The carousel builds its cards from the catalogue and the goal menu, so it
-  // takes no merchant field.
-  'ox-posters': {},
+  // Six image + link + alt fields, one per poster (owner brief 2026-09-24),
+  // plus a `label`/`label_en` pair overriding the section's own title — every
+  // one defaults to null so the content map (`app/content/posters.ts`) and
+  // its own locale keys stay the single source until the owner fills a field
+  // from the dashboard (`OxPosters` reads the merchant field first, the
+  // content map second).
+  'ox-posters': {
+    image_1: null,
+    image_2: null,
+    image_3: null,
+    image_4: null,
+    image_5: null,
+    image_6: null,
+    link_1: null,
+    link_2: null,
+    link_3: null,
+    link_4: null,
+    link_5: null,
+    link_6: null,
+    alt_1: null,
+    alt_2: null,
+    alt_3: null,
+    alt_4: null,
+    alt_5: null,
+    alt_6: null,
+    label: null,
+    label_en: null,
+  },
   'ox-products-secondary': { title: null },
   // Each row is a badge id and the certificate reference that proves it. A row
   // with no reference is not evidence and the resolver drops it, so an empty

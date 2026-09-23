@@ -28,6 +28,13 @@ export const Route = createFileRoute('/{-$locale}/blog')({
 
 function BlogComponent() {
   const data: BlogPageProps = Route.useLoaderData();
+  // NOT patched here: the engine's blog page does not print `page.title` for
+  // its own h1 or breadcrumb, it calls `t('blocks.footer.blog')` itself
+  // against the PLATFORM bundle (measured: `common.titles.home` renders as a
+  // key on this page too, and this theme's dictionary does carry that one).
+  // Those strings resolve from Salla's CDN in production and cannot resolve
+  // in the offline preview at all; the document title, which the theme owns,
+  // is fixed in `head` above (UX-2026-09-24 P0-5).
   return (
     <div className="ox-blog">
       <Suspense fallback={<BlogSkeleton />}>

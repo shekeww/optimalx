@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { ProductListing } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
+import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head';
+import type { TwilightContext } from '@salla.sa/twilight-theme-engine/tanstack';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { ListingPage } from '../components/listing/ListingPage';
 import { listingHeadExtend } from '../components/listing/head';
@@ -36,9 +38,35 @@ export const Route = createFileRoute('/{-$locale}/offers')({
       search: { page: deps.page, sort: deps.sort },
       locale: params.locale,
     }),
-  head: withHead(ProductListing, listingHeadExtend()),
+  head: withHead(ProductListing, offersHeadExtend()),
   component: OffersComponent,
 });
+
+/**
+ * `listingHeadExtend()` only overrides `title`/`description` when the path's
+ * slug names a taxonomy node (a category or goal landing); `offers` is a
+ * static source with none, so it falls through to the engine's own head,
+ * whose title is the same short h1 label above and whose description is
+ * empty. `ox.seo.offers.*` (owner brief 2026-09-24, SEO-ENG-010) fills both,
+ * on top of the shared extension rather than instead of it, so the offers
+ * route still gets the canonical/robots/JSON-LD work `listingHeadExtend`
+ * does for every listing.
+ */
+function offersHeadExtend() {
+  const extend = listingHeadExtend();
+  return (result: HeadDescriptor, ctx: TwilightContext, data: ProductListLoaderData): HeadDescriptor => {
+    const extended = extend(result, ctx, data);
+    const title = headString(ctx.locale, 'ox.seo.offers.title');
+    const description = headString(ctx.locale, 'ox.seo.offers.description');
+    return {
+      ...extended,
+      title,
+      description,
+      openGraph: { ...extended.openGraph, title, description },
+      twitter: extended.twitter ? { ...extended.twitter, title, description } : extended.twitter,
+    };
+  };
+}
 
 function OffersComponent() {
   const data: ProductListLoaderData = Route.useLoaderData();

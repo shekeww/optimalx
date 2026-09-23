@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { toInternalPath } from '../layout/navLinks';
 import { brand as brandApi } from '@salla.sa/twilight-theme-engine/api/brands';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
@@ -61,7 +62,7 @@ export function BrandExplore({ currentId }: BrandExploreProps) {
           <ul className="ox-explore__list">
             {others.map((item) => (
               <li key={item.id ?? item.name}>
-                <Link to={item.url} className="ox-chip ox-chip--filter ox-chip--link">
+                <Link to={toInternalPath(item.url)} className="ox-chip ox-chip--filter ox-chip--link">
                   <span className="ox-chip__label">{item.name}</span>
                 </Link>
               </li>
