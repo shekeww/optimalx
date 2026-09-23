@@ -650,13 +650,16 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // column, so a category with nothing in it still reads as a finished page
 // rather than a hole. Every category on this store is empty today, which is
 // exactly why this render is the one the design is checked in.
+// THE SHAPE (S9b, owner ruling 2026-09-24): every filled plate takes the
+// primary CTA's angled shape. 300px is `EmptyState`'s own typical rendered
+// height (mark, title, body, actions) — the brief's own "full-width 300px
+// panel" example, so the lean is already at `_plates.scss`'s 40px cap.
 .ox-listing__empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-inline: var(--ox-4);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-4);
+  @include ox-plate(300px);
 }
 
 .ox-listing__empty .ox-empty {
@@ -689,11 +692,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
   gap: var(--ox-16);
 }
 
+// THE SHAPE (S9b, owner ruling 2026-09-24): same reasoning as
+// `.ox-listing__empty` above — `EmptyState`'s own typical rendered height.
 .ox-zero__state {
   max-inline-size: 560px;
-  padding-inline: var(--ox-4);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-4);
+  @include ox-plate(300px);
 }
 
 .ox-zero__row {
@@ -959,6 +963,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // The panel that closes a goal landing: plate, hairline, no shadow.
+//
+// THE SHAPE (S9b, owner ruling 2026-09-24): every filled plate takes the
+// primary CTA's angled shape. 150px is this panel's own typical rendered
+// height at either layout (a stacked line-and-button column on a phone, a
+// shorter single-line row from 1024).
 .ox-needhelp {
   display: flex;
   flex-direction: column;
@@ -966,7 +975,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding: var(--ox-6);
   background: var(--ox-plate);
   border: 1px solid var(--ox-plate-2);
-  border-radius: var(--ox-r-4);
+  @include ox-plate(150px);
   align-items: flex-start;
 
   p {
@@ -2352,7 +2361,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding: 0;
   border: 0;
   min-inline-size: 0;
-  overflow-x: hidden;
+  // `clip`, never `hidden`: a hidden axis turns the other axis into a scroll
+  // container, and the 44px hit areas on 24px swatches overflowed it into a
+  // vertical scrollbar on the plate (owner, 2026-09-24). `clip` clips without
+  // scrolling and leaves the vertical axis alone.
+  overflow-x: clip;
+  flex-wrap: nowrap;
   // Empty (no option): paints nothing, and lets a tap fall through to
   // whatever sits under it on the plate.
   pointer-events: none;
