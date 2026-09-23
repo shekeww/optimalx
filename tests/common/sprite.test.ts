@@ -6,11 +6,13 @@ import {
   OX_MIRRORED_ICON_NAMES,
   OX_SIMPLIFIED_ICON_NAMES,
 } from '../../app/components/common/Icon';
+import { ALIASES } from '../../scripts/import-owner-icons.mjs';
 
 /**
  * The sprite contract, rewritten with the S6a redraw (2026-09-23,
- * docs/build/progress/S6a.md). These are the rules a G2 reviewer cannot check
- * by eye across 88 symbols at five sizes.
+ * docs/build/progress/S6a.md) and updated for the owner's delivered icon
+ * system (S8b, 2026-09-24, docs/build/progress/S8b.md). These are the rules a
+ * G2 reviewer cannot check by eye across ~95 symbols at five sizes.
  *
  * The weight assertion changed direction. The old file set `stroke-width` on
  * the sprite's root `<svg>` and this suite *forbade* it on a `<symbol>` — but
@@ -46,24 +48,33 @@ const SYMBOLS: Sym[] = [...SOURCE.matchAll(/<symbol\s+([^>]*)>([\s\S]*?)<\/symbo
 
 
 /**
- * The ten product-category symbols the owner restored verbatim from the
- * pre-redraw sprite ("the icons in shop by category were fine, they just got
- * ruined", 2026-09-24). They are kept byte-for-byte — no `class="ox-sym"`, no
- * stroke attributes, curve commands and all — because that is the only way
- * they paint exactly as they did: the width was *inherited* before the
- * redraw, and it was not one number (1 on the tiles, 1.25 on the categories
- * index, which sets `stroke-width` on `.ox-cat-card__icon`). Writing any
- * value onto the symbol would beat that inherited one and change the
- * categories index. So they are exempt from the new system's drawing
- * assertions, and from nothing else: they still have to be declared, unique,
- * on the 24 grid, transform-free and accent-through-the-class like everything
- * else.
+ * The owner's delivered icon system (optimal-x-icons/, S8b 2026-09-24) is now
+ * the sprite of record: 47 symbols, imported by
+ * scripts/import-owner-icons.mjs, plus four aliases that are byte-for-byte
+ * copies of one of those 47 under a name our components already call
+ * (`ox-heart` = wishlist, `ox-headset` = help, `ox-truck` = shipping,
+ * `ox-shield-check` = authentic — the same ALIASES map the generator uses, so
+ * the two never drift). This supersedes the ten-symbol
+ * `OWNER_APPROVED_ORIGINALS` allowlist from the pre-S8b sprite: the owner's
+ * newest delivery covers the ten product categories too (their previous
+ * "restored verbatim, no class=ox-sym" exemption is gone — they now carry the
+ * full stroke contract like every other owner symbol).
+ *
+ * These 51 ids are exempt from the drawing-language assertions this suite
+ * otherwise enforces — lattice angles, no primitive shapes, live-area fill,
+ * accent share — because that geometry is the owner's, not drawn to our
+ * system. They still have to be declared, unique, on the 24 grid,
+ * transform-free on `<symbol>`/`<path>`, carry `class="ox-sym"` and the full
+ * stroke contract, and paint their accent only through our two classes with
+ * no literal colour — the generator enforces all of that at import time, and
+ * this suite re-checks it on the committed file.
  */
-const OWNER_APPROVED_ORIGINALS = new Set([
-  'ox-protein', 'ox-creatine', 'ox-pre-workout', 'ox-amino-acids', 'ox-omega-3',
-  'ox-vitamins-minerals', 'ox-collagen-beauty', 'ox-daily-health',
-  'ox-snacks-bars', 'ox-accessories',
-]);
+const OWNER_MANIFEST = JSON.parse(
+  fs.readFileSync(path.join('optimal-x-icons', 'icons.json'), 'utf8')
+) as { icons: { name: string }[] };
+const OWNER_ICON_IDS = OWNER_MANIFEST.icons.map((icon) => `ox-${icon.name}`);
+const ALIAS_IDS = Object.keys(ALIASES).map((id) => `ox-${id}`);
+const OWNER_EXEMPT = new Set([...OWNER_ICON_IDS, ...ALIAS_IDS]);
 
 /**
  * `#ox-mark` is the mark, not a symbol drawn to the icon grid: single colour,
@@ -71,9 +82,9 @@ const OWNER_APPROVED_ORIGINALS = new Set([
  * (rule `mark-drift`). It is exempt from the stroke contract and the live
  * area, and from nothing else.
  */
-const drawn = SYMBOLS.filter(
-  (symbol) => symbol.id !== 'ox-mark' && !OWNER_APPROVED_ORIGINALS.has(symbol.id)
-);
+const drawn = SYMBOLS.filter((symbol) => symbol.id !== 'ox-mark');
+/** `drawn`, further scoped to the symbols our own system governs (see OWNER_EXEMPT above). */
+const nonOwnerDrawn = drawn.filter((symbol) => !OWNER_EXEMPT.has(symbol.id));
 const standard = SYMBOLS.filter((symbol) => !symbol.id.endsWith('-s'));
 const twins = SYMBOLS.filter((symbol) => symbol.id.endsWith('-s'));
 
@@ -222,11 +233,11 @@ describe('ox-sprite.svg', () => {
   // two lists are meant to be edited together, and a test that derives its own
   // expectation from the same source it is checking cannot catch the case
   // where both are edited in lockstep but wrong (S2a, 2026-09-22).
-  it('has 92 standard symbols and 16 simplified twins, with no duplicate id', () => {
-    expect(standard).toHaveLength(92);
-    expect(twins).toHaveLength(16);
-    expect(OX_ICON_NAMES).toHaveLength(92);
-    expect(new Set(SYMBOLS.map((symbol) => symbol.id)).size).toBe(108);
+  it('has 94 standard symbols and 1 simplified twin, with no duplicate id', () => {
+    expect(standard).toHaveLength(94);
+    expect(twins).toHaveLength(1);
+    expect(OX_ICON_NAMES).toHaveLength(94);
+    expect(new Set(SYMBOLS.map((symbol) => symbol.id)).size).toBe(95);
   });
 
   it('declares exactly the standard symbols Icon.tsx names', () => {
@@ -252,24 +263,27 @@ describe('ox-sprite.svg', () => {
     expect(SYMBOLS.find((symbol) => symbol.id === 'ox-mark')?.attrs['data-mirror']).toBeUndefined();
   });
 
-  // "Do not place a tiny orange slash inside every icon" (owner brief). The
-  // accent is a real part of the object where one exists, and absent where it
-  // would be decoration - so a healthy share of the set stays pure mono.
-  // The ten restored originals are the one place a symbol may carry the
-  // pre-redraw drawing wholesale; nothing else may opt out of the system.
-  it('restores the ten owner-approved category symbols and exempts only those', () => {
+  // Every symbol carries the full stroke contract now, owner-drawn or not —
+  // the pre-S8b exemption that let the ten category originals skip
+  // class="ox-sym" is gone (see OWNER_EXEMPT above). Only #ox-mark, which is
+  // not drawn to the icon grid at all, stays off it.
+  it('declares class="ox-sym" on every symbol except ox-mark', () => {
     const untouched = SYMBOLS.filter(
-      (symbol) => !symbol.id.endsWith('-s') && !(symbol.attrs.class ?? '').includes('ox-sym')
+      (symbol) => symbol.id !== 'ox-mark' && !(symbol.attrs.class ?? '').split(/\s+/).includes('ox-sym')
     ).map((symbol) => symbol.id);
-    expect(untouched.sort()).toEqual([...OWNER_APPROVED_ORIGINALS, 'ox-mark'].sort());
-    // and none of them ships a twin, so 16 and 20 show the same drawing
-    const twinIds = new Set(twins.map((symbol) => symbol.id));
-    for (const id of OWNER_APPROVED_ORIGINALS) expect(twinIds.has(`${id}-s`)).toBe(false);
+    expect(untouched).toEqual([]);
   });
 
-  it('leaves a substantial part of the set monochrome', () => {
-    const mono = SYMBOLS.filter((symbol) => !symbol.body.includes('ox-icon__accent'));
-    expect(mono.length).toBeGreaterThanOrEqual(Math.round(SYMBOLS.length * 0.3));
+  // "Do not place a tiny orange slash inside every icon" (owner brief). The
+  // accent is a real part of the object where one exists, and absent where it
+  // would be decoration - so a healthy share of the set stays pure mono. The
+  // owner's own 47 (and their four aliases) are exempt from this count (accent
+  // share is one of the drawing-language assertions OWNER_EXEMPT carves out):
+  // their accent budget is the owner's call, not ours to enforce.
+  it('leaves a substantial part of the non-owner set monochrome', () => {
+    const scoped = SYMBOLS.filter((symbol) => !OWNER_EXEMPT.has(symbol.id));
+    const mono = scoped.filter((symbol) => !symbol.body.includes('ox-icon__accent'));
+    expect(mono.length).toBeGreaterThanOrEqual(Math.round(scoped.length * 0.3));
   });
 
   it('paints the accent only through the two accent classes, never a literal colour', () => {
@@ -327,13 +341,24 @@ describe('ox-sprite.svg', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('has no rounded corner anywhere in the file', () => {
+  it('has no rounded linecap, linejoin or bevel anywhere in the file', () => {
     // The prose in the header comment is allowed to say "rounded"; the
-    // geometry is not allowed to be.
+    // geometry is not allowed to be. Owner-drawn rounded rects (rx/ry) are a
+    // separate, scoped check below — the owner's set may use them.
     expect(/(linecap|linejoin)="round"/.test(SOURCE)).toBe(false);
     expect(/stroke-linejoin="bevel"/.test(SOURCE)).toBe(false);
-    expect(/\srx=/.test(SOURCE)).toBe(false);
-    expect(/\sry=/.test(SOURCE)).toBe(false);
+  });
+
+  // rx/ry (a rounded rect corner) is one of the primitive-shape features the
+  // owner's set may use (omega-3, vitamins-minerals draw a capsule with
+  // <rect rx="3">) — no primitive shape at all is a drawing-language
+  // assertion OWNER_EXEMPT carves out. Everything we still draw stays
+  // path-only with square corners.
+  it('has no rx/ry outside the owner-drawn symbols', () => {
+    const offenders = nonOwnerDrawn
+      .filter((symbol) => /\srx=|\sry=/.test(symbol.body))
+      .map((symbol) => symbol.id);
+    expect(offenders).toEqual([]);
   });
 
   it('bumps the relative stroke only at the 16 step of the size ladder', () => {
@@ -346,11 +371,21 @@ describe('ox-sprite.svg', () => {
     expect(PRIMITIVES_SOURCE).toMatch(/&--16\s*\{[^}]*--ox-icon-stroke:\s*2\.25px/);
   });
 
-  it('draws every symbol on the 24 grid, with no transform and no primitive shape', () => {
+  it('draws every symbol on the 24 grid, with no transform on <symbol> or <path>', () => {
     expect(SYMBOLS.filter((s) => s.attrs.viewBox !== '0 0 24 24').map((s) => s.id)).toEqual([]);
     expect(/<symbol[^>]*\stransform=/.test(SOURCE)).toBe(false);
     expect(/<path[^>]*\stransform=/.test(SOURCE)).toBe(false);
-    expect(/<(circle|ellipse|rect|polygon|polyline|line)\b/.test(SOURCE)).toBe(false);
+  });
+
+  // No primitive shape element is a drawing-language assertion OWNER_EXEMPT
+  // carves out: the owner draws <circle> and <rect> (cart's wheels, the
+  // amino-acid nodes, the capsule body). Everything we still draw stays
+  // <path>-only.
+  it('draws every non-owner symbol with <path> only, no primitive shape', () => {
+    const offenders = nonOwnerDrawn
+      .filter((symbol) => /<(circle|ellipse|rect|polygon|polyline|line)\b/.test(symbol.body))
+      .map((symbol) => symbol.id);
+    expect(offenders).toEqual([]);
   });
 
   // The angle law is selective, not total (owner brief: "extract one signature
@@ -361,7 +396,7 @@ describe('ox-sprite.svg', () => {
   it('never draws a 45 degree edge outside the conventional UI glyphs', () => {
     const offenders: string[] = [];
     for (const symbol of SYMBOLS) {
-      if (ANGLE_45_EXEMPT.has(symbol.id) || OWNER_APPROVED_ORIGINALS.has(symbol.id)) continue;
+      if (ANGLE_45_EXEMPT.has(symbol.id) || OWNER_EXEMPT.has(symbol.id)) continue;
       for (const { straight } of pathsOf(symbol)) {
         for (const seg of straight) {
           const angle = angleFromVertical(seg);
@@ -378,7 +413,7 @@ describe('ox-sprite.svg', () => {
     let total = 0;
     let onSystem = 0;
     for (const symbol of SYMBOLS) {
-      if (OWNER_APPROVED_ORIGINALS.has(symbol.id)) continue;
+      if (OWNER_EXEMPT.has(symbol.id)) continue;
       for (const { straight } of pathsOf(symbol)) {
         for (const seg of straight) {
           const angle = angleFromVertical(seg);
@@ -393,7 +428,7 @@ describe('ox-sprite.svg', () => {
 
   it('keeps every drawn point inside the 2-unit live area', () => {
     const offenders: string[] = [];
-    for (const symbol of drawn) {
+    for (const symbol of nonOwnerDrawn) {
       for (const { points } of pathsOf(symbol)) {
         for (const [x, y] of points) {
           if (x < 2 - 1e-6 || x > 22 + 1e-6 || y < 2 - 1e-6 || y > 22 + 1e-6) {
@@ -408,7 +443,7 @@ describe('ox-sprite.svg', () => {
   // Fill the box: an object floating in the middle of a 24 grid dies at 16 px.
   it('reaches the live-area inset on at least two sides', () => {
     const offenders: string[] = [];
-    for (const symbol of drawn) {
+    for (const symbol of nonOwnerDrawn) {
       const points = pathsOf(symbol).flatMap((p) => p.points);
       const xs = points.map((p) => p[0]);
       const ys = points.map((p) => p[1]);
@@ -423,11 +458,18 @@ describe('ox-sprite.svg', () => {
     expect(offenders).toEqual([]);
   });
 
-  // 88 recognisable objects at stroke 2.25 cost more markup than 53 outlines
-  // at 1.8 did, and this file is inlined on every route, so the ceiling is a
-  // real budget. 52 KB raw is roughly 8 KB over the wire.
-  it('stays under 52 KB', () => {
-    expect(Buffer.byteLength(SOURCE, 'utf8')).toBeLessThan(52 * 1024);
+  // ~95 recognisable objects at stroke 2.25 cost more markup than a hairline
+  // outline set did, and this file is inlined on every route, so the ceiling
+  // is a real budget. 64 KB raw is roughly 10 KB over the wire (S8b,
+  // 2026-09-24: raised from 52 KB for the owner's <circle>/<rect> geometry
+  // and the multi-element symbols it draws).
+  it('stays under 64 KB', () => {
+    expect(Buffer.byteLength(SOURCE, 'utf8')).toBeLessThan(64 * 1024);
+  });
+
+  it('never ships the c2pa metadata blob the owner\'s source files carry', () => {
+    expect(SOURCE.includes('<metadata')).toBe(false);
+    expect(SOURCE.includes('c2pa')).toBe(false);
   });
 });
 

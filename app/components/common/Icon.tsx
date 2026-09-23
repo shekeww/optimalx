@@ -6,8 +6,12 @@ import type { SVGAttributes } from 'react';
  * accent element.
  *
  * `authentic`, `shipping` and `help` are a legacy trio: `shield-check`,
- * `truck` and `headset` redraw them (S2a, 2026-09-22). Two call sites under a
- * path this batch could not edit depend on the exact old ids —
+ * `truck` and `headset` are aliases of them (S8b, 2026-09-24 — before that,
+ * S2a redraws; the owner's delivered icon system reversed which name is the
+ * source). `scripts/import-owner-icons.mjs` copies the owner's
+ * `authentic`/`shipping`/`help` drawing byte-for-byte under the `shield-check`
+ * /`truck`/`headset` id, so all six names render identically; call sites
+ * under a path this batch could not edit still depend on the exact old ids —
  * `app/components/layout/Header/UtilityTrust.tsx` (`authentic`, `shipping`),
  * `app/components/listing/ZeroResults.tsx` and
  * `app/routes/account.notifications.tsx` (`help`) — which is why all three
@@ -72,6 +76,14 @@ export const OX_BRAND_ICON_NAMES = [
   'badge',
   'training',
   'cart-add',
+  // The owner's delivered icon system (S8b, 2026-09-24) carries two names our
+  // set did not have: `wishlist` (the heart already covers wishlist actions
+  // as `heart`, so this is the owner's own drawing under its own id — no
+  // caller yet, follow-up in docs/build/progress/S8b.md) and `offers` (a
+  // gift-box-with-ribbon mark for العروض; the nav item and the offers page
+  // heading are the flagged follow-up, not edited by this batch).
+  'wishlist',
+  'offers',
 ] as const;
 
 /**
@@ -151,28 +163,14 @@ export const OX_UI_ICON_NAMES = [
  * it still reads. Every other symbol is already simple enough to hold at 16
  * and falls back to its standard drawing.
  *
- * The ten product-category symbols are deliberately absent: the owner
- * restored them verbatim from the pre-redraw sprite on 2026-09-24, so they
- * must paint as the one original drawing at every size, 16 and 20 included.
+ * The owner's 47 delivered symbols (S8b, 2026-09-24,
+ * docs/build/progress/S8b.md) are deliberately absent, including the four
+ * aliases sourced from one (`shield-check`, `truck`, `headset` — and `heart`,
+ * which was never in this list): the owner's brief ships one drawing per
+ * icon, so they paint as that one drawing at every size, 16 and 20 included.
+ * `whatsapp` is the only symbol left that ships a twin.
  */
-export const OX_SIMPLIFIED_ICON_NAMES = [
-  'goal-energy',
-  'goal-performance',
-  'goal-recovery',
-  'goal-ideal-weight',
-  'goal-general-health',
-  'goal-hair-skin',
-  'endurance',
-  'wellness',
-  'shield-check',
-  'authentic',
-  'truck',
-  'whatsapp',
-  'phone',
-  'points',
-  'cart',
-  'digital-library',
-] as const;
+export const OX_SIMPLIFIED_ICON_NAMES = ['whatsapp'] as const;
 
 /** The size at or below which the simplified twin is used. */
 export const OX_SIMPLIFIED_MAX_SIZE = 20;
@@ -183,6 +181,13 @@ export const OX_SIMPLIFIED_MAX_SIZE = 20;
  * keeps its geometry in both directions (DIRECTION 3.4, owner brief
  * "preserve brand geometry in RTL"). The flip itself is the theme's existing
  * `.ox-mirror` rule (`_primitives.scss`), not a new transform here.
+ *
+ * `cart`, `shipping` and `written-question` are the owner's own `rtlFlip`
+ * icons (optimal-x-icons/icons.json, S8b 2026-09-24) — the same three the
+ * owner's own CSS mirrors (`ox-icons.css`: `[dir="rtl"] .ox-icon--cart,
+ * .ox-icon--shipping, .ox-icon--written-question`). `truck` follows its alias
+ * source, `shipping`; `heart`/`wishlist`, `headset`/`help` and
+ * `shield-check`/`authentic` do not mirror because their sources don't.
  */
 export const OX_MIRRORED_ICON_NAMES = [
   'chevron-start',
@@ -190,6 +195,10 @@ export const OX_MIRRORED_ICON_NAMES = [
   'arrow',
   'external',
   'play',
+  'cart',
+  'shipping',
+  'written-question',
+  'truck',
 ] as const;
 
 export const OX_ICON_NAMES = [...OX_BRAND_ICON_NAMES, ...OX_UI_ICON_NAMES] as const;
