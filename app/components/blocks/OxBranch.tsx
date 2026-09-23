@@ -22,14 +22,16 @@ import { digitsOnly } from './href';
 export { digitsOnly as whatsappDigits } from './href';
 
 /**
- * The one real photograph this block has ever carried (VISIT-2026-09-24
- * §4.1): the long shelf wall, from the store-photo manifest so the panel's
- * `srcset` and intrinsic size always trace back to a rendition that exists on
- * disk. Matched against whatever `photo` prop the caller passes, so a test
- * fixture URL (which matches nothing here) still falls back to the previous
- * static numbers rather than breaking.
+ * The photograph this block carries (VISIT-2026-09-24 §4.1; S9h, owner
+ * screenshots 2026-09-24, "with a premium cinematic integration with the
+ * section": the lit storefront at night replaces the shelf wall so the
+ * cover shows the branch itself, not its stock), from the store-photo
+ * manifest so the panel's `srcset` and intrinsic size always trace back to a
+ * rendition that exists on disk. Matched against whatever `photo` prop the
+ * caller passes, so a test fixture URL (which matches nothing here) still
+ * falls back to the previous static numbers rather than breaking.
  */
-const BRANCH_PHOTO = STORE_PHOTOS['store-wide'];
+const BRANCH_PHOTO = STORE_PHOTOS.storefront;
 
 export interface OxBranchProps {
   /** h2 inside the home page, h1 on /branch (DIRECTION 6.12). */
@@ -53,7 +55,7 @@ export interface OxBranchProps {
    * (VISIT-2026-09-24 §4.1).
    */
   showOfferLine?: boolean;
-  /** The branch photo (`STORE_PHOTOS['store-wide'].photo`); the plate shows through without one. */
+  /** The branch photo (`STORE_PHOTOS.storefront.photo`); the plate shows through without one. */
   photo?: string;
   /** The intro line under the address; the branch page passes its own. */
   intro?: string;
@@ -73,15 +75,17 @@ function readSetting(settings: unknown, key: string): string {
  * The branch block (DIRECTION 5.2 OxBranch, 4.5 branch polygon, 6.12;
  * VISIT-2026-09-24 §4.1 turns it into the visit offer; S9c, creative
  * director direction 2026-09-24, turns the split photo-panel-beside-a-card
- * into one integrated cover). Shared by the home page and `/branch`: the
- * store-wide photograph is the block itself, `ox-angled()`-cut and carrying
- * a cinematic gradient (`.ox-cover`/`.ox-cover__*`, `_covers.scss`), with the
- * title, `StoreRating`, the offer line, the address, the hours table (its own
- * translucent ink plate), the booking and directions actions and the pickup
- * note all inside the frame on paper text — one composition at every width,
- * never a two-column split. Every string is a locale key and every fact
- * (address, hours, number, pickup hours) comes from theme settings, so an
- * unset setting removes its row instead of printing a promise.
+ * into one integrated cover; S9h, owner screenshots 2026-09-24, swaps the
+ * ground photograph for the lit storefront and re-tunes the gradient for it).
+ * Shared by the home page and `/branch`: the storefront photograph is the
+ * block itself, `ox-angled()`-cut and carrying a cinematic gradient
+ * (`.ox-cover`/`.ox-cover__*`/`.ox-cover--storefront-block`, `_covers.scss`),
+ * with the title, `StoreRating`, the offer line, the address, the hours
+ * table (its own translucent ink plate), the booking and directions actions
+ * and the pickup note all inside the frame on paper text — one composition
+ * at every width, never a two-column split. Every string is a locale key
+ * and every fact (address, hours, number, pickup hours) comes from theme
+ * settings, so an unset setting removes its row instead of printing a promise.
  *
  * The photograph is gated on the `photo` prop, and the theme ships no default
  * for it here: a shopfront captioned as this branch at Al Khalidiyah is a
@@ -129,11 +133,11 @@ export function OxBranch({
   const visit = channelById('visit');
   const showsOffer = showOfferLine && inbodyIncluded(themeSettings as Settings);
   // The manifest entry `photo` belongs to, so the cover's srcset and
-  // intrinsic size come from disk, and its slug-tuned gradient (S9c
-  // `.ox-cover--store-wide`) only applies to the real photograph; a photo
-  // this batch does not recognise (a test fixture URL) falls back to the
-  // previous static numbers and the generic scrim rather than rendering with
-  // none at all.
+  // intrinsic size come from disk, and its slug-tuned gradient (S9h
+  // `.ox-cover--storefront-block`) only applies to the real photograph; a
+  // photo this batch does not recognise (a test fixture URL) falls back to
+  // the previous static numbers and the generic scrim rather than rendering
+  // with none at all.
   const photoEntry = photo === BRANCH_PHOTO.photo ? BRANCH_PHOTO : undefined;
 
   const content = (
@@ -213,7 +217,7 @@ export function OxBranch({
           className={[
             'ox-cover',
             'ox-band-dark',
-            photoEntry ? 'ox-cover--store-wide' : '',
+            photoEntry ? 'ox-cover--storefront-block' : '',
           ]
             .filter(Boolean)
             .join(' ')}

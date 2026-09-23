@@ -177,16 +177,20 @@ describe('BranchPage', () => {
     expect(screen.getAllByTestId('ox-store-rating').length).toBeGreaterThan(0);
   });
 
-  it('passes OxBranch the store-wide photo', () => {
+  it('passes OxBranch the storefront photo', () => {
     renderWithProviders(<BranchPage now={THURSDAY_NOON} />);
     const branch = screen.getByTestId('ox-branch');
     const photo = branch.querySelector('img');
-    expect(photo?.getAttribute('src')).toBe('/assets/store/store-wide.webp');
+    expect(photo?.getAttribute('src')).toBe('/assets/store/storefront.webp');
   });
 
-  it('renders the four-photo gallery', () => {
-    renderWithProviders(<BranchPage now={THURSDAY_NOON} />);
+  // S9h: the gallery drops its own storefront tile here, since OxBranch's
+  // cover directly above already shows that photograph.
+  it('renders the three-photo gallery, storefront dropped', () => {
+    const { container } = renderWithProviders(<BranchPage now={THURSDAY_NOON} />);
     expect(screen.getByTestId('ox-branch-gallery')).toBeTruthy();
+    expect(container.querySelectorAll('[data-testid="ox-branch-gallery-cover"]')).toHaveLength(3);
+    expect(container.querySelector('[data-cover="storefront"]')).toBeNull();
   });
 
   it('mounts the mobile visit sticky bar, hidden until its anchor scrolls away', () => {

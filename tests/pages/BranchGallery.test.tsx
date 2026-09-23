@@ -147,4 +147,30 @@ describe('BranchGallery', () => {
       storePhotoSrc(STORE_PHOTOS.storefront, STORE_PHOTOS.storefront.width)
     );
   });
+
+  // S9h (owner screenshots 2026-09-24): `OxBranch`'s own cover shows the
+  // storefront photograph too now, so `BranchPage` drops the gallery's own
+  // storefront tile to avoid the identical photograph appearing twice.
+  it('drops the storefront tile and grids the remaining three when showStorefront is false', () => {
+    setSettings({});
+    const { container, getByTestId } = renderWithProviders(<BranchGallery showStorefront={false} />);
+    const covers = Array.from(container.querySelectorAll('[data-testid="ox-branch-gallery-cover"]'));
+    expect(covers).toHaveLength(3);
+    expect(container.querySelector('[data-cover="storefront"]')).toBeNull();
+    for (const slug of ['advisory-room', 'waiting-area', 'shelves']) {
+      expect(container.querySelector(`[data-cover="${slug}"]`)).not.toBeNull();
+    }
+    expect(getByTestId('ox-branch-gallery').querySelector('.ox-branch-gallery__list')?.className).toContain(
+      'ox-branch-gallery__list--3'
+    );
+  });
+
+  it('keeps all four tiles, no grid modifier, when showStorefront is left at its default', () => {
+    setSettings({});
+    const { container, getByTestId } = renderWithProviders(<BranchGallery />);
+    expect(container.querySelectorAll('[data-testid="ox-branch-gallery-cover"]')).toHaveLength(4);
+    expect(
+      getByTestId('ox-branch-gallery').querySelector('.ox-branch-gallery__list')?.className
+    ).not.toContain('ox-branch-gallery__list--3');
+  });
 });

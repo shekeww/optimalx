@@ -5,8 +5,9 @@ import type { OxBlockProps } from './defaults';
 
 /**
  * The branch block (DIRECTION 5.2 OxBranch, 6.2 row 9; VISIT-2026-09-24 §4.1
- * moves it directly after the advisory band it fulfils and gives it the
- * store-wide photograph).
+ * moves it directly after the advisory band it fulfils; S9h, owner
+ * screenshots 2026-09-24, swaps its ground for the lit storefront
+ * photograph).
  *
  * The shared P1b block does the work; the home page only fixes its heading
  * level at h2 (the branch page passes h1), hands it the 1.4 intro line and the
@@ -23,7 +24,7 @@ export function OxBranchBlock(_props: OxBlockProps) {
           headingLevel="h2"
           showPageLink
           showOfferLine
-          photo={STORE_PHOTOS['store-wide'].photo}
+          photo={STORE_PHOTOS.storefront.photo}
           intro={t('ox.blocks.branch.intro')}
         />
       </div>

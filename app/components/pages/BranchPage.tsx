@@ -74,6 +74,12 @@ export interface BranchPageProps {
  * rather than printed. `VisitStickyBar` (mobile only) shows once `OxBranch`'s
  * own actions scroll out of view, gated on the visit product's own catalogue
  * entry.
+ *
+ * `BranchGallery` is passed `showStorefront={false}` (S9h, owner screenshots
+ * 2026-09-24): `OxBranch`'s own cover above now shows the storefront
+ * photograph too, so this page's gallery drops its own storefront tile
+ * rather than printing the identical photograph twice in one scroll,
+ * leaving three tiles.
  */
 export function BranchPage({ now }: BranchPageProps) {
   const { t } = useTranslation();
@@ -128,10 +134,10 @@ export function BranchPage({ now }: BranchPageProps) {
         showEyebrow={false}
         now={now}
         className="ox-page--branch__block"
-        photo={STORE_PHOTOS['store-wide'].photo}
+        photo={STORE_PHOTOS.storefront.photo}
       />
 
-      <BranchGallery className="ox-page--branch__gallery" />
+      <BranchGallery className="ox-page--branch__gallery" showStorefront={false} />
 
       <BranchMap className="ox-page--branch__map" />
 

@@ -300,10 +300,12 @@ export const BRANCH = {
     directionsKey: `${KEY}.map_directions`,
     openGoogleKey: `${KEY}.map_open_google`,
   },
-  /** The gallery's own label; `store-wide` is `OxBranch`'s own ground, never
-   *  a tile here. The four caption keys below (VISIT §4.4 item 2) are
-   *  retired from rendering by the S9c cover system (their `<figcaption>`
-   *  is gone) but stay registered so the keys remain valid locale entries. */
+  /** The gallery's own label; `storefront` is `OxBranch`'s own ground since
+   *  S9h and is dropped from this gallery on `/branch` (`BranchGallery`'s
+   *  `showStorefront` prop) so the same photograph never appears twice. The
+   *  four caption keys below (VISIT §4.4 item 2) are retired from rendering
+   *  by the S9c cover system (their `<figcaption>` is gone) but stay
+   *  registered so the keys remain valid locale entries. */
   gallery: {
     labelKey: `${KEY}.gallery_label`,
     storefrontCaptionKey: `${KEY}.photo_storefront`,

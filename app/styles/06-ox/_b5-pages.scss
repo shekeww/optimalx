@@ -1008,6 +1008,13 @@
     overflow: visible;
   }
 
+  // Three tiles (S9h: `BranchPage` drops the storefront tile, its own
+  // photograph already carried by `OxBranch`'s cover above it) go three-up
+  // instead of two-up-plus-orphan.
+  .ox-branch-gallery__list--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .ox-branch-gallery__item {
     inline-size: auto;
     max-inline-size: none;

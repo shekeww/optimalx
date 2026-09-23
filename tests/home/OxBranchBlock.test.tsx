@@ -5,11 +5,12 @@ import { STORE_PHOTOS } from '../../app/content/store-photos';
 import type { OxBlockData } from '../../app/components/home/defaults';
 
 /**
- * The home branch block (VISIT-2026-09-24 §4.1): the shared `OxBranch` does
- * the work, this wrapper only fixes the home-only props. This file locks in
- * that wiring: the store-wide photo and the offer line are on, the branch
- * page's own props (`headingLevel="h1"`, no `showOfferLine`) are untouched
- * here because `BranchPage.tsx` is not this batch's file.
+ * The home branch block (VISIT-2026-09-24 §4.1; S9h swaps the ground photo
+ * to the storefront): the shared `OxBranch` does the work, this wrapper only
+ * fixes the home-only props. This file locks in that wiring: the storefront
+ * photo and the offer line are on, the branch page's own props
+ * (`headingLevel="h1"`, no `showOfferLine`) are untouched here because
+ * `BranchPage.tsx` is not this batch's file.
  */
 
 const themeSettings: Record<string, unknown> = {};
@@ -40,11 +41,11 @@ function setSettings(next: Record<string, unknown>) {
 }
 
 describe('OxBranchBlock', () => {
-  it('passes the store-wide photograph and turns the offer line on', () => {
+  it('passes the storefront photograph and turns the offer line on', () => {
     setSettings({});
     const { container } = renderWithProviders(<OxBranchBlock data={{ path: 'ox-branch' } as OxBlockData} />);
     expect(container.querySelector('.ox-cover img')?.getAttribute('src')).toBe(
-      STORE_PHOTOS['store-wide'].photo
+      STORE_PHOTOS.storefront.photo
     );
     expect(container.querySelector('.ox-branch__offer')).not.toBeNull();
     expect(container.querySelector('h2')).not.toBeNull();

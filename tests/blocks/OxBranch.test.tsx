@@ -91,9 +91,9 @@ describe('OxBranch', () => {
     expect(container.querySelector('.ox-branch__content--flat')).toBeNull();
   });
 
-  it('builds the cover photo from the store-wide manifest entry, srcset included, with the slug-tuned gradient', () => {
+  it('builds the cover photo from the storefront manifest entry, srcset included, with the slug-tuned gradient', () => {
     setSettings({});
-    const branchPhoto = STORE_PHOTOS['store-wide'];
+    const branchPhoto = STORE_PHOTOS.storefront;
     const { container } = renderWithProviders(
       <OxBranch photo={branchPhoto.photo} now={THURSDAY_NOON} />
     );
@@ -102,7 +102,7 @@ describe('OxBranch', () => {
     expect(img?.getAttribute('width')).toBe(String(branchPhoto.width));
     expect(img?.getAttribute('height')).toBe(String(branchPhoto.height));
     expect(img?.getAttribute('srcset')).toBe(storePhotoSrcSet(branchPhoto));
-    expect(container.querySelector('.ox-cover')?.className).toContain('ox-cover--store-wide');
+    expect(container.querySelector('.ox-cover')?.className).toContain('ox-cover--storefront-block');
   });
 
   it('marks the row covering today and shows the live status chip', () => {

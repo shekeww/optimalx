@@ -10,6 +10,16 @@ import { toInternalPath } from '../layout/navLinks';
 
 export interface BranchGalleryProps {
   className?: string;
+  /**
+   * S9h (owner screenshots 2026-09-24): `OxBranch`'s own cover now shows the
+   * storefront photograph too (item 1), so the identical photograph would
+   * appear twice on `/branch` if this gallery kept its storefront tile.
+   * `BranchPage` passes `false` to drop it there, leaving three tiles from
+   * 640 (`.ox-branch-gallery__list--3`, this file's own grid modifier); any
+   * future caller that does not sit under a storefront cover keeps the
+   * default four.
+   */
+  showStorefront?: boolean;
 }
 
 interface GalleryCover {
@@ -29,9 +39,9 @@ interface GalleryCover {
  * waiting-area cover is resolved to one of two variants at render time
  * (`inbodyIncluded`); every other cover has one fixed pair of keys.
  */
-function galleryCovers(inbodyOn: boolean): GalleryCover[] {
+function galleryCovers(inbodyOn: boolean, showStorefront: boolean): GalleryCover[] {
   const waiting = inbodyOn ? BRANCH.covers.waitingOn : BRANCH.covers.waitingOff;
-  return [
+  const covers: GalleryCover[] = [
     {
       slug: 'advisory-room',
       coverModifier: 'ox-cover--advisory-room',
@@ -61,15 +71,17 @@ function galleryCovers(inbodyOn: boolean): GalleryCover[] {
       to: '/categories',
     },
   ];
+  return showStorefront ? covers : covers.filter((cover) => cover.slug !== 'storefront');
 }
 
 /**
- * The four other branch photographs on `/branch` (VISIT-2026-09-24 §4.4 item
- * 2; rebuilt as covers by S9c, creative director direction 2026-09-24): a
- * two-up grid from 640px, a scroll-snap rail below it (the shared `.ox-rail`
- * primitive is built for the carousel's chevron cue and progress strap,
- * machinery four static tiles do not need, so this draws the plain fallback
- * the direction names explicitly).
+ * The other branch photographs on `/branch` (VISIT-2026-09-24 §4.4 item 2;
+ * rebuilt as covers by S9c, creative director direction 2026-09-24): a
+ * two-up grid from 640px (three-up when `showStorefront` is false, S9h), a
+ * scroll-snap rail below it (the shared `.ox-rail` primitive is built for
+ * the carousel's chevron cue and progress strap, machinery a handful of
+ * static tiles do not need, so this draws the plain fallback the direction
+ * names explicitly).
  *
  * Each tile is now the whole `.ox-cover` card (`_covers.scss`): the
  * photograph, a cinematic two-gradient scrim and an accent glow behind an
@@ -83,11 +95,24 @@ function galleryCovers(inbodyOn: boolean): GalleryCover[] {
  * this component's own, so the 415px-wide `storefront` file is served sharp
  * rather than blurred up; `shelves` anchors its crop to the top
  * (`.ox-cover--shelves`) so the labelled shelf row survives the 16:10 cut.
+ *
+ * `showStorefront` (S9h, owner screenshots 2026-09-24): `OxBranch`'s own
+ * cover shows the storefront photograph now too (item 1), so `BranchPage`
+ * passes `false` here to avoid printing the identical photograph twice on
+ * one page — three tiles, `.ox-branch-gallery__list--3` (three-up from
+ * 640px). Defaults to `true` (all four) for any caller that does not sit
+ * under a storefront cover.
  */
-export function BranchGallery({ className }: BranchGalleryProps) {
+export function BranchGallery({ className, showStorefront = true }: BranchGalleryProps) {
   const { t } = useTranslation();
   const { settings } = useTheme();
-  const covers = galleryCovers(inbodyIncluded(settings as Settings));
+  const covers = galleryCovers(inbodyIncluded(settings as Settings), showStorefront);
+  const listClasses = [
+    'ox-branch-gallery__list',
+    covers.length === 3 ? 'ox-branch-gallery__list--3' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <section
@@ -95,7 +120,7 @@ export function BranchGallery({ className }: BranchGalleryProps) {
       aria-label={t(BRANCH.gallery.labelKey)}
       data-testid="ox-branch-gallery"
     >
-      <ul className="ox-branch-gallery__list">
+      <ul className={listClasses}>
         {covers.map((cover) => {
           const photo = STORE_PHOTOS[cover.slug];
           const statement = t(cover.statementKey);

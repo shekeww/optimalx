@@ -253,12 +253,13 @@
 
 // ---------------------------------------------------------------------------
 // Per-photograph tuning (direction §2). advisory-room is lit centrally
-// through the frosted door, so darkness stays low; storefront is bright at
-// night (the sign, the coloured uplighting), so only the bottom strip
-// darkens; waiting-area is warm-toned already, so the glow reads stronger
-// against it; shelves crops to the top so the labelled shelf row survives
-// the 16:10 cut; store-wide (the block's own ground) carries the most text
-// of any cover, so its scrim is the strongest.
+// through the frosted door, so darkness stays low; storefront (the GALLERY
+// tile) is bright at night (the sign, the coloured uplighting), so only the
+// bottom strip darkens; waiting-area is warm-toned already, so the glow
+// reads stronger against it; shelves crops to the top so the labelled shelf
+// row survives the 16:10 cut; storefront-block (the block's OWN ground, S9h)
+// carries the most text of any cover over the same storefront photograph, so
+// its scrim is tuned separately and far stronger.
 // ---------------------------------------------------------------------------
 .ox-cover--advisory-room {
   --ox-cover-b0: 70%;
@@ -290,9 +291,39 @@
   --ox-cover-s1: 10%;
 }
 
-.ox-cover--store-wide {
-  --ox-cover-b0: 94%;
-  --ox-cover-b1: 42%;
-  --ox-cover-s0: 60%;
-  --ox-cover-s1: 15%;
+// The block's own ground (S9h, owner screenshots 2026-09-24): the storefront
+// photograph replaces `store-wide` here, "with a premium cinematic
+// integration with the section". `--ox-cover-position: top` keeps the lit
+// sign in frame at every tier: the photo is 1448x1086 (4:3), the sign's own
+// band sits at roughly 30%-38% down the frame, and the cover's `min-block-
+// size` floor is always exactly 16:10 of the container width, so a
+// top-aligned crop always shows the image's own top 0.625 * 1448 / 1086 =
+// 83.3% (a constant, independent of tier, since both the floor and the
+// image keep a fixed ratio to each other) — comfortably past the sign with
+// margin before the crop line, at every width, and a TALLER box (the
+// content-driven case, S9c deviation 3) only reveals more of the image
+// above that, never less.
+//
+// Contrast (measured live, S9h build log): this block carries far more text
+// than any other cover (title, rating, offer/eyebrow, address, hours,
+// three-to-five actions, pickup note), stacked over the same photograph
+// that also shows the sunlit interior shelving through the glass — the
+// exact "busy photograph, too-light gradient" defect the owner's screenshot
+// named. `--ox-cover-b0`/`-s0` reach ~0.9 of the ink, and `--ox-cover-b1`/
+// `-s1` stay high rather than fading early (unlike the other four covers,
+// which carry one short line), so the whole content stack sits on a
+// consistently dark ground; only the top ~10%-15% of the frame (over the
+// sign and the lit awning) stays materially lighter, since neither stop
+// range reaches full strength that close to the transparent end. Verified
+// >= 4.5:1 (worst measured 5.88:1, most >= 7:1) for both the title and the
+// address at 390 and 1440, on both the branch page and the home block
+// (whose extra eyebrow/offer/page-link rows make it the tallest, most
+// text-heavy case).
+.ox-cover--storefront-block {
+  --ox-cover-position: top;
+  --ox-cover-b0: 92%;
+  --ox-cover-b1: 85%;
+  --ox-cover-s0: 90%;
+  --ox-cover-s1: 35%;
+  --ox-cover-glow: 0.14;
 }

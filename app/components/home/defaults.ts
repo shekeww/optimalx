@@ -37,6 +37,14 @@ import { HOME_TYPE_SLUGS } from '../../content/categories';
  */
 export const HOME_BLOCK_PATHS = [
   'ox-hero',
+  // MOVED AGAIN (owner brief 2026-09-24 item 2, screenshots): shop-by-brand
+  // moves up from directly after `ox-categories` to directly after the hero,
+  // ahead of `ox-goals` - the owner's own instruction names the position by
+  // the block it must sit next to ("تسوق حسب العلامة" right after the hero),
+  // not by which question it answers, so the S8d reasoning below (brand
+  // follows the type grid) is superseded for POSITION though its other
+  // rulings - no eyebrow, one fixed logo box, no count - are untouched.
+  'ox-brands',
   'ox-goals',
   'ox-products',
   // The four blocks below were written, committed and never registered, so
@@ -52,14 +60,6 @@ export const HOME_BLOCK_PATHS = [
   'ox-posters',
   'ox-products-secondary',
   'ox-categories',
-  // MOVED (owner brief 2026-09-24, item 1(d)): shop-by-brand is conversion-
-  // critical and now sits directly after the type grid - "which type" is
-  // answered, "which brand" follows it immediately - carrying the type
-  // section's own heading weight (no eyebrow: `OxBrands`' docblock). It used
-  // to sit after `ox-services`; the S2c reasoning right below still holds for
-  // the category rail and the advisory band, which stay adjacent to the type
-  // grid they answer.
-  'ox-brands',
   // MOVED (S2c, 2026-09-22): directly after the type grid, ahead of the
   // advisory band - the grid asks "which one", this band answers "ask us".
   // One rail per type root with products (S2e, 2026-09-22): sits right after
@@ -180,14 +180,15 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the banner row below.
   //
-  // STILL 0/0 AFTER THE HIERARCHY MOVE (owner brief 2026-09-24, item 1(d)):
-  // `ox-brands` moved up next to `ox-categories` in `HOME_BLOCK_PATHS`, but
-  // the reason it reserves nothing has not changed - `fixtures/store/
-  // brands.json` (the live store, not the offline overlay S4d's 21 brands
-  // live in) is still `[]`, so `OxBrands` still renders null on the real
-  // storefront. Reserving here would put a blank box directly under "تصفح
-  // حسب النوع" instead of above the footer, which is a worse position for the
-  // same defect `tests/home/optionalBlocks.test.ts` exists to catch.
+  // STILL 0/0 AFTER BOTH HIERARCHY MOVES (S8d item 1(d), then owner brief
+  // 2026-09-24 item 2): `ox-brands` sits directly after `ox-hero` in
+  // `HOME_BLOCK_PATHS` now, but the reason it reserves nothing has not
+  // changed - `fixtures/store/brands.json` (the live store, not the offline
+  // overlay S4d's 21 brands live in) is still `[]`, so `OxBrands` still
+  // renders null on the real storefront. Reserving here would put a blank
+  // box directly under the hero instead of above the footer, which is a
+  // worse position for the same defect `tests/home/optionalBlocks.test.ts`
+  // exists to catch.
   'ox-brands': { mobile: 0, desktop: 0 },
   // THE OFFER FIRST (owner brief 2026-09-24, S7c). Unlike the two entries
   // above, this pair is READ OFF THE RUNNING PAGE, not derived from the
@@ -220,8 +221,10 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // MOVED AND REBUILT (VISIT-2026-09-24 §4.1, S9a-V1): the block never carried
   // a photograph before this batch (`OxBranchBlock` passed no `photo` prop at
   // all), so the old 268/184 reserved a flat, photo-less card. It now always
-  // gets the store-wide photo panel, `StoreRating`, the visit-offer line and
-  // four unconditional actions.
+  // gets a photo cover (the storefront photograph since S9h, same 1448x1086
+  // ratio the store-wide one this was first measured against also carried,
+  // so the numbers below are unaffected by that swap), `StoreRating`, the
+  // visit-offer line and four unconditional actions.
   //
   // READ OFF THE RUNNING PAGE (headless Chrome over CDP, S8f's method): `/ar`
   // at 390x844 and 1440x900, the block scrolled into view so its lazy shell
