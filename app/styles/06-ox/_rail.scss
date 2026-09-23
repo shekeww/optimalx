@@ -110,6 +110,14 @@
 // The progress strap. The track is always drawn (it reads as the rule that
 // closes the rail); the accent segment appears only once the hook has
 // measured something to scroll, and moves by position, never by width.
+// Owner ruling 2026-09-24: no bar under a carousel of any kind. The 3px
+// progress strap read as a scrollbar, so it no longer paints; the chevron cue
+// stays as the only affordance. useRailProgress keeps writing its custom
+// properties (harmless) so the strap can return with one line.
+.ox-rail__progress {
+  display: none;
+}
+
 .ox-rail__progress {
   position: relative;
   block-size: 3px;

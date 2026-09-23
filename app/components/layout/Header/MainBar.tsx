@@ -110,7 +110,18 @@ export function MainBar() {
         </Link>
 
         <Suspense fallback={null}>
-          <SallaUserMenu avatarOnly showHeader className="ox-iconbtn" />
+          <SallaUserMenu avatarOnly showHeader className="ox-iconbtn">
+            {/* Same slotting shape as the cart button below: the owner's
+                drawing replaces Salla's own signed-out glyph
+                (`.s-user-menu-login-btn`, sized by `.ox-iconbtn
+                .s-user-menu-login-btn svg` below). A signed-in avatar photo
+                still wins over any slot content - that is Salla's own
+                behaviour, not something this slot changes (S8e,
+                2026-09-24). */}
+            <span slot="icon" className="ox-iconbtn__icon">
+              <Icon name="user" size={20} />
+            </span>
+          </SallaUserMenu>
         </Suspense>
 
         <Suspense fallback={null}>

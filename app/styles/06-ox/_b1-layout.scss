@@ -416,6 +416,15 @@ a.ox-util__trust-link {
   justify-content: center;
 }
 
+// The account control's own slotted-icon wrapper (S8e, 2026-09-24): same
+// shape as `.ox-cartbtn__icon` above, minus the count-pill positioning
+// context the cart needs and this control does not.
+.ox-iconbtn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 // `salla-cart-summary` renders its own count and a running total beside the
 // icon. The total has no place in a 44px control, and the count is the one the
 // SDK keeps current, so it is dressed as our pill instead of duplicated.

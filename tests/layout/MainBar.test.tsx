@@ -65,13 +65,20 @@ vi.mock('@salla.sa/twilight-components-react/search', () => ({
   ),
 }));
 vi.mock('@salla.sa/twilight-components-react/user-menu', () => ({
-  SallaUserMenu: (props: Record<string, unknown>) => (
+  SallaUserMenu: ({
+    children,
+    ...props
+  }: {
+    children?: React.ReactNode;
+  } & Record<string, unknown>) => (
     <div
       data-testid="mock-salla-user-menu"
       data-avatar-only={String(props.avatarOnly ?? false)}
       data-show-header={String(props.showHeader ?? false)}
       className={props.className as string}
-    />
+    >
+      {children}
+    </div>
   ),
 }));
 vi.mock('@salla.sa/twilight-components-react/cart-summary', () => ({
@@ -106,6 +113,20 @@ describe('MainBar', () => {
     expect(account.getAttribute('data-avatar-only')).toBe('true');
     expect(account.getAttribute('data-show-header')).toBe('true');
     expect(account.className).toContain('ox-iconbtn');
+  });
+
+  it('slots the drawn user icon (not sicon-user) into the account control', async () => {
+    renderWithProviders(<MainBar />);
+    const account = await screen.findByTestId('mock-salla-user-menu');
+    const icon = account.querySelector('svg.ox-icon use');
+    expect(icon?.getAttribute('href')).toBe('#ox-user');
+    expect(account.querySelector('[slot="icon"]')).not.toBeNull();
+    expect(account.querySelector('.sicon-user')).toBeNull();
+  });
+
+  it('renders no sicon- class anywhere in the main bar', () => {
+    const { container } = renderWithProviders(<MainBar />);
+    expect(container.innerHTML).not.toContain('sicon-');
   });
 
   it('slots the drawn cart icon (not sicon-shopping-bag) into the cart control', async () => {
