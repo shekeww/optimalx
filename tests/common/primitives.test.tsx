@@ -129,6 +129,11 @@ describe('Price', () => {
     const icon = mark.querySelector('i.sicon-sar') as HTMLElement;
     expect(icon).not.toBeNull();
     expect(icon.getAttribute('aria-hidden')).toBe('true');
+    // The glyph is 10% larger than its `.ox-price__mark` context (owner
+    // addendum, 2026-09-23): an inline style, since it always outranks the
+    // stylesheet's own `.sicon-sar { font-size: inherit }` regardless of
+    // that rule's specificity.
+    expect(icon.style.fontSize).toBe('1.1em');
     // Bots, crawlers and screen readers get the written mark two ways: the
     // wrapper's accessible name, and a genuinely-selectable sr-only node.
     expect(mark.getAttribute('role')).toBe('img');

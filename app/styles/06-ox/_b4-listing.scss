@@ -1094,6 +1094,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
   background: var(--ox-paper);
 }
 
+// `logo_ground: "dark"` on the brand's own overlay row: the mark itself is
+// drawn in white (Optimum Nutrition and Dymatize both publish white-only
+// artwork), so the FIELD changes rather than the mark. Same box, same
+// padding, same 3:2 field, ink ground - the brand is shown exactly as its
+// owner draws it, and nothing is recoloured, inverted or composited.
+.ox-brand-tile__logobox--dark {
+  background: var(--ox-ink);
+}
+
 .ox-brand-tile__logo {
   max-inline-size: 100%;
   max-block-size: 100%;
@@ -1301,9 +1310,27 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-weight: var(--ox-w-ui);
 }
 
+// The banner's logo field: the tile's box at banner size, on the same
+// asset-declared ground, so a white-only mark reads here exactly as it does
+// in the grid. The box reserves its own height, so the banner's text does not
+// move when the file lands.
+.ox-brandhero__logobox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 160px;
+  aspect-ratio: 3 / 2;
+  padding: var(--ox-3);
+  background: var(--ox-paper);
+}
+
+.ox-brandhero__logobox--dark {
+  background: var(--ox-ink);
+}
+
 .ox-brandhero__logo {
-  max-inline-size: 160px;
-  max-block-size: 64px;
+  max-inline-size: 100%;
+  max-block-size: 100%;
   object-fit: contain;
 }
 

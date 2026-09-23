@@ -217,6 +217,29 @@
   text-overflow: ellipsis;
 }
 
+// The description excerpt (coordinator addendum, 2026-09-23): the former
+// merchant pitch line, restored under the type+facts line above it — the
+// first sentence of the description's own prose paragraph
+// (`descriptionExcerpt()`, cardSpec.ts), never the spec line's label/value
+// pairs, which the row above already owns. Reserved at two lines
+// (`-webkit-line-clamp`), same as `.ox-card-product__chips`'s own
+// always-reserved row, so a short sentence and a long one keep one baseline
+// across a mixed grid; `--ox-w-quiet`/`--ox-fg-3` read as prose rather than
+// as a fact, the same distinction the spec line's own comment above draws
+// against the weight this rule used to carry.
+.ox-card-product__excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-block-size: 36px;
+  margin: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: var(--ox-w-quiet);
+  line-height: 18px;
+  color: var(--ox-fg-3);
+}
+
 .ox-card-product__rating {
   display: flex;
   align-items: center;

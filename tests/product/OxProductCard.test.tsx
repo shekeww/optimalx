@@ -142,6 +142,7 @@ describe('OxProductCard', () => {
     for (const cls of [
       '.ox-card-product__name',
       '.ox-card-product__chips',
+      '.ox-card-product__excerpt',
       '.ox-card-product__price',
       '.ox-card-product__action',
     ]) {
@@ -232,6 +233,51 @@ describe('OxProductCard', () => {
       <OxProductCard product={makeProduct({ description: '<p>الشكل: بودرة</p>' })} />
     );
     expect(formOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
+  });
+
+  it('prepends the root category name to the spec line, when the catalogue set one (coordinator addendum, 2026-09-23)', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({ category: { id: 9001, name: 'بروتين واي', url: '/protein/c9001' } })}
+      />
+    );
+    const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
+    expect(line.startsWith('بروتين واي')).toBe(true);
+    expect(line).toContain(t('ox.card.servings', { n: 30 }));
+  });
+
+  it('restores the description excerpt under the spec line, as the description\'s own prose sentence (coordinator addendum, 2026-09-23)', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          description: `${SPEC}<p>حزمة البداية تجمع ثلاثة منتجات أساسية. مناسبة للمبتدئين.</p>`,
+        })}
+      />
+    );
+    // Only the FIRST sentence, never the whole paragraph and never the spec
+    // line's own label/value pairs.
+    const excerpt = container.querySelector('.ox-card-product__excerpt')?.textContent ?? '';
+    expect(excerpt).toBe('حزمة البداية تجمع ثلاثة منتجات أساسية.');
+    expect(excerpt).not.toContain('مناسبة للمبتدئين');
+    expect(excerpt).not.toContain('الحصص');
+  });
+
+  it('reads the first paragraph directly as the excerpt when it is not a spec line', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard product={makeProduct({ description: '<p>وصف عام بدون بيانات محددة.</p>' })} />
+    );
+    expect(container.querySelector('.ox-card-product__excerpt')?.textContent).toBe(
+      'وصف عام بدون بيانات محددة.'
+    );
+  });
+
+  it('keeps the excerpt row reserved and empty when the description carries no prose paragraph', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard product={makeProduct({ description: SPEC })} />
+    );
+    const excerpt = container.querySelector('.ox-card-product__excerpt');
+    expect(excerpt).not.toBeNull();
+    expect(excerpt?.textContent).toBe('');
   });
 
   it('invents no stars on a store with no reviews (B28)', () => {

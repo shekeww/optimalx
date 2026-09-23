@@ -13,7 +13,7 @@ import { Icon } from '../common/Icon';
 import { VariantChips, cardOption, defaultValueId } from './VariantChips';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
-import { cardSpecLine } from './lib/cardSpec';
+import { cardSpecLine, descriptionExcerpt } from './lib/cardSpec';
 import { bandBadges } from './lib/bandBadges';
 import { useHoverCapable } from './lib/useHoverCapable';
 import { monthsUntilExpiry } from './lib/supply';
@@ -39,8 +39,12 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  *                    same colour axis
  *   brand line       ONLY when `product.brand?.name` is set; not reserved
  *   title            two lines, ellipsised
- *   spec line        servings, then the pack size, off the product's own
- *                    parsed description (`cardSpecLine`); always reserved
+ *   spec line        the root category name, then servings, then the pack
+ *                    size, off the product's own category and parsed
+ *                    description (`cardSpecLine`); always reserved
+ *   excerpt line     the first sentence of the description's own prose
+ *                    paragraph (`descriptionExcerpt`); restored on the
+ *                    coordinator's 2026-09-23 addendum; always reserved
  *   price row        the amount, plus the struck regular price on a sale
  *   stock line       ONLY on a live `can_show_remained_quantity` quantity
  *                    of 1 to 5; the number itself never prints
@@ -132,6 +136,13 @@ export const OxProductCard = memo(function OxProductCard({
    * chip on the product page already reads.
    */
   const specLine = useMemo(() => cardSpecLine(product, spec, t), [product, spec, t]);
+
+  /**
+   * THE DESCRIPTION EXCERPT (coordinator addendum, 2026-09-23), restored
+   * under the type+facts line above: the first sentence of the product's own
+   * prose paragraph, never the spec line's own label/value pairs.
+   */
+  const excerpt = useMemo(() => descriptionExcerpt(product.description), [product.description]);
 
   // ONE axis, one control and one preview, never both (section 3.7): when the
   // card's own chip row already lets a shopper choose a colour, the plate's
@@ -269,6 +280,7 @@ export const OxProductCard = memo(function OxProductCard({
           </Link>
         </h3>
         <p className="ox-card-product__chips">{specLine ? <Bdi>{specLine}</Bdi> : null}</p>
+        <p className="ox-card-product__excerpt">{excerpt ? <Bdi>{excerpt}</Bdi> : null}</p>
         {/* The WRAPPER is conditional too, not just its contents.
             `RatingRow` already renders null below a real review count, but the
             box around it kept `min-block-size: 20px`, so every card on this
