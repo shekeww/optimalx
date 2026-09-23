@@ -1558,5 +1558,8 @@
   "ox.content.services.written_cta_short": "Write your question",
   "ox.content.services.visit_cta_short": "Book your visit",
   "ox.home.band_inbody_plans": "Free InBody body-composition measurement at the branch with a subscription.",
-  "ox.content.services.visit_inbody": "Includes a free InBody body-composition measurement at the branch."
+  "ox.content.services.visit_inbody": "Includes a free InBody body-composition measurement at the branch.",
+  "ox.home.posters_prev": "Previous",
+  "ox.home.posters_next": "Next",
+  "ox.home.posters_slide_label": "Card {{index}} of {{total}}"
 }

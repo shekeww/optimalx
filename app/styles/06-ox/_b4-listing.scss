@@ -3048,21 +3048,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // layers the carousel's own vocabulary onto this same list rather than
 // replacing it: every slide stays a real `<li>` in a real list, and only the
 // announced role NAME changes, same as the APG carousel pattern.
+//
+// The scroller's own display/margin/padding/list-style/overflow/scroll-snap/
+// no-scrollbar rules now come from `.ox-rail__track` (`_rail.scss`, owner
+// review 2026-09-23 late night, item 1); this class carries only what is
+// still its own: a tighter gap than the primitive's default and the
+// scroll-padding that keeps a snapped cover clear of the row's own edge.
 .ox-featured__row {
-  display: flex;
   gap: var(--ox-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--ox-4);
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 // One cover, 88% of the container, below 768: the remaining 12% (less the
@@ -3187,11 +3181,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
   gap: var(--ox-1);
 }
 
-// Same 44px control the wedge-free arrows on this theme already draw
-// (`.ox-related__arrow`, `_b3-product.scss`): a plain square, no clip-path —
-// the featured rail's own one angled primitive is the plate's corner cut
-// above, and a second angled shape on the nav next to it would be a second
-// gesture on one component (§3.3, "one angled gesture per component").
+// 44px target, no face of its own (owner review 2026-09-23 late night, item
+// 1 supersedes the "plain square" reading below): the unfilled ANGLED face
+// is the `.ox-iconbtn--angled` span inside it (`_primitives.scss`), so the
+// focus ring sits on an unclipped box (X-IDENTITY §7.1 `focus-clipped`) and
+// the 44px hit area stays separate from the 24px drawn face. This and the
+// plate's own corner cut above are two different components' one angled
+// gesture each (the card, and the section's control row) — the same split
+// `OxBrands` already ships with its own corner-cut tile and angled arrows.
 .ox-featured__arrow {
   @include ox-focus(2px);
   display: inline-flex;
@@ -3199,15 +3196,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   justify-content: center;
   inline-size: 44px;
   block-size: 44px;
+  padding: 0;
   color: var(--ox-fg);
-  background: var(--ox-surface);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-3, 12px);
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  // The glyph points toward the inline start; in Arabic that is a rotation of
-  // half a turn, which --direction-factor states once for the whole theme
-  // (the same rule `.ox-related__arrow` already draws its own pair by).
-  transform: rotate(calc((1 - var(--direction-factor)) * 90deg));
 
   &:disabled {
     color: var(--ox-ink-4);
@@ -3215,7 +3208,20 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-.ox-featured__arrow--next {
+.ox-featured__arrow-face {
+  font-size: 16px;
+}
+
+// The glyph points toward the inline start; in Arabic that is a rotation of
+// half a turn, which --direction-factor states once for the whole theme (the
+// same rule `.ox-related__arrow` draws its own pair by). Rotated on the
+// glyph itself, not the button, so the angled face's own corner cut never
+// turns with it.
+.ox-featured__arrow-icon {
+  transform: rotate(calc((1 - var(--direction-factor)) * 90deg));
+}
+
+.ox-featured__arrow--next .ox-featured__arrow-icon {
   transform: rotate(calc((1 - var(--direction-factor)) * 90deg + 180deg));
 }
 

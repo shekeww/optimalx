@@ -6,6 +6,7 @@ import { effectivePrice } from '../product/lib/claims';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
 import { SectionHeader } from '../common/SectionHeader';
+import { useRailProgress } from '../common/hooks/useRailProgress';
 import { useReducedMotion } from '../common/hooks/useReducedMotion';
 
 export interface FeaturedRailProps {
@@ -100,10 +101,24 @@ export function featuredCoverImage(product: Product): { url: string | undefined;
  * VISIBLE_AT_DESKTOP`), which is the "hidden when everything fits" half of
  * the requirement; below 1024 touch/scroll-snap is the only way through the
  * rail, matching every other horizontal scroller in this theme.
+ *
+ * Owner review 2026-09-23 late night, item 1: the track now sits on the
+ * shared rail primitive (`.ox-rail`/`.ox-rail__track`, `_rail.scss`), which
+ * hides the native scrollbar, draws the accent chevron cue at the reading
+ * end and tracks scroll position on the progress strap under the row — the
+ * same primitive `OxBrands` and `OxCategoryRail` carry. The nav pair's own
+ * face is the unfilled angled `.ox-iconbtn--angled` span (`_primitives.scss`)
+ * rather than the plain bordered square it shipped with, superseding S4c's
+ * "one angled gesture per component" reading of that arrow: the plate's
+ * corner cut and the nav's own angled face are two different components (the
+ * card and the section's control row), the same split `OxBrands` already
+ * ships with its own corner-cut tile and angled nav arrows together.
  */
 export function FeaturedRail({ products, className }: FeaturedRailProps) {
   const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
+  const trackRef = useRef<HTMLUListElement>(null);
+  const railRef = useRailProgress(trackRef);
   const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
   const [startIndex, setStartIndex] = useState(0);
 
@@ -143,7 +158,9 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                 disabled={startIndex === 0}
                 aria-label={t('ox.listing.featured_prev')}
               >
-                <i className="sicon-keyboard_arrow_left" aria-hidden="true" />
+                <span className="ox-featured__arrow-face ox-iconbtn--angled" aria-hidden="true">
+                  <i className="sicon-keyboard_arrow_left ox-featured__arrow-icon" aria-hidden="true" />
+                </span>
               </button>
               <button
                 type="button"
@@ -152,63 +169,81 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                 disabled={startIndex >= maxStart}
                 aria-label={t('ox.listing.featured_next')}
               >
-                <i className="sicon-keyboard_arrow_left" aria-hidden="true" />
+                <span className="ox-featured__arrow-face ox-iconbtn--angled" aria-hidden="true">
+                  <i className="sicon-keyboard_arrow_left ox-featured__arrow-icon" aria-hidden="true" />
+                </span>
               </button>
             </div>
           ) : undefined
         }
       />
-      <ul
-        className="ox-featured__row"
-        role="list"
-        aria-roledescription={t('ox.listing.featured_carousel_role')}
-      >
-        {items.map((product, index) => {
-          const cover = featuredCoverImage(product);
-          return (
-            <li
-              key={product.id}
-              ref={(node) => {
-                itemRefs.current[index] = node;
-              }}
-              className="ox-featured__item"
-              aria-roledescription={t('ox.listing.featured_slide_role')}
-              aria-label={t('ox.listing.featured_slide_label', {
-                index: index + 1,
-                total: items.length,
-              })}
-            >
-              <Link to={product.url} className="ox-featured__card">
-                <span className="ox-featured__plate">
-                  <Image
-                    src={cover.url}
-                    alt={cover.alt}
-                    aspectRatio="3/2"
-                    objectFit="contain"
-                    priority={index < 2}
-                    srcSetWidths={RAIL_IMAGE_WIDTHS}
-                    sizes={RAIL_IMAGE_SIZES}
-                    className="ox-featured__img"
-                  />
-                </span>
-                <span className="ox-featured__name">
-                  <Bdi>{product.name}</Bdi>
-                </span>
-                <span className="ox-featured__price">
-                  <Price amount={effectivePrice(product)} currency={product.currency} size="small" />
-                </span>
-                <span className="ox-featured__cta">
-                  {t('ox.listing.featured_cta')}
-                  <i
-                    className="sicon-keyboard_arrow_left ox-mirror ox-iconbtn--angled"
-                    aria-hidden="true"
-                  />
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      {/* The shared rail primitive (`_rail.scss`): no native scrollbar, the
+          accent chevron cue at the reading end, and the progress strap under
+          the row. */}
+      <div className="ox-rail ox-featured__rail" ref={railRef}>
+        <ul
+          className="ox-rail__track ox-featured__row"
+          ref={trackRef}
+          role="list"
+          aria-roledescription={t('ox.listing.featured_carousel_role')}
+        >
+          {items.map((product, index) => {
+            const cover = featuredCoverImage(product);
+            return (
+              <li
+                key={product.id}
+                ref={(node) => {
+                  itemRefs.current[index] = node;
+                }}
+                className="ox-featured__item"
+                aria-roledescription={t('ox.listing.featured_slide_role')}
+                aria-label={t('ox.listing.featured_slide_label', {
+                  index: index + 1,
+                  total: items.length,
+                })}
+              >
+                <Link to={product.url} className="ox-featured__card">
+                  <span className="ox-featured__plate">
+                    <Image
+                      src={cover.url}
+                      alt={cover.alt}
+                      aspectRatio="3/2"
+                      objectFit="contain"
+                      priority={index < 2}
+                      srcSetWidths={RAIL_IMAGE_WIDTHS}
+                      sizes={RAIL_IMAGE_SIZES}
+                      className="ox-featured__img"
+                    />
+                  </span>
+                  <span className="ox-featured__name">
+                    <Bdi>{product.name}</Bdi>
+                  </span>
+                  <span className="ox-featured__price">
+                    <Price amount={effectivePrice(product)} currency={product.currency} size="small" />
+                  </span>
+                  <span className="ox-featured__cta">
+                    {t('ox.listing.featured_cta')}
+                    <i
+                      className="sicon-keyboard_arrow_left ox-mirror ox-iconbtn--angled"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <button
+          type="button"
+          className="ox-rail__cue"
+          onClick={() => goTo(startIndex + VISIBLE_AT_DESKTOP)}
+          aria-label={t('ox.listing.featured_next')}
+        >
+          <span className="ox-rail__cue-arm" aria-hidden="true" />
+          <span className="ox-rail__cue-arm ox-rail__cue-arm--down" aria-hidden="true" />
+        </button>
+        <div className="ox-rail__progress" />
+      </div>
     </section>
   );
 }

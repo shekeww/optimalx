@@ -1,8 +1,11 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
+
+const ar = loadDictionary('ar');
 
 /**
  * One product rail per root category (S2e, 2026-09-22). The contract:
@@ -59,6 +62,7 @@ beforeEach(() => {
   liveCategories.length = 0;
   productList.mockClear();
   productList.mockResolvedValue({ items: [], next: null } as never);
+  Element.prototype.scrollIntoView = vi.fn();
 });
 
 describe('OxCategoryRail, resolution', () => {
@@ -117,6 +121,41 @@ describe('OxCategoryRail, a resolved category', () => {
     );
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(3));
     expect(screen.getByTestId('ox-category-rail').textContent).toContain('عنوان التاجر');
+  });
+});
+
+describe('OxCategoryRail, the rail primitive (owner review 2026-09-23 late night, item 1)', () => {
+  it('carries no native scrollbar contract, the cue and the progress strap, with no nav at three products', async () => {
+    liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
+    productList.mockResolvedValue({ items: products(3), next: null } as never);
+    const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+    await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(3));
+
+    const row = container.querySelector('.ox-cat-rail__scroller');
+    expect(row?.classList.contains('ox-rail__track')).toBe(true);
+    const cue = container.querySelector('.ox-rail__cue');
+    expect(cue?.getAttribute('aria-label')).toBe(ar['ox.listing.featured_next']);
+    expect(container.querySelectorAll('.ox-rail__cue-arm')).toHaveLength(2);
+    expect(container.querySelector('.ox-rail__progress')).not.toBeNull();
+    expect(container.querySelector('.ox-cat-rail__nav')).toBeNull();
+  });
+
+  it('shows the prev/next pair past three products, prev disabled at the start', async () => {
+    liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
+    productList.mockResolvedValue({ items: products(8), next: null } as never);
+    const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+    await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(8));
+
+    const arrows = container.querySelectorAll('.ox-cat-rail__arrow');
+    expect(arrows).toHaveLength(2);
+    expect((arrows[0] as HTMLButtonElement).disabled).toBe(true);
+    expect((arrows[1] as HTMLButtonElement).disabled).toBe(false);
+    // The unfilled angled face is a span inside the button, never the button
+    // itself: a clip-path would clip the focus ring (X-IDENTITY 7.1).
+    expect(arrows[0].querySelector('.ox-iconbtn--angled')).not.toBeNull();
+
+    fireEvent.click(arrows[1]);
+    await waitFor(() => expect((arrows[0] as HTMLButtonElement).disabled).toBe(false));
   });
 });
 

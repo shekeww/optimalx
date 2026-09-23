@@ -150,7 +150,13 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // running one takes the shift on that block instead, which is the smaller
   // cost and affects nobody today.
   'ox-poster': { mobile: 0, desktop: 0 },
-  'ox-posters': { mobile: 362, desktop: 380 },
+  // Re-measured by delta (owner review 2026-09-23 late night, item 2: the
+  // carousel adopts the shared rail primitive): the track's own bottom
+  // padding (`--ox-2`, 8px) is gone, replaced by the rail's progress strap
+  // (`--ox-3` margin + 3px, 15px) — `.ox-pcard`'s own block-size (300px at
+  // every tier) is unchanged, so this is the only height this batch moves.
+  // Net +7px on both viewports: 362 -> 369, 380 -> 387.
+  'ox-posters': { mobile: 369, desktop: 387 },
   'ox-products-secondary': { mobile: 924, desktop: 1040 },
   // A product rail has no honest placeholder for a category that has not
   // resolved to a real Salla id yet (`OxCategoryRail.tsx`), so it renders

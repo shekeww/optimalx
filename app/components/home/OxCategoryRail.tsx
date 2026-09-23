@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
@@ -6,6 +6,8 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SectionHeader } from '../common/SectionHeader';
 import { OxProductCard } from '../product/OxProductCard';
 import { useTaxonomyLinks } from '../listing/useTaxonomyLinks';
+import { useRailProgress } from '../common/hooks/useRailProgress';
+import { useReducedMotion } from '../common/hooks/useReducedMotion';
 import { nodeBySlug } from '../../content/taxonomy';
 import { fieldList, fieldText, rowText, type OxBlockData, type OxBlockProps } from './defaults';
 
@@ -13,6 +15,14 @@ import { fieldList, fieldText, rowText, type OxBlockData, type OxBlockProps } fr
 export const RAIL_PER_PAGE = 8;
 /** Below this the row reads as an apology rather than a shelf, so it hides instead. */
 const MIN_PRODUCTS = 2;
+/**
+ * The number of 300px cards a 1024 container (960px) fits three of with the
+ * 16px gap (932px used of 960) — where `SectionHeader`'s own `actions` slot
+ * first shows the arrows, and the step every press moves (owner brief
+ * 2026-09-23 late night, item 1: every carousel adopts the shared rail
+ * primitive, same STEP_AT_DESKTOP convention `OxBrands`/`FeaturedRail` use).
+ */
+const STEP_AT_DESKTOP = 3;
 
 interface RailTarget {
   id: number;
@@ -58,18 +68,23 @@ function selectedTarget(data: OxBlockData): RailTarget | undefined {
  * category whose whole catalogue is one item reads better folded into the
  * type grid's own tile than repeated here.
  *
- * The scroller is a plain `overflow-x: auto` list, not the Swiper-backed
- * `ProductsSliderWrapper` every other rail on the theme uses: the brief asks
- * for `scroll-snap-type: x mandatory` and the existing `OxProductCard`
- * specifically, not the engine's own card. Keyboard reachability comes free
- * from the cards' own focusable elements - a browser scrolls a focused
- * descendant into view natively, so no `tabindex` belongs on the scroller
- * itself - and reduced motion is the default: nothing here ever sets
- * `scroll-behavior: smooth`, so there is no motion to gate.
+ * The scroller is the shared rail primitive (`_rail.scss`), not the
+ * Swiper-backed `ProductsSliderWrapper` every non-home rail on the theme
+ * uses: the brief asks for `scroll-snap-type: x mandatory`, the existing
+ * `OxProductCard` specifically, and (owner review 2026-09-23 late night, item
+ * 1) no native scrollbar, the accent chevron cue and the progress strap
+ * every carousel now carries. Keyboard reachability comes free from the
+ * cards' own focusable elements - a browser scrolls a focused descendant into
+ * view natively, so no `tabindex` belongs on the scroller itself.
  */
 export function OxCategoryRail({ data }: OxBlockProps) {
   const { t } = useTranslation();
   const taxonomy = useTaxonomyLinks();
+  const reducedMotion = useReducedMotion();
+  const trackRef = useRef<HTMLUListElement>(null);
+  const railRef = useRailProgress(trackRef);
+  const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
+  const [startIndex, setStartIndex] = useState(0);
 
   const target = useMemo<RailTarget | undefined>(() => {
     const merchant = selectedTarget(data);
@@ -103,18 +118,92 @@ export function OxCategoryRail({ data }: OxBlockProps) {
   if (products.length < MIN_PRODUCTS) return null;
 
   const title = fieldText(data, 'title') || target.label;
+  const maxStart = Math.max(0, products.length - STEP_AT_DESKTOP);
+  const showNav = products.length > STEP_AT_DESKTOP;
+
+  const goTo = (nextStart: number) => {
+    const clamped = Math.min(Math.max(nextStart, 0), maxStart);
+    setStartIndex(clamped);
+    itemRefs.current[clamped]?.scrollIntoView({
+      inline: 'start',
+      block: 'nearest',
+      behavior: reducedMotion ? 'auto' : 'smooth',
+    });
+  };
 
   return (
     <section className="ox-cat-rail" data-testid="ox-category-rail">
       <div className="ox-container">
-        <SectionHeader title={title} viewAll={{ to: target.to }} />
-        <ul className="ox-cat-rail__scroller" role="list">
-          {products.map((item, index) => (
-            <li key={item.id ?? index} className="ox-cat-rail__item">
-              <OxProductCard product={item} index={index} />
-            </li>
-          ))}
-        </ul>
+        <SectionHeader
+          title={title}
+          viewAll={{ to: target.to }}
+          actions={
+            showNav ? (
+              <div className="ox-cat-rail__nav">
+                <button
+                  type="button"
+                  className="ox-cat-rail__arrow"
+                  onClick={() => goTo(startIndex - STEP_AT_DESKTOP)}
+                  disabled={startIndex === 0}
+                  aria-label={t('ox.listing.featured_prev')}
+                >
+                  <span className="ox-cat-rail__arrow-face ox-iconbtn--angled" aria-hidden="true">
+                    <i className="sicon-keyboard_arrow_left ox-mirror" />
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="ox-cat-rail__arrow ox-cat-rail__arrow--next"
+                  onClick={() => goTo(startIndex + STEP_AT_DESKTOP)}
+                  disabled={startIndex >= maxStart}
+                  aria-label={t('ox.listing.featured_next')}
+                >
+                  <span className="ox-cat-rail__arrow-face ox-iconbtn--angled" aria-hidden="true">
+                    <i className="sicon-keyboard_arrow_right ox-mirror" />
+                  </span>
+                </button>
+              </div>
+            ) : undefined
+          }
+        />
+        {/* The shared rail primitive (`_rail.scss`): no native scrollbar, the
+            accent chevron cue at the reading end, and the progress strap
+            under the row. */}
+        <div className="ox-rail ox-cat-rail__rail" ref={railRef}>
+          <ul
+            className="ox-rail__track ox-cat-rail__scroller"
+            ref={trackRef}
+            role="list"
+            aria-roledescription={t('ox.listing.featured_carousel_role')}
+          >
+            {products.map((item, index) => (
+              <li
+                key={item.id ?? index}
+                className="ox-cat-rail__item"
+                ref={(node) => {
+                  itemRefs.current[index] = node;
+                }}
+                aria-roledescription={t('ox.listing.featured_slide_role')}
+                aria-label={t('ox.listing.featured_slide_label', {
+                  index: index + 1,
+                  total: products.length,
+                })}
+              >
+                <OxProductCard product={item} index={index} />
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="ox-rail__cue"
+            onClick={() => goTo(startIndex + STEP_AT_DESKTOP)}
+            aria-label={t('ox.listing.featured_next')}
+          >
+            <span className="ox-rail__cue-arm" aria-hidden="true" />
+            <span className="ox-rail__cue-arm ox-rail__cue-arm--down" aria-hidden="true" />
+          </button>
+          <div className="ox-rail__progress" />
+        </div>
       </div>
     </section>
   );

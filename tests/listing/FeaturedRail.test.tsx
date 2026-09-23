@@ -154,28 +154,41 @@ describe('FeaturedRail carousel', () => {
 
   it('hides the prev/next controls once two covers already show everything', () => {
     const products = Array.from({ length: 2 }, (unused, i) => product(i + 1));
-    renderWithProviders(<FeaturedRail products={products} />);
-    expect(screen.queryByRole('button', { name: t('ox.listing.featured_next') })).toBeNull();
-    expect(screen.queryByRole('button', { name: t('ox.listing.featured_prev') })).toBeNull();
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    expect(container.querySelector('.ox-featured__nav')).toBeNull();
   });
 
   it('shows prev/next once there are more covers than fit two-up, prev disabled at the start', () => {
     const products = Array.from({ length: 6 }, (unused, i) => product(i + 1));
-    renderWithProviders(<FeaturedRail products={products} />);
-    const prev = screen.getByRole('button', { name: t('ox.listing.featured_prev') }) as HTMLButtonElement;
-    const next = screen.getByRole('button', { name: t('ox.listing.featured_next') }) as HTMLButtonElement;
-    expect(prev.disabled).toBe(true);
-    expect(next.disabled).toBe(false);
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    const arrows = container.querySelectorAll('.ox-featured__arrow');
+    expect(arrows).toHaveLength(2);
+    expect((arrows[0] as HTMLButtonElement).disabled).toBe(true);
+    expect((arrows[1] as HTMLButtonElement).disabled).toBe(false);
   });
 
   it('next scrolls the carousel forward by two covers and re-enables prev', () => {
     const products = Array.from({ length: 6 }, (unused, i) => product(i + 1));
-    renderWithProviders(<FeaturedRail products={products} />);
-    const next = screen.getByRole('button', { name: t('ox.listing.featured_next') });
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    const [prev, next] = container.querySelectorAll('.ox-featured__arrow');
     fireEvent.click(next);
     expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
-    const prev = screen.getByRole('button', { name: t('ox.listing.featured_prev') }) as HTMLButtonElement;
-    expect(prev.disabled).toBe(false);
+    expect((prev as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('carries the rail primitive: no native scrollbar contract, the cue and the progress strap', () => {
+    const products = Array.from({ length: 6 }, (unused, i) => product(i + 1));
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    const row = container.querySelector('.ox-featured__row');
+    expect(row?.classList.contains('ox-rail__track')).toBe(true);
+    const cue = container.querySelector('.ox-rail__cue');
+    expect(cue?.getAttribute('aria-label')).toBe(t('ox.listing.featured_next'));
+    expect(container.querySelectorAll('.ox-rail__cue-arm')).toHaveLength(2);
+    expect(container.querySelector('.ox-rail__progress')).not.toBeNull();
+    // The unfilled angled face is a span inside the nav button, never the
+    // button itself: a clip-path would clip the focus ring (X-IDENTITY 7.1).
+    const arrows = container.querySelectorAll('.ox-featured__arrow');
+    expect(arrows[0].querySelector('.ox-iconbtn--angled')).not.toBeNull();
   });
 });
 

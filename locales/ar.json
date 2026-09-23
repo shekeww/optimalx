@@ -1558,5 +1558,8 @@
   "ox.content.services.written_cta_short": "اكتب سؤالك",
   "ox.content.services.visit_cta_short": "احجز زيارتك",
   "ox.home.band_inbody_plans": "قياس تكوين الجسم (InBody) مجانا في الفرع مع الاشتراك.",
-  "ox.content.services.visit_inbody": "يشمل قياس تكوين الجسم (InBody) مجانا في الفرع."
+  "ox.content.services.visit_inbody": "يشمل قياس تكوين الجسم (InBody) مجانا في الفرع.",
+  "ox.home.posters_prev": "السابق",
+  "ox.home.posters_next": "التالي",
+  "ox.home.posters_slide_label": "البطاقة {{index}} من {{total}}"
 }

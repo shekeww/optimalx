@@ -1,0 +1,5 @@
+{
+  "ox.home.posters_prev": "Previous",
+  "ox.home.posters_next": "Next",
+  "ox.home.posters_slide_label": "Card {{index}} of {{total}}"
+}

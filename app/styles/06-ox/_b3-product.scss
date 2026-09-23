@@ -2523,20 +2523,22 @@ body.is-sticky-product-bar.product-single {
   display: none;
 }
 
+// 44px target, no face of its own (owner review 2026-09-23 late night, item
+// 1: every carousel's nav adopts the unfilled angled face): the ANGLED face
+// is the `.ox-iconbtn--angled` span inside it (`_primitives.scss`), the same
+// one `OxBrands`/`OxCategoryRail`/`FeaturedRail` draw theirs with, so the
+// focus ring sits on an unclipped box (X-IDENTITY §7.1 `focus-clipped`).
 .ox-related__arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 36px;
-  block-size: 36px;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
   color: var(--ox-fg);
-  background: var(--ox-surface);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-3, 12px);
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  // The glyph points toward the inline start; in Arabic that is a rotation of
-  // half a turn, which --direction-factor states once for the whole theme.
-  transform: rotate(calc((1 - var(--direction-factor)) * 90deg));
 
   &:focus-visible {
     outline: var(--ox-focus-ring);
@@ -2544,7 +2546,19 @@ body.is-sticky-product-bar.product-single {
   }
 }
 
-.ox-related__arrow--next {
+.ox-related__arrow-face {
+  font-size: 16px;
+}
+
+// The glyph points toward the inline start; in Arabic that is a rotation of
+// half a turn, which --direction-factor states once for the whole theme.
+// Rotated on the glyph itself, not the button, so the angled face's own
+// corner cut never turns with it.
+.ox-related__arrow-icon {
+  transform: rotate(calc((1 - var(--direction-factor)) * 90deg));
+}
+
+.ox-related__arrow--next .ox-related__arrow-icon {
   transform: rotate(calc((1 - var(--direction-factor)) * 90deg + 180deg));
 }
 

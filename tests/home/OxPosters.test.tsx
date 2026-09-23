@@ -1,9 +1,12 @@
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
 import { POSTER_CARDS } from '../../app/content/posters';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
+
+const ar = loadDictionary('ar');
 
 /**
  * The poster carousel (homepage-scale-spec section 7). Owner review
@@ -64,5 +67,55 @@ describe('OxPosters', () => {
     // the same rule GoalCard's own slash/cta already hold to).
     expect(container.querySelectorAll('.ox-pcard button')).toHaveLength(0);
     expect(container.querySelectorAll('.ox-pcard a')).toHaveLength(0);
+  });
+});
+
+describe('OxPosters, the carousel on the rail primitive (owner review 2026-09-23 late night, item 2)', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('carries no native scrollbar contract, the cue and the progress strap', async () => {
+    const { container } = renderWithProviders(<OxPosters data={data()} />);
+    await waitFor(() => {
+      expect(screen.getAllByTestId('ox-poster-card')).toHaveLength(POSTER_CARDS.length);
+    });
+
+    const track = container.querySelector('.ox-posters__track');
+    expect(track?.classList.contains('ox-rail__track')).toBe(true);
+    expect(track?.getAttribute('role')).toBe('list');
+    expect(track?.getAttribute('aria-roledescription')).toBe(ar['ox.listing.featured_carousel_role']);
+    const slides = container.querySelectorAll('.ox-posters__slide');
+    expect(slides).toHaveLength(POSTER_CARDS.length);
+    expect(slides[0].getAttribute('aria-roledescription')).toBe(ar['ox.listing.featured_slide_role']);
+    expect(slides[0].getAttribute('aria-label')).toBe(
+      ar['ox.home.posters_slide_label']
+        .replace('{{index}}', '1')
+        .replace('{{total}}', String(POSTER_CARDS.length))
+    );
+
+    const cue = container.querySelector('.ox-rail__cue');
+    expect(cue?.getAttribute('aria-label')).toBe(ar['ox.home.posters_next']);
+    expect(container.querySelectorAll('.ox-rail__cue-arm')).toHaveLength(2);
+    expect(container.querySelector('.ox-rail__progress')).not.toBeNull();
+  });
+
+  it('shows the prev/next pair past three cards, prev disabled at the start, next stepping it forward', async () => {
+    const { container } = renderWithProviders(<OxPosters data={data()} />);
+    await waitFor(() => {
+      expect(screen.getAllByTestId('ox-poster-card')).toHaveLength(POSTER_CARDS.length);
+    });
+
+    const arrows = container.querySelectorAll('.ox-posters__arrow');
+    expect(arrows).toHaveLength(2);
+    expect((arrows[0] as HTMLButtonElement).disabled).toBe(true);
+    expect((arrows[1] as HTMLButtonElement).disabled).toBe(false);
+    // The unfilled angled face is a span inside the button, never the button
+    // itself: a clip-path would clip the focus ring (X-IDENTITY 7.1).
+    expect(arrows[0].querySelector('.ox-iconbtn--angled')).not.toBeNull();
+
+    fireEvent.click(arrows[1]);
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+    await waitFor(() => expect((arrows[0] as HTMLButtonElement).disabled).toBe(false));
   });
 });

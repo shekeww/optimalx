@@ -18,6 +18,18 @@ export interface RelatedRailProps {
  * Claims gate B27: the whole section, heading and arrows included, is absent
  * when the loader comes back empty, because `ProductsSliderWrapper` returns
  * null and this wrapper has no content of its own to leave behind.
+ *
+ * Owner review 2026-09-23 late night, item 1 ("every carousel adopts the
+ * rail primitive"): the underlying scroller here is Salla's own
+ * `SallaProductsSlider` (BUILD.md's "Salla native components before building
+ * anything custom"), not the theme's DIY `.ox-rail__track` scroller — it has
+ * no `overflow-x`/native scrollbar to hide in the first place (Swiper draws
+ * by transform inside an `overflow: hidden` box; confirmed no Scrollbar
+ * module is wired in `@salla.sa/twilight-components-react`'s bundle), so
+ * there is nothing to convert there. What this file owns is the arrow pair:
+ * its face is now the unfilled angled `.ox-iconbtn--angled` span
+ * (`_primitives.scss`), the same face `OxBrands`/`OxCategoryRail`/
+ * `FeaturedRail` draw theirs with, in place of the plain bordered square.
  */
 export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
   const { t } = useTranslation();
@@ -102,7 +114,9 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
             onClick={() => nudge(-1)}
             aria-label={t('ox.pdp.rail_prev')}
           >
-            <i className="sicon-keyboard_arrow_left" aria-hidden="true" />
+            <span className="ox-related__arrow-face ox-iconbtn--angled" aria-hidden="true">
+              <i className="sicon-keyboard_arrow_left ox-related__arrow-icon" aria-hidden="true" />
+            </span>
           </button>
           <button
             type="button"
@@ -110,7 +124,9 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
             onClick={() => nudge(1)}
             aria-label={t('ox.pdp.rail_next')}
           >
-            <i className="sicon-keyboard_arrow_left" aria-hidden="true" />
+            <span className="ox-related__arrow-face ox-iconbtn--angled" aria-hidden="true">
+              <i className="sicon-keyboard_arrow_left ox-related__arrow-icon" aria-hidden="true" />
+            </span>
           </button>
         </div>
       </div>

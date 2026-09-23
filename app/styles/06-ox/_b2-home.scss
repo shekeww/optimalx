@@ -1832,29 +1832,16 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 }
 
 // ---------------------------------------------------------------------------
-// 6b. OxCategoryRail (S2e, 2026-09-22: one per type root with products)
+// 6b. OxCategoryRail (S2e, 2026-09-22: one per type root with products;
+//    owner review 2026-09-23 late night, item 1: onto the shared rail
+//    primitive)
 // ---------------------------------------------------------------------------
-// A plain `overflow-x: auto` scroller, not the Swiper-backed `.ox-rail`:
-// OxCategoryRail.tsx's own docblock has the reasoning. Card widths match the
-// figures `ProductsRailSkeleton`'s `.ox-skel-rail` already uses elsewhere on
-// this page, so a rail that DOES get a skeleton first (none of this block's
-// own instances do; see `CategoryRailSkeleton`) never disagrees with one
-// that renders straight in.
-.ox-cat-rail__scroller {
-  display: flex;
-  gap: var(--ox-4);
-  margin: 0;
-  padding: 0;
-  padding-block-end: var(--ox-1);
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: x mandatory;
-  // No `scroll-behavior: smooth` anywhere in this rule: the browser's default
-  // instant jump is the reduced-motion-safe behaviour already, so there is no
-  // motion here to gate behind `prefers-reduced-motion`.
-}
-
+// The scroller's own display/gap/scroll-snap/no-scrollbar rules now come from
+// `.ox-rail__track` (`_rail.scss`); this class carries only the card width,
+// same figures `ProductsRailSkeleton`'s `.ox-skel-rail` already uses
+// elsewhere on this page, so a rail that DOES get a skeleton first (none of
+// this block's own instances do; see `CategoryRailSkeleton`) never disagrees
+// with one that renders straight in.
 .ox-cat-rail__item {
   flex: 0 0 auto;
   inline-size: 172px;
@@ -1865,6 +1852,41 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   .ox-cat-rail__item {
     inline-size: 300px;
   }
+}
+
+// The prev/next pair rides `SectionHeader`'s own `actions` slot (`display:
+// none` below 1024, `flex` from there), same construction as `.ox-brands__nav`
+// (§7 below).
+.ox-cat-rail__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+}
+
+// 44px target, no face of its own: the unfilled ANGLED face is the
+// `.ox-iconbtn--angled` span inside it (`_primitives.scss`), so the focus
+// ring sits on an unclipped box (X-IDENTITY §7.1 `focus-clipped`).
+.ox-cat-rail__arrow {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  color: var(--ox-fg);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--ox-ink-4);
+    cursor: default;
+  }
+}
+
+.ox-cat-rail__arrow-face {
+  font-size: 16px;
 }
 
 // ---------------------------------------------------------------------------
@@ -3209,37 +3231,94 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   }
 }
 
-// 17.2 The poster carousel (homepage-scale-spec section 7)
+// 17.2 The poster carousel (homepage-scale-spec section 7; owner review
+//    2026-09-23 late night, item 2: onto the shared rail primitive, four
+//    named visible-card tiers)
 //
-// Native scroll snap, no autoplay, no JavaScript per frame. The partial card
-// at the trailing edge is the whole point of the row: a scroller that ends
-// flush looks finished when it is not.
-.ox-posters__track {
-  display: grid;
-  grid-auto-flow: column;
-  // 74 puts 1.35 of a card in view, the middle of the spec's 1.3 to 1.5.
-  grid-auto-columns: 74%;
-  gap: var(--ox-4);
-  margin: 0;
-  padding: 0 0 var(--ox-2);
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: inline mandatory;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar { display: none; }
-}
-
+// The track's own display/gap/scroll-snap/no-scrollbar rules now come from
+// `.ox-rail__track` (`_rail.scss`); this class carries nothing of its own.
+// Card width is `.ox-posters__slide`'s (below), computed from the same
+// "container and gap" formula every other rail on the primitive uses —
+// `min(var(--ox-container), 100% - 2 * var(--ox-gutter))` is the exact
+// expression `.ox-services__photo` already reads the container's width with,
+// reused here because the track BLEEDS past `.ox-container` (its own `100%`
+// is the full, unclamped row) and the brief's four tiers are measured
+// against the container, not the bleed.
+//
+// visible | probe | container | formula                          | card
+// 1.15    | 390   | 358       | (358 − 0.15 × 16) / 1.15          | 309.2px
+// 2       | 768   | 720       | (720 − 1 × 16) / 2                | 352.0px
+// 3       | 1024  | 960       | (960 − 2 × 16) / 3                | 309.3px
+// 4       | 1440  | 1296      | (1296 − 3 × 16) / 4               | 312.0px
+//
+// These breakpoints (768/1024/1280) are the carousel's own and deliberately
+// separate from the corner-cut/strap tiers below (640/1280, `GoalCard`'s own
+// ladder): the two are different concerns that happened to share one media
+// query only because the OLD "1.4 visible" tier also broke at 640. The cards
+// themselves are untouched (owner instruction: "poster cards keep their
+// S4a/S3b design").
 .ox-posters__slide {
   scroll-snap-align: start;
   min-inline-size: 0;
+  flex: 0 0 calc(
+    (min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - 0.15 * var(--ox-4)) / 1.15
+  );
+}
+
+@media (min-width: 768px) {
+  .ox-posters__slide {
+    flex-basis: calc((min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - var(--ox-4)) / 2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-posters__slide {
+    flex-basis: calc(
+      (min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - 2 * var(--ox-4)) / 3
+    );
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-posters__slide {
+    flex-basis: calc(
+      (min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - 3 * var(--ox-4)) / 4
+    );
+  }
+}
+
+// The prev/next pair, `SectionHeader`'s own `actions` slot (display: none
+// below 1024, flex from there), same construction as `.ox-brands__nav`.
+.ox-posters__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+}
+
+.ox-posters__arrow {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  color: var(--ox-fg);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--ox-ink-4);
+    cursor: default;
+  }
+}
+
+.ox-posters__arrow-face {
+  font-size: 16px;
 }
 
 @media (min-width: 640px) {
-  // 1.4 cards of the next one showing, the middle of the spec's 1.3 to 1.5.
-  .ox-posters__track { grid-auto-columns: 46%; }
-
   // lean 56 / run 37.8 at the 768 probe (item 3, same tier `GoalCard` picks
   // at this breakpoint): track row ~= 768 - 24 start padding = 744px, card
   // 46% of that = 342.2px; 37.8 / 342.2 = 11.0%.
@@ -3259,13 +3338,7 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   }
 }
 
-@media (min-width: 1024px) {
-  .ox-posters__track { grid-auto-columns: 31.5%; }
-}
-
 @media (min-width: 1280px) {
-  .ox-posters__track { grid-auto-columns: 27%; }
-
   // lean 64 / run 43.2 at the 1440 probe: row ~= 1440 - 32 start padding =
   // 1408px, card 27% of that = 380.2px; 43.2 / 380.2 = 11.4%.
   .ox-pcard {
