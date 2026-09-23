@@ -137,10 +137,19 @@ describe('Band', () => {
     expect(screen.getByTestId('ox-band').getAttribute('aria-labelledby')).toBe('ox-test-band-title');
   });
 
-  it('draws the owner mark as an asset, never as typeset text', () => {
+  it('draws the owner mark as an asset, never as typeset text, both tones for the tier CSS to pick from', () => {
+    // S9e item 2: the masthead swaps ink at <1024 (`_b5-pages.scss` §2a), so
+    // both the reversed-cream and the page-ink files render; CSS decides
+    // which one paints per tier.
     renderWithProviders(<Band photo={PHOTO} line1="one" />);
-    const mark = screen.getByTestId('ox-wordmark').querySelector('img');
-    expect(mark?.getAttribute('src')).toBe('/assets/brand/optimalx-full-reverse.png');
+    const band = screen.getByTestId('ox-band');
+    const marks = screen.getAllByTestId('ox-wordmark');
+    expect(marks).toHaveLength(2);
+
+    const dark = band.querySelector('.ox-bband__lockup-mark--dark img');
+    expect(dark?.getAttribute('src')).toBe('/assets/brand/optimalx-full-reverse.png');
+    const light = band.querySelector('.ox-bband__lockup-mark--light img');
+    expect(light?.getAttribute('src')).toBe('/assets/brand/optimalx-full.png');
   });
 
   it('omits the lockup when the caller says the surface already carries one', () => {

@@ -2161,23 +2161,61 @@ body {
   @include ox-x-corner(40px, start);
 }
 
-// The facts and the advisory-room photograph (VISIT-2026-09-24 §4.2): one
-// column, photo under the facts, until 768; a row, photo beside them, from
-// there. A plain rounded rectangle, never a second cut — the strip's own
-// `ox-x-corner` above is the plate's one angled gesture.
-.ox-offer__top {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-6);
+// THE PHOTO PANEL (S9e item 1, owner brief 2026-09-24: "extend the advisory
+// image to have chemistry with the section"). Below 768 it is a full-width
+// top band of the plate, 16:7, sharp corners — the plate's own `ox-x-corner`
+// above is the block's one angled gesture at this tier, so the frame draws
+// no clip of its own — bled to the plate's own padded edges by the negative
+// margin below (the plate's `padding: var(--ox-6)` at this tier, so the
+// margin matches it exactly rather than a literal px guess).
+.ox-offer__photo-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 7;
+  margin: calc(var(--ox-6) * -1) calc(var(--ox-6) * -1) 0;
 }
 
 .ox-offer__photo {
-  align-self: center;
+  position: absolute;
+  inset: 0;
   inline-size: 100%;
-  max-inline-size: 220px;
-  aspect-ratio: 497 / 722;
-  border-radius: var(--ox-r-2);
+  block-size: 100%;
   object-fit: cover;
+  // The advisory-room frame: the door at the photograph's own left, the
+  // advisor at its right (VISIT-2026-09-24 §4.2). Right-of-centre and a touch
+  // high keeps the advisor in frame through the tall side panel from 768 and
+  // still shows the door at the short 16:7 band below it (measured
+  // docs/build/progress/S9e.md).
+  object-position: 68% 42%;
+}
+
+// The gradient (never a flat scrim, S9c §2's own cinematic rule): bottom into
+// the plate's OWN ground, so the facts underneath read against the colour
+// the photograph settles into rather than a hard seam. SHORT AND LIGHT
+// (owner feedback 2026-09-24, a 390 screenshot: "reduce the gradient
+// overlay" — the earlier 45%-to-opaque ramp took the whole lower half of the
+// photo to solid graphite before the facts even started). Transparent
+// through 60% of the band, then a ramp to 85% graphite — never fully opaque
+// — over the last 40%, so the door and the advisor stay visible and only the
+// seam itself darkens toward the flat ground the facts sit on.
+.ox-offer__photo-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 60%,
+    color-mix(in srgb, var(--ox-graphite-3) 85%, transparent) 100%
+  );
+}
+
+// Empty below 768: the accent glow is a side-panel cue (from 768, below),
+// not part of the top-band read.
+.ox-offer__photo-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: none;
 }
 
 .ox-offer__facts {
@@ -2246,29 +2284,85 @@ body {
   }
 }
 
+// FROM 768: the frame becomes the plate's inline-end panel — absolute,
+// spanning the plate's full block-size (its containing block is
+// `.ox-services__offer`'s own PADDING box, since the plate is the nearest
+// `position: relative` ancestor and the frame itself carries none, so
+// `inset-block: 0` reaches the plate's real top/bottom regardless of the
+// plate's own padding on its other children), a narrower share than 1024.
+// `padding-inline-end` on the plate reserves exactly that share (the same
+// percentage, because the plate has no inline margin of its own and so
+// renders at its parent's own width — the number the panel's `inline-size`
+// resolves against and the number the padding percentage resolves against
+// are the same pixel figure) plus breathing room, so the facts and the
+// actions below never sit under the photograph.
 @media (min-width: 768px) {
   .ox-services__offer {
     padding: var(--ox-8);
+    padding-inline-end: calc(30% + var(--ox-8));
   }
 
-  .ox-offer__top {
-    flex-direction: row;
-    align-items: stretch;
-    gap: var(--ox-8);
+  .ox-offer__photo-frame {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: 30%;
+    aspect-ratio: auto;
+    margin: 0;
+    // The panel's OWN inner edge at the identity lean — a second, different
+    // kind of angled construction than the plate's `ox-x-corner` above, on
+    // this different selector (`check-identity.mjs`'s `one-angled-per-block`
+    // counts kinds within one selector's own body, never across a family).
+    // 230px is this tier's own typical rendered plate height (two stacked
+    // facts plus the row of buttons inside `--ox-8` padding, S9e log).
+    @include ox-wedge(230px, start);
+  }
+
+  .ox-offer__photo-scrim {
+    background: linear-gradient(to left, var(--ox-graphite-3) 0%, transparent 33%);
+
+    [dir='ltr'] & {
+      background: linear-gradient(to right, var(--ox-graphite-3) 0%, transparent 33%);
+    }
+  }
+
+  // The faint accent glow along the cut: an ellipse centred on the panel's
+  // own inner edge, feathered outward — the same 0.12-0.18 `--ox-accent-rgb`
+  // range the branch cover system's own `.ox-cover__glow` uses
+  // (`_covers.scss`), never `filter: blur()` (S9c §2's render-budget rule).
+  .ox-offer__photo-glow {
+    background: radial-gradient(
+      ellipse 70% 55% at 100% 50%,
+      rgba(var(--ox-accent-rgb), 0.14) 0%,
+      transparent 100%
+    );
+
+    [dir='ltr'] & {
+      background: radial-gradient(
+        ellipse 70% 55% at 0% 50%,
+        rgba(var(--ox-accent-rgb), 0.14) 0%,
+        transparent 100%
+      );
+    }
   }
 
   .ox-offer__facts {
-    flex: 1 1 auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--ox-6);
   }
+}
 
-  .ox-offer__photo {
-    flex: 0 0 220px;
-    align-self: stretch;
-    max-inline-size: none;
-    inline-size: 220px;
-    aspect-ratio: auto;
+// FROM 1024: the panel widens to the brief's own 36-40% band (38%, its
+// midpoint); the reservation on the plate widens with it.
+@media (min-width: 1024px) {
+  .ox-services__offer {
+    padding-inline-end: calc(38% + var(--ox-8));
+  }
+
+  .ox-offer__photo-frame {
+    inline-size: 38%;
+    // 200px, this tier's own typical rendered plate height (S9e log).
+    @include ox-wedge(200px, start);
   }
 }
 

@@ -131,7 +131,24 @@ export function Band({
 
       {lockup ? (
         <p className="ox-bband__lockup">
-          <Wordmark width={156} variant="full" tone="dark" />
+          {/* Both tones render (S9e item 2, `_b5-pages.scss` §2a): the
+              reversed cream file for >=1024, where the text still sits on
+              the photograph, and the page-ink file for below 1024, where
+              the masthead's own outer rectangle is the page background now.
+              CSS toggles which one paints; `Wordmark`'s own doc comment is
+              why this is two real assets rather than a filter. */}
+          <Wordmark
+            width={156}
+            variant="full"
+            tone="dark"
+            className="ox-bband__lockup-mark ox-bband__lockup-mark--dark"
+          />
+          <Wordmark
+            width={156}
+            variant="full"
+            tone="light"
+            className="ox-bband__lockup-mark ox-bband__lockup-mark--light"
+          />
         </p>
       ) : null}
     </section>

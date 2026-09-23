@@ -186,9 +186,18 @@ function ChannelDoor({ channel }: ChannelDoorProps) {
  * OX-046 at 0), which is a fact about the shop's own price list rather than a
  * claim about anybody's health.
  *
- * The advisory-room photograph (VISIT-2026-09-24 §4.2) sits beside the two
- * facts from 768px, under them below: a plain rounded rectangle inside the
- * plate, which keeps its own single corner cut unchanged.
+ * The advisory-room photograph (VISIT-2026-09-24 §4.2; extended S9e item 1,
+ * owner brief 2026-09-24: "extend the advisory image to have chemistry with
+ * the section") is now part of the plate itself, never a rounded thumbnail
+ * beside it: a full-width top band under the facts below 768, the plate's
+ * own inline-end panel - spanning its full height, its inner edge cut at the
+ * identity lean - from there. The plate's `ox-x-corner` stays the block's
+ * ONE angled gesture; the panel's own cut is a second kind of construction on
+ * a different selector (`.ox-offer__photo-frame`), which is what
+ * `check-identity.mjs`'s `one-angled-per-block` rule actually polices (kinds
+ * within one selector's own body, never across a family) - see `_b2-home.scss`
+ * §8 for the full geometry and `docs/build/progress/S9e.md` for the measured
+ * panel shares and the chosen `object-position`.
  */
 function OfferStrip() {
   const { t } = useTranslation();
@@ -200,31 +209,33 @@ function OfferStrip() {
 
   return (
     <div className="ox-services__offer" data-testid="ox-services-offer">
-      <div className="ox-offer__top">
-        <ul className="ox-offer__facts" role="list">
-          <li className="ox-offer__fact" data-testid="ox-offer-advisory">
-            <Icon name="help" size={24} className="ox-offer__icon" />
-            <span className="ox-offer__fact-text ox-h3">{t('ox.home.offer_advisory')}</span>
-          </li>
-          {showsInbody ? (
-            <li className="ox-offer__fact" data-testid="ox-offer-inbody">
-              <Icon name="goal-ideal-weight" size={24} className="ox-offer__icon" />
-              <span className="ox-offer__fact-text ox-h3">{t(SERVICES_HUB.inbodyKey)}</span>
-            </li>
-          ) : null}
-        </ul>
+      <div className="ox-offer__photo-frame">
         <img
           className="ox-offer__photo"
           src={ADVISORY_PHOTO.photo}
           srcSet={storePhotoSrcSet(ADVISORY_PHOTO)}
-          sizes="220px"
+          sizes="(min-width: 1024px) 38vw, (min-width: 768px) 30vw, 100vw"
           width={ADVISORY_PHOTO.width}
           height={ADVISORY_PHOTO.height}
           alt={t('ox.home.offer_photo_alt')}
           loading="lazy"
           decoding="async"
         />
+        <span className="ox-offer__photo-scrim" aria-hidden="true" />
+        <span className="ox-offer__photo-glow" aria-hidden="true" />
       </div>
+      <ul className="ox-offer__facts" role="list">
+        <li className="ox-offer__fact" data-testid="ox-offer-advisory">
+          <Icon name="help" size={24} className="ox-offer__icon" />
+          <span className="ox-offer__fact-text ox-h3">{t('ox.home.offer_advisory')}</span>
+        </li>
+        {showsInbody ? (
+          <li className="ox-offer__fact" data-testid="ox-offer-inbody">
+            <Icon name="goal-ideal-weight" size={24} className="ox-offer__icon" />
+            <span className="ox-offer__fact-text ox-h3">{t(SERVICES_HUB.inbodyKey)}</span>
+          </li>
+        ) : null}
+      </ul>
       <div className="ox-offer__actions">
         <Button
           to={visit?.to ?? '/services'}

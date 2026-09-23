@@ -131,8 +131,11 @@ describe('AboutPage', () => {
 
   it('opens on the band, which carries the h1 and the owner mark as an asset', () => {
     renderWithProviders(<AboutPage />);
-    expect(screen.getByTestId('ox-band')).toBeTruthy();
-    const mark = screen.getByTestId('ox-wordmark').querySelector('img');
+    const band = screen.getByTestId('ox-band');
+    expect(band).toBeTruthy();
+    // Both tones render (S9e item 2): CSS picks the dark-ground file from
+    // 1024 and the page-ink file below it (`_b5-pages.scss` §2a).
+    const mark = band.querySelector('.ox-bband__lockup-mark--dark img');
     expect(mark?.getAttribute('src')).toBe('/assets/brand/optimalx-full-reverse.png');
   });
 
