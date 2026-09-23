@@ -25,8 +25,7 @@
     "status": true,
     "products_count": 7,
     "ar_char": "ا",
-    "en_char": "O",
-    "logo_ground": "dark"
+    "en_char": "O"
   },
   {
     "id": "9103",
@@ -68,8 +67,7 @@
     "status": true,
     "products_count": 2,
     "ar_char": "د",
-    "en_char": "D",
-    "logo_ground": "dark"
+    "en_char": "D"
   },
   {
     "id": "9106",

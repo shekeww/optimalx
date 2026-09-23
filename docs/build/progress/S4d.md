@@ -658,3 +658,13 @@ Every gate re-run after the follow-up, all unchanged and at 0 problems
 (`check-rtl` 327, `check-motion` 327, `check-strings` 322, `check-copy` 2,
 `check-claims` 32 / 4 allowlisted, `check-tokens` 123 / 322,
 `check-identity` 327, `check-jsonld` 11), `pnpm typecheck` clean.
+
+### 4.1 Owner ruling, 2026-09-24: no dark plate behind logos
+
+"Remove the dark background fill behind brand logos." `logo_ground` is no
+longer set on any overlay row, so no tile or banner renders the `--dark`
+modifier (the CSS stays, inert). The two single-colour marks that only
+existed as white (Optimum Nutrition, Dymatize) now ship as their ink
+variant (`#12171E` in place of white, the mono usage the brands' own
+guidelines provide; no shape, proportion or composition changed), so they
+read on the light plate like every other logo.
