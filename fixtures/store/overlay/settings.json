@@ -1,0 +1,7 @@
+{
+  "show_newsletter": true,
+  "newsletter_action_url": "https://example.com/subscribe",
+  "inbody_included": true,
+  "reply_sla_hours": 24,
+  "whatsapp_number": "966500000000"
+}

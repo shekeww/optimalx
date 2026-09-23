@@ -419,7 +419,31 @@
       "label_en": "Show the newsletter form",
       "icon": "sicon-toggle-off",
       "value": true,
-      "description": "مفعل افتراضيا في الصفحة الرئيسية والمقالات؛ أطفئه لإخفاء النموذج"
+      "description": "مفعل افتراضيا في الصفحة الرئيسية والمقالات؛ أطفئه لإخفاء النموذج. لا يظهر النموذج فعليا الا بعد ادخال رابط الاشتراك ادناه"
+    },
+    {
+      "id": "newsletter_action_url",
+      "type": "string",
+      "format": "text",
+      "label": "رابط نموذج الاشتراك في النشرة",
+      "label_en": "Newsletter form action URL",
+      "icon": "sicon-link",
+      "value": "",
+      "required": false,
+      "placeholder": "https://…",
+      "description": "رابط نموذج الاشتراك من خدمة البريد التي تستخدمها المتجر، مثل Mailchimp او Klaviyo او Brevo، يقبل طلب POST يحمل بريد المشترك. في Mailchimp: الجمهور ثم نماذج الاشتراك ثم النموذج المضمن، وانسخ رابط action من كود النموذج. بدون رابط صحيح يبدأ بـ https لا يظهر نموذج النشرة في المتجر"
+    },
+    {
+      "id": "newsletter_email_field",
+      "type": "string",
+      "format": "text",
+      "label": "اسم حقل البريد الإلكتروني في النموذج",
+      "label_en": "Newsletter email field name",
+      "icon": "sicon-format-text-alt",
+      "value": "EMAIL",
+      "required": false,
+      "placeholder": "EMAIL",
+      "description": "اسم الحقل الذي تتوقعه خدمة البريد لعنوان المشترك؛ في Mailchimp غالبا EMAIL. اتركه كما هو ما لم تطلب الخدمة اسما اخر"
     },
     {
       "id": "claim_official_distributors",

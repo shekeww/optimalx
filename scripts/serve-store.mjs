@@ -145,6 +145,31 @@ function platformStrings() {
   return out;
 }
 
+/**
+ * THE SETTINGS OVERLAY (owner brief S8h, item 4). The snapshot's
+ * `store-settings.json` predates every custom setting `twilight.json` has
+ * since declared (`show_newsletter`, `inbody_included`, `reply_sla_hours`,
+ * `whatsapp_number`, `newsletter_action_url`, …) - the live store answers
+ * these once the merchant saves theme settings, verbatim, but this capture
+ * never carried them (`docs/build/progress/S8d.md` §4 item 5). `fixtures/
+ * store/overlay/settings.json` supplies the values a fresh save would,
+ * merged over `data.theme.settings` under the same `OFFLINE_TAXONOMY=1`
+ * switch the taxonomy overlay already uses, so every gated block - the
+ * newsletter form among them - can be seen locally. The theme reads these
+ * through the identical `settings.<key>` path on the live store; this is a
+ * different SOURCE of the same object, never a different mechanism.
+ */
+function loadSettingsOverlay() {
+  const path = join(OVERLAY_DIR, 'settings.json');
+  if (!existsSync(path)) {
+    console.warn(
+      '[store-api] OFFLINE_TAXONOMY=1 but fixtures/store/overlay/settings.json is missing — serving the snapshot\'s settings unchanged'
+    );
+    return {};
+  }
+  return JSON.parse(readFileSync(path, 'utf8'));
+}
+
 const snapshot = {
   settings: load('store-settings.json', { status: 200, success: true, data: null }),
   products: load('products.json', []),
@@ -165,6 +190,17 @@ const snapshot = {
   translations: platformStrings(),
   meta: load('meta.json', {}),
 };
+
+if (OVERLAY && snapshot.settings?.data?.theme?.settings) {
+  const overlaySettings = loadSettingsOverlay();
+  snapshot.settings.data.theme.settings = {
+    ...snapshot.settings.data.theme.settings,
+    ...overlaySettings,
+  };
+  console.log(
+    `[store-api] OFFLINE_TAXONOMY=1: overlaying ${Object.keys(overlaySettings).length} custom setting(s) from fixtures/store/overlay/settings.json`
+  );
+}
 
 /* ------------------------------------------------------------- envelopes */
 

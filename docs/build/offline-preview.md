@@ -330,6 +330,37 @@ hand-written, not generated**: `gen-taxonomy-fixture.mjs` only knows the
 categories have no brand data of their own to derive one from. Edit it
 directly if the sample set ever needs to change.
 
+## The settings overlay, in the same switch (`fixtures/store/overlay/settings.json`)
+
+The snapshot's `store-settings.json` was captured before this theme declared
+any of its own custom settings, so `data.theme.settings` carries only the
+engine-native ones (`show_tags`, `imageZoom`, …) and none of `show_newsletter`,
+`newsletter_action_url`, `inbody_included`, `reply_sla_hours` or any other
+gated custom setting (`docs/build/progress/S8d.md` §4 item 5 first found this
+gap; owner brief S8h fixed it). `OFFLINE_TAXONOMY=1` now also merges
+`fixtures/store/overlay/settings.json` over `data.theme.settings`:
+
+```json
+{
+  "show_newsletter": true,
+  "newsletter_action_url": "https://example.com/subscribe",
+  "inbody_included": true,
+  "reply_sla_hours": 24,
+  "whatsapp_number": "966500000000"
+}
+```
+
+That is enough for every gate this theme reads through `settings.<key>`
+(`app/components/product/lib/claims.ts`'s own gates included) to open
+locally, the newsletter form among them - `newsletter_action_url` points at
+a placeholder `https://example.com/subscribe`, which is valid enough to pass
+the "is this a real https URL" gate and render the form, but obviously
+answers no real POST; do not expect a submit against it to reach an inbox.
+The theme reads these through the exact same `settings.<key>` path on the
+live store once the merchant saves them in the dashboard - this overlay is a
+different SOURCE of the same object, never a different mechanism. Edit the
+file directly to try other values; it is not generated.
+
 ## English locally (`OFFLINE_LANGS=ar,en`)
 
 The live store has English configured but disabled (`languages_list` on

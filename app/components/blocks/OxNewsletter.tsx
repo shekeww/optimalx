@@ -7,17 +7,16 @@ import { Icon } from '../common/Icon';
 
 export interface OxNewsletterProps {
   /**
-   * Submits the address through Salla's own mechanism. No native primitive
-   * exists to wire it to (owner brief 2026-09-24, item 2 asks for one;
-   * re-verified this batch on top of `docs/build/progress/S2c.md`'s own
-   * `grep -rliE "newsletter|subscribe" node_modules/@salla.sa/
-   * twilight-theme-engine` across every `.js` under `dist/`, which returns
-   * nothing, and the live Raed theme's own scraped fixture,
-   * `docs/live-theme/fixtures/fixture-home.html`, which has zero
-   * "newsletter" occurrences) - so the transport stays an injectable prop
-   * (PLAN-final open question Q1), a one-line wire-up the day a real one is
-   * found. Until then a submission with none wired is never a silent
-   * success: see `onSubmit` below.
+   * Submits the address through a caller-supplied transport. No native Salla
+   * primitive exists to wire it to (`docs/build/progress/S8d.md` §2.1: a full
+   * grep of `node_modules/@salla.sa/twilight-theme-engine/dist` and the
+   * scraped live-Raed fixture, both zero hits for "newsletter"). Since owner
+   * brief S8h (this batch) the honest default path is the merchant's own
+   * `newsletter_action_url` setting (`onSubmit` below); this prop stays for
+   * tests and TAKES PRECEDENCE when supplied, both for rendering (item 3: a
+   * caller that hands in its own transport does not need a saved URL to
+   * render) and for submission (a real primitive, the day one exists, is a
+   * one-line wire-up here instead of the fetch below).
    */
   subscribe?: (email: string) => Promise<void>;
   /** Overrides the `show_newsletter` theme setting (kitchen sink, tests). */
@@ -45,44 +44,110 @@ export function looksLikeEmail(value: string): boolean {
 }
 
 /**
- * The newsletter band (DIRECTION 5.2 OxNewsletter). Hidden unless the
- * `show_newsletter` theme setting is on (PLAN-final C7; defaults to true on
- * the home band since owner brief 2026-09-24, item 2). On success the form
- * is replaced by one line of the same height, announced politely
- * (DIRECTION 9.5). The band sits on the plate, not on graphite, because the
- * footer below it is graphite.
+ * True only for an `https://` URL with a real host - the gate `newsletter_
+ * action_url` has to clear before the form ever ships (owner brief S8h item
+ * 3: "a dead form must never ship"). A plain-text setting that is empty, not
+ * a URL at all, or `http://` (the merchant's own credentials would leave this
+ * origin unencrypted) all read as invalid.
+ */
+export function isValidActionUrl(value: string): boolean {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && url.hostname.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/** A trimmed string setting, or ''. Mirrors `claims.ts`'s `settingText` without importing a product-only module. */
+function settingString(settings: Record<string, unknown> | undefined, key: string): string {
+  const value = settings?.[key];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+/** The hidden name every real visitor leaves empty; a script that fills every field does not. */
+const HONEYPOT_FIELD = 'ox_newsletter_company';
+/** Visually hidden, but present in the DOM for a scraper to find - `aria-hidden` and `tabIndex={-1}` below remove it from assistive tech and the tab order, so no visitor ever perceives it. No SCSS file is in this batch's scope, hence inline. */
+const TRAP_STYLE = {
+  position: 'absolute' as const,
+  insetInlineStart: '-9999px',
+  width: 1,
+  height: 1,
+  overflow: 'hidden' as const,
+};
+
+/**
+ * The newsletter band (DIRECTION 5.2 OxNewsletter). Hidden unless
+ * `show_newsletter` is on AND `newsletter_action_url` is a valid `https://`
+ * URL (owner brief S8h item 3) - a saved but empty or malformed URL is the
+ * same as the switch being off, because a submit with nowhere to go is a
+ * dead form. `subscribe`, when supplied, replaces the URL requirement for
+ * both the render gate and the submission itself (docblock above).
+ *
+ * SUBMISSION (item 2): a plain `<form method="post" action="…" target=
+ * "_blank">` so a no-JS visitor's browser posts straight to the merchant's
+ * email service and opens its own reply in a new tab, never navigating this
+ * one away; once React has hydrated, `onSubmit` intercepts it and POSTs the
+ * same address by `fetch(url, { mode: 'no-cors', body: FormData })` instead.
+ * `no-cors` makes the response opaque - the merchant's email service almost
+ * never sends this storefront's origin a CORS header back, so an opaque
+ * resolve is the only success signal this call can ever read, and a network-
+ * level rejection (offline, DNS, a hard block) the only failure. Never a
+ * status code, because none is ever visible.
+ *
+ * A HONEYPOT (`HONEYPOT_FIELD`) guards both paths: a filled trap drops the
+ * submit with no request sent and no status change - never a fabricated
+ * success, the same rule this file has followed since S8d.
  */
 export function OxNewsletter({ subscribe, enabled, className, privacyUrl }: OxNewsletterProps) {
   const { t } = useTranslation();
   const { settings } = useTheme();
+  const settingsRecord = settings as Record<string, unknown> | undefined;
   const [email, setEmail] = useState('');
+  const [trap, setTrap] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const inputId = useId();
   const errorId = `${inputId}-error`;
 
-  const settingOn = Boolean((settings as Record<string, unknown> | undefined)?.show_newsletter);
-  const visible = enabled ?? settingOn;
+  const settingOn = Boolean(settingsRecord?.show_newsletter);
+  const actionUrl = settingString(settingsRecord, 'newsletter_action_url');
+  const emailField = settingString(settingsRecord, 'newsletter_email_field') || 'EMAIL';
+  const hasValidUrl = isValidActionUrl(actionUrl);
+  const settingsReady = settingOn && (Boolean(subscribe) || hasValidUrl);
+  const visible = enabled ?? settingsReady;
   if (!visible) return null;
 
   const invalid = status === 'error';
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (trap.trim().length > 0) return; // honeypot: dropped silently, see docblock
     if (!looksLikeEmail(email)) {
       setStatus('error');
       return;
     }
-    // No transport wired is never a silent success (owner brief 2026-09-24,
-    // item 2: "a submit with no SDK shows the error state, never a crash") -
-    // the address is never accepted without a real subscribe function to
-    // hand it to.
-    if (!subscribe) {
+    if (subscribe) {
+      setStatus('submitting');
+      try {
+        await subscribe(email);
+        setStatus('success');
+      } catch {
+        setStatus('error');
+      }
+      return;
+    }
+    // No valid URL and no injected transport: never a silent success (owner
+    // brief 2026-09-24, S8d item 2, carried forward by S8h item 3).
+    if (!hasValidUrl) {
       setStatus('error');
       return;
     }
     setStatus('submitting');
     try {
-      await subscribe(email);
+      const body = new FormData();
+      body.set(emailField, email);
+      await fetch(actionUrl, { method: 'POST', mode: 'no-cors', body });
       setStatus('success');
     } catch {
       setStatus('error');
@@ -97,12 +162,23 @@ export function OxNewsletter({ subscribe, enabled, className, privacyUrl }: OxNe
 
         <div className="ox-newsletter__slot">
           {status === 'success' ? (
-            <p className="ox-newsletter__success" role="status" data-testid="ox-newsletter-success">
+            <p
+              className="ox-newsletter__success"
+              role="status"
+              aria-live="polite"
+              data-testid="ox-newsletter-success"
+            >
               <Icon name="tick" size={20} />
               {t('ox.newsletter.success')}
             </p>
           ) : (
-            <form className="ox-newsletter__form" onSubmit={onSubmit} noValidate>
+            <form
+              className="ox-newsletter__form"
+              onSubmit={onSubmit}
+              method={hasValidUrl ? 'post' : undefined}
+              action={hasValidUrl ? actionUrl : undefined}
+              target={hasValidUrl ? '_blank' : undefined}
+            >
               <label className="ox-sr-only" htmlFor={inputId}>
                 {t('ox.newsletter.placeholder')}
               </label>
@@ -110,10 +186,11 @@ export function OxNewsletter({ subscribe, enabled, className, privacyUrl }: OxNe
                 id={inputId}
                 className={`ox-input ox-newsletter__input${invalid ? ' is-invalid' : ''}`}
                 type="email"
-                name="email"
+                name={emailField}
                 dir="ltr"
                 inputMode="email"
                 autoComplete="email"
+                required
                 placeholder={t('ox.newsletter.placeholder')}
                 value={email}
                 aria-invalid={invalid || undefined}
@@ -123,6 +200,16 @@ export function OxNewsletter({ subscribe, enabled, className, privacyUrl }: OxNe
                   if (status === 'error') setStatus('idle');
                 }}
               />
+              <input
+                type="text"
+                name={HONEYPOT_FIELD}
+                value={trap}
+                onChange={(event) => setTrap(event.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={TRAP_STYLE}
+              />
               <Button type="submit" size={48} variant="primary" loading={status === 'submitting'}>
                 {t('ox.newsletter.button')}
               </Button>
@@ -131,7 +218,13 @@ export function OxNewsletter({ subscribe, enabled, className, privacyUrl }: OxNe
         </div>
 
         {invalid ? (
-          <p className="ox-newsletter__error" id={errorId} role="alert">
+          <p
+            className="ox-newsletter__error"
+            id={errorId}
+            role="status"
+            aria-live="polite"
+            data-testid="ox-newsletter-error"
+          >
             {looksLikeEmail(email) ? t('ox.newsletter.error') : t('ox.newsletter.invalid')}
           </p>
         ) : null}

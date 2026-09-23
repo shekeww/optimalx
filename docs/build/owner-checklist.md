@@ -51,3 +51,36 @@ SFDA registration display, PDPL privacy and consent text, SCFHS scope for the wr
 26. **Stray theme version.** The store carries an inactive "تنسيق كليك رقم (1)" version (1589489348) next to the active Raed one; delete it from تصميم المتجر so nobody publishes it by mistake.
 27. **Repository hygiene.** Your commit tooling pushed 83 reference images (128 MB) under `references/` into `main` on 2026-09-22; they are now untracked and ignored, but the history still carries them. If Salla's build rejects the repository size, the fix is `git filter-repo --path references --invert-paths` plus a force-push, which needs your go-ahead.
 28. **Owner decisions still open:** the hero H1 stays "ما هدفك اليوم؟" (KOS forbids dialect headings; your preferred "وش هدفك اليوم؟" would be an initialed exception, see `docs/brand/voice-ksa.md` §6.2); the Google rating line stays hidden until you initial the claims source; the "مضمون"/"100%"/"شحن سريع" wording from the reference mockups was not adopted (claims law).
+
+## G. Added 2026-09-23 (S8h): the newsletter form needs your email service's URL
+
+29. **Newsletter form action URL.** Salla's engine has no built-in mailing-list
+    feature (checked directly against the SDK and the reference theme, see
+    `docs/build/progress/S8d.md` §2.1), so the home page's newsletter form
+    posts straight to whatever email service you use. It stays hidden on the
+    live store until you fill in two theme settings under "خيارات اوبتيمال
+    اكس": `newsletter_action_url` (the form's submit address) and, if your
+    service expects a field name other than `EMAIL`, `newsletter_email_field`.
+    - **Mailchimp:** in your Audience, open "Signup forms" then "Embedded
+      form". Mailchimp shows you a block of HTML; find the `<form
+      action="https://…list-manage.com/subscribe/post?...">` line and paste
+      that full URL, exactly as shown, into `newsletter_action_url`. The
+      email field in that same HTML is named `EMAIL`, the setting's default,
+      so `newsletter_email_field` can stay as it is.
+    - **Klaviyo:** create a Klaviyo Form of type "Embed", publish it, and use
+      the form endpoint Klaviyo gives you the same way - paste the action URL
+      into `newsletter_action_url`, and set `newsletter_email_field` to
+      whatever Klaviyo names the email property in that form's own HTML
+      (check the embed code it gives you).
+    - **Any other service** (Brevo and similar): the same rule applies - the
+      URL is whatever `action="…"` your service's own embeddable signup form
+      HTML shows, and the field name is whatever `name="…"` that same HTML
+      puts on the email input.
+    - **Test it with a real address** after saving: submit the form on the
+      live page and confirm the address lands in your email service's
+      audience/list, since the theme cannot read the response back (the
+      request is a cross-origin `no-cors` POST by design - see
+      `docs/build/progress/S8h.md`).
+    - The form renders only once `newsletter_action_url` is a real `https://`
+      link; an empty or `http://` value keeps the whole band hidden, the same
+      way it behaves with `show_newsletter` off.
