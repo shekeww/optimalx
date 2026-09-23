@@ -6,7 +6,7 @@ import type { ProductCardProps } from '@salla.sa/twilight-theme-engine/product';
 import { SallaAddProductButtonCore } from '@salla.sa/twilight-components-react/add-product-button';
 import { WebComponentBoundary } from '../common/WebComponentBoundary';
 import { toInternalPath } from '../layout/navLinks';
-import { currentCartPath, proxyAddToCart } from './lib/buyNow';
+import { ADD_BUTTON_TAG, currentCartPath, proxyAddToCart, whenCustomElementReady } from './lib/buyNow';
 import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
@@ -735,7 +735,26 @@ function quickBuyAmount(product: Pick<Product, 'base_currency_price'>): number |
 }
 
 /**
- * Salla's add button, restyled to the target's outline treatment.
+ * The card's add control: the theme's own real `<button>`, restyled to the
+ * target's outline treatment, that PROXIES to Salla's add button rather than
+ * being it (S9i, PDP-ADD-DIAG-2026-09-24.md).
+ *
+ * **Why the visible element changed.** `salla-add-product-button` gets no
+ * click handler of its own until the SDK script from
+ * cdn.assets.salla.network has loaded and registered it — a gap the owner
+ * saw three times as the add control simply doing nothing ("keeps
+ * deleting"). CSS alone cannot fix that: a themed, un-upgraded custom
+ * element still LOOKS like a button but has no click behaviour at all, so a
+ * tap in that gap was a silent no-op regardless of how it was styled. The
+ * fix is a real, native `<button>`, rendered in the server HTML, that is
+ * clickable from the first paint the way only a real HTML element can be —
+ * and that never touches the cart itself (CLAUDE.md: cart logic stays
+ * Salla's). Salla's own component stays mounted, in `.ox-card-product__add-
+ * native` right below, visually clipped rather than `display:none` (a
+ * hidden-but-connected host still does real work when clicked), and this
+ * button waits for it to be ready (`whenCustomElementReady`, immediate if it
+ * already is) and then clicks THAT — the exact proxy pattern `BuyNow` below
+ * already uses for the card's own buy CTA.
  *
  * **The label tells the shopper which tap opens a chooser.** A product with
  * variants does not go into the cart on the tap: Salla's own button opens the
@@ -747,11 +766,13 @@ function quickBuyAmount(product: Pick<Product, 'base_currency_price'>): number |
  * takes no extra row on the card. A merchant who has typed their own
  * `add_to_cart_label` still wins: theirs is the more specific instruction.
  *
- * `quantity` is the component's own documented property ("custom quantity
- * number to be injected", salla.dev doc-422692), which is what makes the
- * stepper real rather than decorative. It is passed only when the stepper is
- * on screen, so every product that has no stepper keeps exactly the request it
- * sent before this rebuild.
+ * `quantity` is the hidden component's own documented property ("custom
+ * quantity number to be injected", salla.dev doc-422692), which is what makes
+ * the stepper real rather than decorative. It is passed only when the stepper
+ * is on screen, so every product that has no stepper keeps exactly the
+ * request it sent before this rebuild — and since it is a React prop on the
+ * hidden element, the proxied click always carries whatever the stepper reads
+ * at the moment of the tap, with nothing extra to wire up here.
  */
 function AddButton({
   product,
@@ -770,70 +791,119 @@ function AddButton({
   const label =
     product.add_to_cart_label ??
     t(product.has_options && !submit ? 'ox.card.choose_options' : 'ox.card.add');
+  const [pending, setPending] = useState(false);
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      const host = event.currentTarget
+        .closest('.ox-card-product__add-slot')
+        ?.querySelector(ADD_BUTTON_TAG);
+      // Structurally always present (rendered a few lines below, in the same
+      // slot) — defensive only, matching `BuyNow`'s own guard on the same
+      // query, never a silent no-op in practice.
+      if (!host) return;
+      setPending(true);
+      whenCustomElementReady(ADD_BUTTON_TAG).then((ready) => {
+        if (!ready) {
+          // The SDK never registered the element within the wait: restore
+          // the button rather than leave it disabled on a control that may
+          // never arrive (a hard failure, same as `proxyAddToCart`'s own
+          // `failed`/timeout path below).
+          setPending(false);
+          return;
+        }
+        if (submit) {
+          // The hidden host is `type="submit"` inside the card's own form
+          // (`BuyControls`, below): clicking it fires the browser's native
+          // submit event, which the form's `onSubmit` hands to Salla's own
+          // `form.onSubmit`. That path returns early from the component's
+          // own click handler (see the hidden instance's own doc comment)
+          // and reports neither `success` nor `failed`, so there is nothing
+          // left to wait on.
+          (host as HTMLElement).click();
+          setPending(false);
+          return;
+        }
+        proxyAddToCart({
+          button: host,
+          // Salla's own toast is what tells the shopper the add worked;
+          // nothing else has to happen here on success.
+          onSuccess: () => {},
+          onSettled: () => setPending(false),
+        });
+      });
+    },
+    [submit]
+  );
+
   return (
-    // CORE, NOT THE DEFERRED EXPORT, and this is what made the button vanish.
-    //
-    // `SallaAddProductButton` is wrapped in the package's `HydrationBoundary`:
-    // it renders a `s-skeleton-button` placeholder and only mounts the real
-    // custom element once an IntersectionObserver fires. Measured on the home
-    // grid: four cards scrolled fully into view, `readyState` complete, and the
-    // slot still held the skeleton — zero `salla-add-product-button` hosts and
-    // zero `.s-button-element` on the page. So every rule this theme writes for
-    // the add button was styling an element that never existed, which is why
-    // the outline treatment and the inline cart glyph looked "reverted": the
-    // CSS was intact and its target was missing.
-    //
-    // The core export mounts immediately and removes the dependency on that
-    // observer. An add-to-cart button is not a below-the-fold nicety that can
-    // afford to wait for an observer that may never fire; `FrequentlyBought`
-    // reached for the same export for the same reason.
-    //
-    // Core has no error boundary of its own and the package does not export the
-    // one its deferred exports get, so it brings ours.
-    <WebComponentBoundary label={`card add ${product.id}`}>
-      <SallaAddProductButtonCore
-        productId={product.id}
-        productType={product.type}
-        productStatus={product.status}
-        width="wide"
-        fill="outline"
-        loaderPosition="center"
-        className="ox-card-product__add"
+    <>
+      <button
+        type="button"
+        className={'ox-card-product__add' + (pending ? ' is-loading' : '')}
         // ALWAYS SET, not only on the narrow card that needs it. Below the
         // 240px container query (`_b4-listing.scss`) the label's own text is
         // hidden and only the cart glyph shows, in a fixed 44px box — an
         // icon has no name of its own, so `aria-label` is what keeps the
-        // button's accessible name the same word a wide card prints. Setting
-        // it here too, identically to the visible label, costs nothing on a
-        // wide card (Label in Name still holds, since the two strings match)
-        // and means the accessible name never depends on which CSS rule
-        // happens to be in effect.
+        // button's accessible name the same word a wide card prints.
         aria-label={label}
-        // `type="submit"` makes the component render a real submit button and
-        // return early from its own click handler, so the FORM adds the
-        // product — with the chosen option in the payload — instead of the
-        // component adding it optionless.
-        {...(submit ? { type: 'submit' as const } : {})}
-        {...(quantity !== null ? { quantity } : {})}
+        aria-busy={pending || undefined}
+        // Disabled ONLY while a click is in flight, so a second tap cannot
+        // stack a second add behind the same wait or the same proxy.
+        disabled={pending}
+        aria-disabled={pending || undefined}
+        onClick={handleClick}
       >
-        {/* THE LABEL ONLY. The cart glyph is drawn in CSS as a mask on
-            `.s-button-text::before`, not passed as a child, because this
-            component keeps the slotted TEXT and discards element children when
-            it upgrades: an `<svg>` child rendered outside the label row, on its
-            own line, unstyled — which is exactly how the icon "disappeared"
-            from the button. The product page's add button already draws its
-            glyph this way for the same reason, off the same `--ox-cart-glyph`
-            token, so the two are one technique rather than two.
-
-            The span is not decoration. Until Salla's SDK registers the custom
-            element the host IS the button, and the painted-outline treatment
-            needs its fill on `::before` — which paints over a bare text node,
-            because an anonymous flex item cannot be given a stacking order. An
-            element child can. When the component does upgrade it rebuilds from
-            the text content, so the label survives the wrapper either way. */}
         <span className="ox-card-product__add-label">{label}</span>
-      </SallaAddProductButtonCore>
-    </WebComponentBoundary>
+        {pending ? (
+          <span
+            className="ox-card-product__add-loader"
+            role="status"
+            aria-label={t('ox.common.loading')}
+          />
+        ) : null}
+      </button>
+      {/* SALLA'S OWN BUTTON, MOUNTED BUT NEVER SEEN (S9i). Clipped
+          (`.ox-card-product__add-native`, `_b4-listing.scss`), not
+          `display:none`: a hidden-but-connected host is still a real,
+          clickable element the proxy above can reach with `.click()`; a
+          `display:none` one risks the component skipping its own connected
+          work. `aria-hidden` keeps it out of the accessibility tree — the
+          button above is the one control a shopper, sighted or not, is ever
+          meant to find. */}
+      <span className="ox-card-product__add-native" aria-hidden="true">
+        {/* CORE, NOT THE DEFERRED EXPORT — unchanged reasoning from before
+            this batch: `SallaAddProductButton` is wrapped in the package's
+            `HydrationBoundary`, which mounts the real custom element only
+            once an IntersectionObserver fires, and measured on the home grid
+            that observer never fired at all. Core mounts immediately, which
+            is what this file's own proxy above needs to have something to
+            wait on rather than something to wait forever for. Core has no
+            error boundary of its own, so it brings ours. */}
+        <WebComponentBoundary label={`card add ${product.id}`}>
+          <SallaAddProductButtonCore
+            productId={product.id}
+            productType={product.type}
+            productStatus={product.status}
+            width="wide"
+            fill="outline"
+            loaderPosition="center"
+            className="ox-card-product__add"
+            aria-label={label}
+            // `type="submit"` makes the component render a real submit button
+            // and return early from its own click handler, so the FORM adds
+            // the product — with the chosen option in the payload — instead
+            // of the component adding it optionless. The proxy above still
+            // reaches this exact button; only who calls `.click()` on it
+            // moved.
+            {...(submit ? { type: 'submit' as const } : {})}
+            {...(quantity !== null ? { quantity } : {})}
+          >
+            <span className="ox-card-product__add-label">{label}</span>
+          </SallaAddProductButtonCore>
+        </WebComponentBoundary>
+      </span>
+    </>
   );
 }
 

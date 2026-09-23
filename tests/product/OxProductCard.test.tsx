@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { createT } from './i18n-mock';
 
@@ -31,25 +31,52 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 // IntersectionObserver hit and was leaving a skeleton in the slot forever on
 // the live grid; the deferred name stays mocked because other components under
 // test still import it.
-const addButtonStub = ({ children, ...rest }: Record<string, unknown>) => (
-  <button
-    type="button"
-    data-testid={rest.quickBuy ? 'quick-buy-button' : 'add-button'}
-    data-product-id={String(rest.productId)}
-    data-quantity={rest.quantity === undefined ? 'unset' : String(rest.quantity)}
-    data-fill={String(rest.fill ?? '')}
-    data-amount={rest.amount === undefined ? 'unset' : String(rest.amount)}
-    data-required-shipping={rest.requiredShipping ? 'yes' : 'no'}
-    className={String(rest.className ?? '')}
-    aria-label={rest['aria-label'] as string | undefined}
-  >
-    {children as React.ReactNode}
-  </button>
-);
+//
+// TWO SHAPES NOW (S9i). The regular add (and the sold-out notify control,
+// which shares this stub) is proxied to by `AddButton`'s own real `<button>`
+// via `document.querySelector('salla-add-product-button')`, so ITS stub has
+// to be that literal tag — a plain `<button>` stand-in would never be found
+// by that query, the same way jsdom's real registry would never find one.
+// `BuyNow`'s quick-buy branch is untouched by this batch and keeps the
+// original `<button>` stand-in its own tests still check `.className` on.
+const addButtonStub = ({ children, ...rest }: Record<string, unknown>) => {
+  const testId = rest.quickBuy ? 'quick-buy-button' : 'add-button';
+  const shared = {
+    'data-testid': testId,
+    'data-product-id': String(rest.productId),
+    'data-quantity': rest.quantity === undefined ? 'unset' : String(rest.quantity),
+    'data-fill': String(rest.fill ?? ''),
+    'data-amount': rest.amount === undefined ? 'unset' : String(rest.amount),
+    'data-required-shipping': rest.requiredShipping ? 'yes' : 'no',
+    'aria-label': rest['aria-label'] as string | undefined,
+  };
+  if (rest.quickBuy) {
+    return (
+      <button type="button" {...shared} className={String(rest.className ?? '')}>
+        {children as React.ReactNode}
+      </button>
+    );
+  }
+  return (
+    <salla-add-product-button {...shared} class={String(rest.className ?? '')}>
+      {children as React.ReactNode}
+    </salla-add-product-button>
+  );
+};
 vi.mock('@salla.sa/twilight-components-react/add-product-button', () => ({
   SallaAddProductButton: addButtonStub,
   SallaAddProductButtonCore: addButtonStub,
 }));
+// The SDK script this stub stands in for (S9i, PDP-ADD-DIAG-2026-09-24.md):
+// jsdom's own Custom Elements registry never defines this tag on its own,
+// and `AddButton`'s proxy waits on exactly that (`whenCustomElementReady`),
+// so every test in this file gets it pre-registered — a harmless class, since
+// the stub above never relies on any behaviour of its own, only on being a
+// real, connected element a click and two events can be driven through, the
+// same contract `tests/product/buyNow.test.ts` already tests directly.
+if (typeof customElements !== 'undefined' && !customElements.get('salla-add-product-button')) {
+  customElements.define('salla-add-product-button', class extends HTMLElement {});
+}
 vi.mock('@salla.sa/twilight-components-react/button', () => ({
   SallaButton: ({ children, ariaLabel, onClick, className }: Record<string, unknown>) => (
     <button
@@ -472,6 +499,82 @@ describe('OxProductCard', () => {
     expect(screen.getByTestId('add-button').getAttribute('aria-label')).toBe(
       t('ox.card.choose_options')
     );
+  });
+
+  // -------------------------------------------------------------------------
+  // The add column's visible control (S9i): a real, native <button>, in the
+  // rendered tree from the first render, that proxies to Salla's own hidden
+  // component rather than being it — see `AddButton`'s own doc comment.
+  // -------------------------------------------------------------------------
+
+  it('renders the theme\'s own real button in the add column, with Salla\'s component mounted but hidden beside it', () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const themed = container.querySelector('button.ox-card-product__add');
+    expect(themed).not.toBeNull();
+    expect(themed?.getAttribute('type')).toBe('button');
+    expect(themed?.getAttribute('aria-label')).toBe(t('ox.card.add'));
+    expect(themed?.querySelector('.ox-card-product__add-label')?.textContent).toBe(t('ox.card.add'));
+    // Salla's own element is still there, in its own clipped slot, not gone.
+    const native = container.querySelector('.ox-card-product__add-native');
+    expect(native).not.toBeNull();
+    expect(native?.querySelector('salla-add-product-button')).not.toBeNull();
+    expect(native?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('shows a loading state on the themed button while its click is queued, and clears it once Salla reports success', async () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const themed = container.querySelector('button.ox-card-product__add') as HTMLButtonElement;
+    const native = container.querySelector('salla-add-product-button') as HTMLElement;
+    const clicked = vi.fn();
+    native.addEventListener('click', clicked);
+
+    fireEvent.click(themed);
+    // Set synchronously, in the same event handler that queues the proxy.
+    expect(themed.className).toContain('is-loading');
+    expect(themed.disabled).toBe(true);
+    expect(themed.getAttribute('aria-busy')).toBe('true');
+
+    await waitFor(() => expect(clicked).toHaveBeenCalledTimes(1));
+    fireEvent(native, new Event('success'));
+
+    await waitFor(() => expect(themed.className).not.toContain('is-loading'));
+    expect(themed.disabled).toBe(false);
+  });
+
+  it('restores the themed button after Salla reports a failed add, rather than leaving it stuck', async () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const themed = container.querySelector('button.ox-card-product__add') as HTMLButtonElement;
+    const native = container.querySelector('salla-add-product-button') as HTMLElement;
+
+    fireEvent.click(themed);
+    await waitFor(() => expect(themed.className).toContain('is-loading'));
+    fireEvent(native, new Event('failed'));
+
+    await waitFor(() => expect(themed.disabled).toBe(false));
+    expect(themed.className).not.toContain('is-loading');
+  });
+
+  it('still proxies through the hidden component on a card with its own chooser (the submit path)', async () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          options: [
+            { id: 1, type: 'color', values: [{ id: 1, name: 'Lime' }, { id: 2, name: 'Black' }] },
+          ],
+        })}
+      />
+    );
+    const themed = container.querySelector('button.ox-card-product__add') as HTMLButtonElement;
+    const native = container.querySelector('salla-add-product-button') as HTMLElement;
+    const clicked = vi.fn();
+    native.addEventListener('click', clicked);
+
+    fireEvent.click(themed);
+    await waitFor(() => expect(clicked).toHaveBeenCalledTimes(1));
+    // The submit path reports neither `success` nor `failed` (the browser's
+    // own form submission takes over instead), so the button restores itself
+    // right after the click rather than waiting on an event that never comes.
+    await waitFor(() => expect(themed.disabled).toBe(false));
   });
 
   it('renders no wishlist heart any more (owner review, 2026-09-24: header audit, delete what Shopify cannot carry)', () => {

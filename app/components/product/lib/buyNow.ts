@@ -48,6 +48,50 @@ export function currentCartPath(): string {
   return cartPathFor(window.location.pathname);
 }
 
+/**
+ * The tag name the SDK defines once its script from cdn.assets.salla.network
+ * has loaded and run. Every add control that proxies to it — the card's own
+ * themed add button (`AddButton`, `OxProductCard.tsx`) and this file's own
+ * `proxyAddToCart` callers — waits on `whenCustomElementReady` below before a
+ * click can do anything, because an instance of this tag has no click
+ * handler of its own until this exact moment.
+ */
+export const ADD_BUTTON_TAG = 'salla-add-product-button';
+
+/**
+ * How long a queued click waits for the SDK to register `tagName` before the
+ * caller gives up and restores its own control, rather than leaving it
+ * disabled on a component that may never register at all (a genuinely
+ * failed CDN request, an ad blocker). Generous — the SDK script itself can
+ * take a few seconds on a slow connection (PDP-ADD-DIAG-2026-09-24.md) — but
+ * bounded: "never a silent no-op" cuts both ways, and a spinner stuck
+ * forever is its own kind of silence.
+ */
+export const DEFINE_TIMEOUT_MS = 20_000;
+
+/**
+ * Resolves once the SDK has upgraded `tagName` — on the next microtask if it
+ * already has, since a tag that is already defined upgrades any connected
+ * instance synchronously, both at definition time and on later insertion, so
+ * checking `customElements.get` is a sufficient readiness test for an
+ * instance already mounted in the tree. Resolves `false` after `timeoutMs`
+ * if the tag never defines, and never throws: a browser with no Custom
+ * Elements registry, or a `customElements` missing `whenDefined`, resolves
+ * `false` immediately rather than blowing up the caller's click handler.
+ */
+export function whenCustomElementReady(
+  tagName: string,
+  timeoutMs = DEFINE_TIMEOUT_MS
+): Promise<boolean> {
+  if (typeof customElements === 'undefined') return Promise.resolve(false);
+  if (customElements.get(tagName)) return Promise.resolve(true);
+  if (typeof customElements.whenDefined !== 'function') return Promise.resolve(false);
+  return Promise.race([
+    customElements.whenDefined(tagName).then(() => true),
+    new Promise<boolean>((resolve) => setTimeout(() => resolve(false), timeoutMs)),
+  ]);
+}
+
 export interface ProxyAddOptions {
   /** Salla's own add button to click. */
   button: Element;

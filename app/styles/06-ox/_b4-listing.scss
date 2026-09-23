@@ -1701,11 +1701,42 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // a 272px slot holding a 92px button on the product with options, and a
   // 136px slot holding a 111px button on every other card. So the row had a
   // hole in it on one card and a 25px shortfall on all the rest.
+  //
+  // Two children now (S9i), not one: the theme's own visible `<button>`
+  // (`.ox-card-product__add`, below) and Salla's own component, clipped
+  // (`.ox-card-product__add-native`, further down). This rule still sizes
+  // whichever child does not carry the clip override, so the visible button
+  // is unaffected by there being a second, hidden sibling beside it.
   > * {
     flex: 1 1 auto;
     min-inline-size: 0;
     inline-size: 100%;
   }
+}
+
+// SALLA'S OWN BUTTON, MOUNTED BUT NEVER SEEN (S9i, PDP-ADD-DIAG-2026-09-24.md):
+// the clip pattern `.ox-sr-only` already uses (`_primitives.scss`), restated
+// here rather than shared, because this one extra rule also has to OUTRANK
+// the slot's own `> *` sizing two rules up — both are one class selector
+// against the universal selector, tied at (0,1,0), and a selector scoped to
+// this exact child (0,2,0) is what wins regardless of source order, rather
+// than leaning on which partial happens to load first. `position: absolute`
+// is what actually does the hiding-without-display-none work: it paints
+// nothing and takes no layout space, but the element stays connected, sized
+// and clickable, which is what `AddButton`'s own proxy (`OxProductCard.tsx`)
+// needs — a `display:none` host risks a custom element skipping whatever
+// work it does on connect.
+.ox-card-product__add-slot > .ox-card-product__add-native {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 // The add button, outlined. Three elements deep: the slot, the web component,
@@ -1834,32 +1865,37 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // ---------------------------------------------------------------------------
-// THE UN-UPGRADED STATE, which is a real state and not a loading flicker.
+// THE THEME'S OWN BUTTON (S9i, rewritten from "the un-upgraded state" this
+// block used to be). Before this batch this rule painted the raw, un-upgraded
+// `salla-add-product-button` host while Salla's SDK was still loading, and
+// handed the paint over to the rules above once `.s-button-element` appeared
+// inside it — a real state, not a flicker, but one where the element being
+// styled had no click handler of its own yet, so a tap on it in that window
+// did nothing (the "keeps deleting" the owner reported three times).
 //
-// `salla-add-product-button` only becomes a button when Salla's SDK registers
-// the custom element. Measured on the home grid with the page complete: eight
-// hosts, zero skeletons, `customElements.get('salla-add-product-button')` FALSE
-// and every host still `HTMLElement` with no shadow root and a single text
-// node. So the element sat there as an unstyled inline box reading `أضف للسلة`
-// with no edge, no shape and no glyph — which is exactly what the owner was
-// looking at, and no amount of styling `.s-button-element` could reach it
-// because that element did not exist.
-//
-// The host therefore carries the secondary face ITSELF, and hands it over the
-// moment the real button appears. `:not(:has(.s-button-element))` is the whole
-// mechanism: while the component is un-upgraded the host is the button, and as
-// soon as Salla renders its own `.s-button-element` inside, this block stops
-// matching and the rules above take over. No double frame in either state, and
-// no flash of unstyled control on a slow SDK.
+// `AddButton` (`OxProductCard.tsx`) now renders a real, native `<button>` as
+// the visible element in the slot, and Salla's own component lives beside it,
+// clipped rather than `display:none` (`.ox-card-product__add-native`, above).
+// This button never has an `.s-button-element` inside it — that structure
+// only ever exists inside Salla's own upgraded component — so
+// `:not(:has(.s-button-element))` now matches it PERMANENTLY, not only before
+// an SDK loads, and this is the one rule that styles it, at every width, in
+// every state. It is left selecting the old fallback shape on purpose, rather
+// than renamed: the rules above (`.s-button-element`) still validly style
+// Salla's own component once it upgrades, inside its own clipped twin, where
+// they cost nothing and do no harm.
 //
 // The painted outline needs `::before` for its fill, so the glyph goes on
-// `::after` with `order: -1`, which puts it ahead of the anonymous text item in
-// the flex row. Same mask, same token, same inline placement as the upgraded
-// state.
+// `::after` with `order: -1`, which puts it ahead of the anonymous text item
+// in the flex row. Same mask, same token, same inline placement as the
+// (now purely internal, invisible) upgraded state above.
 // ---------------------------------------------------------------------------
 .ox-card-product__add:not(:has(.s-button-element)),
 .ox-card-product__add-slot > *:not(:has(.s-button-element)) {
   @include ox-secondary-face(var(--ox-fg), var(--ox-card));
+  // Anchors the loading ring below (S9i): an absolutely positioned child
+  // centres against this box, not against the card.
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1903,13 +1939,43 @@ nav.breadcrumbs .s-breadcrumb-item button {
     position: relative;
     z-index: 1;
   }
+
+  // THE LOADING STATE (S9i): set by `AddButton` while its click is queued
+  // behind the hidden component's own SDK upgrade, or behind that
+  // component's own `success`/`failed`. The label and the glyph both hide
+  // rather than compete with the ring for the same 40px box — the same
+  // technique the generic `<Button>` uses for its own `is-loading`
+  // (`_primitives.scss`), restated here because this button does not render
+  // through that component.
+  &.is-loading {
+    cursor: progress;
+
+    .ox-card-product__add-label {
+      opacity: 0;
+    }
+
+    &::after {
+      opacity: 0;
+    }
+  }
 }
 
-// When the component DOES upgrade it rebuilds from the text content and this
-// wrapper stops existing, so the rule above is scoped to the fallback only and
-// nothing here has to be undone.
-
-
+// The ring itself: a real element (`AddButton`'s own `<span>`), not a third
+// pseudo-element competing with the glyph's `::after` and the fill's
+// `::before` on the same box.
+.ox-card-product__add-loader {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 18px;
+  block-size: 18px;
+  margin-block-start: -9px;
+  margin-inline-start: -9px;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: var(--ox-r-pill);
+  animation: ox-spin 0.8s linear infinite;
+}
 
 .ox-card-product__add .s-button-element:focus-visible,
 .ox-card-product__add.s-button-element:focus-visible,
