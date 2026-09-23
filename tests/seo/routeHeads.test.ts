@@ -108,13 +108,20 @@ function listingData(overrides: Partial<ProductListLoaderData> = {}): ProductLis
 }
 
 describe('brandHeadExtend', () => {
-  it('rebuilds the title from the researched brand pattern (ar)', () => {
+  it('rebuilds the title from the qualified or compact brand pattern (ar)', () => {
     const result = brandHeadExtend()(
       engineHead('Optimum Nutrition', `${ORIGIN}/brands/5`),
       ctx('/brands/5'),
       listingData()
     );
-    expect(result.title).toBe(tAr('ox.seo.brand.title_pattern').replace('{{brand}}', 'Optimum Nutrition'));
+    // Two patterns since S4d (2026-09-23): the qualified one when it fits the
+    // 60-character ceiling, the compact one otherwise; never the retired
+    // per-brand authenticity claim.
+    const qualified = tAr('ox.seo.brand.title_qualified').replace('{{brand}}', 'Optimum Nutrition');
+    const compact = tAr('ox.seo.brand.title_compact').replace('{{brand}}', 'Optimum Nutrition');
+    expect(result.title).toBe(qualified.length <= 60 ? qualified : compact);
+    expect(result.title.length).toBeLessThanOrEqual(60);
+    expect(result.title).not.toContain('أصلي');
   });
 
   it('rebuilds the title from the English brand pattern at locale en', () => {
@@ -123,7 +130,14 @@ describe('brandHeadExtend', () => {
       ctx('/en/brands/5', 'en'),
       listingData()
     );
-    expect(result.title).toBe(tEn('ox.seo.brand.title_pattern').replace('{{brand}}', 'Optimum Nutrition'));
+    // Two patterns since S4d (2026-09-23): the qualified one when it fits the
+    // 60-character ceiling, the compact one otherwise; never the retired
+    // per-brand authenticity claim.
+    const qualified = tEn('ox.seo.brand.title_qualified').replace('{{brand}}', 'Optimum Nutrition');
+    const compact = tEn('ox.seo.brand.title_compact').replace('{{brand}}', 'Optimum Nutrition');
+    expect(result.title).toBe(qualified.length <= 60 ? qualified : compact);
+    expect(result.title.length).toBeLessThanOrEqual(60);
+    expect(result.title).not.toContain('أصلي');
   });
 });
 
