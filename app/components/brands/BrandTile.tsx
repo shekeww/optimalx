@@ -29,11 +29,31 @@ export interface BrandWithCount extends Brand {
    * both carry it, so a tile can state a live count. Optional by design: no
    * count renders when it is missing. */
   products_count?: number;
+  /**
+   * The ground the brand's own artwork needs, when its mark is drawn in white
+   * and would otherwise be invisible on a light plate (Optimum Nutrition and
+   * Dymatize both publish white-only marks). `dark` puts the logo field on the
+   * ink ground; anything else, and the default, keeps the light one.
+   *
+   * Not part of the engine's typed `Brand` either: it is a fact about the
+   * ASSET, carried beside it in the same overlay row, so the theme never has
+   * to sample a logo's pixels or recolour someone else's trademark.
+   */
+  logo_ground?: 'dark' | 'light';
 }
 
 /** True for a payload object that can be rendered as a brand tile. */
 export function isBrand(value: unknown): value is BrandWithCount {
   return Boolean(value) && typeof value === 'object' && typeof (value as Brand).name === 'string';
+}
+
+/**
+ * The logo field's class, with its ground modifier. The ground is a property
+ * of the artwork, never of the surface: the same brand reads the same way on
+ * the home carousel, the index grid and its own banner.
+ */
+export function logoBoxClass(base: string, brand: Pick<BrandWithCount, 'logo_ground'>): string {
+  return brand.logo_ground === 'dark' ? `${base} ${base}--dark` : base;
 }
 
 /** The first grapheme and the rest, by codepoint (`Array.from`) rather than a
@@ -60,11 +80,12 @@ export function BrandTile({ brand, className, sizes = '208px' }: BrandTileProps)
     <Link to={brand.url} className={['ox-brand-tile', className].filter(Boolean).join(' ')}>
       <span className="ox-brand-tile__plate">
         {brand.logo ? (
-          // The brand's own artwork, contained in a fixed 3:2 field on a light
-          // ground so a dark-on-transparent mark stays legible and nothing is
-          // ever cropped or recoloured. The accessible name is still the
-          // brand's name, so a tile reads the same with or without a logo.
-          <span className="ox-brand-tile__logobox">
+          // The brand's own artwork, contained in a fixed 3:2 field whose
+          // ground the asset itself asks for (light by default, ink when the
+          // mark is white), so nothing is ever cropped or recoloured. The
+          // accessible name is still the brand's name, so a tile reads the
+          // same with or without a logo.
+          <span className={logoBoxClass('ox-brand-tile__logobox', brand)}>
             <Image
               className="ox-brand-tile__logo"
               src={brand.logo}

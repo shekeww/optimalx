@@ -155,6 +155,42 @@ describe('BrandPage', () => {
     expect(container.querySelector('#page-main-title')).toBeNull();
   });
 
+  it('draws the banner logo on the ground its own row asks for', () => {
+    const light = data();
+    const lightSource = {
+      ...light.source,
+      entity: { ...light.source.entity, logo: 'https://cdn.example/now.svg' },
+    };
+    const { container: lightBox } = renderWithProviders(
+      <BrandPage {...data({ source: lightSource })} />
+    );
+    const plain = lightBox.querySelector('.ox-brandhero__logobox');
+    expect(plain).not.toBeNull();
+    expect(plain?.classList.contains('ox-brandhero__logobox--dark')).toBe(false);
+
+    const darkSource = {
+      ...light.source,
+      entity: {
+        ...light.source.entity,
+        logo: 'https://cdn.example/on-white.svg',
+        logo_ground: 'dark',
+      },
+    };
+    const { container: darkBox } = renderWithProviders(
+      <BrandPage {...data({ source: darkSource })} />
+    );
+    expect(
+      darkBox.querySelector('.ox-brandhero__logobox')?.classList.contains(
+        'ox-brandhero__logobox--dark'
+      )
+    ).toBe(true);
+    // Scoped to this render's own container: the light case above is still
+    // mounted in the same document.
+    expect(
+      darkBox.querySelector('.ox-brandhero__logobox img')?.getAttribute('src')
+    ).toBe('https://cdn.example/on-white.svg');
+  });
+
   it('never states a count the API did not send', () => {
     const payload = data();
     const source = { ...payload.source, entity: { ...payload.source.entity, products_count: undefined } };

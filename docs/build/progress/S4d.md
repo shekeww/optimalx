@@ -2,8 +2,9 @@
 
 Batch: the owner item "complete the design of shop by brand section, carousel
 and page, reflected by the premium energetic kinetic identity and ui/ux of
-optimal x", plus two mid-batch coordinator items (the shared rail cue and
-progress strap; the real brand logos).
+optimal x", plus three mid-batch coordinator items (the shared rail cue and
+progress strap; the real brand logos; `logo_ground` for the two white-only
+marks).
 
 Read first, in full: `X-IDENTITY-2026-09-22.md` (§§1–7), `DIRECTION.md` 2, 5,
 6.14, 10, `progress/S4a.md` §4 (the 21 derived brands, shipped an hour
@@ -19,9 +20,10 @@ named.
 
 A brand is drawn by **one tile** everywhere (`app/components/brands/
 BrandTile.tsx`, styled once in `_b4-listing.scss` §11): a plate carrying the
-mark's own **arm-foot corner cut**, the brand's artwork when the API has one,
-its **name mark** when it does not (first grapheme in `--ox-accent-deep`,
-Cairo 700), and one **live count**. The home carousel, the `/brands` grid and
+mark's own **arm-foot corner cut**, the brand's artwork when the API has one
+(in a fixed 3:2 field on the ground that asset asks for — §4's
+`logo_ground`), its **name mark** when it does not (first grapheme in
+`--ox-accent-deep`, Cairo 700), and one **live count**. The home carousel, the `/brands` grid and
 the brand banner therefore read as the same object at three sizes rather than
 as three designs of the same idea.
 
@@ -230,16 +232,22 @@ featured covers and the posters:
 
 ## 4. The brand logos (coordinator item)
 
-Fetched from each brand's own site where it was reachable, Wikimedia Commons
-where it was not, converted with PIL (RGBA, transparent border trimmed, 512px
-on the long side, WEBP q85 with a step-down loop to stay under 40 KB), SVG
-kept byte-for-byte as served. Saved to `public/assets/brands/<slug>.<ext>` and
-pointed at from `fixtures/store/overlay/brands.json`'s `logo` field.
+**All 21 brands now carry their own artwork.** Fourteen were fetched in this
+batch (below); the remaining seven were fetched by the coordinator with a
+browser-grade scraper after this batch reported them as blocked, and landed
+in the same directory under the same slugs while the batch was still open.
+
+Conversion, for the fourteen: PIL (RGBA, transparent border trimmed, 512px on
+the long side, WEBP q85 with a step-down loop to stay under 40 KB); SVG kept
+byte-for-byte as served. All 21 are pointed at from
+`fixtures/store/overlay/brands.json`'s `logo` field.
 
 **These are third-party trademarks, reproduced unaltered and used
 nominatively to identify products the store sells (the owner confirms).** No
-mark is recoloured, cropped, redrawn or composited; the tile contains it in a
-fixed 3:2 field on a light ground and never fills it.
+mark is recoloured, inverted, cropped, redrawn or composited anywhere in this
+theme; the tile and the banner contain it in a fixed 3:2 field and never fill
+it. Where a mark is drawn in white, the FIELD changes, not the mark — see
+`logo_ground` below.
 
 | brand | file | bytes | source |
 |---|---|---|---|
@@ -259,25 +267,65 @@ fixed 3:2 field on a light ground and never fills it.
 | Vital Proteins | vital-proteins.webp | 6758 | `cdn.shopify.com/s/files/1/2074/9385/files/vital_proteins_logo_horizontal_fad23378….png` |
 
 Every one of the fourteen was **opened and looked at** after conversion, not
-just downloaded: three candidates were rejected on sight rather than shipped.
+just downloaded: three candidates were fetched, inspected and **rejected**
+rather than shipped — an iHerb storefront logo served in EVLution's place, a
+120×14 privacy-popup sprite served in NeoCell's, and two unrelated Wikimedia
+files (a CPC International logo returned for "NOW Foods", a government press
+photo for "Optimum Nutrition").
 
-**Seven could not be fetched, and their tiles keep the name mark** (`logo`
-stays `null`):
+### The seven the coordinator supplied
 
-| brand | why |
-|---|---|
-| NOW Foods, NOW Sports | `nowfoods.com` answers **403** to any non-browser request (bot protection), at the apex and at `www`; Commons has no NOW Foods logo file |
-| Optimum Nutrition | the only logo asset on the site is `on-logo-white.svg` — **pure `#ffffff`**, invisible on a light plate. Three black/plain variants probed on the same CDN path, all 404. Recolouring someone else's trademark is not an option this batch will take |
-| Dymatize | the site's only structured-data logo is its parent company's (`bellring.png`); no Dymatize mark in the markup |
-| BSN | `bsnsupplements.com` and `www.bsnsupplements.com` **do not resolve** from this environment |
-| EVLution Nutrition | `evlnutrition.com` and `evlutionnutrition.com` both serve an iHerb-operated storefront whose header image is the **iHerb** logo, not EVL's (fetched, inspected, rejected) |
-| NeoCell | same storefront platform; its `custom-logo` is a 120×14 privacy-popup sprite (fetched, inspected, rejected) |
+| brand | file | bytes | source | ground |
+|---|---|---|---|---|
+| NOW Foods | now-foods.svg | 4030 | `nowfoods.com/themes/_custom/sd/logo.svg` | light |
+| NOW Sports | now-sports.svg | 4030 | same NOW mark | light |
+| Optimum Nutrition | optimum-nutrition.svg | 11435 | `optimumnutrition.com` `on-logo-white.svg` | **dark** |
+| Dymatize | dymatize.svg | 2911 | `dymatize.com`, inline header SVG | **dark** |
+| BSN | bsn.svg | 10991 | `gobsn.com` `Group_259.svg` | light |
+| EVLution Nutrition | evlution-nutrition.webp | 4930 | `evlnutrition.com` `logo.png` | light |
+| NeoCell | neocell.svg | 2669 | `neocell.com` `neocell-logo-black` svg | light |
 
-`logo.clearbit.com` **does not resolve** from this environment at all, so the
-brief's middle fallback was unavailable; Commons was tried for all seven and
-returned either nothing or an unrelated file (a CPC International logo for
-"NOW Foods", a government press photo for "Optimum Nutrition" — both deleted
-rather than shipped).
+Same nominative-use note applies to all seven. Read back from the files
+themselves rather than taken on trust: `now-foods.svg` is the gradient NOW
+mark (`#FAE200` → `#F36C21`), `optimum-nutrition.svg` and `dymatize.svg` are
+**white-only** (`fill:#ffffff` ×23 and `fill="#fff"` ×12 respectively),
+`bsn.svg` is the `#BA0C2F` hexagon with white letters on it, and
+`neocell.svg` is `#1b1718` black — which is exactly the split the two
+`logo_ground` rows encode.
+
+For the record, why this batch's own fetch could not get these seven:
+`nowfoods.com` answers **403** to any non-browser request at the apex and at
+`www`; `optimumnutrition.com` publishes only the white mark and the three
+black variants probed on the same CDN path all 404; `dymatize.com`'s only
+structured-data logo is its parent company's (`bellring.png`);
+`bsnsupplements.com` (the domain in the brief) **does not resolve** from this
+environment, while the real one is `gobsn.com`; `evlnutrition.com` and
+`neocell.com` both serve iHerb-operated storefronts whose header images are
+not the brand's own. `logo.clearbit.com` does not resolve here at all, so the
+brief's middle fallback was unavailable.
+
+### `logo_ground`, and why the field changes rather than the mark
+
+Two of the seven publish **white-only** artwork, which is invisible on the
+light plate. Recolouring or inverting someone else's trademark is not an
+option, and dropping the asset would leave the store's two biggest brands as
+text. So the overlay row carries a fact about the ASSET —
+`"logo_ground": "dark"` — and the theme changes the FIELD under it:
+
+- `BrandTile`/`BrandBanner` read `logo_ground` through one helper,
+  `logoBoxClass()`, so the same brand gets the same ground on the home
+  carousel, the index grid and its own banner;
+- `.ox-brand-tile__logobox--dark` / `.ox-brandhero__logobox--dark` swap
+  `--ox-paper` for `--ox-ink` and change nothing else: same box, same
+  padding, same 3:2 field, same `object-fit: contain`;
+- the value is typed on `BrandWithCount` (`'dark' | 'light'`, optional) beside
+  `products_count`, with the same note: it is not part of the engine's typed
+  `Brand`, so it is read defensively and defaults to the light ground.
+
+The alternative — sampling a logo's pixels at render time to guess its
+ground — would be a paint-time cost on every tile and a guess that is wrong
+for any mark with both light and dark parts. A fact recorded once beside the
+asset is cheaper and cannot be wrong.
 
 ---
 
@@ -413,7 +461,9 @@ relationship the store does not have.
 8. **The three brand-tile logo candidates that were fetched and rejected**
    (iHerb for EVLution, a privacy-popup sprite for NeoCell, a white-only SVG
    for Optimum Nutrition) and the two Commons mismatches are listed in §4
-   rather than quietly dropped.
+   rather than quietly dropped. The seven this batch could not reach were
+   supplied by the coordinator mid-batch and are in §4's second table, with
+   the colours read back from the files themselves.
 9. **`ox.seo.brand.title_pattern` left in place but unread** — §6. Owner call.
 10. **One transient preview flake, not a code defect**: the first curl of
     `/ar/brands` returned a canonical and `@id` of
@@ -423,15 +473,13 @@ relationship the store does not have.
     three pages were correct on every attempt. Recorded because it will look
     alarming in a log, and because it is the same class of dev-server
     unreliability `S3b.md` and `S4a.md` already documented.
-11. **The logos cannot be seen in the running preview.**
-    `scripts/serve-store.mjs` reads the overlay once at boot, so the live
-    preview still answers `logo: null` for all 21 brands and every tile there
-    renders the name mark. Restarting the server is forbidden by the brief.
-    The logo path is covered by unit tests instead (the logo box, the
-    `alt`-as-accessible-name and the mark-only-as-fallback rule), and the
-    assets themselves are confirmed served:
-    `curl /assets/brands/thorne.svg` → `200 image/svg+xml`,
-    `/assets/brands/grenade.webp` → `200 image/webp`.
+11. **RESOLVED — the logos are live.** `scripts/serve-store.mjs` reads the
+    overlay once at boot, so for most of this batch the preview answered
+    `logo: null` and every tile rendered the name mark; restarting the server
+    is forbidden by the brief. The coordinator restarted it with the seven
+    supplied assets, and `/ar/brands` now serves **21 distinct
+    `/assets/brands/*` files, 0 name marks, and exactly 2 tiles on the dark
+    ground** (§9). No code changed between the two states.
 
 ---
 
@@ -439,11 +487,13 @@ relationship the store does not have.
 
 **Components**
 - `app/components/brands/BrandTile.tsx` — new. The one brand tile: plate,
-  corner cut, logo box or name mark, API-only count.
+  corner cut, logo box or name mark, API-only count. Owns `logo_ground` and
+  the `logoBoxClass()` helper both brand surfaces read.
 - `app/components/brands/BrandsIndex.tsx` — new. The `/brands` composition:
   band, watermark, letter rail, API letter groups, grid, empty state.
 - `app/components/brands/BrandBanner.tsx` — new. The brand page's identity
-  plate: eyebrow, artwork, the name mark as the one h1, the live count.
+  plate: eyebrow, artwork in the same logo field (same `logo_ground`), the
+  name mark as the one h1, the live count.
 - `app/components/brands/BrandExplore.tsx` — new. Other-brand chips and root
   type chips, the latter through `useTaxonomyLinks`.
 - `app/components/brands/BrandPage.tsx` — new. The brand listing composition.
@@ -474,18 +524,22 @@ relationship the store does not have.
 - `app/styles/06-ox/_b2-home.scss` — section 7 only: the carousel layout, the
   tile-width tiers, the strap sweep, the arrow pair.
 - `app/styles/06-ox/_b4-listing.scss` — section 11 rewritten (the shared tile,
-  `.ox-brandhub*`, `.ox-brandhero*`); section 13 lost its two now-dead
-  `.ox-brand-tile` reduced-motion lines.
+  its logo field and the `--dark` ground, `.ox-brandhub*`, `.ox-brandhero*`
+  and its own logo field); section 13 lost its two now-dead `.ox-brand-tile`
+  reduced-motion lines.
 
 **Data and copy**
-- `fixtures/store/overlay/brands.json` — `logo` set on 14 rows, `null` on 7.
-- `public/assets/brands/*` — 14 new logo files (§4).
+- `fixtures/store/overlay/brands.json` — `logo` set on all 21 rows (14 by
+  this batch, 7 by the coordinator), `logo_ground: "dark"` on two.
+- `public/assets/brands/*` — 21 logo files, 14 of them this batch's (§4).
 - `locales/partials/s4.{ar,en}.json` + `locales/{ar,en}.json` — 15 new keys,
   mirrored identically, merged with `i18n-merge`.
 
 **Tests**
-- `tests/brands/BrandsIndex.test.tsx` — new, 9 cases.
-- `tests/brands/BrandPage.test.tsx` — new, 9 cases.
+- `tests/brands/BrandsIndex.test.tsx` — new, 10 cases (including the dark
+  ground and that the artwork itself is untouched).
+- `tests/brands/BrandPage.test.tsx` — new, 10 cases (including the banner's
+  own ground, light and dark).
 - `tests/home/blocks.test.tsx` — the `OxBrands` block: two cases retargeted at
   the new classes, four added (count-from-API-only, carousel semantics, the
   rail cue, the arrow pair and its unfilled angled face).
@@ -503,8 +557,11 @@ $ tsc --noEmit
 ```
 $ pnpm vitest run tests/home tests/brands tests/listing tests/common
  Test Files  32 passed (32)
-      Tests  348 passed (348)
+      Tests  350 passed (350)
 ```
+
+(348 before the `logo_ground` follow-up; the two added cases are the dark
+ground on the tile and on the banner.)
 
 (An intermediate run had three failures: two were the `OxBrands` cases this
 batch retargeted, and one was `tests/home/OxServices.test.tsx > skips row one
@@ -570,3 +627,34 @@ Live curl, `http://localhost:3210`:
 and mounts on the client (pre-existing: the block renders from a query, which
 is also why it reserves no height — §2.6), so the carousel's markup is covered
 by unit tests rather than by curl.
+
+### After the `logo_ground` follow-up (the coordinator's restarted server)
+
+```
+/ar/brands       200  77786
+/ar/brands/9102  200 127167          (Optimum Nutrition: the dark-ground case)
+
+/ar/brands   21 x src="/assets/brands/<slug>.<svg|webp>", one per brand,
+             19 x class="ox-brand-tile__logobox"
+              2 x class="ox-brand-tile__logobox ox-brand-tile__logobox--dark"
+              0 x class="ox-brand-tile__mark"        (no fallback left)
+
+/ar/brands/9102
+             class="ox-brandhero__logobox ox-brandhero__logobox--dark"
+             <img src="/assets/brands/optimum-nutrition.svg"
+                  alt="Optimum Nutrition" class="ox-brandhero__logo object-contain"
+                  width="160" height="107" loading="lazy" decoding="async">
+             h1 = 1, canonical https://optimalx.com.sa/ar/brands/9102
+             title=58 desc=145   (the 17-character brand name: inside the 60
+                                  ceiling, above the 55 target, as §6 predicts)
+```
+
+Compiled CSS read back again after the follow-up:
+`.ox-brand-tile__logobox{…background:var(--ox-paper)}`,
+`.ox-brand-tile__logobox--dark{background:var(--ox-ink)}`, and the same pair
+for `.ox-brandhero__logobox`.
+
+Every gate re-run after the follow-up, all unchanged and at 0 problems
+(`check-rtl` 327, `check-motion` 327, `check-strings` 322, `check-copy` 2,
+`check-claims` 32 / 4 allowlisted, `check-tokens` 123 / 322,
+`check-identity` 327, `check-jsonld` 11), `pnpm typecheck` clean.

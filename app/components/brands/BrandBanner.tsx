@@ -1,7 +1,7 @@
 import { Image } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Bdi } from '../common/Bdi';
-import { splitMark, type BrandWithCount } from './BrandTile';
+import { logoBoxClass, splitMark, type BrandWithCount } from './BrandTile';
 
 /**
  * The brand page's banner (owner brief 2026-09-23 late, item 3): the identity
@@ -38,15 +38,20 @@ export function BrandBanner({ brand, titleId, intro }: BrandBannerProps) {
     <div className="ox-brandhero">
       <p className="ox-brandhero__eyebrow ox-small">{t('ox.nav.brands')}</p>
       {brand.logo ? (
-        <Image
-          className="ox-brandhero__logo"
-          src={brand.logo}
-          alt={brand.name}
-          width={160}
-          height={64}
-          objectFit="contain"
-          noWrapper
-        />
+        // The same logo field the tile draws, at banner size and on the same
+        // asset-declared ground: a white-only mark sits on ink here too,
+        // rather than being recoloured or quietly dropped.
+        <span className={logoBoxClass('ox-brandhero__logobox', brand)}>
+          <Image
+            className="ox-brandhero__logo"
+            src={brand.logo}
+            alt={brand.name}
+            width={160}
+            height={107}
+            objectFit="contain"
+            noWrapper
+          />
+        </span>
       ) : null}
       <h1 className="ox-brandhero__mark ox-h1" id={titleId}>
         <Bdi lang={null}>

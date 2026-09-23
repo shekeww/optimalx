@@ -150,4 +150,33 @@ describe('BrandsIndex', () => {
     expect(logo.closest('.ox-brand-tile__logobox')).not.toBeNull();
     expect(logo.closest('.ox-brand-tile')?.querySelector('.ox-brand-tile__mark')).toBeNull();
   });
+
+  // Optimum Nutrition and Dymatize publish WHITE-only marks. The field
+  // changes, never the mark: no inversion, no recolour, no drop of the asset.
+  it('puts a white mark on the ink ground when its own row asks for one', () => {
+    const { container } = renderWithProviders(
+      <BrandsIndex
+        {...props({
+          brands: {
+            O: [
+              brand('7', 'Optimum Nutrition', {
+                logo: `${ORIGIN}/on-white.svg`,
+                logo_ground: 'dark',
+              }),
+            ],
+            M: [brand('8', 'Myprotein', { logo: `${ORIGIN}/mp.png` })],
+          } as never,
+        })}
+      />
+    );
+    const boxes = Array.from(container.querySelectorAll('.ox-brand-tile__logobox'));
+    expect(boxes).toHaveLength(2);
+    // Group keys sorted: M (light) before O (dark).
+    expect(boxes[0].classList.contains('ox-brand-tile__logobox--dark')).toBe(false);
+    expect(boxes[1].classList.contains('ox-brand-tile__logobox--dark')).toBe(true);
+    // The artwork itself is untouched: same src, same alt, still contained.
+    expect(
+      (boxes[1].querySelector('img') as HTMLImageElement).getAttribute('src')
+    ).toBe(`${ORIGIN}/on-white.svg`);
+  });
 });
