@@ -3,6 +3,11 @@
 // each batch owns exactly its own partial (PLAN-final 2.1, SCSS seam).
 @import 'primitives';
 @import 'x-motif';
+// The shared rail primitive (S4d, coordinator brief 2026-09-23: one cue and
+// one progress strap for every carousel). After x-motif because its chevron
+// is drawn from the same angle tokens, before every block partial that hangs
+// `.ox-rail` on one of its scrollers.
+@import 'rail';
 @import 'blocks';
 @import 'b1-layout';
 @import 'b2-home';

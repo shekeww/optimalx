@@ -1113,6 +1113,20 @@ body {
 // card's own square corners. `--ox-tile-notch-t/-j` and, at the 1280 tier,
 // `--ox-tile-lean/-run` are removed with it: both were declared only to feed
 // the clip-path this owns.
+// OWNER REVIEW 2026-09-23 (later): the "plain rectangle" above read as
+// square-black-corners on the dark art tiles (`vitamins-minerals`, the
+// black-tone art card) next to the tinted tiles' own corners — except the
+// tinted tiles were ALSO square (no radius was ever set here), so the fix
+// gives every tile, tinted or art, the SAME rounded corner:
+// `--ox-r-2` (8px), the identical token `_b4-listing.scss`'s `.ox-cat-card`
+// already carries for this exact family of card on the categories index, so
+// the two surfaces read as one system. `overflow: hidden` on the card
+// itself — not a separate inner wrapper — clips every child to that rounded
+// shape in one declaration: the tinted `::before` background/border below,
+// and the art `<img>` (`.ox-tile__art`). The focus ring is unaffected:
+// `ox-focus()` draws an `outline`, which `overflow` never clips (unlike
+// `clip-path`, which does — the reason `.ox-goal`/`.ox-pcard` moved their
+// own focus ring to an inset box-shadow; this card needs no such move).
 .ox-tile {
   position: relative;
   isolation: isolate;
@@ -1122,6 +1136,8 @@ body {
   gap: var(--ox-1);
   min-block-size: 158px;
   padding: var(--ox-3);
+  border-radius: var(--ox-r-2);
+  overflow: hidden;
   color: var(--ox-fg);
   text-decoration: none;
   --ox-tile-arrow: var(--ox-accent-dark);
@@ -1591,42 +1607,67 @@ body {
 // same day: the corner cuts moved to the diagonal (top-right/bottom-left)
 // corners above, so the strap at the physical top-left no longer sits inside
 // a cut — it is its own independent 34deg band, not derived from one.
+//
+// Owner review 2026-09-23 (later): a skewed box positioned by a hand-picked
+// negative inset put most of the strap OUTSIDE the card's own clip-path once
+// it moved to the top-right (a cut corner, unlike the sharp top-left the
+// first mirror pass left it at) — it painted as a hairline along the cut,
+// most of its area silently clipped away. First fix: a physical parallelogram
+// clipped from the cut's own two endpoints, 6px inside it. That parallelogram
+// cannot simply be lengthened, though — continuing in the cut's own direction
+// past its foot (`B`) pushes it OUTSIDE the card (the diagonal line, extended,
+// runs past x=100%); the cut is a short segment for exactly that reason.
+//
+// Owner review 2026-09-23 (later still): "extend the strap vertically, much
+// longer (40-50% of card height at 1440, proportionally at 390/768), still
+// parallel [at 34deg], fully inside the clip." A single long skewed bar
+// leaning the OPPOSITE horizontal way from the cut (the same mirrored slant
+// `calc(-1 * var(--ox-skew))` already draws) starts at the same validated
+// "6px inside the cut" point and moves AWAY from the right edge as it runs
+// down — the one direction that stays inside the card for any length, proven
+// below and in docs/build/progress/S4a.md. `ox-strap-inset()` returns that
+// starting point's distance from the card's own right edge (`run + gap *
+// cos34`, the same quantity the retired `ox-strap-polygon()` called `dist-a`);
+// `ox-strap-width()` converts the wanted PERPENDICULAR thickness to the
+// pre-skew `inline-size` a skewed box needs to paint at that thickness
+// (`thickness / cos34` — two lines both leaning at 34deg from vertical, a
+// horizontal distance `w` apart, sit `w * cos34` apart perpendicularly).
+// `transform-origin: 0 0` (always the box's own PHYSICAL top-left corner,
+// in both `dir`s) anchors the skew at that same starting point rather than
+// the default centre, so the maths below is exact.
+$ox-strap-cos34: 0.829;
+$ox-strap-sin34: 0.5592;
+$ox-strap-inv-cos34: 1.20627; // 1 / cos34
+
+@function ox-strap-inset($run, $gap) {
+  @return $run + $gap * $ox-strap-cos34;
+}
+
+@function ox-strap-width($thickness) {
+  @return $thickness * $ox-strap-inv-cos34;
+}
+
 // `block-size` ordered first with the pragma on its own line —
 // `.ox-plan__arrow`'s own comment in this file traces the checker's
-// multi-line match issue this avoids. Control-scale (92px tall), the same
-// named 3.2 exception `.ox-iconbtn--angled` and the sized CTA buttons already
-// carry, not a band- or panel-scale cut.
-//
-// Owner review 2026-09-23 (late), item 1: mirrored horizontally to the
-// physical top-RIGHT, in both languages — PHYSICAL, not logical, matching
-// the card's own corner cuts above (never mirrored under `[dir='ltr']`) and
-// sitting along the top-right diagonal cut those corners already carry. In
-// the RTL default, inline-START is the physical right edge (this file's own
-// Conventions line), so the base rule now pins `inset-inline-start`; in LTR,
-// inline-END is the physical right edge, so the `[dir='ltr']` override pins
-// `inset-inline-end` — the exact swap of the pre-2026-09-23-late pair, which
-// pinned physical LEFT in both rules the same way. The skew is NEGATED
-// (`calc(-1 * var(--ox-skew))`) rather than left as `var(--ox-skew)`: moving
-// the bar to the opposite corner without flipping its own lean would repeat
-// the same absolute slant on the other side, which reads as the strap
-// sliding sideways rather than the mirrored gesture the owner asked for —
-// the mark's own two chevrons (X-IDENTITY §1.3) are mirror images of each
-// other for the same reason, never one shape translated.
+// multi-line match issue this avoids. `inset-block-start: 6px * sin34` is
+// the same `gap * sin34` the short strap's outer-top vertex used — constant
+// across tiers, since `gap` (6px) never changes.
 .ox-goal__slash {
-  block-size: 92px; // ox-allow: small-angle
+  block-size: 90px; // ox-allow: small-angle
   position: absolute;
   z-index: 2;
-  inset-block-start: -4px;
-  inset-inline-start: -4px;
-  inline-size: 20px;
+  inset-block-start: 3.3552px;
+  inset-inline-start: ox-strap-inset(ox-run(40px), 6px);
+  inline-size: ox-strap-width(10px);
   background: var(--ox-accent);
   transform: skewX(calc(-1 * var(--ox-skew)));
+  transform-origin: 0 0;
   pointer-events: none;
 }
 
 [dir='ltr'] .ox-goal__slash {
   inset-inline-start: auto;
-  inset-inline-end: -4px;
+  inset-inline-end: ox-strap-inset(ox-run(40px), 6px);
 }
 
 .ox-goal__body {
@@ -1705,6 +1746,19 @@ body {
   .ox-goal__body {
     padding: var(--ox-4);
   }
+
+  // Strap re-derived from this tier's own lean/run (56 / ox-run(56px)) so it
+  // starts parallel to the cut above; length grown to ~46% of this tier's
+  // 228px card (`docs/build/progress/S4a.md` has the exact figure).
+  .ox-goal__slash {
+    block-size: 103px; // ox-allow: small-angle
+    inset-inline-start: ox-strap-inset(ox-run(56px), 6px);
+    inline-size: ox-strap-width(11px);
+  }
+
+  [dir='ltr'] .ox-goal__slash {
+    inset-inline-end: ox-strap-inset(ox-run(56px), 6px);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1735,6 +1789,22 @@ body {
 
   .ox-goal__label {
     font-size: 19px;
+  }
+
+  // Strap re-derived from this tier's own lean/run (64 / ox-run(64px));
+  // length grown to ~46% of this tier's 400px card (180px — over the 158px
+  // 3.2 control-scale floor, so no `small-angle` pragma here: that rule
+  // governs elements BELOW the floor, and X-IDENTITY §2.3's own bar
+  // exemption already covers a thin travelling parallelogram like this one
+  // by name, the same reasoning the hero strap and footer wedge bars carry).
+  .ox-goal__slash {
+    block-size: 180px;
+    inset-inline-start: ox-strap-inset(ox-run(64px), 6px);
+    inline-size: ox-strap-width(12px);
+  }
+
+  [dir='ltr'] .ox-goal__slash {
+    inset-inline-end: ox-strap-inset(ox-run(64px), 6px);
   }
 }
 
@@ -1798,13 +1868,29 @@ body {
 }
 
 // ---------------------------------------------------------------------------
-// 7. OxBrands (DIRECTION 6.2 row 6)
+// 7. OxBrands: the shop-by-brand CAROUSEL (DIRECTION 6.2 row 6; owner brief
+//    2026-09-23 late, item 1)
 // ---------------------------------------------------------------------------
+// The static strip is now a scroll-snap carousel on the shared rail primitive
+// (`_rail.scss`): 2.4 tiles visible at 390 so the next one peeks, 4 from 768,
+// 6 from 1280, gap `--ox-4`, no native scrollbar, the accent chevron cue at
+// the reading end and the progress strap under the row.
+//
+// Why the tier jumps at 1280 and not at 1024: six tiles in a 1024 viewport
+// (container 960) is a 146.7px tile, and the corner cut's 1440 tier (lean 64,
+// run 43.2) is 29.5% of that — over X-IDENTITY §2.3's 24% budget. At 1280 the
+// container is 1216, the tile is 189.3 and the same run is 22.8%, inside it.
+// The brief's three probes are met exactly: 2.4 at 390, 4 at 768, 6 at 1440.
+//
+// The tile itself (`.ox-brand-tile`, plate, corner cut, name mark, count) is
+// declared ONCE, in `_b4-listing.scss` section 11, because the same tile draws
+// the `/brands` index grid; this section owns only the carousel's layout.
+//
 // The manifest's `image` field (S2c, 2026-09-22): a generated background the
 // owner can drop in, exposed as `--ox-band-image` and painted at low opacity
-// behind the header and the strip. The logo plates stay opaque regardless, so
-// legibility never depends on it, and the fallback is `none`: the section
-// looks finished with no image at all.
+// behind the header and the row. The tiles stay opaque, so legibility never
+// depends on it, and the fallback is `none`: the section looks finished with
+// no image at all.
 .ox-brands {
   position: relative;
   isolation: isolate;
@@ -1822,91 +1908,107 @@ body {
   }
 }
 
+// THE STRAP SWEEP (owner brief 2026-09-23 late, item 1: "the kinetic touch:
+// the strap sweep on reveal, once, never a hover lift").
+//
+// The strap is the section eyebrow's own accent rule — `.ox-sh__eyebrow::before`
+// in `_primitives.scss`, this section's ONE accent element (BUILD 3.1) —
+// widened to 40px here so the gesture reads, and opened from its inline-start
+// edge once when the block reveals. `transform` only, no colour, no size
+// animation, so it costs one composited frame and nothing else.
+//
+// `transform-origin` is written as arithmetic on `--direction-factor` rather
+// than the physical `right`/`left` keywords: RTL (factor -1) resolves to 100%,
+// the inline-start edge in this document's default direction, and LTR (factor
+// 1) resolves to 0%. One declaration, correct in both, no physical keyword.
+//
+// `useSectionReveal` never arms an element already on screen at hydration and
+// returns before observing under `prefers-reduced-motion`, so the SSR html and
+// the first client paint are identical and a visitor who asked for no motion
+// simply gets the strap at full width.
 .ox-brands__head {
-  display: flex;
-  align-items: center;
-  gap: var(--ox-3);
-  margin-block-end: var(--ox-4);
-}
-
-// The section's one true accent element. NOT skewed: X-IDENTITY-2026-09-22.md
-// §3.2's 158px law reserves the 34° angle for elements at or above that
-// block-size — below it an angle may live only inside a sprite symbol, never
-// a `clip-path`/`skew`/`rotate` on a layout box, and this bar is 20px. A
-// plain accent-coloured rule carries the identity's one required colour;
-// the section's angled primitive is pending its own compliant device (see
-// docs/build/progress/S2c.md).
-.ox-brands__accent {
-  flex: none;
-  inline-size: 3px;
-  block-size: 20px;
-  background: var(--ox-accent);
-}
-
-.ox-brands__strip {
-  position: relative;
-  display: flex;
-  gap: var(--ox-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
+  .ox-sh__eyebrow::before {
+    inline-size: 40px;
+    transform-origin: calc(50% - var(--direction-factor) * 50%) center;
+    transition: transform var(--dur-slow) var(--ease-out);
   }
+}
+
+[data-reveal='ready'] .ox-brands__head .ox-sh__eyebrow::before {
+  transform: scaleX(0);
+}
+
+[data-reveal='in'] .ox-brands__head .ox-sh__eyebrow::before {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-brands__head .ox-sh__eyebrow::before {
+    transform: none;
+    transition: none;
+  }
+}
+
+// The row is the rail primitive's track; only the tile width is this
+// section's. `100%` inside a flex item is the track's own content box, so the
+// arithmetic below is the visible-tile count exactly.
+.ox-brands__row {
+  padding-block-end: var(--ox-1);
 }
 
 .ox-brands__item {
-  flex: none;
+  // 390: (358 - 1.4 x 16) / 2.4 = 139.8
+  inline-size: calc((100% - 1.4 * var(--ox-4)) / 2.4);
 }
 
-.ox-brands__link {
+@media (min-width: 768px) {
+  .ox-brands__item {
+    // 768: (720 - 3 x 16) / 4 = 168
+    inline-size: calc((100% - 3 * var(--ox-4)) / 4);
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-brands__item {
+    // 1440: (1296 - 5 x 16) / 6 = 202.7
+    inline-size: calc((100% - 5 * var(--ox-4)) / 6);
+  }
+}
+
+// The prev/next pair rides `SectionHeader`'s own `actions` slot, which is
+// `display: none` below 1024 and `flex` from there up, so the arrows exist at
+// 1024 and up exactly as the brief asks with no media query of their own.
+.ox-brands__nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  inline-size: 120px;
-  block-size: 64px;
-  padding: var(--ox-2);
-  background: var(--ox-plate);
-  border-radius: var(--ox-r-2);
+  gap: var(--ox-2);
+}
+
+// 44px target, no face of its own: the unfilled ANGLED face is the
+// `.ox-iconbtn--angled` span inside it (`_primitives.scss`), so the focus ring
+// sits on an unclipped box (X-IDENTITY §7.1 `focus-clipped`) and the hit area
+// stays 44 while the drawn mark is 24.
+.ox-brands__arrow {
   @include ox-focus(2px);
-}
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  color: var(--ox-fg);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 
-.ox-brands__logo {
-  max-inline-size: 100%;
-  max-block-size: 48px;
-  object-fit: contain;
-}
-
-// The name-on-plate fallback (owner review 2026-09-23 (late), item 4): a
-// brand with no logo still reads as a finished tile rather than a blank
-// plate. Cairo 700 (`--ox-w-title`; Cairo itself is the theme's one font
-// stack already, nothing new to load) with the first character in accent.
-.ox-brands__mark {
-  display: block;
-  font-weight: var(--ox-w-title);
-  color: var(--ox-fg-2);
-  text-align: center;
-}
-
-.ox-brands__mark-first {
-  color: var(--ox-accent);
-}
-
-@media (min-width: 1024px) {
-  .ox-brands__strip {
-    display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    overflow-x: visible;
+  &:disabled {
+    color: var(--ox-ink-4);
+    cursor: default;
   }
+}
 
-  .ox-brands__link {
-    inline-size: 100%;
-    block-size: 80px;
-  }
+.ox-brands__arrow-face {
+  font-size: 16px;
 }
 
 // ---------------------------------------------------------------------------
@@ -2062,6 +2164,49 @@ body {
   font-weight: var(--ox-w-read);
 }
 
+// ---------------------------------------------------------------------------
+// The two rows, each with its own title (owner review 2026-09-23, late night)
+// ---------------------------------------------------------------------------
+// Six cards under one heading read as six equal boxes. A title plus a
+// one-line note over each row says which question that row answers, so the
+// section reads as one offer in two steps: the ways to ask, then what the
+// asking leads to. The titles are `h3` under the section's own `h2`
+// (DIRECTION 9.2: h2 for the section, h3 for what sits inside it, no level
+// skipped).
+.ox-services__row + .ox-services__row {
+  margin-block-start: var(--ox-8);
+}
+
+.ox-services__row-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
+  margin-block-end: var(--ox-4);
+  text-align: start;
+}
+
+.ox-services__row-title {
+  margin: 0;
+  color: var(--ox-fg);
+}
+
+// Same weight floor as the subline above: 400 on `--ox-graphite` reads thin.
+.ox-services__row-note,
+.ox-services__row-cue {
+  margin: 0;
+  max-inline-size: 64ch;
+  color: var(--ox-fg-3);
+  font-weight: var(--ox-w-read);
+}
+
+// The reply-time cue is a fact the owner has entered in a setting, not a
+// promise the theme writes, so it sits one step brighter than the note it
+// follows. It renders only while that setting is filled.
+.ox-services__row-cue {
+  color: var(--ox-fg-2);
+}
+
 // ONE COLUMN at 390 (owner review 2026-09-23 (late), item 3): six cards read
 // as two answered questions in DOM order — three channels, then three plans
 // — not a strip to swipe through, so this is no longer the horizontal
@@ -2151,6 +2296,14 @@ body {
   font-weight: var(--ox-w-figure);
 }
 
+// The consultation credit, verbatim from the owner's `consultation_credit_note`
+// setting and absent entirely until it is filled (claims source section 2,
+// row 7). It sits directly under the line it qualifies.
+.ox-channel-door__credit {
+  color: var(--ox-fg-2);
+  font-weight: var(--ox-w-read);
+}
+
 .ox-channel-door__cta {
   display: inline-flex;
   align-items: center;
@@ -2162,6 +2315,17 @@ body {
 
 .ox-channel-door:hover .ox-channel-door__cta .ox-iconbtn--angled {
   border-color: currentColor;
+}
+
+// THE SECTION'S ONE PRIMARY ACTION on `/services` (owner review 2026-09-23,
+// late night), where the band carries no CTA button because the page that
+// button would open is the page the reader is standing on. The
+// written-question door takes the role instead: the same 1px accent ring
+// hover already draws, made permanent, so the primary is the cheapest yes in
+// the row rather than a second orange box. The home page never applies it
+// there, `عرض الكل` is that page's one primary.
+.ox-channel-door--primary {
+  box-shadow: inset 0 0 0 1px var(--ox-accent);
 }
 
 // One photographic door. Hover: 1px accent inset ring, no translate
@@ -3082,6 +3246,17 @@ body {
   .ox-pcard {
     clip-path: polygon(0 0, calc(100% - #{ox-run(56px)}) 0, 100% 56px, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
   }
+
+  // Strap re-derived from this tier's own lean/run, same as `GoalCard`'s;
+  // length stays 135px (`.ox-pcard`'s own block-size never changes).
+  .ox-pcard__slash {
+    inset-inline-start: ox-strap-inset(ox-run(56px), 6px);
+    inline-size: ox-strap-width(11px);
+  }
+
+  [dir='ltr'] .ox-pcard__slash {
+    inset-inline-end: ox-strap-inset(ox-run(56px), 6px);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -3095,6 +3270,15 @@ body {
   // 1408px, card 27% of that = 380.2px; 43.2 / 380.2 = 11.4%.
   .ox-pcard {
     clip-path: polygon(0 0, calc(100% - #{ox-run(64px)}) 0, 100% 64px, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
+  }
+
+  .ox-pcard__slash {
+    inset-inline-start: ox-strap-inset(ox-run(64px), 6px);
+    inline-size: ox-strap-width(12px);
+  }
+
+  [dir='ltr'] .ox-pcard__slash {
+    inset-inline-end: ox-strap-inset(ox-run(64px), 6px);
   }
 }
 
@@ -3148,28 +3332,32 @@ body {
   block-size: 100%;
 }
 
-// Same construction as `.ox-goal__slash` (item 2), and the same 2026-09-23
-// (late) mirror (item 1): physical top-RIGHT in both languages, along the
-// diagonal corner cuts above, skew negated so the strap reads as the
-// mirrored gesture rather than the same slant translated sideways — see
-// `.ox-goal__slash`'s own comment in this file for the full reasoning.
-// `block-size` ordered first with the pragma on its own line, same reason
-// `.ox-goal__slash` and `.ox-plan__arrow` give.
+// Same construction as `.ox-goal__slash` (item 2, and the two 2026-09-23
+// later corrections — `ox-strap-inset()`/`ox-strap-width()`, defined once
+// above `.ox-goal__slash`, reused here): a long skewed bar starting 6px
+// inside the top-right cut and leaning AWAY from the card's own edge as it
+// runs down, the one direction that stays inside for any length. `.ox-pcard`
+// is a fixed 300px tall at every tier (no `min-block-size`, unlike
+// `.ox-goal`), so the length target (~45% of card height) is the SAME
+// 135px at 390/768/1440 — only the starting inset and thickness change with
+// the tier's own lean/run. See `.ox-goal__slash`'s own comment for the full
+// reasoning and docs/build/progress/S4a.md for the per-tier numbers.
 .ox-pcard__slash {
-  block-size: 92px; // ox-allow: small-angle
+  block-size: 135px; // ox-allow: small-angle
   position: absolute;
   z-index: 2;
-  inset-block-start: -4px;
-  inset-inline-start: -4px;
-  inline-size: 20px;
+  inset-block-start: 3.3552px;
+  inset-inline-start: ox-strap-inset(ox-run(40px), 6px);
+  inline-size: ox-strap-width(10px);
   background: var(--ox-accent);
   transform: skewX(calc(-1 * var(--ox-skew)));
+  transform-origin: 0 0;
   pointer-events: none;
 }
 
 [dir='ltr'] .ox-pcard__slash {
   inset-inline-start: auto;
-  inset-inline-end: -4px;
+  inset-inline-end: ox-strap-inset(ox-run(40px), 6px);
 }
 
 // The treatment the goal and plan cards already use: the frame sits low

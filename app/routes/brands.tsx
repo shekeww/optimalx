@@ -2,13 +2,14 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Brands } from '@salla.sa/twilight-theme-engine/routes/brands';
 import type { BrandsPageProps } from '@salla.sa/twilight-theme-engine/routes/brands';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
-import { BrandsGrid } from '../components/listing/BrandsGrid';
-import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
+import { BrandsIndex } from '../components/brands/BrandsIndex';
+import { brandsIndexHeadExtend } from '../components/seo/routeHeads';
 
 /**
- * The brands index (DIRECTION 6.14). The engine loader and head stay; the
- * engine's own grid is replaced by ours so the tiles match the catalogue
- * plates the rest of the storefront uses.
+ * The brands index (DIRECTION 6.14; owner brief 2026-09-23 late, item 2). The
+ * engine loader stays; the page it renders is ours (`components/brands/
+ * BrandsIndex`), so the tiles, the letter groups and the watermark match the
+ * rest of the storefront instead of the engine's own grid.
  *
  * A store with no brands yet answers `/brands` with an HTML error page rather
  * than JSON, and the engine loader turns that into a 500 for a page that is in
@@ -17,9 +18,10 @@ import { canonicalFor, robots, tryOriginOf } from '../components/seo/head';
  * the visitor there is nothing here, which is also true once the owner adds
  * brands and one of them is hidden.
  *
- * The head extension is the C12 canonical correction only: no JSON-LD is
- * added here (a list of brands is not an ItemList of products), and the
- * engine `Breadcrumb` inside the page emits the one BreadcrumbList (C11).
+ * `brandsIndexHeadExtend` (seo/routeHeads.ts) carries the C12 canonical
+ * correction, the page's own title and description (the engine served the raw
+ * key `common.titles.brands` and the store-wide description before this
+ * batch) and the CollectionPage + ItemList + BreadcrumbList graph.
  */
 export const Route = createFileRoute('/{-$locale}/brands')({
   loader: async ({ params }): Promise<BrandsPageProps> => {
@@ -29,26 +31,11 @@ export const Route = createFileRoute('/{-$locale}/brands')({
       return { page: { title: '', slug: 'brands.index' }, brands: {} };
     }
   },
-  head: withHead(Brands, (result, ctx) => {
-    const origin = tryOriginOf(ctx.settings?.store?.url);
-    const path = ctx.location?.pathname ?? '';
-    const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
-    const canonical =
-      origin && path
-        ? canonicalFor(origin, multilingual ? ctx.locale : null, path)
-        : result.canonical;
-    return {
-      ...result,
-      robots: robots(false),
-      canonical,
-      openGraph: { ...result.openGraph, url: canonical },
-      alternateLanguages: multilingual ? result.alternateLanguages : undefined,
-    };
-  }),
+  head: withHead(Brands, brandsIndexHeadExtend()),
   component: BrandsComponent,
 });
 
 function BrandsComponent() {
   const data: BrandsPageProps = Route.useLoaderData();
-  return <BrandsGrid {...data} />;
+  return <BrandsIndex {...data} />;
 }

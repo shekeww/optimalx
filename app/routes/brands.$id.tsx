@@ -2,19 +2,22 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ProductListing } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
-import { ListingPage } from '../components/listing/ListingPage';
+import { BrandPage } from '../components/brands/BrandPage';
 import { brandHeadExtend } from '../components/seo/routeHeads';
 
 /**
- * A brand's products (DIRECTION 6.14: the 6.3 composition with the brand
- * logo plate in the header).
+ * A brand's products (DIRECTION 6.14; owner brief 2026-09-23 late, item 3).
  *
- * The engine's own brand header is not rendered: it prints the merchant's
- * brand description through `dangerouslySetInnerHTML`. Ours renders it as
- * text (components/listing/BrandHeader).
+ * The engine loader and head stay; the page is ours
+ * (`components/brands/BrandPage`): the identity banner, the two-up cover
+ * carousel S4c built for category pages, the toolbar, the filters without
+ * their now-redundant brand facet, the grid, and the chips out to the other
+ * brands and the root types. The engine's own brand header is not rendered
+ * anywhere: it prints the merchant's description through
+ * `dangerouslySetInnerHTML`, and ours renders it as text.
  *
  * `brandHeadExtend` (seo/routeHeads.ts) is `listingHeadExtend` plus the
- * researched brand-page title pattern (keywords-ar.md B01-B05).
+ * brand-page title and description patterns.
  */
 export const Route = createFileRoute('/{-$locale}/brands/$id')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -35,5 +38,5 @@ export const Route = createFileRoute('/{-$locale}/brands/$id')({
 
 function BrandListingComponent() {
   const data: ProductListLoaderData = Route.useLoaderData();
-  return <ListingPage {...data} />;
+  return <BrandPage {...data} />;
 }

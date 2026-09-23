@@ -2,6 +2,7 @@ import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head'
 import type { TwilightContext } from '@salla.sa/twilight-theme-engine/tanstack';
 import type { ProductPageProps } from '@salla.sa/twilight-theme-engine/routes/product';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
+import type { BrandsPageProps } from '@salla.sa/twilight-theme-engine/routes/brands';
 import {
   canonicalFor,
   canonicalForRequest,
@@ -11,7 +12,15 @@ import {
   tryOriginOf,
 } from './head';
 import { headTranslator } from './strings';
-import { breadcrumbList, collectionPage, faqPage, graph, service, type JsonLdNode } from './jsonld';
+import {
+  breadcrumbList,
+  collectionPage,
+  faqPage,
+  graph,
+  service,
+  urlItemList,
+  type JsonLdNode,
+} from './jsonld';
 import { articleHeadExtend } from '../commerce/head';
 import { pageHead, type PageHeadOptions } from '../pages/head';
 import { listingHeadExtend, type ListingHeadOptions } from '../listing/head';
@@ -140,15 +149,38 @@ export function productHeadExtend() {
   };
 }
 
-const BRAND_TITLE_PATTERN_KEY = 'ox.seo.brand.title_pattern';
+const BRAND_TITLE_QUALIFIED_KEY = 'ox.seo.brand.title_qualified';
+const BRAND_TITLE_COMPACT_KEY = 'ox.seo.brand.title_compact';
+const BRAND_DESCRIPTION_KEY = 'ox.seo.brand.description_pattern';
 const BRAND_PLACEHOLDER = '{{brand}}';
+/** SEO-ENG-010's hard title ceiling, both locales. */
+const TITLE_CEILING = 60;
 
 /**
  * A brand listing's `extend`: `listingHeadExtend`'s canonical, robots and
- * graph, with the title rebuilt from the researched brand-page pattern
- * (keywords-ar.md B01-B05: "<brand> أصلي | اوبتيمال اكس") instead of the
- * engine's bare brand name, since the researched pattern is what the claim
- * "أصلي" (authentic) and the brand cluster both need in the title.
+ * graph (CollectionPage + ItemList + BreadcrumbList), with a title and a
+ * description built for the brand.
+ *
+ * TWO title patterns, not one, because one cannot fit. SEO-ENG-010 wants an
+ * Arabic title of 45 to 55 characters with a hard ceiling of 60, and this
+ * catalogue's brand names run from 3 characters ("BSN") to 21 ("Olimp Sport
+ * Nutrition"): no single fixed wrapper can clear the lower target for the
+ * short name and the ceiling for the long one. So the qualified pattern is
+ * used whenever it fits, and the compact one takes over when it would
+ * breach. Measured across the store's 21 brands: Arabic 43 to 59, English 42
+ * to 60, nothing over the ceiling (docs/build/progress/S4d.md).
+ *
+ * The description was missing entirely: the engine answered `/brands/9101`
+ * with the English "Browse NOW Foods" on an Arabic page (verified live,
+ * 2026-09-23). It now comes from our own pattern, 131 to 149 characters in
+ * Arabic across the same 21 brands.
+ *
+ * NO AUTHENTICITY, DISTRIBUTION OR EXCLUSIVITY CLAIM appears in either
+ * pattern. The previous title key (`ox.seo.brand.title_pattern`,
+ * "{{brand}} أصلي") asserted per-brand authenticity, which is wider than the
+ * one store-wide originality line the claims gate allows; it is left in the
+ * dictionary untouched for whoever owns the keyword research, and is simply
+ * no longer read. See progress/S4d.md.
  */
 export function brandHeadExtend(options: ListingHeadOptions = {}) {
   const base = listingHeadExtend(options);
@@ -161,13 +193,98 @@ export function brandHeadExtend(options: ListingHeadOptions = {}) {
     const brandName = data?.source?.entity?.name;
     if (!brandName) return extended;
     const t = headTranslator(ctx.locale);
-    const pattern = t(BRAND_TITLE_PATTERN_KEY);
-    const title = pattern.replace(BRAND_PLACEHOLDER, brandName);
+    const qualified = t(BRAND_TITLE_QUALIFIED_KEY).replace(BRAND_PLACEHOLDER, brandName);
+    const title =
+      qualified.length <= TITLE_CEILING
+        ? qualified
+        : t(BRAND_TITLE_COMPACT_KEY).replace(BRAND_PLACEHOLDER, brandName);
+    const description = t(BRAND_DESCRIPTION_KEY).replace(BRAND_PLACEHOLDER, brandName);
     return {
       ...extended,
       title,
-      openGraph: { ...extended.openGraph, title },
-      twitter: extended.twitter ? { ...extended.twitter, title } : extended.twitter,
+      description,
+      openGraph: { ...extended.openGraph, title, description },
+      twitter: extended.twitter ? { ...extended.twitter, title, description } : extended.twitter,
+    };
+  };
+}
+
+const BRANDS_TITLE_KEY = 'ox.seo.brands.title';
+const BRANDS_DESCRIPTION_KEY = 'ox.seo.brands.description';
+const BRANDS_LABEL_KEY = 'ox.nav.brands';
+const HOME_LABEL_KEY = 'common.titles.home';
+
+/**
+ * The `/brands` index head (owner brief 2026-09-23 late, item 2).
+ *
+ * Three corrections to what the engine answers with, all verified live on
+ * 2026-09-23 before this was written:
+ *  - the title was the raw platform key `common.titles.brands` (the store's
+ *    dictionary carries the key, the engine head does not resolve it), so
+ *    the tab and the SERP line read as a lookup key. It is our own researched
+ *    title now: Arabic 50 characters, English 53, inside SEO-ENG-010;
+ *  - the description was the store's generic one, duplicated across pages.
+ *    SEO-ENG-010 asks for one description per indexable page;
+ *  - the page published no structured data at all. It now carries the
+ *    CollectionPage, an ItemList of the brand URLs the loader actually
+ *    returned, and the BreadcrumbList, in the one `@graph` every owned route
+ *    in this theme emits (SEO-ENG-006).
+ *
+ * The ItemList is built from the loader's own groups: no brand is invented,
+ * none is added, and a store with no brands publishes a CollectionPage with
+ * no `mainEntity` rather than an empty list.
+ */
+export function brandsIndexHeadExtend() {
+  return (
+    result: HeadDescriptor,
+    ctx: TwilightContext,
+    data: BrandsPageProps
+  ): HeadDescriptor => {
+    const origin = tryOriginOf(ctx.settings?.store?.url);
+    const path = ctx.location?.pathname ?? '';
+    const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
+    const locale = multilingual ? ctx.locale : null;
+    const canonical = origin && path ? canonicalFor(origin, locale, path) : result.canonical;
+
+    const t = headTranslator(ctx.locale);
+    const title = t(BRANDS_TITLE_KEY);
+    const description = t(BRANDS_DESCRIPTION_KEY);
+
+    const entries = Object.keys(data?.brands ?? {})
+      .sort()
+      .flatMap((char) => data.brands[char] ?? [])
+      .filter((entry) => entry && entry.name && entry.url)
+      .map((entry) => ({ name: entry.name, url: entry.url }));
+
+    const nodes: JsonLdNode[] = [];
+    if (canonical) {
+      nodes.push(
+        collectionPage({
+          url: canonical,
+          name: title,
+          description,
+          itemListId: entries.length > 0 ? `${canonical}#itemlist` : undefined,
+        })
+      );
+      if (entries.length > 0) nodes.push(urlItemList(entries, canonical));
+      nodes.push(
+        breadcrumbList([
+          { name: t(HOME_LABEL_KEY), url: origin ? canonicalFor(origin, locale, '/') : '/' },
+          { name: t(BRANDS_LABEL_KEY), url: canonical },
+        ])
+      );
+    }
+
+    return {
+      ...result,
+      title,
+      description,
+      robots: robots(false),
+      canonical,
+      openGraph: { ...result.openGraph, title, description, url: canonical },
+      twitter: result.twitter ? { ...result.twitter, title, description } : result.twitter,
+      alternateLanguages: multilingual ? result.alternateLanguages : undefined,
+      jsonLd: nodes.length > 0 ? graph(...nodes) : undefined,
     };
   };
 }

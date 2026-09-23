@@ -1,63 +1,77 @@
+import { useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { brand } from '@salla.sa/twilight-theme-engine/api/brands';
-import type { Brand } from '@salla.sa/twilight-theme-engine/routes/brands';
-import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SectionHeader } from '../common/SectionHeader';
+import { useRailProgress } from '../common/hooks/useRailProgress';
+import { useReducedMotion } from '../common/hooks/useReducedMotion';
+import { BrandTile, isBrand, type BrandWithCount } from '../brands/BrandTile';
 import { fieldList, fieldText, type OxBlockProps } from './defaults';
+import { useSectionReveal } from './useSectionReveal';
 
 /**
- * The brand strip (DIRECTION 6.2 row 6): a section header, logos on plates,
- * a scroller on mobile and eight per row on desktop.
+ * The brand strip (DIRECTION 6.2 row 6), rebuilt as a scroll-snap CAROUSEL
+ * (owner brief 2026-09-23 late: "complete the design of shop by brand
+ * section, carousel and page").
  *
- * Shown from ONE brand up (owner call, 2026-09-22; was four): the store
- * carries real supplier brands today and a single logo still reads as a real
- * strip, not a claim about "brands" plural the way three or fewer used to.
- * The strip is a `nav`-less list of links inside a labelled region so a
- * screen reader still knows what it is. The reserved height stays 0 while
- * there are none (`HOME_BLOCK_HEIGHTS['ox-brands']`, `optionalBlocks.test.ts`).
+ * What it is now: a section eyebrow, an h2, a "عرض الكل" link to `/brands`,
+ * and a horizontal snap carousel of brand tiles — 2.4 visible at 390 so the
+ * next tile peeks, 4 from 768, 6 from 1280, gap `--ox-4`. Each tile is
+ * `BrandTile`: a plate carrying the mark's own arm-foot corner cut, the
+ * brand's artwork or its NAME MARK, and one live `products_count` line.
  *
- * The manifest's `image` field (S2c, 2026-09-22) is the owner's generated
- * background, exposed as `--ox-band-image` and painted at low opacity behind
- * the header and the strip: the logo plates stay opaque, so legibility never
- * depends on what the merchant drops in, and the section looks finished with
- * no image at all (the custom property's own fallback is `none`).
+ * Shown from ONE brand up (owner call, 2026-09-22): the store carries real
+ * supplier brands and a single tile still reads as a real strip. Sorted by
+ * product count DESC and capped at `MAX_BRANDS` (owner review 2026-09-23,
+ * item 4) so the carousel stays browsable once the catalogue carries its
+ * twenty-one derived brands (`fixtures/store/overlay/brands.json`).
  *
- * Owner review 2026-09-23 (late), item 4: every brand the API returns is
- * rendered (no longer just the raw API order), sorted by product count
- * DESC and capped at `MAX_BRANDS` so the strip stays browsable once the
- * catalogue carries the fifteen-plus real brands it derives from
- * (`fixtures/store/overlay/brands.json`, `docs/build/progress/S4a.md`). A
- * brand with no logo renders a name mark instead of an empty plate — the
- * first character in its own span (`.ox-brands__mark-first`, accent colour,
- * Cairo 700 — the strip's own font and weight already, see `_b2-home.scss`)
- * so a merchant who has not uploaded artwork yet still gets a tile that
- * looks finished rather than a blank rectangle.
+ * The manifest's `image` field (S2c) is the owner's generated background,
+ * exposed as `--ox-band-image` and painted at low opacity behind the header
+ * and the row: the tiles stay opaque, so legibility never depends on what
+ * the merchant drops in, and the section looks finished with no image at all.
+ *
+ * Carousel mechanics are `FeaturedRail`'s, deliberately: `startIndex` is the
+ * slide aligned to the row's inline-start edge, and `goTo()` scrolls the
+ * target slide with `scrollIntoView({ inline: 'start' })` rather than a
+ * hand-computed `scrollLeft` delta, so the step is correct in both reading
+ * directions with no manual RTL sign flip. The prev/next pair rides
+ * `SectionHeader`'s own `actions` slot, which is `display: none` below 1024,
+ * so the arrows exist at 1024 and up exactly as the brief asks and touch
+ * scroll-snap is the only mechanism below it.
+ *
+ * Motion: the one kinetic touch is the STRAP SWEEP — the section eyebrow's
+ * accent rule opens from its inline-start edge once, on reveal, transform
+ * only (`_b2-home.scss`). `useSectionReveal` never arms an element that is
+ * already on screen at hydration and returns before observing under
+ * `prefers-reduced-motion`, so the SSR html and the first client paint are
+ * identical and the strap is simply drawn at full width when motion is off.
+ * There is no hover lift anywhere in this section (BUILD 3.4).
  */
 
 export const MIN_BRANDS = 1;
-/** The strip never grows past this many tiles (owner review 2026-09-23 (late), item 4). */
+/** The carousel never grows past this many tiles (owner review 2026-09-23, item 4). */
 export const MAX_BRANDS = 24;
-
-interface BrandWithCount extends Brand {
-  /** Not part of the engine's typed `Brand`; the fixture and (once created)
-   * the real API carry it, so the strip can sort the heaviest brand first. */
-  products_count?: number;
-}
-
-function isBrand(value: unknown): value is BrandWithCount {
-  return Boolean(value) && typeof value === 'object' && typeof (value as Brand).name === 'string';
-}
-
-/** The first grapheme and the rest, by codepoint (`Array.from`) rather than
- * a UTF-16 slice, so a name mark never splits a surrogate pair. */
-function splitMark(name: string): [string, string] {
-  const chars = Array.from(name.trim());
-  return [chars[0] ?? '', chars.slice(1).join('')];
-}
+/**
+ * How many tiles the arrows step by, and the row's own overscroll allowance.
+ * Four is the number of tiles visible at 1024, the width the arrows first
+ * appear at, so one press always moves a full screen of tiles at the tier
+ * that has arrows at all.
+ */
+const STEP_AT_DESKTOP = 4;
 
 export function OxBrands({ data }: OxBlockProps) {
   const { t } = useTranslation();
+  const reducedMotion = useReducedMotion();
+  // One reveal for the whole block: the eyebrow's accent rule sweeps open and
+  // the rail's chevron cue pulses off the same `data-reveal` attribute, so the
+  // section has one kinetic moment rather than two unrelated ones.
+  const revealRef = useSectionReveal<HTMLDivElement>();
+  const trackRef = useRef<HTMLUListElement>(null);
+  const railRef = useRailProgress(trackRef);
+  const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
+  const [startIndex, setStartIndex] = useState(0);
+
   const selected = fieldList(data, 'brands').filter(isBrand);
   const { data: group } = useQuery({ ...brand.queries.list(), enabled: selected.length === 0 });
 
@@ -69,6 +83,18 @@ export function OxBrands({ data }: OxBlockProps) {
   if (brands.length < MIN_BRANDS) return null;
 
   const image = fieldText(data, 'image');
+  const maxStart = Math.max(0, brands.length - STEP_AT_DESKTOP);
+  const showNav = brands.length > STEP_AT_DESKTOP;
+
+  const goTo = (target: number) => {
+    const clamped = Math.min(Math.max(target, 0), maxStart);
+    setStartIndex(clamped);
+    itemRefs.current[clamped]?.scrollIntoView({
+      inline: 'start',
+      block: 'nearest',
+      behavior: reducedMotion ? 'auto' : 'smooth',
+    });
+  };
 
   return (
     <section
@@ -77,44 +103,92 @@ export function OxBrands({ data }: OxBlockProps) {
       data-testid="ox-brands"
       style={image ? { ['--ox-band-image' as string]: `url("${image}")` } : undefined}
     >
-      <div className="ox-container">
+      <div className="ox-container" ref={revealRef}>
         <div className="ox-brands__head">
-          {/* The section's one true accent element. Not skewed (X-IDENTITY
-              §3.2's 158px law: an angle below that block-size may live only
-              inside a sprite symbol) — see _b2-home.scss for the note and
-              the pending angled primitive this section still owes. */}
-          <span className="ox-brands__accent" aria-hidden="true" />
-          <SectionHeader title={t('ox.home.brands_title')} titleId="ox-brands-title" as="h2" />
-        </div>
-        <ul className="ox-brands__strip">
-          {brands.map((item) => {
-            const [first, rest] = splitMark(item.name);
-            return (
-              <li className="ox-brands__item" key={item.id ?? item.name}>
-                <Link to={item.url} className="ox-brands__link">
-                  {item.logo ? (
-                    <Image
-                      src={item.logo}
-                      alt={item.name}
-                      width={120}
-                      height={48}
-                      srcSetWidths={[120, 240]}
-                      sizes="120px"
-                      objectFit="contain"
-                      className="ox-brands__logo"
-                      noWrapper
-                    />
-                  ) : (
-                    <span className="ox-brands__mark ox-small">
-                      <span className="ox-brands__mark-first">{first}</span>
-                      {rest}
+          <SectionHeader
+            eyebrow={t('ox.home.brands_label')}
+            title={t('ox.home.brands_title')}
+            titleId="ox-brands-title"
+            as="h2"
+            viewAll={{ to: '/brands' }}
+            actions={
+              showNav ? (
+                <div className="ox-brands__nav">
+                  {/* The 44px target is the button; the ANGLED, unfilled face
+                      is the `.ox-iconbtn--angled` span inside it, so the clip
+                      never sits on the element carrying the focus ring
+                      (X-IDENTITY §7.1 `focus-clipped`). The glyph is chosen as
+                      it reads in LTR and `.ox-mirror` flips it in RTL, which is
+                      this theme's one direction-icon convention. */}
+                  <button
+                    type="button"
+                    className="ox-brands__arrow"
+                    onClick={() => goTo(startIndex - STEP_AT_DESKTOP)}
+                    disabled={startIndex === 0}
+                    aria-label={t('ox.home.brands_prev')}
+                  >
+                    <span className="ox-brands__arrow-face ox-iconbtn--angled" aria-hidden="true">
+                      <i className="sicon-keyboard_arrow_left ox-mirror" />
                     </span>
-                  )}
-                </Link>
+                  </button>
+                  <button
+                    type="button"
+                    className="ox-brands__arrow ox-brands__arrow--next"
+                    onClick={() => goTo(startIndex + STEP_AT_DESKTOP)}
+                    disabled={startIndex >= maxStart}
+                    aria-label={t('ox.home.brands_next')}
+                  >
+                    <span className="ox-brands__arrow-face ox-iconbtn--angled" aria-hidden="true">
+                      <i className="sicon-keyboard_arrow_right ox-mirror" />
+                    </span>
+                  </button>
+                </div>
+              ) : undefined
+            }
+          />
+        </div>
+        {/* The shared rail primitive (`_rail.scss`): no native scrollbar, the
+            accent chevron cue at the reading end, and the progress strap under
+            the row. `useRailProgress` writes the position straight onto the
+            wrapper, so a swipe costs no React render. */}
+        <div className="ox-rail ox-brands__rail" ref={railRef}>
+          <ul
+            className="ox-rail__track ox-brands__row"
+            ref={trackRef}
+            role="list"
+            aria-roledescription={t('ox.home.brands_carousel_role')}
+          >
+            {brands.map((item, index) => (
+              <li
+                className="ox-brands__item"
+                key={item.id ?? item.name}
+                ref={(node) => {
+                  itemRefs.current[index] = node;
+                }}
+                aria-roledescription={t('ox.home.brands_slide_role')}
+                aria-label={t('ox.home.brands_slide_label', {
+                  index: index + 1,
+                  total: brands.length,
+                })}
+              >
+                <BrandTile
+                  brand={item}
+                  sizes="(min-width: 1280px) 203px, (min-width: 768px) 168px, 140px"
+                />
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="ox-rail__cue"
+            onClick={() => goTo(startIndex + STEP_AT_DESKTOP)}
+            aria-label={t('ox.home.brands_next')}
+          >
+            <span className="ox-rail__cue-arm" aria-hidden="true" />
+            <span className="ox-rail__cue-arm ox-rail__cue-arm--down" aria-hidden="true" />
+          </button>
+          <div className="ox-rail__progress" />
+        </div>
       </div>
     </section>
   );

@@ -3,5 +3,20 @@
   "ox.listing.featured_next": "Next products",
   "ox.listing.featured_slide_label": "Product {{index}} of {{total}}",
   "ox.listing.featured_carousel_role": "carousel",
-  "ox.listing.featured_slide_role": "slide"
+  "ox.listing.featured_slide_role": "slide",
+  "ox.brands.products_count": "Products: {{count}}",
+  "ox.brands.letters_label": "Jump to a letter",
+  "ox.brands.group_label": "Brands starting with {{char}}",
+  "ox.brands.explore_brands_label": "Other brands",
+  "ox.brands.explore_types_label": "Browse by type",
+  "ox.home.brands_prev": "Previous brands",
+  "ox.home.brands_next": "Next brands",
+  "ox.home.brands_carousel_role": "carousel",
+  "ox.home.brands_slide_role": "slide",
+  "ox.home.brands_slide_label": "Brand {{index}} of {{total}}",
+  "ox.seo.brands.title": "Supplement Brands We Stock in Saudi Arabia | OptimalX",
+  "ox.seo.brands.description": "Browse the supplement brands available at OptimalX. Pick a brand to see its protein, creatine and vitamin products, with a clear note before you buy.",
+  "ox.seo.brand.title_qualified": "{{brand}} Supplements in Saudi Arabia | OptimalX",
+  "ox.seo.brand.title_compact": "{{brand}} Supplements | OptimalX",
+  "ox.seo.brand.description_pattern": "Browse {{brand}} products at OptimalX: protein, creatine and vitamins, each with a clear note before you buy, and shipping across Saudi Arabia."
 }

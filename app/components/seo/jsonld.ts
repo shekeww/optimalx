@@ -226,6 +226,28 @@ export function itemList(products: readonly Product[], url: string): JsonLdNode 
   };
 }
 
+/**
+ * An `ItemList` of plain URLs, for an index page whose members are not
+ * products: `/brands` lists brand pages, so its list carries each brand's own
+ * URL and name and nothing else. Kept beside `itemList` rather than folded
+ * into it because that one reads `Product` fields the engine types, and a
+ * brand is a different payload with a different shape.
+ */
+export function urlItemList(entries: readonly BreadcrumbItem[], url: string): JsonLdNode {
+  return {
+    '@type': 'ItemList',
+    '@id': `${url}#itemlist`,
+    url,
+    numberOfItems: entries.length,
+    itemListElement: entries.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: entry.url,
+      name: entry.name,
+    })),
+  };
+}
+
 export function faqPage(pairs: readonly FaqPair[], url?: string): JsonLdNode {
   return compact({
     '@type': 'FAQPage',

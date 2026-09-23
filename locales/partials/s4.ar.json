@@ -3,5 +3,20 @@
   "ox.listing.featured_next": "المنتجات التالية",
   "ox.listing.featured_slide_label": "المنتج {{index}} من {{total}}",
   "ox.listing.featured_carousel_role": "عرض دائري",
-  "ox.listing.featured_slide_role": "شريحة"
+  "ox.listing.featured_slide_role": "شريحة",
+  "ox.brands.products_count": "منتجات: {{count}}",
+  "ox.brands.letters_label": "الانتقال إلى حرف",
+  "ox.brands.group_label": "علامات تبدأ بحرف {{char}}",
+  "ox.brands.explore_brands_label": "علامات أخرى",
+  "ox.brands.explore_types_label": "تصفح حسب النوع",
+  "ox.home.brands_prev": "العلامات السابقة",
+  "ox.home.brands_next": "العلامات التالية",
+  "ox.home.brands_carousel_role": "عرض دائري",
+  "ox.home.brands_slide_role": "شريحة",
+  "ox.home.brands_slide_label": "العلامة {{index}} من {{total}}",
+  "ox.seo.brands.title": "العلامات التجارية للمكملات الغذائية | اوبتيمال اكس",
+  "ox.seo.brands.description": "تصفح العلامات التجارية المتوفرة في اوبتيمال اكس، واختر علامة لعرض منتجاتها من البروتين والكرياتين والفيتامينات، مع شرح واضح قبل الشراء.",
+  "ox.seo.brand.title_qualified": "مكملات {{brand}} الغذائية والرياضية | اوبتيمال اكس",
+  "ox.seo.brand.title_compact": "مكملات {{brand}} | اوبتيمال اكس",
+  "ox.seo.brand.description_pattern": "تصفح منتجات {{brand}} المتوفرة في متجر اوبتيمال اكس: بروتين وكرياتين وفيتامينات، مع شرح واضح لكل منتج قبل الشراء وشحن لجميع مدن السعودية."
 }

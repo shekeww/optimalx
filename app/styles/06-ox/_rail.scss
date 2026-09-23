@@ -1,0 +1,165 @@
+// ---------------------------------------------------------------------------
+// The rail primitive: one scroller, one cue, one progress strap.
+// ---------------------------------------------------------------------------
+// Coordinator brief, 2026-09-23: every carousel in this theme hides the native
+// scrollbar and states its own position instead, in the identity's language —
+// an angled ACCENT CHEVRON at the reading end of the rail (the mark's own arm,
+// X-IDENTITY §1.3's chevron, drawn at 34° through `--ox-skew` and nothing
+// else), which pulses once when the block reveals and doubles as the "next"
+// control, and a 3px accent segment on a `--ox-line` track under the rail
+// whose inline position tracks scroll progress.
+//
+// Built here rather than inside the brand carousel so the conductor can hang
+// the same three classes on the product rails, the featured covers and the
+// posters afterwards. The markup contract is exactly:
+//
+//   <div class="ox-rail" ref={useRailProgress(trackRef)}>
+//     <ul class="ox-rail__track" ref={trackRef}>…</ul>
+//     <button class="ox-rail__cue">two .ox-rail__cue-arm spans</button>
+//     <div class="ox-rail__progress"></div>
+//   </div>
+//
+// `useRailProgress` (app/components/common/hooks) publishes
+// `--ox-rail-visible`, `--ox-rail-progress` and `data-rail` on `.ox-rail`.
+// Until it has measured, `data-rail` is absent and BOTH the cue and the
+// segment are invisible, so a rail that fits draws no affordance at all and
+// the server-rendered html never promises one.
+//
+// Identity: the two cue arms are the only angled elements here, they are thin
+// parallelogram BARS (X-IDENTITY §2.3's bar exemption: a bar's run is its own
+// travel, not a bite out of its inline-size) and they carry no block-size of
+// their own — they are sized by `inset-block`, so the 158px law's target
+// never applies to them. Nothing here animates a `clip-path`; the one
+// animation is the cue's single pulse, on `transform` and `opacity` only.
+
+.ox-rail {
+  position: relative;
+}
+
+// The scroller itself. Scroll-snap, no native scrollbar, contained
+// overscroll so a swipe at the end of the rail never pages the document.
+.ox-rail__track {
+  display: flex;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > * {
+    flex: none;
+    scroll-snap-align: start;
+  }
+}
+
+// The cue: a 44px target with no face of its own, carrying the mark's
+// chevron. Present only once the hook has measured a rail that can still
+// scroll, so it is never a dead control.
+.ox-rail__cue {
+  @include ox-focus(2px);
+  position: absolute;
+  inset-inline-end: 0;
+  // Centred on the track's own band without a transform, so the pulse
+  // keyframes below own `transform` outright.
+  inset-block-start: 0;
+  inset-block-end: var(--ox-rail-cue-offset, 15px);
+  margin-block: auto;
+  display: none;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  .ox-rail[data-rail='scroll'] & {
+    display: grid;
+  }
+}
+
+// One arm of the mark's chevron. `--ox-skew` is
+// `calc(var(--direction-factor) * var(--ox-angle))`, so the pair mirrors
+// itself between RTL and LTR and the chevron always points at the reading
+// end of the rail. No block-size here on purpose (see the header note).
+.ox-rail__cue-arm {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 9px;
+  inset-block-end: 22px;
+  inline-size: 3px;
+  margin-inline-start: -1.5px;
+  background: var(--ox-accent);
+  transform: skewX(var(--ox-skew));
+}
+
+.ox-rail__cue-arm--down {
+  inset-block-start: 22px;
+  inset-block-end: 9px;
+  transform: skewX(calc(-1 * var(--ox-skew)));
+}
+
+// The progress strap. The track is always drawn (it reads as the rule that
+// closes the rail); the accent segment appears only once the hook has
+// measured something to scroll, and moves by position, never by width.
+.ox-rail__progress {
+  position: relative;
+  block-size: 3px;
+  margin-block-start: var(--ox-3);
+  background: var(--ox-line);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(
+      var(--ox-rail-progress, 0) * (100% - var(--ox-rail-visible, 1) * 100%)
+    );
+    inline-size: calc(var(--ox-rail-visible, 1) * 100%);
+    background: var(--ox-accent);
+    opacity: 0;
+  }
+
+  .ox-rail[data-rail] &::before {
+    opacity: 1;
+  }
+}
+
+// The one pulse: it runs when the block this rail sits in reveals, once,
+// and never again. `useSectionReveal` does not arm an element that is
+// already on screen at hydration and returns before observing under
+// `prefers-reduced-motion`, so this is both a below-the-fold effect and an
+// opt-out one; the media query below is the belt to that brace.
+@keyframes ox-rail-cue {
+  0% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  55% {
+    opacity: 1;
+    transform: translateX(calc(var(--direction-factor) * 4px));
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+[data-reveal='in'] .ox-rail__cue {
+  animation: ox-rail-cue var(--dur-slow) var(--ease-out) 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal='in'] .ox-rail__cue {
+    animation: none;
+  }
+}

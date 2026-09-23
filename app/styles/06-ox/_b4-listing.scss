@@ -1025,20 +1025,132 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // ---------------------------------------------------------------------------
-// 11. Brands (DIRECTION 6.14)
+// 11. Brands: the tile, the index page and the brand banner (DIRECTION 6.14;
+//     owner brief 2026-09-23 late, items 2 and 3)
 // ---------------------------------------------------------------------------
-.ox-brands {
+// One tile draws every brand surface - the home carousel, the `/brands` index
+// grid - so a brand looks like itself wherever it appears. It is declared here
+// rather than in `_b2-home.scss` because the index grid is a listing surface
+// and the home carousel only borrows it.
+//
+// The tile's one angled gesture is the mark's own ARM-FOOT CORNER CUT
+// (X-IDENTITY §3.3, `ox-x-corner`), on the PLATE and never on the link: a
+// `clip-path` clips its element's outline, so the focus ring lives on the
+// unclipped anchor (§7.1 `focus-clipped`). The plate never drops below 158px
+// of block-size, which is what makes a panel-scale angle legal on it at all
+// (§3.2's 158px law), and the run stays inside §2.3's 24% budget at every
+// width the tile is drawn at:
+//
+//   tier      tile width (carousel / index grid)   lean / run   run as %
+//   base      139.8 at 390 / 171 at 390            40 / 27.0    19.3 / 15.8
+//   >= 768    168 at 768 / 229.3 at 768            48 / 32.4    19.3 / 14.1
+//   >= 1024   228 at 1024 / 146.7 at 1024 (6-up)   48 / 32.4    14.2 / 22.1
+//   >= 1280   202.7 at 1440 / 202.7 at 1440        64 / 43.2    21.3 / 21.3
+//
+// This overrides X-IDENTITY §6's Brands row ("brand plates are straight;
+// forbidden: a corner cut on a brand plate") on the owner's explicit later
+// instruction; see docs/build/progress/S4d.md for the note and the reasoning.
+//
+// NO HOVER LIFT anywhere here (BUILD 3.4, progress/S3c.md finding 6): the
+// plate that used to translate -2px on hover now steps its own value and its
+// hairline instead, and colour never transitions (X-IDENTITY §5).
+.ox-brand-tile {
+  @include ox-focus(2px);
+  display: block;
+  text-decoration: none;
+  color: var(--ox-fg);
+}
+
+.ox-brand-tile__plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  min-block-size: 158px;
+  padding: var(--ox-4);
+  background: var(--ox-plate);
+  border: 1px solid var(--ox-plate-2);
+  @include ox-x-corner(40px);
+
+  .ox-brand-tile:hover & {
+    background: var(--ox-plate-2);
+    border-color: var(--ox-line-2);
+  }
+}
+
+// The logo field: a fixed 3:2 box on a light ground (coordinator brief
+// 2026-09-23). The box reserves its own height through `aspect-ratio`, so a
+// logo that arrives late shifts nothing, and `contain` inside it means the
+// artwork is never cropped, stretched or recoloured - a third-party mark is
+// shown as its owner draws it or not at all.
+.ox-brand-tile__logobox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  aspect-ratio: 3 / 2;
+  padding: var(--ox-3);
+  background: var(--ox-paper);
+}
+
+.ox-brand-tile__logo {
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  object-fit: contain;
+}
+
+// The NAME MARK: the brand's own name set in the theme's title weight, its
+// first grapheme in `--ox-accent-deep`. Deep, not `--ox-accent`: this is
+// TEXT, and X-IDENTITY §4.6 fixes the accent step for accent text at
+// #A82D07 (5.99:1 on the plate tints, where the bright accent is 3.5:1 and
+// fails AA at this size).
+.ox-brand-tile__mark {
+  font-size: var(--ox-t-h3);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.ox-brand-tile__mark-first {
+  color: var(--ox-accent-deep);
+}
+
+.ox-brand-tile__count {
+  color: var(--ox-fg-3);
+}
+
+@media (min-width: 768px) {
+  .ox-brand-tile__plate {
+    @include ox-x-corner(48px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-brand-tile__plate {
+    min-block-size: 176px;
+    @include ox-x-corner(64px);
+  }
+}
+
+// --- The /brands index -----------------------------------------------------
+// Our own composition in the theme's chrome: the listing masthead band (so
+// /brands and a brand's own products open identically), the X watermark over
+// the head at §4.1's 0.06, the letter groups the API itself serves, and a
+// letter rail at 1024 and up.
+.ox-brandhub {
   padding-block-end: var(--ox-16);
 }
 
-// The band is a grandparent of its own container, so this reaches only the
-// content column under it: the grid, or the empty state when the store has no
-// brands yet.
-.ox-brands > .ox-container {
-  padding-block-start: var(--ox-8);
+.ox-brandhub__band {
+  position: relative;
+  // The watermark is deliberately placed outside its own box (§4.1: inset
+  // -8%/-10%); the band clips it so it never reaches the page edges.
+  overflow: hidden;
 }
 
-.ox-brands__head {
+.ox-brandhub__head {
   display: flex;
   flex-direction: column;
   gap: var(--ox-2);
@@ -1050,13 +1162,54 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-.ox-brands__intro {
+.ox-brandhub__intro {
   margin: 0;
   color: var(--ox-fg-2);
   max-inline-size: var(--ox-container-text);
 }
 
-.ox-brands__grid {
+// §4.1's sizes: 240 by 212.1 at 390, 420 by 371.2 at 1440. Colour, opacity
+// and placement belong to the `.ox-x-watermark` primitive; only the size is
+// set here.
+.ox-brandhub__watermark {
+  --ox-x-wm-w: 240px;
+  --ox-x-wm-h: 212.1px;
+}
+
+.ox-brandhub__body {
+  padding-block-start: var(--ox-8);
+}
+
+.ox-brandhub__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-12);
+}
+
+.ox-brandhub__group {
+  // The letter rail jumps here; the offset keeps the heading clear of the
+  // sticky chrome instead of landing under it.
+  scroll-margin-block-start: calc(var(--ox-h-bar, 64px) + var(--ox-4));
+}
+
+.ox-brandhub__group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  margin: 0 0 var(--ox-4);
+  font-size: var(--ox-t-h3);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg-3);
+
+  &::after {
+    content: '';
+    flex: 1;
+    block-size: 1px;
+    background: var(--ox-line);
+  }
+}
+
+.ox-brandhub__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ox-4);
@@ -1065,77 +1218,127 @@ nav.breadcrumbs .s-breadcrumb-item button {
   list-style: none;
 }
 
-@media (min-width: 640px) {
-  .ox-brands__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+// The letter rail: anchor links to the groups the API served, never a filter
+// and never a second source of truth about which letters exist.
+.ox-brandhub__letters {
+  display: none;
+}
+
+.ox-brandhub__letters-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0 0 var(--ox-6);
+  padding: 0;
+  list-style: none;
+}
+
+.ox-brandhub__letter {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg-2);
+  text-decoration: none;
+  background: var(--ox-plate);
+
+  &:hover {
+    color: var(--ox-fg);
+    background: var(--ox-plate-2);
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-brandhub__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .ox-brands__grid {
+  .ox-brandhub__grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: var(--ox-6);
   }
-  .ox-brands__head {
+
+  .ox-brandhub__letters {
+    display: block;
+  }
+
+  .ox-brandhub__head {
     min-block-size: 88px;
   }
-}
 
-.ox-brand-tile {
-  @include ox-focus(2px);
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  text-decoration: none;
-  color: var(--ox-fg);
-}
-
-.ox-brand-tile__plate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 3 / 2;
-  padding: var(--ox-6);
-  background: var(--ox-plate);
-  border: 1px solid var(--ox-plate-2);
-  border-radius: var(--ox-r-4);
-  transition: transform var(--dur-fast) var(--ease-out);
-
-  .ox-brand-tile:hover & {
-    transform: translateY(-2px);
+  .ox-brandhub__watermark {
+    --ox-x-wm-w: 420px;
+    --ox-x-wm-h: 371.2px;
   }
 }
 
-.ox-brand-tile__img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-}
-
-.ox-brand-tile__name {
-  display: block;
-  min-block-size: 40px;
-  font-weight: var(--ox-w-title);
-  text-align: center;
-}
-
-// The 64 logo plate in a brand listing header (DIRECTION 6.14).
-.ox-brand-plate {
+// --- A brand's own page ----------------------------------------------------
+// The banner is this page's one panel-scale gesture: the identity plate with
+// the mark's corner cut, carrying the brand's artwork when it has one, the
+// name mark as the page's single h1, and the live product count.
+.ox-brandhero {
+  position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
-  inline-size: 96px;
-  block-size: 64px;
-  padding: var(--ox-2);
-  background: var(--ox-card);
-  border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  gap: var(--ox-2);
+  min-block-size: 200px;
+  margin-block-start: var(--ox-4);
+  padding: var(--ox-6);
+  background: var(--ox-plate);
+  @include ox-x-corner(40px);
 }
 
-.ox-brand-plate__img {
-  inline-size: 100%;
-  block-size: 100%;
+.ox-brandhero__eyebrow {
+  margin: 0;
+  color: var(--ox-fg-3);
+  font-weight: var(--ox-w-ui);
+}
+
+.ox-brandhero__logo {
+  max-inline-size: 160px;
+  max-block-size: 64px;
   object-fit: contain;
+}
+
+.ox-brandhero__mark {
+  margin: 0;
+}
+
+.ox-brandhero__mark-first {
+  color: var(--ox-accent-deep);
+}
+
+.ox-brandhero__count {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+.ox-brandhero__intro {
+  margin: 0;
+  max-inline-size: var(--ox-container-text);
+  color: var(--ox-fg-2);
+}
+
+@media (min-width: 768px) {
+  .ox-brandhero {
+    min-block-size: 220px;
+    padding: var(--ox-8);
+    @include ox-x-corner(48px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-brandhero {
+    min-block-size: 240px;
+    @include ox-x-corner(64px);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1234,7 +1437,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
 .ox-card-product__swatches {
   position: absolute;
   inset-block-start: 50%;
-  inset-inline-end: 0;
+  // Shifted 2px past the row's resting edge, toward the plate's PHYSICAL
+  // left in BOTH languages (coordinator addendum, 2026-09-23): the plain
+  // `inset-inline-end: 0` this carried put the column on the physical left
+  // only in RTL and flipped it to the physical right in LTR; the
+  // `[dir='ltr']` override below now pins the same physical corner in
+  // English too. -2px is the full safe budget, not the ~4px "one gap"
+  // (`--ox-1`) the ask named: the selected ring below needs exactly 4px of
+  // clearance (2px outline + 2px offset) from the plate's own clipped edge
+  // (the padding-inline below already gives it 4px of that 6px), so -2px is
+  // as far as the ring can move before the plate's `overflow: hidden` clips
+  // it — flagged here rather than silently shipping a clipped ring.
+  inset-inline-end: -2px;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -1250,22 +1464,30 @@ nav.breadcrumbs .s-breadcrumb-item button {
   overflow: visible;
   transform: translateY(-50%);
   pointer-events: none;
+
+  [dir='ltr'] & {
+    inset-inline-end: auto;
+    inset-inline-start: -2px;
+  }
 }
 
 .ox-card-product__swatch {
   inline-size: 14px;
   block-size: 14px;
-  border: 1px solid var(--ox-bd-2);
+  // The unselected ring lightens to --ox-line-3 at reduced opacity
+  // (coordinator addendum, 2026-09-23): the dot's own fill below is the
+  // product's real colour and is never touched — only the boundary framing
+  // it lightens.
+  border: 1px solid color-mix(in srgb, var(--ox-line-3) 50%, transparent);
   border-radius: var(--ox-r-pill);
   // Set from the product's own option hex; the fallback keeps the dot visible
   // if a colour ever arrives empty.
   background: var(--ox-swatch, var(--ox-plate));
 
-  // The ring on the default value, in the identity's own interactive colour
-  // (owner review, 2026-09-23, item 3: was `--ox-fg`). An outline, not a
-  // shadow.
+  // The ring on the default value lightens to --ox-accent-light (coordinator
+  // addendum, 2026-09-23; was --ox-accent). An outline, not a shadow.
   &.is-selected {
-    outline: 2px solid var(--ox-accent);
+    outline: 2px solid var(--ox-accent-light);
     outline-offset: 2px;
   }
 }
@@ -1483,29 +1705,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // it read as a stroke with nothing behind it, and the stroke is dark rather
   // than the hero's white because this sits on a white card.
   @include ox-secondary-face(var(--ox-fg), var(--ox-card));
-  // STRAIGHT-EDGED (owner override, 2026-09-23, section 12 preamble): the
-  // buy-now button is the card's one angled primitive, so this control takes
-  // the plain radius CARD-2026-09-23 section 6.1 already names for it
-  // (`ox-angled(40px)` removed) rather than a second parallelogram.
-  border-radius: var(--ox-r-2);
+  // ANGLED AGAIN (owner review, 2026-09-23, late night, item 1: revert):
+  // the straight `border-radius: var(--ox-r-2)` this rule carried an hour
+  // read as "an odd design, not angled and energetic" against the global
+  // secondary face everywhere else (hero, PDP, cart). The mixin's own
+  // `::before` already carries `clip-path: inherit`, so no local override is
+  // needed here any more — see the deleted `&::before` block this replaced.
+  @include ox-angled(40px);
   font-family: inherit;
   // 0.9 of the Small step (see `.ox-card-product__qty-value` above).
   font-size: calc(var(--ox-t-small) * 0.9);
   font-weight: var(--ox-w-ui);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    z-index: 0;
-    background: var(--ox-card);
-    // `border-radius: inherit`, not `clip-path: inherit` (the mixin's own
-    // pattern for an angled face): this face is straight-edged, so the fill
-    // pseudo takes the same rounding as the element it sits inside instead.
-    border-radius: inherit;
-  }
 
   > * {
     position: relative;
@@ -1593,25 +1805,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // minimum), 20 → 18, and the Small step's own ratio for the font.
   block-size: 40px;
   padding-inline: 18px;
-  // STRAIGHT-EDGED, matching the upgraded state above (owner override,
-  // 2026-09-23): the un-upgraded host is the button while it lasts, and it
-  // never carries a shape the real button will not.
-  border-radius: var(--ox-r-2);
+  // ANGLED AGAIN, matching the upgraded state above (owner review,
+  // 2026-09-23, late night, item 1: revert) — the un-upgraded host is the
+  // button while it lasts, and it now carries the exact shape the real
+  // button will hand over to. The mixin's own `::before` already carries
+  // `clip-path: inherit`, so the local override this replaced is gone too.
+  @include ox-angled(40px);
   font-family: inherit;
   font-size: calc(var(--ox-t-small) * 0.9);
   font-weight: var(--ox-w-ui);
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
   cursor: pointer;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    z-index: 0;
-    background: var(--ox-card);
-    border-radius: inherit;
-  }
 
   &::after {
     content: '';
@@ -1709,33 +1914,17 @@ nav.breadcrumbs .s-breadcrumb-item button {
   @include ox-angled(44px);
 }
 
-// MOBILE ROW B (coordinator fix, 2026-09-23, urgent): below 768 the buy
-// button shares its row with the icon-only add control instead of owning a
-// full-width row of its own (`.ox-card-product__action`'s own mobile grid,
-// below) — its grid cell is as narrow as 81px at the 390 two-up card, where
-// the 44px parallelogram's own run (29.7px) plus a 17px/700 label could not
-// fit; measured, the label painted clipped ("شتري الآن"). The margin that
-// protects the full-width desktop row from the card's own corner radius is
-// therefore wrong here too: this cell no longer touches the card's padding
-// edge on both sides, only on its own inline-end, and X-IDENTITY §2.4's own
-// `run / 0.24` floor (123.75px) disqualifies the parallelogram outright at
-// this width regardless. `ox-x-corner` draws the mark's own arm-foot corner
-// cut instead (§3.3) — ONE angled gesture still, just the small one — at an
-// 8px lean (run 5.4), which clears §3.2's 158px law on its own terms (no
-// `block-size`/`min-block-size` under 158 is declared in THIS rule's own
-// body) and needs none of the desktop row's clearance.
-@media (max-width: 767px) {
-  .ox-card-product__buy {
-    // Full width of its OWN grid cell now (the `add`/`buy` pair share the
-    // row, below), not the full card content box, so there is no longer a
-    // corner to clear on the inline-start side and the inline-end side is
-    // the corner cut's own job.
-    inline-size: 100%;
-    margin-inline: 0;
-    padding-inline: 6px;
-    @include ox-x-corner(8px, end);
-  }
-}
+// MOBILE ROW B, REVERTED (owner review, 2026-09-23, late night, item 2):
+// buy-now no longer shares a row with the add control at all — the add
+// button moved up to join the quantity stepper instead (`.ox-card-product
+// __action`'s own mobile grid, below), so buy-now's mobile grid cell is the
+// full row width again, identical to the desktop rule above (`calc(100% -
+// 16px)`, the 8px corner clearance, the full `ox-angled(44px)` parallelogram).
+// The coordinator's earlier `ox-x-corner` corner-cut fallback existed only
+// because that shared 81px cell was geometrically under X-IDENTITY §2.4's
+// `run / 0.24` floor (123.75px); the cell that forced it no longer exists,
+// so no mobile override is needed here at all — the base rule above already
+// does the right thing.
 
 // THE PHONE CELL — `--native` only now. The Link variant this rule used to
 // cover moved to the shared mobile row above (coordinator fix, 2026-09-23),
@@ -1899,50 +2088,83 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // 13. Reduced motion (DIRECTION 7.1, 9.6)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
-  .ox-subneed__link,
-  .ox-brand-tile__plate {
+  // `.ox-brand-tile__plate` is no longer listed here: its hover translate is
+  // gone outright (section 11, BUILD 3.4 and progress/S3c.md finding 6), so
+  // there is nothing left for reduced motion to switch off.
+  .ox-subneed__link {
     transition: none;
   }
-  .ox-subneed__link:hover,
-  .ox-brand-tile:hover .ox-brand-tile__plate {
+  .ox-subneed__link:hover {
     transform: none;
   }
 }
 
 // ---------------------------------------------------------------------------
-// The action row below 768. The stepper takes its own row, compact, at the
-// reading start (owner review, 2026-09-23, item 2), and the next row holds
-// the add button as an icon-only control BESIDE buy-now, not above it
-// (coordinator fix, 2026-09-23, urgent, superseding this row's own `40% 1fr`
-// split): the add cell is now a FIXED 48px, not a percentage, so buy-now's
-// own cell is deterministic — 81px at the 390 two-up card's 137px content
-// (137 − 48 − 8 gap), never the ~74px the 40% split left it depending on the
-// card's own width. At 768 and up nothing here applies — the container-query
-// tiers further down keep doing their own, narrower job (a card square
-// enough to need it even on a wide viewport, e.g. the related-products
-// rail), scoped below to the same 768 floor so the two systems never compete
-// for the same card.
+// The action row below 768, REARRANGED (owner review, 2026-09-23, late
+// night, item 2 — supersedes the coordinator's own `48px 1fr` / `qty qty` /
+// `add buy` fix from an hour earlier, which put the stepper on its own row
+// above an add+buy pair). Row A is now the icon-only add button at the
+// reading start plus the quantity stepper filling the rest; row B is
+// buy-now, full width, on its own (the base rule above, unchanged — see the
+// reverted mobile override just above this one). At 768 and up nothing here
+// applies — the container-query tiers further down keep doing their own,
+// narrower job (a card square enough to need it even on a wide viewport,
+// e.g. the related-products rail), scoped to the same 768 floor so the two
+// systems never compete for the same card.
 // ---------------------------------------------------------------------------
 @media (max-width: 767px) {
   .ox-card-product__action {
-    grid-template-columns: 48px 1fr;
-    grid-template-areas: 'qty qty' 'add buy';
+    grid-template-columns: 64px 1fr;
+    grid-template-areas: 'add qty' 'buy buy';
+    // Row A's own column gap only (row-gap between the two rows keeps its
+    // `--ox-2`): the stepper's own minimum content (two buttons plus the
+    // value's own 22px floor) needs every spare pixel once it shares a row
+    // with a fixed 64px cell — see the measurements below.
+    column-gap: var(--ox-1);
   }
 
-  // Compact, at the reading start: `justify-self` overrides the grid's own
-  // stretch, so the stepper keeps the fixed width the base rule already
-  // gives it instead of filling the row it now has to itself.
+  // The stepper fills the rest of row A now, instead of sitting compact at
+  // its own fixed 96px width: the base rule's `inline-size: 96px` is
+  // overridden here so the grid's own default `stretch` sizes it to
+  // whatever the `1fr` column leaves once the 64px add cell is out.
   .ox-card-product__qty {
-    justify-self: start;
+    flex: 1 1 auto;
+    inline-size: auto;
   }
 
-  // 48 wide, 44 tall, straight-edged (owner override, section 12 preamble):
-  // the add control is never the card's one angled primitive, so it takes a
-  // plain radius rather than `ox-angled(44px)`'s parallelogram — coordinator
-  // fix, 2026-09-23, replacing this tier's own earlier angled treatment.
-  // Both the class and the slot's structural position are styled, for the
-  // same reason the base rule above is: the class never lands on the host
-  // during SSR or before hydration.
+  // The buttons shrink to the same 18px this file's own narrowest
+  // container-query tier already ships (`ox-hit-area` keeps the touch
+  // target at 44px regardless of the painted size), because the stepper now
+  // shares its row with a fixed 64px cell. MEASURED, not assumed: qty's own
+  // available width is (card content − 64px add cell − 4px gap). At the
+  // required 390 case (137px content) that is 69px against a 58px minimum
+  // (18+18 buttons + the value's own 22px floor) — 11px spare. At 360
+  // (124px content) it is 56px against the same 58px minimum — 2px SHORT;
+  // at 320 (104px content) it is 36px against 58px — 22px short. Flagged,
+  // not silently absorbed: 390 and up (the vast majority of phones this
+  // theme is measured against, and the width CARD-2026-09-23 itself uses as
+  // its own reference) fit; 360 and 320 do not, because the stepper's own
+  // 22px value floor and 18px button floor are both pre-existing minimums
+  // this batch did not set and was not asked to redesign — narrowing the
+  // 64px add cell further, or the stepper's own floor, is an owner call.
+  .ox-card-product__qty-btn {
+    inline-size: 18px;
+  }
+
+  // 64 WIDE, 44 TALL, ANGLED AGAIN (owner review, 2026-09-23, late night,
+  // item 1: revert). The icon-only add button is the same outlined
+  // parallelogram as the desktop text button, just narrower: it carries only
+  // the glyph, so the run (`ox-run(44px)` = 29.7px) still reads inside a
+  // 64px box — a constant 34.3px core width at every height, per the
+  // identity's own two-edges-shifted-by-the-run construction (X-IDENTITY
+  // §2.1) — even though 64px sits under §2.4's own 123.75px `run / 0.24`
+  // floor for a LABELLED control. Flagged, not silently assumed comfortable:
+  // the floor exists for a control that also carries a label; this one
+  // carries only a centred glyph, and the owner asked for exactly this width
+  // ("about 64px wide... so the parallelogram's run still reads"). Both the
+  // class and the slot's structural position are styled, for the same
+  // reason the base rule above is: the class never lands on the host during
+  // SSR or before hydration.
   .ox-card-product__add,
   .ox-card-product__add-slot > * {
     inline-size: 100%;
@@ -1958,7 +2180,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-card-product__add-slot > *:not(:has(.s-button-element)) {
     min-block-size: 44px;
     padding-inline: 0;
-    border-radius: var(--ox-r-2);
+    @include ox-angled(44px);
   }
 
   // ICON-ONLY: the glyph already paints as a mask on `.s-button-text::before`
@@ -1967,7 +2189,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // word. `font-size: 0` leaves the text node in the accessibility tree
   // regardless of its painted size, so the button's accessible name —
   // `AddButton` (OxProductCard.tsx) sets `aria-label` unconditionally — never
-  // depends on it, and no separate `sr-only` span is needed.
+  // depends on it, and no separate `sr-only` span is needed. The glyph stays
+  // at the base rule's own 18px here (not grown to 20px, unlike the narrower
+  // container tier below): centred in a 64px-wide, 44px-tall parallelogram
+  // whose constant core is 34.3px wide, an 18px glyph clears the slant by
+  // 2.0–6.2px at every height across its own vertical extent (computed
+  // against the run above), where a 20px glyph would leave under half a
+  // pixel at the two extreme corners — flagged and avoided rather than
+  // shipped tight.
   .ox-card-product__add .s-button-text,
   .ox-card-product__add-label,
   .ox-card-product__add-slot > * .s-button-text {
@@ -1977,14 +2206,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-card-product__add .s-button-text,
   .ox-card-product__add-slot > * .s-button-text {
     gap: 0;
-  }
-
-  .ox-card-product__add .s-button-text::before,
-  .ox-card-product__add:not(:has(.s-button-element))::after,
-  .ox-card-product__add-slot > * .s-button-text::before,
-  .ox-card-product__add-slot > *:not(:has(.s-button-element))::after {
-    inline-size: 20px;
-    block-size: 20px;
   }
 }
 
@@ -2059,6 +2280,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
       inline-size: 44px;
       min-inline-size: 44px;
       padding-inline: 0;
+      // STRAIGHT (owner review, 2026-09-23, item 1's revert does not reach
+      // here): at 44px wide against a 40px-tall run of 27px the constant
+      // core is only 17px, well under X-IDENTITY §2.4's own `run / 0.24`
+      // floor (112.5px) for a labelled-or-not control at this run — the base
+      // rule's `ox-angled(40px)` is cancelled explicitly rather than left to
+      // clip the 20px glyph below. The `[dir='ltr']` twin is needed too: the
+      // mixin's own LTR mirror carries an extra attribute selector, which
+      // outranks a plain override on specificity alone regardless of source
+      // order.
+      clip-path: none;
+      [dir='ltr'] & {
+        clip-path: none;
+      }
     }
 
     // Collapses the rendered WORD to nothing while leaving the icon alone:
@@ -2140,6 +2374,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
     .ox-card-product__add-slot > *:not(:has(.s-button-element)) {
       inline-size: 40px;
       min-inline-size: 40px;
+      // STRAIGHT, same reasoning as the wider tier above: 40px against the
+      // same 27px run leaves a 13px core, further under §2.4's floor still.
+      // The `[dir='ltr']` twin beats the mixin's own higher-specificity
+      // mirror the same way.
+      clip-path: none;
+      [dir='ltr'] & {
+        clip-path: none;
+      }
     }
   }
 }
@@ -2320,6 +2562,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // treatment the home grid's `CategoryTile` carries, off the same
 // `HOME_TILE_TONES` map, so a type never reads as one colour on the home
 // page and another here.
+// OWNER REVIEW 2026-09-23 (later, coordinator-authorized scope on this
+// otherwise off-limits file for this one fix): `overflow: hidden` added so
+// the art variant's `<img>` (`.ox-cat-card__art`, below) is clipped to this
+// same `--ox-r-2` corner — see that selector's own comment for why the art
+// card used to go square instead. `ox-focus()` (`.ox-cat-card__link`, below)
+// draws an `outline`, never clipped by `overflow` (only `clip-path` clips
+// an outline), so the focus ring is unaffected.
 .ox-cat-card {
   position: relative;
   isolation: isolate;
@@ -2331,6 +2580,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   background: var(--ox-fill);
   border: 1px solid var(--ox-line-3);
   border-radius: var(--ox-r-2);
+  overflow: hidden;
   transition: border-color var(--dur-base) var(--ease-out);
 
   // Border colour only (BUILD.md §3.4: no lift on hover, identity rule 1).
@@ -2470,17 +2720,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
 //    card alike, art or tinted, and `__children` above absorbs any leftover
 //    row height) and its 1px `--ox-line-3` frame (the tinted card's own
 //    border/background, untouched below - only `padding` goes to 0 so the
-//    artwork runs edge to edge, and `border-radius` too, so a square-
-//    cornered artwork (coordinator addendum, owner review 2026-09-23: no
-//    clip-path on the artwork at any tier - see `.ox-cat-card__art` below)
-//    sits flush inside a square-cornered frame, not a rounded one showing
-//    the artwork's own corner past the curve); `.ox-cat-card--art
+//    artwork runs edge to edge; `border-radius` no longer goes to 0 here
+//    (owner review 2026-09-23, later: the square corners this produced next
+//    to the tinted cards' own `--ox-r-2` read as a defect, not a deliberate
+//    two-shape system) - the base rule's `--ox-r-2` and its new
+//    `overflow: hidden` (above) now clip the artwork to the SAME curve the
+//    frame carries, so the two agree instead of one hiding the other's
+//    corner; `.ox-cat-card--art
 //    .ox-cat-card__link`, below, gets `position: relative` so `__body`
 //    scopes to the artwork alone.
 // ---------------------------------------------------------------------------
 .ox-cat-card--art {
   padding: 0;
-  border-radius: 0;
   color: var(--ox-fg); // resets `--black`'s light ink for collagen-beauty -
                         // see "the collagen-beauty conflict" note, below.
 }
@@ -2496,9 +2747,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // which this mirrors; this grid's own 2/3/5-column rhythm (below) does not
 // match the home grid's 2/4, so only the one shared floor is carried here
 // rather than a second, page-specific measured checkpoint. Coordinator
-// addendum, owner review 2026-09-23: no `clip-path` at any tier — a plain
-// rectangle, the card's own square corners (`.ox-cat-card--art`'s own
-// `border-radius: 0`, above).
+// addendum, owner review 2026-09-23: no `clip-path` at any tier - a plain
+// rectangle, no radius of its own; `.ox-cat-card`'s own `border-radius:
+// var(--ox-r-2)` plus `overflow: hidden` (owner review 2026-09-23, later)
+// clips this image to that same curve instead.
 .ox-cat-card__art {
   position: relative;
   z-index: 0;

@@ -139,7 +139,7 @@ describe('OxBrands', () => {
     ];
     const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
     await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
-    const names = Array.from(container.querySelectorAll('.ox-brands__link')).map((el) => el.textContent);
+    const names = Array.from(container.querySelectorAll('.ox-brand-tile')).map((el) => el.textContent);
     expect(names[0]).toContain('Heavy');
     expect(names[1]).toContain('Light');
   });
@@ -163,9 +163,67 @@ describe('OxBrands', () => {
     brandGroups.a = [{ id: '1', name: 'Optimum Nutrition', url: '/on', logo: '' }];
     const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
     await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
-    const mark = container.querySelector('.ox-brands__mark');
+    const mark = container.querySelector('.ox-brand-tile__mark');
     expect(mark?.textContent).toBe('Optimum Nutrition');
-    expect(mark?.querySelector('.ox-brands__mark-first')?.textContent).toBe('O');
+    expect(mark?.querySelector('.ox-brand-tile__mark-first')?.textContent).toBe('O');
+  });
+
+  // The 2026-09-23 (late) owner brief: the strip becomes a CAROUSEL of plated
+  // tiles, each stating one live count, with the shared rail primitive's cue
+  // instead of a native scrollbar.
+  it('states a count only when the API sends one, never an inferred number', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [
+      { id: '1', name: 'Counted', url: '/c', logo: '', products_count: 7 },
+      { id: '2', name: 'Uncounted', url: '/u', logo: '' },
+    ];
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    const counts = container.querySelectorAll('.ox-brand-tile__count');
+    expect(counts).toHaveLength(1);
+    expect(counts[0].textContent).toBe(ar['ox.brands.products_count'].replace('{{count}}', '7'));
+  });
+
+  it('is a carousel: the row and every slide say so, and each tile takes the corner-cut plate', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [1, 2, 3].map((n) => ({ id: String(n), name: `B${n}`, url: `/b${n}`, logo: '' }));
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    const row = container.querySelector('.ox-brands__row');
+    expect(row?.getAttribute('aria-roledescription')).toBe(ar['ox.home.brands_carousel_role']);
+    expect(row?.classList.contains('ox-rail__track')).toBe(true);
+    const slides = container.querySelectorAll('.ox-brands__item');
+    expect(slides).toHaveLength(3);
+    expect(slides[0].getAttribute('aria-label')).toBe(
+      ar['ox.home.brands_slide_label'].replace('{{index}}', '1').replace('{{total}}', '3')
+    );
+    expect(container.querySelectorAll('.ox-brand-tile__plate')).toHaveLength(3);
+  });
+
+  it('carries the rail cue as its next affordance, and the arrows only past four brands', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [1, 2, 3].map((n) => ({ id: String(n), name: `B${n}`, url: `/b${n}`, logo: '' }));
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    const cue = container.querySelector('.ox-rail__cue');
+    expect(cue?.getAttribute('aria-label')).toBe(ar['ox.home.brands_next']);
+    expect(container.querySelectorAll('.ox-rail__cue-arm')).toHaveLength(2);
+    expect(container.querySelector('.ox-rail__progress')).not.toBeNull();
+    expect(container.querySelectorAll('.ox-brands__arrow')).toHaveLength(0);
+  });
+
+  it('shows the prev/next pair once there is a screen of tiles to step past', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [1, 2, 3, 4, 5].map((n) => ({ id: String(n), name: `B${n}`, url: `/b${n}`, logo: '' }));
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    const arrows = container.querySelectorAll('.ox-brands__arrow');
+    expect(arrows).toHaveLength(2);
+    expect((arrows[0] as HTMLButtonElement).disabled).toBe(true);
+    expect((arrows[1] as HTMLButtonElement).disabled).toBe(false);
+    // The unfilled angled face is a span inside the button, never the button
+    // itself: a clip-path would clip the focus ring (X-IDENTITY 7.1).
+    expect(arrows[0].querySelector('.ox-iconbtn--angled')).not.toBeNull();
   });
 });
 
