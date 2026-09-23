@@ -1,8 +1,11 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../../common/Button';
 import { Icon } from '../../common/Icon';
+import { StoreRating } from '../../common/StoreRating';
 import { digitsOnly } from '../../blocks/href';
+import { BRANCH_LISTING } from '../../../content/branch';
 import { channelById, SERVICES_HUB } from '../../../content/services';
+import { readStoreRating } from '../../../content/social-proof';
 import { inbodyIncluded, settingText, type Settings } from '../lib/claims';
 
 export interface AdvisoryCtaProps {
@@ -44,6 +47,13 @@ export interface AdvisoryCtaProps {
  * or an outcome. The WhatsApp button renders only once the owner has written
  * `whatsapp_number`; with none set the secondary action is a text link to
  * `/services` instead of a channel the store has not configured.
+ *
+ * VISIT-2026-09-24 §4.3 adds two more things to the plate, both from
+ * `settings` rather than a hook, matching the rest of this file: the store's
+ * `StoreRating` chip beside the closing note, gated the same way every other
+ * rating surface is (`readStoreRating`), and a third quiet link, "الاتجاهات
+ * إلى الفرع", to the fixed `BRANCH_LISTING.directionsUrl` after the two
+ * buttons. Neither changes the plate's own compact shape.
  */
 export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
   const { t } = useTranslation();
@@ -55,6 +65,7 @@ export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
         t('ox.pdp.advisory_whatsapp_text', { product: productName })
       )}`
     : null;
+  const rating = readStoreRating(settings);
 
   return (
     <section
@@ -95,8 +106,21 @@ export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
               {t('ox.services.view_all')}
             </Button>
           )}
+          <Button
+            href={BRANCH_LISTING.directionsUrl}
+            variant="link"
+            target="_blank"
+            rel="noopener noreferrer"
+            iconStart={<Icon name="map-pin" size={20} />}
+            className="ox-advisory__action"
+          >
+            {t('ox.pdp.advisory_directions')}
+          </Button>
         </div>
-        <p className="ox-advisory__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
+        <div className="ox-advisory__foot">
+          {rating ? <StoreRating variant="inline" value={rating} /> : null}
+          <p className="ox-advisory__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
+        </div>
       </div>
     </section>
   );

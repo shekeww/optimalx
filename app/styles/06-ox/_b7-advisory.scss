@@ -46,6 +46,15 @@
   inline-size: 100%;
 }
 
+// The store rating (VISIT-2026-09-24 §4.3) beside the closing note. Wraps on
+// a narrow column rather than forcing the two onto one line.
+.ox-advisory__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-3);
+}
+
 // The reused closing scope line: one step quieter than the line above it,
 // matching how the services band's own closing note reads under its band.
 .ox-advisory__note {

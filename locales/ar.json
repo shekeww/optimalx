@@ -1602,5 +1602,9 @@
   "ox.card.type.whey_isolate": "واي ايزوليت",
   "ox.card.type.casein": "كازين",
   "ox.card.type.plant_protein": "بروتين نباتي",
-  "ox.card.type.mass_gainer": "ماس جينر"
+  "ox.card.type.mass_gainer": "ماس جينر",
+  "ox.blocks.branch.directions": "الاتجاهات",
+  "ox.blocks.branch.photo_wide_alt": "رفوف فرع اوبتيمال اكس في حي الخالدية، المدينة المنورة",
+  "ox.pdp.advisory_directions": "الاتجاهات إلى الفرع",
+  "ox.home.offer_photo_alt": "غرفة الاستشارة في فرع اوبتيمال اكس"
 }

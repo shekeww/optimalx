@@ -1,4 +1,5 @@
 import { pathForSku } from './salla-ids';
+import { STORE_PHOTOS } from './store-photos';
 
 /**
  * The home carousel "اكتشف أكثر" and the offers page's poster grid.
@@ -233,10 +234,12 @@ export const CONTENT_CARDS: ContentCardContent[] = [
     to: '/services',
   },
   {
+    // The real storefront photograph (VISIT-2026-09-24 §4.1), replacing the
+    // stock frame: the slot is 309 to 352px, inside the 415px source.
     slug: 'branch',
-    photo: '/assets/images/about-store.webp',
-    width: 1226,
-    height: 576,
+    photo: STORE_PHOTOS.storefront.photo,
+    width: STORE_PHOTOS.storefront.width,
+    height: STORE_PHOTOS.storefront.height,
     titleKey: `${CONTENT_KEY}.branch_title`,
     lineKey: `${CONTENT_KEY}.branch_line`,
     to: '/about',

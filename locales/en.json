@@ -1602,5 +1602,9 @@
   "ox.card.type.whey_isolate": "Whey isolate",
   "ox.card.type.casein": "Casein",
   "ox.card.type.plant_protein": "Plant protein",
-  "ox.card.type.mass_gainer": "Mass gainer"
+  "ox.card.type.mass_gainer": "Mass gainer",
+  "ox.blocks.branch.directions": "Directions",
+  "ox.blocks.branch.photo_wide_alt": "The shelves inside the OptimalX branch in Al Khalidiyah, Madinah",
+  "ox.pdp.advisory_directions": "Directions to the branch",
+  "ox.home.offer_photo_alt": "The consultation room at the OptimalX branch"
 }

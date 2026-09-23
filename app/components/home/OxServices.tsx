@@ -6,6 +6,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
 import { Icon } from '../common/Icon';
 import { Price } from '../common/Price';
+import { StoreRating } from '../common/StoreRating';
 import { PlanCard } from './PlanCard';
 import {
   effectivePrice,
@@ -15,6 +16,8 @@ import {
   type Settings,
 } from '../product/lib/claims';
 import { idForSku } from '../../content/salla-ids';
+import { readStoreRating } from '../../content/social-proof';
+import { STORE_PHOTOS, storePhotoSrcSet } from '../../content/store-photos';
 import {
   channelById,
   HOME_PLANS,
@@ -23,6 +26,13 @@ import {
   type ServiceChannel,
 } from '../../content/services';
 import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
+
+/**
+ * The offer strip's photo panel (VISIT-2026-09-24 §4.2): the advisory room,
+ * the same portrait frame `/branch`'s own gallery will show. Read from the
+ * manifest so the srcset always traces back to a rendition on disk.
+ */
+const ADVISORY_PHOTO = STORE_PHOTOS['advisory-room'];
 
 /**
  * The advisory band: THE OFFER FIRST, then the ways to reach it (owner brief
@@ -175,6 +185,10 @@ function ChannelDoor({ channel }: ChannelDoorProps) {
  * free in the live catalogue (`fixtures/store/products.json`, OX-044 and
  * OX-046 at 0), which is a fact about the shop's own price list rather than a
  * claim about anybody's health.
+ *
+ * The advisory-room photograph (VISIT-2026-09-24 §4.2) sits beside the two
+ * facts from 768px, under them below: a plain rounded rectangle inside the
+ * plate, which keeps its own single corner cut unchanged.
  */
 function OfferStrip() {
   const { t } = useTranslation();
@@ -186,18 +200,31 @@ function OfferStrip() {
 
   return (
     <div className="ox-services__offer" data-testid="ox-services-offer">
-      <ul className="ox-offer__facts" role="list">
-        <li className="ox-offer__fact" data-testid="ox-offer-advisory">
-          <Icon name="help" size={24} className="ox-offer__icon" />
-          <span className="ox-offer__fact-text ox-h3">{t('ox.home.offer_advisory')}</span>
-        </li>
-        {showsInbody ? (
-          <li className="ox-offer__fact" data-testid="ox-offer-inbody">
-            <Icon name="goal-ideal-weight" size={24} className="ox-offer__icon" />
-            <span className="ox-offer__fact-text ox-h3">{t(SERVICES_HUB.inbodyKey)}</span>
+      <div className="ox-offer__top">
+        <ul className="ox-offer__facts" role="list">
+          <li className="ox-offer__fact" data-testid="ox-offer-advisory">
+            <Icon name="help" size={24} className="ox-offer__icon" />
+            <span className="ox-offer__fact-text ox-h3">{t('ox.home.offer_advisory')}</span>
           </li>
-        ) : null}
-      </ul>
+          {showsInbody ? (
+            <li className="ox-offer__fact" data-testid="ox-offer-inbody">
+              <Icon name="goal-ideal-weight" size={24} className="ox-offer__icon" />
+              <span className="ox-offer__fact-text ox-h3">{t(SERVICES_HUB.inbodyKey)}</span>
+            </li>
+          ) : null}
+        </ul>
+        <img
+          className="ox-offer__photo"
+          src={ADVISORY_PHOTO.photo}
+          srcSet={storePhotoSrcSet(ADVISORY_PHOTO)}
+          sizes="220px"
+          width={ADVISORY_PHOTO.width}
+          height={ADVISORY_PHOTO.height}
+          alt={t('ox.home.offer_photo_alt')}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
       <div className="ox-offer__actions">
         <Button
           to={visit?.to ?? '/services'}
@@ -275,18 +302,26 @@ function BandRow({ titleKey, noteKey, children, id }: BandRowProps) {
  * the locale line the branch block already prints (`OxBranch.tsx` does the
  * same, and the street is in the claims source), because the branch is a real
  * place whether or not the dashboard field has been filled. The consultation
- * credit renders verbatim from its own setting or not at all. No counts, no
- * ratings, no professional titles: there is nothing true to say in those
- * shapes yet.
+ * credit renders verbatim from its own setting or not at all. The store's
+ * Google rating (VISIT-2026-09-24 §4.2) is the row's first item, through
+ * `StoreRating` alone and gated the same way (`readStoreRating`): a bare
+ * figure with no source link is never rendered here, either. No professional
+ * titles: there is nothing true to say in that shape yet.
  */
 function TrustRow() {
   const { t } = useTranslation();
   const { settings } = useTheme();
+  const rating = readStoreRating(settings);
   const address = settingText(settings as Settings, 'branch_address') ?? t('ox.blocks.branch.address');
   const credit = settingText(settings as Settings, 'consultation_credit_note');
 
   return (
     <ul className="ox-services__trust ox-small" role="list" data-testid="ox-services-trust">
+      {rating ? (
+        <li className="ox-services__trust-item" data-testid="ox-trust-rating">
+          <StoreRating variant="inline" value={rating} />
+        </li>
+      ) : null}
       <li className="ox-services__trust-item" data-testid="ox-trust-branch">
         <Icon name="map-pin" size={20} className="ox-services__trust-icon" />
         {address}

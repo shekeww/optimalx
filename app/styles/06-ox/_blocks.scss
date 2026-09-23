@@ -73,6 +73,12 @@
   margin: 0;
 }
 
+// The visit-offer sentence (VISIT-2026-09-24 §4.1), home block only.
+.ox-branch__offer {
+  color: var(--ox-fg-2);
+  margin: 0;
+}
+
 .ox-branch__actions {
   display: flex;
   flex-wrap: wrap;

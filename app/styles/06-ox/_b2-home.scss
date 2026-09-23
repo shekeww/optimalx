@@ -2134,6 +2134,25 @@ body {
   @include ox-x-corner(40px, start);
 }
 
+// The facts and the advisory-room photograph (VISIT-2026-09-24 §4.2): one
+// column, photo under the facts, until 768; a row, photo beside them, from
+// there. A plain rounded rectangle, never a second cut — the strip's own
+// `ox-x-corner` above is the plate's one angled gesture.
+.ox-offer__top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+}
+
+.ox-offer__photo {
+  align-self: center;
+  inline-size: 100%;
+  max-inline-size: 220px;
+  aspect-ratio: 497 / 722;
+  border-radius: var(--ox-r-2);
+  object-fit: cover;
+}
+
 .ox-offer__facts {
   display: grid;
   grid-template-columns: 1fr;
@@ -2205,9 +2224,24 @@ body {
     padding: var(--ox-8);
   }
 
+  .ox-offer__top {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--ox-8);
+  }
+
   .ox-offer__facts {
+    flex: 1 1 auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--ox-6);
+  }
+
+  .ox-offer__photo {
+    flex: 0 0 220px;
+    align-self: stretch;
+    max-inline-size: none;
+    inline-size: 220px;
+    aspect-ratio: auto;
   }
 }
 

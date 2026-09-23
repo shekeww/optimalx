@@ -2,6 +2,8 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { BRANCH_LISTING } from '../../app/content/branch';
+import { STORE_PHOTOS, storePhotoSrcSet } from '../../app/content/store-photos';
 
 const themeSettings: Record<string, unknown> = {};
 

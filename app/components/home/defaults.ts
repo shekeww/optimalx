@@ -67,8 +67,13 @@ export const HOME_BLOCK_PATHS = [
   // `DEFAULT_HOME_COMPONENTS` below.
   'ox-category-rail',
   'ox-services',
-  'ox-guides',
+  // MOVED (VISIT-2026-09-24 §4.1): directly after the advisory band it
+  // fulfils - the band pitches the free advisory and the free InBody
+  // measurement, the branch is where both happen, so the block that shows a
+  // real place with a real rating and books the visit now sits right where
+  // that pitch lands rather than after the guides row.
   'ox-branch',
+  'ox-guides',
   'ox-certifications',
   'ox-faq',
   'ox-newsletter',
