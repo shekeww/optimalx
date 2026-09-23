@@ -21,6 +21,7 @@
 //     store-wide:    store-wide.*   | store-products.* | 60.*
 //     advisory-room: advisory-room.*| 61.*
 //     waiting-area:  waiting-area.* | advisory-room-2.* | 62.*
+//     mark-wall:     mark-wall.*    | logo-wall.* | mark.* | 63.*
 //   (59.* is the Google Maps rating screenshot: data only, never published.)
 
 import fs from 'node:fs';
@@ -52,6 +53,9 @@ const PHOTOS = [
   { slug: 'store-wide', names: ['store-wide', 'store-products', '60'], crop: { left: 300, top: 0 } },
   { slug: 'advisory-room', names: ['advisory-room', '61'], crop: null },
   { slug: 'waiting-area', names: ['waiting-area', 'advisory-room-2', '62'], crop: null },
+  // The lit mark on the ribbed wall inside the store (owner, 2026-09-24,
+  // 'used and emphasised'): the brand's own object, for mastheads and plates.
+  { slug: 'mark-wall', names: ['mark-wall', 'logo-wall', 'mark', '63'], crop: null },
 ];
 
 const WIDTHS = [380, 480, 760, 1160, 1600];
