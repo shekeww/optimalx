@@ -404,4 +404,5 @@ allowlist entry in `check-copy`; the conductor recommends against it.
 
 | Surface | Label | Decision |
 |---|---|---|
+| The advisory band's plans row and its branch-visit door, keys `ox.home.band_inbody_plans` and `ox.content.services.visit_inbody` | قياس تكوين الجسم (InBody) مجانا في الفرع | Owner statement 2026-09-23, recorded as row 10 of `FINAL-claims-source.md` section 2. The noun is قياس, a measurement: تشخيص، فحص طبي، تحليل، قراءة نتائج are all outside it, and no outcome (loss, gain, a number, a timeframe) may be attached to it. "InBody" stays in Latin, the name on the device. The line renders only while the `inbody_included` setting is on, and that setting defaults to on because the device is at the branch today. |
 | Buy-now button (card, product page, sticky bar), keys `ox.card.buy_now` and `ox.pdp.buy_now` | اشتري الآن | Owner-initialed on 2026-09-23, replacing اشتر الآن. The form with the final ya is the Saudi retail convention for this button and a standard imperative form, not a dialect word, so §5 (P5) is not engaged; the sweep must not revert it. Every other button keeps the bare masculine imperative in the row above (أضف، احجز، اسأل، تصفح). |

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Skeleton, SkeletonBar, SkeletonBlock } from '../common/Skeleton';
 import { HOME_BLOCK_HEIGHT_CSS, type HomeBlockPath } from './defaults';
 
@@ -172,11 +172,20 @@ export function ServicesSkeleton() {
   return (
     <BlockSkeleton path="ox-services" className="ox-skel-services">
       <SkeletonBar width="30%" />
-      <div className="ox-skel-grid ox-skel-grid--channels">
-        {rows(6).map((index) => (
-          <SkeletonBlock key={index} height="100%" className="ox-skel-dark" />
-        ))}
-      </div>
+      {/* Two rows of three, each under its own row title (owner review
+          2026-09-23, late night): the real section reserves a title and a
+          note over each row now, so a single six-block grid would resolve
+          into a taller thing than it drew. */}
+      {rows(2).map((row) => (
+        <Fragment key={row}>
+          <SkeletonBar width="40%" />
+          <div className="ox-skel-grid ox-skel-grid--channels">
+            {rows(3).map((index) => (
+              <SkeletonBlock key={index} height="100%" className="ox-skel-dark" />
+            ))}
+          </div>
+        </Fragment>
+      ))}
     </BlockSkeleton>
   );
 }

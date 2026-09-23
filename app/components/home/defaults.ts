@@ -163,21 +163,31 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the newsletter and banner rows below.
   'ox-brands': { mobile: 0, desktop: 0 },
-  // Re-measured for the TWO-ROW band (owner review 2026-09-23 (late), item 3;
-  // token arithmetic, not a live browser measurement — see
-  // docs/build/progress/S4a.md). The row grew from three cards to six (the
-  // three channels rejoin the three plan doors), and mobile is no longer a
-  // horizontal scroller — it is ONE column of six stacked cards.
+  // Re-measured AGAIN for the two TITLED rows (owner review 2026-09-23, late
+  // night; token arithmetic against `_b2-home.scss`'s own section 8, not a
+  // live browser measurement — see docs/build/progress/S5c.md). The six cards
+  // are unchanged in size; what grew is the head over each row (an h3 title, a
+  // 4px gap, a one-line note, a 16px margin to the cards) plus the 32px gap
+  // between the two rows, which is what turns six equal boxes into one offer
+  // in two steps.
   // Mobile (358 container, --ox-12 padding): 48 pad-top + head stack 141
   // (eyebrow row 20 + gap 8 + h2 30 + gap 8 + 2-line subline 51, margin-end
-  // 24) + grid 1472 (six 232px cards + five 16px row gaps) + 24 gap + 44 CTA
-  // + 16 gap + 20 note + 48 pad-bottom = 1813.
-  // Desktop (--ox-16 padding, 1296 container, three-up from 1024 — two rows
-  // of three for six cards): 64 pad-top + head stack 135 (eyebrow 20 + gap 8
-  // + h2 40 + gap 8 + 1-line subline 27, margin-end 32) + grid 544 (two
-  // 260px card rows + one 24px row gap) + 24 gap + 44 CTA + 16 gap + 20 note
-  // + 64 pad-bottom = 911.
-  'ox-services': { mobile: 1813, desktop: 911 },
+  // 24) + row one 816 (head 88: h3 26 + gap 4 + 2-line note 42, margin-end
+  // 16; grid 728: three 232px cards + two 16px gaps) + 32 row gap + row two
+  // 862 (head 134: the same 88 plus gap 4 + the 2-line InBody cue 42; grid
+  // 728) + 24 gap + 44 CTA + 16 gap + 20 note + 48 pad-bottom = 2051.
+  // Desktop (--ox-16 padding, 1296 container, three-up from 1024, so each row
+  // is one line of three): 64 pad-top + head stack 135 (eyebrow 20 + gap 8 +
+  // h2 40 + gap 8 + 1-line subline 27, margin-end 32) + row one 330 (head 70:
+  // h3 28 + gap 4 + 1-line note 22, margin-end 16; grid 260) + 32 row gap +
+  // row two 356 (head 96: the same 70 plus gap 4 + the 1-line InBody cue 22;
+  // grid 260) + 24 gap + 44 CTA + 16 gap + 20 note + 64 pad-bottom = 1085.
+  // Which cues are RESERVED, and why only these: the InBody line is counted
+  // because its gate (`inbody_included`) defaults to ON, so every store paints
+  // it; the reply-time cue is not, because it renders only once the owner
+  // fills `reply_sla_hours`, and the store that fills it takes one 22px shift
+  // here instead of every store reserving a line nothing paints.
+  'ox-services': { mobile: 2051, desktop: 1085 },
   'ox-guides': { mobile: 0, desktop: 0 },
   'ox-branch': { mobile: 268, desktop: 184 },
   // No certification holds the per-product evidence a badge needs, so the

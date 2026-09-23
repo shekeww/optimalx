@@ -241,7 +241,6 @@
 }
 
 .ox-hub-intro__lead,
-.ox-hub-intro__reply,
 .ox-service-intro__lead {
   margin: 0;
 }
@@ -251,11 +250,7 @@
   color: var(--ox-fg-2);
 }
 
-.ox-hub-intro__reply {
-  color: var(--ox-fg-3);
-}
 
-.ox-hub__section,
 .ox-hub__faq,
 .ox-contact,
 .ox-contact-ask,
@@ -269,8 +264,10 @@
   gap: var(--ox-6);
 }
 
-// A grid child that carries the card plus the two notes under it, so the
-// three columns stay equal height (DIRECTION 4.4).
+// A grid child that carries the card plus the notes under it, so columns of
+// cards stay equal height (DIRECTION 4.4). `/contact` is its one caller now:
+// the services hub's own channel section became row one of the advisory band
+// (owner review 2026-09-23, late night).
 .ox-hub__channel {
   display: flex;
   flex-direction: column;

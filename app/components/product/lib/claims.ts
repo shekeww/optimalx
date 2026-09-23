@@ -66,6 +66,23 @@ export function consultationCreditNote(settings: Settings): string | null {
   return settingText(settings, 'consultation_credit_note');
 }
 
+/**
+ * The free InBody body-composition measurement at the branch, included with
+ * the advisory services and the subscriptions (owner statement 2026-09-23,
+ * recorded in `docs/build/research/FINAL-claims-source.md` section 2, row 10:
+ * a service fact, never a diagnosis or a medical test).
+ *
+ * DEFAULT TRUE, which is the one gate here that reads that way: the device is
+ * at the branch today, so the setting exists to switch the line OFF the day it
+ * is not, rather than to switch it on. An explicit false (or "false"/0/"0")
+ * hides it; an empty or missing setting keeps the owner's stated fact.
+ */
+export function inbodyIncluded(settings: Settings): boolean {
+  const value = settings?.['inbody_included'];
+  if (value === undefined || value === null || value === '') return true;
+  return !(value === false || value === 'false' || value === 0 || value === '0');
+}
+
 /** The free shipping threshold, from the dashboard rule; never a literal. */
 export function freeShippingThreshold(settings: Settings): number | null {
   return settingNumber(settings, 'free_shipping_threshold');

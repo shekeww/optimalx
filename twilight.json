@@ -402,6 +402,16 @@
       "description": "اتركه فارغا ما لم تكن القناة مخدومة؛ لا يظهر أي وعد بالرد بدونه"
     },
     {
+      "id": "inbody_included",
+      "type": "boolean",
+      "format": "switch",
+      "label": "إظهار قياس تكوين الجسم (InBody) المجاني في الفرع",
+      "label_en": "Show the free InBody body-composition measurement at the branch",
+      "icon": "sicon-toggle-off",
+      "value": true,
+      "description": "مفعل افتراضيا؛ أطفئه إذا لم يكن الجهاز متاحا في الفرع فيختفي السطر من الخدمات"
+    },
+    {
       "id": "show_newsletter",
       "type": "boolean",
       "format": "switch",

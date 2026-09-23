@@ -19,6 +19,20 @@ Status: draft prepared 2026-09-18 from the live store record, BUILD.md section 4
 | 7 | الاستشارة المرئية 50 ريالا تحسم من أول طلب | only once the coupon mechanism exists in the dashboard | |
 | 8 | منتجات أصلية من موزعين رسميين | only once distributor invoices exist; until then "منتجات أصلية" with the definition sentence and no "رسميين" | |
 | 9 | Nutrition figures per serving | label data transcribed from the product; never a statistic | |
+| 10 | قياس تكوين الجسم (InBody) مجانا في الفرع مع الاشتراك | owner statement 2026-09-23: the branch holds the device and the measurement is included with the advisory services and the subscriptions | owner 2026-09-23 |
+
+Row 10 in detail, because it is the one row that touches a body and therefore
+the one most easily written into a health claim. What is approved is a
+**service fact**: a measurement, its price (free), its place (the branch) and
+what it comes with (the advisory services and the subscriptions). What is NOT
+approved, and what the copy may never say: تشخيص، فحص طبي، تحليل، قراءة نتائج،
+تفسير، and any outcome attached to the measurement (fat loss, muscle gain, a
+target number, a timeframe). The device name stays in Latin ("InBody") because
+that is the name on the machine and the term people search. The line is gated
+on the `inbody_included` theme setting, which DEFAULTS TO ON because the device
+is at the branch today; the owner switches it off and every surface drops the
+line the same hour. Shipped in `ox.home.band_inbody_plans` (the plans row) and
+`ox.content.services.visit_inbody` (the branch-visit door), 2026-09-23.
 
 ## 3. What the store may not claim
 

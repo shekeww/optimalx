@@ -1,16 +1,11 @@
-
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
-import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { Accordion } from '../common/Accordion';
 import { Band } from '../common/Band';
 import { Button } from '../common/Button';
-import { ChannelCard } from '../blocks/ChannelCard';
-import { replySlaHours } from '../product/lib/claims';
 import { pathForSku } from '../../content/salla-ids';
 import {
-  SERVICE_CHANNELS,
   SERVICE_PAGES,
   SERVICE_PHOTOS,
   SERVICE_STEPS,
@@ -39,15 +34,28 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  *
  * Composition, top to bottom: breadcrumb, the FULL-BLEED band carrying the
  * page's only h1 and its one primary action, the intro in the text measure,
- * the three channel cards (S2c, 2026-09-22: moved here from the home page's
- * advisory band, so the page that used to open on a bare list now opens on
- * the same cards with a heading and the section's own reply-time line), the
- * plan doors (`OxServices`, the same band the home page draws, and also full
- * bleed), the five services side by side in one comparison grid, the scope
- * panel, the anchor strip, the five service sections, the three steps, the
- * FAQ and a contact row.
+ * the advisory band (`OxServices`, the same section the home page draws,
+ * carrying BOTH of its rows: the three ways to ask, then the three programmes
+ * the asking leads to), the five services side by side in one comparison
+ * grid, the scope panel, the anchor strip, the five service sections, the
+ * three steps, the FAQ and a contact row.
  *
- * ## Two structural decisions worth the reader's time
+ * ## Three structural decisions worth the reader's time
+ *
+ * **The three channels are the band's own row one, not a section of their
+ * own** (owner review 2026-09-23, late night). This page used to draw a
+ * dedicated channel section here, in the fuller `ChannelCard`, with the band
+ * below it carrying the plan doors alone; the same three services therefore
+ * introduced themselves twice within one screenful and a third time in the
+ * comparison grid, in three different card shapes. One composition replaces
+ * the two, which is also what lets the band's two row titles do their work:
+ * the reader sees one offer in two steps on this page and on the home page
+ * alike. Nothing was lost with the section: every channel's description,
+ * scope, preparation, output and change policy is the `ServiceSection` for
+ * that channel further down, and `ChannelCard` itself still ships where it is
+ * not a repeat (`/contact`, the kitchen sink). The page's page-level
+ * reply-time line went with it for the same reason: the band states that fact
+ * once, under the row where the written question actually sits.
  *
  * **The hero is the shared `Band`, not DIRECTION 6.11's light "goal
  * construction".** DIRECTION predates the approved image; the image
@@ -64,10 +72,9 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  * system prescribes for a page longer than one screen.
  *
  * ## Claims gates (PLAN-final 5.1)
- *  - the medical line renders verbatim once directly under the plan doors
- *    (covering the channel cards above them and the doors themselves) and
- *    again under the scope panel;
- *  - the consultation credit renders only through `ChannelCard`, from the
+ *  - the medical line renders verbatim once directly under the advisory band
+ *    (covering both of its rows) and again under the scope panel;
+ *  - the consultation credit renders on the video door, from the
  *    `consultation_credit_note` setting, verbatim and only when it is set;
  *  - a reply-time promise renders only when `reply_sla_hours` is set, and
  *    interpolates it. With the setting empty nothing about reply time is said;
@@ -79,9 +86,7 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  */
 export function ServicesHub() {
   const { t } = useTranslation();
-  const { settings } = useTheme();
   const store = useStore();
-  const replyHours = replySlaHours(settings as Record<string, unknown> | undefined);
   const faqRows = resolveFaq(t, SERVICES_FAQ);
 
   const page: Page = { title: t('ox.services.title'), slug: 'services' };
@@ -110,45 +115,27 @@ export function ServicesHub() {
           {t('ox.services.title')}
         </h2>
         <p className="ox-hub-intro__lead ox-lead">{t(SERVICES_HUB.introKey)}</p>
-        {replyHours ? (
-          <p className="ox-hub-intro__reply ox-small" data-testid="ox-reply-line">
-            {t('ox.services.reply_within', { hours: replyHours })}
-          </p>
-        ) : null}
       </section>
 
-      {/* THE THREE CHANNEL CARDS, at the top of the page (S2c, 2026-09-22:
-          moved from the home page's advisory band, which now carries only the
-          three plan doors below). This is how a shopper ASKS: free or nearly
-          so, no commitment, the cheapest yes on the page, so it comes first,
-          ahead of what the asking leads to. */}
-      <section className="ox-hub__section ox-hub__channels" aria-labelledby="ox-hub-channels-title">
-        <h2 id="ox-hub-channels-title" className="ox-h2">
-          {t('ox.services.channels_title')}
-        </h2>
-        <div className="ox-channels">
-          {SERVICE_CHANNELS.map((channel) => (
-            <div className="ox-hub__channel" key={channel.id}>
-              <ChannelCard channel={channel} />
-            </div>
-          ))}
-        </div>
-        {replyHours ? (
-          <p className="ox-hub__card-note ox-small" data-testid="ox-services-reply">
-            {t('ox.home.services_reply', { hours: replyHours })}
-          </p>
-        ) : null}
-      </section>
+      {/* THE OFFER, both rows of it: the three ways to ask and the three
+          programmes the asking leads to, in the same band `OxServices` draws
+          on the home page (owner review 2026-09-23, late night). This page
+          used to open on its own fuller channel section, with the band below
+          it carrying the plan doors alone; the three channels therefore
+          appeared twice on the page in two card shapes, and a third time in
+          the comparison grid below. One composition replaces the two: the
+          band's own row one is the channel row now, the row titles say which
+          question each row answers, and the fuller card survives where it is
+          not a repeat (`/contact`, the kitchen sink).
 
-      {/* THE PLAN DOORS, the same band `OxServices` draws on the home page —
-          but NOT full bleed here (owner review 2026-09-23, item 3): the home
-          page opens on nothing else dark, while this page already opened on
-          the full-bleed hero band above, and a second full-width near-black
-          band directly under the channel cards read as one long band rather
-          than two sections. `.ox-hub__advisory` (`_b5-pages.scss`) sits it
-          inside the page's own container instead, with its own radius.
-          `routeOut={false}`: the header carries no CTA to `/services` here,
-          since the row already sits on that page. */}
+          NOT full bleed here (owner review 2026-09-23, item 3): the home page
+          opens on nothing else dark, while this page already opened on the
+          full-bleed hero band above, and a second full-width near-black band
+          directly under it read as one long band rather than two sections.
+          `.ox-hub__advisory` (`_b5-pages.scss`) sits it inside the page's own
+          container instead, with its own radius. `routeOut={false}`: the band
+          routes nobody out to the page they are standing on, so its primary
+          action is the written-question door itself. */}
       <OxServices className="ox-hub__advisory" routeOut={false} />
 
       <p className="ox-hub__medical ox-small" data-testid="ox-medical-line">

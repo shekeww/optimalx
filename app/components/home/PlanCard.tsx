@@ -29,6 +29,11 @@ export interface PlanCardProps {
  * pair rather than the same card twice. The mark sits at accent 0.12 on
  * `--ox-band-util`, the measured ceiling for that pairing.
  *
+ * The CTA label is the plan's OWN `ctaKey` (owner review 2026-09-23, late
+ * night), not one shared label under all three cards: the training session is
+ * booked ("احجز الجلسة") and the other two open a page that explains before it
+ * books ("اعرف التفاصيل"), so the three labels say what the click does.
+ *
  * The card carries no slash of its own: the identity rule spends the
  * section's one angled band edge on `OxServices`'s ground motif, so a second
  * angle here would be the "scattered wedges as texture" the rule forbids.
@@ -50,7 +55,7 @@ export function PlanCard({ plan }: PlanCardProps) {
         <span className="ox-plan__foot">
           <Icon name={plan.icon} size={24} className="ox-plan__icon ox-icon--mono" />
           <span className="ox-plan__cta">
-            <span className="ox-plan__cta-label">{t('ox.home.band_card_cta')}</span>
+            <span className="ox-plan__cta-label">{t(plan.ctaKey)}</span>
             <i className="sicon-keyboard_arrow_right ox-plan__arrow ox-mirror" aria-hidden="true" />
           </span>
         </span>

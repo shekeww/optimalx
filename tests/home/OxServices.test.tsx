@@ -2,18 +2,23 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { createT } from '../helpers/i18n';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
 import { HOME_PLANS, SERVICE_CHANNELS } from '../../app/content/services';
 import { idForSku } from '../../app/content/salla-ids';
 
 /**
- * The advisory band, TWO ROWS of three (owner review 2026-09-23 (late),
- * item 3): row one is the three channels (an upright `ChannelDoor`), row two
- * the three photographic `PlanCard` doors, unchanged. `/services`
- * (`routeOut={false}`) skips row one — it already has its own dedicated
- * channels section a few hundred pixels above where it mounts this band.
- * None of it may imply an expert: the store has no certified staff, so
- * there is no portrait and no professional title (claims source section 3).
+ * The advisory band: ONE OFFER IN TWO TITLED ROWS (owner review 2026-09-23,
+ * late night). Row one is the three ways to ask (`ChannelDoor`), row two is
+ * the three programmes the asking leads to (`PlanCard`), and each row says in
+ * its own title which question it answers. Both rows render on both surfaces
+ * now; `routeOut` decides the heading and the section's one primary action
+ * only.
+ *
+ * None of it may imply an expert: the store has no certified staff, so there
+ * is no portrait and no professional title (claims source section 3). No card
+ * states a price or a reply time in copy: the price is the live product and
+ * the reply time is the owner's own setting or nothing.
  */
 
 const themeSettings: Record<string, unknown> = {};
@@ -47,6 +52,8 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 
 const { OxServices } = await import('../../app/components/home/OxServices');
 
+const t = createT('ar');
+
 function setSettings(next: Record<string, unknown>) {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
   Object.assign(themeSettings, next);
@@ -66,38 +73,103 @@ function data(extra: Record<string, unknown> = {}): OxBlockData {
 }
 
 describe('OxServices', () => {
-  it('renders six cards on the home page: the three channels, then the three plan doors', () => {
+  it('frames the offer with an eyebrow that does not repeat the heading', () => {
     setSettings({});
     clearPrices();
     const { container } = renderWithProviders(<OxServices data={data()} />);
 
-    const doors = screen.getAllByTestId('ox-channel-door');
-    expect(doors).toHaveLength(SERVICE_CHANNELS.length);
-    expect(doors.map((door) => door.getAttribute('data-channel'))).toEqual(
-      SERVICE_CHANNELS.map((channel) => channel.id)
-    );
-    for (const door of doors) expect(door.getAttribute('href')).toBeTruthy();
-
-    const plans = screen.getAllByTestId('ox-plan-card');
-    expect(plans).toHaveLength(HOME_PLANS.length);
-
-    // Row one (channels) precedes row two (plans) in DOM order, one list, so
-    // a three-column grid lays them out as two rows of three.
-    const cards = Array.from(
-      container.querySelectorAll('[data-testid="ox-channel-door"], [data-testid="ox-plan-card"]')
-    ).map((el) => el.getAttribute('data-testid'));
-    expect(cards).toEqual([
-      ...SERVICE_CHANNELS.map(() => 'ox-channel-door'),
-      ...HOME_PLANS.map(() => 'ox-plan-card'),
-    ]);
+    const eyebrow = container.querySelector('.ox-services__eyebrow')?.textContent?.trim();
+    const heading = container.querySelector('.ox-services__title')?.textContent?.trim();
+    const subline = container.querySelector('.ox-services__subline')?.textContent?.trim();
+    expect(eyebrow).toBe(t('ox.home.band_eyebrow'));
+    expect(heading).toBe(t('ox.services.title'));
+    expect(subline).toBe(t('ox.home.band_subline'));
+    // The defect this section was rebuilt for: the eyebrow used to say what
+    // the heading says. Neither may contain the other.
+    expect(eyebrow).not.toBe(heading);
+    expect(heading?.includes(eyebrow ?? '')).toBe(false);
+    expect(eyebrow?.includes(heading ?? '')).toBe(false);
   });
 
-  it('skips row one on /services: it already has its own channels section there', () => {
+  it('says the page h1 once: on /services the band heading is not the h1 sentence', () => {
     setSettings({});
     clearPrices();
     const { container } = renderWithProviders(<OxServices data={data()} routeOut={false} />);
-    expect(container.querySelectorAll('[data-testid="ox-channel-door"]')).toHaveLength(0);
-    expect(container.querySelectorAll('[data-testid="ox-plan-card"]')).toHaveLength(HOME_PLANS.length);
+    const heading = container.querySelector('.ox-services__title')?.textContent?.trim();
+    expect(heading).toBe(t('ox.home.band_title_services'));
+    expect(heading).not.toBe(t('ox.content.services.hub_h1'));
+  });
+
+  it('titles each row, so the six cards read as two answers and not six boxes', () => {
+    setSettings({});
+    clearPrices();
+    const { container } = renderWithProviders(<OxServices data={data()} />);
+
+    const rows = container.querySelectorAll('.ox-services__row');
+    expect(rows).toHaveLength(2);
+
+    const titles = Array.from(container.querySelectorAll('.ox-services__row-title')).map(
+      (node) => node.textContent
+    );
+    expect(titles).toEqual([
+      t('ox.home.band_row_ask_title'),
+      t('ox.home.band_row_plans_title'),
+    ]);
+    // The two rows never carry the same title, and neither repeats the h2.
+    expect(titles[0]).not.toBe(titles[1]);
+    expect(titles).not.toContain(t('ox.services.title'));
+    // Each row title is an h3 under the section's own h2: no level skipped.
+    for (const node of container.querySelectorAll('.ox-services__row-title')) {
+      expect(node.tagName).toBe('H3');
+    }
+
+    const notes = Array.from(container.querySelectorAll('.ox-services__row-note')).map(
+      (node) => node.textContent
+    );
+    expect(notes).toEqual([
+      t('ox.home.band_row_ask_note'),
+      t('ox.home.band_row_plans_note'),
+    ]);
+
+    // Row one holds the three doors, row two the three plans.
+    expect(rows[0].querySelectorAll('[data-testid="ox-channel-door"]')).toHaveLength(
+      SERVICE_CHANNELS.length
+    );
+    expect(rows[0].querySelectorAll('[data-testid="ox-plan-card"]')).toHaveLength(0);
+    expect(rows[1].querySelectorAll('[data-testid="ox-plan-card"]')).toHaveLength(
+      HOME_PLANS.length
+    );
+    expect(rows[1].querySelectorAll('[data-testid="ox-channel-door"]')).toHaveLength(0);
+  });
+
+  it('renders both rows on /services too, now that the page has no channel section of its own', () => {
+    setSettings({});
+    clearPrices();
+    const { container } = renderWithProviders(<OxServices data={data()} routeOut={false} />);
+    expect(container.querySelectorAll('.ox-services__row')).toHaveLength(2);
+    expect(screen.getAllByTestId('ox-channel-door')).toHaveLength(SERVICE_CHANNELS.length);
+    expect(screen.getAllByTestId('ox-plan-card')).toHaveLength(HOME_PLANS.length);
+  });
+
+  it('gives every card its own CTA verb, and the ways to ask three different ones', () => {
+    setSettings({});
+    clearPrices();
+    const { container } = renderWithProviders(<OxServices data={data()} />);
+
+    const doorLabels = SERVICE_CHANNELS.map((channel) => {
+      const door = container.querySelector(
+        `[data-testid="ox-channel-door"][data-channel="${channel.id}"]`
+      ) as HTMLElement;
+      return within(door).getByText(t(channel.doorCtaKey)).textContent;
+    });
+    expect(new Set(doorLabels).size).toBe(SERVICE_CHANNELS.length);
+
+    const planLabels = Array.from(container.querySelectorAll('.ox-plan__cta-label')).map(
+      (node) => node.textContent
+    );
+    expect(planLabels).toEqual(HOME_PLANS.map((plan) => t(plan.ctaKey)));
+    // The training session is booked, not read about: its card says so.
+    expect(planLabels).toContain(t('ox.content.services.training_cta'));
   });
 
   it("reads each channel's price live through effectivePrice, never a typed number", async () => {
@@ -117,6 +189,62 @@ describe('OxServices', () => {
       expect(within(video as HTMLElement).getByTestId('ox-channel-door-price').textContent).toContain('50')
     );
     clearPrices();
+  });
+
+  it('states a reply time only once the owner has set reply_sla_hours', () => {
+    setSettings({});
+    clearPrices();
+    const off = renderWithProviders(<OxServices data={data()} />);
+    expect(off.container.querySelector('[data-testid="ox-services-reply"]')).toBeNull();
+    off.unmount();
+
+    setSettings({ reply_sla_hours: '24' });
+    const on = renderWithProviders(<OxServices data={data()} />);
+    const cue = on.container.querySelector('[data-testid="ox-services-reply"]');
+    expect(cue?.textContent).toBe(t('ox.home.services_reply', { hours: '24' }));
+    // It belongs to row one, the row whose written question it is about.
+    expect(on.container.querySelectorAll('.ox-services__row')[0].contains(cue)).toBe(true);
+  });
+
+  it('renders the consultation credit verbatim from the setting, and nothing while it is empty', async () => {
+    setSettings({});
+    clearPrices();
+    const off = renderWithProviders(<OxServices data={data()} />);
+    expect(off.container.querySelector('[data-testid="ox-channel-credit"]')).toBeNull();
+    off.unmount();
+
+    setSettings({ consultation_credit_note: 'خصم على الطلب الأول' });
+    const on = renderWithProviders(<OxServices data={data()} />);
+    const credit = await within(
+      on.container.querySelector('[data-channel="video"]') as HTMLElement
+    ).findByTestId('ox-channel-credit');
+    expect(credit.textContent).toBe('خصم على الطلب الأول');
+    // One gate, one card: the free channels never carry a money note.
+    expect(on.container.querySelectorAll('[data-testid="ox-channel-credit"]')).toHaveLength(1);
+  });
+
+  it('carries the branch measurement on the plans row and on the visit door, and drops it on the owner switch', () => {
+    setSettings({});
+    clearPrices();
+    // Default ON: the device is at the branch today, so the gate exists to
+    // switch the line off, not on (owner statement 2026-09-23).
+    const on = renderWithProviders(<OxServices data={data()} />);
+    const rowCue = on.container.querySelector('[data-testid="ox-services-inbody"]');
+    expect(rowCue?.textContent).toBe(t('ox.home.band_inbody_plans'));
+    expect(on.container.querySelectorAll('.ox-services__row')[1].contains(rowCue)).toBe(true);
+    const doorLine = on.container.querySelector(
+      '[data-channel="visit"] [data-testid="ox-channel-inbody"]'
+    );
+    expect(doorLine?.textContent).toBe(t('ox.content.services.visit_inbody'));
+    // One door only: the measurement happens at the branch, so it is said on
+    // the branch door and nowhere else in the row.
+    expect(on.container.querySelectorAll('[data-testid="ox-channel-inbody"]')).toHaveLength(1);
+    on.unmount();
+
+    setSettings({ inbody_included: false });
+    const off = renderWithProviders(<OxServices data={data()} />);
+    expect(off.container.querySelector('[data-testid="ox-services-inbody"]')).toBeNull();
+    expect(off.container.querySelector('[data-testid="ox-channel-inbody"]')).toBeNull();
   });
 
   it('is finished before the frames are shot', () => {
@@ -141,19 +269,36 @@ describe('OxServices', () => {
     }
   });
 
-  it('carries the bands one filled CTA to /services, on the home page only', () => {
+  it('carries exactly one primary next step per surface', () => {
     setSettings({});
     clearPrices();
     const home = renderWithProviders(<OxServices data={data()} />);
     const cta = home.container.querySelector('.ox-services__cta a');
     expect(cta?.getAttribute('href')).toBe('/services');
-    expect(cta?.textContent).toBeTruthy();
+    expect(cta?.textContent).toBe(t('ox.common.view_all'));
+    // The home page's primary is that button, so no door is marked primary.
+    expect(home.container.querySelector('.ox-channel-door--primary')).toBeNull();
     home.unmount();
 
-    // routeOut off (the /services mount): the row already sits on the page
-    // the CTA would point to, so it does not render a second time.
+    // On /services the band routes nobody out to the page they are on: the
+    // written-question door is the section's primary instead.
     const onPage = renderWithProviders(<OxServices data={data()} routeOut={false} />);
     expect(onPage.container.querySelector('.ox-services__cta')).toBeNull();
+    const primaries = onPage.container.querySelectorAll('.ox-channel-door--primary');
+    expect(primaries).toHaveLength(1);
+    expect(primaries[0].getAttribute('data-channel')).toBe('written');
+  });
+
+  it('closes on the limit of our work, on both surfaces', () => {
+    setSettings({});
+    clearPrices();
+    for (const routeOut of [true, false]) {
+      const view = renderWithProviders(<OxServices data={data()} routeOut={routeOut} />);
+      expect(view.container.querySelector('.ox-services__note')?.textContent).toBe(
+        t('ox.content.services.card_footer')
+      );
+      view.unmount();
+    }
   });
 
   it('is always on the dark band; the merchant photo is opt-in on top of it', () => {
@@ -187,10 +332,11 @@ describe('OxServices', () => {
       <OxServices data={data({ title: 'عنوان التاجر' })} />
     );
     expect(container.querySelector('.ox-services__title')?.textContent).toBe('عنوان التاجر');
-    // The eyebrow and the subline are the band's own copy, never a merchant
-    // field: there is no dashboard control for either.
+    // The eyebrow, the subline and the two row titles are the band's own
+    // copy, never a merchant field: there is no dashboard control for them.
     expect(container.querySelector('.ox-services__eyebrow')).not.toBeNull();
     expect(container.querySelector('.ox-services__subline')?.textContent).toBeTruthy();
+    expect(container.querySelectorAll('.ox-services__row-title')).toHaveLength(2);
   });
 
   it('never renders the retired plans_title, plans_tier_title or plan_cta keys, and never the full /services channel card', () => {
@@ -201,11 +347,11 @@ describe('OxServices', () => {
     expect(text).not.toContain('ox.home.plans_title');
     expect(text).not.toContain('ox.home.plans_tier_title');
     expect(text).not.toContain('ox.home.plan_cta');
+    expect(text).not.toContain('{{');
     // The heavier, full `/services` channel card (badge, description, its
-    // own primary button) never renders here — only the compact home-row
-    // `ChannelDoor`, and the reply-time line stays on `/services` alone.
+    // own primary button) never renders here — only the compact
+    // `ChannelDoor`.
     expect(container.querySelector('[data-testid="ox-channel-card"]')).toBeNull();
-    expect(container.querySelector('[data-testid="ox-services-reply"]')).toBeNull();
   });
 
   it('names no professional title anywhere in the rows', () => {
@@ -213,7 +359,18 @@ describe('OxServices', () => {
     clearPrices();
     const { container } = renderWithProviders(<OxServices data={data()} />);
     const text = container.textContent ?? '';
-    for (const banned of ['أخصائي', 'صيدلي', 'طبيب', 'مدرب معتمد', 'مضمون', 'نتائج خلال']) {
+    // The measurement is a measurement: never a diagnosis, never a medical
+    // test, never an outcome attached to it.
+    for (const banned of [
+      'أخصائي',
+      'صيدلي',
+      'طبيب',
+      'مدرب معتمد',
+      'مضمون',
+      'نتائج خلال',
+      'تشخيص',
+      'فحص',
+    ]) {
       expect(text).not.toContain(banned);
     }
   });

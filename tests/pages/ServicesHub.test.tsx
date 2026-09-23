@@ -56,7 +56,7 @@ describe('ServicesHub', () => {
     expect(headings[0].textContent).toBe(t('ox.content.services.hub_h1'));
   });
 
-  it('carries the medical line verbatim under the advisory section and under the scope panel', () => {
+  it('carries the medical line verbatim under the advisory band and under the scope panel', () => {
     renderWithProviders(<ServicesHub />);
     const lines = screen.getAllByTestId('ox-medical-line');
     // Two, not four. It used to repeat under each of the three channel cards,
@@ -75,41 +75,71 @@ describe('ServicesHub', () => {
     expect(screen.queryByTestId('ox-channel-credit')).toBeNull();
   });
 
-  it('renders the credit note verbatim from the setting once the owner fills it', async () => {
-    setSettings({ consultation_credit_note: 'خصم على الطلب الأول' });
+  it('opens on the advisory band, both rows of it, and never a second channel section', () => {
     renderWithProviders(<ServicesHub />);
-    const credit = await screen.findByTestId('ox-channel-credit');
-    expect(credit.textContent).toBe('خصم على الطلب الأول');
+    // The page used to draw its own fuller channel cards above the band and
+    // the band showed the plan doors alone; the same three services therefore
+    // introduced themselves twice on one page (owner review 2026-09-23, late
+    // night). One composition carries them now.
+    expect(screen.queryAllByTestId('ox-channel-card')).toHaveLength(0);
+    expect(screen.getAllByTestId('ox-channel-door')).toHaveLength(3);
+    expect(screen.getAllByTestId('ox-plan-card')).toHaveLength(3);
+    expect(screen.getAllByTestId('ox-services')).toHaveLength(1);
   });
 
-  it('hides the reply-time promise while reply_sla_hours is empty', () => {
+  it('marks the written-question door as the section primary, since the band routes nobody out', () => {
+    const { container } = renderWithProviders(<ServicesHub />);
+    expect(container.querySelector('.ox-services__cta')).toBeNull();
+    const primary = container.querySelectorAll('.ox-channel-door--primary');
+    expect(primary).toHaveLength(1);
+    expect(primary[0].getAttribute('data-channel')).toBe('written');
+  });
+
+  it('renders the credit note verbatim from the setting once the owner fills it', async () => {
+    setSettings({ consultation_credit_note: 'خصم على الطلب الأول' });
+    const { container } = renderWithProviders(<ServicesHub />);
+    const credit = await screen.findByTestId('ox-channel-credit');
+    expect(credit.textContent).toBe('خصم على الطلب الأول');
+    // On the video door, which is the one channel the gate belongs to.
+    expect(container.querySelector('[data-channel="video"]')?.contains(credit)).toBe(true);
+  });
+
+  it('states no reply time anywhere until reply_sla_hours is set', () => {
     renderWithProviders(<ServicesHub />);
+    // One place says it now, the band's own row of ways to ask, so the page
+    // no longer promises the same thing twice with two wordings.
+    expect(screen.queryByTestId('ox-services-reply')).toBeNull();
     expect(screen.queryByTestId('ox-reply-line')).toBeNull();
   });
 
-  it('interpolates reply_sla_hours into the reply line once it is set', () => {
+  it('carries the reply line once, under the row of ways to ask, when reply_sla_hours is set', () => {
     setSettings({ reply_sla_hours: '24' });
     renderWithProviders(<ServicesHub />);
-    const line = screen.getByTestId('ox-reply-line');
-    expect(line.textContent).toBe(t('ox.services.reply_within', { hours: '24' }));
-    expect(line.textContent).toContain('24');
+    const lines = screen.getAllByTestId('ox-services-reply');
+    expect(lines).toHaveLength(1);
+    expect(lines[0].textContent).toBe(t('ox.home.services_reply', { hours: '24' }));
+    expect(screen.queryByTestId('ox-reply-line')).toBeNull();
   });
 
-  it('states no written-question reply time under the channel cards until reply_sla_hours is set', () => {
+  it('carries the branch measurement on the plans row and the visit door, gated on inbody_included', () => {
+    const on = renderWithProviders(<ServicesHub />);
+    expect(screen.getByTestId('ox-services-inbody').textContent).toBe(
+      t('ox.home.band_inbody_plans')
+    );
+    expect(screen.getByTestId('ox-channel-inbody').textContent).toBe(
+      t('ox.content.services.visit_inbody')
+    );
+    on.unmount();
+
+    setSettings({ inbody_included: false });
     renderWithProviders(<ServicesHub />);
-    expect(screen.queryByTestId('ox-services-reply')).toBeNull();
+    expect(screen.queryByTestId('ox-services-inbody')).toBeNull();
+    expect(screen.queryByTestId('ox-channel-inbody')).toBeNull();
   });
 
-  it('carries the ox.home.services_reply line under the channel cards once reply_sla_hours is set', () => {
-    setSettings({ reply_sla_hours: '24' });
+  it('shows the three ways to ask and the scope list', () => {
     renderWithProviders(<ServicesHub />);
-    const line = screen.getByTestId('ox-services-reply');
-    expect(line.textContent).toBe(t('ox.home.services_reply', { hours: '24' }));
-  });
-
-  it('shows the three channel cards and the scope list', () => {
-    renderWithProviders(<ServicesHub />);
-    expect(screen.getAllByTestId('ox-channel-card')).toHaveLength(3);
+    expect(screen.getAllByTestId('ox-channel-door')).toHaveLength(3);
     const scope = screen.getByTestId('ox-scope-panel');
     expect(within(scope).getAllByRole('listitem')).toHaveLength(7);
   });

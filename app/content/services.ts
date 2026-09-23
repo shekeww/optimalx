@@ -39,6 +39,14 @@ export interface ServiceChannel {
   outputKey: string;
   changeKey: string;
   ctaKey: string;
+  /**
+   * The SHORT form of `ctaKey`, for the advisory band's compact channel door
+   * (owner review 2026-09-23, late night): a card that is one third of a row
+   * takes a two-word verb, not the five-word sentence `visit_cta` carries for
+   * its own full-width section. One verb per card, never the same verb twice
+   * in the row (`اكتب سؤالك`, `احجز موعدك`, `احجز زيارتك`).
+   */
+  doorCtaKey: string;
   /** Route the CTA opens. */
   to: string;
   /**
@@ -46,6 +54,16 @@ export interface ServiceChannel {
    * renders; the setting's own text is what renders, verbatim.
    */
   gatedSetting?: 'consultation_credit_note';
+  /**
+   * The free InBody body-composition MEASUREMENT at the branch, included with
+   * the advisory services and the subscriptions (owner statement 2026-09-23;
+   * claims source section 2, row 10). Only the branch visit carries it,
+   * because the device is at the branch, and it renders only while the
+   * `inbody_included` setting is on (`inbodyIncluded()`). Never a diagnosis,
+   * never a medical test, never an outcome: the copy says what is measured
+   * and where.
+   */
+  inbodyKey?: string;
 }
 
 const KEY = 'ox.content.services';
@@ -70,6 +88,7 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     outputKey: `${KEY}.written_output`,
     changeKey: `${KEY}.written_change`,
     ctaKey: `${KEY}.written_cta`,
+    doorCtaKey: `${KEY}.written_cta_short`,
     to: pathForSku('OX-044') ?? '/services',
   },
   {
@@ -86,6 +105,9 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     outputKey: `${KEY}.video_output`,
     changeKey: `${KEY}.video_change`,
     ctaKey: `${KEY}.video_cta`,
+    // Already two words, so the door reuses it rather than declaring a
+    // second key with an identical value.
+    doorCtaKey: `${KEY}.video_cta`,
     to: pathForSku('OX-045') ?? '/services',
     gatedSetting: 'consultation_credit_note',
   },
@@ -104,6 +126,8 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     outputKey: `${KEY}.visit_output`,
     changeKey: `${KEY}.visit_change`,
     ctaKey: `${KEY}.visit_cta`,
+    doorCtaKey: `${KEY}.visit_cta_short`,
+    inbodyKey: `${KEY}.visit_inbody`,
     to: pathForSku('OX-046') ?? '/services',
   },
 ];
@@ -325,10 +349,18 @@ export const SERVICE_PAGE_SLUGS: string[] = SERVICE_PAGES.map((page) => page.slu
  * plans, training plans and the consultation. Those three are what this map
  * holds, each pointing at the surface that already sells it.
  *
- * The two entry channels that are not plans, the free written question and the
- * branch visit, moved to `/services` (top of that page): `ServicesHub` mounts
- * them directly now, ahead of this row, so the "ask" and the "get a plan"
- * questions each get their own place instead of six cards in one row.
+ * They are ROW TWO of the advisory band. Row one is the three ways to ask
+ * (`SERVICE_CHANNELS`); this row is what the asking leads to, on both the home
+ * page and `/services` (owner review 2026-09-23, late night). The two rows
+ * carry their own titles so the six cards read as one offer in two steps
+ * rather than six equal boxes.
+ *
+ * `advisory` is the one card whose COPY had to move for that reading to be
+ * true: it used to be a second "استشارة مرئية" card pointing at the same
+ * product as row one's video door, which is the clearest possible way to read
+ * as "six equal boxes". It now names what the consultation leaves the reader
+ * with, the written priority list `video_output` already promises, and keeps
+ * the product route, because that page is where the list is booked.
  *
  * Each plan's `photo` is the SAME frame its own destination page already
  * wears (`SERVICE_PHOTOS`): the card is a door onto a surface that already
@@ -343,6 +375,14 @@ export interface HomePlan {
   icon: OxIconName;
   titleKey: string;
   lineKey: string;
+  /**
+   * The card's own CTA label. One verb per card (owner review 2026-09-23,
+   * late night): the two cards that open a page which explains before it
+   * books share the shared "اعرف التفاصيل" label, the training session takes
+   * its own booking verb. No card invents a subscription verb: the catalogue
+   * holds no subscription product.
+   */
+  ctaKey: string;
   /**
    * The card photograph, present only when the file EXISTS in
    * `public/assets/images`. Absent is the normal state today.
@@ -365,6 +405,7 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'plan',
     titleKey: 'ox.home.plan_nutrition_title',
     lineKey: 'ox.home.plan_nutrition_line',
+    ctaKey: 'ox.home.band_card_cta',
     // The destination page's own band frame: the card is a door onto the
     // surface that already wears this photograph, so the two agree.
     photo: SERVICE_PHOTOS.nutrition,
@@ -377,6 +418,7 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'goal-performance',
     titleKey: 'ox.home.plan_training_title',
     lineKey: 'ox.home.plan_training_line',
+    ctaKey: 'ox.content.services.training_cta',
     photo: SERVICE_PHOTOS.training,
   },
   {
@@ -385,6 +427,7 @@ export const HOME_PLANS: HomePlan[] = [
     icon: 'video-consult',
     titleKey: 'ox.home.plan_advisory_title',
     lineKey: 'ox.home.plan_advisory_line',
+    ctaKey: 'ox.home.band_card_cta',
     photo: SERVICE_PHOTOS.services,
   },
 ];
