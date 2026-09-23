@@ -9,7 +9,7 @@ The theme is built, tested and pushed. What is left needs a person logged in to 
 - The theme code is on GitHub at `shekeww/optimalx`, branch `main`, which is the default and only branch of that repository.
 - The theme is registered in your Partners account as **optimalx**, id **1938498306**, status development.
 - The store already holds the 47 mock products with photos, and the theme reads them live.
-- Checks at the last build (2026-09-24): 1316 tests pass, `pnpm typecheck` is clean, the production build passes and emits every route, and the copy, structured-data, right-to-left, motion, string, claims, token and identity checks are clean.
+- Checks at the last build (2026-09-24, evening, 04616ac): 1431 tests pass, `pnpm typecheck` is clean, the production build passes and emits every route, and the copy, structured-data, right-to-left, motion, string, claims, token and identity checks are clean.
 
 ## Step 1: point the Partners theme at the repository
 
