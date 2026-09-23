@@ -295,3 +295,22 @@ export const BRANCH = {
   mapAltKey: `${KEY}.map_alt`,
   faq: [1, 2, 3].map((n) => ({ qKey: `${KEY}.faq_${n}_q`, aKey: `${KEY}.faq_${n}_a` })),
 } as const;
+
+/**
+ * The branch's public Google Business Profile (docs/build/VISIT-2026-09-24.md
+ * §1, checked 2026-09-24). `BRANCH_GEO` above is the claims-source record and
+ * feeds the structured data; this is where Google sends a customer who taps
+ * the listing, so navigation links are built from it. The two pins are 30 m
+ * apart. No API key is involved in any of these URLs: the listing link opens
+ * the profile (with its reviews), the directions link opens turn-by-turn
+ * navigation, and the embed link is the keyless map frame that
+ * `BranchMap` loads only after a tap.
+ */
+export const BRANCH_LISTING = {
+  latitude: 24.4630382,
+  longitude: 39.6533422,
+  cid: '2204940348214661233',
+  listingUrl: 'https://maps.google.com/?cid=2204940348214661233',
+  directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=24.4630382,39.6533422',
+  embedUrl: 'https://maps.google.com/maps?q=24.4630382,39.6533422&z=16&hl=ar&output=embed',
+} as const;

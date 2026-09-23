@@ -3,5 +3,12 @@
   "newsletter_action_url": "https://example.com/subscribe",
   "inbody_included": true,
   "reply_sla_hours": 24,
-  "whatsapp_number": "966500000000"
+  "whatsapp_number": "966553524524",
+  "google_place_url": "https://maps.google.com/?cid=2204940348214661233",
+  "google_rating": "5.0",
+  "google_review_count": "80",
+  "google_verified_at": "2026-09-24",
+  "branch_address": "شارع جبار بن صخر، حي الخالدية، المدينة المنورة 42317",
+  "branch_hours": "السبت إلى الخميس: 9:00 إلى 24:00\nالجمعة: 16:00 إلى 24:00",
+  "branch_map_url": "https://maps.google.com/?cid=2204940348214661233"
 }

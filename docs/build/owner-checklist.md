@@ -88,3 +88,21 @@ SFDA registration display, PDPL privacy and consent text, SCFHS scope for the wr
 ## Poster files and the corner cuts (S8i, 2026-09-24)
 
 Every card in the "اكتشف أكثر" rail, offer poster included, is clipped on the diagonal at the physical top-right and bottom-left (a 40px-tall, 27px-wide triangle each). Keep the logo, the tagline and any text in the six poster files clear of those two corners; the cut is in the theme, not the file, so it cannot be turned off per poster.
+
+## Branch listing values (2026-09-24)
+
+Type these into the theme settings in the Salla dashboard (they are already in the offline preview overlay and in the Shopify theme's initial values). Each one turns on the surface that reads it; an empty one keeps that surface hidden.
+
+| Setting | Value |
+|---|---|
+| google_place_url | https://maps.google.com/?cid=2204940348214661233 |
+| google_rating | 5.0 |
+| google_review_count | 80 (as shown on the listing on 2026-09-24; update the count and the date together whenever you check it) |
+| google_verified_at | 2026-09-24 |
+| branch_address | شارع جبار بن صخر، حي الخالدية، المدينة المنورة 42317 |
+| branch_hours | السبت إلى الخميس: 9:00 إلى 24:00 (one line) and الجمعة: 16:00 إلى 24:00 (second line) |
+| branch_map_url | https://maps.google.com/?cid=2204940348214661233 |
+| whatsapp_number | 966553524524 if the listing's phone is the WhatsApp line; otherwise the WhatsApp number in the same digits-only form |
+
+Also: send the original, full-size file of the storefront photograph (the night shot of the lit facade). The copy on disk is 415 px wide, which is enough for the small slots it fills today and too small for a wide panel.
+
