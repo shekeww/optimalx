@@ -554,7 +554,7 @@ describe('ListingPage, the offers poster grid (owner brief 2026-09-24)', () => {
     expect(container.querySelector('#offers-grid')?.classList.contains('ox-listing__catalogue')).toBe(true);
   });
 
-  it('every poster renders its photograph since the owner's files landed (2026-09-24)', () => {
+  it('every poster renders its photograph since the owner files landed (2026-09-24)', () => {
     const { container } = renderWithProviders(<ListingPage {...offersData()} />);
     const grid = container.querySelector('.ox-offers-posters');
     expect(grid?.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(0);
