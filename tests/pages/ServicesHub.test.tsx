@@ -214,4 +214,11 @@ describe('ServicesHub', () => {
     renderWithProviders(<ServicesHub />);
     expect(screen.queryByTestId('ox-contact-row')).toBeNull();
   });
+
+  it('mounts the mobile visit sticky bar (VISIT-2026-09-24 §4.4 item 4)', () => {
+    renderWithProviders(<ServicesHub />);
+    const bar = screen.getByTestId('ox-visit-sticky');
+    expect(bar.getAttribute('aria-hidden')).toBe('true');
+    expect(screen.getAllByText(t('ox.content.services.visit_cta_short')).length).toBeGreaterThan(0);
+  });
 });

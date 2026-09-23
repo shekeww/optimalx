@@ -3,6 +3,7 @@ import type { Store } from '@salla.sa/twilight-theme-engine/types';
 import { currentUrl, tryOriginOf } from './head';
 import {
   BRANCH_GEO,
+  BRANCH_LISTING,
   parseBranchHours,
   toSchemaOpeningHours,
 } from '../../content/branch';
@@ -73,6 +74,13 @@ const BRANCH_STREET_FALLBACK = 'ox.seo.branch.street';
  * claims-backed street line above when the merchant setting is empty, so the
  * geo point (a fixed constant, not a setting) is no longer gated on a setting
  * that starts empty on every fresh install.
+ *
+ * `mapUrl` (-> `hasMap`, VISIT-2026-09-24 §4.6) prefers the merchant's own
+ * `google_place_url`, then `branch_map_url`, then falls back to
+ * `BRANCH_LISTING.listingUrl` — the same audited, public Google Business
+ * Profile URL `BranchMap.tsx` falls back to for its own "open in Google
+ * Maps" link, so a fresh install still publishes one real, checkable map
+ * link rather than none.
  */
 export function branchFromSettings(
   settings: Record<string, unknown> | undefined,
@@ -91,7 +99,10 @@ export function branchFromSettings(
     region: address ? label(BRANCH_REGION) : undefined,
     hours: hours.length ? hours : undefined,
     phone: localized(settings?.whatsapp_number, locale),
-    mapUrl: localized(settings?.google_place_url, locale) ?? localized(settings?.branch_map_url, locale),
+    mapUrl:
+      localized(settings?.google_place_url, locale) ??
+      localized(settings?.branch_map_url, locale) ??
+      BRANCH_LISTING.listingUrl,
     geo: address ? BRANCH_GEO : undefined,
   };
 }

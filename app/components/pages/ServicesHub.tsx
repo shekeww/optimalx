@@ -20,6 +20,12 @@ import { ServiceSection } from './ServiceSection';
 import { ContactRow } from './ContactRow';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
 import { OxServices } from '../home/OxServices';
+import { VisitStickyBar } from './VisitStickyBar';
+
+/** The anchor `VisitStickyBar` watches: the advisory band's own offer strip,
+ *  which carries this page's "احجز زيارتك" button (`OxServices`'s
+ *  `OfferStrip`, `data-testid="ox-services-offer"`). */
+const VISIT_STICKY_ANCHOR = '[data-testid="ox-services-offer"]';
 
 /** The four hub rows (FINAL-content 4; the answers restate nothing new). */
 export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
@@ -200,6 +206,8 @@ export function ServicesHub() {
           {t('ox.nav.branch')}
         </Button>
       </p>
+
+      <VisitStickyBar anchorSelector={VISIT_STICKY_ANCHOR} />
     </div>
   );
 }

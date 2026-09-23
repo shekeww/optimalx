@@ -293,6 +293,26 @@ export const BRANCH = {
   },
   directionsKey: `${KEY}.directions`,
   mapAltKey: `${KEY}.map_alt`,
+  /** The click-to-load facade's own controls (VISIT-2026-09-24 §4.4 item 3),
+   *  distinct from `directionsKey` above (the FAQ-style sentence). */
+  map: {
+    viewKey: `${KEY}.map_view`,
+    directionsKey: `${KEY}.map_directions`,
+    openGoogleKey: `${KEY}.map_open_google`,
+  },
+  /** The gallery's own label and the four other photographs' captions
+   *  (VISIT §4.4 item 2); `store-wide` is `OxBranch`'s own panel, never
+   *  captioned here. */
+  gallery: {
+    labelKey: `${KEY}.gallery_label`,
+    storefrontCaptionKey: `${KEY}.photo_storefront`,
+    shelvesCaptionKey: `${KEY}.photo_shelves`,
+    advisoryCaptionKey: `${KEY}.photo_advisory`,
+    waitingCaptionKey: `${KEY}.photo_waiting`,
+  },
+  /** The masthead band's photo of the branch's own wall mark (conductor
+   *  addendum, gated on `STORE_PHOTOS['mark-wall']` existing). */
+  markWallAltKey: `${KEY}.mark_wall_alt`,
   faq: [1, 2, 3].map((n) => ({ qKey: `${KEY}.faq_${n}_q`, aKey: `${KEY}.faq_${n}_a` })),
 } as const;
 

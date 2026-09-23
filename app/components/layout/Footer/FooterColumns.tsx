@@ -3,12 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
+import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { digitsOnly } from '../../blocks/href';
 import { FOOTER_COLUMNS, findMenuLink, type NavEntry } from '../../../content/nav';
 import { Icon } from '../../common/Icon';
+import { StoreRating } from '../../common/StoreRating';
 import { useMediaQuery } from '../../common/hooks/useMediaQuery';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
+import { settingText } from '../../product/lib/claims';
 import { resolveNavHref, toSafeLinks } from '../navLinks';
 import { useHeaderMenu } from '../Header/useHeaderMenu';
 
@@ -64,11 +67,19 @@ type Resolved = { key: string; label: string; href: string; external: boolean } 
  *   page is not a returns policy, and an invented policy URL is a dead link on
  *   a legal page
  * - WhatsApp renders only when the store publishes a number
+ *
+ * The "customer service" column also carries the branch address (gated on
+ * `branch_address`, VISIT-2026-09-24 §4.5) and the `StoreRating` inline chip
+ * below its link list, so the store's checkable Google rating reaches every
+ * page's footer, not just `/branch`. The address prints with no label and no
+ * icon, matching `ContactRow`'s own plain phone line.
  */
 export function FooterColumns() {
   const { t } = useTranslation();
   const store = useStore();
+  const { settings } = useTheme();
   const { items } = useHeaderMenu();
+  const address = settingText(settings as Record<string, unknown> | undefined, 'branch_address');
   // Reduced to a path here, not inside `useTaxonomyLinks`: that hook is
   // shared with the listing page's `ChildChips`, whose own test pins
   // today's raw-URL behaviour for its live-children path (NAV-2026-09-23 §8
@@ -134,6 +145,12 @@ export function FooterColumns() {
                 </li>
               ))}
             </ul>
+            {column.key === 'service' ? (
+              <div className="ox-footer__contact">
+                {address ? <p className="ox-footer__address ox-small">{address}</p> : null}
+                <StoreRating variant="inline" className="ox-footer__rating" />
+              </div>
+            ) : null}
           </Column>
         );
       })}

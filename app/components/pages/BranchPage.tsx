@@ -4,16 +4,24 @@ import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { OxBranch } from '../blocks/OxBranch';
 import { Accordion } from '../common/Accordion';
+import { Band } from '../common/Band';
 import { Icon } from '../common/Icon';
 import { Panel } from '../common/Panel';
 import { BRANCH, parseBranchHours } from '../../content/branch';
 import { channelById } from '../../content/services';
+import { STORE_PHOTOS, type StorePhoto } from '../../content/store-photos';
 import { Button } from '../common/Button';
+import { BranchGallery } from './BranchGallery';
 import { BranchMap } from './BranchMap';
 import { ContactRow } from './ContactRow';
 import { resolveFaq, type FaqRowKeys } from './faq';
 import { PickupSteps } from './PickupSteps';
+import { VisitStickyBar } from './VisitStickyBar';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
+
+/** The anchor `VisitStickyBar` watches: `OxBranch`'s own root, the page's
+ *  first visit-booking control (its actions row). */
+const VISIT_STICKY_ANCHOR = '[data-testid="ox-branch"]';
 
 /** The three branch rows (FINAL-content 5.7), by content key. */
 export const BRANCH_FAQ: FaqRowKeys[] = BRANCH.faq.map((row, index) => ({
@@ -38,9 +46,22 @@ export interface BranchPageProps {
  * the page header and the block heading is the section's h2. One h1, and the
  * mandated wording is the one a shopper and a crawler see.
  *
- * The page carries no dark band: `OxBranch` already puts a photograph at the
- * top of it, and a second full-width dark block would be the screen's second
- * hero. The wedge is spent on the block's own photo edge.
+ * The page carries no dark band by default: `OxBranch` already puts a
+ * photograph at the top of it, and a second full-width dark block would be
+ * the screen's second hero. Conductor addendum 2026-09-24 (mid-batch, the
+ * owner's photo of the lit X mark on the branch's ribbed wall): once
+ * `STORE_PHOTOS['mark-wall']` exists, the page opens instead on a contained
+ * S7b-style `Band` (`docs/build/progress/S7b.md`) carrying that photograph, a
+ * scrim, and the SAME h1/lead this page always printed, now inside the band
+ * rather than a plain header — one h1 either way. Absent the photo (every
+ * store today), the page falls back to the plain header exactly as before.
+ *
+ * `StoreRating` (VISIT-2026-09-24 §3, §4.4) is NOT declared a second time
+ * here: `OxBranch` (V1) already carries it, unconditionally, under its own
+ * title, immediately below the lead/band either way. A second rail directly
+ * under the page's own lead would put the identical figure on screen twice
+ * within one scroll, so this page relies on the shared block's copy rather
+ * than repeating it.
  *
  * LocalBusiness structured data is NOT declared here: the site-wide graph in
  * `components/seo/registerHeadHooks.tsx` emits the one `#localbusiness` node,
@@ -48,9 +69,11 @@ export interface BranchPageProps {
  *
  * Every fact below is gated on a theme setting: the hours table hides itself
  * when `branch_hours` parses to nothing, the pickup steps hide until both
- * pickup numbers are set, the map falls back to a link and then to nothing,
- * and a FAQ answer whose placeholder is unresolved is dropped rather than
- * printed.
+ * pickup numbers are set, the map falls back to a click-to-load facade
+ * (VISIT §4.4), and a FAQ answer whose placeholder is unresolved is dropped
+ * rather than printed. `VisitStickyBar` (mobile only) shows once `OxBranch`'s
+ * own actions scroll out of view, gated on the visit product's own catalogue
+ * entry.
  */
 export function BranchPage({ now }: BranchPageProps) {
   const { t } = useTranslation();
@@ -69,19 +92,46 @@ export function BranchPage({ now }: BranchPageProps) {
   // the catalogue's own entry for the visit channel, never a typed id: an id
   // in a component is a dead link the day the store is rebuilt.
   const visitHref = channelById('visit')?.to;
+  const lead = (
+    <>
+      {t(BRANCH.introKey)} {t(hasHours ? 'ox.branch.intro_with_hours' : 'ox.branch.intro_no_hours')}
+    </>
+  );
+  // Conductor addendum 2026-09-24: absent until the owner's photograph lands
+  // (`scripts/store-photos-import.mjs`); the cast matches the type the
+  // manifest will carry the slug under the day it does.
+  const markWallPhoto = (STORE_PHOTOS as Partial<Record<string, StorePhoto>>)['mark-wall'];
 
   return (
     <div className="ox-page ox-page--branch">
       <OxBreadcrumb page={page} />
 
-      <header className="ox-page-head">
-        <h1 className="ox-page-head__title ox-h1">{t(BRANCH.h1Key)}</h1>
-        <p className="ox-page-head__lead ox-lead">
-          {t(BRANCH.introKey)} {t(hasHours ? 'ox.branch.intro_with_hours' : 'ox.branch.intro_no_hours')}
-        </p>
-      </header>
+      {markWallPhoto ? (
+        <Band
+          id="ox-branch-band"
+          className="ox-page--branch__band"
+          photo={markWallPhoto.photo}
+          alt={t(BRANCH.markWallAltKey)}
+          headingLevel="h1"
+          line1={t(BRANCH.h1Key)}
+          subline={lead}
+        />
+      ) : (
+        <header className="ox-page-head">
+          <h1 className="ox-page-head__title ox-h1">{t(BRANCH.h1Key)}</h1>
+          <p className="ox-page-head__lead ox-lead">{lead}</p>
+        </header>
+      )}
 
-      <OxBranch headingLevel="h2" showEyebrow={false} now={now} className="ox-page--branch__block" />
+      <OxBranch
+        headingLevel="h2"
+        showEyebrow={false}
+        now={now}
+        className="ox-page--branch__block"
+        photo={STORE_PHOTOS['store-wide'].photo}
+      />
+
+      <BranchGallery className="ox-page--branch__gallery" />
 
       <BranchMap className="ox-page--branch__map" />
 
@@ -131,6 +181,8 @@ export function BranchPage({ now }: BranchPageProps) {
       ) : null}
 
       <ContactRow className="ox-page--branch__contact" />
+
+      <VisitStickyBar anchorSelector={VISIT_STICKY_ANCHOR} now={now} />
     </div>
   );
 }

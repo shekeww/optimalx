@@ -1606,5 +1606,14 @@
   "ox.blocks.branch.directions": "Directions",
   "ox.blocks.branch.photo_wide_alt": "The shelves inside the OptimalX branch in Al Khalidiyah, Madinah",
   "ox.pdp.advisory_directions": "Directions to the branch",
-  "ox.home.offer_photo_alt": "The consultation room at the OptimalX branch"
+  "ox.home.offer_photo_alt": "The consultation room at the OptimalX branch",
+  "ox.content.branch.gallery_label": "Photos of our branch in Al Khalidiyah",
+  "ox.content.branch.photo_storefront": "The branch facade",
+  "ox.content.branch.photo_shelves": "The branch shelves",
+  "ox.content.branch.photo_advisory": "The advisory room",
+  "ox.content.branch.photo_waiting": "The waiting area",
+  "ox.content.branch.map_view": "View the map",
+  "ox.content.branch.map_directions": "Directions",
+  "ox.content.branch.map_open_google": "Open in Google Maps",
+  "ox.content.branch.mark_wall_alt": "The OptimalX mark on the branch wall"
 }

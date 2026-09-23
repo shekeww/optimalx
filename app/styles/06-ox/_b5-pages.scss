@@ -203,7 +203,11 @@
 
 .ox-page--services__band,
 .ox-page--about__band,
-.ox-page--faq__band {
+.ox-page--faq__band,
+// The branch masthead (S9a-V2, gated on STORE_PHOTOS['mark-wall']): the same
+// contained band the about/FAQ pages already use, since `.ox-page--branch`
+// carries no `ox-page--bleed` either.
+.ox-page--branch__band {
   margin-block-start: var(--ox-2);
 }
 
@@ -248,7 +252,8 @@
 
   .ox-page--services__band,
   .ox-page--about__band,
-  .ox-page--faq__band {
+  .ox-page--faq__band,
+  .ox-page--branch__band {
     min-block-size: 360px;
     background: transparent;
     padding-inline: calc(#{ox-run(360px)} + var(--ox-6));
@@ -778,27 +783,32 @@
 }
 
 // ---------------------------------------------------------------------------
-// 7. Branch page (DIRECTION 6.12)
+// 7. Branch page (DIRECTION 6.12; VISIT-2026-09-24 §4.4: the gallery, the
+//    click-to-load map facade, the mobile visit sticky bar)
 // ---------------------------------------------------------------------------
 .ox-branch-map {
   display: flex;
   flex-direction: column;
   gap: var(--ox-4);
-  align-items: flex-start;
+  align-items: stretch;
 }
 
-.ox-branch-map__frame,
-.ox-branch-map__plate {
+// The native `SallaMap` frame AND the keyless embed iframe (both states share
+// one box so the section never jumps size when the facade swaps itself for
+// the iframe on tap). "a 16:10 box" (VISIT §4.4 item 3).
+.ox-branch-map__frame {
   inline-size: 100%;
-  block-size: 268px;
+  aspect-ratio: 16 / 10;
   border-radius: var(--ox-r-4, 16px);
   overflow: hidden;
 }
 
-.ox-branch-map__frame salla-map {
+.ox-branch-map__frame salla-map,
+.ox-branch-map__embed {
   display: block;
   inline-size: 100%;
   block-size: 100%;
+  border: 0;
 }
 
 .ox-branch-map__skeleton {
@@ -806,17 +816,32 @@
   block-size: 100%;
 }
 
-// Every piece of imagery on this site sits on the plate; a map we cannot draw
-// is still imagery, so its stand-in sits there too.
+// The facade: the storefront photograph never upscaled past its own 415px,
+// beside the address, the landmark and the "عرض الخريطة" button. Stacked
+// below 640 (the photo has no room to sit beside anything yet); a row from
+// 640, the photo capped at its own native width so it never outgrows the
+// slot the manifest built it for.
 .ox-branch-map__plate {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--ox-2);
   background: var(--ox-plate);
-  text-align: center;
-  padding-inline: var(--ox-4);
+  border-radius: var(--ox-r-4, 16px);
+  overflow: hidden;
+}
+
+.ox-branch-map__photo {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  object-fit: cover;
+}
+
+.ox-branch-map__info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  padding: var(--ox-4);
 }
 
 .ox-branch-map__icon {
@@ -830,6 +855,178 @@
 
 .ox-branch-map__landmark {
   color: var(--ox-fg-3);
+}
+
+// The two links every state carries underneath: "الاتجاهات" and the listing.
+.ox-branch-map__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-3);
+}
+
+@media (min-width: 640px) {
+  .ox-branch-map__plate {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .ox-branch-map__photo {
+    flex: 0 0 auto;
+    inline-size: 415px;
+    max-inline-size: 415px;
+    object-fit: cover;
+  }
+
+  .ox-branch-map__info {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+// The four other photographs (VISIT §4.4 item 2): two-up from 640px, a
+// scroll-snap rail below it — the plain fallback the direction names, not
+// `.ox-rail` (`_rail.scss`), whose chevron cue and progress strap are built
+// for a carousel longer than four static tiles.
+.ox-branch-gallery__list {
+  // Positioned: the scroller's own containing block (G2, DIRECTION 10.1),
+  // so nothing under it can ever escape to the document even though every
+  // child here is a static figure/caption today.
+  position: relative;
+  display: flex;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-branch-gallery__item {
+  flex: 0 0 auto;
+  inline-size: 78vw;
+  max-inline-size: 320px;
+  scroll-snap-align: start;
+}
+
+.ox-branch-gallery__figure {
+  margin: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.ox-branch-gallery__photo {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  object-fit: cover;
+}
+
+.ox-branch-gallery__caption {
+  margin: var(--ox-2) 0 0;
+  color: var(--ox-fg-2);
+}
+
+// The mark's own corner cut, first tile only (VISIT §4.4 item 2), the same
+// lean ladder the brand tile plate and the poster rail use.
+.ox-branch-gallery__item--cut .ox-branch-gallery__figure {
+  @include ox-x-corner(40px);
+}
+
+@media (min-width: 640px) {
+  .ox-branch-gallery__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow: visible;
+  }
+
+  .ox-branch-gallery__item {
+    inline-size: auto;
+    max-inline-size: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-branch-gallery__item--cut .ox-branch-gallery__figure {
+    @include ox-x-corner(48px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-branch-gallery__item--cut .ox-branch-gallery__figure {
+    @include ox-x-corner(64px);
+  }
+}
+
+// The mobile "احجز زيارتك" bar on `/branch` and `/services` (VISIT §4.4 item
+// 4), the PDP `.ox-sticky`'s own fixed/reveal construction, a class of its
+// own because its content (the status chip) differs.
+.ox-visit-sticky {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--ox-z-sticky);
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+  background: var(--ox-surface);
+  border-block-start: 1px solid var(--ox-bd);
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform var(--dur-base) var(--ease-in),
+    opacity var(--dur-base) var(--ease-in),
+    visibility 0s linear var(--dur-base);
+
+  &.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      opacity var(--dur-slow) var(--ease-out),
+      visibility 0s;
+  }
+}
+
+.ox-visit-sticky__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-4);
+  min-block-size: 64px;
+  padding-inline: var(--ox-gutter);
+  padding-block: var(--ox-2);
+}
+
+.ox-visit-sticky__status {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: var(--ox-w-read);
+  white-space: nowrap;
+
+  &.is-open {
+    color: var(--ox-verify);
+  }
+
+  &.is-closed {
+    color: var(--ox-fg-3);
+  }
+}
+
+.ox-visit-sticky__cta {
+  flex: 1 1 auto;
+  min-block-size: 48px;
+}
+
+@media (min-width: 1024px) {
+  .ox-visit-sticky {
+    display: none;
+  }
 }
 
 .ox-branch-do__grid {
@@ -864,11 +1061,6 @@
 }
 
 @media (min-width: 1024px) {
-  .ox-branch-map__frame,
-  .ox-branch-map__plate {
-    block-size: 400px;
-  }
-
   .ox-branch-do__grid {
     grid-template-columns: repeat(3, 1fr);
   }

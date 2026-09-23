@@ -114,6 +114,28 @@ describe('siteJsonLd', () => {
     expect(organization.sameAs).toContain('https://maps.google.com/place/1');
   });
 
+  it('falls back to the audited BRANCH_LISTING url for hasMap when neither setting is set (VISIT §4.6)', () => {
+    const { branch_map_url, google_place_url, ...withoutMapSettings } = SETTINGS as Record<
+      string,
+      unknown
+    >;
+    const doc = JSON.parse(siteJsonLd(store, 'ar', withoutMapSettings, t) as string);
+    const local = (doc['@graph'] as Array<Record<string, unknown>>)[2];
+    expect(local.hasMap).toBe('https://maps.google.com/?cid=2204940348214661233');
+  });
+
+  it('never emits aggregateRating anywhere in the graph (social-proof.ts rule 1)', () => {
+    const withRating = {
+      ...SETTINGS,
+      google_place_url: 'https://maps.google.com/place/1',
+      google_rating: '5.0',
+      google_review_count: '80',
+      google_verified_at: '2026-09-24',
+    };
+    const text = siteJsonLd(store, 'ar', withRating, t) as string;
+    expect(text).not.toContain('aggregateRating');
+  });
+
   it('gives the Organization node an alternateName, areaServed and contactPoint', () => {
     const doc = JSON.parse(siteJsonLd(store, 'ar', SETTINGS, t) as string);
     const organization = (doc['@graph'] as Array<Record<string, unknown>>)[0];

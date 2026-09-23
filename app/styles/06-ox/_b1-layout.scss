@@ -1535,6 +1535,30 @@ body.ox-has-tabbar {
   }
 }
 
+// The address line and the `StoreRating` inline chip, under the "customer
+// service" column's own link list (VISIT-2026-09-24 §4.5). `.ox-gr` already
+// re-reads `--ox-fg` from `.ox-band-dark` (tokens.css), so the stars and the
+// value read correctly here for free; `--ox-ink-4` (the count/stamp colour)
+// is NOT one of the tokens a dark band re-points, so it is repointed here,
+// scoped to the footer, rather than in `_primitives.scss` (out of this
+// batch's file list) for every other surface `StoreRating` mounts on.
+.ox-footer__contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  margin-block-start: var(--ox-3);
+}
+
+.ox-footer__address {
+  margin: 0;
+  color: var(--ox-ink-3-on-dark);
+}
+
+.ox-footer__rating .ox-gr__count,
+.ox-footer__rating .ox-gr__stamp {
+  color: var(--ox-ink-3-on-dark);
+}
+
 .ox-footer__brand {
   display: flex;
   flex-direction: column;

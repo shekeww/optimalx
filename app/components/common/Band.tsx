@@ -11,8 +11,14 @@ export interface BandBadge {
 }
 
 export interface BandProps {
-  /** Decorative photograph; it always renders with an empty alt. */
+  /** Decorative photograph; empty alt unless `alt` names real content. */
   photo: string;
+  /**
+   * Real alt text for `photo` (S9a-V2, the branch masthead's photo of the
+   * store's own wall mark). Every existing caller omits it and keeps the
+   * decorative empty alt this component always rendered.
+   */
+  alt?: string;
   line1: ReactNode;
   line2?: ReactNode;
   subline?: ReactNode;
@@ -59,6 +65,7 @@ export interface BandProps {
  */
 export function Band({
   photo,
+  alt = '',
   line1,
   line2,
   subline,
@@ -83,7 +90,7 @@ export function Band({
   return (
     <section className={classes} id={id} aria-labelledby={titleId} data-testid="ox-band">
       <div className="ox-bband__plate" aria-hidden="true">
-        <img className="ox-bband__photo" src={photo} alt="" loading="lazy" decoding="async" />
+        <img className="ox-bband__photo" src={photo} alt={alt} loading="lazy" decoding="async" />
         <span className="ox-bband__scrim" aria-hidden="true" />
       </div>
       <span className="ox-bband__wash" aria-hidden="true" />

@@ -351,6 +351,36 @@ describe('Footer', () => {
     storeValue.contacts = {};
   });
 
+  it('carries the branch address and the store rating in the contact column (VISIT-2026-09-24 §4.5)', async () => {
+    const bare = renderWithProviders(<Footer />);
+    const bareColumns = await screen.findByTestId('ox-footer-columns');
+    expect(bareColumns.querySelector('.ox-footer__address')).toBeNull();
+    expect(bareColumns.querySelector('[data-testid="ox-store-rating"]')).toBeNull();
+    bare.unmount();
+
+    setSettings({
+      branch_address: 'حي الخالدية، شارع جبار بن صخر',
+      google_place_url: 'https://maps.google.com/place/1',
+      google_rating: '5.0',
+      google_review_count: '80',
+      google_verified_at: '2026-09-24',
+    });
+    storeValue.contacts = { whatsapp: '+966 50 123 4567' };
+    renderWithProviders(<Footer />);
+    const columns = await screen.findByTestId('ox-footer-columns');
+    expect(columns.querySelector('.ox-footer__address')?.textContent).toBe(
+      'حي الخالدية، شارع جبار بن صخر'
+    );
+    const rating = columns.querySelector('[data-testid="ox-store-rating"]');
+    expect(rating).not.toBeNull();
+    expect(rating?.className).toContain('ox-gr--inline');
+    // The WhatsApp entry stays alongside the new address and rating.
+    expect(
+      Array.from(columns.querySelectorAll('a')).some((a) => a.getAttribute('href')?.includes('wa.me'))
+    ).toBe(true);
+    storeValue.contacts = {};
+  });
+
   it('keeps the unapproved Latin tagline behind a setting that is off', () => {
     const bare = renderWithProviders(<Footer />);
     expect(bare.container.querySelector('[data-testid="ox-footer-en-tagline"]')).toBeNull();
