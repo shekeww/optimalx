@@ -1,8 +1,36 @@
 import type { HeadDescriptor } from '@salla.sa/twilight-theme-engine/utils/head';
 import type { TwilightContext } from '@salla.sa/twilight-theme-engine/tanstack';
 import type { BlogSinglePageProps } from '@salla.sa/twilight-theme-engine/routes/blog';
-import { canonicalFor, robots, tryOriginOf } from '../seo/head';
+import { canonicalFor, isUnresolvedKey, robots, tryOriginOf } from '../seo/head';
+import { headString } from '../seo/strings';
 import { article, graph, type JsonLdNode } from '../seo/jsonld';
+
+/**
+ * A document title that is never a lookup key (UX-2026-09-24 P0-5).
+ *
+ * The engine hands a commerce route its title from the PLATFORM string
+ * bundle, which Salla serves from its own CDN and which the head pass does
+ * not resolve: `/ar/cart` shipped the tab title `common.titles.cart` and
+ * `/ar/blog` shipped `blocks.footer.blog`. The theme's own dictionary carries
+ * many of those platform keys, so the first attempt is a real lookup in it;
+ * `titleKey` is the theme key the route names for the ones it does not
+ * (`blocks.footer.blog` has no entry anywhere in this theme).
+ *
+ * A title that is neither a key nor resolvable is left exactly as the engine
+ * produced it: a merchant's own page title is never rewritten here.
+ */
+function headTitle(
+  title: string | undefined,
+  locale: string | null | undefined,
+  titleKey: string | undefined
+): string | undefined {
+  if (!title || !isUnresolvedKey(title)) return title;
+  const fromDictionary = headString(locale, title);
+  if (!isUnresolvedKey(fromDictionary)) return fromDictionary;
+  if (!titleKey) return title;
+  const fallback = headString(locale, titleKey);
+  return isUnresolvedKey(fallback) ? title : fallback;
+}
 
 /**
  * The `withHead` extension the commerce routes share.
@@ -19,7 +47,10 @@ import { article, graph, type JsonLdNode } from '../seo/jsonld';
  * No route here emits a BreadcrumbList: the engine `Breadcrumb` component
  * inside each page already emits one in a script of its own (C11).
  */
-export function commerceHeadExtend({ noindex = false }: { noindex?: boolean } = {}) {
+export function commerceHeadExtend({
+  noindex = false,
+  titleKey,
+}: { noindex?: boolean; titleKey?: string } = {}) {
   return (result: HeadDescriptor, ctx: TwilightContext): HeadDescriptor => {
     const origin = tryOriginOf(ctx.settings?.store?.url);
     const path = ctx.location?.pathname ?? '';
@@ -31,6 +62,7 @@ export function commerceHeadExtend({ noindex = false }: { noindex?: boolean } = 
 
     return {
       ...result,
+      title: headTitle(result.title, ctx.locale, titleKey),
       robots: robots(noindex),
       canonical,
       openGraph: { ...result.openGraph, url: canonical },

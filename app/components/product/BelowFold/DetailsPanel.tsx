@@ -43,7 +43,10 @@ export function DetailsPanel({ product, spec, footer }: DetailsPanelProps) {
   const size = specField(spec, PACK_SIZE_LABELS) ?? (product.weight ? product.weight.trim() : null);
   if (size) rows.push({ id: 'size', label: t('ox.pdp.size'), value: size });
 
-  if (spec?.servingsText) {
+  // A package of one serving is the package itself, so the row says nothing:
+  // it read `عدد الحصص: 1` on a reusable shaker bottle (UX-2026-09-24 P0-13).
+  // A count the label wrote in words ("30 يوما") is kept as written.
+  if (spec?.servingsText && spec.servings !== 1) {
     rows.push({ id: 'servings', label: t('ox.pdp.servings'), value: spec.servingsText });
   }
 

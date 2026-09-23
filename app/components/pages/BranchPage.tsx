@@ -1,11 +1,14 @@
 
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import type { Page } from '@salla.sa/twilight-theme-engine/types';
 import { OxBranch } from '../blocks/OxBranch';
 import { Accordion } from '../common/Accordion';
 import { Icon } from '../common/Icon';
 import { Panel } from '../common/Panel';
-import { BRANCH } from '../../content/branch';
+import { BRANCH, parseBranchHours } from '../../content/branch';
+import { channelById } from '../../content/services';
+import { Button } from '../common/Button';
 import { BranchMap } from './BranchMap';
 import { ContactRow } from './ContactRow';
 import { resolveFaq, type FaqRowKeys } from './faq';
@@ -51,8 +54,21 @@ export interface BranchPageProps {
  */
 export function BranchPage({ now }: BranchPageProps) {
   const { t } = useTranslation();
+  const { settings } = useTheme();
   const faqRows = resolveFaq(t, BRANCH_FAQ);
   const page: Page = { title: t(BRANCH.h1Key), slug: BRANCH.slug };
+
+  // THE INTRO PROMISED THE HOURS AND THE PAGE HAD NONE (UX-2026-09-24 P0-7).
+  // `branch_hours` is null on this store, so `OxBranch` correctly hides its
+  // table, and the paragraph above it still said the opening hours were here.
+  // The closing sentence is now the same gate as the table: with hours it
+  // says they are here, without them it says where to ask for them.
+  const hoursSetting = (settings as Record<string, unknown> | undefined)?.branch_hours;
+  const hasHours = parseBranchHours(typeof hoursSetting === 'string' ? hoursSetting : null).length > 0;
+  // The booking product the "book a time for your visit" row describes. It is
+  // the catalogue's own entry for the visit channel, never a typed id: an id
+  // in a component is a dead link the day the store is rebuilt.
+  const visitHref = channelById('visit')?.to;
 
   return (
     <div className="ox-page ox-page--branch">
@@ -60,7 +76,9 @@ export function BranchPage({ now }: BranchPageProps) {
 
       <header className="ox-page-head">
         <h1 className="ox-page-head__title ox-h1">{t(BRANCH.h1Key)}</h1>
-        <p className="ox-page-head__lead ox-lead">{t(BRANCH.introKey)}</p>
+        <p className="ox-page-head__lead ox-lead">
+          {t(BRANCH.introKey)} {t(hasHours ? 'ox.branch.intro_with_hours' : 'ox.branch.intro_no_hours')}
+        </p>
       </header>
 
       <OxBranch headingLevel="h2" showEyebrow={false} now={now} className="ox-page--branch__block" />
@@ -72,15 +90,26 @@ export function BranchPage({ now }: BranchPageProps) {
           {t(BRANCH.doTitleKey)}
         </h2>
         <div className="ox-branch-do__grid">
-          {BRANCH.doList.map((item) => (
-            <Panel key={item.titleKey} className="ox-branch-do__item">
-              <h3 className="ox-branch-do__item-title">
-                <Icon name="tick" size={20} className="ox-branch-do__tick" />
-                <span>{t(item.titleKey)}</span>
-              </h3>
-              <p className="ox-branch-do__line ox-small">{t(item.lineKey)}</p>
-            </Panel>
-          ))}
+          {BRANCH.doList.map((item, index) => {
+            // The last row is "book a time for your visit", and it described
+            // a booking with nothing to press (P0-7). It carries the link to
+            // the product that IS the booking now.
+            const href = index === BRANCH.doList.length - 1 ? (visitHref ?? null) : null;
+            return (
+              <Panel key={item.titleKey} className="ox-branch-do__item">
+                <h3 className="ox-branch-do__item-title">
+                  <Icon name="tick" size={20} className="ox-branch-do__tick" />
+                  <span>{t(item.titleKey)}</span>
+                </h3>
+                <p className="ox-branch-do__line ox-small">{t(item.lineKey)}</p>
+                {href ? (
+                  <Button to={href} variant="secondary" size={44} className="ox-branch-do__cta">
+                    {t('ox.pdp.book_now')}
+                  </Button>
+                ) : null}
+              </Panel>
+            );
+          })}
         </div>
       </section>
 

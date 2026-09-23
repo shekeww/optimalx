@@ -1,6 +1,7 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { Bdi } from '../../common/Bdi';
+import { toInternalPath } from '../../layout/navLinks';
 import { SectionHeader } from '../../common/SectionHeader';
 import type { BundleMember } from '../lib/variant';
 
@@ -38,7 +39,7 @@ export function BundleMembers({ members }: BundleMembersProps) {
             </div>
             <p className="ox-bundle__name">
               {member.url ? (
-                <Link to={member.url}>
+                <Link to={toInternalPath(member.url)}>
                   <Bdi>{member.name}</Bdi>
                 </Link>
               ) : (

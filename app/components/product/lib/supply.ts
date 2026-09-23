@@ -11,6 +11,46 @@
 export const MIN_DOSE = 1;
 export const MAX_DOSE = 4;
 
+/**
+ * The dosage forms a package is CONSUMED in, as the catalogue writes them on
+ * the spec line's `الشكل` field (UX-2026-09-24 P0-13).
+ *
+ * The measured defect: a reusable shaker bottle (`الشكل: عبوة`, `الحصص: 1`)
+ * was described as lasting one day and running out tomorrow, because the only
+ * gate was "the label printed a servings number". A bottle, a gift card, a
+ * digital file and a booking are not consumed, so the days-of-supply question
+ * is not asked of them at all. The set is the catalogue's own vocabulary
+ * (powder, capsules, tablets, softgel, bar, liquid), never a guess: `عبوة`,
+ * `خدمة`, `ملف رقمي` and `بطاقة رقمية` are deliberately not in it.
+ */
+export const CONSUMABLE_FORMS: readonly string[] = [
+  'بودرة',
+  'كبسولات',
+  'أقراص',
+  'سوفت جيل',
+  'بار',
+  'سائل',
+];
+
+/** Servings below this describe a package nobody doses: one serving is the thing itself. */
+const MIN_SERVINGS = 2;
+
+/**
+ * Whether the days-of-supply question means anything for this package: the
+ * label printed at least two servings AND the form is one a body consumes.
+ * Both, never either.
+ */
+export function isConsumablePack(
+  spec: { servings?: number | null; form?: string | null } | null | undefined
+): boolean {
+  const servings = spec?.servings;
+  if (typeof servings !== 'number' || !Number.isFinite(servings) || servings < MIN_SERVINGS) {
+    return false;
+  }
+  const form = spec?.form?.trim();
+  return Boolean(form && CONSUMABLE_FORMS.includes(form));
+}
+
 export interface SupplyEstimate {
   /** Whole days the package covers at this dose. */
   days: number;

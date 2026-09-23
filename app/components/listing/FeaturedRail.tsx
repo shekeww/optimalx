@@ -6,6 +6,7 @@ import { effectivePrice } from '../product/lib/claims';
 import { Bdi } from '../common/Bdi';
 import { Icon } from '../common/Icon';
 import { Price } from '../common/Price';
+import { toInternalPath } from '../layout/navLinks';
 import { SectionHeader } from '../common/SectionHeader';
 import { useRailProgress } from '../common/hooks/useRailProgress';
 import { useReducedMotion } from '../common/hooks/useReducedMotion';
@@ -203,7 +204,8 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                   total: items.length,
                 })}
               >
-                <Link to={product.url} className="ox-featured__card">
+                {/* toInternalPath: the API publishes this URL absolute (P0-14). */}
+                <Link to={toInternalPath(product.url)} className="ox-featured__card">
                   <span className="ox-featured__plate">
                     <Image
                       src={cover.url}

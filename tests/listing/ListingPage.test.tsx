@@ -522,13 +522,15 @@ describe('ListingPage, taxonomy head region (S1 step 5)', () => {
     await waitFor(() =>
       expect(
         Array.from(container.querySelectorAll('.ox-listing__chips a')).map((a) => a.getAttribute('href'))
-      ).toContain(`${ORIGIN}/whey-protein/c9011`)
+      ).toContain('/whey-protein/c9011')
     );
     const hrefs = Array.from(container.querySelectorAll('.ox-listing__chips a')).map((a) =>
       a.getAttribute('href')
     );
     expect(hrefs).toHaveLength(5);
-    expect(hrefs[0]).toBe(`${ORIGIN}/whey-protein/c9011`);
+    // The live category publishes `${ORIGIN}/whey-protein/c9011`; the chip
+    // renders its path (P0-14, the one link resolution rule).
+    expect(hrefs[0]).toBe('/whey-protein/c9011');
     for (const href of hrefs.slice(1)) expect(href).toMatch(/^\/search\?q=/);
   });
 
@@ -556,7 +558,8 @@ describe('ListingPage, taxonomy head region (S1 step 5)', () => {
     const hrefs = Array.from(container.querySelectorAll('.ox-listing__chips a')).map((a) =>
       a.getAttribute('href')
     );
-    expect(hrefs).toEqual([`${ORIGIN}/whey-protein/c9011`, `${ORIGIN}/whey-isolate/c9012`]);
+    expect(hrefs).toEqual(['/whey-protein/c9011', '/whey-isolate/c9012']);
+    for (const href of hrefs) expect(href?.includes(ORIGIN)).toBe(false);
   });
 
   it('gives a utility category its h1, intro and FAQ from the taxonomy', () => {

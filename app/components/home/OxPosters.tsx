@@ -105,7 +105,12 @@ export function OxPosters(_props: OxBlockProps) {
     <section className="ox-posters" data-testid="ox-posters">
       <div className="ox-container">
         <SectionHeader
+          // The carousel and the offers grid below it both read
+          // `تصفح المزيد`, one after the other, so neither said what it was
+          // (UX-2026-09-24 P0-11). This one names what these tiles are:
+          // short doors into the goals, the types and the advisory.
           title={t('ox.home.posters_title')}
+          subline={t('ox.home.posters_lead')}
           actions={
             showNav ? (
               <div className="ox-posters__nav">

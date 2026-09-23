@@ -120,3 +120,23 @@ describe('splitDescription', () => {
     expect(problems).toEqual([]);
   });
 });
+
+describe('a table the platform flattened into a paragraph (P0-9)', () => {
+  const FLAT =
+    '<p>الحصص: 1 | حجم الحصة: 820 مل | الصلاحية: غير منطبق | الشكل: عبوة</p>' +
+    '<p>شيكر كلاسيك V2 زجاجة خلط بسعة 820 مل.</p>' +
+    '<p>تفاصيل المنتجالقيمةالسعة820 مل (28 أونصة)المادةبلاستيك خال من BPA</p>' +
+    '<p>تنبيه: ليس للسوائل الساخنة.</p>';
+
+  it('never renders it as prose, so the benefits region has nothing left to draw', () => {
+    const parts = splitDescription(FLAT);
+    expect(parts.bodyHtml).toBe('');
+    expect(parts.lead).toContain('شيكر كلاسيك');
+    expect(parts.warning.length).toBe(1);
+  });
+
+  it('leaves an ordinary paragraph that merely mentions a value alone', () => {
+    const parts = splitDescription('<p>لمحة.</p><p>القيمة الغذائية مذكورة على الملصق.</p>');
+    expect(parts.bodyHtml).toContain('القيمة الغذائية');
+  });
+});

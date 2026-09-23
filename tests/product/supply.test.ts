@@ -6,6 +6,7 @@ import {
   MIN_DOSE,
   clampDose,
   estimateSupply,
+  isConsumablePack,
   monthsUntilExpiry,
   toIsoDate,
 } from '../../app/components/product/lib/supply';
@@ -113,5 +114,32 @@ describe('effective price (the API sends sale_price 0 when nothing is discounted
 
   it('treats a free service as free, not as missing', () => {
     expect(effectivePrice({ is_on_sale: false, price: 0, sale_price: 0, starting_price: null })).toBe(0);
+  });
+});
+
+describe('isConsumablePack (P0-13)', () => {
+  it('says no to a reusable bottle, whatever its servings line says', () => {
+    expect(isConsumablePack({ servings: 1, form: 'عبوة' })).toBe(false);
+    expect(isConsumablePack({ servings: 8, form: 'عبوة' })).toBe(false);
+  });
+
+  it('says no to a service, a digital file and a gift card', () => {
+    expect(isConsumablePack({ servings: null, form: 'خدمة' })).toBe(false);
+    expect(isConsumablePack({ servings: null, form: 'ملف رقمي' })).toBe(false);
+    expect(isConsumablePack({ servings: null, form: 'بطاقة رقمية' })).toBe(false);
+  });
+
+  it('says yes to a tub, a bottle of capsules, tablets, a bar box and a liquid', () => {
+    expect(isConsumablePack({ servings: 73, form: 'بودرة' })).toBe(true);
+    expect(isConsumablePack({ servings: 90, form: 'كبسولات' })).toBe(true);
+    expect(isConsumablePack({ servings: 80, form: 'أقراص' })).toBe(true);
+    expect(isConsumablePack({ servings: 12, form: 'بار' })).toBe(true);
+    expect(isConsumablePack({ servings: 16, form: 'سائل' })).toBe(true);
+  });
+
+  it('needs both halves: no form, or one serving, is not a consumable pack', () => {
+    expect(isConsumablePack({ servings: 30, form: null })).toBe(false);
+    expect(isConsumablePack({ servings: 1, form: 'بودرة' })).toBe(false);
+    expect(isConsumablePack(null)).toBe(false);
   });
 });

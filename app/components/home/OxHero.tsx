@@ -62,9 +62,20 @@ import { fieldText, type OxBlockProps } from './defaults';
 // lost. A frame whose type must be read belongs in a full-bleed band, where the
 // whole composition survives, not in this hero's photo half.
 export const DEFAULT_HERO = '/assets/images/hero-creatine.webp';
-// The same composition on a phone (owner call, 2026-09-22): object-fit crops
-// the landscape frame to the athlete and the tub.
-export const DEFAULT_HERO_MOBILE = '/assets/images/hero-creatine-mobile.webp';
+// THE PHONE FRAME IS A PHOTOGRAPH, NOT A POSTER (UX-2026-09-24 P0-16).
+//
+// `hero-creatine-mobile.webp` is byte-identical to the desktop file (same
+// md5, both 1376x768): there never was a phone crop, only the same
+// pre-composed marketing banner. The desktop split hides its burnt-in type
+// off the edge of the photo half; a 390x300 phone band cannot, so the first
+// thing on the phone was half an Arabic sentence and two English badges
+// (`MOR...`, `BETT...`) bleeding off the inline end, above the real headline.
+//
+// This is the file DIRECTION 8.1 names for exactly this slot,
+// `hero-home-mobile.jpg`, 780x1040 at 3:4, subject centred, no captions and
+// no signage anywhere in frame: the store's own shakers, which is the one
+// object the brand owns.
+export const DEFAULT_HERO_MOBILE = '/assets/images/hero-home-mobile.jpg';
 
 /**
  * The frames the photo half cycles through when the merchant has not set its

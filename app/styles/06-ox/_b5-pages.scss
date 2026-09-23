@@ -379,6 +379,17 @@
 }
 
 .ox-compare__scroller {
+  // `relative` is load-bearing, not decoration (DIRECTION 10.1, the G2
+  // scroller rule; UX-2026-09-24 P0-4). A static scroller holding a sticky
+  // column hands that column's containing block to the initial containing
+  // block, so the table's 640px minimum reached the DOCUMENT instead of
+  // staying inside the scroller: measured on `/ar/services` at 390 in mobile
+  // emulation, `documentElement.scrollWidth` and `window.innerWidth` both 720
+  // against a 390 device, which is the phone rendering the whole page at
+  // about 54 %. Proven by bisection in the running page: injecting this one
+  // declaration at document start returns both numbers to 390, and hiding
+  // `.ox-compare__table`'s `min-inline-size` does the same.
+  position: relative;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scroll-snap-type: inline proximity;

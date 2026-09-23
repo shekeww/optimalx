@@ -1,24 +1,13 @@
 import { useCallback, useRef, type RefObject } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
+import { currentCartPath, proxyAddToCart } from '../lib/buyNow';
 
 export interface BuyActionsProps {
   product: Product;
   /** The buy zone that holds the engine's form and its add button. */
   anchorRef: RefObject<HTMLDivElement | null>;
 }
-
-/** Where a completed buy-now lands. The cart route is the theme's own. */
-const CART_PATH = '/cart';
-
-/**
- * How long to wait for the add button's own `success` before giving up on the
- * redirect. A product with options opens Salla's chooser first, and a shopper
- * reading four flavours takes longer than a network call, so this is generous.
- * On timeout the shopper simply stays on the page with the item in the cart —
- * the add still happened, only the navigation is skipped.
- */
-const SUCCESS_TIMEOUT_MS = 60_000;
 
 /**
  * The product page's second call to action, and the other half of a pair.
@@ -71,24 +60,15 @@ export function BuyActions({ product, anchorRef }: BuyActionsProps) {
     }
     pending.current = true;
 
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const done = () => {
-      pending.current = false;
-      if (timer) clearTimeout(timer);
-      button.removeEventListener('success', onSuccess);
-      button.removeEventListener('failed', onFailed);
-    };
-    const onSuccess = () => {
-      done();
-      if (typeof window !== 'undefined') window.location.assign(CART_PATH);
-    };
-    const onFailed = () => done();
-
-    button.addEventListener('success', onSuccess, { once: true });
-    button.addEventListener('failed', onFailed, { once: true });
-    timer = setTimeout(done, SUCCESS_TIMEOUT_MS);
-
-    (button as HTMLElement).click();
+    proxyAddToCart({
+      button,
+      onSuccess: () => {
+        if (typeof window !== 'undefined') window.location.assign(currentCartPath());
+      },
+      onSettled: () => {
+        pending.current = false;
+      },
+    });
   }, [anchorRef]);
 
   // Out of stock has no buy-now. The engine's own button becomes a notify-me

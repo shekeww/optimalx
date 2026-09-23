@@ -26,7 +26,7 @@
   "ox.content.branch.hours_note": "We close at prayer times and reopen afterwards.",
   "ox.content.branch.hours_title": "Opening hours",
   "ox.content.branch.hours_today": "Today",
-  "ox.content.branch.intro": "Our only branch is in the Al Khalidiyah district of Madinah, on Jabbar bin Sakhr street. We sell there what we sell online at the same prices, and anyone in the city can collect their order from the branch for free instead of waiting for shipping. The person who meets you at the branch is the same team that answers the written questions, so ask whatever you like about choosing and using a product. The store is new and the branch is small; the address and the opening hours are below.",
+  "ox.content.branch.intro": "Our only branch is in the Al Khalidiyah district of Madinah, on Jabbar bin Sakhr street. We sell there what we sell online at the same prices, and anyone in the city can collect their order from the branch for free instead of waiting for shipping. The person who meets you at the branch is the same team that answers the written questions, so ask whatever you like about choosing and using a product. The store is new and the branch is small.",
   "ox.content.branch.map_alt": "A map showing the location of the OptimalX branch in the Al Khalidiyah district of Madinah.",
   "ox.content.branch.pickup_1": "Choose \"collect from the branch\" at checkout. No shipping charge.",
   "ox.content.branch.pickup_2": "Wait for the \"your order is ready\" message on your phone; it usually arrives within {{PICKUP_READY_HOURS}} working hours.",

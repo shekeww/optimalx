@@ -105,7 +105,9 @@ describe('ExploreLinks, component', () => {
     await waitFor(() =>
       expect(
         Array.from(container.querySelectorAll('.ox-explore__list a')).map((a) => a.getAttribute('href'))
-      ).toContain('https://optimalx.com.sa/creatine/c9002')
+        // The published URL is absolute; the theme's one link resolution
+      // rule drops the origin before it reaches an anchor (P0-14).
+    ).toContain('/creatine/c9002')
     );
   });
 

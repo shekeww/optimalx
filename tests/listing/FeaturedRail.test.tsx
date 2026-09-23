@@ -85,7 +85,10 @@ describe('FeaturedRail', () => {
     expect(items).toHaveLength(6);
 
     const first = items[0].querySelector('.ox-featured__card') as HTMLAnchorElement;
-    expect(first.getAttribute('href')).toBe(`${ORIGIN}/p1`);
+    // The rail card carries the product's PATH: the API publishes
+    // `${ORIGIN}/p1`, and the one link resolution rule drops the origin so the
+    // anchor never leaves the build (UX-2026-09-24 P0-14).
+    expect(first.getAttribute('href')).toBe('/p1');
     expect(first.textContent).toContain('Gold Standard Whey 1');
     // The price renders through `Price` (the mocked `useMoney().format()`
     // output), never a hand-formatted string.

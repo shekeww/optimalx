@@ -191,8 +191,10 @@ describe('CategoriesIndex', () => {
       expect(container.querySelector('[data-testid="ox-type-card"][data-resolved="true"]')).not.toBeNull()
     );
     const protein = container.querySelector('[data-testid="ox-type-card"][data-resolved="true"]') as HTMLElement;
+    // Origin dropped by the one link resolution rule (P0-14): an absolute
+    // href leaves the build on a click and drops the locale.
     expect(protein.querySelector('.ox-cat-card__link')?.getAttribute('href')).toBe(
-      'https://optimalx.com.sa/protein/c9001'
+      '/protein/c9001'
     );
     // Protein carries curated artwork (2026-09-23), which wins over the live
     // image: the card is an art card with no live-image slot.
@@ -200,7 +202,7 @@ describe('CategoriesIndex', () => {
     expect(protein.querySelector('.ox-cat-card__media')).toBeNull();
     // The nested child resolved through the flattened list; its siblings did not.
     const chips = Array.from(protein.querySelectorAll('.ox-cat-card__children a'));
-    expect(chips[0].getAttribute('href')).toBe('https://optimalx.com.sa/whey-protein/c9011');
+    expect(chips[0].getAttribute('href')).toBe('/whey-protein/c9011');
     expect(chips[1].getAttribute('href')).toMatch(/^\/search\?q=/);
     // The other nine roots still fall back.
     expect(container.querySelectorAll('[data-testid="ox-type-card"][data-resolved="false"]')).toHaveLength(9);

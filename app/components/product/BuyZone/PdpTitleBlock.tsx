@@ -1,6 +1,7 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../../common/Bdi';
+import { toInternalPath } from '../../layout/navLinks';
 import { RatingRow } from '../RatingRow';
 
 export interface PdpTitleBlockProps {
@@ -34,8 +35,9 @@ export function PdpTitleBlock({ product, lead, hasReviews = false }: PdpTitleBlo
     <div className="ox-pdp__title-block">
       {brand ? (
         <p className="ox-pdp__brand">
+          {/* toInternalPath: the API publishes this URL absolute (P0-14). */}
           {product.brand?.url ? (
-            <Link to={product.brand.url} className="ox-pdp__brand-link">
+            <Link to={toInternalPath(product.brand.url)} className="ox-pdp__brand-link">
               <Bdi>{brand}</Bdi>
             </Link>
           ) : (

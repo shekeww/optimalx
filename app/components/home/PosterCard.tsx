@@ -1,4 +1,5 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
+import { toInternalPath } from '../layout/navLinks';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon, type OxIconName } from '../common/Icon';
 import { BandPhoto } from './BandPhoto';
@@ -51,7 +52,10 @@ export function PosterCard({
   const { t } = useTranslation();
   return (
     <Link
-      to={to}
+      // The poster's destination is a live category URL, published absolute
+      // by the API (UX-2026-09-24 P0-14): one rule, applied at every render
+      // of a merchant-supplied destination.
+      to={toInternalPath(to)}
       className="ox-pcard"
       data-testid="ox-poster-card"
       data-poster={id}

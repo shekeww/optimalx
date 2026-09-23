@@ -2,6 +2,7 @@ import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { BrandsPageProps } from '@salla.sa/twilight-theme-engine/routes/brands';
 import { Bdi } from '../common/Bdi';
+import { toInternalPath } from '../layout/navLinks';
 import { Button } from '../common/Button';
 import { EmptyState } from '../common/EmptyState';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
@@ -60,7 +61,8 @@ export function BrandsGrid({ page, brands }: BrandsPageProps) {
           <ul className="ox-brands__grid">
             {items.map((brand) => (
               <li key={brand.id}>
-                <Link to={brand.url} className="ox-brand-tile">
+                {/* toInternalPath: the API publishes this URL absolute (P0-14). */}
+                <Link to={toInternalPath(brand.url)} className="ox-brand-tile">
                   <span className="ox-brand-tile__plate">
                     {brand.logo ? (
                       <Image

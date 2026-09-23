@@ -4,6 +4,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SallaAddProductButton } from '@salla.sa/twilight-components-react/add-product-button';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../../common/Bdi';
+import { toInternalPath } from '../../layout/navLinks';
 import { Button } from '../../common/Button';
 import { Price } from '../../common/Price';
 import { Icon } from '../../common/Icon';
@@ -132,7 +133,7 @@ export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
         return (
           <article className="ox-bundle-offer__card" key={bundle.id} data-ox-bundle={bundle.id}>
             <h3 className="ox-bundle-offer__name">
-              <Link to={head.url}>
+              <Link to={toInternalPath(head.url)}>
                 <Bdi>{head.name}</Bdi>
               </Link>
             </h3>
@@ -163,7 +164,7 @@ export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
               {members.map((member) => (
                 <li className="ox-bundle-offer__item" key={member.id}>
                   <span className="ox-bundle-offer__item-name">
-                    <Link to={member.url}>
+                    <Link to={toInternalPath(member.url)}>
                       <Bdi>{member.name}</Bdi>
                     </Link>
                   </span>
@@ -208,7 +209,12 @@ export function Bundle({ product, sample = SHOW_SAMPLE_BUNDLES }: BundleProps) {
                   <Icon name="cart" size={16} className="ox-bundle-offer__add-icon" />
                   {addLabel}
                 </SallaAddProductButton>
-                <Button to={head.url} variant="secondary" size={44} className="ox-bundle-offer__view">
+                <Button
+                  to={toInternalPath(head.url)}
+                  variant="secondary"
+                  size={44}
+                  className="ox-bundle-offer__view"
+                >
                   {t('ox.pdp.bundle_view')}
                 </Button>
               </div>

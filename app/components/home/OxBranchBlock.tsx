@@ -16,7 +16,7 @@ export function OxBranchBlock(_props: OxBlockProps) {
   return (
     <div className="ox-branch-block">
       <div className="ox-container">
-        <OxBranch headingLevel="h2" intro={t('ox.blocks.branch.intro')} />
+        <OxBranch headingLevel="h2" showPageLink intro={t('ox.blocks.branch.intro')} />
       </div>
     </div>
   );

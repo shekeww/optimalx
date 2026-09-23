@@ -26,14 +26,27 @@ export interface CartData {
  * nowhere, so `useCartContext()` would otherwise be null here too).
  */
 export function useCartData(): CartData {
-  const [cartId, setCartId] = useState<number | null>(null);
+  // `undefined` means "still asking"; `null` means "this visitor has no cart,
+  // or this build has no cart API". The two were one value before, so a
+  // preview with no SDK, and a store whose id request rejects, both sat on
+  // the skeleton for ever instead of reaching the empty state
+  // (UX-2026-09-24 P0-1).
+  const [cartId, setCartId] = useState<number | null | undefined>(undefined);
 
   useEffect(() => {
     let alive = true;
-    window.salla?.cart.api
-      .getCurrentCartId()
+    // Every hop is optional: the offline preview ships no `window.salla` at
+    // all, and a partially booted SDK has `salla` without `cart.api`. A
+    // missing API is a cartless visitor, not an exception to throw through
+    // the render.
+    const pending = window.salla?.cart?.api?.getCurrentCartId?.();
+    if (!pending || typeof pending.then !== 'function') {
+      setCartId(null);
+      return;
+    }
+    pending
       .then((id) => {
-        if (alive) setCartId(id);
+        if (alive) setCartId(typeof id === 'number' ? id : null);
       })
       .catch(() => {
         if (alive) setCartId(null);
@@ -45,7 +58,7 @@ export function useCartData(): CartData {
 
   const { data } = useQuery({
     ...cartApi.queries.detail(cartId as number),
-    enabled: cartId !== null,
+    enabled: typeof cartId === 'number',
   });
 
   // The cart page holds the authoritative count; publish it so the header
@@ -55,5 +68,8 @@ export function useCartData(): CartData {
     if (typeof count === 'number') setCartCount(count);
   }, [count]);
 
-  return { cart: data, loading: cartId === null || !data };
+  // Loading is "we have not finished asking", never "there is nothing":
+  // a visitor with no cart (`cartId === null`) is resolved, and the page owes
+  // them the empty state.
+  return { cart: data, loading: cartId === undefined || (typeof cartId === 'number' && !data) };
 }

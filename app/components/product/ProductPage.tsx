@@ -42,8 +42,10 @@ import { createGlossaryLookup } from './lib/glossary';
 import { categorySlugOf, pdpFaqItems, prePurchaseRows } from './lib/faq';
 import { statCells } from './lib/stats';
 import { LABEL_EXPIRY, LABEL_FORM, LABEL_SERVINGS, LABEL_SERVING_SIZE } from './lib/specLine';
+import { isConsumablePack } from './lib/supply';
 import { bundleMembers, hasSupplyCalculator, isShippable, variantOf } from './lib/variant';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
+import { toInternalPath } from '../layout/navLinks';
 
 /**
  * The OptimalX product page: our composition over the engine's product
@@ -84,6 +86,26 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product.id]);
 
+  /**
+   * The trail this page KNOWS (UX-2026-09-24 P0-6). The engine's fallback
+   * second crumb is `page.parent`, which it fills with the last page the
+   * visitor happened to visit: the same shaker read `الطاقة` at 1440 and the
+   * branch page's own title at 390, and both linked back to the shaker. The
+   * product's own category is a fact about the product, so it reads the same
+   * however the shopper arrived; a product with no category falls back to the
+   * type index rather than to a guess.
+   */
+  const crumbs = useMemo(
+    () => [
+      { name: 'common.titles.home', url: '/' },
+      product.category?.url
+        ? { name: product.category.name, url: toInternalPath(product.category.url) }
+        : { name: 'ox.nav.all_types', url: '/categories' },
+      { name: product.name, url: toInternalPath(product.url ?? page.url ?? '') },
+    ],
+    [product.category?.url, product.category?.name, product.name, product.url, page.url]
+  );
+
   const glossary = useMemo(() => createGlossaryLookup(t), [t]);
   const parts = useMemo(
     () => splitDescription(product.description, glossary),
@@ -101,6 +123,16 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
   const faqItems = pdpFaqItems(t, product.category?.url);
   const settings = theme.settings as Record<string, unknown> | undefined;
   const payments = store.settings?.payments;
+
+  /**
+   * The days-of-supply question is asked of a consumable package only
+   * (UX-2026-09-24 P0-13). The type gate alone let it run on a reusable
+   * shaker bottle, which the page then described as lasting one day and
+   * running out tomorrow; the form and the servings count answer whether
+   * anyone doses this package at all.
+   */
+  const showsSupply =
+    hasSupplyCalculator(product.type) && isConsumablePack(parts.specLine);
 
   const stats = useMemo(
     () => (isService ? [] : statCells({ product, spec: parts.specLine, nutrition: parts.nutrition })),
@@ -135,7 +167,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
             from search with no idea what else the store sells. The trail is
             the cheapest orientation on the page and it is already the page's
             one BreadcrumbList JSON-LD (PLAN-final C11). */}
-        <OxBreadcrumb page={page} className="ox-crumbs ox-pdp__crumbs" />
+        <OxBreadcrumb page={page} trail={crumbs} className="ox-crumbs ox-pdp__crumbs" />
         <HookSlot name="product:start" context={hookContext} />
 
         <div className="ox-pdp__top" id={'product-' + product.id}>
@@ -160,7 +192,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                 <StatCards cells={stats} />
                 <PdpPriceBlock
                   product={product}
-                  servings={hasSupplyCalculator(product.type) ? parts.specLine?.servings : null}
+                  servings={showsSupply ? parts.specLine?.servings : null}
                   expiry={parts.specLine?.expiry}
                   settings={settings}
                   country={store?.country}
@@ -181,32 +213,42 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
             <HookSlot name="product:details.end" context={hookContext} />
             <HookSlot name="product:single.form.start" context={hookContext} />
 
-            <BuyForm
-              product={product}
-              anchorRef={buyZoneRef}
-              formStartSlot={
-                isDigital || isGiftCard ? (
-                  <>
-                    <SpecChips spec={parts.specLine} settings={settings} />
-                    <SpecFacts
-                      spec={parts.specLine}
-                      settings={settings}
-                      skip={[LABEL_SERVINGS, LABEL_SERVING_SIZE, LABEL_EXPIRY, LABEL_FORM]}
-                      title={t('ox.pdp.facts')}
-                    />
-                  </>
-                ) : null
-              }
-              afterForm={
-                /* The other half of the pair. The engine's form owns the
-                   stepper and the add button; this adds the buy-now beneath
-                   them, inside the same block so the two sit 12px apart, and
-                   proxies that same button, so the quantity and options the
-                   shopper chose are what reaches the cart. A service is
-                   booked rather than bought, so it gets no buy-now. */
-                isService ? null : <BuyActions product={product} anchorRef={buyZoneRef} />
-              }
-            />
+            {/* A service and a booking do not mount the engine form at all
+                (UX-2026-09-24 P0-2). `AddToCartForm` renders shipping fields
+                - an English `Weight 0.1` row, an English `Quantity` row and a
+                total of 0 - which mean nothing for a branch visit, and its
+                quantity input and add button sat as permanent `s-skeleton`
+                pulses on that page. `ServicePdp` above renders Salla's own
+                add button instead, which is the whole cart path a booking
+                needs. */}
+            {isService ? null : (
+              <BuyForm
+                product={product}
+                anchorRef={buyZoneRef}
+                formStartSlot={
+                  isDigital || isGiftCard ? (
+                    <>
+                      <SpecChips spec={parts.specLine} settings={settings} />
+                      <SpecFacts
+                        spec={parts.specLine}
+                        settings={settings}
+                        skip={[LABEL_SERVINGS, LABEL_SERVING_SIZE, LABEL_EXPIRY, LABEL_FORM]}
+                        title={t('ox.pdp.facts')}
+                      />
+                    </>
+                  ) : null
+                }
+                afterForm={
+                  /* The other half of the pair. The engine's form owns the
+                     stepper and the add button; this adds the buy-now beneath
+                     them, inside the same block so the two sit 12px apart, and
+                     proxies that same button, so the quantity and options the
+                     shopper chose are what reaches the cart. A service is
+                     booked rather than bought, and never reaches this form. */
+                  <BuyActions product={product} anchorRef={buyZoneRef} />
+                }
+              />
+            )}
 
             <HookSlot name="product:single.form.end" context={hookContext} />
 
@@ -291,11 +333,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
           {hasMethod ? (
             <HowToUse
               steps={parts.howToUse}
-              footer={
-                hasSupplyCalculator(product.type) ? (
-                  <SupplyCalculator servings={parts.specLine?.servings} />
-                ) : null
-              }
+              footer={showsSupply ? <SupplyCalculator servings={parts.specLine?.servings} /> : null}
             />
           ) : null}
           {hasNutrition ? (

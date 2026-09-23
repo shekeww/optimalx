@@ -1,6 +1,7 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Category } from '@salla.sa/twilight-theme-engine/types';
+import { toInternalPath } from '../layout/navLinks';
 import { useTaxonomyLinks } from './useTaxonomyLinks';
 
 export interface ChildChipsProps {
@@ -34,7 +35,12 @@ export function ChildChips({ categories, slug, className }: ChildChipsProps) {
   const live = (categories ?? []).filter((child) => child.name && child.url);
   const fromTaxonomy = live.length === 0 && slug ? (bySlug(slug)?.children ?? []) : [];
   const items = live.length
-    ? live.map((child) => ({ key: String(child.id), label: child.name, to: child.url }))
+    ? live.map((child) => ({
+        key: String(child.id),
+        label: child.name,
+        // The live child's `url` is absolute (UX-2026-09-24 P0-14).
+        to: toInternalPath(child.url),
+      }))
     : fromTaxonomy.map((child) => ({ key: child.slug, label: child.label, to: child.to }));
 
   if (items.length === 0) return null;

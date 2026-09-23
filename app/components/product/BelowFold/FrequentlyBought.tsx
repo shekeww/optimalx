@@ -4,6 +4,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { SallaAddProductButtonCore } from '@salla.sa/twilight-components-react/add-product-button';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { Bdi } from '../../common/Bdi';
+import { toInternalPath } from '../../layout/navLinks';
 import { Button } from '../../common/Button';
 import { Price } from '../../common/Price';
 import { Icon } from '../../common/Icon';
@@ -326,7 +327,7 @@ export function FrequentlyBought({ product, sample = SHOW_SAMPLE_BUNDLES }: Freq
               <span className="ox-fbt__check-slot" aria-hidden="true" />
               <span className="ox-fbt__name">
                 <Bdi>{row.name}</Bdi>
-                <Link to={row.url} className="ox-fbt__choose">
+                <Link to={toInternalPath(row.url)} className="ox-fbt__choose">
                   {t('ox.card.choose_options')}
                 </Link>
               </span>

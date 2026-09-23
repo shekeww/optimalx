@@ -1,4 +1,5 @@
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
+import { toInternalPath } from '../layout/navLinks';
 import type { ArticleSummary } from '@salla.sa/twilight-theme-engine/routes/blog';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 
@@ -26,7 +27,8 @@ export function GuideCard({ article, readMinutes, label, className }: GuideCardP
 
   return (
     <article className={['ox-guide', className].filter(Boolean).join(' ')} data-testid="ox-guide-card">
-      <Link to={article.url} className="ox-guide__link">
+      {/* toInternalPath: the API publishes this URL absolute (P0-14). */}
+      <Link to={toInternalPath(article.url)} className="ox-guide__link">
         <span className="ox-guide__plate">
           {article.image ? (
             <Image

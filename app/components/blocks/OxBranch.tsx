@@ -26,6 +26,12 @@ export interface OxBranchProps {
    * h1 already names the district (amendment A4).
    */
   showEyebrow?: boolean;
+  /**
+   * A secondary link to `/branch` beside the WhatsApp button. The home block
+   * passes it; the branch page does not, because it is that page
+   * (UX-2026-09-24 P0-7).
+   */
+  showPageLink?: boolean;
   /** Storefront photo (asset brief 8.5); the plate shows through without one. */
   photo?: string;
   /** The intro line under the address; the branch page passes its own. */
@@ -63,6 +69,7 @@ function readSetting(settings: unknown, key: string): string {
 export function OxBranch({
   headingLevel: Heading = 'h2',
   showEyebrow = true,
+  showPageLink = false,
   photo,
   intro,
   className,
@@ -102,7 +109,7 @@ export function OxBranch({
   // hours, no number and no map link the flat card stays one column, because a
   // two column split whose end column holds one short line reads as a layout
   // that lost something.
-  const meta = rows.length > 0 || whatsappHref || mapUrl ? 'full' : 'bare';
+  const meta = rows.length > 0 || whatsappHref || mapUrl || showPageLink ? 'full' : 'bare';
 
   return (
     <section className={classes} data-testid="ox-branch">
@@ -136,7 +143,7 @@ export function OxBranch({
         <div className="ox-branch__meta">
           <HoursTable rows={rows} now={now} status={status} />
 
-          {whatsappHref || mapUrl ? (
+          {whatsappHref || mapUrl || showPageLink ? (
             <div className="ox-branch__actions">
               {whatsappHref ? (
                 <Button
@@ -160,6 +167,17 @@ export function OxBranch({
                   iconStart={<Icon name="branch-visit" size={20} />}
                 >
                   {t('ox.blocks.branch.map')}
+                </Button>
+              ) : null}
+              {/* The home block was a 184px card whose only control was
+                  WhatsApp, with no route to the branch page at all
+                  (UX-2026-09-24 P0-7): the store's one named proof was one
+                  message away and no clicks away from being read about. The
+                  branch page itself never renders this, because it is the
+                  page. */}
+              {showPageLink ? (
+                <Button to="/branch" size={48} variant="secondary">
+                  {t('ox.branch.view_page')}
                 </Button>
               ) : null}
             </div>

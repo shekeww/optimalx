@@ -2,6 +2,7 @@ import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Brand } from '@salla.sa/twilight-theme-engine/routes/brands';
 import { Bdi } from '../common/Bdi';
+import { toInternalPath } from '../layout/navLinks';
 
 /**
  * The one brand tile every brand surface draws: the home carousel, the
@@ -77,7 +78,11 @@ export function BrandTile({ brand, className, sizes = '208px' }: BrandTileProps)
   const count = typeof brand.products_count === 'number' ? brand.products_count : null;
 
   return (
-    <Link to={brand.url} className={['ox-brand-tile', className].filter(Boolean).join(' ')}>
+    // toInternalPath: the API publishes this URL absolute (P0-14).
+    <Link
+      to={toInternalPath(brand.url)}
+      className={['ox-brand-tile', className].filter(Boolean).join(' ')}
+    >
       <span className="ox-brand-tile__plate">
         {brand.logo ? (
           // The brand's own artwork, contained in a fixed 3:2 field whose

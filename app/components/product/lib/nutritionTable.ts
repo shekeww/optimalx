@@ -54,6 +54,24 @@ export interface DescriptionParts {
 export const PREFIX_HOW_TO_USE = 'طريقة الاستخدام';
 export const PREFIX_WARNING = 'تنبيه';
 
+/**
+ * The details table's own two header cells, glued together (UX-2026-09-24
+ * P0-9).
+ *
+ * 46 of the 47 catalogue descriptions carry the details table as a real
+ * `<table>`, which this parser reads and then drops. On the shaker, Salla
+ * stripped the markup when the product was created and kept the CELLS, so the
+ * store itself serves one paragraph reading
+ * `تفاصيل المنتجالقيمةالسعة820 مل (28 أونصة)المادة...` - the whole table with
+ * its headings welded to its values. Rendered as prose under `الفوائد` it is
+ * the same facts the details panel already prints, unreadable.
+ *
+ * The signature is exact rather than fuzzy: two heading cells with nothing
+ * between them is not a sentence anyone typed, and it is what a stripped
+ * `<th><th>` pair always leaves behind. Never a table as a text node.
+ */
+const FLATTENED_TABLE_HEAD = 'تفاصيل المنتج' + 'القيمة';
+
 /** Lookup the third nutrition column uses: a nutrient name to a locale key. */
 export type GlossaryLookup = (nutrientName: string) => string | null;
 
@@ -201,6 +219,8 @@ export function splitDescription(
         warning.push(...sentences(afterPrefix(text, PREFIX_WARNING)));
         continue;
       }
+      // A table the platform flattened into a paragraph is still a table.
+      if (text.indexOf(FLATTENED_TABLE_HEAD) === 0) continue;
       if (text.length === 0) continue;
       // The first prose paragraph is the buy column's short description; the
       // rest stays in the body, which becomes the benefits region.

@@ -282,9 +282,16 @@
     clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
   }
 
+  // LTR RESTATES THE POLYGON, NEVER THE SIDE (UX-2026-09-24 P0-8;
+  // DIRECTION 9.8). The pane is placed logically above (`inset-inline-end:
+  // 0`), so it already sits at the reading END - the left in Arabic, the
+  // right in English - and the copy column sits at the start opposite it.
+  // Pinning it back to the physical left here is what put the English
+  // headline and body copy ON the athlete, with an empty black third left
+  // over on the right (measured at 1440 on /en: photo x0 w929, text x66 w596
+  // inside it). Only the clip is physical, because `clip-path` takes no
+  // logical values.
   [dir='ltr'] .ox-hero__photo {
-    inset-inline-end: auto;
-    inset-inline-start: 0;
     /* identity: 34deg, run 350.7 of 520 */
     clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(520px)} 100%);
   }
@@ -357,10 +364,10 @@
   pointer-events: none;
 }
 
-[dir='ltr'] .ox-hero__edge {
-  inset-inline-end: auto;
-  inset-inline-start: 53%;
-}
+// No `[dir='ltr']` side override: the strap marks the pane's own edge, and
+// the pane is placed logically, so the strap follows it into English
+// (UX-2026-09-24 P0-8). Its 20px weight and its lean are the owner's
+// 2026-09-23 review and are not touched here.
 
 .ox-hero__dots {
   position: absolute;
@@ -489,9 +496,8 @@
     clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
   }
 
+  // The scrim shares the pane's box, so it mirrors with it: the clip only.
   [dir='ltr'] .ox-hero__scrim {
-    inset-inline-end: auto;
-    inset-inline-start: 0;
     /* identity: 34deg, run 350.7 of 520 */
     clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(520px)} 100%);
   }
@@ -544,6 +550,13 @@
     clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(96px)} 100%, 0 calc(100% - 96px));
   }
 
+  // The phone frame is a 3:4 portrait in a 390x300 band, so `cover` throws
+  // away its lower half: anchored to the top, what survives is the subject
+  // (UX-2026-09-24 P0-16), not the floor under it.
+  .ox-hero__img {
+    object-position: center top;
+  }
+
   .ox-hero__inner {
     position: relative;
     z-index: 2;
@@ -586,15 +599,16 @@
   }
 }
 
-// The wedge pair at the band's left edge.
+// The wedge pair at the photograph's outer edge.
 //
-// Left in both locales, on purpose, and this is the one place in the theme
-// where a side is physical. The wedge answers the photograph: the subject is
-// right of centre in the file, the quiet pixels are on the left of the file,
-// and neither moves when the document direction does. `inset-inline-end` is
-// the physical left in the RTL document this theme is written in; the
-// `[dir='ltr']` override puts it back on the left there too. Nothing here
-// animates (A9), and the lean is `--ox-skew`, never re-derived.
+// It answers the photograph, so it goes where the photograph goes: the pane
+// is placed logically (`inset-inline-end`), which is the physical left in
+// Arabic and the physical right in English, and the pair uses the same
+// logical side. It used to carry a `[dir='ltr']` override pinning it to the
+// physical left in both, which in English left two orange bars at x -50 and
+// x 4 - across the copy column, with the photograph on the other side of the
+// band (UX-2026-09-24 P0-8). Nothing here animates (A9), and the lean is
+// `--ox-skew`, never re-derived.
 .ox-hero__wedge {
   position: absolute;
   z-index: 2;
@@ -602,11 +616,6 @@
   background: var(--ox-accent);
   transform: skewX(var(--ox-skew));
   pointer-events: none;
-}
-
-[dir='ltr'] .ox-hero__wedge {
-  inset-inline-end: auto;
-  inset-inline-start: 0;
 }
 
 // Staggered, not stacked: the pair descends away from the edge, which is what
@@ -626,16 +635,6 @@
   inset-inline-end: 24px;
   inline-size: 11px;
   block-size: 72px;
-}
-
-[dir='ltr'] .ox-hero__wedge--wide {
-  inset-inline-end: auto;
-  inset-inline-start: -8px;
-}
-
-[dir='ltr'] .ox-hero__wedge--thin {
-  inset-inline-end: auto;
-  inset-inline-start: 24px;
 }
 
 .ox-hero__videobtn {
@@ -788,9 +787,6 @@
     block-size: 96px;
   }
 
-  [dir='ltr'] .ox-hero__wedge--thin {
-    inset-inline-start: 34px;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -810,6 +806,7 @@
     clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(560px)}) 100%, 0 100%);
   }
 
+  // The clip only, as above: the pane's side is logical in both directions.
   [dir='ltr'] .ox-hero__photo,
   [dir='ltr'] .ox-hero__scrim {
     /* identity: 34deg, run 377.7 of 560 */
@@ -841,13 +838,6 @@
     block-size: 118px;
   }
 
-  [dir='ltr'] .ox-hero__wedge--wide {
-    inset-inline-start: -10px;
-  }
-
-  [dir='ltr'] .ox-hero__wedge--thin {
-    inset-inline-start: 44px;
-  }
 }
 
 // ---------------------------------------------------------------------------

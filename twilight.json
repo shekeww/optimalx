@@ -249,7 +249,7 @@
       "format": "textarea",
       "label": "عنوان الفرع",
       "icon": "sicon-format-text-alt",
-      "value": null,
+      "value": "حي الخالدية، شارع جبار بن صخر، المدينة المنورة",
       "required": false,
       "placeholder": null,
       "description": null,
@@ -334,7 +334,7 @@
       "label": "رابط الفرع في خرائط جوجل",
       "label_en": "Branch map link (Google Maps)",
       "icon": "sicon-format-text-alt",
-      "value": null,
+      "value": "https://www.google.com/maps/search/?api=1&query=24.46276125,39.653138015",
       "required": false,
       "placeholder": null,
       "description": "يفتح موقع الفرع في خرائط جوجل من صفحة الفرع"

@@ -51,6 +51,52 @@ export function toPath(url: string): string {
 }
 
 /**
+ * Half of THE link resolution rule: the path of `url` with its query and hash
+ * kept, the origin dropped, nothing else touched.
+ *
+ * This is what a component renders through the engine `Link`, whose adapter
+ * (`localizeDestination`) then adds the locale segment from the route params -
+ * the one place a locale is added on that path, identically on the server and
+ * on the client. `toPath` drops the query too, which is right for a menu URL
+ * being matched against a route set and wrong for a destination: the
+ * taxonomy's own fallback is `/search?q=<label>` and that query IS the
+ * destination.
+ */
+export function toInternalPath(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed.length === 0) return '/';
+  const scheme = trimmed.indexOf('://');
+  const hostAt = scheme >= 0 ? scheme + 3 : trimmed.startsWith('//') ? 2 : -1;
+  if (hostAt >= 0) {
+    const slash = trimmed.indexOf('/', hostAt);
+    return slash >= 0 ? trimmed.slice(slash) : '/';
+  }
+  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+}
+
+/**
+ * THE link resolution rule (NAV-2026-09-23 §8; UX-2026-09-24 P0-14), whole:
+ * the origin dropped and the active locale segment added exactly once.
+ *
+ * It is idempotent by construction - a path that already starts with a locale
+ * segment is returned unchanged - so it is safe on a href that is then handed
+ * to the engine `Link`, whose adapter applies the same rule again, and safe
+ * on a href read back off the DOM.
+ *
+ * Measured defect it closes: 24 of 58 anchors on `/ar` at 390 resolved to
+ * `https://optimalx.com.sa/...`, because the live category API, the dashboard
+ * menu and `product.url` all publish absolute URLs. An absolute href leaves
+ * the preview build, forces a full reload in production and drops an English
+ * visitor back into Arabic.
+ *
+ * For the store's own destinations only. An external URL (`wa.me`,
+ * `instagram.com`, `mailto:`) must never be passed through it.
+ */
+export function toHref(url: string, locale?: string | null): string {
+  return withLocale(toInternalPath(url), locale);
+}
+
+/**
  * `links`, each `.to` reduced to a path and each `.children` recursed the
  * same way. `useTaxonomyLinks` itself is not changed to do this: it is
  * shared with the listing page's `ChildChips`, whose own test pins today's
@@ -115,12 +161,28 @@ const DEFAULT_LOCALE = 'ar';
 export function withLocale(path: string, locale: string | null | undefined): string {
   const code = locale || DEFAULT_LOCALE;
   const normalized = path.startsWith('/') ? path : `/${path}`;
-  if (normalized === `/${code}` || normalized.startsWith(`/${code}/`)) return normalized;
+  // Any locale segment, not only the active one: a path that already carries
+  // `/en` must not become `/ar/en/...` on an Arabic page. This is the same
+  // test the engine's own link adapter runs (`localizeDestination`), so a
+  // href resolved here and then handed to `Link` is prefixed exactly once.
+  if (LOCALE_SEGMENT.test(normalized)) return normalized;
   return `/${code}${normalized}`;
 }
 
 /** A 2-letter locale segment at the start of a pathname, if there is one. */
 const LOCALE_SEGMENT = /^\/[a-z]{2}(?=\/|$)/;
+
+/**
+ * The leading locale segment of a served pathname, with its slash
+ * (`/ar/x/p1` -> `/ar`), or an empty string when the page is served without
+ * one. Used to build a destination that matches HOW THIS PAGE IS SERVED,
+ * which is not the same question as "what is the active locale": a
+ * single-language store serves `/cart` and redirects `/ar/cart` to it, so
+ * defaulting to `/ar` there would send every buy-now through a redirect.
+ */
+export function localeSegmentOf(pathname: string): string {
+  return LOCALE_SEGMENT.exec(pathname)?.[0] ?? '';
+}
 
 /**
  * `pathname` with its leading locale segment removed (NAV-2026-09-23 §4.1,

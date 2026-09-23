@@ -7,7 +7,7 @@ import type { Category, MenuItem } from '@salla.sa/twilight-theme-engine/types';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { childrenOf, MENU, TAXONOMY, type TaxonomyNode } from '../../content/taxonomy';
 import { TAXONOMY_IDS } from '../../content/taxonomy-ids';
-import { flattenMenu } from '../layout/navLinks';
+import { flattenMenu, toInternalPath } from '../layout/navLinks';
 import type { OxIconName } from '../common/Icon';
 import { matchesSlug, searchFallback } from './resolve';
 
@@ -163,7 +163,14 @@ function resolveNode(
     return {
       slug: node.slug,
       label: liveMatch.name,
-      to: liveMatch.url,
+      // THE link resolution rule, applied once at the source (UX-2026-09-24
+      // P0-14). The live category API publishes an absolute URL
+      // (`https://optimalx.com.sa/protein/c9001`), and every surface that
+      // reads this hook - the mega panel, the sheet, the drawer, the footer,
+      // the goal cards, the type tiles, the sub-need cards, the child chips -
+      // used to render it verbatim, which leaves the build on a click and
+      // drops an English visitor back into Arabic.
+      to: toInternalPath(liveMatch.url),
       resolved: true,
       icon: node.icon,
       id: rawId(liveMatch),
@@ -180,7 +187,7 @@ function resolveNode(
     return {
       slug: node.slug,
       label: menuMatch.title,
-      to: menuMatch.url,
+      to: toInternalPath(menuMatch.url),
       resolved: true,
       icon: node.icon,
       children: [],

@@ -1,4 +1,5 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { ProductsGridWrapper } from '../blocks/ProductsGridWrapper';
 import { ProductsGridSkeleton } from './HomeSkeleton';
 import { resolveSource } from './OxProducts';
@@ -13,12 +14,17 @@ import { fieldText, type OxBlockProps } from './defaults';
  * `latest` sorted price-ascending when there are none, which is every day
  * until the owner runs a campaign.
  *
- * **The heading says neither.** `تصفح المزيد من المنتجات` is true of both and
- * claims nothing about price, popularity or stock. Naming the fallback in the
- * heading would be a discount claim on days there is no discount, and naming
- * offers would be one on the same days. The fallback is what stops the row
- * from collapsing under the visitor: a grid that renders a heading, finds
- * nothing and then removes itself is worse than the honest alternative.
+ * **The heading names the door, not a discount.** It read `تصفح المزيد`,
+ * which is also what the poster carousel directly above it read: two adjacent
+ * sections under one heading, and no way for a visitor to tell that this one
+ * is the reduced prices (UX-2026-09-24 P0-11). `العروض` names the section the
+ * way the header's own `/offers` item names it, and it still claims nothing
+ * about a particular product: the badge on a card carries the saving, this
+ * heading never does. The row follows the same gate the header does
+ * (`show_offers_nav !== false`, NAV 1.3), so a store that switches offers off
+ * does not keep a section called offers. The `latest` fallback is what stops
+ * the row from collapsing on a day with no campaign: a grid that renders a
+ * heading, finds nothing and then removes itself is worse.
  *
  * This is the last of the three answers to "which one is for me", and it is
  * placed after the goal row and the poster carousel on purpose: by the time a
@@ -31,11 +37,15 @@ import { fieldText, type OxBlockProps } from './defaults';
  */
 export function OxProductsSecondary({ data }: OxBlockProps) {
   const { t } = useTranslation();
+  const { settings } = useTheme();
   // A merchant who picks products or a source in the dashboard overrides both
   // the primary source and the fallback, which is what picking one means.
   const chosen = resolveSource(data);
   const curated = chosen.source !== 'latest';
   const title = fieldText(data, 'title') || t('ox.home.offers_title');
+  const showsOffers = (settings as Record<string, unknown> | undefined)?.show_offers_nav !== false;
+
+  if (!showsOffers) return null;
 
   return (
     <section className="ox-products ox-products--secondary" data-testid="ox-products-secondary">
@@ -49,7 +59,7 @@ export function OxProductsSecondary({ data }: OxBlockProps) {
           sort="priceFromLowToTop"
           count={8}
           title={title}
-          viewAll={{ to: '/latest-products' }}
+          viewAll={{ to: '/offers' }}
           gridId="ox-home-offers"
           skeleton={<ProductsGridSkeleton />}
         />

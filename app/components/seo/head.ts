@@ -99,9 +99,39 @@ export function stripLocale(path: string, languages: readonly string[]): string 
  */
 const UNRESOLVED_KEY = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$/;
 
-/** A breadcrumb `name` resolved through `t` when it still looks like a key. */
+/** True while `value` still looks like an i18n lookup key rather than a word. */
+export function isUnresolvedKey(value: string): boolean {
+  return UNRESOLVED_KEY.test(value.trim());
+}
+
+/**
+ * The theme key that answers a platform key the platform bundle did not
+ * resolve (UX-2026-09-24 P0-5). Only the three the audit measured on screen;
+ * every other platform key this theme needs is already carried verbatim in
+ * `locales/*.json`, where `headString` and the runtime `t` both find it.
+ */
+const THEME_TITLE_FALLBACK: Record<string, string> = {
+  'common.titles.cart': 'ox.titles.cart',
+  'common.titles.brands': 'ox.titles.brands',
+  'common.titles.blog': 'ox.titles.blog',
+  'blocks.footer.blog': 'ox.titles.blog',
+};
+
+/**
+ * A breadcrumb `name` resolved through `t` when it still looks like a key,
+ * and then through the theme's own title key when `t` handed the key back
+ * (the platform bundle is served from Salla's CDN and is simply absent in the
+ * offline preview, which is where `common.titles.brands` reached the page).
+ */
 export function resolvedLabel(name: string, t: (key: string) => string): string {
-  return UNRESOLVED_KEY.test(name.trim()) ? t(name) : name;
+  const raw = name.trim();
+  if (!UNRESOLVED_KEY.test(raw)) return name;
+  const translated = t(raw);
+  if (!UNRESOLVED_KEY.test(translated)) return translated;
+  const fallbackKey = THEME_TITLE_FALLBACK[raw];
+  if (!fallbackKey) return translated;
+  const fallback = t(fallbackKey);
+  return UNRESOLVED_KEY.test(fallback) ? translated : fallback;
 }
 
 export interface HreflangLink {
