@@ -32,6 +32,20 @@
 // <g transform="…"> wrapper on three icons) are kept exactly as drawn — nested
 // content aside from the empty elements above is never touched.
 //
+// Two owner rulings, 2026-09-24 (docs/build/ICONS-2026-09-24.md, this file's
+// own header note), layered on top of step 5's shell:
+//   a. the source root's own viewBox, stroke-width, stroke-linecap,
+//      stroke-linejoin and overflow — when it carries one — ship on the
+//      <symbol> in place of the shell default (ownerSvgRootAttrs); an
+//      override file (app/assets/icon-overrides/, readOwnerSource above) is
+//      exactly this case, e.g. goal-ideal-weight's own 2.3 stroke and round
+//      caps/joins;
+//   b. the ten product-category symbols (manifest category
+//      "product-categories") additionally take stroke-linejoin="round" —
+//      corners only, caps stay square, no geometry touched — via
+//      CATEGORY_ATTRS, applied after (a) so it wins even though the owner's
+//      category files also spell out the default "miter" themselves.
+//
 // Four of our ids are aliases: a byte-for-byte copy of an owner drawing under
 // a name our components already call. Verified against actual call sites
 // before wiring (docs/build/progress/S8b.md): both `shield-check` callers
@@ -83,8 +97,44 @@ export const ALIASES = {
   'shield-check': 'authentic',
 };
 
-const SYMBOL_OPEN =
-  'viewBox="0 0 24 24" class="ox-sym" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4"';
+/** The shell's own defaults for the five attributes a source root may override. */
+const SHELL_DEFAULTS = {
+  viewBox: '0 0 24 24',
+  'stroke-width': '2',
+  'stroke-linecap': 'square',
+  'stroke-linejoin': 'miter',
+};
+
+/**
+ * Owner ruling, 2026-09-24, item 2: "sharp angled icons such as the product
+ * categories [should be] a bit rounded on the edges if it does not ruin the
+ * shape." Corners only — caps stay square, no path data touched — keyed by
+ * the owner's manifest category (optimal-x-icons/icons.json).
+ * @type {Record<string, Record<string, string>>}
+ */
+export const CATEGORY_ATTRS = {
+  'product-categories': { 'stroke-linejoin': 'round' },
+};
+
+/**
+ * The five presentation attributes a source root may declare for itself
+ * (owner ruling, 2026-09-24, item 1): when present, each ships on the
+ * <symbol> in place of the shell default. Every other shell attribute
+ * (class, fill, stroke, stroke-miterlimit) is ours regardless of what the
+ * source declares.
+ * @param {string} source
+ * @returns {Record<string, string>}
+ */
+export function ownerSvgRootAttrs(source) {
+  const match = source.match(/<svg\b([^>]*)>/);
+  if (!match) throw new Error('import-owner-icons: no <svg> root found in owner source');
+  const attrs = {};
+  for (const name of ['viewBox', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'overflow']) {
+    const attrMatch = match[1].match(new RegExp(`\\s${name}="([^"]*)"`));
+    if (attrMatch) attrs[name] = attrMatch[1];
+  }
+  return attrs;
+}
 
 /**
  * Strips the c2pa metadata blob and the xmlns:c2pa attribute, and returns the
@@ -158,19 +208,29 @@ export function selfCloseEmptyTags(inner) {
 
 /**
  * One owner SVG source -> one <symbol>…</symbol>, ready to splice into the
- * sprite.
+ * sprite. `categoryAttrs` (CATEGORY_ATTRS[icon.category], item 2) is merged
+ * in last, after the source root's own attributes (ownerSvgRootAttrs, item
+ * 1), so the owner's per-category ruling wins even where the source also
+ * spells out the shell default itself.
  * @param {string} id e.g. "ox-cart"
  * @param {string} svgSource the owner's raw file contents
  * @param {boolean} mirror
+ * @param {Record<string, string>} [categoryAttrs]
  * @returns {string}
  */
-export function renderOwnerSymbol(id, svgSource, mirror) {
+export function renderOwnerSymbol(id, svgSource, mirror, categoryAttrs = {}) {
   const inner = selfCloseEmptyTags(convertAccentStyles(ownerSvgInner(svgSource)));
   if (/#[0-9a-fA-F]{3,6}\b/.test(inner)) {
     throw new Error(`import-owner-icons: literal colour survives in ${id}`);
   }
+  const attrs = { ...SHELL_DEFAULTS, ...ownerSvgRootAttrs(svgSource), ...categoryAttrs };
+  const overflowAttr = attrs.overflow ? ` overflow="${attrs.overflow}"` : '';
+  const symbolOpen =
+    `viewBox="${attrs.viewBox}" class="ox-sym" fill="none" stroke="currentColor" ` +
+    `stroke-width="${attrs['stroke-width']}" stroke-linecap="${attrs['stroke-linecap']}" ` +
+    `stroke-linejoin="${attrs['stroke-linejoin']}" stroke-miterlimit="4"${overflowAttr}`;
   const mirrorAttr = mirror ? ' data-mirror="1"' : '';
-  return `<symbol id="${id}" ${SYMBOL_OPEN}${mirrorAttr}>${inner}</symbol>`;
+  return `<symbol id="${id}" ${symbolOpen}${mirrorAttr}>${inner}</symbol>`;
 }
 
 /**
@@ -216,6 +276,12 @@ const HEADER = `<!--
     forward unchanged from the sprite this script read when it last ran
     (docs/build/progress/S6a.md/S6d.md govern those). #ox-mark is one of
     them: never mirrored, pinned byte-for-byte by scripts/check-identity.mjs.
+  * Two 2026-09-24 owner rulings (docs/build/ICONS-2026-09-24.md): a source
+    file's own viewBox/stroke-width/stroke-linecap/stroke-linejoin/overflow
+    ships on its symbol in place of the shell default (goal-ideal-weight's
+    override: viewBox="1 1 22 22" stroke-width="2.3" round caps/joins); the
+    ten product-category symbols additionally carry
+    stroke-linejoin="round" (corners only, caps stay square).
 
   The weight lives on each <symbol>, not on this root <svg>: <use> clones a
   symbol into a shadow tree that inherits from the <use> element, so a root
@@ -259,14 +325,14 @@ export function generate() {
 
   const ownerSymbols = ownerIcons.map((icon) => {
     const source = readOwnerSource(icon);
-    return renderOwnerSymbol(`ox-${icon.name}`, source, icon.rtlFlip);
+    return renderOwnerSymbol(`ox-${icon.name}`, source, icon.rtlFlip, CATEGORY_ATTRS[icon.category]);
   });
 
   const aliasSymbols = Object.entries(ALIASES).map(([id, sourceName]) => {
     const icon = iconByName.get(sourceName);
     if (!icon) throw new Error(`import-owner-icons: alias source "${sourceName}" not in manifest`);
     const source = readOwnerSource(icon);
-    return renderOwnerSymbol(`ox-${id}`, source, icon.rtlFlip);
+    return renderOwnerSymbol(`ox-${id}`, source, icon.rtlFlip, CATEGORY_ATTRS[icon.category]);
   });
 
   const replacedNames = new Set([...iconByName.keys(), ...Object.keys(ALIASES)]);

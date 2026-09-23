@@ -1,0 +1,345 @@
+{
+  "name": "Optimal X Icons",
+  "version": "1.0.0",
+  "grid": 24,
+  "stroke": 2,
+  "accentVar": "--ox-accent",
+  "accentDefault": "#FF4A1A",
+  "categories": {
+    "product-categories": "Product Categories",
+    "goals-benefits": "Goals & Benefits",
+    "shop-ux": "Shop & UX",
+    "service-trust": "Service & Trust"
+  },
+  "icons": [
+    {
+      "name": "protein",
+      "category": "product-categories",
+      "file": "svg/protein.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "creatine",
+      "category": "product-categories",
+      "file": "svg/creatine.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "pre-workout",
+      "category": "product-categories",
+      "file": "svg/pre-workout.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "amino-acids",
+      "category": "product-categories",
+      "file": "svg/amino-acids.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "omega-3",
+      "category": "product-categories",
+      "file": "svg/omega-3.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "vitamins-minerals",
+      "category": "product-categories",
+      "file": "svg/vitamins-minerals.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "collagen-beauty",
+      "category": "product-categories",
+      "file": "svg/collagen-beauty.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "daily-health",
+      "category": "product-categories",
+      "file": "svg/daily-health.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "snacks-bars",
+      "category": "product-categories",
+      "file": "svg/snacks-bars.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "accessories",
+      "category": "product-categories",
+      "file": "svg/accessories.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-energy",
+      "category": "goals-benefits",
+      "file": "svg/goal-energy.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-performance",
+      "category": "goals-benefits",
+      "file": "svg/goal-performance.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-recovery",
+      "category": "goals-benefits",
+      "file": "svg/goal-recovery.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-ideal-weight",
+      "category": "goals-benefits",
+      "file": "svg/goal-ideal-weight.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-general-health",
+      "category": "goals-benefits",
+      "file": "svg/goal-general-health.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-hair-skin",
+      "category": "goals-benefits",
+      "file": "svg/goal-hair-skin.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "endurance",
+      "category": "goals-benefits",
+      "file": "svg/endurance.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "immunity",
+      "category": "goals-benefits",
+      "file": "svg/immunity.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "wellness",
+      "category": "goals-benefits",
+      "file": "svg/wellness.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "better-sleep",
+      "category": "goals-benefits",
+      "file": "svg/better-sleep.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "cart",
+      "category": "shop-ux",
+      "file": "svg/cart.svg",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "wishlist",
+      "category": "shop-ux",
+      "file": "svg/wishlist.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "user",
+      "category": "shop-ux",
+      "file": "svg/user.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "search",
+      "category": "shop-ux",
+      "file": "svg/search.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "menu",
+      "category": "shop-ux",
+      "file": "svg/menu.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "home",
+      "category": "shop-ux",
+      "file": "svg/home.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "store",
+      "category": "shop-ux",
+      "file": "svg/store.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "branch-visit",
+      "category": "shop-ux",
+      "file": "svg/branch-visit.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "help",
+      "category": "shop-ux",
+      "file": "svg/help.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "written-question",
+      "category": "shop-ux",
+      "file": "svg/written-question.svg",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "video-consult",
+      "category": "shop-ux",
+      "file": "svg/video-consult.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "offers",
+      "category": "shop-ux",
+      "file": "svg/offers.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "gift",
+      "category": "shop-ux",
+      "file": "svg/gift.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "points",
+      "category": "shop-ux",
+      "file": "svg/points.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "shipping",
+      "category": "service-trust",
+      "file": "svg/shipping.svg",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "secure-payment",
+      "category": "service-trust",
+      "file": "svg/secure-payment.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "authentic",
+      "category": "service-trust",
+      "file": "svg/authentic.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "expiry",
+      "category": "service-trust",
+      "file": "svg/expiry.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "training",
+      "category": "service-trust",
+      "file": "svg/training.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "servings",
+      "category": "service-trust",
+      "file": "svg/servings.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "serving-size",
+      "category": "service-trust",
+      "file": "svg/serving-size.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "plan",
+      "category": "service-trust",
+      "file": "svg/plan.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "digital-library",
+      "category": "service-trust",
+      "file": "svg/digital-library.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "phone",
+      "category": "service-trust",
+      "file": "svg/phone.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "mail",
+      "category": "service-trust",
+      "file": "svg/mail.svg",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "map-pin",
+      "category": "service-trust",
+      "file": "svg/map-pin.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "lock",
+      "category": "service-trust",
+      "file": "svg/lock.svg",
+      "hasAccent": true,
+      "rtlFlip": false
+    }
+  ]
+}

@@ -9,7 +9,9 @@ import { describe, expect, it } from 'vitest';
 import { OX_ICON_NAMES } from '../../app/components/common/Icon';
 import {
   ALIASES,
+  CATEGORY_ATTRS,
   ownerSvgInner,
+  ownerSvgRootAttrs,
   convertAccentStyles,
   selfCloseEmptyTags,
   renderOwnerSymbol,
@@ -82,6 +84,49 @@ describe('import-owner-icons: the owner source transform', () => {
     const source = '<svg><symbol id="ox-a" viewBox="0 0 24 24"><path d="M0 0z"/></symbol>' +
       '<symbol id="ox-b" viewBox="0 0 24 24"><path d="M1 1z"/></symbol></svg>';
     expect(parseSymbols(source).map((s) => s.id)).toEqual(['ox-a', 'ox-b']);
+  });
+
+  // Item 1 of the owner's 2026-09-24 brief: honour a source root's own
+  // viewBox/stroke-width/caps/joins/overflow instead of discarding them.
+  it('reads only the five overridable attributes off the source root, when present', () => {
+    const full =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="1 1 22 22" fill="none" ' +
+      'stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" ' +
+      'overflow="visible"><path d="M1 1z"/></svg>';
+    expect(ownerSvgRootAttrs(full)).toEqual({
+      viewBox: '1 1 22 22',
+      'stroke-width': '2.3',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      overflow: 'visible',
+    });
+    const bare = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 1z"/></svg>';
+    expect(ownerSvgRootAttrs(bare)).toEqual({ viewBox: '0 0 24 24' });
+  });
+
+  it("carries the source root's own overridable attributes onto the symbol, in place of the shell defaults", () => {
+    const source =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="1 1 22 22" fill="none" ' +
+      'stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" ' +
+      'overflow="visible"><path d="M1 1h1v1z"/></svg>';
+    const symbol = renderOwnerSymbol('ox-example', source, false);
+    expect(symbol).toBe(
+      '<symbol id="ox-example" viewBox="1 1 22 22" class="ox-sym" fill="none" stroke="currentColor" ' +
+        'stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" ' +
+        'overflow="visible"><path d="M1 1h1v1z"/></symbol>'
+    );
+  });
+
+  // Item 2 of the owner's 2026-09-24 brief: round the product-category
+  // corners, caps stay square, even though the category source files spell
+  // out the default stroke-linejoin="miter" themselves.
+  it("applies a category attribute override on top of the shell and the source's own attrs", () => {
+    const source =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="miter">' +
+      '<path d="M1 1h1v1z"/></svg>';
+    const symbol = renderOwnerSymbol('ox-protein', source, false, CATEGORY_ATTRS['product-categories']);
+    expect(symbol).toContain('stroke-linejoin="round"');
+    expect(symbol).toContain('stroke-linecap="square"');
   });
 });
 

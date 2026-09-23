@@ -71,7 +71,7 @@ const SYMBOLS: Sym[] = [...SOURCE.matchAll(/<symbol\s+([^>]*)>([\s\S]*?)<\/symbo
  */
 const OWNER_MANIFEST = JSON.parse(
   fs.readFileSync(path.join('optimal-x-icons', 'icons.json'), 'utf8')
-) as { icons: { name: string }[] };
+) as { icons: { name: string; category: string }[] };
 const OWNER_ICON_IDS = OWNER_MANIFEST.icons.map((icon) => `ox-${icon.name}`);
 const ALIAS_IDS = Object.keys(ALIASES).map((id) => `ox-${id}`);
 const OWNER_EXEMPT = new Set([...OWNER_ICON_IDS, ...ALIAS_IDS]);
@@ -300,13 +300,16 @@ describe('ox-sprite.svg', () => {
 
   // The weight law, carried where it actually reaches a rendered path: on the
   // symbol. A value on the sprite root never crosses the `<use>` boundary.
+  // stroke-width is checked separately below, scoped to nonOwnerDrawn: an
+  // owner-exempt symbol may carry its own value (2026-09-24 ruling, item 1 —
+  // e.g. goal-ideal-weight's 2.3), but fill/stroke/miterlimit/class are never
+  // part of that per-file override, so they stay asserted on every symbol.
   it('sets the stroke contract on every drawn symbol', () => {
     const wrong = drawn
       .filter(
         (symbol) =>
           symbol.attrs.fill !== 'none' ||
           symbol.attrs.stroke !== 'currentColor' ||
-          symbol.attrs['stroke-width'] !== '2' ||
           symbol.attrs['stroke-miterlimit'] !== '4' ||
           !(symbol.attrs.class ?? '').split(/\s+/).includes('ox-sym')
       )
@@ -314,9 +317,45 @@ describe('ox-sprite.svg', () => {
     expect(wrong).toEqual([]);
   });
 
-  it('declares square caps and miter joins on every drawn symbol', () => {
-    expect(drawn.filter((s) => s.attrs['stroke-linecap'] !== 'square').map((s) => s.id)).toEqual([]);
-    expect(drawn.filter((s) => s.attrs['stroke-linejoin'] !== 'miter').map((s) => s.id)).toEqual([]);
+  it('sets the default stroke width on every non-owner symbol', () => {
+    expect(nonOwnerDrawn.filter((s) => s.attrs['stroke-width'] !== '2').map((s) => s.id)).toEqual([]);
+  });
+
+  // Owner-exempt symbols may carry their own caps/joins (2026-09-24 ruling:
+  // item 1's per-file override, e.g. goal-ideal-weight's round caps/joins;
+  // item 2's category override, the ten product categories' round joins) —
+  // scoped to nonOwnerDrawn, same reasoning as the stroke-width test above.
+  it('declares square caps and miter joins on every non-owner symbol', () => {
+    expect(nonOwnerDrawn.filter((s) => s.attrs['stroke-linecap'] !== 'square').map((s) => s.id)).toEqual([]);
+    expect(nonOwnerDrawn.filter((s) => s.attrs['stroke-linejoin'] !== 'miter').map((s) => s.id)).toEqual([]);
+  });
+
+  // Item 1 of the owner's 2026-09-24 ruling: honour the override file's own
+  // attributes rather than the shell default (docs/build/ICONS-2026-09-24.md,
+  // app/assets/icon-overrides/goal-ideal-weight.svg).
+  it('carries the owner-drawn viewBox, stroke-width and round caps/joins on the ideal-weight override', () => {
+    const symbol = SYMBOLS.find((s) => s.id === 'ox-goal-ideal-weight');
+    expect(symbol?.attrs.viewBox).toBe('1 1 22 22');
+    expect(symbol?.attrs['stroke-width']).toBe('2.3');
+    expect(symbol?.attrs['stroke-linecap']).toBe('round');
+    expect(symbol?.attrs['stroke-linejoin']).toBe('round');
+  });
+
+  // Item 2 of the owner's 2026-09-24 ruling: "sharp angled icons such as the
+  // product categories to be a bit rounded on the edges if it does not ruin
+  // the shape" — corners only, caps stay square, no geometry touched. Ids
+  // derived from the manifest's own category field rather than hardcoded, so
+  // this stays in step with optimal-x-icons/icons.json.
+  it('rounds only the corners of the ten product-category symbols, not the caps', () => {
+    const categoryIds = OWNER_MANIFEST.icons
+      .filter((icon) => icon.category === 'product-categories')
+      .map((icon) => `ox-${icon.name}`);
+    expect(categoryIds).toHaveLength(10);
+    for (const id of categoryIds) {
+      const symbol = SYMBOLS.find((s) => s.id === id);
+      expect(symbol?.attrs['stroke-linejoin']).toBe('round');
+      expect(symbol?.attrs['stroke-linecap']).toBe('square');
+    }
   });
 
   /**
@@ -341,11 +380,19 @@ describe('ox-sprite.svg', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('has no rounded linecap, linejoin or bevel anywhere in the file', () => {
-    // The prose in the header comment is allowed to say "rounded"; the
-    // geometry is not allowed to be. Owner-drawn rounded rects (rx/ry) are a
-    // separate, scoped check below — the owner's set may use them.
-    expect(/(linecap|linejoin)="round"/.test(SOURCE)).toBe(false);
+  // Scoped per-symbol rather than a raw SOURCE regex (2026-09-24: the header
+  // comment and two owner rulings now legitimately contain "round" — a
+  // per-file override, item 1, and the product-category corners, item 2 —
+  // both confined to OWNER_EXEMPT symbols). Owner-drawn rounded rects
+  // (rx/ry) are a separate, scoped check below — the owner's set may use
+  // them.
+  it('has no rounded linecap or linejoin outside owner-exempt symbols, and no bevel anywhere', () => {
+    const offenders = SYMBOLS.filter(
+      (symbol) =>
+        !OWNER_EXEMPT.has(symbol.id) &&
+        (symbol.attrs['stroke-linecap'] === 'round' || symbol.attrs['stroke-linejoin'] === 'round')
+    ).map((symbol) => symbol.id);
+    expect(offenders).toEqual([]);
     expect(/stroke-linejoin="bevel"/.test(SOURCE)).toBe(false);
   });
 
@@ -371,8 +418,12 @@ describe('ox-sprite.svg', () => {
     expect(PRIMITIVES_SOURCE).toMatch(/&--16\s*\{[^}]*--ox-icon-stroke:\s*2\.25px/);
   });
 
-  it('draws every symbol on the 24 grid, with no transform on <symbol> or <path>', () => {
-    expect(SYMBOLS.filter((s) => s.attrs.viewBox !== '0 0 24 24').map((s) => s.id)).toEqual([]);
+  // viewBox is one of the five attributes a source root may override
+  // (2026-09-24 ruling, item 1 — goal-ideal-weight's own "1 1 22 22"), so the
+  // default is only asserted outside OWNER_EXEMPT.
+  it('draws every non-owner symbol on the 24 grid, with no transform on <symbol> or <path>', () => {
+    const nonOwnerSymbols = SYMBOLS.filter((s) => !OWNER_EXEMPT.has(s.id));
+    expect(nonOwnerSymbols.filter((s) => s.attrs.viewBox !== '0 0 24 24').map((s) => s.id)).toEqual([]);
     expect(/<symbol[^>]*\stransform=/.test(SOURCE)).toBe(false);
     expect(/<path[^>]*\stransform=/.test(SOURCE)).toBe(false);
   });

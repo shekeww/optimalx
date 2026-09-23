@@ -1,0 +1,8 @@
+/* Optimal X Icons v1.0 — shared by Shopify + Salla */
+:root{--ox-accent:#FF4A1A}
+.ox-icon{display:inline-block;flex-shrink:0;vertical-align:middle;overflow:visible;color:inherit}
+.ox-icon--mono{--ox-accent:currentColor}
+.ox-icon--16{width:16px;height:16px}.ox-icon--20{width:20px;height:20px}.ox-icon--24{width:24px;height:24px}.ox-icon--32{width:32px;height:32px}.ox-icon--36{width:36px;height:36px}
+[dir="rtl"] .ox-icon--cart,[dir="rtl"] .ox-icon--shipping,[dir="rtl"] .ox-icon--written-question{transform:scaleX(-1)}
+ox-icon{display:inline-flex;line-height:0;vertical-align:middle}
+[dir="rtl"] ox-icon[name="cart"],[dir="rtl"] ox-icon[name="shipping"],[dir="rtl"] ox-icon[name="written-question"]{transform:scaleX(-1)}
