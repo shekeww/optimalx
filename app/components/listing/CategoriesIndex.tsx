@@ -204,10 +204,7 @@ function TypeCard({ link, t }: CardProps) {
                 <span className="ox-cat-card__line">{t(LINE_BY_SLUG[link.slug])}</span>
               ) : null}
               <span className="ox-cat-card__foot">
-                <i
-                  className="sicon-keyboard_arrow_right ox-cat-card__arrow ox-mirror ox-iconbtn--angled"
-                  aria-hidden="true"
-                />
+                <Icon name="chevron-end" size={24} className="ox-cat-card__arrow ox-iconbtn--angled" />
               </span>
             </span>
           </>

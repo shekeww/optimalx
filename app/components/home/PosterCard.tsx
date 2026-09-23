@@ -69,7 +69,7 @@ export function PosterCard({
         <span className="ox-pcard__line">{line}</span>
         <span className="ox-pcard__cta">
           <span className="ox-pcard__cta-label">{t('ox.common.view_all')}</span>
-          <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+          <Icon name="chevron-end" size={16} />
         </span>
       </span>
     </Link>

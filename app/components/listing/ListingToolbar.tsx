@@ -1,6 +1,7 @@
 import { useId, type ReactNode } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
 import type { SortOption } from './sortOptions';
 
 export interface ListingSortControl {
@@ -79,7 +80,7 @@ export function ListingToolbar({ chips, sort, filters, count, className }: Listi
               size={44}
               onClick={filters.onOpen}
               className={`ox-listing__filters-trigger${filters.count > 0 ? ' is-active' : ''}`}
-              iconStart={<i className="sicon-filter" aria-hidden="true" />}
+              iconStart={<Icon name="filter" size={20} />}
             >
               {t('ox.filter.title')}
               {filters.count > 0 ? (

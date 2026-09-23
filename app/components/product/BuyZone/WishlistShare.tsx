@@ -25,7 +25,7 @@ export function WishlistShare({ productId }: WishlistShareProps) {
         onClick={() => wishlist.toggle(productId)}
         aria-pressed={inWishlist}
       >
-        <i className="sicon-heart" aria-hidden="true" />
+        <Icon name="heart" size={20} />
         <span>{inWishlist ? t('ox.pdp.wishlist_added') : t('ox.pdp.wishlist_add')}</span>
       </button>
       <div className="ox-pdp__share">

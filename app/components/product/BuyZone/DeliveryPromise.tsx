@@ -60,7 +60,7 @@ export function DeliveryPromise({ settings, currency, shippable, storeCity }: De
             <Icon name="truck" size={20} className="ox-delivery__truck" />
             <span className="ox-delivery__text">{estimate}</span>
             <span className="ox-delivery__change">{t('ox.pdp.change_city')}</span>
-            <i className="sicon-keyboard_arrow_left ox-delivery__chev" aria-hidden="true" />
+            <Icon name="chevron-end" size={16} className="ox-delivery__chev" />
           </a>
         ) : (
           <p className="ox-delivery__row">

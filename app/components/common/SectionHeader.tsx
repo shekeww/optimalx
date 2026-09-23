@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from './Icon';
 
 export type HeadingLevel = 'h1' | 'h2' | 'h3';
 
@@ -57,7 +58,7 @@ export function SectionHeader({
       {viewAll ? (
         <Link to={viewAll.to} className="ox-sh__link">
           <span>{viewAll.label ?? t('ox.common.view_all')}</span>
-          <i className="sicon-keyboard_arrow_right ox-sh__chevron ox-mirror" aria-hidden="true" />
+          <Icon name="chevron-end" size={16} className="ox-sh__chevron" />
         </Link>
       ) : null}
     </header>

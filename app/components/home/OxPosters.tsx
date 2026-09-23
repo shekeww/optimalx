@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { category } from '@salla.sa/twilight-theme-engine/api/category';
 import type { Category } from '@salla.sa/twilight-theme-engine/types';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
 import { matchesSlug, useHeaderMenu } from '../layout/Header/useHeaderMenu';
 import { useRailProgress } from '../common/hooks/useRailProgress';
@@ -116,7 +117,7 @@ export function OxPosters(_props: OxBlockProps) {
                   aria-label={t('ox.home.posters_prev')}
                 >
                   <span className="ox-posters__arrow-face ox-iconbtn--angled" aria-hidden="true">
-                    <i className="sicon-keyboard_arrow_left ox-mirror" />
+                    <Icon name="chevron-start" size={16} />
                   </span>
                 </button>
                 <button
@@ -127,7 +128,7 @@ export function OxPosters(_props: OxBlockProps) {
                   aria-label={t('ox.home.posters_next')}
                 >
                   <span className="ox-posters__arrow-face ox-iconbtn--angled" aria-hidden="true">
-                    <i className="sicon-keyboard_arrow_right ox-mirror" />
+                    <Icon name="chevron-end" size={16} />
                   </span>
                 </button>
               </div>

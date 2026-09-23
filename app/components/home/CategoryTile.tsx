@@ -96,10 +96,7 @@ export function CategoryTile({
   // for other consumers) but is no longer read here.
   const foot = (
     <span className="ox-tile__foot">
-      <i
-        className="sicon-keyboard_arrow_right ox-tile__arrow ox-mirror ox-iconbtn--angled"
-        aria-hidden="true"
-      />
+      <Icon name="chevron-end" size={24} className="ox-tile__arrow ox-iconbtn--angled" />
     </span>
   );
 

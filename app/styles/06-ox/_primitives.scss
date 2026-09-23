@@ -389,12 +389,12 @@ $ox-angle-tan: 0.6745;
   fill: none;
   stroke: currentColor;
   overflow: visible;
-  // The weight law (BUILD.md 3.5): every symbol is drawn at stroke 1.8 on its
-  // own 24 grid, so a rendered size other than 24 (16, 44, ...) would
-  // otherwise scale the stroke along with the shape. This keeps the drawn
-  // line the same physical weight at every size the chrome asks for.
-  vector-effect: non-scaling-stroke;
-  &--16 { inline-size: 16px; block-size: 16px; }
+  // S6a deviation 6: the 16px step of the size ladder takes a slightly
+  // heavier relative stroke so the glyph holds; the sprite's own inline
+  // <style> sets stroke-width from this custom property
+  // (docs/build/progress/S6a.md §5, deviation 6 — moved here from the
+  // sprite's <style> block, the tidier home for it).
+  &--16 { inline-size: 16px; block-size: 16px; --ox-icon-stroke: 2.25px; }
   &--20 { inline-size: 20px; block-size: 20px; }
   &--24 { inline-size: 24px; block-size: 24px; }
   &--32 { inline-size: 32px; block-size: 32px; }

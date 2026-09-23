@@ -1,6 +1,7 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { categoryBySlug } from '../../content/categories';
+import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
 import type { TFunction } from './types';
 
@@ -58,7 +59,7 @@ export function RelatedGuides({ slug, items, className }: RelatedGuidesProps) {
           <li key={guide.slug}>
             <Link to={guide.to} className="ox-listing__guide-row">
               <span className="ox-body">{guide.title}</span>
-              <i className="sicon-keyboard_arrow_left ox-mirror" aria-hidden="true" />
+              <Icon name="chevron-start" size={16} />
             </Link>
           </li>
         ))}

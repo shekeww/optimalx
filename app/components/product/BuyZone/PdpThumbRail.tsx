@@ -47,7 +47,7 @@ export function PdpThumbRail({ images, activeIndex, onSelect }: PdpThumbRailProp
         tabIndex={scrollable ? 0 : -1}
         aria-hidden={!scrollable}
       >
-        <i className="sicon-keyboard_arrow_up" aria-hidden="true" />
+        <Icon name="chevron-up" size={16} />
       </button>
       <ul className="ox-thumbs__list" ref={listRef}>
         {images.map((image, index) => (

@@ -1,5 +1,6 @@
 import { useCallback, useId, useState, type ReactNode } from 'react';
 import { Collapse } from '@salla.sa/twilight-theme-engine/collapse';
+import { Icon } from './Icon';
 
 /**
  * The accordion behind Faq and PrePurchaseInfo (DIRECTION 5.4, 7.1, 9.2).
@@ -87,7 +88,7 @@ export function Accordion({
                 aria-controls={panelId}
               >
                 <span className="ox-acc__title">{item.title}</span>
-                <i className="sicon-keyboard_arrow_down ox-acc__chevron" aria-hidden="true" />
+                <Icon name="chevron-down" size={16} className="ox-acc__chevron" />
               </Collapse.Trigger>
             </Heading>
             <Collapse.Content

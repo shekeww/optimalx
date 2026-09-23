@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { brand as brandApi } from '@salla.sa/twilight-theme-engine/api/brands';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
 import { MENU } from '../../content/taxonomy';
 import { useTaxonomyLinks, type TaxonomyLink } from '../listing/useTaxonomyLinks';
@@ -85,7 +86,7 @@ export function BrandExplore({ currentId }: BrandExploreProps) {
         <li>
           <Link to="/brands" className="ox-listing__guide-row">
             <span className="ox-body">{t('ox.nav.all_brands')}</span>
-            <i className="sicon-keyboard_arrow_left ox-mirror" aria-hidden="true" />
+            <Icon name="chevron-start" size={16} />
           </Link>
         </li>
       </ul>

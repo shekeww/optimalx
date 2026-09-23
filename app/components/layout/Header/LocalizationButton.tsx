@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { useTwilight } from '@salla.sa/twilight-theme-engine';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../../common/Icon';
 
 const SallaLocalizationModal = lazy(() =>
   import('@salla.sa/twilight-components-react/localization-modal').then((m) => ({
@@ -40,7 +41,7 @@ export function LocalizationButton({ className }: LocalizationButtonProps) {
       data-testid="ox-localization-button"
       onClick={() => salla?.event?.dispatch('localization::open')}
     >
-      <i className="sicon-globe" aria-hidden="true" />
+      <Icon name="globe" size={20} />
       <span className="ox-localize__label">
         {languageName}
         {symbol ? <span className="ox-localize__sep"> · </span> : null}

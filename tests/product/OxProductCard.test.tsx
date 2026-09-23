@@ -636,13 +636,44 @@ describe('OxProductCard', () => {
     }
   });
 
-  it('renders the buy CTA as a link to the product page while quick buy is off', () => {
+  it('buys with the buy CTA while quick buy is off, instead of navigating', () => {
+    // UX-2026-09-24 P0-10: the control used to be an <a> to the product page
+    // wearing the words "buy now". It is a button now, and it clicks the
+    // card's own Salla add button (tests/product/buyNow.test.ts proves the
+    // mechanism) rather than moving the shopper one page closer to a second
+    // press.
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    expect(container.querySelector('a.ox-card-product__buy')).toBeNull();
+    const buy = container.querySelector('button.ox-card-product__buy');
+    expect(buy).not.toBeNull();
+    expect(buy?.textContent).toContain(t('ox.card.buy_now'));
+    expect(screen.queryByTestId('quick-buy-button')).toBeNull();
+  });
+
+  it('keeps a link on a product whose variant has to be chosen first', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard product={makeProduct({ has_options: true })} />
+    );
     const buy = container.querySelector('a.ox-card-product__buy');
     expect(buy).not.toBeNull();
     expect(buy?.getAttribute('href')).toBe('/p1996831868');
     expect(buy?.textContent).toContain(t('ox.card.buy_now'));
-    expect(screen.queryByTestId('quick-buy-button')).toBeNull();
+  });
+
+  it('keeps every card anchor inside the build, locale and all', () => {
+    // The live catalogue publishes `product.url` absolute; 24 of 58 anchors on
+    // /ar left the build before the one link resolution rule (P0-14).
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({ url: 'https://optimalx.com.sa/whey/p1996831868' })}
+      />
+    );
+    const hrefs = Array.from(container.querySelectorAll('a')).map((a) => a.getAttribute('href'));
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) expect(href?.includes('optimalx.com.sa')).toBe(false);
+    expect(container.querySelector('.ox-card-product__title-link')?.getAttribute('href')).toBe(
+      '/whey/p1996831868'
+    );
   });
 
   it('uses the platform quick buy where the platform has enabled it', () => {

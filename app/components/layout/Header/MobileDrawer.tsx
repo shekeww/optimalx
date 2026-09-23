@@ -44,7 +44,7 @@ function DrawerGroup({ label, open, onToggle, children }: GroupProps) {
     <li className="ox-drawer__group">
       <button type="button" className="ox-drawer__row" aria-expanded={open} onClick={onToggle}>
         <span>{label}</span>
-        <i className="sicon-keyboard_arrow_down ox-drawer__chevron" aria-hidden="true" />
+        <Icon name="chevron-down" size={16} className="ox-drawer__chevron" />
       </button>
       <div className={`ox-drawer__panel${open ? ' is-open' : ''}`}>
         <div className="ox-drawer__panel-inner">
@@ -131,9 +131,9 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
 
   // Wishlist and account leave the mobile bar, which carries the cart, and
   // arrive here as their own group.
-  const account = [
-    { key: 'account', label: t('ox.nav.account'), to: '/account/profile', icon: 'sicon-user' },
-    { key: 'wishlist', label: t('ox.header.wishlist'), to: '/account/wishlist', icon: 'sicon-heart' },
+  const account: Array<{ key: string; label: string; to: string; icon: OxIconName }> = [
+    { key: 'account', label: t('ox.nav.account'), to: '/account/profile', icon: 'user' },
+    { key: 'wishlist', label: t('ox.header.wishlist'), to: '/account/wishlist', icon: 'heart' },
   ];
 
   return (
@@ -157,7 +157,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
             data-testid="ox-drawer-close"
             onClick={onClose}
           >
-            <i className="sicon-cancel" aria-hidden="true" />
+            <Icon name="close" size={22} />
           </button>
         </div>
 
@@ -215,7 +215,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
                   className="ox-drawer__row ox-drawer__row--sub"
                   onClick={onClose}
                 >
-                  <i className={item.icon} aria-hidden="true" />
+                  <Icon name={item.icon} size={24} />
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -234,13 +234,13 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <i className="sicon-whatsapp" aria-hidden="true" />
+                <Icon name="whatsapp" size={24} />
                 <span>{t('ox.blocks.branch.whatsapp')}</span>
               </a>
             ) : null}
             {phone ? (
               <a className="ox-drawer__contact-link" href={`tel:${phone}`}>
-                <i className="sicon-phone" aria-hidden="true" />
+                <Icon name="phone" size={24} />
                 <span dir="ltr">{phone}</span>
               </a>
             ) : null}

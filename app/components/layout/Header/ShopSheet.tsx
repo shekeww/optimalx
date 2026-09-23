@@ -84,7 +84,7 @@ export function ShopSheet({ id, open, onClose }: ShopSheetProps) {
           data-testid="ox-sheet-close"
           onClick={onClose}
         >
-          <i className="sicon-cancel" aria-hidden="true" />
+          <Icon name="close" size={22} />
         </button>
       </div>
 

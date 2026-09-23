@@ -1,5 +1,6 @@
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../common/Icon';
 import { fieldText, type OxBlockProps } from './defaults';
 
 /**
@@ -59,7 +60,7 @@ export function OxBanner({ data }: OxBlockProps) {
           {url ? (
             <span className="ox-campaign__cta ox-cta-wedge">
               <span className="ox-campaign__cta-label">{t('ox.home.shop_now')}</span>
-              <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+              <Icon name="chevron-end" size={16} />
             </span>
           ) : null}
         </span>

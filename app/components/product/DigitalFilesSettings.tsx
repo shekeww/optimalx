@@ -1,4 +1,5 @@
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../common/Icon';
 
 export interface DigitalFilesSettingsProps {
   /** Number of digital files included */
@@ -32,7 +33,7 @@ export function DigitalFilesSettings({
       <ul className="space-y-4">
         <li className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <i className="sicon-page" />
+            <Icon name="document" size={24} />
             <div className="text-gray-600 text-sm">
               {t('pages.products.number_of_files', 'Number of Files')}
             </div>
@@ -42,7 +43,7 @@ export function DigitalFilesSettings({
 
         <li className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <i className="sicon-file-archive" />
+            <Icon name="archive" size={24} />
             <div className="text-gray-600 text-sm">
               {t('pages.products.file_formats', 'File Formats')}
             </div>
@@ -52,7 +53,7 @@ export function DigitalFilesSettings({
 
         <li className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <i className="sicon-calendar" />
+            <Icon name="calendar" size={24} />
             <div className="text-gray-600 text-sm">
               {t('pages.products.file_expiration_period', 'File Expiration Period')}
             </div>
@@ -63,13 +64,13 @@ export function DigitalFilesSettings({
         {access_new_files && (
           <li className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <i className="sicon-rotate" />
+              <Icon name="rotate" size={24} />
               <div className="text-gray-600 text-sm">
                 {t('pages.products.free_access_to_new_files', 'Free Access to New Files')}
               </div>
             </div>
             <div className="text-gray-900 text-sm">
-              <i className="sicon-check-circle text-lg" />
+              <Icon name="check-circle" size={18} />
             </div>
           </li>
         )}

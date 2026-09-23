@@ -84,7 +84,7 @@ function FilterChip({
           onClick={onRemove}
           aria-label={removeLabel ?? t('ox.common.close')}
         >
-          <i className="sicon-cancel" aria-hidden="true" />
+          <Icon name="close" size={16} />
         </button>
       </span>
     );

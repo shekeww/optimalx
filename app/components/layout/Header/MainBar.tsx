@@ -105,7 +105,7 @@ export function MainBar() {
           className="ox-iconbtn ox-wishlist"
           aria-label={t('ox.header.wishlist')}
         >
-          <i className="sicon-heart" aria-hidden="true" />
+          <Icon name="heart" size={20} />
           <CountPill count={wishlist?.count ?? 0} />
         </Link>
 

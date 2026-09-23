@@ -6,6 +6,8 @@ import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import type { ProductCardProps } from '@salla.sa/twilight-theme-engine/product';
 import { SallaAddProductButtonCore } from '@salla.sa/twilight-components-react/add-product-button';
 import { WebComponentBoundary } from '../common/WebComponentBoundary';
+import { toInternalPath } from '../layout/navLinks';
+import { currentCartPath, proxyAddToCart } from './lib/buyNow';
 import { Badge, BadgeStack } from '../common/Badge';
 import { Bdi } from '../common/Bdi';
 import { Price } from '../common/Price';
@@ -50,7 +52,8 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  *                    of 1 to 5; the number itself never prints
  *   action row       quantity stepper + Salla's own add button, outlined
  *   buy row          a full-width accent CTA: Salla's own quick buy where
- *                    `can_quick_buy` is on, otherwise a link to the product
+ *                    `can_quick_buy` is on, otherwise a proxy of the card's
+ *                    own add button that lands on the cart (P0-10)
  *
  * Every row keeps its height when its content is absent, which is what lets a
  * row of mixed products put every price on one baseline. The rating slot in
@@ -246,7 +249,7 @@ export const OxProductCard = memo(function OxProductCard({
           aria-pressed={inWishlist}
           onClick={() => wishlist.toggle(product.id)}
         >
-          <i className="sicon-heart" aria-hidden="true" />
+          <Icon name="heart" size={20} />
         </button>
         {showSwatchDots ? (
           <ul className="ox-card-product__swatches" aria-label={t('ox.card.colours')}>
@@ -275,7 +278,10 @@ export const OxProductCard = memo(function OxProductCard({
           </p>
         ) : null}
         <h3 className="ox-card-product__name">
-          <Link to={product.url} className="ox-card-product__title-link">
+          {/* `product.url` is absolute (`https://optimalx.com.sa/...`), and an
+              absolute href leaves the build on a click and drops an English
+              visitor back into Arabic (UX-2026-09-24 P0-14). */}
+          <Link to={toInternalPath(product.url)} className="ox-card-product__title-link">
             <Bdi>{product.name}</Bdi>
           </Link>
         </h3>
@@ -531,12 +537,17 @@ function SoldOutControl({ product }: { product: Product }) {
  * endpoint; the whole path stays inside Salla's component.
  *
  * **On this store the gate is shut.** `can_quick_buy` is false on all 47
- * products in the catalogue snapshot, so what renders today is the fallback:
- * the same accent button, as a LINK to the product page. It is a navigation
- * control, not a one-tap buy, and it is deliberately not dressed up as one
- * beyond the label the owner's design asks for. The day quick buy is switched
- * on in the dashboard the cards become real fast-checkout buttons with no
- * change here.
+ * products in the catalogue snapshot, and what used to render then was a LINK
+ * to the product page wearing the words "اشتري الآن": an accent button that
+ * said buy and navigated (UX-2026-09-24 P0-10, measured on every card on
+ * every route). The owner's decision is that the label and the angled primary
+ * stay, so the control now does what it says: it clicks the card's own
+ * `salla-add-product-button` (`proxyAddToCart`) and moves the shopper to the
+ * cart once that component reports success. Still no `salla.cart` call, still
+ * no checkout endpoint - the add is Salla's, only the destination is ours.
+ *
+ * The one product that keeps a link is one with options: buying it needs a
+ * choice the card cannot make, so "buy now" opens the page that has it.
  */
 function BuyNow({ product }: { product: Product }) {
   const { t } = useTranslation();
@@ -569,10 +580,41 @@ function BuyNow({ product }: { product: Product }) {
     );
   }
 
+  // A product whose variant has to be chosen is the ONE case where a link is
+  // the honest control: buying it needs a choice this card cannot make for
+  // the shopper, so "buy now" opens the page where the choice is (P0-10).
+  if (product.has_options === true) {
+    return (
+      <Link
+        to={toInternalPath(product.url)}
+        className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy"
+      >
+        {label}
+      </Link>
+    );
+  }
+
+  // Quick buy off, no options: the button BUYS. It clicks the card's own
+  // `salla-add-product-button` - the one rendered a few nodes away in
+  // `.ox-card-product__action` - and moves the shopper to the cart only once
+  // that component reports its own success. Salla owns the add, the
+  // validation and the toast; this owns where the shopper goes next.
   return (
-    <Link to={product.url} className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy">
+    <button
+      type="button"
+      className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy"
+      onClick={(event) => {
+        const scope = event.currentTarget.closest('.ox-card-product__action');
+        const addButton = scope?.querySelector('salla-add-product-button');
+        if (!addButton) return;
+        proxyAddToCart({
+          button: addButton,
+          onSuccess: () => window.location.assign(currentCartPath()),
+        });
+      }}
+    >
       {label}
-    </Link>
+    </button>
   );
 }
 

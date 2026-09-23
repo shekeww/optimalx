@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
 import { useMediaQuery } from '../common/hooks/useMediaQuery';
 import { useReducedMotion } from '../common/hooks/useReducedMotion';
 import { fieldText, type OxBlockProps } from './defaults';
@@ -286,7 +287,7 @@ export function OxHero({ data }: OxBlockProps) {
             aria-label={playing ? t('ox.home.hero_video_pause') : t('ox.home.hero_video_play')}
             data-testid="ox-hero-video-toggle"
           >
-            <i className={playing ? 'sicon-pause' : 'sicon-play'} aria-hidden="true" />
+            <Icon name={playing ? 'pause' : 'play'} size={24} />
           </button>
         ) : null}
       </div>
@@ -310,7 +311,7 @@ export function OxHero({ data }: OxBlockProps) {
               size={48}
               className="ox-cta-wedge"
               iconEnd={
-                <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+                <Icon name="chevron-end" size={24} />
               }
             >
               {primaryLabel}

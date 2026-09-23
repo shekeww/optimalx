@@ -48,7 +48,7 @@ export function MobileHeader({ menuOpen, onToggleMenu, withSearchRow, drawerId }
           data-testid="ox-menu-button"
           onClick={onToggleMenu}
         >
-          <i className={menuOpen ? 'sicon-cancel' : 'sicon-menu'} aria-hidden="true" />
+          <Icon name={menuOpen ? 'close' : 'menu'} size={20} />
         </button>
 
         <Logo width={108} priority className="ox-mobilebar__logo" />

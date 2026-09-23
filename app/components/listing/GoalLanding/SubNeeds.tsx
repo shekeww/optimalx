@@ -2,6 +2,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { categoryBySlug } from '../../../content/categories';
 import type { GoalSubNeed } from '../../../content/goals';
+import { Icon } from '../../common/Icon';
 import { SectionHeader } from '../../common/SectionHeader';
 import { useSlugLink } from '../useSlugLink';
 
@@ -61,7 +62,7 @@ export function SubNeeds({ needs, title, intro, anchor, headingId }: SubNeedsPro
                 <span className="ox-subneed__line ox-body">{t(need.lineKey)}</span>
                 <span className="ox-subneed__cta ox-small">
                   {t('ox.goal.subneed_cta')}
-                  <i className="sicon-keyboard_arrow_left ox-mirror" aria-hidden="true" />
+                  <Icon name="chevron-start" size={16} />
                 </span>
               </Link>
             </li>

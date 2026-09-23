@@ -4,6 +4,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { effectivePrice } from '../product/lib/claims';
 import { Bdi } from '../common/Bdi';
+import { Icon } from '../common/Icon';
 import { Price } from '../common/Price';
 import { SectionHeader } from '../common/SectionHeader';
 import { useRailProgress } from '../common/hooks/useRailProgress';
@@ -159,7 +160,7 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                 aria-label={t('ox.listing.featured_prev')}
               >
                 <span className="ox-featured__arrow-face ox-iconbtn--angled" aria-hidden="true">
-                  <i className="sicon-keyboard_arrow_left ox-featured__arrow-icon" aria-hidden="true" />
+                  <Icon name="chevron-start" size={16} />
                 </span>
               </button>
               <button
@@ -170,7 +171,7 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                 aria-label={t('ox.listing.featured_next')}
               >
                 <span className="ox-featured__arrow-face ox-iconbtn--angled" aria-hidden="true">
-                  <i className="sicon-keyboard_arrow_left ox-featured__arrow-icon" aria-hidden="true" />
+                  <Icon name="chevron-end" size={16} />
                 </span>
               </button>
             </div>
@@ -223,10 +224,7 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                   </span>
                   <span className="ox-featured__cta">
                     {t('ox.listing.featured_cta')}
-                    <i
-                      className="sicon-keyboard_arrow_left ox-mirror ox-iconbtn--angled"
-                      aria-hidden="true"
-                    />
+                    <Icon name="chevron-start" size={24} className="ox-iconbtn--angled" />
                   </span>
                 </Link>
               </li>

@@ -117,9 +117,11 @@ describe('MainBar', () => {
     expect(cart.querySelector('.sicon-shopping-bag')).toBeNull();
   });
 
-  it('renders the wishlist link with its own sallaicons glyph', () => {
+  it('renders the wishlist link with the drawn heart glyph (not sicon-heart)', () => {
     renderWithProviders(<MainBar />);
     const wishlist = screen.getByLabelText('المفضلة');
-    expect(wishlist.querySelector('.sicon-heart')).not.toBeNull();
+    const icon = wishlist.querySelector('svg.ox-icon use');
+    expect(icon?.getAttribute('href')).toBe('#ox-heart');
+    expect(wishlist.querySelector('.sicon-heart')).toBeNull();
   });
 });

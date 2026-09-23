@@ -1,5 +1,6 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../../common/Icon';
 import { ContactAffordance } from './ContactAffordance';
 import { CountryControl } from './CountryControl';
 import { UtilityTrust } from './UtilityTrust';
@@ -30,7 +31,7 @@ export function UtilityBar() {
       <div className="ox-utility__inner ox-container">
         <div className="ox-utility__start">
           <Link to="/branch" className="ox-util__branch" data-testid="ox-utility-branch">
-            <i className="sicon-store" aria-hidden="true" />
+            <Icon name="store" size={20} />
             <span>{t('ox.nav.branch')}</span>
           </Link>
           <ContactAffordance />

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
 import { OxProductCard } from '../product/OxProductCard';
 import { useTaxonomyLinks } from '../listing/useTaxonomyLinks';
@@ -148,7 +149,7 @@ export function OxCategoryRail({ data }: OxBlockProps) {
                   aria-label={t('ox.listing.featured_prev')}
                 >
                   <span className="ox-cat-rail__arrow-face ox-iconbtn--angled" aria-hidden="true">
-                    <i className="sicon-keyboard_arrow_left ox-mirror" />
+                    <Icon name="chevron-start" size={16} />
                   </span>
                 </button>
                 <button
@@ -159,7 +160,7 @@ export function OxCategoryRail({ data }: OxBlockProps) {
                   aria-label={t('ox.listing.featured_next')}
                 >
                   <span className="ox-cat-rail__arrow-face ox-iconbtn--angled" aria-hidden="true">
-                    <i className="sicon-keyboard_arrow_right ox-mirror" />
+                    <Icon name="chevron-end" size={16} />
                   </span>
                 </button>
               </div>

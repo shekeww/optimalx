@@ -145,7 +145,7 @@ export function OxBranch({
                   variant="primary"
                   target="_blank"
                   rel="noopener noreferrer"
-                  iconStart={<i className="sicon-whatsapp" aria-hidden="true" />}
+                  iconStart={<Icon name="whatsapp" size={20} />}
                 >
                   {t('ox.blocks.branch.whatsapp')}
                 </Button>

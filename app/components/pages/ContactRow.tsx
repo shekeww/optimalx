@@ -3,6 +3,7 @@ import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Bdi } from '../common/Bdi';
 import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
 import { digitsOnly } from '../blocks/href';
 import { settingText } from '../product/lib/claims';
 
@@ -56,7 +57,7 @@ export function ContactRow({ titleKey, phone, className }: ContactRowProps) {
             variant="secondary"
             target="_blank"
             rel="noopener noreferrer"
-            iconStart={<i className="sicon-whatsapp" aria-hidden="true" />}
+            iconStart={<Icon name="whatsapp" size={20} />}
           >
             {t('ox.branch.whatsapp')}
           </Button>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../../common/Icon';
 import { Alternatives } from './Alternatives';
 
 export interface RelatedRailProps {
@@ -115,7 +116,7 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
             aria-label={t('ox.pdp.rail_prev')}
           >
             <span className="ox-related__arrow-face ox-iconbtn--angled" aria-hidden="true">
-              <i className="sicon-keyboard_arrow_left ox-related__arrow-icon" aria-hidden="true" />
+              <Icon name="chevron-start" size={16} />
             </span>
           </button>
           <button
@@ -125,7 +126,7 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
             aria-label={t('ox.pdp.rail_next')}
           >
             <span className="ox-related__arrow-face ox-iconbtn--angled" aria-hidden="true">
-              <i className="sicon-keyboard_arrow_left ox-related__arrow-icon" aria-hidden="true" />
+              <Icon name="chevron-end" size={16} />
             </span>
           </button>
         </div>

@@ -105,7 +105,7 @@ export function Poster({
           {cta ? (
             <span className="ox-poster__cta ox-cta-wedge">
               <span className="ox-poster__cta-label">{cta.label}</span>
-              <i className="sicon-keyboard_arrow_right ox-mirror" aria-hidden="true" />
+              <Icon name="chevron-end" size={16} />
             </span>
           ) : null}
         </span>

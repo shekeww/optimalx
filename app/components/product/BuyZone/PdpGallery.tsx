@@ -4,6 +4,7 @@ import { Image } from '@salla.sa/twilight-theme-engine/common';
 import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { ProductGalleryProps } from '@salla.sa/twilight-theme-engine/product';
 import type { ProductImage } from '@salla.sa/twilight-theme-engine/types';
+import { Icon } from '../../common/Icon';
 import { PdpThumbRail } from './PdpThumbRail';
 import { promotionLabel } from '../lib/claims';
 
@@ -108,7 +109,7 @@ export function PdpGallery({ product }: ProductGalleryProps) {
           aria-pressed={inWishlist}
           aria-label={t('ox.a11y.wishlist_toggle')}
         >
-          <i className="sicon-heart" aria-hidden="true" />
+          <Icon name="heart" size={20} />
         </button>
       </div>
     </div>

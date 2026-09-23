@@ -1,6 +1,7 @@
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Icon } from '../../common/Icon';
 
 function settingValue(settings: unknown, key: string): string {
   if (!settings || typeof settings !== 'object') return '';
@@ -40,7 +41,7 @@ export function MegaPromo({ onNavigate }: MegaPromoProps) {
         {title ? <span className="ox-mega__promo-title">{title}</span> : null}
         <span className="ox-mega__promo-link">
           {line}
-          <i className="sicon-keyboard_arrow_right ox-mega__promo-chevron ox-mirror" aria-hidden="true" />
+          <Icon name="chevron-end" size={16} className="ox-mega__promo-chevron" />
         </span>
       </Link>
     </section>

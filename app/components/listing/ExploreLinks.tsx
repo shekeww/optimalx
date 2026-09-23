@@ -2,6 +2,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { GOALS, goalBySlug, type GoalContent, type GoalSubNeed } from '../../content/goals';
 import { MENU, childrenOf, type TaxonomyNode } from '../../content/taxonomy';
+import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
 import { relatedGuidesFor, type RelatedGuide } from './RelatedGuides';
 import { useTaxonomyLinks, type TaxonomyLink } from './useTaxonomyLinks';
@@ -118,14 +119,14 @@ export function ExploreLinks({ node, className }: ExploreLinksProps) {
           <li>
             <Link to={guide.to} className="ox-listing__guide-row">
               <span className="ox-body">{guide.title}</span>
-              <i className="sicon-keyboard_arrow_left ox-mirror" aria-hidden="true" />
+              <Icon name="chevron-start" size={16} />
             </Link>
           </li>
         ) : null}
         <li>
           <Link to="/services" className="ox-listing__guide-row">
             <span className="ox-body">{t('ox.services.title')}</span>
-            <i className="sicon-keyboard_arrow_left ox-mirror" aria-hidden="true" />
+            <Icon name="chevron-start" size={16} />
           </Link>
         </li>
       </ul>

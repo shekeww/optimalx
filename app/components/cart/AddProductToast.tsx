@@ -297,7 +297,7 @@ export function AddProductToast() {
           aria-label="Close"
           onClick={close}
         >
-          <i className="sicon-cancel" />
+          <Icon name="close" size={24} />
         </button>
       </div>
 

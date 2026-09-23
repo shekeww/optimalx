@@ -1215,9 +1215,6 @@
   flex: 0 0 auto;
   margin-inline-start: 6px;
   color: var(--ox-ink-4);
-  // The glyph points toward the inline start; the row's control points the
-  // other way, so it turns with the reading direction and nothing else.
-  transform: rotate(calc((1 - var(--direction-factor)) * 90deg + 180deg));
 }
 
 .ox-delivery__truck {
@@ -1527,91 +1524,105 @@ body.is-sticky-product-bar.product-single {
 }
 
 // ---------------------------------------------------------------------------
-// 9b. The buy zone below 768 (owner review, 2026-09-23, item 2)
+// 9b. The buy zone below 768, REBUILT (UX-2026-09-24 P0-3: "the mobile buy
+// row overlaps itself" — the previous design's own `.ox-buy__actions {
+// position: absolute; inset-block-end: 0 }` anchored buy-now to `.ox-buy`'s
+// own bottom edge on the theory that the qty/add row was the last thing in
+// the form, but `.ox-buy`'s own box ends there too, so buy-now painted
+// directly on top of the add button and the stepper instead of below them —
+// measured live: `.ox-buy__now` y288 h48, `salla-quantity-input` y290 h40,
+// `salla-add-product-button` y284 h52, all three overlapping.
 //
 // Above 768 nothing here applies: add-to-cart keeps its label and shares the
-// row with the stepper exactly as section 9 already builds it. Below 768 the
-// stepper takes its own row, compact, at the reading start, and the next row
-// holds add-to-cart as an icon-only control (the glyph already paints on
-// `.s-button-text::before`/`::after` — section 9 above — so this only hides
-// the word) at 40% of the row, beside buy-now for the remaining width.
-//
-// Buy-now (`.ox-buy__now`, BuyActions.tsx's `afterForm`) is a sibling of the
-// engine's own `<form>`, not of the stepper or the add button inside it —
-// `AddToCartForm` is the engine's markup and this batch does not reach into
-// it. An absolute placement, anchored to the same row via `.ox-buy`'s own
-// box, is the one CSS-only route to "beside it" that does not touch that
-// markup or risk the form's other sections (weight, bundle, attachments),
-// which a `display: contents` flatten of the whole form would have put at
-// the mercy of the same grid.
+// row with the stepper exactly as section 9 already builds it. Below 768
+// this is now three real, IN-FLOW rows, never an absolute overlay: row A the
+// stepper alone (120×44, flush to the reading start); row B add-to-cart
+// alone, full width, with its own real label restored (not icon-only any
+// more — a full-width control has the room); row C buy-now, full width,
+// already exactly 358×48 at this breakpoint from its own pre-existing
+// `@media (max-width: 639px)` rule further down this file, unaffected by
+// this section.
 // ---------------------------------------------------------------------------
 @media (max-width: 767px) {
   .ox-buy {
     position: relative;
   }
 
+  // Row A / row B, 12px apart — the label's own reading gap, not the 8px
+  // spacing token, since UX-2026-09-24 names 12 specifically.
   .sticky-product-bar {
     grid-template-columns: 1fr;
     grid-template-areas: 'qty' 'add';
-    row-gap: var(--ox-2);
+    row-gap: var(--ox-3);
   }
 
-  // Compact, at the reading start: an explicit width instead of the grid's
-  // own column stretch, so the stepper reads as a control and not a bar.
+  // Row A: the stepper alone, flush to the reading start, 120 wide (was
+  // 140 — UX-2026-09-24's own re-measurement).
   .sticky-product-bar__quantity {
     justify-self: start;
-    inline-size: 140px;
+    inline-size: 120px;
   }
 
-  // 40% of the row (the owner's own figure) and at least 44px tall; the
-  // remaining width is buy-now's, positioned beside it below.
+  // Row B: FULL WIDTH now (was 40%, with buy-now absolutely positioned
+  // beside it — the layout P0-3 replaces). No `justify-self: start` any
+  // more: the row's own single column already stretches a full-width item.
   .sticky-product-bar > *:not(.sticky-product-bar__quantity) {
-    justify-self: start;
-    inline-size: 40%;
+    inline-size: 100%;
   }
 
+  // 48 tall (UX-2026-09-24's own row B figure), not 44: the stepper (row A)
+  // keeps 44 from its own shared rule two sections up; only add-to-cart
+  // grows here.
   .sticky-product-bar salla-add-product-button,
   .sticky-product-bar__btn,
   .sticky-product-bar salla-add-product-button .s-button-element,
   .sticky-product-bar__btn.s-button-element,
   .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
-    min-block-size: 44px;
+    min-block-size: 48px;
   }
 
-  // ICON-ONLY: the glyph already paints on `.s-button-text::before` (and the
-  // un-upgraded state's own `::after`, both in section 9 above); this hides
-  // only the word, the way the product card's own narrow tier already does
-  // it. `font-size: 0` leaves the text node in the accessibility tree — a
-  // screen reader reads it regardless of its painted size — so no separate
-  // `sr-only` span or `aria-label` is needed on markup this batch cannot add
-  // to (the engine's own button).
-  .sticky-product-bar salla-add-product-button .s-button-text,
-  .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
-    font-size: 0;
-  }
-
-  .sticky-product-bar salla-add-product-button .s-button-text::before,
-  .sticky-product-bar salla-add-product-button:not(:has(.s-button-element))::after {
-    margin-inline-end: 0;
-  }
-
+  // THE FULL LABEL IS BACK (UX-2026-09-24 P0-3): a 358px-wide row has room
+  // for "أضف إلى السلة" and the glyph both, so the icon-only treatment (and
+  // its own zero-margin glyph adjustment) this block used to carry is
+  // removed outright rather than merely unused — nothing here still hides
+  // the word.
+  //
+  // STRAIGHT, not angled: the old 40%-width button measured 91px wide,
+  // under X-IDENTITY §2.4's own `run / 0.24` floor for `ox-angled(48px)`
+  // (`ox-run(48px)` = 32.4, floor = 32.4 / 0.24 = 135px) — illegal on the
+  // identity document's own terms, not merely cramped. The fix widens the
+  // button to full row width (358px, well clear of the floor) AND drops the
+  // parallelogram (`border-radius: var(--ox-r-2)` in its place), per
+  // UX-2026-09-24's own explicit instruction, so buy-now (row C) stays the
+  // page's one angled control at this breakpoint — the same "one angled
+  // gesture reads as intentional, two read as noise" reasoning X-IDENTITY
+  // §3.3 already gives for the product card. `clip-path: none` cancels the
+  // base (desktop) rule's own `ox-angled(52px)`, with the `[dir='ltr']`
+  // twin needed too: that mixin's own LTR mirror carries an extra attribute
+  // selector, which outranks a plain override on specificity alone
+  // regardless of source order.
   .sticky-product-bar salla-add-product-button .s-button-element,
   .sticky-product-bar__btn.s-button-element,
   .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
-    padding-inline: 0;
-    @include ox-angled(44px);
+    border-radius: var(--ox-r-2);
+    clip-path: none;
+    [dir='ltr'] & {
+      clip-path: none;
+    }
   }
 
-  // Beside it: the row's remaining width (100% − 40% − the grid's own 12px
-  // gap), bottom-aligned to `.ox-buy`'s own edge, which is exactly the
-  // stepper/add row's own bottom once the form's last-section margin is 0
-  // (the rule above section 9's engine-form block already sets that).
+  // Row C: buy-now, a REAL SIBLING now, not an absolutely positioned
+  // overlay — `.ox-buy__actions` simply flows after the form, 12px below
+  // row B (UX-2026-09-24's own row gap), which is what actually fixes the
+  // overlap: there is no longer a `position: absolute` for `.ox-buy`'s own
+  // box to mis-measure against. `display: grid` is UX-2026-09-24's own
+  // literal instruction, forward-compatible with more than the one child
+  // this wrapper holds today (`BuyActions.tsx`'s `afterForm`).
   .ox-buy__actions {
-    position: absolute;
-    inset-inline-end: 0;
-    inset-block-end: 0;
-    inline-size: calc(60% - 12px);
-    margin-block-start: 0;
+    position: relative;
+    display: grid;
+    gap: 12px;
+    margin-block-start: var(--ox-3);
   }
 }
 
@@ -2550,18 +2561,6 @@ body.is-sticky-product-bar.product-single {
   font-size: 16px;
 }
 
-// The glyph points toward the inline start; in Arabic that is a rotation of
-// half a turn, which --direction-factor states once for the whole theme.
-// Rotated on the glyph itself, not the button, so the angled face's own
-// corner cut never turns with it.
-.ox-related__arrow-icon {
-  transform: rotate(calc((1 - var(--direction-factor)) * 90deg));
-}
-
-.ox-related__arrow--next .ox-related__arrow-icon {
-  transform: rotate(calc((1 - var(--direction-factor)) * 90deg + 180deg));
-}
-
 // The rail keeps its own scroll; only its own arrows are hidden, because the
 // design's pair lives in the header row above it.
 //
@@ -2634,6 +2633,50 @@ body.is-sticky-product-bar.product-single {
   font-size: 24px;
   font-weight: var(--ox-w-figure);
   color: var(--ox-go);
+}
+
+// The measurement line, stated once where the visit is requested
+// (UX-2026-09-24 P0-2 and P0-12). A fact on a plate, never a promise.
+.ox-service__inbody {
+  margin: 0;
+  padding: var(--ox-2) var(--ox-3);
+  font-size: 15px;
+  line-height: var(--ox-lh-body);
+  color: var(--ox-fg);
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2, 8px);
+}
+
+// THE BOOKING CONTROL (UX-2026-09-24 P0-2). The branch visit had nothing to
+// press: the engine scaffold's quantity input and add button never resolved
+// past their skeletons and the only words on the page were a `<p>`. This is
+// Salla's own add button, so the cart path is unchanged, wearing the page's
+// primary face at the 48 the spec asks for. The host carries the same face,
+// for the same measured reason the buy zone's does: the custom element is a
+// bare inline box until Salla's SDK registers it.
+.ox-service__buy {
+  display: flex;
+  min-block-size: 48px;
+}
+
+.ox-service__add,
+.ox-service__add .s-button-element,
+.ox-service__buy salla-add-product-button:not(:has(.s-button-element)) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  min-block-size: 48px;
+  margin: 0;
+  padding-inline: 34px;
+  border: 0;
+  border-radius: 0;
+  opacity: 1;
+  transform: none;
+  transition: none;
+  white-space: nowrap;
+  @include ox-primary-face;
+  @include ox-angled(48px);
 }
 
 .ox-service__slot-note,

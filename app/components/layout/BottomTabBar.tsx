@@ -88,7 +88,7 @@ export function BottomTabBar() {
             className={`ox-tab${isHome ? ' is-active' : ''}`}
             {...(isHome ? { 'aria-current': 'page' } : {})}
           >
-            <i className="sicon-home" aria-hidden="true" />
+            <Icon name="home" size={20} />
             <span className="ox-tab__label">{t('ox.nav.home')}</span>
           </Link>
         </li>
@@ -104,7 +104,7 @@ export function BottomTabBar() {
             data-testid="ox-tab-shop"
             onClick={() => openShopSheet()}
           >
-            <i className="sicon-grid" aria-hidden="true" />
+            <Icon name="grid" size={20} />
             <span className="ox-tab__label">{t('ox.nav.shop')}</span>
           </button>
         </li>
@@ -114,7 +114,7 @@ export function BottomTabBar() {
             className={`ox-tab${isSearch ? ' is-active' : ''}`}
             {...(isSearch ? { 'aria-current': 'page' } : {})}
           >
-            <i className="sicon-search" aria-hidden="true" />
+            <Icon name="search" size={20} />
             <span className="ox-tab__label">{t('ox.nav.search')}</span>
           </Link>
         </li>
@@ -143,7 +143,7 @@ export function BottomTabBar() {
             className={`ox-tab${isAccount ? ' is-active' : ''}`}
             {...(isAccount ? { 'aria-current': 'page' } : {})}
           >
-            <i className="sicon-user" aria-hidden="true" />
+            <Icon name="user" size={20} />
             <span className="ox-tab__label">{t('ox.nav.account')}</span>
           </Link>
         </li>
