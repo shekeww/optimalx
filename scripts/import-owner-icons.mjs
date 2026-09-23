@@ -57,6 +57,19 @@ import { pathToFileURL } from 'node:url';
 export const OWNER_DIR = path.join('optimal-x-icons');
 export const OWNER_SVG_DIR = path.join(OWNER_DIR, 'svg');
 export const OWNER_MANIFEST_FILE = path.join(OWNER_DIR, 'icons.json');
+/**
+ * Owner-requested replacements drawn on the owner's own system: a file
+ * app/assets/icon-overrides/<name>.svg replaces optimal-x-icons/svg/<name>.svg
+ * at generation time (2026-09-24: goal-ideal-weight, "perfect weight without
+ * body details"). The owner copies an override back into optimal-x-icons
+ * when he adopts it, and the file here is then deleted.
+ */
+export const OVERRIDE_DIR = path.join('app', 'assets', 'icon-overrides');
+export function readOwnerSource(icon) {
+  const override = path.join(OVERRIDE_DIR, `${icon.name}.svg`);
+  if (fs.existsSync(override)) return fs.readFileSync(override, 'utf8');
+  return fs.readFileSync(path.join(OWNER_DIR, icon.file), 'utf8');
+}
 export const SPRITE_FILE = path.join('app', 'assets', 'ox-sprite.svg');
 
 /**
@@ -245,14 +258,14 @@ export function generate() {
   const iconByName = new Map(ownerIcons.map((icon) => [icon.name, icon]));
 
   const ownerSymbols = ownerIcons.map((icon) => {
-    const source = fs.readFileSync(path.join(OWNER_DIR, icon.file), 'utf8');
+    const source = readOwnerSource(icon);
     return renderOwnerSymbol(`ox-${icon.name}`, source, icon.rtlFlip);
   });
 
   const aliasSymbols = Object.entries(ALIASES).map(([id, sourceName]) => {
     const icon = iconByName.get(sourceName);
     if (!icon) throw new Error(`import-owner-icons: alias source "${sourceName}" not in manifest`);
-    const source = fs.readFileSync(path.join(OWNER_DIR, icon.file), 'utf8');
+    const source = readOwnerSource(icon);
     return renderOwnerSymbol(`ox-${id}`, source, icon.rtlFlip);
   });
 

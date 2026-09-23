@@ -46,14 +46,27 @@ export function readSymbolBody(source, id) {
  * @returns {string}
  */
 export function maskDataUri(symbolBody) {
-  const elements = [...symbolBody.matchAll(/<path\b([^>]*)\/>/g)].map((match) => match[1]);
-  if (elements.length === 0) throw new Error('gen-icon-mask: symbol has no <path> elements');
-  const parts = elements.map((attrs) => {
-    const d = attrs.match(/\sd="([^"]+)"/)?.[1];
-    if (!d) throw new Error('gen-icon-mask: <path> with no d attribute');
+  // <path>, <circle> and <rect>: the owner's icon set draws wheels and dots
+  // as circles (2026-09-24), which a path-only matcher silently dropped.
+  const elements = [...symbolBody.matchAll(/<(path|circle|rect)\b([^>]*)\/>/g)].map((match) => ({
+    tag: match[1],
+    attrs: match[2],
+  }));
+  if (elements.length === 0) throw new Error('gen-icon-mask: symbol has no drawable elements');
+  const parts = elements.map(({ tag, attrs }) => {
+    const pick = (name) => attrs.match(new RegExp(`\\s${name}="([^"]+)"`))?.[1];
     const isAccent = /class="ox-icon__accent"/.test(attrs);
     const paint = isAccent ? " fill='%23000' stroke='none'" : '';
-    return `%3Cpath d='${d}'${paint}/%3E`;
+    if (tag === 'path') {
+      const d = pick('d');
+      if (!d) throw new Error('gen-icon-mask: <path> with no d attribute');
+      return `%3Cpath d='${d}'${paint}/%3E`;
+    }
+    if (tag === 'circle') {
+      return `%3Ccircle cx='${pick('cx')}' cy='${pick('cy')}' r='${pick('r')}'${paint}/%3E`;
+    }
+    const rx = pick('rx') ? ` rx='${pick('rx')}'` : '';
+    return `%3Crect x='${pick('x')}' y='${pick('y')}' width='${pick('width')}' height='${pick('height')}'${rx}${paint}/%3E`;
   });
   const svg =
     `%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' ` +
