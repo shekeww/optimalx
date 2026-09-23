@@ -107,6 +107,10 @@
 }
 
 .ox-card-product__img {
+  // Above the plate ground: the band and the mark are absolutely positioned
+  // siblings, so a static image painted under them (owner, 2026-09-25).
+  position: relative;
+  z-index: 1;
   inline-size: 100%;
   block-size: 100%;
   object-fit: contain;

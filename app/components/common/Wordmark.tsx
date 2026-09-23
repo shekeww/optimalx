@@ -47,14 +47,14 @@ export interface WordmarkProps {
 /** Intrinsic sizes of the generated assets, used to reserve the box. */
 const ASSETS: Record<WordmarkVariant, { w: number; h: number; light: string; dark: string }> = {
   full: {
-    w: 1179,
-    h: 363,
+    w: 2107,
+    h: 653,
     light: '/assets/brand/optimalx-full.png',
     dark: '/assets/brand/optimalx-full-reverse.png',
   },
   wordmark: {
-    w: 1179,
-    h: 298,
+    w: 2107,
+    h: 539,
     light: '/assets/brand/optimalx-wordmark.png',
     dark: '/assets/brand/optimalx-wordmark-reverse.png',
   },
