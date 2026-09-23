@@ -1594,5 +1594,13 @@
   "ox.card.type.daily_health": "الصحة اليومية",
   "ox.card.type.snacks_bars": "سناكات وبارات",
   "ox.card.type.accessories": "إكسسوارات",
-  "ox.newsletter.line": "عروض مختارة وأدلة قصيرة تصلك أولا. لا رسائل مزعجة."
+  "ox.newsletter.line": "عروض مختارة وأدلة قصيرة تصلك أولا. لا رسائل مزعجة.",
+  "ox.card.free_consult": "استشارة مجانية قبل الشراء",
+  "ox.card.bundle": "باقة",
+  "ox.card.bundle_count": "{{n}} منتجات",
+  "ox.card.type.whey_protein": "واي بروتين",
+  "ox.card.type.whey_isolate": "واي ايزوليت",
+  "ox.card.type.casein": "كازين",
+  "ox.card.type.plant_protein": "بروتين نباتي",
+  "ox.card.type.mass_gainer": "ماس جينر"
 }

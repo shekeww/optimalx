@@ -20,6 +20,7 @@ import { ListingCategoryContext, productTypeOf } from './lib/productType';
 import { bandBadges } from './lib/bandBadges';
 import { useHoverCapable } from './lib/useHoverCapable';
 import { monthsUntilExpiry } from './lib/supply';
+import { bundleMembers, variantOf } from './lib/variant';
 import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
 
 /**
@@ -33,25 +34,36 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  * The target, and what each part is gated on (CARD-2026-09-23):
  *
  *   wishlist heart   reading-start corner of the plate
- *   badge stack      the opposite corner, at most two, in the section 6.2
- *                    priority: out of stock (suppresses every other one),
- *                    saving, new, a real dietary tag, expiry within 6 months
+ *   badge stack      the opposite corner, at most two, in priority order:
+ *                    out of stock (suppresses every other one), a real
+ *                    bundle, saving, new, a real dietary tag, expiry within
+ *                    6 months
  *   colour swatches  the trailing edge of the plate, ONLY when the product
  *                    carries real option colours (see `colourSwatches`) AND
  *                    the card's own chip row is not already choosing the
  *                    same colour axis
  *   brand line       ONLY when `product.brand?.name` is set; not reserved
  *   title            two lines, ellipsised
- *   spec line        the product TYPE, then the servings or else the pack
- *                    size (`cardSpecLine`); the type from `productTypeOf`,
- *                    never guessed; always reserved
+ *   spec line        "<type> · <subcategory>" for a typed product, "باقة ·
+ *                    <n> منتجات" for a real bundle, else the one fallback
+ *                    fact the product carries (`cardSpecLine`); the type
+ *                    from `productTypeOf`, never guessed; always reserved;
+ *                    never the servings count again (S8g item 1)
  *   excerpt line     the first sentence of the description's own prose
  *                    paragraph (`descriptionExcerpt`); restored on the
  *                    coordinator's 2026-09-23 addendum; always reserved
  *   price row        the amount, plus the struck regular price on a sale
+ *   consult link     "استشارة مجانية قبل الشراء" (S8g item 1), a small text
+ *                    link to the free written-question service, on every
+ *                    boxed or bundle product — never a service, digital or
+ *                    gift product, which is not something a shopper is
+ *                    asking a supplements question about
  *   stock line       ONLY on a live `can_show_remained_quantity` quantity
  *                    of 1 to 5; the number itself never prints
- *   action row       quantity stepper + Salla's own add button, outlined
+ *   action row       quantity stepper + Salla's own add button, outlined —
+ *                    a real bundle without the API's own `can_add` gets a
+ *                    link to its own page instead (S8g item 3), the same
+ *                    honest fallback a product with options already gets
  *   buy row          a full-width accent CTA: Salla's own quick buy where
  *                    `can_quick_buy` is on, otherwise a proxy of the card's
  *                    own add button that lands on the cart (P0-10)
@@ -135,23 +147,41 @@ export const OxProductCard = memo(function OxProductCard({
   /**
    * THE CARD'S SPEC LINE (CARD-2026-09-23 section 3.4) replaces the merchant's
    * free-text `subtitle` pitch, which rendered as a single ellipsised line cut
-   * mid word ("واى ايزوليت نقى بـ 25 ج...") and was never a spec: servings,
-   * then the pack size, off the same parsed description every stat cell and
-   * chip on the product page already reads.
+   * mid word ("واى ايزوليت نقى بـ 25 ج...") and was never a spec.
    */
-  // The TYPE (owner item 2026-09-24, S8a): the API category, else the
-  // listing this card renders in, else the theme's own SKU membership, else
-  // an unambiguous name keyword; nothing when none answers
-  // (`lib/productType.ts`). Printed as the short card label
+  // THE TYPE (owner items 2026-09-24, S8a and S8g): a real bundle, else the
+  // API category, else the listing this card renders in, else the theme's
+  // own SKU membership, else an unambiguous name keyword — resolved for both
+  // the root and its child, nothing when no source answers
+  // (`lib/productType.ts`). Printed as the short card labels
   // (`ox.card.type.<key>`), not the taxonomy's own name: "الفيتامينات
-  // والمعادن" pushed the servings behind the ellipsis on a two-up phone card.
+  // والمعادن" pushed the fact behind the ellipsis on a two-up phone card.
   const listingCategory = useContext(ListingCategoryContext);
-  const typeKey = useMemo(
+  const typeInfo = useMemo(
     () => productTypeOf(product, { categorySlug: listingCategory }),
     [product, listingCategory]
   );
-  const typeName = typeKey ? t(`ox.card.type.${typeKey}`) : null;
-  const specLine = useMemo(() => cardSpecLine(product, spec, t, typeName), [product, spec, t, typeName]);
+  const isBundle = typeInfo?.kind === 'bundle';
+  // "باقة · <n> منتجات" ONLY when the bundle's own member list is real
+  // (`consisted_products`, the same field `BundleMembers` on the PDP reads);
+  // never a count the API did not carry.
+  const bundleMemberCount = useMemo(() => {
+    if (!isBundle) return null;
+    const count = bundleMembers(product).length;
+    return count > 0 ? count : null;
+  }, [isBundle, product]);
+  const specLine = useMemo(
+    () => cardSpecLine(product, spec, t, typeInfo, bundleMemberCount),
+    [product, spec, t, typeInfo, bundleMemberCount]
+  );
+  // THE FREE-CONSULTATION CUE (owner item 2026-09-24, S8g item 1): a
+  // universal, conversion-oriented cue available on any boxed or bundle
+  // product without inventing data — the written-question channel really is
+  // free in the catalogue (FINAL-claims-source.md row 6, services.ts). Never
+  // on a service, digital or gift product, which is not a "before you buy"
+  // question about a physical good.
+  const consultVariant = variantOf(product.type);
+  const showsFreeConsult = consultVariant === 'physical' || consultVariant === 'bundle';
 
   /**
    * THE DESCRIPTION EXCERPT (coordinator addendum, 2026-09-23), restored
@@ -168,10 +198,13 @@ export const OxProductCard = memo(function OxProductCard({
 
   // THE BADGE STACK, capped at two, in the priority section 6.2 sets. A real
   // out-of-stock flag suppresses every other one on its own (rendered
-  // separately below); past that, the saving pill outranks "new", which
-  // outranks a real dietary tag, which outranks an expiry within six months.
+  // separately below); past that, a real bundle (S8g item 3: the card must
+  // present as a bundle, not a product) outranks the saving pill, which
+  // outranks "new", which outranks a real dietary tag, which outranks an
+  // expiry within six months.
   const tagBadge = outOfStock ? null : (bandBadges(product)[0] ?? null);
-  const badgeCandidates: { id: 'saving' | 'new' | 'tag' | 'expiry'; show: boolean }[] = [
+  const badgeCandidates: { id: 'bundle' | 'saving' | 'new' | 'tag' | 'expiry'; show: boolean }[] = [
+    { id: 'bundle', show: !outOfStock && isBundle },
     { id: 'saving', show: !outOfStock && saving !== null },
     { id: 'new', show: !outOfStock && saving === null && isNewProduct(product) },
     { id: 'tag', show: !outOfStock && tagBadge !== null },
@@ -227,6 +260,11 @@ export const OxProductCard = memo(function OxProductCard({
         ) : null}
         <BadgeStack className="ox-card-product__badges">
           {outOfStock ? <Badge tone="stop">{t('ox.card.out_of_stock')}</Badge> : null}
+          {/* The bundle badge (S8g item 3): a real Salla bundle must present as
+              one, not as a product, so this outranks every promotional badge
+              below it. Same tone as the PDP's own informational badge
+              (`ox.pdp.official_distributors`), never a promo colour. */}
+          {visibleBadges.has('bundle') ? <Badge tone="neutral">{t('ox.card.bundle')}</Badge> : null}
           {/* The saving pill. The percentage is the platform's own
               `discount_percentage`, printed verbatim; the amount is the
               difference between two prices the catalogue actually holds.
@@ -330,10 +368,18 @@ export const OxProductCard = memo(function OxProductCard({
         {/* No savings line under the price (owner call, 2026-09-22): the pill
             in the image corner already states the saving, and the extra row
             stretched every card for a figure printed twice. */}
+        {showsFreeConsult ? (
+          <Link to="/services" className="ox-card-product__consult">
+            <Icon name="written-question" size={16} />
+            {t('ox.card.free_consult')}
+          </Link>
+        ) : null}
         {showsLimitedQty ? (
           <p className="ox-card-product__stock">{t('ox.card.limited_qty')}</p>
         ) : null}
-        {withoutAddButton ? null : <BuyControls product={product} outOfStock={outOfStock} />}
+        {withoutAddButton ? null : (
+          <BuyControls product={product} outOfStock={outOfStock} bundle={isBundle} />
+        )}
       </div>
     </article>
   );
@@ -352,8 +398,23 @@ export const OxProductCard = memo(function OxProductCard({
  * control. Returning early here, rather than threading `outOfStock` through
  * every row below, is what keeps the in-stock branch from having to reason
  * about a state it can no longer reach.
+ *
+ * **Neither is a bundle without the API's own permission** (S8g item 3): a
+ * multi-product bundle cannot be composed from a listing card the way a
+ * single coloured product can, so it gets no stepper and no add button
+ * either — only a link to its own page, unless `can_add` says the platform
+ * itself allows adding it from here.
  */
-function BuyControls({ product, outOfStock }: { product: Product; outOfStock: boolean }) {
+function BuyControls({
+  product,
+  outOfStock,
+  bundle,
+}: {
+  product: Product;
+  outOfStock: boolean;
+  /** A real bundle (S8g item 3), not merely a product with options. */
+  bundle: boolean;
+}) {
   const { t } = useTranslation();
   const max = maxQuantity(product);
   const [quantity, setQuantity] = useState(1);
@@ -401,6 +462,26 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
     return (
       <div className="ox-card-product__action ox-card-product__action--out">
         <SoldOutControl product={product} />
+      </div>
+    );
+  }
+
+  // A real bundle whose own page has to compose the add (S8g item 3): no
+  // stepper, no add button, one link — read defensively, the way
+  // `bundleMembers` reads `consisted_products`, since neither field is
+  // declared on the engine's own Product type. `can_add` is not present on
+  // any product in this catalogue today, so this is the honest state until
+  // the platform starts sending it.
+  const canAddBundle = bundle && (product as unknown as { can_add?: unknown }).can_add === true;
+  if (bundle && !canAddBundle) {
+    return (
+      <div className="ox-card-product__action">
+        <Link
+          to={toInternalPath(product.url)}
+          className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy"
+        >
+          {t('ox.card.buy_now')}
+        </Link>
       </div>
     );
   }

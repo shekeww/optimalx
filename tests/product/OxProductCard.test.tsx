@@ -203,9 +203,11 @@ describe('OxProductCard', () => {
     );
     const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
     // The fixture product is OX-001 (Gold Standard Whey): the theme's own
-    // SKU membership names its type (S8a item 5), then the one fact.
-    expect(line).toBe(`${t('ox.card.type.protein')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`);
-    expect(line).not.toContain('واي بروتين');
+    // SKU membership names its root type AND its child (S8g item 2).
+    expect(line).toBe(`${t('ox.card.type.protein')}${DIVIDER}${t('ox.card.type.whey_protein')}`);
+    // The merchant's own free-text subtitle never leaks in, proven by a word
+    // that appears only there, not in either type label.
+    expect(line).not.toContain('معزول');
   });
 
   it('keeps the spec-line row reserved and empty when the description carries no spec line', () => {
@@ -223,9 +225,19 @@ describe('OxProductCard', () => {
     expect(empty?.textContent).toBe('');
   });
 
-  it('prints ONE fact after the type: the servings, else the pack size, else the dosage form (S8a)', () => {
-    // An untyped product isolates the fact half of "<type> | <servings or size>".
+  it('never prints a servings count again; the one fallback fact is the pack size, else the dosage form, when nothing can type the product (S8g item 1)', () => {
     const untyped = { id: 1, name: 'منتج' };
+
+    // Servings alone, and no type: the row goes empty now, not "30 حصة" —
+    // the owner's item 1 ends the servings-count fact on the card outright.
+    // The PDP's own supply calculator and spec chips keep reading it.
+    const servingsOnly = renderWithProviders(
+      <OxProductCard product={makeProduct({ ...untyped, description: '<p>الحصص: 30</p>' })} />
+    );
+    expect(servingsOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('');
+    servingsOnly.unmount();
+
+    // Pack size still wins over the form when both are present.
     const both = renderWithProviders(
       <OxProductCard
         product={makeProduct({
@@ -235,8 +247,8 @@ describe('OxProductCard', () => {
       />
     );
     const line = both.container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(line).toBe(t('ox.card.servings', { n: 30 }));
-    expect(line).not.toContain('907 جم');
+    expect(line).toBe('907 جم');
+    expect(line).not.toContain('حصة');
     both.unmount();
 
     const packOnly = renderWithProviders(
@@ -245,7 +257,7 @@ describe('OxProductCard', () => {
     expect(packOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('907 جم');
     packOnly.unmount();
 
-    // Neither servings nor a pack size, but a dosage form: the form alone.
+    // Neither a pack size nor servings that count, but a dosage form: the form alone.
     const formOnly = renderWithProviders(
       <OxProductCard product={makeProduct({ ...untyped, description: '<p>الشكل: بودرة</p>' })} />
     );
@@ -258,9 +270,11 @@ describe('OxProductCard', () => {
         product={makeProduct({ category: { id: 9002, name: 'كرياتين', url: '/creatine/c9002' } })}
       />
     );
-    // The category outranks the SKU membership (OX-001 is protein).
+    // The category outranks the SKU membership (OX-001 is protein); its own
+    // real child (whey_protein) never pairs with this different root either
+    // (S8g item 2's "never guess wrong").
     expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
-      `${t('ox.card.type.creatine')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`
+      t('ox.card.type.creatine')
     );
   });
 
@@ -271,7 +285,18 @@ describe('OxProductCard', () => {
       </ListingCategoryContext.Provider>
     );
     expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
-      `${t('ox.card.type.omega_3')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`
+      t('ox.card.type.omega_3')
+    );
+  });
+
+  it('names the child listing too, root and child both, when the card renders on one (S8g item 2)', () => {
+    const { container } = renderWithProviders(
+      <ListingCategoryContext.Provider value="whey-isolate">
+        <OxProductCard product={makeProduct({ id: 1, sku: null, name: 'منتج' })} />
+      </ListingCategoryContext.Provider>
+    );
+    expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
+      `${t('ox.card.type.protein')}${DIVIDER}${t('ox.card.type.whey_isolate')}`
     );
   });
 
@@ -280,16 +305,18 @@ describe('OxProductCard', () => {
       <OxProductCard product={makeProduct({ id: 1, name: 'كرياتين مونوهيدرات - ثورن' })} />
     );
     expect(named.container.querySelector('.ox-card-product__chips')?.textContent).toBe(
-      `${t('ox.card.type.creatine')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`
+      t('ox.card.type.creatine')
     );
     named.unmount();
 
     const ambiguous = renderWithProviders(
       <OxProductCard product={makeProduct({ id: 1, name: 'امينو انرجي - اوبتيموم نيوترشن' })} />
     );
-    expect(ambiguous.container.querySelector('.ox-card-product__chips')?.textContent).toBe(
-      t('ox.card.servings', { n: 30 })
-    );
+    // No source can type it (a veto word); the row falls back to the one
+    // universal fact the description carries — the dosage form here, since
+    // "حجم الحصة" is a per-serving size, not the pack size, and the servings
+    // count itself never prints (S8g item 1).
+    expect(ambiguous.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
   });
 
   it('restores the description excerpt under the spec line, as the description\'s own prose sentence (coordinator addendum, 2026-09-23)', () => {
@@ -398,6 +425,22 @@ describe('OxProductCard', () => {
       <OxProductCard product={makeProduct({ quantity: 3, can_show_remained_quantity: false })} />
     );
     expect(hidden.container.querySelector('.ox-card-product__stock')).toBeNull();
+  });
+
+  it('shows the free-consultation cue on a boxed product, under the price row (S8g item 1)', () => {
+    const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const link = container.querySelector('.ox-card-product__consult');
+    expect(link).not.toBeNull();
+    expect(link?.textContent).toContain(t('ox.card.free_consult'));
+    expect(link?.getAttribute('href')).toBe('/services');
+  });
+
+  it('hides the free-consultation cue on a service, digital or gift product', () => {
+    for (const type of ['service', 'booking', 'digital', 'codes']) {
+      const view = renderWithProviders(<OxProductCard product={makeProduct({ type })} />);
+      expect(view.container.querySelector('.ox-card-product__consult'), type).toBeNull();
+      view.unmount();
+    }
   });
 
   it('suppresses the plate colour dots when the chip row already chooses that axis (CARD 3.7)', () => {
@@ -741,5 +784,60 @@ describe('OxProductCard', () => {
     expect(container.querySelector('.ox-rating')).toBeNull();
     expect(container.querySelector('.ox-badge--popular')).toBeNull();
     expect(container.textContent).not.toContain('%');
+  });
+
+  // -------------------------------------------------------------------------
+  // The bundle card (owner item 2026-09-24, S8g item 3): a real Salla bundle
+  // presents as one, not as a product.
+  // -------------------------------------------------------------------------
+
+  function bundleProduct(overrides: Record<string, unknown> = {}) {
+    return makeProduct({
+      id: 1141798217,
+      name: 'حزمة البداية - اوبتيمال اكس',
+      type: 'group_products',
+      url: '/p1141798217',
+      ...overrides,
+    });
+  }
+
+  it('shows the bundle badge and the "باقة" facts line alone with no member count carried', () => {
+    const { container } = renderWithProviders(<OxProductCard product={bundleProduct()} />);
+    const badges = container.querySelectorAll('.ox-card-product__badges > *');
+    expect(badges.length).toBe(1);
+    expect(badges[0].textContent).toBe(t('ox.card.bundle'));
+    expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(t('ox.card.bundle'));
+  });
+
+  it('adds the member count to the facts line only when the API carries the bundle\'s real member list', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={bundleProduct({
+          consisted_products: [
+            { id: 1, name: 'واي بروتين' },
+            { id: 2, name: 'كرياتين' },
+            { id: 3, name: 'ملتي فيتامين' },
+          ],
+        })}
+      />
+    );
+    expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
+      `${t('ox.card.bundle')}${DIVIDER}${t('ox.card.bundle_count', { n: 3 })}`
+    );
+  });
+
+  it('offers no add-to-cart from the card; only a link to the bundle\'s own page (S8g item 3)', () => {
+    const { container } = renderWithProviders(<OxProductCard product={bundleProduct()} />);
+    expect(container.querySelector('.ox-card-product__qty')).toBeNull();
+    expect(screen.queryByTestId('add-button')).toBeNull();
+    const buy = container.querySelector('a.ox-card-product__buy');
+    expect(buy).not.toBeNull();
+    expect(buy?.getAttribute('href')).toBe('/p1141798217');
+    expect(buy?.textContent).toContain(t('ox.card.buy_now'));
+  });
+
+  it('adds normally once the API\'s own can_add says the card may', () => {
+    renderWithProviders(<OxProductCard product={bundleProduct({ can_add: true })} />);
+    expect(screen.getByTestId('add-button')).toBeTruthy();
   });
 });

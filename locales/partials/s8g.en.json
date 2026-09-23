@@ -1,0 +1,10 @@
+{
+  "ox.card.free_consult": "Free consultation before you buy",
+  "ox.card.bundle": "Bundle",
+  "ox.card.bundle_count": "{{n}} products",
+  "ox.card.type.whey_protein": "Whey protein",
+  "ox.card.type.whey_isolate": "Whey isolate",
+  "ox.card.type.casein": "Casein",
+  "ox.card.type.plant_protein": "Plant protein",
+  "ox.card.type.mass_gainer": "Mass gainer"
+}
