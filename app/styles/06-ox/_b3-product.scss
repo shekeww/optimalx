@@ -227,6 +227,28 @@
 // across a mixed grid; `--ox-w-quiet`/`--ox-fg-3` read as prose rather than
 // as a fact, the same distinction the spec line's own comment above draws
 // against the weight this rule used to carry.
+// The free-consultation cue under the price row (S8g, 2026-09-24): one line,
+// the written-question glyph and a text link to /services; micro size, the
+// accent-dark ink the card's other links use, no fill, reserved 20px so the
+// row never shifts. Absent on service, booking, digital and gift products.
+.ox-card-product__consult {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 20px;
+  margin-block-start: var(--ox-1);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-accent-dark);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
 .ox-card-product__excerpt {
   display: -webkit-box;
   -webkit-box-orient: vertical;
