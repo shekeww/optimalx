@@ -305,6 +305,28 @@ describe('ox-sprite.svg', () => {
     expect(drawn.filter((s) => s.attrs['stroke-linejoin'] !== 'miter').map((s) => s.id)).toEqual([]);
   });
 
+  /**
+   * S6d, the one construction rule this batch added: the system now has two
+   * inks, the 2-unit line and the filled PLANE (docs/build/ICONS-2026-09-24.md
+   * R1). A plane is a path that declares its own fill, and it must also
+   * declare `stroke="none"` - the symbol carries `stroke-width="2"`, so a
+   * plane without it is painted one unit fat on every edge and the mark's
+   * 4.5-unit bar thickness silently becomes 6.5. The accent classes are
+   * fill-only in `_primitives.scss` already, so they are exempt.
+   */
+  it('gives every mono plane an explicit stroke="none"', () => {
+    const offenders: string[] = [];
+    for (const symbol of drawn) {
+      for (const match of symbol.body.matchAll(/<path([^>]*)\/>/g)) {
+        const attrs = attrsOf(match[1]);
+        if (!attrs.fill || attrs.fill === 'none') continue;
+        if ((attrs.class ?? '').includes('ox-icon__accent')) continue;
+        if (attrs.stroke !== 'none') offenders.push(`${symbol.id} fill=${attrs.fill}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
   it('has no rounded corner anywhere in the file', () => {
     // The prose in the header comment is allowed to say "rounded"; the
     // geometry is not allowed to be.
