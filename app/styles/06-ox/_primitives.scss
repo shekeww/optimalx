@@ -207,11 +207,26 @@ $ox-angle-tan: 0.6745;
     inset-inline-start: 50%;
     inline-size: max(100%, 44px);
     block-size: max(100%, 44px);
-    transform: translate(calc(var(--direction-factor) * 50%), -50%);
+    // `inset-inline-start: 50%` is `right: 50%` in RTL, which needs a +50%
+    // translate to centre the box; the direction factor is -1 there, so the
+    // product carries a minus (2026-09-24, W6 RTL review P1-5: the old
+    // `* 50%` put the tap zone a full width to the left of the chip). The
+    // LTR override below is now the same value the expression yields and
+    // stays only as the explicit statement of the intent.
+    transform: translate(calc(var(--direction-factor) * -50%), -50%);
   }
   [dir='ltr'] &::after {
     transform: translate(-50%, -50%);
   }
+}
+
+// Plain links with no rule of their own (cart item titles, policy links, the
+// contact page's channels) lost their focus ring to the scaffold reset's
+// `a:focus { outline: none }` (2026-09-24, W6 RTL review P1-7). A zero
+// specificity fallback under every component's own `ox-focus` rule.
+:where(a[href]):focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
 }
 
 // The clip pattern (DIRECTION 10.1): never -9999px.
@@ -1053,6 +1068,13 @@ $ox-angle-tan: 0.6745;
     gap: var(--ox-2);
     @media (min-width: 1024px) { display: flex; }
   }
+  // With an arrow pair in the header the link steps inward past it
+  // (2026-09-24, W6 RTL review P1-13: both were pinned to the same corner).
+  &:has(.ox-sh__actions) .ox-sh__link {
+    @media (min-width: 1024px) {
+      inset-inline-end: calc(2 * 44px + var(--ox-2) + var(--ox-4));
+    }
+  }
   &__link {
     @include ox-focus(2px);
     display: inline-flex;
@@ -1075,7 +1097,9 @@ $ox-angle-tan: 0.6745;
     &:hover {
       color: var(--ox-accent-dark);
       .ox-sh__chevron {
-        transform: translateX(calc(var(--direction-factor) * 2px));
+        // The individual property composes with the mirror's own transform
+        // instead of replacing it (2026-09-24, W6 RTL review P1-4).
+        translate: calc(var(--direction-factor) * 2px) 0;
         transition-timing-function: var(--ease-out);
       }
     }
