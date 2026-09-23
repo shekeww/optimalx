@@ -157,6 +157,21 @@ describe('StoreRating', () => {
     expect(screen.getByTestId('ox-store-rating').textContent).toContain('68');
     for (const key of Object.keys(settings)) delete settings[key];
   });
+
+  // S9j, 2026-09-25: the accent-fill row draws the solid `star-fill` icon —
+  // `star` itself is outline-only and a CSS fill can never override a
+  // <symbol>'s own presentation attribute, which is why the stars used to
+  // render empty.
+  it('draws the base row in the plain outline star and the fill row in the solid star', () => {
+    renderWithProviders(<StoreRating value={readStoreRating(withProof())} />);
+    const el = screen.getByTestId('ox-store-rating');
+    const baseUses = el.querySelectorAll('.ox-gr__row--base use');
+    const fillUses = el.querySelectorAll('.ox-gr__row--fill use');
+    expect(baseUses).toHaveLength(5);
+    expect(fillUses).toHaveLength(5);
+    for (const use of baseUses) expect(use.getAttribute('href')).toBe('#ox-star');
+    for (const use of fillUses) expect(use.getAttribute('href')).toBe('#ox-star-fill');
+  });
 });
 
 describe('no structured data carries this rating', () => {

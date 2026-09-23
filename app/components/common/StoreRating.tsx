@@ -50,7 +50,7 @@ function Stars({ rating, size }: { rating: number; size: number }) {
       </span>
       <span className="ox-gr__row ox-gr__row--fill">
         {STARS.map((n) => (
-          <Icon key={n} name="star" size={size} />
+          <Icon key={n} name="star-fill" size={size} />
         ))}
       </span>
     </span>

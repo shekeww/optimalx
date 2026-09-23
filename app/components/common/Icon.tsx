@@ -109,6 +109,13 @@ export const OX_UI_ICON_NAMES = [
   'shaker',
   'shaker-straw',
   'star',
+  // The Google-rating accent-fill row's solid twin of `star` (S9j,
+  // 2026-09-25): a presentation attribute on a <symbol> always outranks a
+  // CSS fill declared on the <use> that references it, so the empty `star`
+  // outline can never be painted solid by CSS alone. Generated as an alias
+  // of `star` (scripts/import-owner-icons.mjs, ALIAS_ATTRS), never hand-drawn
+  // or mirrored — see OX_MIRRORED_ICON_NAMES below.
+  'star-fill',
   // The chrome set, drawn by S6a (2026-09-23) so a later batch can retire the
   // `sicon-*` glyphs one line at a time (docs/build/progress/S6a.md section 4).
   // Nothing here is wired up yet: the components that still carry `sicon-*`

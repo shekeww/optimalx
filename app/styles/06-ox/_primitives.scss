@@ -1662,7 +1662,11 @@ body {
   color: var(--ox-accent);
   white-space: nowrap;
 
-  .ox-icon { fill: currentColor; }
+  // No `.ox-icon { fill: currentColor }` here: a <use>'s shadow tree inherits
+  // from the <use> element, but a presentation attribute on the referenced
+  // <symbol> always wins over that inherited value, so this row draws
+  // `ox-star-fill` (fill="currentColor" on the symbol itself, S9j 2026-09-25)
+  // instead of relying on CSS to fill the plain `star` outline.
 }
 
 .ox-gr__value {

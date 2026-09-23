@@ -233,11 +233,11 @@ describe('ox-sprite.svg', () => {
   // two lists are meant to be edited together, and a test that derives its own
   // expectation from the same source it is checking cannot catch the case
   // where both are edited in lockstep but wrong (S2a, 2026-09-22).
-  it('has 94 standard symbols and 1 simplified twin, with no duplicate id', () => {
-    expect(standard).toHaveLength(94);
+  it('has 95 standard symbols and 1 simplified twin, with no duplicate id', () => {
+    expect(standard).toHaveLength(95);
     expect(twins).toHaveLength(1);
-    expect(OX_ICON_NAMES).toHaveLength(94);
-    expect(new Set(SYMBOLS.map((symbol) => symbol.id)).size).toBe(95);
+    expect(OX_ICON_NAMES).toHaveLength(95);
+    expect(new Set(SYMBOLS.map((symbol) => symbol.id)).size).toBe(96);
   });
 
   it('declares exactly the standard symbols Icon.tsx names', () => {
@@ -304,11 +304,19 @@ describe('ox-sprite.svg', () => {
   // owner-exempt symbol may carry its own value (2026-09-24 ruling, item 1 —
   // e.g. goal-ideal-weight's 2.3), but fill/stroke/miterlimit/class are never
   // part of that per-file override, so they stay asserted on every symbol.
+  // `ox-star-fill` (S9j, 2026-09-25) is the one drawn symbol whose fill is
+  // not "none" by design: it is `star` repainted solid via ALIAS_ATTRS for
+  // the Google-rating accent-fill row, so its own fill is asserted here
+  // instead of the shared default — a precise, single-id exemption, not a
+  // broadening of the rule to every OWNER_EXEMPT symbol.
+  const FILL_OVERRIDDEN = new Set(['ox-star-fill']);
   it('sets the stroke contract on every drawn symbol', () => {
     const wrong = drawn
       .filter(
         (symbol) =>
-          symbol.attrs.fill !== 'none' ||
+          (FILL_OVERRIDDEN.has(symbol.id)
+            ? symbol.attrs.fill !== 'currentColor'
+            : symbol.attrs.fill !== 'none') ||
           symbol.attrs.stroke !== 'currentColor' ||
           symbol.attrs['stroke-miterlimit'] !== '4' ||
           !(symbol.attrs.class ?? '').split(/\s+/).includes('ox-sym')

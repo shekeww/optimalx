@@ -9,12 +9,14 @@ import { describe, expect, it } from 'vitest';
 import { OX_ICON_NAMES } from '../../app/components/common/Icon';
 import {
   ALIASES,
+  ALIAS_ATTRS,
   CATEGORY_ATTRS,
   ownerSvgInner,
   ownerSvgRootAttrs,
   convertAccentStyles,
   selfCloseEmptyTags,
   renderOwnerSymbol,
+  renderSpriteAlias,
   parseSymbols,
   buildSpriteFile,
   generate,
@@ -128,6 +130,38 @@ describe('import-owner-icons: the owner source transform', () => {
     expect(symbol).toContain('stroke-linejoin="round"');
     expect(symbol).toContain('stroke-linecap="square"');
   });
+
+  // S9j, 2026-09-25: an alias can repaint its source rather than only copy
+  // it, so `star-fill` can be `star` painted solid instead of outlined.
+  it('applies an attribute override on top of the shell, winning over the plain fill="none" default', () => {
+    const source =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 1h1v1z"/></svg>';
+    const symbol = renderOwnerSymbol('ox-star-fill', source, false, {}, ALIAS_ATTRS['star-fill']);
+    expect(symbol).toContain('fill="currentColor"');
+    expect(symbol).toContain('stroke="currentColor"');
+    expect(symbol).not.toContain('fill="none"');
+  });
+
+  it('leaves fill="none" untouched when no attribute override is given', () => {
+    const source =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 1h1v1z"/></svg>';
+    expect(renderOwnerSymbol('ox-example', source, false)).toContain('fill="none"');
+  });
+
+  // `star-fill`'s source, `star`, is not one of the owner's 47: this is the
+  // fallback alias path that copies an existing sprite symbol instead of an
+  // owner file.
+  it('renders an alias from an existing sprite symbol, applying the same attribute overrides', () => {
+    const existing = '<symbol id="ox-star" viewBox="0 0 24 24" class="ox-sym" fill="none" ' +
+      'stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" ' +
+      'stroke-miterlimit="4"><path d="M12 2 22 9 12 17Z"/></symbol>';
+    const symbol = renderSpriteAlias('ox-star-fill', existing, { fill: 'currentColor' });
+    expect(symbol).toBe(
+      '<symbol id="ox-star-fill" viewBox="0 0 24 24" class="ox-sym" fill="currentColor" ' +
+        'stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" ' +
+        'stroke-miterlimit="4"><path d="M12 2 22 9 12 17Z"/></symbol>'
+    );
+  });
 });
 
 describe('import-owner-icons: assembly and idempotency', () => {
@@ -167,5 +201,17 @@ describe('import-owner-icons: assembly and idempotency', () => {
     for (const id of Object.keys(ALIASES)) {
       expect((OX_ICON_NAMES as readonly string[])).toContain(id);
     }
+  });
+
+  // S9j, 2026-09-25: `star-fill` is generated, not hand-added to the sprite,
+  // and carries its ALIAS_ATTRS override on the committed file.
+  it('generates ox-star-fill as a solid copy of ox-star', () => {
+    const source = fs.readFileSync(SPRITE_FILE, 'utf8');
+    const symbols = new Map(parseSymbols(source).map((s) => [s.id, s.full]));
+    expect(symbols.get('ox-star-fill')).toContain('fill="currentColor"');
+    expect(symbols.get('ox-star-fill')).toContain('stroke="currentColor"');
+    const starPath = symbols.get('ox-star')?.match(/<path d="([^"]+)"/)?.[1];
+    const fillPath = symbols.get('ox-star-fill')?.match(/<path d="([^"]+)"/)?.[1];
+    expect(fillPath).toBe(starPath);
   });
 });

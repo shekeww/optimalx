@@ -53,6 +53,13 @@
 // so `authentic`'s 14-point seal + accent check is the right source, not a
 // generic verified/secure drawing. Each alias follows its source's rtlFlip.
 //
+// A fifth, `star-fill` (S9j, 2026-09-25), is not an owner drawing: `star` is
+// one of the "remaining" symbols below, not one of the owner's 47, so
+// `star-fill` instead copies `star`'s current sprite geometry and repaints it
+// solid via ALIAS_ATTRS. It still goes through this same alias path — copied
+// by the generator, never hand-edited into the sprite — so it stays in step
+// with `star` if that drawing ever changes.
+//
 // Every id Icon.tsx names that is neither one of the owner's 47 nor one of
 // these four aliases is carried forward unchanged from the sprite already on
 // disk when this script runs (git HEAD a5049de) — the "remaining" symbols the
@@ -87,7 +94,10 @@ export function readOwnerSource(icon) {
 export const SPRITE_FILE = path.join('app', 'assets', 'ox-sprite.svg');
 
 /**
- * Our id -> the owner's manifest name it is a byte-for-byte copy of.
+ * Our id -> the name it is a copy of: an owner manifest name for four of the
+ * five aliases, byte-for-byte; `star-fill`'s source, `star`, is not in the
+ * owner's manifest, so it copies whatever the sprite already carries for
+ * `ox-star` instead (see `generate()`).
  * @type {Record<string, string>}
  */
 export const ALIASES = {
@@ -95,6 +105,21 @@ export const ALIASES = {
   headset: 'help',
   truck: 'shipping',
   'shield-check': 'authentic',
+  'star-fill': 'star',
+};
+
+/**
+ * Shell paint attributes an alias may override (owner ruling, 2026-09-25,
+ * S9j): `star-fill` is `star`'s geometry painted solid, because a
+ * presentation attribute on a `<symbol>` — `star`'s own `fill="none"` — always
+ * outranks a CSS fill declared on the `<use>` that references it, so the
+ * Google-rating fill row's stylesheet rule could never have worked. Every
+ * other alias has no entry here and keeps the shell's plain `fill="none"
+ * stroke="currentColor"`.
+ * @type {Record<string, Record<string, string>>}
+ */
+export const ALIAS_ATTRS = {
+  'star-fill': { fill: 'currentColor' },
 };
 
 /** The shell's own defaults for the five attributes a source root may override. */
@@ -206,31 +231,65 @@ export function selfCloseEmptyTags(inner) {
   return inner.replace(/<(path|circle|rect)((?:\s[^>]*)?)\s*><\/\1>/g, '<$1$2/>');
 }
 
+/** The shell's own defaults for the two paint attributes an alias may override (ALIAS_ATTRS). */
+const PAINT_DEFAULTS = { fill: 'none', stroke: 'currentColor' };
+
 /**
  * One owner SVG source -> one <symbol>…</symbol>, ready to splice into the
  * sprite. `categoryAttrs` (CATEGORY_ATTRS[icon.category], item 2) is merged
- * in last, after the source root's own attributes (ownerSvgRootAttrs, item
- * 1), so the owner's per-category ruling wins even where the source also
- * spells out the shell default itself.
+ * in after the source root's own attributes (ownerSvgRootAttrs, item 1), so
+ * the owner's per-category ruling wins even where the source also spells out
+ * the shell default itself; `attrOverrides` (ALIAS_ATTRS, S9j 2026-09-25) is
+ * merged in last of all, so an alias's own repaint always wins.
  * @param {string} id e.g. "ox-cart"
  * @param {string} svgSource the owner's raw file contents
  * @param {boolean} mirror
  * @param {Record<string, string>} [categoryAttrs]
+ * @param {Record<string, string>} [attrOverrides]
  * @returns {string}
  */
-export function renderOwnerSymbol(id, svgSource, mirror, categoryAttrs = {}) {
+export function renderOwnerSymbol(id, svgSource, mirror, categoryAttrs = {}, attrOverrides = {}) {
   const inner = selfCloseEmptyTags(convertAccentStyles(ownerSvgInner(svgSource)));
   if (/#[0-9a-fA-F]{3,6}\b/.test(inner)) {
     throw new Error(`import-owner-icons: literal colour survives in ${id}`);
   }
-  const attrs = { ...SHELL_DEFAULTS, ...ownerSvgRootAttrs(svgSource), ...categoryAttrs };
+  const attrs = {
+    ...SHELL_DEFAULTS,
+    ...PAINT_DEFAULTS,
+    ...ownerSvgRootAttrs(svgSource),
+    ...categoryAttrs,
+    ...attrOverrides,
+  };
   const overflowAttr = attrs.overflow ? ` overflow="${attrs.overflow}"` : '';
   const symbolOpen =
-    `viewBox="${attrs.viewBox}" class="ox-sym" fill="none" stroke="currentColor" ` +
+    `viewBox="${attrs.viewBox}" class="ox-sym" fill="${attrs.fill}" stroke="${attrs.stroke}" ` +
     `stroke-width="${attrs['stroke-width']}" stroke-linecap="${attrs['stroke-linecap']}" ` +
     `stroke-linejoin="${attrs['stroke-linejoin']}" stroke-miterlimit="4"${overflowAttr}`;
   const mirrorAttr = mirror ? ' data-mirror="1"' : '';
   return `<symbol id="${id}" ${symbolOpen}${mirrorAttr}>${inner}</symbol>`;
+}
+
+/**
+ * An alias whose source is not an owner manifest icon but a symbol already in
+ * the sprite (S9j, 2026-09-25: `star-fill` from `star`). Reuses
+ * `renderOwnerSymbol`'s same pipeline by wrapping the existing symbol's own
+ * body in a synthetic root carrying its viewBox, so the two alias paths — an
+ * owner file, or an existing symbol — produce the same shell guarantees.
+ * @param {string} id e.g. "ox-star-fill"
+ * @param {string} existingSymbolFull the full "<symbol …>…</symbol>" markup
+ * @param {Record<string, string>} [attrOverrides]
+ * @returns {string}
+ */
+export function renderSpriteAlias(id, existingSymbolFull, attrOverrides = {}) {
+  const openMatch = existingSymbolFull.match(/<symbol\s+([^>]*)>/);
+  const bodyMatch = existingSymbolFull.match(/<symbol\s+[^>]*>([\s\S]*)<\/symbol>/);
+  if (!openMatch || !bodyMatch) {
+    throw new Error(`import-owner-icons: malformed existing symbol markup for ${id}`);
+  }
+  const viewBoxMatch = openMatch[1].match(/\sviewBox="([^"]*)"/);
+  const viewBox = viewBoxMatch ? viewBoxMatch[1] : SHELL_DEFAULTS.viewBox;
+  const syntheticSource = `<svg viewBox="${viewBox}">${bodyMatch[1]}</svg>`;
+  return renderOwnerSymbol(id, syntheticSource, false, {}, attrOverrides);
 }
 
 /**
@@ -267,7 +326,9 @@ const HEADER = `<!--
     <rect>, <g transform> — untouched.
   * Four ids are aliases, a byte-for-byte copy of an owner drawing under a
     name our components already call: ox-heart = wishlist, ox-headset = help,
-    ox-truck = shipping, ox-shield-check = authentic.
+    ox-truck = shipping, ox-shield-check = authentic. A fifth, ox-star-fill
+    (S9j, 2026-09-25), copies ox-star instead — not an owner drawing — and
+    repaints it fill="currentColor" for the Google-rating fill row.
   * data-mirror="1" follows icons.json's rtlFlip for the owner's symbols and
     aliases (cart, shipping, written-question, and truck by inheriting
     shipping's), plus our own directional set carried forward below
@@ -304,7 +365,7 @@ export function buildSpriteFile({ ownerSymbols, aliasSymbols, carryForward }) {
     HEADER +
     '\n<!-- OWNER ICON SYSTEM (optimal-x-icons, 2026-09-24) -->\n' +
     ownerSymbols.join('\n') +
-    '\n\n<!-- ALIASES: our ids mapped onto the owner\'s drawings -->\n' +
+    '\n\n<!-- ALIASES: our ids mapped onto the owner\'s drawings, plus star-fill onto ox-star -->\n' +
     aliasSymbols.join('\n') +
     '\n\n<!-- REMAINING SYMBOLS: not covered by the owner\'s set, carried forward -->\n' +
     carryForward.map((symbol) => symbol.full).join('\n') +
@@ -328,15 +389,26 @@ export function generate() {
     return renderOwnerSymbol(`ox-${icon.name}`, source, icon.rtlFlip, CATEGORY_ATTRS[icon.category]);
   });
 
+  const existingSource = fs.existsSync(SPRITE_FILE) ? fs.readFileSync(SPRITE_FILE, 'utf8') : '';
+  const existingSymbolsById = new Map(parseSymbols(existingSource).map((symbol) => [symbol.id, symbol]));
+
   const aliasSymbols = Object.entries(ALIASES).map(([id, sourceName]) => {
+    const attrOverrides = ALIAS_ATTRS[id];
     const icon = iconByName.get(sourceName);
-    if (!icon) throw new Error(`import-owner-icons: alias source "${sourceName}" not in manifest`);
-    const source = readOwnerSource(icon);
-    return renderOwnerSymbol(`ox-${id}`, source, icon.rtlFlip, CATEGORY_ATTRS[icon.category]);
+    if (icon) {
+      const source = readOwnerSource(icon);
+      return renderOwnerSymbol(`ox-${id}`, source, icon.rtlFlip, CATEGORY_ATTRS[icon.category], attrOverrides);
+    }
+    // Not one of the owner's 47 (e.g. `star-fill`'s source, `star`): copy
+    // whatever symbol is already in the sprite instead.
+    const existing = existingSymbolsById.get(`ox-${sourceName}`);
+    if (!existing) {
+      throw new Error(`import-owner-icons: alias source "${sourceName}" not in manifest or sprite`);
+    }
+    return renderSpriteAlias(`ox-${id}`, existing.full, attrOverrides);
   });
 
   const replacedNames = new Set([...iconByName.keys(), ...Object.keys(ALIASES)]);
-  const existingSource = fs.existsSync(SPRITE_FILE) ? fs.readFileSync(SPRITE_FILE, 'utf8') : '';
   const carryForward = parseSymbols(existingSource).filter(
     (symbol) => !replacedNames.has(baseName(symbol.id))
   );
