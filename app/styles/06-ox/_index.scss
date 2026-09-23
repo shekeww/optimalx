@@ -2,6 +2,10 @@
 // blocks second, then one partial per batch. Nobody edits this file after P0;
 // each batch owns exactly its own partial (PLAN-final 2.1, SCSS seam).
 @import 'primitives';
+// The shared plate shape (S9b, owner ruling 2026-09-24): right after
+// primitives so every later partial can `@include ox-plate()` — it calls
+// `ox-run()`, which primitives defines.
+@import 'plates';
 @import 'x-motif';
 // The shared rail primitive (S4d, coordinator brief 2026-09-23: one cue and
 // one progress strap for every carousel). After x-motif because its chevron

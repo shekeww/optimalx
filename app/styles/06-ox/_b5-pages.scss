@@ -45,7 +45,16 @@
 
 // The warm inset tone. No hairline: a 1px --ox-line on --ox-plate is under a
 // perceptible step, and the value change is doing the separating already.
+//
+// THE SHAPE (S9b, owner ruling 2026-09-24, the contact page's branch panel
+// screenshot): every filled plate takes the primary CTA's angled shape.
+// 200px is a conservative floor for this rule's own consumers (the branch
+// panel with its hours table, the scope and pickup-steps panels, the about
+// page's registration panel) — all render well past it, so the lean is
+// already at `_plates.scss`'s own 40px cap; `ox-plate()` reruns the maths if
+// a shorter plate ever calls this tone.
 .ox-panel--plate {
+  @include ox-plate(200px);
   background: var(--ox-plate);
   border-color: transparent;
 }
@@ -1327,6 +1336,9 @@
   max-inline-size: var(--ox-container-text);
 }
 
+// THE SHAPE (S9b, owner ruling 2026-09-24): every filled plate takes the
+// primary CTA's angled shape. 100px is this panel's own typical rendered
+// height (a label line plus a result line inside the panel's own padding).
 .ox-converter__result {
   display: flex;
   flex-direction: column;
@@ -1334,7 +1346,7 @@
   margin: 0;
   padding: var(--ox-6);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-4, 16px);
+  @include ox-plate(100px);
   max-inline-size: var(--ox-container-text);
 }
 

@@ -993,11 +993,15 @@
   margin-block-end: var(--ox-4);
 }
 
+// THE SHAPE (S9b, owner ruling 2026-09-24): every filled plate takes the
+// primary CTA's angled shape. 120px is the digital/gift-card/service spec's
+// own typical rendered height (one to four 32px rows plus the panel's own
+// padding); `ox-plate()` reruns the maths if the row count ever changes it.
 .ox-facts {
   margin: 0;
   padding: var(--ox-4);
   background: var(--ox-plate);
-  border-radius: var(--ox-r-3, 12px);
+  @include ox-plate(120px);
 }
 
 .ox-facts__row {
