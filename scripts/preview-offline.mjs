@@ -145,6 +145,9 @@ start('[vite]', process.execPath, [join(ROOT, 'node_modules', 'vite', 'bin', 'vi
   // sends the browser's Salla calls to this base, and 127.0.0.1 only resolves
   // on this machine. Added 2026-09-22 to share the build before Salla builds it.
   VITE_API_URL: process.env.OFFLINE_API_PUBLIC_URL || API_BASE,
+  // SSR always talks to the local snapshot API directly (fast, no tunnel);
+  // only the browser needs the public address above (2026-09-23).
+  OFFLINE_API_SERVER_BASE: API_BASE,
   // The engine resolves the store from `?storeId=` on the URL, else from the
   // host, else from this variable (the last fallback in its
   // resolveStoreIdentifier). Off Salla's hosts a bare http://localhost:3210/

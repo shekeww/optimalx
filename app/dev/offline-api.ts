@@ -43,6 +43,7 @@
  * workerd SSR runner, where `process.env` is empty.
  */
 declare const __OX_OFFLINE_API_BASE__: string;
+declare const __OX_OFFLINE_API_SERVER_BASE__: string;
 declare const __OX_BLOCK_SALLA_API__: string;
 
 /** Hosts this shim will redirect, and nothing else. */
@@ -52,10 +53,15 @@ const BLOCKED_HOST = 'api.salla.dev';
 
 const FLAG = '__OX_OFFLINE_API_INSTALLED__';
 
-function defined(name: '__OX_OFFLINE_API_BASE__' | '__OX_BLOCK_SALLA_API__'): string {
+function defined(
+  name: '__OX_OFFLINE_API_BASE__' | '__OX_OFFLINE_API_SERVER_BASE__' | '__OX_BLOCK_SALLA_API__'
+): string {
   try {
     if (name === '__OX_OFFLINE_API_BASE__') {
       return typeof __OX_OFFLINE_API_BASE__ === 'string' ? __OX_OFFLINE_API_BASE__ : '';
+    }
+    if (name === '__OX_OFFLINE_API_SERVER_BASE__') {
+      return typeof __OX_OFFLINE_API_SERVER_BASE__ === 'string' ? __OX_OFFLINE_API_SERVER_BASE__ : '';
     }
     return typeof __OX_BLOCK_SALLA_API__ === 'string' ? __OX_BLOCK_SALLA_API__ : '';
   } catch {
@@ -78,7 +84,15 @@ function fromEnv(key: string): string {
 }
 
 function readBase(): string | null {
-  const raw = defined('__OX_OFFLINE_API_BASE__') || fromEnv('VITE_API_URL');
+  // On the server (no `window`) prefer the local base when one is defined:
+  // a public tunnel address costs a second per request and times out under
+  // the dozens of calls one SSR page makes (2026-09-23, HTTPError 500s and
+  // 29-second pages on the owner's preview). The browser keeps the public one.
+  const serverBase =
+    typeof window === 'undefined'
+      ? defined('__OX_OFFLINE_API_SERVER_BASE__') || fromEnv('OFFLINE_API_SERVER_BASE')
+      : '';
+  const raw = serverBase || defined('__OX_OFFLINE_API_BASE__') || fromEnv('VITE_API_URL');
   if (!raw) return null;
   // Accept an origin with or without a trailing slash, and tolerate someone
   // pointing the var at `…/store/v1` by trimming back to the origin: the path

@@ -30,6 +30,11 @@ export default defineConfig(async () => ({
   // empty strings on a normal `pnpm dev`, which leaves the shim inert.
   define: {
     __OX_OFFLINE_API_BASE__: JSON.stringify(process.env.VITE_API_URL ?? ''),
+    // The base the SERVER render uses when it differs from the browser's
+    // (2026-09-23): a public tunnel address is slow and flaky for the dozens of
+    // requests one SSR page makes, so the preview points SSR at 127.0.0.1 and
+    // only the browser at the tunnel.
+    __OX_OFFLINE_API_SERVER_BASE__: JSON.stringify(process.env.OFFLINE_API_SERVER_BASE ?? ''),
     __OX_BLOCK_SALLA_API__: JSON.stringify(process.env.VITE_BLOCK_SALLA_API ?? ''),
   },
   resolve: {
