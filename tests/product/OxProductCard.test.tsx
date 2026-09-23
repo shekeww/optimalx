@@ -82,6 +82,15 @@ const t = createT('ar');
 
 const SPEC = '<p>الحصص: 30 | حجم الحصة: 31 جم | الصلاحية: 2029-03 | الشكل: بودرة</p>';
 
+/** A `YYYY-MM` string a fixed number of months from today, for the expiry gate. */
+function nearExpiry(monthsAhead = 2): string {
+  const now = new Date();
+  const total = now.getFullYear() * 12 + now.getMonth() + monthsAhead;
+  const year = Math.floor(total / 12);
+  const month = (total % 12) + 1;
+  return `${year}-${String(month).padStart(2, '0')}`;
+}
+
 function makeProduct(overrides: Record<string, unknown> = {}) {
   return {
     id: 1996831868,
@@ -130,9 +139,6 @@ describe('OxProductCard', () => {
 
   it('keeps the fixed-height rows so a grid of cards shares one baseline', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
-    // The brand row is gone: the target folds the brand into the meta line, so
-    // the card no longer reserves a row for a fact it now prints elsewhere.
-    expect(container.querySelector('.ox-card-product__brand')).toBeNull();
     for (const cls of [
       '.ox-card-product__name',
       '.ox-card-product__chips',
@@ -141,6 +147,21 @@ describe('OxProductCard', () => {
     ]) {
       expect(container.querySelector(cls), cls).not.toBeNull();
     }
+  });
+
+  it('renders the brand line only when the product actually carries one (CARD 3.2)', () => {
+    const withBrand = renderWithProviders(<OxProductCard product={makeProduct()} />);
+    const brand = withBrand.container.querySelector('.ox-card-product__brand');
+    expect(brand).not.toBeNull();
+    expect(brand?.textContent).toBe('Optimum Nutrition');
+    withBrand.unmount();
+
+    // Not reserved when absent: the row costs no hole on the 47 products in
+    // this catalogue that carry no brand at all.
+    const noBrand = renderWithProviders(
+      <OxProductCard product={makeProduct({ brand: undefined })} />
+    );
+    expect(noBrand.container.querySelector('.ox-card-product__brand')).toBeNull();
   });
 
   it('collapses the rating row entirely rather than reserving an empty one', () => {
@@ -169,31 +190,48 @@ describe('OxProductCard', () => {
     expect(screen.getByText(t('ox.pdp.rating_count', { count: 12 }))).toBeTruthy();
   });
 
-  it("carries the merchant's own line for the product, not a serving count", () => {
-    // The row used to read "30 حصة". A scoop count does not help anyone choose
-    // between two proteins, and the "category | servings" lead the design
-    // wanted was always half empty: this store has ZERO categories and ZERO
-    // brands in Salla, so the category never resolved and the brand fallback
-    // never resolved either. `subtitle` is set on all 47 products and is the
-    // merchant's own pitch for that specific one, already published on the
-    // product page, so surfacing it here asserts nothing new.
+  it('renders the spec line from the parsed description, never the merchant pitch (CARD 3.4)', () => {
+    // The row used to print the merchant's free-text `subtitle`, which
+    // rendered as a single ellipsised line cut mid word ("واى ايزوليت نقى بـ
+    // 25 ج..."). It reads the catalogue's own spec-line convention now, and
+    // `subtitle` is ignored entirely, even when the merchant has typed one.
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ subtitle: 'واي بروتين معزول بلا سكر مضاف' })} />
     );
     const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(line).toBe('واي بروتين معزول بلا سكر مضاف');
-    expect(line).not.toContain(t('ox.card.servings', { n: 30 }));
+    expect(line).toBe(t('ox.card.servings', { n: 30 }));
+    expect(line).not.toContain('واي بروتين');
   });
 
-  it('keeps the row reserved and silent when the merchant wrote no line', () => {
+  it('keeps the spec-line row reserved and empty when the description carries no spec line', () => {
     // The height stays so a grid of mixed products shares one baseline, but
     // nothing is invented to fill it.
     const { container } = renderWithProviders(
-      <OxProductCard product={makeProduct({ subtitle: undefined })} />
+      <OxProductCard product={makeProduct({ description: '<p>وصف عام بدون بيانات محددة.</p>' })} />
     );
     const empty = container.querySelector('.ox-card-product__chips');
     expect(empty).not.toBeNull();
     expect(empty?.textContent).toBe('');
+  });
+
+  it('joins servings and pack size with the divider, and falls back to the dosage form', () => {
+    const both = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          description: '<p>الحصص: 30 | حجم العبوة: 907 جم | الشكل: بودرة</p>',
+        })}
+      />
+    );
+    const line = both.container.querySelector('.ox-card-product__chips')?.textContent ?? '';
+    expect(line).toContain(t('ox.card.servings', { n: 30 }));
+    expect(line).toContain('907 جم');
+    both.unmount();
+
+    // Neither servings nor a pack size, but a dosage form: the form alone.
+    const formOnly = renderWithProviders(
+      <OxProductCard product={makeProduct({ description: '<p>الشكل: بودرة</p>' })} />
+    );
+    expect(formOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
   });
 
   it('invents no stars on a store with no reviews (B28)', () => {
@@ -224,6 +262,73 @@ describe('OxProductCard', () => {
   it('never renders a "new" badge without a real created_at inside the window', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
     expect(container.querySelector('.ox-badge--new')).toBeNull();
+  });
+
+  it('renders a real dietary tag off the product\'s own Salla tags (CARD 6.2 badge 4)', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard product={makeProduct({ tags: [{ id: 1, name: 'نباتي' }] })} />
+    );
+    const tag = container.querySelector('.ox-badge--tag');
+    expect(tag).not.toBeNull();
+    expect(tag?.textContent).toContain(t('ox.pdp.stat_vegan'));
+  });
+
+  it('caps the badge stack at two, in the saving/new/tag/expiry priority (CARD 6.2)', () => {
+    const { container } = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          is_on_sale: true,
+          regular_price: 310,
+          sale_price: 240,
+          tags: [{ id: 1, name: 'نباتي' }],
+          description: SPEC.replace('2029-03', nearExpiry()) + '<p>وصف.</p>',
+        })}
+      />
+    );
+    const badges = container.querySelectorAll('.ox-card-product__badges > *');
+    expect(badges.length).toBe(2);
+    expect(container.querySelector('.ox-card-product__saving-badge')).not.toBeNull();
+    expect(container.querySelector('.ox-badge--tag')).not.toBeNull();
+    // Lower priority than both: never rendered once two already qualify.
+    expect(container.querySelector('.ox-badge--note')).toBeNull();
+  });
+
+  it('shows the limited-quantity line only on the exact gate, and never prints the number', () => {
+    const shown = renderWithProviders(
+      <OxProductCard product={makeProduct({ quantity: 3, can_show_remained_quantity: true })} />
+    );
+    const stock = shown.container.querySelector('.ox-card-product__stock');
+    expect(stock?.textContent).toBe(t('ox.card.limited_qty'));
+    expect(stock?.textContent).not.toContain('3');
+    shown.unmount();
+
+    const hidden = renderWithProviders(
+      <OxProductCard product={makeProduct({ quantity: 3, can_show_remained_quantity: false })} />
+    );
+    expect(hidden.container.querySelector('.ox-card-product__stock')).toBeNull();
+  });
+
+  it('suppresses the plate colour dots when the chip row already chooses that axis (CARD 3.7)', () => {
+    const colourOption = {
+      id: 1,
+      type: 'color',
+      details: [
+        { id: 11, name: 'Lime', color: '#bceb0e', is_default: 1 },
+        { id: 12, name: 'Black', color: '#111111', is_default: 0 },
+      ],
+      values: [
+        { id: 11, name: 'Lime' },
+        { id: 12, name: 'Black' },
+      ],
+    };
+    const { container } = renderWithProviders(
+      <OxProductCard product={makeProduct({ options: [colourOption] })} />
+    );
+    // The chip row is the control for this axis (`cardOption` picks the
+    // same colour option), so the plate's own preview dots for it are
+    // redundant and do not render.
+    expect(container.querySelector('.ox-card-product__swatches')).toBeNull();
+    expect(container.querySelector('.ox-swatch')).not.toBeNull();
   });
 
   it('passes the product to the engine add button instead of adding to cart itself', () => {
@@ -322,7 +427,7 @@ describe('OxProductCard', () => {
     expect(container.querySelector('.ox-card-product__saving')).toBeNull();
   });
 
-  it('drops the saving pill and the buy CTA when the product is out of stock', () => {
+  it('drops the saving pill, the stepper, the chips and the buy CTA when out of stock (CARD section 5)', () => {
     const { container } = renderWithProviders(
       <OxProductCard
         product={makeProduct({
@@ -338,8 +443,34 @@ describe('OxProductCard', () => {
     expect(container.querySelector('.ox-card-product__saving-badge')).toBeNull();
     expect(container.querySelector('.ox-card-product__buy')).toBeNull();
     expect(container.querySelector('.ox-card-product__qty')).toBeNull();
-    // Salla's button stays: it is the one that carries the notify-me form.
-    expect(container.querySelector('[data-testid="add-button"]')).not.toBeNull();
+    expect(container.querySelector('.ox-card-product__variants')).toBeNull();
+    // No `notify_availability` and a plain `out` status: the honest
+    // unavailable state, focusable but never a `<button disabled>`.
+    const unavailable = container.querySelector('.ox-card-product__unavailable');
+    expect(unavailable).not.toBeNull();
+    expect(unavailable?.getAttribute('aria-disabled')).toBe('true');
+    expect((unavailable as HTMLButtonElement)?.disabled).toBe(false);
+    expect(unavailable?.textContent).toBe(t('ox.card.unavailable'));
+  });
+
+  it('offers the notify-me control when the product can actually notify', () => {
+    const withFlag = renderWithProviders(
+      <OxProductCard
+        product={makeProduct({
+          is_out_of_stock: true,
+          status: 'out',
+          notify_availability: { channels: ['email'], subscribed: false },
+        })}
+      />
+    );
+    expect(withFlag.container.querySelector('.ox-card-product__unavailable')).toBeNull();
+    expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.notify_me'));
+    withFlag.unmount();
+
+    const outAndNotify = renderWithProviders(
+      <OxProductCard product={makeProduct({ is_out_of_stock: true, status: 'out-and-notify' })} />
+    );
+    expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.notify_me'));
   });
 
   it('draws swatches only from colours the merchant really set', () => {

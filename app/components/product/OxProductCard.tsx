@@ -212,7 +212,7 @@ export const OxProductCard = memo(function OxProductCard({
                 </>
               ) : (
                 <>
-                  {t('ox.pdp.save_label')} <Price amount={saving} currency={product.currency} />
+                  {t('ox.pdp.save_label')} <Price amount={saving ?? undefined} currency={product.currency} />
                 </>
               )}
             </Badge>

@@ -104,6 +104,16 @@
   opacity: 1;
 }
 
+// CARD-2026-09-23 section 8: the second image's cross fade and the hover
+// border both go instant under reduced motion, never removed outright — the
+// second image is information, not decoration, so it still swaps.
+@media (prefers-reduced-motion: reduce) {
+  .ox-card-product,
+  .ox-card-product__img--hover {
+    transition: none;
+  }
+}
+
 .ox-card-product__badges {
   position: absolute;
   inset-block-start: 0;
