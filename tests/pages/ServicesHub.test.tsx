@@ -112,7 +112,7 @@ describe('ServicesHub', () => {
     expect(screen.queryByTestId('ox-reply-line')).toBeNull();
   });
 
-  it('carries the reply line once, under the row of ways to ask, when reply_sla_hours is set', () => {
+  it('carries the reply line once, under the offer strip, when reply_sla_hours is set', () => {
     setSettings({ reply_sla_hours: '24' });
     renderWithProviders(<ServicesHub />);
     const lines = screen.getAllByTestId('ox-services-reply');
@@ -121,20 +121,32 @@ describe('ServicesHub', () => {
     expect(screen.queryByTestId('ox-reply-line')).toBeNull();
   });
 
-  it('carries the branch measurement on the plans row and the visit door, gated on inbody_included', () => {
-    const on = renderWithProviders(<ServicesHub />);
-    expect(screen.getByTestId('ox-services-inbody').textContent).toBe(
-      t('ox.home.band_inbody_plans')
+  it('opens on the offer: free advice and the free branch measurement, once each', () => {
+    const { container } = renderWithProviders(<ServicesHub />);
+    const strip = screen.getByTestId('ox-services-offer');
+    expect(screen.getByTestId('ox-offer-advisory').textContent).toBe(
+      t('ox.home.offer_advisory')
     );
-    expect(screen.getByTestId('ox-channel-inbody').textContent).toBe(
+    expect(screen.getByTestId('ox-offer-inbody').textContent).toBe(
       t('ox.content.services.visit_inbody')
     );
+    // The strip belongs to the band, not to the masthead: one offer per page
+    // (owner brief 2026-09-24, item 5).
+    expect(container.querySelector('.ox-hub__advisory')?.contains(strip)).toBe(true);
+    expect(container.querySelectorAll('[data-testid="ox-services-offer"]')).toHaveLength(1);
+  });
+
+  it('states the branch measurement once on the page, gated on inbody_included', () => {
+    const on = renderWithProviders(<ServicesHub />);
+    // UX audit 2026-09-24 P0-12: it used to say two different things on one
+    // screen. One sentence, one place.
+    expect((on.container.textContent ?? '').split('InBody').length - 1).toBe(1);
     on.unmount();
 
     setSettings({ inbody_included: false });
-    renderWithProviders(<ServicesHub />);
-    expect(screen.queryByTestId('ox-services-inbody')).toBeNull();
-    expect(screen.queryByTestId('ox-channel-inbody')).toBeNull();
+    const off = renderWithProviders(<ServicesHub />);
+    expect(screen.queryByTestId('ox-offer-inbody')).toBeNull();
+    expect(off.container.textContent).not.toContain('InBody');
   });
 
   it('shows the three ways to ask and the scope list', () => {

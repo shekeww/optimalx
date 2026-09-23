@@ -55,15 +55,19 @@ export interface ServiceChannel {
    */
   gatedSetting?: 'consultation_credit_note';
   /**
-   * The free InBody body-composition MEASUREMENT at the branch, included with
-   * the advisory services and the subscriptions (owner statement 2026-09-23;
-   * claims source section 2, row 10). Only the branch visit carries it,
-   * because the device is at the branch, and it renders only while the
-   * `inbody_included` setting is on (`inbodyIncluded()`). Never a diagnosis,
-   * never a medical test, never an outcome: the copy says what is measured
-   * and where.
+   * The one door the band recommends as a starting point (owner brief
+   * 2026-09-24, "the recommended door"): it carries the small
+   * `ox.home.door_recommended` eyebrow, the accent outline and the FILLED
+   * button, where the other two carry the outline button. Exactly one
+   * channel may set it.
+   *
+   * It is the written question, and the reason is the reader rather than the
+   * margin: it is free, it needs no appointment, it reaches the whole of
+   * Saudi Arabia (`written_desc`), and it commits nobody to a purchase
+   * (`faq_3_a`). The branch visit is the offer strip's own primary, so the
+   * two are not the same action twice.
    */
-  inbodyKey?: string;
+  recommended?: boolean;
 }
 
 const KEY = 'ox.content.services';
@@ -89,6 +93,7 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     changeKey: `${KEY}.written_change`,
     ctaKey: `${KEY}.written_cta`,
     doorCtaKey: `${KEY}.written_cta_short`,
+    recommended: true,
     to: pathForSku('OX-044') ?? '/services',
   },
   {
@@ -127,7 +132,6 @@ export const SERVICE_CHANNELS: ServiceChannel[] = [
     changeKey: `${KEY}.visit_change`,
     ctaKey: `${KEY}.visit_cta`,
     doorCtaKey: `${KEY}.visit_cta_short`,
-    inbodyKey: `${KEY}.visit_inbody`,
     to: pathForSku('OX-046') ?? '/services',
   },
 ];
@@ -147,6 +151,20 @@ export const SERVICES_HUB = {
   cardFooterKey: `${KEY}.card_footer`,
   /** The setting that must be set before any reply-time line renders. */
   replyTimeSetting: 'reply_sla_hours' as const,
+  /**
+   * The free InBody body-composition MEASUREMENT at the branch (owner
+   * statement 2026-09-23; claims source section 2, row 10), gated on
+   * `inbody_included`.
+   *
+   * ONE SENTENCE FOR THE WHOLE THEME (UX audit 2026-09-24, P0-12): the band
+   * used to state it twice in two different wordings on one screen, once on
+   * the visit door ("يشمل … في الفرع.") and once under the plans row ("… مع
+   * الاشتراك."). The second key is retired and this one is the survivor, so a
+   * second surface that wants the fact says the same words. It names a
+   * measurement and a place: never a diagnosis, a medical test, a number, a
+   * timeframe or an outcome.
+   */
+  inbodyKey: `${KEY}.visit_inbody`,
 } as const;
 
 /** The three steps under the cards (FINAL-content 4.4). */
@@ -384,6 +402,23 @@ export interface HomePlan {
    */
   ctaKey: string;
   /**
+   * WHAT IS INCLUDED, two lines per card (owner brief 2026-09-24, "2 to 3
+   * included items with the check icon"). Every one of them is an
+   * already-approved scope line from the service the card opens, reused by
+   * key rather than rewritten: a card that promises something its own
+   * destination page does not list is how a catalogue starts lying to
+   * itself. No outcome, no timeframe, no number.
+   */
+  itemKeys: readonly string[];
+  /**
+   * The catalogue code whose LIVE price the card may print, and nothing when
+   * a card has no product behind it (owner brief 2026-09-24: "the price only
+   * when the linked product carries one … never invented"). The nutrition
+   * card has no product, so it prints no price at all rather than a "from"
+   * figure nobody can pay.
+   */
+  sku?: string;
+  /**
    * The card photograph, present only when the file EXISTS in
    * `public/assets/images`. Absent is the normal state today.
    *
@@ -406,6 +441,9 @@ export const HOME_PLANS: HomePlan[] = [
     titleKey: 'ox.home.plan_nutrition_title',
     lineKey: 'ox.home.plan_nutrition_line',
     ctaKey: 'ox.home.band_card_cta',
+    // The written question's own approved scope lines: this card opens the
+    // editorial nutrition page, whose help is exactly those two things.
+    itemKeys: [`${KEY}.written_scope_1`, `${KEY}.written_scope_3`],
     // The destination page's own band frame: the card is a door onto the
     // surface that already wears this photograph, so the two agree.
     photo: SERVICE_PHOTOS.nutrition,
@@ -419,6 +457,8 @@ export const HOME_PLANS: HomePlan[] = [
     titleKey: 'ox.home.plan_training_title',
     lineKey: 'ox.home.plan_training_line',
     ctaKey: 'ox.content.services.training_cta',
+    itemKeys: [`${KEY}.training_scope_4`, `${KEY}.training_scope_1`],
+    sku: 'OX-047',
     photo: SERVICE_PHOTOS.training,
   },
   {
@@ -428,6 +468,8 @@ export const HOME_PLANS: HomePlan[] = [
     titleKey: 'ox.home.plan_advisory_title',
     lineKey: 'ox.home.plan_advisory_line',
     ctaKey: 'ox.home.band_card_cta',
+    itemKeys: [`${KEY}.video_scope_1`, `${KEY}.video_scope_2`],
+    sku: 'OX-045',
     photo: SERVICE_PHOTOS.services,
   },
 ];

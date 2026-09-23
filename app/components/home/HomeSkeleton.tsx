@@ -172,6 +172,11 @@ export function ServicesSkeleton() {
   return (
     <BlockSkeleton path="ox-services" className="ox-skel-services">
       <SkeletonBar width="30%" />
+      {/* The offer plate the band opens on (S7c, 2026-09-24): it is the
+          tallest single element in the section after the cards, so a
+          skeleton that skipped it would resolve into a taller thing than it
+          drew. 268 at 390 and 190 from 768, its measured heights. */}
+      <SkeletonBlock height={268} className="ox-skel-dark ox-skel-services__offer" />
       {/* Two rows of three, each under its own row title (owner review
           2026-09-23, late night): the real section reserves a title and a
           note over each row now, so a single six-block grid would resolve
@@ -186,6 +191,8 @@ export function ServicesSkeleton() {
           </div>
         </Fragment>
       ))}
+      {/* The trust row and the closing line. */}
+      <SkeletonBar width="55%" />
     </BlockSkeleton>
   );
 }

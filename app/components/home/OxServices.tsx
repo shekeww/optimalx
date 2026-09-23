@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
-import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
@@ -16,67 +15,69 @@ import {
   type Settings,
 } from '../product/lib/claims';
 import { idForSku } from '../../content/salla-ids';
-import { HOME_PLANS, SERVICES_HUB, SERVICE_CHANNELS, type ServiceChannel } from '../../content/services';
-import { useSectionReveal } from './useSectionReveal';
+import {
+  channelById,
+  HOME_PLANS,
+  SERVICES_HUB,
+  SERVICE_CHANNELS,
+  type ServiceChannel,
+} from '../../content/services';
 import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 
 /**
- * The advisory band: ONE OFFER IN TWO STEPS, on the home page and on
- * `/services` alike (owner review 2026-09-23, late night; the copy table is in
- * `docs/build/progress/S5c.md`).
+ * The advisory band: THE OFFER FIRST, then the ways to reach it (owner brief
+ * 2026-09-24, with the live screenshot of the 1890px home band; the decision
+ * record is `docs/build/progress/S7c.md`).
  *
- * THE SHAPE, and why it is this one. The band used to be six cards under one
- * heading, with the eyebrow ("قبل أن تشتري") repeating the heading ("اسأل قبل
- * أن تشتري") and nothing telling the reader that the first three cards and the
- * last three answer different questions. It now reads top to bottom as a
- * single offer:
+ * WHAT CHANGED AND WHY. The band shipped by S5c said the two things the owner
+ * most wants seen — that the advice is free and that the branch measures body
+ * composition with InBody for nothing — in two grey notes, one under a row
+ * title and one inside the third card, at the smallest type on the section.
+ * Everything that could be clicked was an accent text link beside a 24px
+ * chevron box, and every card's lower half was empty. So the offer is now the
+ * first thing under the heading and it is a plate with real buttons on it:
  *
- *  - an EYEBROW that frames the offer ("المعلومة أولا، ثم القرار") and says
- *    something the heading does not, which is the only condition DIRECTION
- *    amendment A4 puts on an eyebrow existing at all;
- *  - the HEADING as the invitation: "اسأل قبل أن تشتري" on the home page (the
- *    locked nav and page label, voice doc 3.3). On `/services` that exact
- *    sentence is already the page's h1, so the band takes "ابدأ من هنا"
- *    instead rather than saying the same words twice on one screen;
- *  - a SUBLINE with what the reader gets and the honest limit of it;
- *  - ROW ONE, the three ways to ask, with its own title and note, plus the
- *    reply-time cue when (and only when) the owner has set `reply_sla_hours`;
- *  - ROW TWO, what the asking leads to, with its own title and note;
- *  - ONE primary next step: "عرض الكل" to `/services` on the home page; on
- *    `/services` the written-question door itself is the section's primary
- *    (`ox-channel-door--primary`), because the page the CTA would point at is
- *    the page the reader is standing on;
- *  - the limit-of-our-work line, last, which is why nothing above it hedges.
+ *  - the HEAD (eyebrow, heading, subline), unchanged in copy;
+ *  - the OFFER STRIP: two facts one type step over the row titles — free advice, and the free
+ *    branch InBody measurement while `inbody_included` is on — then the
+ *    band's own primary ("احجز زيارتك", the branch visit product) and its
+ *    secondary ("اسأل الآن", the free written question), then the reply-time
+ *    cue when the owner has filled `reply_sla_hours`. It carries the
+ *    identity's corner cut and it is the largest text after the h2;
+ *  - ROW ONE, the three ways to ask, each door sized to its content with a
+ *    real full-width button pinned to its foot, a price chip, and the
+ *    recommended door (the written question) carrying the accent outline,
+ *    the `ox.home.door_recommended` eyebrow and the filled button;
+ *  - ROW TWO, the three programmes, on `PlanCard`;
+ *  - the TRUST ROW: the branch address, the consultation credit when the
+ *    owner has written one, and then the limit-of-our-work line. Real facts
+ *    or nothing — no counts, no ratings, nobody called an expert;
+ *  - on the home page only, a quiet text link to `/services` ("كل الخدمات",
+ *    named rather than a twelfth "عرض الكل" — UX audit 2026-09-24, P1-7).
  *
- * BOTH ROWS RENDER ON BOTH PAGES now. `/services` used to draw its own fuller
- * channel section above this band and `routeOut` gated row one off to avoid
- * showing the three channels twice; that section is gone (see
- * `ServicesHub.tsx`), so the band carries the whole offer on both surfaces and
- * `routeOut` means only what its name says: whether the section routes the
- * reader out to another page.
+ * BOTH SURFACES GET THE SAME COMPOSITION, `/services` included, so the offer
+ * strip exists once per page; `routeOut` decides the heading and whether the
+ * band offers a way out to another page, nothing else.
  *
- * Ground: flat `--ox-graphite` plus ONE skewed motif (never a card slash: the
- * identity rule is one angled band edge per section, not scattered wedges).
- * The eyebrow is ink-on-dark with the accent bar, never orange type (§3.1:
- * accent is reserved for things people can click).
+ * Ground: flat `--ox-graphite` plus ONE skewed motif (never a card slash).
+ * The eyebrow is ink-on-dark with the accent bar, never orange type (§3.1).
  *
- * Claims: every price is read live through `effectivePrice()`
- * (`product/lib/claims.ts`), never typed as copy and never a per-serving
- * figure. The three trust cues are gated on the owner's own settings and each
- * renders nothing while its gate is off: the reply time interpolates
- * `reply_sla_hours`, the consultation credit is the `consultation_credit_note`
- * text verbatim, and the free InBody body-composition MEASUREMENT at the
- * branch (owner statement 2026-09-23; claims source section 2, row 10) rides
- * on `inbody_included`, which is the one gate that defaults to on because the
- * device is at the branch today. The InBody copy names a measurement and a
- * place, never a diagnosis, a medical test or an outcome.
+ * Claims: every price is read live through `effectivePrice()`, never typed as
+ * copy. The three gated cues each render nothing while their gate is shut:
+ * the reply time interpolates `reply_sla_hours`, the consultation credit is
+ * the `consultation_credit_note` text verbatim, and the InBody measurement
+ * rides on `inbody_included` (default on, the device is at the branch today).
+ * The InBody sentence is now ONE sentence in one place on the band
+ * (`SERVICES_HUB.inbodyKey`), which is UX audit 2026-09-24 P0-12: it used to
+ * say two different things on one screen. It names a measurement and a place,
+ * never a diagnosis, a medical test, a number or an outcome.
  */
 
 export interface OxServicesProps extends Partial<OxBlockProps> {
   /**
-   * True on the home page, where the band is a trailer and its one filled CTA
-   * opens `/services`; false on `/services` itself, where the band is the
-   * offer and the written-question door is its primary action instead.
+   * True on the home page, where the band is a trailer and ends in a quiet
+   * link to `/services`; false on `/services` itself, where the band is the
+   * offer and routes nobody out to the page they are standing on.
    */
   routeOut?: boolean;
   className?: string;
@@ -84,24 +85,26 @@ export interface OxServicesProps extends Partial<OxBlockProps> {
 
 interface ChannelDoorProps {
   channel: ServiceChannel;
-  /** The section's one primary action, on the page that has no CTA button. */
-  primary?: boolean;
 }
 
 /**
- * One channel door, row one: an upright card — icon, name, one-line summary
- * (`channel.metaKey`, already a single sentence), the gated notes (the
- * consultation credit on the video door, the branch measurement on the visit
- * door), a live price line and the channel's own short CTA verb — never a
- * photograph, which is what tells this row apart from the plan doors below it
- * even once the grid joins the two into one three-up track.
+ * One channel door, row one.
+ *
+ * It is NOT a link any more, and that is the point of this rebuild: the card
+ * used to be one big anchor whose only visible affordance was an accent word
+ * and a detached chevron box, so nothing on it looked pressable. The door is
+ * a plain container now and the CTA is a real button — the outline
+ * parallelogram, full width, 48 tall, pinned to the card's foot by the
+ * stylesheet's `margin-block-start: auto`, so three doors of unequal copy
+ * still end on one line. A `<button>`/`<a>` inside an `<a>` is invalid, which
+ * is why the wrapper had to stop being a `Link` for the button to exist.
  *
  * The price reads `effectivePrice()`, the same sale/starting-price precedence
- * the engine's own add-to-cart form follows, and renders the shared free label
- * when the product costs nothing (the written question and the branch visit
- * both do, in the live catalogue).
+ * the engine's own add-to-cart form follows, and renders as a chip: the
+ * accent-soft "مجاني" for the two free channels (the written question and the
+ * branch visit, in the live catalogue), the riyal amount otherwise.
  */
-function ChannelDoor({ channel, primary = false }: ChannelDoorProps) {
+function ChannelDoor({ channel }: ChannelDoorProps) {
   const { t } = useTranslation();
   const { settings } = useTheme();
   const id = idForSku(channel.sku);
@@ -117,90 +120,185 @@ function ChannelDoor({ channel, primary = false }: ChannelDoorProps) {
   const credit = channel.gatedSetting
     ? settingText(settings as Settings, channel.gatedSetting)
     : null;
-  // The branch measurement, said only while the owner's switch is on.
-  const inbody =
-    channel.inbodyKey && inbodyIncluded(settings as Settings) ? channel.inbodyKey : null;
+  const recommended = channel.recommended === true;
 
   return (
-    <Link
-      to={channel.to}
-      className={['ox-channel-door', primary ? 'ox-channel-door--primary' : null]
+    <div
+      className={['ox-channel-door', recommended ? 'ox-channel-door--primary' : null]
         .filter(Boolean)
         .join(' ')}
       data-testid="ox-channel-door"
       data-channel={channel.id}
     >
-      <span className="ox-channel-door__body">
-        <Icon name={channel.icon} size={28} className="ox-channel-door__icon" />
-        <span className="ox-channel-door__title ox-h3">{t(channel.titleKey)}</span>
-        <span className="ox-channel-door__line ox-small">{t(channel.metaKey)}</span>
+      {recommended ? (
+        <p className="ox-channel-door__flag ox-micro" data-testid="ox-channel-door-flag">
+          {t('ox.home.door_recommended')}
+        </p>
+      ) : null}
+      <Icon name={channel.icon} size={24} className="ox-channel-door__icon" />
+      <p className="ox-channel-door__title ox-title">{t(channel.titleKey)}</p>
+      <p className="ox-channel-door__line ox-small">{t(channel.metaKey)}</p>
+      <p className="ox-channel-door__facts">
+        <span className="ox-channel-door__price" data-testid="ox-channel-door-price">
+          {amount === undefined ? null : isFree ? (
+            <span className="ox-channel-door__chip">{t('ox.common.free')}</span>
+          ) : (
+            <Price amount={amount} size="h3" />
+          )}
+        </span>
         {credit ? (
           <span className="ox-channel-door__credit ox-small" data-testid="ox-channel-credit">
             {credit}
           </span>
         ) : null}
-        {inbody ? (
-          <span className="ox-channel-door__credit ox-small" data-testid="ox-channel-inbody">
-            {t(inbody)}
-          </span>
+      </p>
+      <Button
+        to={channel.to}
+        size={48}
+        block
+        variant={recommended ? 'primary' : 'secondary'}
+        className="ox-channel-door__action"
+      >
+        {t(channel.doorCtaKey)}
+      </Button>
+    </div>
+  );
+}
+
+/**
+ * The offer strip: the two free things, and the two buttons that take them.
+ *
+ * This is the conversion element of the whole band, so it sits directly under
+ * the heading, it is the largest type after it, and it is the only plate here
+ * that carries the identity's corner cut. The InBody fact is gated and the
+ * advisory fact is not: the written question and the branch visit are both
+ * free in the live catalogue (`fixtures/store/products.json`, OX-044 and
+ * OX-046 at 0), which is a fact about the shop's own price list rather than a
+ * claim about anybody's health.
+ */
+function OfferStrip() {
+  const { t } = useTranslation();
+  const { settings } = useTheme();
+  const visit = channelById('visit');
+  const written = channelById('written');
+  const replyHours = replySlaHours(settings as Settings);
+  const showsInbody = inbodyIncluded(settings as Settings);
+
+  return (
+    <div className="ox-services__offer" data-testid="ox-services-offer">
+      <ul className="ox-offer__facts" role="list">
+        <li className="ox-offer__fact" data-testid="ox-offer-advisory">
+          <Icon name="help" size={24} className="ox-offer__icon" />
+          <span className="ox-offer__fact-text ox-h3">{t('ox.home.offer_advisory')}</span>
+        </li>
+        {showsInbody ? (
+          <li className="ox-offer__fact" data-testid="ox-offer-inbody">
+            <Icon name="goal-ideal-weight" size={24} className="ox-offer__icon" />
+            <span className="ox-offer__fact-text ox-h3">{t(SERVICES_HUB.inbodyKey)}</span>
+          </li>
         ) : null}
-        <span className="ox-channel-door__foot">
-          <span className="ox-channel-door__price" data-testid="ox-channel-door-price">
-            {amount === undefined ? null : isFree ? (
-              <span className="ox-channel-door__free">{t('ox.common.free')}</span>
-            ) : (
-              <Price amount={amount} size="h3" />
-            )}
-          </span>
-          <span className="ox-channel-door__cta">
-            <span className="ox-channel-door__cta-label">{t(channel.doorCtaKey)}</span>
-            <i className="sicon-keyboard_arrow_right ox-mirror ox-iconbtn--angled" aria-hidden="true" />
-          </span>
-        </span>
-      </span>
-    </Link>
+      </ul>
+      <div className="ox-offer__actions">
+        <Button
+          to={visit?.to ?? '/services'}
+          size={48}
+          variant="primary"
+          className="ox-offer__action"
+        >
+          {t('ox.content.services.visit_cta_short')}
+        </Button>
+        <Button
+          to={written?.to ?? '/services'}
+          size={48}
+          variant="secondary"
+          className="ox-offer__action"
+        >
+          {t('ox.home.offer_cta_ask')}
+        </Button>
+      </div>
+      {replyHours ? (
+        <p className="ox-offer__cue ox-small" data-testid="ox-services-reply">
+          {t('ox.home.services_reply', { hours: replyHours })}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
 interface BandRowProps {
   titleKey: string;
   noteKey: string;
-  /** A gated trust cue: rendered only when the owner's setting carries it. */
-  cue?: { text: string; testId: string } | null;
   children: ReactNode;
 }
 
 /**
- * One row of the band: a title that names what the three cards are, a one-line
- * note, an optional gated cue, and the cards. Each row owns its own reveal, so
- * the stagger runs across the three cards of that row rather than across all
- * six at once.
+ * One row of the band: a title that names what the three cards are, a
+ * one-line note, and the cards.
+ *
+ * NO REVEAL (X-IDENTITY 5.1, which this band was not following): the table
+ * reads "Advisory band | nothing" and the text under it cut the band's own
+ * stagger back to the single revealed block BUILD 3.4 sanctions. It is also
+ * an availability question rather than a taste one: a revealed row sits at
+ * `opacity: 0` until an IntersectionObserver callback arrives, and this
+ * batch's own headless measurement caught the plans row still invisible
+ * after a scroll pass because that callback never came. A row that holds the
+ * offer may not depend on an observer to exist.
+ *
+ * The gated cues that used to hang off a row head are gone too: the InBody
+ * line is the offer strip's second fact and the reply time is the line under
+ * the strip's buttons, each said once on the band.
  */
-function BandRow({ titleKey, noteKey, cue, children }: BandRowProps) {
+function BandRow({ titleKey, noteKey, children }: BandRowProps) {
   const { t } = useTranslation();
-  const rowRef = useSectionReveal<HTMLUListElement>();
 
   return (
     <div className="ox-services__row">
       <div className="ox-services__row-head">
-        <h3 className="ox-services__row-title ox-h3">{t(titleKey)}</h3>
+        <h3 className="ox-services__row-title ox-title">{t(titleKey)}</h3>
         <p className="ox-services__row-note ox-small">{t(noteKey)}</p>
-        {cue ? (
-          <p className="ox-services__row-cue ox-small" data-testid={cue.testId}>
-            {cue.text}
-          </p>
-        ) : null}
       </div>
-      <ul className="ox-plans ox-reveal" role="list" ref={rowRef}>
+      <ul className="ox-plans" role="list">
         {children}
       </ul>
     </div>
   );
 }
 
-export function OxServices({ data, routeOut = true, className }: OxServicesProps) {
+/**
+ * The trust row: the facts the store can prove, and nothing else.
+ *
+ * The address prefers the owner's `branch_address` setting and falls back to
+ * the locale line the branch block already prints (`OxBranch.tsx` does the
+ * same, and the street is in the claims source), because the branch is a real
+ * place whether or not the dashboard field has been filled. The consultation
+ * credit renders verbatim from its own setting or not at all. No counts, no
+ * ratings, no professional titles: there is nothing true to say in those
+ * shapes yet.
+ */
+function TrustRow() {
   const { t } = useTranslation();
   const { settings } = useTheme();
+  const address = settingText(settings as Settings, 'branch_address') ?? t('ox.blocks.branch.address');
+  const credit = settingText(settings as Settings, 'consultation_credit_note');
+
+  return (
+    <ul className="ox-services__trust ox-small" role="list" data-testid="ox-services-trust">
+      <li className="ox-services__trust-item" data-testid="ox-trust-branch">
+        <Icon name="map-pin" size={20} className="ox-services__trust-icon" />
+        {address}
+      </li>
+      {credit ? (
+        <li className="ox-services__trust-item" data-testid="ox-trust-credit">
+          <Icon name="badge" size={20} className="ox-services__trust-icon" />
+          {credit}
+        </li>
+      ) : null}
+    </ul>
+  );
+}
+
+export function OxServices({ data, routeOut = true, className }: OxServicesProps) {
+  const { t } = useTranslation();
   // The block registry always passes `data`; `/services` mounts the section
   // directly and passes none, so the section falls back to its own defaults.
   const fields: OxBlockData = data ?? { path: 'ox-services' };
@@ -215,8 +313,6 @@ export function OxServices({ data, routeOut = true, className }: OxServicesProps
   // near-black plus the motif, not a photograph. The manifest's "Band image"
   // field still works for a merchant who uploads one.
   const band = fieldText(fields, 'image');
-  const replyHours = replySlaHours(settings as Settings);
-  const showsInbody = inbodyIncluded(settings as Settings);
 
   return (
     <section
@@ -249,60 +345,37 @@ export function OxServices({ data, routeOut = true, className }: OxServicesProps
           <p className="ox-services__subline">{t('ox.home.band_subline')}</p>
         </header>
 
-        <BandRow
-          titleKey="ox.home.band_row_ask_title"
-          noteKey="ox.home.band_row_ask_note"
-          cue={
-            replyHours
-              ? {
-                  text: t('ox.home.services_reply', { hours: replyHours }),
-                  testId: 'ox-services-reply',
-                }
-              : null
-          }
-        >
-          {SERVICE_CHANNELS.map((channel, index) => (
-            <li
-              className="ox-plans__slide"
-              key={channel.id}
-              style={{ ['--i' as string]: String(index) }}
-            >
-              <ChannelDoor channel={channel} primary={!routeOut && channel.id === 'written'} />
+        <OfferStrip />
+
+        <BandRow titleKey="ox.home.band_row_ask_title" noteKey="ox.home.band_row_ask_note">
+          {SERVICE_CHANNELS.map((channel) => (
+            <li className="ox-plans__slide" key={channel.id}>
+              <ChannelDoor channel={channel} />
             </li>
           ))}
         </BandRow>
 
-        <BandRow
-          titleKey="ox.home.band_row_plans_title"
-          noteKey="ox.home.band_row_plans_note"
-          cue={
-            showsInbody
-              ? { text: t('ox.home.band_inbody_plans'), testId: 'ox-services-inbody' }
-              : null
-          }
-        >
-          {HOME_PLANS.map((plan, index) => (
-            <li
-              className="ox-plans__slide"
-              key={plan.id}
-              style={{ ['--i' as string]: String(index) }}
-            >
+        <BandRow titleKey="ox.home.band_row_plans_title" noteKey="ox.home.band_row_plans_note">
+          {HOME_PLANS.map((plan) => (
+            <li className="ox-plans__slide" key={plan.id}>
               <PlanCard plan={plan} />
             </li>
           ))}
         </BandRow>
 
-        {routeOut ? (
-          <div className="ox-services__cta">
-            <Button to="/services" size={44} variant="primary">
-              {t('ox.common.view_all')}
-            </Button>
-          </div>
-        ) : null}
+        <TrustRow />
 
         {/* The limit-of-our-work line. It renders on every advisory surface
             and it is the reason none of the copy above has to hedge. */}
         <p className="ox-services__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
+
+        {routeOut ? (
+          <p className="ox-services__cta">
+            <Button to="/services" variant="link">
+              {t('ox.services.view_all')}
+            </Button>
+          </p>
+        ) : null}
       </div>
     </section>
   );

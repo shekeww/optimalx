@@ -2056,13 +2056,26 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 .ox-services--banded {
   isolation: isolate;
   overflow: hidden;
-  padding-block: var(--ox-12);
+  // 56 / 80 / 96 by tier (owner brief 2026-09-24, item 5). DIRECTION 4.2
+  // prices a dark band's INTERNAL padding at 48 mobile / 64 desktop and
+  // spends its 96 step on the air above and below this band; the brief moves
+  // the breath inside, because the band now opens on the offer plate rather
+  // than on a row of cards, and 48 above that plate reads as a crop. Only 96
+  // is on the spacing scale (--ox-24), so the two lower steps are literal,
+  // the same way this section already writes its card paddings.
+  padding-block: 56px;
   background: var(--ox-bg);
+}
+
+@media (min-width: 768px) {
+  .ox-services--banded {
+    padding-block: 80px;
+  }
 }
 
 @media (min-width: 1024px) {
   .ox-services--banded {
-    padding-block: var(--ox-16);
+    padding-block: var(--ox-24);
   }
 }
 
@@ -2138,7 +2151,8 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   flex-direction: column;
   align-items: flex-start;
   gap: var(--ox-2);
-  margin-block-end: var(--ox-6);
+  // Head to offer strip: 32 (owner brief 2026-09-24, item 5).
+  margin-block-end: var(--ox-8);
   text-align: start;
 }
 
@@ -2187,6 +2201,112 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 }
 
 // ---------------------------------------------------------------------------
+// The offer strip (owner brief 2026-09-24, item 1)
+// ---------------------------------------------------------------------------
+// The two things the owner most wants a visitor to see - the advice is free,
+// and the branch measures body composition with InBody for nothing - used to
+// be two grey notes at the smallest type in the band, one under a row title
+// and one inside the third card. They are the FIRST thing under the heading
+// now, at the largest type after it, on a plate with the band's two real
+// buttons on it.
+//
+// The plate is the only element in this band that carries the identity's
+// corner cut (X-IDENTITY 3.3/3.4, `ox-x-corner`, lean 40 / run 27.0 - 7.5 %
+// of the 358 plate at 390 and 2.1 % of 1296 at 1440, both far inside 2.3's
+// 24 % budget). It declares no block-size, and it measures 268 at 390 and
+// 190 at 1440, so 3.2's 158 px floor for a panel-scale cut holds at every
+// width. The plan cards give up their watermarks in exchange (4.1: one mark
+// per section, and that row was drawing three).
+.ox-services__offer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-6);
+  // Strip to the first row: 40.
+  margin-block-end: 40px;
+  padding: var(--ox-6);
+  background: var(--ox-graphite-3);
+  @include ox-x-corner(40px, start);
+}
+
+.ox-offer__facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ox-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-offer__fact {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-3);
+  color: var(--ox-fg);
+}
+
+// The one accent note on the plate besides the filled button: a 24px glyph
+// per fact. Both sit at 4.9:1 on this ground as graphical objects, well over
+// WCAG 1.4.11's 3:1.
+.ox-offer__icon {
+  flex: none;
+  color: var(--ox-accent);
+  // Optical: the glyph's box is 24 and the line it labels is 20/1.35, so a
+  // 2px drop puts the two on the same visual centre.
+  margin-block-start: 2px;
+}
+
+// THE LARGEST TEXT AFTER THE HEADING (the brief's own test): 18 rising to 20
+// at title weight, one step over the row titles (17 to 18, .ox-title) and
+// under the h2 (24 to 32). The ladder has no step between h3 and h2, so the
+// strip takes h3's size and the row titles step down rather than the strip
+// inventing a size of its own.
+.ox-offer__fact-text {
+  color: var(--ox-fg);
+}
+
+.ox-offer__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+}
+
+.ox-offer__action {
+  inline-size: 100%;
+}
+
+// The reply time, and only once the owner has filled `reply_sla_hours`. It
+// sits under the buttons because it qualifies the written question the
+// secondary opens, not the offer as a whole.
+.ox-offer__cue {
+  margin: 0;
+  color: var(--ox-fg-2);
+  font-weight: var(--ox-w-read);
+}
+
+@media (min-width: 640px) {
+  .ox-offer__actions {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .ox-offer__action {
+    inline-size: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-services__offer {
+    padding: var(--ox-8);
+  }
+
+  .ox-offer__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ox-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // The two rows, each with its own title (owner review 2026-09-23, late night)
 // ---------------------------------------------------------------------------
 // Six cards under one heading read as six equal boxes. A title plus a
@@ -2196,7 +2316,8 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 // (DIRECTION 9.2: h2 for the section, h3 for what sits inside it, no level
 // skipped).
 .ox-services__row + .ox-services__row {
-  margin-block-start: var(--ox-8);
+  // Row to row: the same 40 the strip leaves above the first row.
+  margin-block-start: 40px;
 }
 
 .ox-services__row-head {
@@ -2214,19 +2335,11 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 }
 
 // Same weight floor as the subline above: 400 on `--ox-graphite` reads thin.
-.ox-services__row-note,
-.ox-services__row-cue {
+.ox-services__row-note {
   margin: 0;
   max-inline-size: 64ch;
   color: var(--ox-fg-3);
   font-weight: var(--ox-w-read);
-}
-
-// The reply-time cue is a fact the owner has entered in a setting, not a
-// promise the theme writes, so it sits one step brighter than the note it
-// follows. It renders only while that setting is filled.
-.ox-services__row-cue {
-  color: var(--ox-fg-2);
 }
 
 // ONE COLUMN at 390 (owner review 2026-09-23 (late), item 3): six cards read
@@ -2243,40 +2356,66 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   list-style: none;
 }
 
+// The slide is a flex box so its one child fills the stretched grid cell:
+// that is what makes three doors of unequal copy end on one line with their
+// buttons on the same baseline (owner brief 2026-09-24, item 2).
 .ox-plans__slide {
+  display: flex;
   min-inline-size: 0;
 }
 
-// One channel door: an upright card (icon, name, one line, a live price, a
-// CTA), never a photograph — the plain ground is what tells row one from
-// row two at a glance even once the grid below joins them into one three-up
-// track. Same floor height as `.ox-plan` so the two rows read as one system.
+// One channel door: an upright card (an optional flag, a 24px accent glyph,
+// the name, one line, a price chip and a real button), never a photograph —
+// the plain ground is what tells row one from row two at a glance even once
+// the grid below joins them into one three-up track.
+//
+// NO MIN-BLOCK-SIZE any more (owner brief 2026-09-24, item 2: "sized to
+// their content, no empty half"). The old 232/260 floor is what left the
+// lower half of every door empty in the owner's screenshot; the height each
+// door needs is the height of its own copy, and the three still end level
+// because the grid cell stretches and `__action`'s auto margin drops the
+// button onto the card's foot.
+//
+// It is no longer an anchor: the CTA is a real `.ox-btn` and a control
+// cannot live inside a link. Nothing here is hoverable as a whole any more,
+// so the card gives up its hover ring and its focus ring; the button carries
+// both.
 .ox-channel-door {
   position: relative;
   isolation: isolate;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
   inline-size: 100%;
-  min-block-size: 232px;
-  padding: 20px;
+  // Card padding 24, and 24 under the CTA at every tier (the brief's own
+  // "no card with more than 24px of empty space under its CTA"): the 768
+  // block below raises the top and the sides to 32 and leaves the foot at
+  // 24, which is also the optically correct pairing under a filled control.
+  padding: var(--ox-6);
   border-radius: var(--ox-r-3);
   background: var(--ox-graphite-3);
   color: var(--ox-fg);
-  text-decoration: none;
-  transition: box-shadow var(--dur-fast) var(--ease-out);
-  @include ox-focus(2px);
-
-  &:hover {
-    box-shadow: inset 0 0 0 1px var(--ox-accent);
-  }
 }
 
-.ox-channel-door__body {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ox-1);
-  block-size: 100%;
+// The recommended door's eyebrow. Ink on dark with a 16x2 accent rule, never
+// orange type: the same construction `.ox-services__eyebrow` uses further up
+// this section, and for the same reason (BUILD 3.1; accent type on
+// `--ox-graphite-3` measures 3.63:1, under the 4.5:1 floor for a 12px line).
+.ox-channel-door__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0 0 var(--ox-1);
+  color: var(--ox-fg);
+}
+
+.ox-channel-door__flag::before {
+  content: '';
+  flex: none;
+  inline-size: 16px;
+  block-size: 2px;
+  background: var(--ox-accent);
 }
 
 .ox-channel-door__icon {
@@ -2286,35 +2425,54 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 }
 
 .ox-channel-door__title {
+  margin: 0;
   color: var(--ox-fg);
 }
 
 .ox-channel-door__line {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
+  margin: 0;
   max-inline-size: 40ch;
   color: var(--ox-fg-2);
 }
 
-.ox-channel-door__foot {
+// The facts row: the price chip, plus the gated credit line where the owner
+// has written one. 12 under it plus the column's own 4 of gap is the 16 the
+// brief asks for between the facts and the button.
+.ox-channel-door__facts {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: var(--ox-2);
   inline-size: 100%;
-  margin-block-start: auto;
-  padding-block-start: var(--ox-3);
+  // The chip's own height, held whether or not the live price has arrived:
+  // the figure comes from React Query after mount, and a row that grows late
+  // moves everything under it (CLS). The row is simply empty until then.
+  min-block-size: 24px;
+  margin: var(--ox-3) 0;
 }
 
 .ox-channel-door__price {
   color: var(--ox-fg);
 }
 
-// Matches `.ox-channel__free` (`_blocks.scss`, the /services card): weight
-// only, no colour of its own — it inherits `.ox-channel-door__price`.
-.ox-channel-door__free {
+// "مجاني" as a chip rather than a word floating over the card foot (the
+// owner's screenshot: nothing held that line). Accent-soft on a dark ground
+// is an accent TINT, never accent type: the composite of --ox-accent at 0.16
+// over --ox-graphite-3 is #4B3630, and --ox-ink-on-dark on it measures
+// 10.0:1.
+.ox-channel-door__chip {
+  display: inline-flex;
+  align-items: center;
+  block-size: 24px;
+  padding-inline: var(--ox-2);
+  border-radius: var(--ox-r-1);
+  background: rgba(var(--ox-accent-rgb), 0.16);
+  color: var(--ox-fg);
+  font-size: var(--ox-t-small);
   font-weight: var(--ox-w-figure);
 }
 
@@ -2326,55 +2484,56 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   font-weight: var(--ox-w-read);
 }
 
-.ox-channel-door__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-1);
-  font-size: var(--ox-t-small);
-  font-weight: var(--ox-w-ui);
-  color: var(--ox-accent);
+// The CTA, pinned to the card's foot so three doors of unequal copy end on
+// one line. It is the outline parallelogram on two doors and the filled one
+// on the recommended door; both are 48 tall.
+.ox-channel-door__action {
+  margin-block-start: auto;
 }
 
-.ox-channel-door:hover .ox-channel-door__cta .ox-iconbtn--angled {
-  border-color: currentColor;
-}
-
-// THE SECTION'S ONE PRIMARY ACTION on `/services` (owner review 2026-09-23,
-// late night), where the band carries no CTA button because the page that
-// button would open is the page the reader is standing on. The
-// written-question door takes the role instead: the same 1px accent ring
-// hover already draws, made permanent, so the primary is the cheapest yes in
-// the row rather than a second orange box. The home page never applies it
-// there, `عرض الكل` is that page's one primary.
+// THE RECOMMENDED DOOR (owner brief 2026-09-24, item 2): the accent outline,
+// with the flag above it and the filled button below. One per row, declared
+// in `app/content/services.ts` rather than by the page, so the home page and
+// `/services` recommend the same door.
 .ox-channel-door--primary {
   box-shadow: inset 0 0 0 1px var(--ox-accent);
 }
 
-// One photographic door. Hover: 1px accent inset ring, no translate
-// (BUILD.md §3.4). No slash of its own: the band's one angle is the motif
-// above.
+// One photographic programme card. The photograph is the top band and every
+// word sits on a solid plate at the foot (UX audit 2026-09-24, P1-20: the
+// title, the line and the action used to occupy the top 110 of a 300px card
+// and the rest was an empty frame).
+//
+// Like the doors above it, it is no longer one big anchor: its CTA is a real
+// button, so the card drops the hover ring and the focus ring the anchor
+// carried. No slash of its own either: the band's one angle is the ground
+// motif and the offer plate's corner cut.
 .ox-plan {
   position: relative;
   isolation: isolate;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   inline-size: 100%;
-  min-block-size: 232px;
+  // The floor exists so the photograph has a band to live in; the plate
+  // grows from the foot and takes whatever the copy needs above it.
+  min-block-size: 340px;
   overflow: hidden;
   border-radius: var(--ox-r-3);
   background: var(--ox-graphite-3);
   color: var(--ox-fg);
-  text-decoration: none;
-  transition: box-shadow var(--dur-fast) var(--ease-out);
-  @include ox-focus(2px);
-
-  &:hover {
-    box-shadow: inset 0 0 0 1px var(--ox-accent);
-  }
 }
 
-// FADED photographic background (X-IDENTITY-2026-09-22.md §4.5). Position and
-// sizing live here; the opacity itself is `.ox-plan__photo[data-ready]` in
-// section 5 (the shared `BandPhoto` reveal rule, S2b's), now 0.55.
+// The photographic background. Position and sizing live here; the shared
+// `BandPhoto` reveal rule in section 5 fades it in at 0.55, and this family
+// overrides that to 0.9 (owner brief 2026-09-24, "keep the photographs").
+//
+// Why it may be raised: 0.55 under §4.5's scrim existed so TEXT could sit on
+// the frame and still clear 4.5:1. No text sits on the frame any more - it
+// sits on the 0.92 ink plate below - so the only thing 0.55 was still doing
+// was turning the visible band of every card into a near-black rectangle,
+// which is the same "empty photograph" the audit raised, moved to the top of
+// the card.
 .ox-plan__photo {
   position: absolute;
   inset: 0;
@@ -2383,15 +2542,26 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   block-size: 100%;
   object-fit: cover;
   object-position: center;
+
+  &[data-ready] {
+    opacity: 0.9;
+  }
 }
 
 // The scrim: perpendicular to the mark's own 34° bars, never a flat
 // top-to-bottom fade or a `rotate` (§4.5's own literal gradient angles — a
 // `linear-gradient()` direction is outside `--ox-angle`/`--ox-skew`'s reach,
-// so 236/124 are correct here, declared as two rules). Darkest (0.94) at 0%,
-// which is why the content block below sits at the top-inline-start corner:
-// only the 0-72% zone clears the measured 4.5:1 floor for `--ox-ink-on-dark`
-// over a worst-case white pixel.
+// so 236/124 are correct here, declared as two rules).
+//
+// LIGHTER STOPS than §4.5's table, and this is the one place in the batch
+// that needs saying out loud. That table sets a FLOOR for a photograph that
+// carries text: alpha 0.60 is what `--ox-ink-on-dark` needs over a worst-case
+// white pixel. This card carries no text on the photograph any more (owner
+// brief 2026-09-24: the text block moved onto a solid plate), so the floor
+// does not bind here and the scrim's remaining job is tonal - tying the frame
+// to the band's own near-black. The 0.94 opening stop was leaving the one
+// visible band of the card, its top third, as a black rectangle. The angle,
+// the direction and the two-rule mirroring are unchanged.
 .ox-plan__scrim {
   position: absolute;
   inset: 0;
@@ -2399,128 +2569,141 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   pointer-events: none;
   background: linear-gradient(
     236deg,
-    rgba(14, 16, 20, 0.94) 0%,
-    rgba(14, 16, 20, 0.78) 38%,
-    rgba(14, 16, 20, 0.6) 72%,
-    rgba(14, 16, 20, 0.46) 100%
+    rgba(14, 16, 20, 0.66) 0%,
+    rgba(14, 16, 20, 0.5) 38%,
+    rgba(14, 16, 20, 0.34) 72%,
+    rgba(14, 16, 20, 0.22) 100%
   );
 }
 
 [dir='ltr'] .ox-plan__scrim {
   background: linear-gradient(
     124deg,
-    rgba(14, 16, 20, 0.94) 0%,
-    rgba(14, 16, 20, 0.78) 38%,
-    rgba(14, 16, 20, 0.6) 72%,
-    rgba(14, 16, 20, 0.46) 100%
+    rgba(14, 16, 20, 0.66) 0%,
+    rgba(14, 16, 20, 0.5) 38%,
+    rgba(14, 16, 20, 0.34) 72%,
+    rgba(14, 16, 20, 0.22) 100%
   );
 }
 
-// The watermark (§4.6: a dark plan card takes the mark, never a corner cut).
-// `--ox-ink-on-dark` at 0.06, NOT `--ox-accent` at 0.12 (owner review
-// 2026-09-23, coordinator addendum; `check-identity.mjs`'s `watermark-
-// contrast` rule flagged both): §4.1's own judge fix (X-IDENTITY §9, item 18)
-// already dropped every `--ox-accent` row from the contrast table — BUILD 3.1
-// reserves accent for things people can click, and this document's preamble
-// does not amend that rule — in favour of `--ox-ink`/`--ox-ink-on-dark`, and
-// 0.06 is the ceiling every §4.1 row ships at, not 0.12. Sized down from the
-// section-level table for a card-scale device, in the corner the scrim
-// leaves open (past 72%, where no text sits).
-.ox-plan__watermark {
-  position: absolute;
-  z-index: 1;
-  inset-block-end: -8%;
-  inset-inline-end: -6%;
-  color: var(--ox-ink-on-dark);
-  opacity: 0.06;
-  pointer-events: none;
-}
-
+// THE PLATE. X-IDENTITY §4.5 measures the floor for `--ox-ink-on-dark` over a
+// worst-case white photograph pixel at alpha 0.60; this plate is `--ox-ink`
+// at 0.92, which clears it with room and, unlike a gradient, clears it for
+// every pixel of every frame the merchant may ever swap in. That is what
+// lets the card carry a list of what is included without a contrast argument
+// per line. The mark that used to sit here is gone: §4.1 allows one
+// watermark per SECTION and this row was drawing three.
 .ox-plan__body {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
   gap: var(--ox-1);
-  block-size: 100%;
-  padding: 20px;
+  inline-size: 100%;
+  // The foot of the card, which is P1-20's own fix.
+  margin-block-start: auto;
+  // 24, and 24 under the CTA; the 768 block raises the top and sides to 32.
+  padding: var(--ox-6);
+  background: color-mix(in srgb, var(--ox-ink) 92%, transparent);
 }
 
 .ox-plan__title {
+  margin: 0;
   color: var(--ox-fg);
 }
 
+// WHO it is for, one line, never what it will do to anybody.
 .ox-plan__line {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  margin: 0;
   max-inline-size: 40ch;
   color: var(--ox-fg-2);
 }
 
-.ox-plan__foot {
+// What is included: two approved scope lines of the service the card opens.
+.ox-plan__items {
   display: flex;
-  align-items: center;
-  gap: var(--ox-2);
-  margin-block-start: var(--ox-2);
+  flex-direction: column;
+  gap: var(--ox-1);
+  inline-size: 100%;
+  margin: var(--ox-2) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-// Flat orange through the `--ox-icon-mono` per-context override (the sprite's
-// default is a white stroke plus one orange fleck; here both become the same
-// orange, one accent note rather than two).
-.ox-plan__icon {
+.ox-plan__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  color: var(--ox-fg-2);
+}
+
+// The benefit-list bullet (X-IDENTITY §4.4), and the one accent element left
+// on this card. On the 0.92 ink plate it measures 4.9:1 as a graphical
+// object, over WCAG 1.4.11's 3:1.
+.ox-plan__check {
   flex: none;
+  margin-block-start: 3px;
   color: var(--ox-accent);
 }
 
-.ox-plan__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ox-1);
-  font-size: var(--ox-t-small);
-  font-weight: var(--ox-w-ui);
+// Only when a real product backs the card: `HomePlan.sku`, read live. The
+// nutrition card has no product and prints no price at all.
+// Reserved, then filled: same reasoning as the door's facts row above.
+.ox-plan__price {
+  display: flex;
+  align-items: baseline;
+  min-block-size: 26px;
+  margin: var(--ox-3) 0 0;
   color: var(--ox-fg);
 }
 
-// The same small angled icon-button `.ox-iconbtn--angled` draws (owner
-// review 2026-09-23, item 4), reproduced here rather than the class itself:
-// `PlanCard.tsx` is another builder's file (S2 brief's do-not-touch list)
-// and cannot take a new class in markup, but `.ox-plan__arrow` already names
-// the icon, so the shape lands on the existing selector instead.
-// `ox-x-corner()` is available here (`_x-motif.scss` loads before this
-// file), unlike `_primitives.scss`'s own copy of this construction.
-.ox-plan__arrow {
-  // ox-allow: small-angle — ordered first (checker's multi-line match bug,
-  // `.ox-badge` in `_primitives.scss` traces it).
-  block-size: 24px; // ox-allow: small-angle
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 24px;
-  // Owner review 2026-09-23 (late), item 2: no background fill — the same
-  // fix `.ox-iconbtn--angled` carries in `_primitives.scss`, reproduced here
-  // rather than shared because this selector predates that class (see the
-  // comment above this rule for why `PlanCard.tsx` cannot simply take the
-  // shared class in markup). The border is `currentColor` at 60% opacity,
-  // matching the glyph colour already set below.
-  background: transparent;
-  border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
-  color: var(--ox-accent);
-  font-size: 18px;
-  @include ox-x-corner(8px);
-}
-
-.ox-plan:hover .ox-plan__arrow {
-  border-color: currentColor;
-}
-
-// The band's ONE filled CTA, under the row — not one per card.
-.ox-services__cta {
+.ox-plan__price-value {
   display: flex;
-  margin-block-start: var(--ox-6);
+  align-items: baseline;
+  gap: var(--ox-1);
+}
+
+.ox-plan__price-label {
+  color: var(--ox-fg-3);
+}
+
+.ox-plan__action {
+  margin-block-start: var(--ox-4);
+}
+
+// ---------------------------------------------------------------------------
+// The trust row and the closing lines (owner brief 2026-09-24, item 4)
+// ---------------------------------------------------------------------------
+// Gated facts or nothing. The branch address is a real place; the
+// consultation credit is the owner's own sentence and renders only once it
+// is written. No counts, no ratings, nobody called an expert, because none
+// of those is true yet (claims source section 3).
+.ox-services__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2) var(--ox-6);
+  // Cards to trust row: 32.
+  margin: var(--ox-8) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ox-fg-2);
+  font-weight: var(--ox-w-read);
+}
+
+.ox-services__trust-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+}
+
+.ox-services__trust-icon {
+  flex: none;
+  color: var(--ox-accent);
 }
 
 .ox-services__note {
@@ -2529,19 +2712,31 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   color: var(--ox-fg-3);
 }
 
+// The way out to `/services`, on the home page only: a text link, because
+// the band's filled primary is the offer strip's own button now and two
+// filled controls in one section is two primaries. Its label names the
+// destination rather than being the page's twelfth "عرض الكل" (UX audit
+// 2026-09-24, P1-7).
+.ox-services__cta {
+  display: flex;
+  margin: var(--ox-4) 0 0;
+}
+
 @media (min-width: 768px) {
   .ox-plans {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--ox-6);
   }
 
-  .ox-plan,
-  .ox-channel-door {
-    min-block-size: 260px;
+  .ox-plan {
+    min-block-size: 380px;
   }
 
+  // Card padding 32, with the foot left at 24 so nothing sits more than 24
+  // under a CTA (owner brief 2026-09-24, item 5).
+  .ox-channel-door,
   .ox-plan__body {
-    padding: var(--ox-6);
+    padding: var(--ox-8) var(--ox-8) var(--ox-6);
   }
 }
 
@@ -2859,6 +3054,18 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
   .ox-skel-grid {
     flex: 1 1 auto;
+  }
+}
+
+// The offer plate holds its measured height rather than sharing the two
+// grids' free space (S7c, 2026-09-24).
+.ox-skel-services__offer {
+  flex: none;
+}
+
+@media (min-width: 768px) {
+  .ox-skel-services__offer {
+    block-size: 190px;
   }
 }
 

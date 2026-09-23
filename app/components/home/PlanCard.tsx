@@ -1,7 +1,12 @@
-import { Link } from '@salla.sa/twilight-theme-engine/common';
+import { useQuery } from '@tanstack/react-query';
+import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { Button } from '../common/Button';
 import { Icon } from '../common/Icon';
+import { Price } from '../common/Price';
 import { BandPhoto } from './BandPhoto';
+import { effectivePrice } from '../product/lib/claims';
+import { idForSku } from '../../content/salla-ids';
 import type { HomePlan } from '../../content/services';
 
 export interface PlanCardProps {
@@ -9,57 +14,92 @@ export interface PlanCardProps {
 }
 
 /**
- * One photographic door in the advisory band (S2 design-audit 2026-09-22,
- * reworked to `docs/build/X-IDENTITY-2026-09-22.md` §4.5-4.6).
+ * One programme card, row two of the advisory band (owner brief 2026-09-24;
+ * UX audit 2026-09-24 P1-20).
  *
- * FADED photographic background: the frame sits at `opacity: 0.55`, under a
- * scrim whose gradient runs perpendicular to the mark's own 34° bars —
- * `linear-gradient(236deg, …)` in RTL, `124deg` in LTR (§4.5's own literal
- * values, declared as two rules rather than a `rotate`; a gradient angle is
- * outside `--ox-angle`/`--ox-skew`'s reach, so this is the one place a
- * literal degree is correct). The 0% stop is the darkest (0.94) and sits at
- * the card's top-inline-start corner, which is why the whole content block
- * lives there now instead of at the foot: §4.5 measures the floor at
- * alpha >= 0.60 for `--ox-ink-on-dark` on a worst-case white pixel, and only
- * the 0-72% zone of the gradient clears it. Past 72% the card carries no
- * text, only the watermark.
+ * THE PLATE. The photograph stays, but the text no longer floats on it. The
+ * card's whole content block sits at the FOOT of the card on a solid ink
+ * plate (`--ox-ink` at 0.92, `_b2-home.scss` section 8), which is both the
+ * audit's fix — the title, the line and the action used to occupy the top
+ * 110px of a 300px card and the rest was an empty photograph — and what lets
+ * the card carry a list of what is included without a contrast argument for
+ * every line: over a 0.92 ink plate the measure is the plate, not the
+ * worst-case white pixel of the frame underneath it (X-IDENTITY §4.5's floor
+ * is alpha ≥ 0.60 for `--ox-ink-on-dark`; 0.92 clears it with room).
  *
- * §4.6: a dark plan card takes the watermark and no corner cut (the pastel
- * need cards take the corner cut and no watermark) — the two rows read as a
- * pair rather than the same card twice. The mark sits at accent 0.12 on
- * `--ox-band-util`, the measured ceiling for that pairing.
+ * WHAT THE CARD SAYS, in the order it says it: the name; one line of WHO it
+ * is for, never what it will do to anybody; two things that are included,
+ * each one an already-approved scope line of the service the card opens
+ * (`HomePlan.itemKeys`); the live "from" price, and only when a real product
+ * backs the card (`HomePlan.sku` — the nutrition page has none, so it shows
+ * none rather than inventing a figure); then a real full-width outline button
+ * carrying the card's own verb, 48 tall, pinned to the plate's foot so three
+ * cards of unequal copy still end on one line.
  *
- * The CTA label is the plan's OWN `ctaKey` (owner review 2026-09-23, late
- * night), not one shared label under all three cards: the training session is
- * booked ("احجز الجلسة") and the other two open a page that explains before it
- * books ("اعرف التفاصيل"), so the three labels say what the click does.
+ * Like the doors above it, the card is NOT one big anchor any more: a button
+ * cannot live inside an `<a>`, and the accent word plus a detached chevron
+ * box that the anchor version showed instead is exactly the "nothing here
+ * looks pressable" the owner's screenshot caught.
  *
- * The card carries no slash of its own: the identity rule spends the
- * section's one angled band edge on `OxServices`'s ground motif, so a second
- * angle here would be the "scattered wedges as texture" the rule forbids.
- * Hover is a 1px accent inset ring, never a lift (BUILD.md §3.4: border
- * colour only). The glyph is painted flat orange through the
- * `--ox-icon-mono` per-context override rather than the sprite's default
- * two-tone (white stroke, orange fleck) — one accent note, not two.
+ * NO WATERMARK AND NO FOOT GLYPH. X-IDENTITY §4.1 allows one watermark per
+ * SECTION and this row drew three, plus a decorative icon on every card; the
+ * band's one identity device is the ground motif and the offer strip's corner
+ * cut. The only accent left on the card is the check glyph on the included
+ * list (§4.4's benefit-list bullet), and the card carries no angled gesture
+ * of its own beyond its button's own shape.
  */
 export function PlanCard({ plan }: PlanCardProps) {
   const { t } = useTranslation();
+  const id = plan.sku ? idForSku(plan.sku) : undefined;
+  const query = useQuery({
+    ...product.queries.detail(String(id ?? '')),
+    enabled: id !== undefined,
+  });
+  const amount = query.data ? effectivePrice(query.data) : undefined;
+
   return (
-    <Link to={plan.to} className="ox-plan" data-testid="ox-plan-card" data-plan={plan.id}>
+    <div className="ox-plan" data-testid="ox-plan-card" data-plan={plan.id}>
       {plan.photo ? <BandPhoto src={plan.photo} className="ox-plan__photo" /> : null}
       <span className="ox-plan__scrim" aria-hidden="true" />
-      <Icon name="mark" size={96} className="ox-plan__watermark" />
-      <span className="ox-plan__body">
-        <span className="ox-plan__title ox-h3">{t(plan.titleKey)}</span>
-        <span className="ox-plan__line ox-small">{t(plan.lineKey)}</span>
-        <span className="ox-plan__foot">
-          <Icon name={plan.icon} size={24} className="ox-plan__icon ox-icon--mono" />
-          <span className="ox-plan__cta">
-            <span className="ox-plan__cta-label">{t(plan.ctaKey)}</span>
-            <i className="sicon-keyboard_arrow_right ox-plan__arrow ox-mirror" aria-hidden="true" />
-          </span>
-        </span>
-      </span>
-    </Link>
+      <div className="ox-plan__body">
+        <p className="ox-plan__title ox-title">{t(plan.titleKey)}</p>
+        <p className="ox-plan__line ox-small">{t(plan.lineKey)}</p>
+        <ul className="ox-plan__items" role="list">
+          {plan.itemKeys.map((key) => (
+            <li className="ox-plan__item ox-small" key={key}>
+              <Icon name="check" size={16} className="ox-plan__check" />
+              {t(key)}
+            </li>
+          ))}
+        </ul>
+        {/* The price ROW is reserved for every card that has a product
+            behind it, and filled once the live price arrives: the figure
+            comes from React Query after mount, so a row that appears late
+            would push the card's whole plate down and shift the page under
+            the reader. The row is empty until the price is known and absent
+            entirely where no product backs the card. */}
+        {plan.sku ? (
+          <p className="ox-plan__price">
+            {amount !== undefined && amount > 0 ? (
+              <span className="ox-plan__price-value" data-testid="ox-plan-price">
+                <span className="ox-plan__price-label ox-small">
+                  {t('ox.home.plan_price_from')}
+                </span>
+                <Price amount={amount} size="h3" />
+              </span>
+            ) : null}
+          </p>
+        ) : null}
+        <Button
+          to={plan.to}
+          size={48}
+          block
+          variant="secondary"
+          className="ox-plan__action"
+        >
+          {t(plan.ctaKey)}
+        </Button>
+      </div>
+    </div>
   );
 }

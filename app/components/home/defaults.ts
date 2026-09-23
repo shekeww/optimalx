@@ -169,31 +169,34 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the newsletter and banner rows below.
   'ox-brands': { mobile: 0, desktop: 0 },
-  // Re-measured AGAIN for the two TITLED rows (owner review 2026-09-23, late
-  // night; token arithmetic against `_b2-home.scss`'s own section 8, not a
-  // live browser measurement — see docs/build/progress/S5c.md). The six cards
-  // are unchanged in size; what grew is the head over each row (an h3 title, a
-  // 4px gap, a one-line note, a 16px margin to the cards) plus the 32px gap
-  // between the two rows, which is what turns six equal boxes into one offer
-  // in two steps.
-  // Mobile (358 container, --ox-12 padding): 48 pad-top + head stack 141
-  // (eyebrow row 20 + gap 8 + h2 30 + gap 8 + 2-line subline 51, margin-end
-  // 24) + row one 816 (head 88: h3 26 + gap 4 + 2-line note 42, margin-end
-  // 16; grid 728: three 232px cards + two 16px gaps) + 32 row gap + row two
-  // 862 (head 134: the same 88 plus gap 4 + the 2-line InBody cue 42; grid
-  // 728) + 24 gap + 44 CTA + 16 gap + 20 note + 48 pad-bottom = 2051.
-  // Desktop (--ox-16 padding, 1296 container, three-up from 1024, so each row
-  // is one line of three): 64 pad-top + head stack 135 (eyebrow 20 + gap 8 +
-  // h2 40 + gap 8 + 1-line subline 27, margin-end 32) + row one 330 (head 70:
-  // h3 28 + gap 4 + 1-line note 22, margin-end 16; grid 260) + 32 row gap +
-  // row two 356 (head 96: the same 70 plus gap 4 + the 1-line InBody cue 22;
-  // grid 260) + 24 gap + 44 CTA + 16 gap + 20 note + 64 pad-bottom = 1085.
-  // Which cues are RESERVED, and why only these: the InBody line is counted
-  // because its gate (`inbody_included`) defaults to ON, so every store paints
-  // it; the reply-time cue is not, because it renders only once the owner
-  // fills `reply_sla_hours`, and the store that fills it takes one 22px shift
-  // here instead of every store reserving a line nothing paints.
-  'ox-services': { mobile: 2051, desktop: 1085 },
+  // THE OFFER FIRST (owner brief 2026-09-24, S7c). Unlike the two entries
+  // above, this pair is READ OFF THE RUNNING PAGE, not derived from the
+  // stylesheet: headless Chrome over the DevTools protocol, `/ar` at 390x844
+  // dpr 3 mobile and at 1440x900, band scrolled into view and every child of
+  // `.ox-services__inner` measured. The itemisation below is that
+  // measurement, child by child, and it sums to the number on the line.
+  //
+  // The band grew because the composition did: it now opens on the offer
+  // plate (two facts and two real buttons), every one of the six cards ends
+  // in a 48px button instead of an accent word, each plan card carries a list
+  // of what is included and a live price, and a trust row closes it.
+  //
+  // Mobile (390, container 358, one card per row): 56 pad-top + head 124 +
+  // 32 + offer 296.8 + 40 + row one 826.6 (head 88 + three doors 259.8/235.6/
+  // 234.6 + two 16 gaps) + 40 + row two 1116.6 (head 88 + three 340 cards +
+  // two 16 gaps) + 32 + trust 20.8 + 16 + note 41.6 + 16 + link 26 + 56
+  // pad-bottom = 2740.4.
+  // Desktop (1440, container 1296, three up from 1024): 96 + head 134 + 32 +
+  // offer 164 + 40 + row one 339.2 (head 70 + 271.6 cards) + 40 + row two
+  // 447.6 (head 70 + 380 cards) + 32 + trust 22.4 + 16 + note 22.4 + 16 +
+  // link 26 + 96 = 1523.5.
+  //
+  // What is RESERVED and what is not: the InBody fact is counted, because its
+  // gate (`inbody_included`) defaults to ON, so every store paints it; the
+  // reply-time cue under the offer's buttons is not, because it renders only
+  // once the owner fills `reply_sla_hours`, and that store takes one ~20px
+  // shift here rather than every store reserving a line nothing paints.
+  'ox-services': { mobile: 2740, desktop: 1524 },
   'ox-guides': { mobile: 0, desktop: 0 },
   'ox-branch': { mobile: 268, desktop: 184 },
   // No certification holds the per-product evidence a badge needs, so the
