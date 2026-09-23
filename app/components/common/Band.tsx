@@ -41,6 +41,15 @@ export interface BandProps {
  * duplication is on purpose: `BrandBand` is shipped and verified against the
  * approved image and is not reopened to make this generic.
  *
+ * `.ox-bband__plate` (S7b, 2026-09-24) wraps the photo and its scrim only —
+ * not the wash, not the wedge straps: those keep painting the whole section
+ * exactly as before. The plate alone carries the page-hero cut
+ * (`_b5-pages.scss` §2, `ox-angled()` at the primary CTA's own angle), so a
+ * page-hero caller reads as one angled card rather than a rectangle with an
+ * angled photograph inside it, and the cut never reaches a focusable
+ * descendant (`.ox-bband__inner`/`.ox-bband__lockup` are its unclipped
+ * siblings, not its children).
+ *
  * Two rules the band enforces for the page rather than for itself:
  *  - the wedge is a signature, so a screen carries at most one. A page whose
  *    hero already spends it passes `wedge={false}`;
@@ -73,8 +82,10 @@ export function Band({
 
   return (
     <section className={classes} id={id} aria-labelledby={titleId} data-testid="ox-band">
-      <img className="ox-bband__photo" src={photo} alt="" loading="lazy" decoding="async" />
-      <span className="ox-bband__scrim" aria-hidden="true" />
+      <div className="ox-bband__plate" aria-hidden="true">
+        <img className="ox-bband__photo" src={photo} alt="" loading="lazy" decoding="async" />
+        <span className="ox-bband__scrim" aria-hidden="true" />
+      </div>
       <span className="ox-bband__wash" aria-hidden="true" />
       {wedge ? (
         <>

@@ -32,8 +32,10 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  * `/services`: the "ask before you buy" hub, and the home of all five advisory
  * services (DIRECTION 6.11, PLAN-final 5.3).
  *
- * Composition, top to bottom: breadcrumb, the FULL-BLEED band carrying the
- * page's only h1 and its one primary action, the intro in the text measure,
+ * Composition, top to bottom: breadcrumb, the dark cover band (contained in
+ * the page gutter, its plate cut like the primary CTA — owner item
+ * 2026-09-24, S7b) carrying the page's only h1 and its one primary action,
+ * the intro in the text measure,
  * the advisory band (`OxServices`, the same section the home page draws,
  * carrying BOTH of its rows: the three ways to ask, then the three programmes
  * the asking leads to), the five services side by side in one comparison
@@ -98,7 +100,7 @@ export function ServicesHub() {
 
       <Band
         id="ox-hub-band"
-        className="ox-page__bleed ox-page--services__band"
+        className="ox-page--services__band"
         photo={SERVICE_PHOTOS.services}
         headingLevel="h1"
         line1={t(SERVICES_HUB.h1Key)}
@@ -130,8 +132,10 @@ export function ServicesHub() {
 
           NOT full bleed here (owner review 2026-09-23, item 3): the home page
           opens on nothing else dark, while this page already opened on the
-          full-bleed hero band above, and a second full-width near-black band
-          directly under it read as one long band rather than two sections.
+          dark hero band above (contained in the page gutter since S7b,
+          2026-09-24 — it was never meant to be full bleed either), and a
+          second full-width near-black band directly under it read as one
+          long band rather than two sections.
           `.ox-hub__advisory` (`_b5-pages.scss`) sits it inside the page's own
           container instead, with its own radius. `routeOut={false}`: the band
           routes nobody out to the page they are standing on, so its primary

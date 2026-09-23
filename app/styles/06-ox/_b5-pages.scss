@@ -138,9 +138,12 @@
 // So the measure moves down one level. The page keeps its vertical rhythm and
 // gives up its width; each child takes exactly the box the page used to have,
 // which is the same geometry as before; and a child marked `.ox-page__bleed`
-// declines it and spans the frame. Two children do that on `/services`, the
-// cover band and the advisory section, and both draw their own inner
-// container, so their type still sits on the measure.
+// declines it and spans the frame. On `/services` today that is the advisory
+// section only (matched below by its own selector, `.ox-hub__advisory`,
+// rather than the marker class), which draws its own inner container so its
+// type still sits on the measure. The cover band above it is a plain child
+// (S7b, 2026-09-24: it was never meant to bleed — the h1 and the CTA read the
+// owner's screenshot as touching the viewport edge, which this fixed).
 .ox-page--bleed {
   max-inline-size: none;
   padding-inline: 0;
@@ -204,11 +207,51 @@
   margin-block-start: var(--ox-2);
 }
 
+// 2a. The plate cut (owner item 2026-09-24: contain the masthead in the page
+// gutter, angle its borders like the primary CTA). `.ox-bband__plate`
+// (`Band.tsx`) wraps only the photo and its scrim, at exactly the box they
+// already occupied, so `ox-angled()` — the identity's one parallelogram
+// primitive, X-IDENTITY-2026-09-22.md §2/§3.4 — is the block's one angled
+// gesture; the wash and the wedge straps stay outside it, unclipped, exactly
+// as before. Lean is the plate's own rendered block-size at each tier (mobile
+// 160px, the photo strip; 1024-and-up 360px, the page override below), so
+// `run = lean × 0.6745` is computed off a real box, never guessed:
+//   160px lean -> run 107.9px (ox-run(160px))
+//   360px lean -> run 242.8px (ox-run(360px))
+// `.ox-bband`'s own background stays (mobile text sits on it, not on the
+// photo); it is dropped to transparent only at 1024-and-up, where the plate
+// covers the full box and the cut needs the page ground behind its corners
+// to read as a cut at all.
+.ox-bband__plate {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 160px;
+  overflow: hidden;
+  @include ox-angled(160px);
+}
+
+// The safe area: `.ox-bband__inner`/`.ox-bband__lockup` never sit under the
+// cut. Below 1024 the photo strip and the text never share a row (the text
+// starts at `padding-block-start: 184px`, well below the 160px strip), so no
+// extra inline padding is needed there. At 1024-and-up the plate is the full
+// box behind the grid row, so the row's own inline padding grows to the
+// plate's run plus `--ox-6`, on both sides, replacing `_b3-product.scss`'s
+// 40px (that padding-inline longhand cascades over `.ox-bband`'s shorthand:
+// equal specificity, later in the stylesheet).
 @media (min-width: 1024px) {
+  .ox-bband__plate {
+    inset-block: 0;
+    block-size: 100%;
+    @include ox-angled(360px);
+  }
+
   .ox-page--services__band,
   .ox-page--about__band,
   .ox-page--faq__band {
     min-block-size: 360px;
+    background: transparent;
+    padding-inline: calc(#{ox-run(360px)} + var(--ox-6));
   }
 }
 
