@@ -61,7 +61,7 @@ export const POSTER_CARDS: PosterCardContent[] = [
     to: pathForSku('OX-046') ?? '/services',
     kind: 'offer',
     altKey: `${KEY}.inbody_consult.alt`,
-    available: false,
+    available: true,
   },
   {
     slug: 'weekly-picks',
@@ -70,7 +70,7 @@ export const POSTER_CARDS: PosterCardContent[] = [
     to: '/offers',
     kind: 'offer',
     altKey: `${KEY}.weekly_picks.alt`,
-    available: false,
+    available: true,
   },
   {
     slug: 'bundle-her',
@@ -81,7 +81,7 @@ export const POSTER_CARDS: PosterCardContent[] = [
     to: pathForSku('OX-041') ?? '/offers',
     kind: 'bundle',
     altKey: `${KEY}.bundle_her.alt`,
-    available: false,
+    available: true,
   },
   {
     slug: 'bundle-him',
@@ -91,7 +91,7 @@ export const POSTER_CARDS: PosterCardContent[] = [
     to: pathForSku('OX-041') ?? '/offers',
     kind: 'bundle',
     altKey: `${KEY}.bundle_him.alt`,
-    available: false,
+    available: true,
   },
   {
     slug: 'weight-subscription',
@@ -101,7 +101,7 @@ export const POSTER_CARDS: PosterCardContent[] = [
     to: '/services#plans',
     kind: 'subscription',
     altKey: `${KEY}.weight_subscription.alt`,
-    available: false,
+    available: true,
   },
   {
     slug: 'bigramy-creatine',
@@ -113,7 +113,7 @@ export const POSTER_CARDS: PosterCardContent[] = [
     kind: 'offer',
     altKey: `${KEY}.bigramy_creatine.alt`,
     categorySlug: 'creatine',
-    available: false,
+    available: true,
   },
 ];
 

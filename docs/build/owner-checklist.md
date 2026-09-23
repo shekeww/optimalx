@@ -106,3 +106,17 @@ Type these into the theme settings in the Salla dashboard (they are already in t
 
 Also: send the original, full-size file of the storefront photograph (the night shot of the lit facade). The copy on disk is 415 px wide, which is enough for the small slots it fills today and too small for a wide panel.
 
+## The six ad covers and the claims they carry (2026-09-24)
+
+The six poster files you sent are live in the "اكتشف أكثر" rail and on /offers as placeholders "until you replace them". They are your own artwork, so the theme shows them as sent, with neutral alt text. Before launch, note that the text baked into several of them contradicts rows the claims source bans (docs/build/research/FINAL-claims-source.md §3, SFDA advertising rules), and the theme cannot gate text inside an image:
+
+| File / slot | Baked-in text that a reviewer would reject | Why |
+|---|---|---|
+| Big Ramy creatine (bigramy-creatine) | "قوة أكبر / أداء أفضل / تعافٍ أسرع", "قوة تصنع الأبطال" | outcome promises; "أسرع" is on the banned list |
+| Buy 1 get 1 (weekly-picks, inbody-consult) | "يدعم حرق الدهون", "يعزز عملية الأيض", "الأكثر مبيعا" | fat-burning and metabolism claims; "الأكثر مبيعا" needs real order data |
+| Any two for 196 (bundle-her) | "الأكثر مبيعا", "يساعد على التحكم في الشهية" | same; an appetite claim is a health claim |
+| 3-month subscription 696 (weight-subscription) | "100% كاش باك", "نتائج أخف" | a 100% figure and a result claim; the cashback must be exactly the store credit rule in the small print |
+| Flex duo 196 (bundle-him) | none beyond "تنوع يناسب يومك" | fine |
+
+Replace the chips on the first four before launch (keep the offer, drop the outcome and superlative lines), or send versions without them. The subscription poster also lists InBody as included: that matches the theme's own gated line only while the "InBody measurement included" setting stays on. The two "buy 1 get 1" files are the same artwork in two slots; the inbody-consult slot links to the consultation product, so its poster should become the consultation offer when you have one.
+

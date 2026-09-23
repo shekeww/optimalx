@@ -50,7 +50,9 @@ function loadSharp() {
 const PHOTOS = [
   { slug: 'storefront', names: ['storefront', '57'], crop: null },
   { slug: 'shelves', names: ['shelves', '58'], crop: null },
-  { slug: 'store-wide', names: ['store-wide', 'store-products', '60'], crop: { left: 300, top: 0 } },
+  // The enhanced file the owner sent later the same day is clean; the crop
+  // that removed the Maps overlay from the first file is no longer needed.
+  { slug: 'store-wide', names: ['store-wide', 'store-products', '60'], crop: null },
   { slug: 'advisory-room', names: ['advisory-room', '61'], crop: null },
   { slug: 'waiting-area', names: ['waiting-area', 'advisory-room-2', '62'], crop: null },
   // The lit mark on the ribbed wall inside the store (owner, 2026-09-24,

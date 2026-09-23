@@ -24,9 +24,9 @@ export const STORE_PHOTOS: Record<StorePhotoSlug, StorePhoto> = {
   'storefront': {
     /** The largest rendition; `<slug>-{w}.webp` at every other width. */
     photo: '/assets/store/storefront.webp',
-    width: 415,
-    height: 241,
-    widths: [380, 415],
+    width: 1448,
+    height: 1086,
+    widths: [380, 480, 760, 1160, 1448],
   },
   'shelves': {
     /** The largest rendition; `<slug>-{w}.webp` at every other width. */
@@ -38,23 +38,23 @@ export const STORE_PHOTOS: Record<StorePhotoSlug, StorePhoto> = {
   'store-wide': {
     /** The largest rendition; `<slug>-{w}.webp` at every other width. */
     photo: '/assets/store/store-wide.webp',
-    width: 1139,
-    height: 1093,
-    widths: [380, 480, 760, 1139],
+    width: 1448,
+    height: 1086,
+    widths: [380, 480, 760, 1160, 1448],
   },
   'advisory-room': {
     /** The largest rendition; `<slug>-{w}.webp` at every other width. */
     photo: '/assets/store/advisory-room.webp',
-    width: 497,
-    height: 722,
-    widths: [380, 480, 497],
+    width: 1448,
+    height: 1086,
+    widths: [380, 480, 760, 1160, 1448],
   },
   'waiting-area': {
     /** The largest rendition; `<slug>-{w}.webp` at every other width. */
     photo: '/assets/store/waiting-area.webp',
-    width: 1482,
-    height: 1061,
-    widths: [380, 480, 760, 1160, 1482],
+    width: 1448,
+    height: 1086,
+    widths: [380, 480, 760, 1160, 1448],
   },
 };
 
