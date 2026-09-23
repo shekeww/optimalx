@@ -236,6 +236,31 @@ a.ox-util__trust-link {
   }
 }
 
+// The utility bar's language switch (NAV-2026-09-23 addendum, S9g): a quiet
+// link, not a button - no background, no border, the bar's own quiet-text
+// colour pair. `min-block-size: 44px` is the hit area the owner's brief asks
+// for; the bar itself is 48px tall at this breakpoint (tokens.css), so the
+// link sits centred with a couple of px to spare on either side.
+.ox-util__lang {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding-inline: var(--ox-2);
+  color: var(--ox-ink-2-on-dark);
+  font-size: 13px;
+  font-weight: var(--ox-w-ui);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-ink-on-dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ox-ink-on-dark);
+    outline-offset: 2px;
+  }
+}
+
 // The three trust items UNDER the mobile header, on the SAME dark band as the
 // desktop utility strip (owner-reported defect, 2026-09-22: this used to sit
 // on paper, the one place the strip broke from the header's dark identity).
@@ -275,8 +300,8 @@ a.ox-util__trust-link {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Localization button (drawer footer; the utility strip has its own
-//    country control)
+// 3. Language switch link (drawer footer; the utility strip's own version is
+//    `.ox-util__lang` above, NAV-2026-09-23 addendum, S9g)
 // ---------------------------------------------------------------------------
 .ox-localize {
   display: inline-flex;

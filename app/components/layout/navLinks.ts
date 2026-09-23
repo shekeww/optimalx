@@ -195,6 +195,57 @@ export function stripLocale(pathname: string): string {
   return stripped === '' ? '/' : stripped;
 }
 
+/**
+ * The two locales this theme ships copy for. The language switch link
+ * (NAV-2026-09-23 addendum, S9g) only ever offers one of these two - a third
+ * store language would need its own dictionary before this link could show
+ * it, so the pair is literal rather than derived from the store's own list.
+ */
+const SWITCHABLE_LOCALES = ['ar', 'en'] as const;
+export type SwitchableLocale = (typeof SWITCHABLE_LOCALES)[number];
+
+/** The language switch link's destination and the two locale keys it reads. */
+export interface LanguageSwitch {
+  /** The language this link switches TO (never the page's own language). */
+  locale: SwitchableLocale;
+  /** The current page, under the target language's own locale segment. */
+  to: string;
+  /** The link's visible text: the target language's own name. */
+  labelKey: 'ox.header.lang_switch_en' | 'ox.header.lang_switch_ar';
+  /** The accessible name, phrased in the CURRENT page's own language. */
+  ariaLabelKey: 'ox.header.switch_language_en' | 'ox.header.switch_language_ar';
+}
+
+/**
+ * The language switch link for `pathname` (owner, 2026-09-24: "arabic and
+ * english language switch can be confusing, as the other would only see the
+ * country; it should be obvious to be a language switch, showing العربية in
+ * English, and EN in the Arabic version"), or `null` when the store has
+ * nothing to switch to.
+ *
+ * `languages` is the store's own language codes
+ * (`useTwilight().settings.languages`, mapped to `.code`). The target is
+ * English on an Arabic page and Arabic on an English one - the only pair
+ * this theme ships strings for - and it is offered only when the store's own
+ * list actually carries that target, which is what leaves the live,
+ * English-disabled store with no link at all.
+ */
+export function otherLocaleLink(
+  pathname: string,
+  languages: readonly string[] | undefined
+): LanguageSwitch | null {
+  const current = localeSegmentOf(pathname).slice(1) || DEFAULT_LOCALE;
+  const target: SwitchableLocale = current === 'en' ? 'ar' : 'en';
+  if (!languages?.includes(target)) return null;
+  return {
+    locale: target,
+    to: withLocale(stripLocale(pathname), target),
+    labelKey: target === 'en' ? 'ox.header.lang_switch_en' : 'ox.header.lang_switch_ar',
+    ariaLabelKey:
+      target === 'en' ? 'ox.header.switch_language_en' : 'ox.header.switch_language_ar',
+  };
+}
+
 const SHOP_ROUTES = new Set([
   '/categories',
   '/offers',

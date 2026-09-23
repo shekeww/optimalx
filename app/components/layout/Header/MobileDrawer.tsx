@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useTwilight } from '@salla.sa/twilight-theme-engine';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
@@ -8,8 +9,7 @@ import { HEADER_NAV, MORE_NAV } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
-import { resolveNavHref, toSafeLinks } from '../navLinks';
-import { LocalizationButton } from './LocalizationButton';
+import { otherLocaleLink, resolveNavHref, toSafeLinks, useRouterPathname } from '../navLinks';
 import { Logo } from './Logo';
 import { ShopTree } from './ShopTree';
 
@@ -74,6 +74,10 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const { t } = useTranslation();
   const { settings } = useTheme();
   const store = useStore();
+  // `useTwilight().settings` (StoreContext, `.languages`), not the theme
+  // `settings` above (ThemeSettings) - the two share a name by coincidence.
+  const { settings: storeContext } = useTwilight();
+  const pathname = useRouterPathname();
   // Reduced to a path here, not inside `useTaxonomyLinks`: that hook is
   // shared with the listing page's `ChildChips`, whose own test pins
   // today's raw-URL behaviour for its live-children path (NAV-2026-09-23 §8
@@ -109,6 +113,14 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const phone = digitsOnly(store?.contacts?.phone || store?.contacts?.mobile || '');
   const promise = settingValue(settings, 'delivery_promise_line');
   const showOffers = (settings as Record<string, unknown> | undefined)?.show_offers_nav !== false;
+  // The drawer's own language switch row (NAV-2026-09-23 addendum, S9g):
+  // `null` until the store lists a second language, same gate as the bar's.
+  const languageSwitch = store?.settings?.is_multilingual
+    ? otherLocaleLink(
+        pathname,
+        (storeContext?.languages ?? []).map((language) => language.code)
+      )
+    : null;
 
   // The four plain rows between the two catalogue accordions and المزيد:
   // العروض (gated, same as the bar), العلامات التجارية, اسأل قبل أن تشتري,
@@ -227,7 +239,23 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
         </nav>
 
         <div className="ox-drawer__foot">
-          <LocalizationButton className="ox-drawer__localize" />
+          {/* A raw `<a>`, not the engine `Link` (navLinks.ts's own precedent
+              for the shop trigger): it needs `lang`/`hrefLang`, which `Link`'s
+              `BaseLinkProps` does not carry. */}
+          {languageSwitch ? (
+            <a
+              href={languageSwitch.to}
+              className="ox-drawer__localize ox-localize"
+              lang={languageSwitch.locale}
+              hrefLang={languageSwitch.locale}
+              aria-label={t(languageSwitch.ariaLabelKey)}
+              data-testid="ox-language-switch"
+              onClick={onClose}
+            >
+              <Icon name="globe" size={20} />
+              <span className="ox-localize__label">{t(languageSwitch.labelKey)}</span>
+            </a>
+          ) : null}
           {promise ? <p className="ox-drawer__promise ox-small">{promise}</p> : null}
           <div className="ox-drawer__contact">
             {whatsapp ? (

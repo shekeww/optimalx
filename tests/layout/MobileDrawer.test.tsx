@@ -7,12 +7,34 @@ import { loadDictionary } from '../helpers/i18n';
 const ar = loadDictionary('ar');
 const themeSettings: Record<string, unknown> = {};
 const storeValue: Record<string, unknown> = { contacts: {}, settings: {} };
+// `StoreContext` (`useTwilight().settings`), not the theme settings above -
+// `.languages` lives here (NAV-2026-09-23 addendum, S9g).
+const twilightSettings: Record<string, unknown> = {};
+// The router's own store, not `useTwilight().location`: `useRouterPathname`
+// (navLinks.ts) reads this instead, same reasoning NavBar.test.tsx documents.
+const routerLocation: Record<string, unknown> = { pathname: '/ar/x' };
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
 );
 vi.mock('@salla.sa/twilight-theme-engine', () => ({
-  useTwilight: () => ({ store: { settings: {} }, currency: { code: 'SAR', symbol: 'SAR' }, locale: 'ar', salla: undefined }),
+  useTwilight: () => ({
+    store: storeValue,
+    currency: { code: 'SAR', symbol: 'SAR' },
+    locale: 'ar',
+    salla: undefined,
+    settings: twilightSettings,
+  }),
+}));
+vi.mock('@tanstack/react-router', () => ({
+  useRouterState: (options?: { select?: (state: unknown) => unknown }) => {
+    const state = { location: routerLocation };
+    return options?.select ? options.select(state) : state;
+  },
+  // `useTaxonomyLinks.ts` prefers a route loader's taxonomy data; no test
+  // here provides one, so this returns `undefined` and the hook falls back
+  // to its own query, exactly like outside a `<RouterProvider>`.
+  useRouter: () => undefined,
 }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useTheme', () => ({
   useTheme: () => ({ color: {}, font: undefined, settings: themeSettings, isRTL: true }),
@@ -54,6 +76,9 @@ function Harness({ initialOpen = false }: { initialOpen?: boolean }) {
 beforeEach(() => {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
   storeValue.contacts = {};
+  storeValue.settings = {};
+  for (const key of Object.keys(twilightSettings)) delete twilightSettings[key];
+  routerLocation.pathname = '/ar/x';
   document.body.className = '';
 });
 
@@ -193,5 +218,46 @@ describe('MobileDrawer', () => {
       'tel:0148000000',
     ]);
     unmount();
+  });
+
+  /**
+   * The drawer's own language switch row (NAV-2026-09-23 addendum, S9g;
+   * owner, 2026-09-24: "it should be obvious to be a language switch,
+   * showing العربية in English, and EN in the Arabic version").
+   */
+  describe('language switch', () => {
+    it('renders no row when the store is not multilingual (the live store today)', async () => {
+      const { unmount } = renderWithProviders(<Harness initialOpen />);
+      const drawer = await screen.findByTestId('ox-mobile-drawer');
+      expect(drawer.querySelector('[data-testid="ox-language-switch"]')).toBeNull();
+      unmount();
+    });
+
+    it('renders no row when the store lists only one language', async () => {
+      storeValue.settings = { is_multilingual: true };
+      twilightSettings.languages = [{ code: 'ar' }];
+      const { unmount } = renderWithProviders(<Harness initialOpen />);
+      const drawer = await screen.findByTestId('ox-mobile-drawer');
+      expect(drawer.querySelector('[data-testid="ox-language-switch"]')).toBeNull();
+      unmount();
+    });
+
+    it('shows EN, to the /en path, from an Arabic page, and closes the drawer on click', async () => {
+      storeValue.settings = { is_multilingual: true };
+      twilightSettings.languages = [{ code: 'ar' }, { code: 'en' }];
+      routerLocation.pathname = '/ar/x';
+      const { unmount } = renderWithProviders(<Harness initialOpen />);
+      const drawer = await screen.findByTestId('ox-mobile-drawer');
+      const link = drawer.querySelector<HTMLAnchorElement>('[data-testid="ox-language-switch"]');
+      expect(link?.textContent).toBe(ar['ox.header.lang_switch_en']);
+      expect(link?.getAttribute('href')).toBe('/en/x');
+      expect(link?.getAttribute('lang')).toBe('en');
+      expect(link?.getAttribute('hreflang')).toBe('en');
+      expect(link?.getAttribute('aria-label')).toBe(ar['ox.header.switch_language_en']);
+
+      fireEvent.click(link as HTMLAnchorElement);
+      await waitFor(() => expect(screen.queryByTestId('ox-mobile-drawer')).toBeNull());
+      unmount();
+    });
   });
 });

@@ -5,6 +5,7 @@ import {
   toPath,
   withLocale,
   resolveNavHref,
+  otherLocaleLink,
 } from '../../app/components/layout/navLinks';
 
 /**
@@ -114,5 +115,47 @@ describe('toPath and resolveNavHref stay origin-free', () => {
     );
     expect(href).toBe('/protein/c9001');
     expect(toHref(href as string, 'ar')).toBe('/ar/protein/c9001');
+  });
+});
+
+/**
+ * The language switch link (NAV-2026-09-23 addendum, S9g; owner, 2026-09-24:
+ * "it should be obvious to be a language switch, showing العربية in
+ * English, and EN in the Arabic version").
+ */
+describe('otherLocaleLink', () => {
+  it('targets en, on the same path, from an Arabic page', () => {
+    const link = otherLocaleLink('/ar/x', ['ar', 'en']);
+    expect(link).toEqual({
+      locale: 'en',
+      to: '/en/x',
+      labelKey: 'ox.header.lang_switch_en',
+      ariaLabelKey: 'ox.header.switch_language_en',
+    });
+  });
+
+  it('targets ar, on the same path, from an English page', () => {
+    const link = otherLocaleLink('/en/x', ['ar', 'en']);
+    expect(link).toEqual({
+      locale: 'ar',
+      to: '/ar/x',
+      labelKey: 'ox.header.lang_switch_ar',
+      ariaLabelKey: 'ox.header.switch_language_ar',
+    });
+  });
+
+  it('is null when the store lists no other language (the live store today)', () => {
+    expect(otherLocaleLink('/ar/x', ['ar'])).toBeNull();
+    expect(otherLocaleLink('/ar/x', [])).toBeNull();
+    expect(otherLocaleLink('/ar/x', undefined)).toBeNull();
+  });
+
+  it('defaults an unprefixed page to Arabic, so the target is English', () => {
+    expect(otherLocaleLink('/x', ['ar', 'en'])?.to).toBe('/en/x');
+  });
+
+  it('preserves the query and the root path', () => {
+    expect(otherLocaleLink('/ar/search?q=whey', ['ar', 'en'])?.to).toBe('/en/search?q=whey');
+    expect(otherLocaleLink('/ar', ['ar', 'en'])?.to).toBe('/en/');
   });
 });
