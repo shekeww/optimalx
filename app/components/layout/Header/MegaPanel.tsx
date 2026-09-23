@@ -3,6 +3,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { Icon, type OxIconName } from '../../common/Icon';
+import { toSafeLinks } from '../navLinks';
 import { MegaPromo } from './MegaPromo';
 
 export interface MegaPanelProps {
@@ -45,7 +46,14 @@ export function MegaPanel({
   onPointerLeave,
 }: MegaPanelProps) {
   const { t } = useTranslation();
-  const { types, goals, utility } = useTaxonomyLinks();
+  const taxonomy = useTaxonomyLinks();
+  // `useTaxonomyLinks` is shared with the listing page's `ChildChips`, which
+  // renders a live category's raw `.url` on purpose (its own test pins that);
+  // this batch's own consumers reduce every `.to` to a path here instead of
+  // inside the hook (NAV-2026-09-23 §8 item 1).
+  const types = toSafeLinks(taxonomy.types);
+  const goals = toSafeLinks(taxonomy.goals);
+  const utility = toSafeLinks(taxonomy.utility);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

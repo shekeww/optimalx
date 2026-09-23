@@ -3,6 +3,31 @@ import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 
+// `Header` renders the real (lazy) `SallaAdvertisement`, `SallaSearch`,
+// `SallaUserMenu` and `SallaCartSummary` behind `<Suspense>`; none are
+// mocked here (the header's own render, not the web component's, is what
+// this file tests). Their hydration boundary reads `react-intersection-
+// observer`'s `useInView`, and jsdom has no `IntersectionObserver` at all -
+// once the lazy `import()` resolves (part way through this file's run),
+// every later `<Header>` mount crashes on it. A permanent, un-stubbed
+// global (not `vi.stubGlobal`, which this file's own `afterEach` clears
+// after every test) fixes it for the file's whole lifetime.
+if (typeof globalThis.IntersectionObserver === 'undefined') {
+  class IntersectionObserverStub implements IntersectionObserver {
+    root: Element | Document | null = null;
+    rootMargin = '';
+    thresholds: readonly number[] = [];
+    constructor(_callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {}
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return [];
+    }
+  }
+  globalThis.IntersectionObserver = IntersectionObserverStub;
+}
+
 const themeSettings: Record<string, unknown> = {};
 const twilight: Record<string, unknown> = { routeId: 'index', location: { pathname: '/' } };
 const leafRouteId = { current: '/{-$locale}/' };

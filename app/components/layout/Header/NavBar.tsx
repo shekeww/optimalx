@@ -91,7 +91,6 @@ export function NavBar() {
   const entries = HEADER_NAV.filter((entry) => entry.key !== 'offers' || showOffers);
 
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [moreOpen, setMoreOpen] = useState(false);
   const [folded, setFolded] = useState<Set<string> | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Intrinsic item widths keyed by item, measured once while every item is
@@ -100,6 +99,12 @@ export function NavBar() {
   const widths = useRef<Record<string, number>>({});
   const listRef = useRef<HTMLUListElement>(null);
   const shopTriggerRef = useRef<HTMLAnchorElement>(null);
+  // `measure` needs the current links on every call but must keep a stable
+  // identity across renders (a new function each render would re-fire the
+  // effects below on every render, which set state, which renders again -
+  // an infinite loop). A ref updated inline during render, read inside the
+  // callback, is the same trick `countRef` used before this rewrite.
+  const linksRef = useRef<NavLinkItem[]>([]);
 
   const links: NavLinkItem[] = entries.map((entry) => {
     const label = t(entry.labelKey);
@@ -111,6 +116,7 @@ export function NavBar() {
       pin: entry.pin,
     };
   });
+  linksRef.current = links;
 
   const morePages: NavLinkItem[] = MORE_NAV.map((entry) => {
     const label = t(entry.labelKey);
@@ -124,21 +130,22 @@ export function NavBar() {
     const row = host.getBoundingClientRect().width;
     if (!row) return;
     const gap = columnGapOf(list);
+    const currentLinks = linksRef.current;
     const rendered = Array.from(list.querySelectorAll<HTMLElement>('[data-nav-item]'));
-    if (rendered.length >= links.length) {
+    if (rendered.length >= currentLinks.length) {
       for (const node of rendered) {
         const key = node.getAttribute('data-nav-item');
         if (key) widths.current[key] = node.getBoundingClientRect().width;
       }
     }
     if (Object.keys(widths.current).length === 0) return;
-    const items: FoldableItem[] = links.map((link) => ({
+    const items: FoldableItem[] = currentLinks.map((link) => ({
       key: link.key,
       width: widths.current[link.key] ?? 0,
       pin: link.pin,
     }));
     setFolded(computeFold(items, row, gap));
-  }, [links]);
+  }, []);
 
   useEffect(() => {
     widths.current = {};

@@ -3,6 +3,7 @@ import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import { useDocumentClass } from '@salla.sa/twilight-theme-engine/hooks';
 import { categoriesHeadExtend } from '../components/seo/routeHeads';
 import { CATEGORIES_INDEX_KEYS, CategoriesIndex } from '../components/listing/CategoriesIndex';
+import { loadTaxonomyData } from '../components/listing/useTaxonomyLinks';
 
 /**
  * `/categories`: the taxonomy index (PLAN-ship Batch S1 step 6, Contract E:
@@ -19,7 +20,15 @@ import { CATEGORIES_INDEX_KEYS, CategoriesIndex } from '../components/listing/Ca
  * h1 come from one source.
  */
 export const Route = createFileRoute('/{-$locale}/categories')({
-  loader: () => ({ path: '/categories' }),
+  // Taxonomy prefetch (2026-09-23): the index renders every type, goal and
+  // utility link; without the pair `useTaxonomyLinks` reads first, the server
+  // shipped `/search?q=` fallbacks while the client rendered category URLs,
+  // a hydration mismatch S3d observed on this route (fixed on the home route
+  // and the category routes on 2026-09-22, missed here).
+  loader: async ({ context }) => ({
+    path: '/categories',
+    taxonomy: await loadTaxonomyData(context.queryClient),
+  }),
   head: withHead({
     head: categoriesHeadExtend({
       path: '/categories',

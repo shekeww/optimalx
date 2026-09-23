@@ -8,7 +8,7 @@ import { HEADER_NAV, MORE_NAV } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
-import { resolveNavHref } from '../navLinks';
+import { resolveNavHref, toSafeLinks } from '../navLinks';
 import { LocalizationButton } from './LocalizationButton';
 import { Logo } from './Logo';
 import { ShopTree } from './ShopTree';
@@ -74,7 +74,11 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
   const { t } = useTranslation();
   const { settings } = useTheme();
   const store = useStore();
-  const { goals } = useTaxonomyLinks();
+  // Reduced to a path here, not inside `useTaxonomyLinks`: that hook is
+  // shared with the listing page's `ChildChips`, whose own test pins
+  // today's raw-URL behaviour for its live-children path (NAV-2026-09-23 §8
+  // item 1).
+  const goals = toSafeLinks(useTaxonomyLinks().goals);
   const panelRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
   const [group, setGroup] = useState<Group>(initialGroup === 'goals' ? 'goals' : 'types');

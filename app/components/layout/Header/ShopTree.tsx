@@ -1,5 +1,6 @@
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
+import { toSafeLinks } from '../navLinks';
 
 export interface ShopTreeProps {
   /** `list`: the drawer's nested accordion rows. `grid`: the sheet's tiles. */
@@ -27,8 +28,15 @@ export interface ShopTreeProps {
  * accordion and the protein listing's chip row).
  */
 export function ShopTree({ mode, includeUtility = mode === 'list', onNavigate }: ShopTreeProps) {
-  const { types, utility } = useTaxonomyLinks();
-  const otherCategories = includeUtility ? utility.filter((node) => node.slug !== 'services') : [];
+  const taxonomy = useTaxonomyLinks();
+  // Reduced to a path here, not inside the hook: `useTaxonomyLinks` is
+  // shared with the listing page's `ChildChips`, whose own test pins
+  // today's raw-URL behaviour for its live-children path (NAV-2026-09-23 §8
+  // item 1).
+  const types = toSafeLinks(taxonomy.types);
+  const otherCategories = includeUtility
+    ? toSafeLinks(taxonomy.utility.filter((node) => node.slug !== 'services'))
+    : [];
 
   if (mode === 'grid') {
     return (

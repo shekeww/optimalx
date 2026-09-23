@@ -5,6 +5,7 @@ import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { Button } from '../../common/Button';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
+import { toSafeLinks } from '../navLinks';
 import { ShopTree } from './ShopTree';
 
 export interface ShopSheetProps {
@@ -31,7 +32,13 @@ const BODY_OPEN_CLASS = 'modal-is-open';
  */
 export function ShopSheet({ id, open, onClose }: ShopSheetProps) {
   const { t } = useTranslation();
-  const { goals, utility } = useTaxonomyLinks();
+  const taxonomy = useTaxonomyLinks();
+  // Reduced to a path here, not inside the hook: `useTaxonomyLinks` is
+  // shared with the listing page's `ChildChips`, whose own test pins
+  // today's raw-URL behaviour for its live-children path (NAV-2026-09-23 §8
+  // item 1).
+  const goals = toSafeLinks(taxonomy.goals);
+  const utility = toSafeLinks(taxonomy.utility);
   const panelRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
 

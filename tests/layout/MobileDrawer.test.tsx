@@ -125,7 +125,7 @@ describe('MobileDrawer', () => {
     unmount();
   });
 
-  it('lists حسب النوع before حسب الهدف, with protein's five children nested and the three non-services utility categories appended', async () => {
+  it("lists حسب النوع before حسب الهدف, with protein's five children nested and the three non-services utility categories appended", async () => {
     const { unmount } = renderWithProviders(<Harness initialOpen />);
     const drawer = await screen.findByTestId('ox-mobile-drawer');
     const groupLabels = Array.from(
@@ -150,7 +150,7 @@ describe('MobileDrawer', () => {
     unmount();
   });
 
-  it('opening one accordion closes the others (goals open by default, the menu button's own default)', async () => {
+  it("opening one accordion closes the others (goals open by default, the menu button's own default)", async () => {
     const { unmount } = renderWithProviders(<Harness initialOpen />);
     const drawer = await screen.findByTestId('ox-mobile-drawer');
     const [typeToggle, goalToggle] = Array.from(

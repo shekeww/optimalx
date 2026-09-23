@@ -16,16 +16,32 @@ export function flattenMenu(items: readonly MenuItem[] | undefined): MenuItem[] 
 }
 
 /**
- * A menu URL reduced to its path: origin, query and hash dropped
- * (NAV-2026-09-23 §8 item 1). `menuSegments` already does this reduction for
- * matching; this is the same reduction kept as a return value, because the
- * dashboard menu is free to publish an absolute URL
+ * A menu or category URL reduced to its path: origin, query and hash dropped
+ * (NAV-2026-09-23 §8 item 1). The dashboard menu and the live category API
+ * are both free to publish an absolute URL
  * (`https://optimalx.com.sa/protein/c9001`, the measured defect this closes)
  * and an absolute href leaves the preview build the moment someone clicks it.
  */
-function menuPath(url: string): string {
+export function toPath(url: string): string {
   const segments = menuSegments(url);
   return segments.length ? `/${segments.join('/')}` : '/';
+}
+
+/**
+ * `links`, each `.to` reduced to a path and each `.children` recursed the
+ * same way. `useTaxonomyLinks` itself is not changed to do this: it is
+ * shared with the listing page's `ChildChips`, whose own test pins today's
+ * raw-URL behaviour for its live-children path, and that page is out of this
+ * batch's scope. Every one of this batch's own consumers of the hook - the
+ * mega panel, `ShopTree`, the shop sheet, the mobile drawer, the footer's
+ * goal column - calls this once on the arrays it reads instead.
+ */
+export function toSafeLinks<T extends { to: string; children?: T[] }>(links: readonly T[]): T[] {
+  return links.map((link) => ({
+    ...link,
+    to: toPath(link.to),
+    ...(link.children ? { children: toSafeLinks(link.children) } : {}),
+  }));
 }
 
 /**
@@ -35,7 +51,7 @@ function menuPath(url: string): string {
  *
  * 1. A live category whose URL carries the entry's slug. Once the merchant
  *    creates the category, the link follows it without a code change. The
- *    match is reduced to a path (`menuPath`) before it is returned: matching
+ *    match is reduced to a path (`toPath`) before it is returned: matching
  *    against the raw URL is fine (`menuSegments` reduces its own copy), but
  *    returning the raw URL let an absolute origin through unmodified.
  * 2. The entry's standing theme route, which always exists.
@@ -55,7 +71,7 @@ export function resolveNavHref(
     const match = flattenMenu(items).find(
       (item) => typeof item.url === 'string' && menuSegments(item.url).includes(entry.slug as string)
     );
-    if (match?.url) return menuPath(match.url);
+    if (match?.url) return toPath(match.url);
   }
   if (entry.to) return entry.to;
   const query = label.trim();

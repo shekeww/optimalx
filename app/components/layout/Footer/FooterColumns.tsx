@@ -9,7 +9,7 @@ import { FOOTER_COLUMNS, findMenuLink, type NavEntry } from '../../../content/na
 import { Icon } from '../../common/Icon';
 import { useMediaQuery } from '../../common/hooks/useMediaQuery';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
-import { resolveNavHref } from '../navLinks';
+import { resolveNavHref, toSafeLinks } from '../navLinks';
 import { useHeaderMenu } from '../Header/useHeaderMenu';
 
 interface ColumnProps {
@@ -69,7 +69,11 @@ export function FooterColumns() {
   const { t } = useTranslation();
   const store = useStore();
   const { items } = useHeaderMenu();
-  const { goals } = useTaxonomyLinks();
+  // Reduced to a path here, not inside `useTaxonomyLinks`: that hook is
+  // shared with the listing page's `ChildChips`, whose own test pins
+  // today's raw-URL behaviour for its live-children path (NAV-2026-09-23 §8
+  // item 1).
+  const goals = toSafeLinks(useTaxonomyLinks().goals);
   const { data: footerMenu } = useQuery({
     queryKey: ['menu', 'footer'],
     queryFn: () => menu.footer(),
