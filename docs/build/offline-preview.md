@@ -22,6 +22,34 @@ production is unaffected because `optimalx.com.sa` identifies the store by
 host. Found 2026-09-21 after an hour of chasing a routing regression that did
 not exist.
 
+**The dev server (`vite dev` on :3210) is one shared Node process and can go
+fully unresponsive — not just slow — under concurrent headless-browser load.**
+Confirmed 2026-09-24 while diagnosing an owner report of the product page's
+add-to-cart button and quantity control "disappearing": with several
+concurrent headless-Chrome sessions hitting the preview, `Page.navigate`
+(CDP) did not acknowledge for 90+ seconds, a plain `curl` to `/ar` or to a
+product page got zero bytes back after 40-60s, and the vite process's CPU
+time was flat (idle, not computing) the whole time it was stuck — a genuine
+stall, not a busy loop. Any route needing the SSR data-loader chain (which is
+almost every real page: home, PDP, listings) was affected; a route needing no
+loader (the bare-host username redirect above) kept answering in under 60ms
+the entire time, and the separate snapshot API on `:5178` (`serve-store.mjs`,
+plain `node:http`, its own process) kept answering in under 2ms throughout —
+so the bottleneck is specifically Vite's dev-mode SSR render pipeline, not
+the API mock and not the whole machine. The conductor restarting both
+processes cleared it immediately. **If a page won't load, or a control that
+should be there (add-to-cart, quantity, anything mounted client-side) seems
+to be missing or flickering, check whether the server is actually answering
+(`curl -w '%{http_code} %{time_total}'` to `/ar`) before concluding it's a
+code defect** — a live re-check against this exact catalogue/product, once
+the server answers in well under a second, is the only trustworthy evidence.
+There is no code fix for this in `serve-store.mjs` / `offline-api.ts` /
+`preview-offline.mjs`: it is Vite's own dev-server concurrency, and it has no
+equivalent on the live store (a real multi-tenant platform, not one shared
+local Node process). Full diagnosis, including the live DOM evidence taken
+once the server was healthy again, is in
+`docs/build/progress/PDP-ADD-DIAG-2026-09-24.md`.
+
 ---
 
 ## Why this exists
