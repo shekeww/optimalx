@@ -18,7 +18,21 @@ vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({
   useOpeningHours: () => ({ isOpen: false, isEnabled: false, nextOpen: null, nextOpenFormatted: '' }),
 }));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
-  Image: ({ alt, src }: { alt: string; src?: string }) => <img alt={alt} src={src} />,
+  Image: ({
+    alt,
+    src,
+    width,
+    height,
+    srcSet,
+    sizes,
+  }: {
+    alt: string;
+    src?: string;
+    width?: number;
+    height?: number;
+    srcSet?: string;
+    sizes?: string;
+  }) => <img alt={alt} src={src} width={width} height={height} srcSet={srcSet} sizes={sizes} />,
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
 }));
@@ -54,8 +68,10 @@ describe('OxBranch', () => {
     // theme may not ship an invented shopfront captioned as this branch.
     expect(container.querySelector('.ox-branch__photo')).toBeNull();
     expect(container.querySelector('.ox-branch')?.classList.contains('ox-branch--flat')).toBe(true);
-    // Nothing else in the second column either, so the card stays one column.
-    expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('bare');
+    // The booking and directions actions are unconditional (VISIT-2026-09-24
+    // §4.1), so the flat card always carries a second column's worth of
+    // content, even with no other setting filled.
+    expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('full');
   });
 
   it('takes the photo panel and the two column card once the facts exist', () => {
@@ -68,6 +84,19 @@ describe('OxBranch', () => {
     );
     expect(container.querySelector('.ox-branch')?.classList.contains('ox-branch--flat')).toBe(false);
     expect(container.querySelector('.ox-branch__card')?.getAttribute('data-meta')).toBe('full');
+  });
+
+  it('builds the photo panel from the store-wide manifest entry, srcset included', () => {
+    setSettings({});
+    const branchPhoto = STORE_PHOTOS['store-wide'];
+    const { container } = renderWithProviders(
+      <OxBranch photo={branchPhoto.photo} now={THURSDAY_NOON} />
+    );
+    const img = container.querySelector('.ox-branch__photo img');
+    expect(img?.getAttribute('src')).toBe(branchPhoto.photo);
+    expect(img?.getAttribute('width')).toBe(String(branchPhoto.width));
+    expect(img?.getAttribute('height')).toBe(String(branchPhoto.height));
+    expect(img?.getAttribute('srcset')).toBe(storePhotoSrcSet(branchPhoto));
   });
 
   it('marks the row covering today and shows the live status chip', () => {
@@ -91,18 +120,61 @@ describe('OxBranch', () => {
     expect(page.container.querySelector('h1')).not.toBeNull();
   });
 
-  it('omits the WhatsApp and map buttons until their settings are filled', () => {
+  it('always shows the booking and directions actions, and adds the quiet WhatsApp link once the number is set', () => {
     setSettings({});
     const bare = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
-    expect(bare.container.querySelectorAll('.ox-branch__actions a')).toHaveLength(0);
+    const bareLinks = Array.from(
+      bare.container.querySelectorAll<HTMLAnchorElement>('.ox-branch__actions a')
+    );
+    expect(bareLinks).toHaveLength(2);
+    expect(bareLinks[0].textContent).toBe('احجز زيارتك');
+    expect(bareLinks[1].textContent).toBe('الاتجاهات');
+    expect(bareLinks[1].getAttribute('href')).toBe(BRANCH_LISTING.directionsUrl);
+    expect(bareLinks[1].getAttribute('target')).toBe('_blank');
+    expect(bareLinks[1].getAttribute('rel')).toBe('noopener noreferrer');
     bare.unmount();
 
-    setSettings({ whatsapp_number: '+966 50 123 4567', branch_map_url: 'https://maps.example/x' });
+    setSettings({ whatsapp_number: '+966 50 123 4567' });
     const filled = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
-    const links = Array.from(filled.container.querySelectorAll<HTMLAnchorElement>('.ox-branch__actions a'));
-    expect(links).toHaveLength(2);
-    expect(links[0].getAttribute('href')).toContain('https://wa.me/966501234567?text=');
-    expect(links[1].getAttribute('href')).toBe('https://maps.example/x');
+    const links = Array.from(
+      filled.container.querySelectorAll<HTMLAnchorElement>('.ox-branch__actions a')
+    );
+    expect(links).toHaveLength(3);
+    expect(links[2].getAttribute('href')).toContain('https://wa.me/966501234567?text=');
+    expect(links[2].className).toContain('ox-btn--link');
+  });
+
+  it('shows the store rating once the four google_* settings are filled, nothing before', () => {
+    setSettings({});
+    const off = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
+    expect(off.container.querySelector('[data-testid="ox-store-rating"]')).toBeNull();
+    off.unmount();
+
+    setSettings({
+      google_place_url: 'https://maps.google.com/?cid=1',
+      google_rating: '5.0',
+      google_review_count: '80',
+      google_verified_at: '2026-09-24',
+    });
+    const on = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
+    expect(on.container.querySelector('[data-testid="ox-store-rating"]')).not.toBeNull();
+  });
+
+  it('states the visit offer only on the home block, and only while inbody_included is on', () => {
+    setSettings({});
+    const page = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
+    expect(page.container.querySelector('.ox-branch__offer')).toBeNull();
+    page.unmount();
+
+    const home = renderWithProviders(<OxBranch showOfferLine now={THURSDAY_NOON} />);
+    expect(home.container.querySelector('.ox-branch__offer')?.textContent).toBe(
+      'قياس تكوين الجسم (InBody) مجانا في الفرع.'
+    );
+    home.unmount();
+
+    setSettings({ inbody_included: false });
+    const off = renderWithProviders(<OxBranch showOfferLine now={THURSDAY_NOON} />);
+    expect(off.container.querySelector('.ox-branch__offer')).toBeNull();
   });
 
   it('adds the pickup hours to the note only when the setting is set', () => {
@@ -119,29 +191,6 @@ describe('OxBranch', () => {
   it('keeps digits only in a wa.me number', () => {
     expect(digitsOnly('+966 (50) 123-4567')).toBe('966501234567');
     expect(digitsOnly('javascript:alert(1)')).toBe('1');
-  });
-
-  it('renders no map button for a setting that is not an absolute http URL', () => {
-    for (const hostile of [
-      'javascript:alert(1)',
-      // A real tab inside the scheme: browsers ignore it, so the guard must not.
-      `java${String.fromCharCode(9)}script:alert(1)`,
-      'data:text/html,<script>alert(1)</script>',
-      'vbscript:msgbox(1)',
-      'file:///etc/passwd',
-      '//evil.example/maps',
-      '/maps/branch',
-      '#maps',
-      '   ',
-    ]) {
-      setSettings({ branch_map_url: hostile });
-      const view = renderWithProviders(<OxBranch now={THURSDAY_NOON} />);
-      expect(
-        view.container.querySelectorAll('.ox-branch__actions a'),
-        hostile
-      ).toHaveLength(0);
-      view.unmount();
-    }
   });
 
   it('accepts only absolute http and https URLs for the map link', () => {

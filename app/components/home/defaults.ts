@@ -217,8 +217,32 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // once the owner fills `reply_sla_hours`, and that store takes one ~20px
   // shift here rather than every store reserving a line nothing paints.
   'ox-services': { mobile: 2740, desktop: 1524 },
+  // MOVED AND REBUILT (VISIT-2026-09-24 §4.1, S9a-V1): the block never carried
+  // a photograph before this batch (`OxBranchBlock` passed no `photo` prop at
+  // all), so the old 268/184 reserved a flat, photo-less card. It now always
+  // gets the store-wide photo panel, `StoreRating`, the visit-offer line and
+  // four unconditional actions.
+  //
+  // READ OFF THE RUNNING PAGE (headless Chrome over CDP, S8f's method): `/ar`
+  // at 390x844 and 1440x900, the block scrolled into view so its lazy shell
+  // mounts, `.ox-branch-block` measured with `getBoundingClientRect()`. The
+  // live store's settings carry `branch_hours`/`whatsapp_number` (both
+  // counted) but not yet the four `google_*` fields (the owner has not filled
+  // them on the dashboard, VISIT-2026-09-24 §5) — `StoreRating`'s own box was
+  // measured separately: the exact markup the component renders was injected
+  // into the SAME loaded page at the SAME position (right under the title)
+  // and the resulting delta read the same way, then removed, restoring the
+  // original height exactly.
+  //
+  // Mobile (390): 763.6 without the rating row, 884.4 with it inserted
+  // (delta 120.8 = the chip's own 104.8, wrapped to two lines below the
+  // `.ox-gr--rail` 560px breakpoint, plus the head's `--ox-4` gap) -> 885.
+  // Desktop (1440): 505.4 either way — the row's height is set by the photo
+  // panel's own intrinsic contribution, not the card's content, so the extra
+  // line is absorbed into `.ox-branch__actions`' own `margin-block-start:
+  // auto` slack rather than growing the block -> 506.
+  'ox-branch': { mobile: 885, desktop: 506 },
   'ox-guides': { mobile: 0, desktop: 0 },
-  'ox-branch': { mobile: 268, desktop: 184 },
   // No certification holds the per-product evidence a badge needs, so the
   // resolver returns an empty list and the band renders null.
   'ox-certifications': { mobile: 0, desktop: 0 },

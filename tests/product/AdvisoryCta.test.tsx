@@ -9,11 +9,20 @@ import { vi } from 'vitest';
  * (owner brief 2026-09-24). Same identity plate as the services offer strip
  * (S7c), its own copy, its own gates: the InBody clause on `inbody_included`,
  * the WhatsApp button on `whatsapp_number`.
+ *
+ * VISIT-2026-09-24 §4.3 adds the store rating and the directions link, both
+ * still driven off the `settings` prop rather than a hook. `StoreRating`
+ * itself calls `useTheme()` unconditionally even when a `value` override is
+ * passed (it cannot branch around a hook), so this file mocks that hook too,
+ * or every test here would throw for the missing `TwilightProvider`.
  */
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('./i18n-mock')).i18nModuleMock('ar')
 );
+vi.mock('@salla.sa/twilight-theme-engine/hooks/useTheme', () => ({
+  useTheme: () => ({ color: {}, font: undefined, settings: {}, isRTL: true }),
+}));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
@@ -21,6 +30,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 
 const { AdvisoryCta } = await import('../../app/components/product/BelowFold/AdvisoryCta');
 const { SERVICE_CHANNELS } = await import('../../app/content/services');
+const { BRANCH_LISTING } = await import('../../app/content/branch');
 
 const t = createT('ar');
 const VISIT_TO = SERVICE_CHANNELS.find((channel) => channel.id === 'visit')?.to;
@@ -89,5 +99,45 @@ describe('AdvisoryCta', () => {
     expect(getByTestId('ox-pdp-advisory').textContent).toContain(
       t('ox.content.services.card_footer')
     );
+  });
+
+  it('adds a third quiet link to the branch directions, after the two buttons', () => {
+    const { getByTestId } = renderWithProviders(
+      <AdvisoryCta productName="Gold Standard Whey" settings={{}} />
+    );
+    const block = getByTestId('ox-pdp-advisory');
+    const links = Array.from(
+      block.querySelectorAll<HTMLAnchorElement>('.ox-advisory__actions .ox-advisory__action')
+    );
+    const directions = links[links.length - 1];
+    expect(directions.textContent).toBe(t('ox.pdp.advisory_directions'));
+    expect(directions.getAttribute('href')).toBe(BRANCH_LISTING.directionsUrl);
+    expect(directions.getAttribute('target')).toBe('_blank');
+    expect(directions.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(directions.className).toContain('ox-btn--link');
+  });
+
+  it('shows the store rating beside the closing note once the four google_* settings are filled', () => {
+    const off = renderWithProviders(
+      <AdvisoryCta productName="Gold Standard Whey" settings={{}} />
+    );
+    expect(off.getByTestId('ox-pdp-advisory').querySelector('[data-testid="ox-store-rating"]')).toBeNull();
+    off.unmount();
+
+    const on = renderWithProviders(
+      <AdvisoryCta
+        productName="Gold Standard Whey"
+        settings={{
+          google_place_url: 'https://maps.google.com/?cid=1',
+          google_rating: '5.0',
+          google_review_count: '80',
+          google_verified_at: '2026-09-24',
+        }}
+      />
+    );
+    const block = on.getByTestId('ox-pdp-advisory');
+    const rating = block.querySelector('[data-testid="ox-store-rating"]');
+    expect(rating).not.toBeNull();
+    expect(block.querySelector('.ox-advisory__foot')?.contains(rating)).toBe(true);
   });
 });

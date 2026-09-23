@@ -1251,6 +1251,17 @@
       ]
     },
     {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d109",
+      "title": {
+        "ar": "فرع المدينة المنورة",
+        "en": "Madinah branch"
+      },
+      "icon": "sicon-store",
+      "path": "home.ox-branch",
+      "is_default": true,
+      "fields": []
+    },
+    {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d108",
       "title": {
         "ar": "أدلة",
@@ -1275,17 +1286,6 @@
           "required": false
         }
       ]
-    },
-    {
-      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d109",
-      "title": {
-        "ar": "فرع المدينة المنورة",
-        "en": "Madinah branch"
-      },
-      "icon": "sicon-store",
-      "path": "home.ox-branch",
-      "is_default": true,
-      "fields": []
     },
     {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d204",

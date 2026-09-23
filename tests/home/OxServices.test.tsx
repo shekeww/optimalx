@@ -6,6 +6,7 @@ import { createT } from '../helpers/i18n';
 import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
 import { HOME_PLANS, SERVICE_CHANNELS } from '../../app/content/services';
 import { idForSku } from '../../app/content/salla-ids';
+import { STORE_PHOTOS, storePhotoSrcSet } from '../../app/content/store-photos';
 
 /**
  * The advisory band: THE OFFER FIRST (owner brief 2026-09-24).
@@ -137,6 +138,21 @@ describe('OxServices', () => {
     expect(secondary.getAttribute('href')).toBe(
       SERVICE_CHANNELS.find((channel) => channel.id === 'written')?.to
     );
+  });
+
+  it('carries the advisory-room photograph in the offer strip, srcset from the manifest', () => {
+    setSettings({});
+    clearPrices();
+    const { container } = renderWithProviders(<OxServices data={data()} />);
+
+    const photo = container.querySelector('.ox-offer__photo') as HTMLImageElement;
+    const entry = STORE_PHOTOS['advisory-room'];
+    expect(photo.getAttribute('src')).toBe(entry.photo);
+    expect(photo.getAttribute('srcset')).toBe(storePhotoSrcSet(entry));
+    expect(photo.getAttribute('alt')).toBe(t('ox.home.offer_photo_alt'));
+    expect(photo.getAttribute('loading')).toBe('lazy');
+    // Beside the facts, inside the same strip that carries the plate's cut.
+    expect(screen.getByTestId('ox-services-offer').contains(photo)).toBe(true);
   });
 
   it('says the page h1 once: on /services the band heading is not the h1 sentence', () => {
@@ -403,6 +419,25 @@ describe('OxServices', () => {
     expect(
       withSetting.container.querySelector('[data-testid="ox-trust-branch"]')?.textContent
     ).toContain('شارع الملك عبدالعزيز');
+  });
+
+  it('leads the trust row with the store rating once the four google_* settings are filled', () => {
+    setSettings({});
+    clearPrices();
+    const off = renderWithProviders(<OxServices data={data()} />);
+    expect(off.container.querySelector('[data-testid="ox-trust-rating"]')).toBeNull();
+    off.unmount();
+
+    setSettings({
+      google_place_url: 'https://maps.google.com/?cid=1',
+      google_rating: '5.0',
+      google_review_count: '80',
+      google_verified_at: '2026-09-24',
+    });
+    const on = renderWithProviders(<OxServices data={data()} />);
+    const trust = on.container.querySelector('[data-testid="ox-services-trust"]') as HTMLElement;
+    expect(trust.firstElementChild?.getAttribute('data-testid')).toBe('ox-trust-rating');
+    expect(within(trust).getByTestId('ox-store-rating')).toBeTruthy();
   });
 
   it('is finished before the frames are shot, and draws no watermark per card', () => {

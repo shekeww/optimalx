@@ -772,6 +772,20 @@
     max-inline-size: 52%;
   }
 
+  // ENGLISH ONLY (owner review 2026-09-24, item 1b): the pane's inner edge is
+  // a 34deg diagonal, narrower at the top than the bottom (§2's derivation
+  // above), so a flat percentage of the CONTAINER lets Latin copy — wider
+  // than Arabic at the same font-size — run past the cut into the
+  // photograph ("today?" printed over the athlete at 1440 and 1905,
+  // docs/build/progress/S9a-V3.md). 44%, down from 52%: measured against the
+  // pane's own boundary at the headline's own top for this tier (H=520,
+  // run=ox-run(520px)=350.7) with a safety margin, so the whole column —
+  // eyebrow, headline, lead, actions — stays inside the cut at every width.
+  // The Arabic column is untouched: no `[dir='ltr']` selector reaches it.
+  [dir='ltr'] .ox-hero__text {
+    max-inline-size: 44%;
+  }
+
   .ox-hero__actions .ox-cta-pill {
     display: inline-flex;
   }
@@ -822,6 +836,19 @@
   .ox-hero__text {
     max-inline-size: 48%;
     gap: var(--ox-6);
+  }
+
+  // Same fix as the tier below, this tier's own H/run (owner review
+  // 2026-09-24, item 1b). Measured at 1440 (getBoundingClientRect against
+  // the clip polygon, docs/build/progress/S9a-V3.md): the pane's inner
+  // boundary at the headline's own top sits at band-relative x=622.6; the
+  // text column starts at the container gutter (64.5 at 1440), leaving
+  // 558px before the cut. 40% of the 1296px container is 518.4px, inside
+  // that figure with margin from 1024 up through 1905 (the owner's own
+  // review width) — the container caps at 1296 while the pane's own box
+  // keeps growing with the viewport past it, so the margin only widens.
+  [dir='ltr'] .ox-hero__text {
+    max-inline-size: 40%;
   }
 
   .ox-hero__wedge--wide {
