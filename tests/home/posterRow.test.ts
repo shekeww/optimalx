@@ -27,14 +27,19 @@ describe('the mixed poster row', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('cuts the content card on the diagonal at lean 40, the tier its strap is built from', () => {
-    const [content] = rulesFor('.ox-pcard--content');
-    expect(declared(content, 'clip-path')).toMatch(
+  it('cuts every card, offer and content alike, on the diagonal at lean 40 (owner ruling 2026-09-24, S8i)', () => {
+    const [card] = rulesFor('.ox-pcard');
+    expect(declared(card, 'clip-path')).toMatch(
       /^polygon\(0 0, calc\(100% - 27px\) 0, 100% 40px, 100% 100%, 27px 100%, 0 calc\(100% - 40px\)\)$/
     );
-    // The offer poster stays uncut (S7a §6: artwork nobody has inspected).
-    const [offer] = rulesFor('.ox-pcard');
-    expect(declared(offer, 'clip-path')).toBeUndefined();
+    // One cut on the base rule, none re-declared on the content kind, so the
+    // two kinds can never drift apart again.
+    const [content] = rulesFor('.ox-pcard--content');
+    expect(declared(content, 'clip-path')).toBeUndefined();
+  });
+
+  it('carries no strap rule on either kind (owner ruling 2026-09-24, S8i)', () => {
+    expect(compiledRules().filter((rule) => rule.selector.includes('ox-pcard__slash'))).toEqual([]);
   });
 
   it('keeps the reserved block height S7a measured for the 4:5 card', () => {

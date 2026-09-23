@@ -1595,9 +1595,12 @@ body {
 }
 
 // Owner item 2026-09-24 (S8a): the goal card's own strap is GONE — rule and
-// markup — and the card keeps its diagonal cuts and sharp corners alone. The
-// history and the two functions below stay because `.ox-pcard__slash` (the
-// poster carousel's own strap, §17) is still built from them.
+// markup — and the card keeps its diagonal cuts and sharp corners alone.
+// Owner ruling later the same day (S8i): the poster carousel's strap went the
+// same way, so the strap-geometry functions (`ox-strap-inset()`,
+// `ox-strap-width()`, S4a) that only it still called are retired with it;
+// the derivation below stays as the record of why the card-strap idea was
+// built the way it was, and git history (S4a, S7a) holds the code.
 //
 // Owner review 2026-09-23, item 2: "the orange straps on cards should always
 // be angled" — a 34deg parallelogram again (it carried `skewX(var(--ox-skew))`
@@ -1633,18 +1636,6 @@ body {
 // `transform-origin: 0 0` (always the box's own PHYSICAL top-left corner,
 // in both `dir`s) anchors the skew at that same starting point rather than
 // the default centre, so the maths below is exact.
-$ox-strap-cos34: 0.829;
-$ox-strap-sin34: 0.5592;
-$ox-strap-inv-cos34: 1.20627; // 1 / cos34
-
-@function ox-strap-inset($run, $gap) {
-  @return $run + $gap * $ox-strap-cos34;
-}
-
-@function ox-strap-width($thickness) {
-  @return $thickness * $ox-strap-inv-cos34;
-}
-
 .ox-goal__body {
   position: relative;
   z-index: 3;
@@ -3441,13 +3432,21 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
 // Owner brief 2026-09-24 (docs/build/progress/S7a.md): the poster carousel's
 // six cards are now IMAGES, each carrying its own baked-in headline, offer
-// and CTA. The diagonal corner cuts S3b/S4a gave this card, and the three
-// per-tier clip-path/strap-width overrides that used to sit above this rule,
-// are GONE, not shrunk: a `clip-path` written today cannot see where the
-// owner's logo (top-left) or vertical tagline (top-right) will land in a file
-// that does not exist on disk yet, and only a zero-cut card is provably safe
-// for artwork this theme has not inspected. Sharp corners (`border-radius:
-// 0`) stay — S3b's own sharp-corner reset was never only about the cut.
+// and CTA. S7a left them uncut because a `clip-path` written today cannot
+// see where the owner's logo or tagline will land in a file not yet on disk.
+//
+// Owner ruling later the same day (docs/build/progress/S8i.md): "all cards
+// share the same cuts" and "remove the orange strap on the cards". So the
+// diagonal cuts (top-right and bottom-left, lean 40 / run 27.0) sit on THIS
+// base rule and reach both kinds, offer poster and content card alike, and
+// the `.ox-pcard__slash` strap rule and markup are gone. 27.0 / 309.2 = 8.7%
+// of the narrowest card the rail draws (the 390 and 1024 tiers above),
+// inside the 24% budget (X-IDENTITY §2.3); one tier, not three, because the
+// card's width only moves within 309 to 352px across the rail's four tiers.
+// The residual risk moves to the poster files: their corners must stay clear
+// of the two cuts (docs/build/owner-checklist.md). Sharp corners
+// (`border-radius: 0`) stay — S3b's own sharp-corner reset was never only
+// about the cut.
 .ox-pcard {
   position: relative;
   display: block;
@@ -3457,6 +3456,7 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   background: var(--ox-graphite-2);
   color: var(--ox-paper);
   text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
 
   &:focus-visible {
     outline: none;
@@ -3494,60 +3494,19 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   color: rgb(255 255 255 / 0.78);
 }
 
-// The angled strap stays (the brief is explicit) at the smallest lean/run
-// pair the identity ladder has (40/27, the "small arm-foot" size `GoalCard`'s
-// own 390 tier used before S8a removed its strap, `ox-strap-inset()`/
-// `ox-strap-width()` defined once above `.ox-goal__body`) — there is no clip
-// left to size a bigger strap against,
-// and a small corner accent risks less against artwork this theme has not
-// seen than the longer 135px bar the goal and plan cards carry. A residual,
-// honest risk, not a solved one: a real file whose tagline runs to within a
-// few pixels of the physical top-right edge can still sit under this strap;
-// flagged in docs/build/progress/S7a.md for the visual QA pass once the
-// owner's six files land.
-.ox-pcard__slash {
-  block-size: 90px; // ox-allow: small-angle
-  position: absolute;
-  z-index: 2;
-  inset-block-start: 3.3552px;
-  inset-inline-start: ox-strap-inset(ox-run(40px), 6px);
-  inline-size: ox-strap-width(10px);
-  background: var(--ox-accent);
-  transform: skewX(calc(-1 * var(--ox-skew)));
-  transform-origin: 0 0;
-  pointer-events: none;
-}
-
-[dir='ltr'] .ox-pcard__slash {
-  inset-inline-start: auto;
-  inset-inline-end: ox-strap-inset(ox-run(40px), 6px);
-}
-
 // The content card (owner item 2026-09-24, docs/build/progress/S8a.md): the
 // five text-and-photo cards restored from 4657b89 into the same rail as the
 // offer posters, alternating with them. Same box as the offer beside it
-// (`.ox-pcard`'s own 4:5, sharp corners, the strap above), so the row keeps
-// one height and reads as one set; the composition inside is the pre-S7a
-// one: the photograph low on the dark ground, a scrim deepening toward the
-// floor, then the title, the line and the angled arrow.
-//
-// The diagonal cuts come back on THIS kind only. S7a dropped them from the
-// offer posters because a clip cannot see where a logo or a tagline will
-// land in artwork nobody has inspected; these photographs are the theme's
-// own, so that reason does not reach them. lean 40 / run 27.0, the tier the
-// strap above is already built from (`ox-strap-inset(ox-run(40px), 6px)`
-// starts 6px inside exactly this cut): 27.0 / 309.2 = 8.7% of the narrowest
-// card the rail draws (the 390 and 1024 tiers, §17.2), inside the 24%
-// budget (X-IDENTITY §2.3). One tier, not three: the card's width moves
-// within 309 to 352px across the rail's four tiers, too little for a second
-// lean to earn its own breakpoint.
+// (`.ox-pcard`'s own 4:5, sharp corners and diagonal cuts, no strap; S8i),
+// so the row keeps one height and reads as one set; the composition inside
+// is the pre-S7a one: the photograph low on the dark ground, a scrim
+// deepening toward the floor, then the title, the line and the angled arrow.
 .ox-pcard--content {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   isolation: isolate;
   padding: var(--ox-6);
-  clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
 }
 
 .ox-pcard__frame,

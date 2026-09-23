@@ -51,21 +51,15 @@ const SIZES = '(min-width: 1280px) 312px, (min-width: 1024px) 309px, (min-width:
  * back beside these in the home rail as `ContentPosterCard` below (owner
  * item 2026-09-24, docs/build/progress/S8a.md); this card is unchanged.
  *
- * THE DIAGONAL CORNER CUTS S3B/S4A GAVE THIS CARD ARE DROPPED HERE, not
- * reduced to a smaller tier. The owner's logo sits at the physical top-left
- * and a vertical tagline at the physical top-right of files that are not on
- * disk yet, and a `clip-path` written today cannot see where either one will
- * actually land in an image dropped in weeks from now. Cutting nothing is the
- * only choice that is provably safe for artwork this theme has not inspected.
- * Sharp corners (`border-radius: 0`) stay: S3b's own sharp-corner reset was
- * never only about the diagonal cut. The angled orange strap stays too (the
- * brief is explicit), rebuilt at the smallest lean/run pair the identity
- * ladder has (40/27, the same "small arm-foot" size `GoalCard`'s own 390
- * tier uses) since there is no clip left to size a strap against, and a
- * small corner accent is the safer bet against artwork this theme has not
- * seen: it decorates a corner rather than laying a long bar across whatever
- * the owner draws there. This is a residual, honest risk, not a solved one —
- * see the progress note for what a real file might still collide with.
+ * Owner ruling 2026-09-24 (docs/build/progress/S8i.md): no orange strap on
+ * any card in this rail, and every card, offer poster or content card, shares
+ * the same diagonal corner cuts (top-right and bottom-left, lean 40, the
+ * `.ox-pcard` rule in `_b2-home.scss` §17.2). S7a had left the offer
+ * posters uncut because a clip cannot see where a logo or tagline will land
+ * in artwork not yet on disk; the owner chose one shape for the whole row
+ * over that caution, so the residual risk moves to the poster files
+ * themselves: keep their corners clear of the two cuts. Sharp corners
+ * (`border-radius: 0`) stay.
  *
  * Until the owner's file lands (`available` false), the card renders the
  * same tinted plate every photo-less card in this theme falls back to, with
@@ -99,7 +93,6 @@ export function PosterCard({ slug, photo, srcSet, to, alt, available, loading }:
           <span className="ox-pcard__caption">{alt}</span>
         </span>
       )}
-      <span className="ox-pcard__slash" aria-hidden="true" />
     </Link>
   );
 }
@@ -121,9 +114,8 @@ export interface ContentPosterCardProps {
  * 2026-09-24, docs/build/progress/S8a.md): the theme's own photograph low on
  * the dark ground behind a scrim, a title, one line and the angled arrow,
  * the same box as the offer poster beside it (4:5, sharp corners, the same
- * strap) so the alternating row reads as one set. Its photograph is the
- * theme's own, not artwork of unknown layout, so the diagonal cuts S7a had
- * to drop for the offer posters come back here (`.ox-pcard--content`).
+ * diagonal cuts, no strap; owner ruling 2026-09-24, S8i) so the alternating
+ * row reads as one set.
  *
  * The whole card is one link; the arrow is a decorative span face (box 24,
  * glyph 16, the shared `.ox-iconbtn--angled`), never a nested button.
@@ -149,7 +141,6 @@ export function ContentPosterCard({
     >
       <BandPhoto src={photo} className="ox-pcard__frame" width={photoWidth} height={photoHeight} />
       <span className="ox-pcard__scrim" aria-hidden="true" />
-      <span className="ox-pcard__slash" aria-hidden="true" />
       <span className="ox-pcard__body">
         <span className="ox-pcard__title ox-h3">{title}</span>
         <span className="ox-pcard__line">{line}</span>

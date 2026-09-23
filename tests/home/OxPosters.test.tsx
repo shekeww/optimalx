@@ -164,11 +164,11 @@ describe('OxPosters, six offer posters, unavailable by default (no files on disk
     }
   });
 
-  it('carries the angled strap, decorative only, never a nested link or button', () => {
+  it('carries no strap on either kind (owner ruling 2026-09-24, S8i) and never a nested link or button', () => {
     const { container } = renderWithProviders(<OxPosters data={data()} />);
-    const straps = container.querySelectorAll('.ox-pcard__slash');
-    expect(straps).toHaveLength(HOME_CAROUSEL.length);
-    straps.forEach((strap) => expect(strap.getAttribute('aria-hidden')).toBe('true'));
+    expect(container.querySelectorAll('.ox-pcard__slash')).toHaveLength(0);
+    // Both kinds share the one base class the diagonal cuts are drawn on.
+    expect(container.querySelectorAll('.ox-pcard')).toHaveLength(HOME_CAROUSEL.length);
     expect(container.querySelectorAll('.ox-pcard button')).toHaveLength(0);
     expect(container.querySelectorAll('.ox-pcard a')).toHaveLength(0);
 

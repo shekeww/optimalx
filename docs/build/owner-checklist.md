@@ -84,3 +84,7 @@ SFDA registration display, PDPL privacy and consent text, SCFHS scope for the wr
     - The form renders only once `newsletter_action_url` is a real `https://`
       link; an empty or `http://` value keeps the whole band hidden, the same
       way it behaves with `show_newsletter` off.
+
+## Poster files and the corner cuts (S8i, 2026-09-24)
+
+Every card in the "اكتشف أكثر" rail, offer poster included, is clipped on the diagonal at the physical top-right and bottom-left (a 40px-tall, 27px-wide triangle each). Keep the logo, the tagline and any text in the six poster files clear of those two corners; the cut is in the theme, not the file, so it cannot be turned off per poster.
