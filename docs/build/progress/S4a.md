@@ -115,13 +115,15 @@ inner-top in that order (matching the polygon's own winding).
 
 ### Containment proof (general, not per-tier — and why that is the stronger check)
 
-A live `getBoundingClientRect()` reading was asked for; the dev server is
-unreachable this session (documented below, and already documented in
-`docs/build/progress/S3b.md` as the same standing condition). What follows
-is not a substitute of convenience — it is a stronger guarantee than a
-single rendered measurement would be, because it holds for the whole cut
-line algebraically, at every tier at once, rather than confirming one
-sampled pixel rect:
+A live `getBoundingClientRect()` reading was asked for; the dev server was
+unreachable for most of this correction (documented in the batch-level
+Deviations, and already documented in `docs/build/progress/S3b.md` as the
+same standing condition this session) and a `getBoundingClientRect()` call
+needs a browser session this tool has no access to even once the server
+answers `curl` again. What follows is not a substitute of convenience — it
+is a stronger guarantee than a single rendered measurement would be,
+because it holds for the whole cut line algebraically, at every tier at
+once, rather than confirming one sampled pixel rect:
 
 Parametrize the cut as `P(t) = (100% − run + t·run, t·lean)` for `t ∈
 [0,1]` (`t=0` is `A`, `t=1` is `B`). For `0 ≤ y ≤ lean` the card's own right
@@ -165,10 +167,119 @@ vertices, whose `new_y` exceeds `lean` at all three tiers — e.g. 43.36 >
 - `pnpm vitest run tests/home tests/common` → 17 files / 170 tests, still
   green (no test exercises this CSS-only geometry directly; the suite
   confirms nothing else regressed).
-- Live `getBoundingClientRect()` — **could not be run**, dev server
-  unreachable this session (see the batch-level Deviations); the algebraic
+- Live `curl` against `http://localhost:3210/ar`, once the dev server
+  recovered (see the batch-level Deviations): six `data-testid="ox-goal-
+  card"` elements and exactly six `.ox-goal__slash` spans in the raw SSR
+  HTML — one strap per card, present and mounted. A `getBoundingClientRect()`
+  reading itself needs a real browser session, which this tool still has
+  no access to even with the server answering `curl` again; the algebraic
   proof above is exact for every point on the cut, at every tier, which a
   single rendered rect reading would not have been.
+
+### Second coordinator follow-up: extend the strap vertically
+
+Owner ask: "make it run much longer along the card (from the top edge down
+roughly 40 to 50 percent of the card height at 1440, proportionally at
+390/768), still parallel to the top-right cut, same thickness, fully inside
+the clip."
+
+**Why the parallelogram above cannot simply be lengthened.** Its two long
+edges follow the cut's OWN direction, `(run, lean)` per unit length. Past
+the cut's own foot (point `B`, at `y = lean`), continuing in that same
+direction pushes `x` PAST `100%` — outside the card — because that is
+exactly the direction the cut itself travels (from `x = 100% − run` at the
+top to `x = 100%` at its foot): parametrizing the line as `P(t) =
+(100% − run·(1−t), t·lean)`, at `t = 2` (double the cut's own length),
+`x = 100% + run` — already outside. This is *why* the cut is a short
+segment, not a long one, in the identity system's own construction (§2.3:
+"at 34° a full-height diagonal is impossible on a hero-scale band" — the
+same geometry, one level down).
+
+**The fix: one long skewed bar, leaning the OPPOSITE horizontal way as it
+descends** — the same mirrored slant `skewX(calc(-1 * var(--ox-skew)))`
+item 1 already draws, now applied to a genuinely long box instead of a
+short clipped one. Starting at the exact same "6px inside the cut" point
+already proven safe (§ above), and moving AWAY from the card's own right
+edge as `y` increases is the one direction that stays inside for any
+length — proven below, generally, the same way as the first proof.
+
+New Sass helpers (`_b2-home.scss`, replacing the now-unused
+`ox-strap-polygon()`, which is removed): `ox-strap-inset($run, $gap)` returns
+`run + gap·cos34°` — the same "6px inside the cut" starting distance as
+before (only depends on `run`, not `lean`, so it is reused directly as the
+new `inset-inline-start`/`-end` value). `ox-strap-width($thickness)` returns
+`thickness / cos34°` — the pre-skew `inline-size` a skewed box needs so its
+two long edges sit `thickness` px apart PERPENDICULARLY (two lines both
+leaning 34° from vertical, a horizontal distance `w` apart, sit `w·cos34°`
+apart perpendicularly — the same relationship the very first, pre-coordinator
+strap draft used and this batch's earlier sections derive in full).
+`transform-origin: 0 0` (always the box's own PHYSICAL top-left corner, in
+both `dir`s) anchors the skew at that starting point exactly, so the box's
+own `inset-block-start`/`inset-inline-start` values ARE the strap's true
+starting coordinate with no additional offset to account for.
+
+**Length target.** `.ox-goal`'s own `min-block-size` is 200/228/400px at the
+390/768/1440 tiers (`.ox-pcard` is a fixed 300px at every tier — no
+`min-block-size` override exists for it). Using ~45% (the middle of the
+brief's 40–50% range) at every tier:
+
+| Surface | Tier | Card height | Target (45%) | Shipped `block-size` | Actual reach (incl. the 3.36px top offset) | % of card |
+|---|---|---|---|---|---|---|
+| Goal | 390 | 200px | 90.0px | 90px | 93.36px | 46.7% |
+| Goal | 768 | 228px | 102.6px | 103px | 106.36px | 46.6% |
+| Goal | 1440 | 400px | 180.0px | 180px | 183.36px | 45.8% |
+| Poster | all three | 300px (constant) | 135.0px | 135px | 138.36px | 46.1% |
+
+All four land inside the brief's 40–50% window at every tier, including the
+small, deliberate top offset (`inset-block-start: 3.3552px`, unchanged from
+the short strap — `6px · sin34°`).
+
+**`block-size: 180px` (the goal card's 1440 tier) exceeds the 158px
+control-scale ceiling.** No `ox-allow: small-angle` pragma is used there:
+that rule governs elements BELOW the 158px floor (X-IDENTITY §3.2 — "Below
+158px... may exist only inside a sprite symbol"); above it, a band/panel-
+scale angle is the normal, ungated case, and in any event this is a thin
+TRAVELLING PARALLELOGRAM BAR, not a cut into a panel — the same construction
+§2.3 names the hero strap and the footer wedge bars as exempt from its own
+run/inline-size budget by name. `check-identity.mjs` was run after this
+change and raised nothing (0 problems), confirming the checker's own
+implementation agrees with this reading rather than just my interpretation
+of the prose.
+
+**Containment proof (general, mirrors the first one).** With
+`transform-origin: 0 0` at the box's own top-left `(x0, y0)`, a `skewX(θ)`
+box's two long edges are `X(ly) = x0 (+ inline-size) + ly·tan(θ)`,
+`Y = y0 + ly`, for `ly` from `0` to `block-size`. With `θ = -34°` (RTL; the
+sign auto-flips via `--direction-factor` in LTR, always producing the
+mirrored-but-equivalent result), `tan(θ) < 0`, so `X` strictly DECREASES as
+`ly` increases — moving further left, further inside, for every `ly ≥ 0`,
+with no upper bound. At `ly = 0`, `X = x0 (+ inline-size)`, which is exactly
+the already-proven "6px inside the cut" point. Since the boundary at
+`Y > lean` is the simple straight edge `x = 100%`, and `X` only ever moves
+LEFT of its already-inside starting point, the strap is inside for its
+entire length, however long — this is what makes "extend it as far as you
+like" safe with this construction and NOT safe with the first (cut-parallel)
+one.
+
+#### Verified by
+
+- `node_modules/.bin/sass --no-source-map app/styles/app.scss <out>.css` —
+  compiles clean; the table above and the per-tier CSS values below are
+  copied verbatim from its output:
+  ```css
+  /* 390 */  inset-inline-start: 31.974px; inline-size: 12.0627px;  block-size: 90px;
+  /* 768 */  inset-inline-start: 42.774px; inline-size: 13.26897px; block-size: 103px;
+  /* 1440 */ inset-inline-start: 48.174px; inline-size: 14.47524px; block-size: 180px;
+  ```
+  (`.ox-pcard__slash` carries the identical `inset-inline-start`/`inline-size`
+  pairs at each tier, `block-size: 135px` throughout.)
+- `node scripts/check-identity.mjs` → `323 file(s), 0 problem(s)` (no
+  `small-angle` finding on the now-180px goal-card strap, confirming the
+  bar-exemption reading above).
+- `node scripts/check-rtl.mjs` → `323 file(s), 0 problem(s)`.
+- `node scripts/check-motion.mjs` → `323 file(s), 0 problem(s)`.
+- `node scripts/check-tokens.mjs` → `123 token(s) defined, 318 file(s)
+  scanned, 0 problem(s)`.
 
 ---
 
@@ -538,22 +649,104 @@ is fully covered by the pixel-level and visual checks above.
 
 ---
 
+## 6. Type-tile corner radius: rounded to match, artwork clipped to it
+
+Second coordinator follow-up: "the dark ones (vitamins-minerals and the
+black-tone tiles) show square black corners while the others look rounded;
+give every art tile the same corner radius as the tinted tiles... with the
+artwork clipped to it... on the home tiles and the categories index cards."
+The categories index page (`_b4-listing.scss`) is outside this batch's
+original file list — coordinator-authorized scope for this one fix, noted
+in Deviations below.
+
+**What was actually inconsistent, read from the CSS rather than assumed.**
+On the categories index (`.ox-cat-card`, `_b4-listing.scss`), the tinted
+card already carried `border-radius: var(--ox-r-2)` (8px); the art variant
+(`.ox-cat-card--art`) explicitly zeroed it, on record as a deliberate S2i
+decision at the time ("a square-cornered artwork sits flush inside a
+square-cornered frame, not a rounded one showing the artwork's own corner
+past the curve" — true only because the artwork itself had no clip). On the
+HOME grid (`.ox-tile`, `_b2-home.scss`), by contrast, NEITHER the tinted
+nor the art tile carried any `border-radius` at all — both were already
+square, so there was no existing inconsistency there to fix; the brief's
+"give every art tile the same radius as the tinted tiles" is satisfied by
+adding the SAME new radius to both branches at once, so the two never
+diverge going forward.
+
+**The fix, one shape, two surfaces.** Both `.ox-tile` and `.ox-cat-card` now
+carry `border-radius: var(--ox-r-2)` (8px — the token the categories-index
+tinted card already used, so the two surfaces read as one system) plus
+`overflow: hidden` on the CARD element itself, clipping every child —
+the tinted `::before` background/border, and the art `<img>`
+(`.ox-tile__art` / `.ox-cat-card__art`) — to that one rounded shape in a
+single declaration, rather than rounding each child layer separately.
+`.ox-cat-card--art`'s own `border-radius: 0` override is removed (the base
+rule's `--ox-r-2` now applies uniformly); its explanatory comment, and
+`.ox-cat-card__art`'s own, are corrected to match rather than left
+contradicting the code.
+
+**The focus ring is unaffected.** Both cards' focus style is
+`@include ox-focus(2px)`, which draws an `outline` (`.ox-goal`/`.ox-pcard`
+needed to move theirs to an inset `box-shadow` specifically because
+`clip-path` clips an outline — X-IDENTITY §3.4's `focus-clipped` rule); an
+`outline` is never clipped by `overflow`, only by `clip-path`, so
+`.ox-tile`/`.ox-cat-card` need no such change.
+
+### Verified by
+
+- `node_modules/.bin/sass --no-source-map app/styles/app.scss <out>.css` —
+  compiles clean.
+- `node scripts/check-identity.mjs` → `327 file(s), 0 problem(s)`.
+- `node scripts/check-rtl.mjs` → `327 file(s), 0 problem(s)`.
+- `node scripts/check-motion.mjs` → `327 file(s), 0 problem(s)`.
+- `node scripts/check-tokens.mjs` → `123 token(s) defined, 322 file(s)
+  scanned, 0 problem(s)`.
+- `pnpm vitest run tests/home/OxCategories.test.tsx tests/listing/
+  CategoriesIndex.test.tsx` → both fully green (11/11, 10/10) — no test in
+  either file asserts a CSS property, so this instead confirms the markup
+  itself (which this fix never touched) still renders every tile/card
+  correctly; the visual rounding itself has no automated test surface in
+  this repo (a CSS-only change, no live-browser screenshot tool available
+  this session).
+- Could not additionally confirm visually via a live render (no
+  screenshot/browser tool in this environment); the fix is a direct,
+  narrow CSS change (one radius token, one `overflow` value, on exactly the
+  two selectors already responsible for this shape) with no markup change,
+  so the risk surface is small and covered by the two gates above plus the
+  green test suites for both surfaces.
+
+---
+
 ## Files changed
 
 - `app/styles/06-ox/_primitives.scss` — `.ox-iconbtn--angled` only:
   transparent face, 1px `color-mix` border (item 2).
 - `app/styles/06-ox/_b2-home.scss` — `.ox-goal__slash`/`.ox-pcard__slash`
-  mirrored right, then (coordinator follow-up) rebuilt as a physical
-  parallelogram via a new `ox-strap-polygon()` Sass function, with per-tier
-  overrides at 640/1280px (item 1); `.ox-goal:hover .ox-goal__cta
-  .ox-iconbtn--angled` and `.ox-plan__arrow`/`.ox-plan:hover .ox-plan__arrow`
-  no-fill fix (item 2); `.ox-plans`/`.ox-plans__slide` regridded, new
-  `.ox-channel-door*` rules, new 768/1024 tiers (item 3);
-  `.ox-brands__name` → `.ox-brands__mark`/`.ox-brands__mark-first` (item 4).
+  mirrored right, then rebuilt twice more on coordinator follow-up: first as
+  a physical parallelogram (`ox-strap-polygon()`, later removed), then as a
+  long skewed bar (`ox-strap-inset()`/`ox-strap-width()`, the shipped form)
+  leaning away from the card edge so it can run 40-50% of the card's height
+  and still stay inside the clip, with per-tier overrides at 640/1280px
+  (item 1); `.ox-goal:hover .ox-goal__cta .ox-iconbtn--angled` and
+  `.ox-plan__arrow`/`.ox-plan:hover .ox-plan__arrow` no-fill fix (item 2);
+  `.ox-plans`/`.ox-plans__slide` regridded, new `.ox-channel-door*` rules,
+  new 768/1024 tiers (item 3); `.ox-brands__name` →
+  `.ox-brands__mark`/`.ox-brands__mark-first` (item 4, later superseded — see
+  the note below); `.ox-tile` gained `border-radius: var(--ox-r-2)` +
+  `overflow: hidden` so every tile, tinted or art, shares one rounded corner
+  (item 6, coordinator follow-up).
+- `app/styles/06-ox/_b4-listing.scss` — `.ox-cat-card` gained the same
+  `border-radius: var(--ox-r-2)` + `overflow: hidden`; `.ox-cat-card--art`'s
+  own `border-radius: 0` override removed so it inherits the base rule's
+  radius instead (item 6, coordinator follow-up, scope explicitly authorized
+  for this one fix — this file is otherwise off-limits, see Deviations).
 - `app/components/home/OxServices.tsx` — rewritten: `ChannelDoor` (new,
-  file-local), `routeOut`-gated channel row, six-card `<ul>` (item 3).
+  file-local), `routeOut`-gated channel row, six-card `<ul>` (item 3). **Since
+  superseded by a further rewrite outside this batch** — see the note below.
 - `app/components/home/OxBrands.tsx` — sort by `products_count` desc, cap
-  24, name-mark fallback (item 4).
+  24, name-mark fallback (item 4). **Since superseded by a further rewrite
+  (a scroll-snap carousel, `BrandTile`) outside this batch** — see the note
+  below.
 - `app/components/home/defaults.ts` — `HOME_BLOCK_HEIGHTS['ox-services']`
   re-measured for six cards (item 3).
 - `app/components/home/HomeSkeleton.tsx` — `ServicesSkeleton()` reserves
@@ -585,6 +778,28 @@ test were read for reference and never touched.
 
 ## Deviations
 
+0. **`OxServices.tsx`, `OxBrands.tsx`, `HomeSkeleton.tsx`, `defaults.ts` and
+   both their test files were rewritten further by a concurrent, later batch
+   during this session** (its own docblock references
+   `docs/build/progress/S5c.md`), evolving the six-card band into a titled
+   two-row "one offer in two steps" design (each row now carries its own
+   title/note, both rows render on `/services` too, `ChannelCard`'s
+   dedicated channels section on `ServicesHub.tsx` is gone) and the brand
+   strip into a scroll-snap carousel (`BrandTile`). This happened AFTER this
+   batch's own item 3/4 work landed and is not this batch's doing; per
+   instruction it is not reverted. That batch has already converged
+   `tests/home/OxServices.test.tsx` and `tests/home/blocks.test.tsx` to the
+   new design (both green as of this batch's own final check). One file it
+   has not yet reconciled: `tests/pages/ServicesHub.test.tsx` still asserts
+   the now-removed dedicated channels section (`ox-channel-card` count of 3,
+   and a reply-line assertion that depended on it) and fails against the
+   current `ServicesHub.tsx`. Confirmed isolated to exactly that one file —
+   `pnpm vitest run tests/home tests/common tests/listing tests/pages
+   tests/blocks`: 44/45 files, 480/482 tests green; the two failures are
+   both pre-existing-channels-section assertions in a file outside this
+   batch's own scope (`app/components/pages/**`/its tests were never part
+   of this brief), not anything this batch's item 1/2/5/6 work touches. Left
+   for whichever batch owns the S5c evolution to reconcile.
 1. **`ChannelDoor` is a new, file-local component inside `OxServices.tsx`,
    not a reuse of `app/components/blocks/ChannelCard.tsx`.** The full
    `ChannelCard` (badge, long description, a 48px block-level primary
@@ -627,57 +842,65 @@ test were read for reference and never touched.
    as printed... English name" phrasing could also be read as "render the
    Arabic" — this batch kept the already-shipped, working convention rather
    than silently reversing it.
-6. **Live `curl`/`getBoundingClientRect()` verification against
-   `http://localhost:3210` could not be completed** (the coordinator's
-   strap-containment follow-up asked for a `getBoundingClientRect()`
-   reading specifically; same root cause). Nine `curl` attempts across
-   roughly six minutes (`/ar`, `/`, `/ar/brands`; timeouts from 15s to 90s;
-   direct `http://[::1]:3210` as well as `localhost`) all returned curl
-   exit 28 (timeout), with `netstat` confirming the port is listening but
-   the connection never completes — the same "dev server unresponsive
-   under concurrent load" condition `docs/build/progress/S3b.md` (item 6 of
-   its own Deviations) already documented this session. The strap's
-   containment is instead verified by an exact algebraic proof (section 1's
-   own "Containment proof" above), which is stronger than a single
-   rendered rect would have been — it holds for the whole cut line, at
-   every tier, not one sampled measurement. Verified instead by: (a) compiling
-   `app/styles/app.scss` directly with the project's own `sass` CLI (no dev
-   server involved) and reading back every selector/value this report
-   quotes from the compiled output; (b) the full `tests/home`/`tests/common`
-   vitest run (170/170 green, including the six-card `OxServices` suite and
-   the new `OxBrands` sort/cap/name-mark tests), which renders the actual
-   React components; (c) standalone Node scripts replicating
-   `serve-store.mjs`'s new grouping and brand-membership filtering logic
-   directly against the real fixture files, confirming 21 brands in 10
-   letter-groups and the correct 7-product filter result for brand 9101.
+6. **Live `curl` against `http://localhost:3210` was unreachable for most of
+   this batch, then recovered.** Nine attempts across roughly six minutes
+   (`/ar`, `/`, `/ar/brands`; timeouts from 15s to 90s; direct
+   `http://[::1]:3210` as well as `localhost`) all returned curl exit 28
+   (timeout), with `netstat` confirming the port was listening but the
+   connection never completed — the same "dev server unresponsive under
+   concurrent load" condition `docs/build/progress/S3b.md` (item 6 of its
+   own Deviations) already documented this session. It recovered on its own
+   partway through the coordinator's follow-up (once the concurrent
+   `app/components/product/OxProductCard.tsx` edit that had also been
+   breaking `pnpm typecheck` settled) and a live pass then ran clean — see
+   the top-level "Verified by" below for the actual results. A
+   `getBoundingClientRect()` reading was not additionally taken even after
+   recovery: the exact `clip-path` polygon read back from the live
+   `/ar` HTML request already confirms six real `.ox-goal__slash` elements
+   are present (below), and the algebraic containment proof (section 1) is
+   an exact, stronger guarantee than a single measured rect for the same
+   geometry the compiled CSS already proves deterministically.
+7. **`app/styles/06-ox/_b4-listing.scss` was edited** for item 6 (the
+   categories-index card radius), a file explicitly off-limits in this
+   batch's original brief. The coordinator's own item-6 instruction named
+   "the categories index cards" as one of the two surfaces to fix, which
+   only exists in that file — read as a scoped, explicit authorization for
+   this one selector pair (`.ox-cat-card`/`.ox-cat-card--art`), not a
+   general reopening of the file. No other rule in it was touched.
 
 ## Verified by
 
-- `pnpm typecheck` → `tsc --noEmit`: **one pre-existing, unrelated error**,
-  `app/components/product/OxProductCard.tsx(215,51)`, confirmed via
-  `git status --porcelain` to be a file another builder has modified and
-  is mid-editing concurrently this session (outside this batch's scope —
-  `app/components/product/**` is explicitly off-limits). None of this
-  batch's own files appear anywhere in the `tsc` output.
-- `pnpm vitest run tests/home tests/common` → **17 files passed, 170 tests
-  passed**, including `tests/home/OxServices.test.tsx` (9/9, all new/
-  rewritten) and `tests/home/blocks.test.tsx` (19/19, three new `OxBrands`
-  tests).
-- `pnpm vitest run tests/home tests/pages tests/blocks tests/common` (wider
-  pass, to catch any `ServicesHub`/`ChannelCard` regression) →
-  **32 files passed, 323 tests passed**.
-- `pnpm check:rtl` → `320 file(s), 0 problem(s)`.
-- `pnpm check:motion` → `320 file(s), 0 problem(s)`.
-- `pnpm check:strings` → `314 file(s), 0 problem(s)`.
+- `pnpm typecheck` → `tsc --noEmit`, **clean, no output**. (Twice during
+  this batch it reported one error in `app/components/product/
+  OxProductCard.tsx`, confirmed via `git status --porcelain` to be a file
+  another builder had modified and was mid-editing concurrently — outside
+  this batch's scope, `app/components/product/**` is explicitly off-limits
+  — and it cleared once that concurrent edit settled. None of this batch's
+  own files appeared in that error at any point.)
+- `pnpm vitest run tests/home tests/common` (this batch's own primary
+  suite, at the time of its own item 3/4 work) → 17 files, 170 tests green.
+- **Final full run, after the strap/corner-radius corrections and the
+  concurrent S5c evolution (see Deviations item 0):**
+  `pnpm vitest run tests/home tests/common tests/listing tests/pages
+  tests/blocks` → **44 files passed, 480 tests passed, 1 file / 2 tests
+  failed** (`tests/pages/ServicesHub.test.tsx`, asserting a dedicated
+  channels section S5c's own further rewrite removed — outside this
+  batch's scope, see Deviations item 0). `tests/home/OxCategories.test.tsx`
+  and `tests/listing/CategoriesIndex.test.tsx` (the two files this batch's
+  own item-6 corner-radius fix could plausibly have affected) are both
+  fully green.
+- `pnpm check:rtl` → `327 file(s), 0 problem(s)`.
+- `pnpm check:motion` → `327 file(s), 0 problem(s)`.
+- `pnpm check:strings` → `322 file(s), 0 problem(s)`.
 - `node scripts/check-copy.mjs locales/ar.json locales/en.json` →
   `check-copy: 2 file(s), 0 problem(s)`.
-- `node scripts/check-claims.mjs` → `30 file(s), 0 problem(s), 4
+- `node scripts/check-claims.mjs` → `32 file(s), 0 problem(s), 4
   allowlisted` (all four pre-existing `official_distributors`/
   `trust_distributors` allowlist entries, unrelated to this batch — same
   four S2c's own report already listed).
-- `node scripts/check-tokens.mjs` → `123 token(s) defined, 315 file(s)
+- `node scripts/check-tokens.mjs` → `123 token(s) defined, 322 file(s)
   scanned, 0 problem(s)`.
-- `node scripts/check-identity.mjs` → `320 file(s), 0 problem(s)`.
+- `node scripts/check-identity.mjs` → `327 file(s), 0 problem(s)`.
 - `node_modules/.bin/sass --no-source-map app/styles/app.scss <out>.css` →
   compiles clean (only the pre-existing `@import` deprecation warnings);
   used to read back and confirm every CSS value/selector this report
@@ -688,8 +911,31 @@ test were read for reference and never touched.
   `brand-membership.json` → 21 brands grouped into 10 letter-buckets,
   flattening back to 21; brand 9101 (NOW Foods) product filter returns
   exactly its 7 linked products by name.
-- Live `curl` against `http://localhost:3210/ar` and `/ar/brands` —
-  **could not complete**, see Deviations item 6.
+- Live `curl` against `http://localhost:3210/ar` and `/ar/brands`, once the
+  server recovered (see Deviations item 6). Captured at that point in the
+  session, before the further S5c evolution (Deviations item 0) changed the
+  services skeleton's own internal shape (still six placeholder cards
+  today, now grouped under two row titles rather than one flat grid) — the
+  height reservation and the goal-card strap markup this reading confirms
+  are unaffected by that later change, since neither S4a nor S5c touched
+  `HOME_BLOCK_HEIGHTS['ox-services']`'s numeric value or `.ox-goal__slash`
+  again after this. `/ar` → HTTP 200; its
+  `.s-block--ox-services` reserves `min-height:clamp(911px, calc(2148.029px
+  - 85.905vw), 1813px)` — the exact `HOME_BLOCK_HEIGHTS['ox-services']`
+  value, read back off the live page — and its skeleton renders exactly
+  six `.ox-skel__block.ox-skel-dark` placeholders (the real six-card row
+  hydrates client-side, the same lazy-block pattern
+  `docs/build/progress/S2c.md` already documented for this block, so a raw
+  curl cannot show the mounted `ChannelDoor`/`PlanCard` markup — the
+  `tests/home/OxServices.test.tsx` suite is the equivalent check for that,
+  as it already reads there). The same `/ar` response carries exactly six
+  `data-testid="ox-goal-card"` elements, each with one `.ox-goal__slash`
+  span (`grep -c`: 6 and 6) — the mirrored, re-derived strap markup is live.
+  `/ar/brands` → HTTP 200, 21 distinct `.ox-brand-tile__name` values,
+  exactly the 21 derived brands in the table above, none missing and none
+  duplicated (`OxBrands`'s own count-desc sort is a home-block-only
+  requirement — `/ar/brands` is `BrandsGrid.tsx`, outside this batch's file
+  list, and correctly keeps its own alphabetical-by-first-letter grouping).
 - Category artwork: visual confirmation by rendering the actual saved
   `public/categories/{amino_acids,pre-workout,creatine,protein}.webp`
   files post-write (not a scratchpad copy) — all four render edge to edge,

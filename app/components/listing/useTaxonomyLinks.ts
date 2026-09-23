@@ -9,7 +9,7 @@ import { childrenOf, MENU, TAXONOMY, type TaxonomyNode } from '../../content/tax
 import { TAXONOMY_IDS } from '../../content/taxonomy-ids';
 import { flattenMenu } from '../layout/navLinks';
 import type { OxIconName } from '../common/Icon';
-import { matchesSlug, pathSegments, searchFallback } from './resolve';
+import { matchesSlug, searchFallback } from './resolve';
 
 /**
  * The two lists `useTaxonomyLinks` resolves against, threaded through a route
@@ -148,18 +148,6 @@ function rawId(category: Category): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-/**
- * `url` reduced to a path: origin, query and hash dropped (NAV-2026-09-23 §8
- * item 1). The live category and dashboard menu are both free to publish an
- * absolute URL (`https://optimalx.com.sa/protein/c9001`, the measured
- * defect), and every consumer of this hook renders its `to` in an `<a>` or
- * the engine `Link`, neither of which strips an origin on its own.
- */
-function toPath(url: string): string {
-  const segments = pathSegments(url);
-  return segments.length ? `/${segments.join('/')}` : '/';
-}
-
 function resolveNode(
   node: TaxonomyNode,
   liveFlat: Category[],
@@ -175,7 +163,7 @@ function resolveNode(
     return {
       slug: node.slug,
       label: liveMatch.name,
-      to: toPath(liveMatch.url),
+      to: liveMatch.url,
       resolved: true,
       icon: node.icon,
       id: rawId(liveMatch),
@@ -192,7 +180,7 @@ function resolveNode(
     return {
       slug: node.slug,
       label: menuMatch.title,
-      to: toPath(menuMatch.url),
+      to: menuMatch.url,
       resolved: true,
       icon: node.icon,
       children: [],

@@ -1,5 +1,28 @@
+import { useRouterState } from '@tanstack/react-router';
 import type { MenuItem } from '@salla.sa/twilight-theme-engine/types';
 import { menuSegments, type NavEntry } from '../../content/nav';
+
+/** A router state shaped only as much as this file reads it. */
+interface RouterLocationState {
+  location?: { pathname?: string };
+}
+
+/**
+ * The router's current pathname, filled in identically on the server and the
+ * client. `useTwilight().location` is not this: it is empty during SSR and
+ * only filled in after hydration - reading it for an active-route test
+ * renders "nothing is active" on the server and "this item is active" on the
+ * client the moment the item's route matches, which is a hydration mismatch
+ * (the coordinator's finding, 2026-09-23). TanStack's own router store is
+ * what `Link` itself reads to paint its active state identically on both
+ * passes, so every active-route test in the header and the tab bar reads the
+ * same store here instead.
+ */
+export function useRouterPathname(): string {
+  return useRouterState({
+    select: (state) => (state as unknown as RouterLocationState).location?.pathname ?? '',
+  }) as unknown as string;
+}
 
 /** Every menu item, parents and children, in one list. */
 export function flattenMenu(items: readonly MenuItem[] | undefined): MenuItem[] {

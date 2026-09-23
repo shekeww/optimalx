@@ -75,7 +75,11 @@ vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
   category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => [] }) } },
 }));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
-  Link: ({ to, children, ...rest }: Record<string, unknown>) =>
+  // `activeOptions` is real TanStack Router `Link` API, consumed by the
+  // engine's own adapter and never reaching a DOM anchor; this mock is a
+  // dumb passthrough, so it is destructured out here rather than spread
+  // onto the `<a>` (React otherwise warns about an unrecognised DOM prop).
+  Link: ({ to, children, activeOptions: _activeOptions, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
   Image: ({ alt, src }: { alt: string; src?: string }) => <img alt={alt} src={src} />,
 }));

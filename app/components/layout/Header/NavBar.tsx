@@ -1,12 +1,35 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type ComponentProps, type ComponentType } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTwilight } from '@salla.sa/twilight-theme-engine';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { HEADER_NAV, MORE_NAV, type NavEntry } from '../../../content/nav';
 import { Icon } from '../../common/Icon';
-import { matchesShopRoute, resolveNavHref, stripLocale, withLocale } from '../navLinks';
+import {
+  matchesShopRoute,
+  resolveNavHref,
+  stripLocale,
+  useRouterPathname,
+  withLocale,
+} from '../navLinks';
 import { MegaPanel } from './MegaPanel';
+
+/**
+ * `TanStackLinkAdapter` (the engine `Link`) spreads unknown props straight
+ * onto TanStack's own `Link`, which defaults `activeProps` to
+ * `{ className: 'active' }` the moment its own fuzzy match (`activeOptions`
+ * unset, so prefix matching) considers a route active. Every plain item on
+ * this bar carries its own exact-match `is-active` class already
+ * (NAV-2026-09-23 §4.1); a second, fuzzily-matched "active" class from the
+ * engine is not this spec's rule and is disabled here rather than styled.
+ * `BaseLinkProps` does not declare `activeOptions` (it is TanStack's own,
+ * passed through the adapter's `...rest`), so the engine `Link` is retyped
+ * locally to accept it rather than widening every call site to `unknown`.
+ */
+const NavLink = Link as unknown as ComponentType<
+  ComponentProps<typeof Link> & { activeOptions?: { exact?: boolean } }
+>;
+const EXACT_ACTIVE = { exact: true } as const;
 
 /** Hover intent, NAV-2026-09-23 §5.5: 120ms to open, 200ms to close. */
 const OPEN_DELAY = 120;
@@ -84,7 +107,8 @@ function columnGapOf(node: HTMLElement): number {
 export function NavBar() {
   const { t } = useTranslation();
   const { settings } = useTheme();
-  const { location, locale } = useTwilight();
+  const { locale } = useTwilight();
+  const pathname = useRouterPathname();
   const panelId = useId();
 
   const showOffers = (settings as Record<string, unknown> | undefined)?.show_offers_nav !== false;
@@ -188,7 +212,7 @@ export function NavBar() {
   const foldedSet = folded ?? new Set<string>();
   const shown = links.filter((link) => !foldedSet.has(link.key));
   const overflow = links.filter((link) => foldedSet.has(link.key));
-  const stripped = stripLocale(location?.pathname ?? '/');
+  const stripped = stripLocale(pathname || '/');
 
   const isActive = (link: NavLinkItem) => {
     if (link.key === 'shop') return matchesShopRoute(stripped);
@@ -233,9 +257,14 @@ export function NavBar() {
                   >
                     {moreItems.map((item) => (
                       <li key={item.key}>
-                        <Link to={item.to} className="ox-nav__droplink" onClick={() => close(link.key)}>
+                        <NavLink
+                          to={item.to}
+                          className="ox-nav__droplink"
+                          activeOptions={EXACT_ACTIVE}
+                          onClick={() => close(link.key)}
+                        >
                           {item.label}
-                        </Link>
+                        </NavLink>
                       </li>
                     ))}
                   </ul>
@@ -291,14 +320,15 @@ export function NavBar() {
 
           return (
             <li className="ox-nav__item" key={link.key} data-nav-item={link.key}>
-              <Link
+              <NavLink
                 to={link.to}
                 className={`ox-nav__link${active ? ' is-active' : ''}`}
+                activeOptions={EXACT_ACTIVE}
                 data-testid={`ox-nav-${link.key}`}
                 {...(active ? { 'aria-current': 'page' } : {})}
               >
                 {link.label}
-              </Link>
+              </NavLink>
             </li>
           );
         })}

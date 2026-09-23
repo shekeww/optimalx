@@ -43,8 +43,8 @@ export function ShopTree({ mode, includeUtility = mode === 'list', onNavigate }:
       <ul className="ox-sheet__grid ox-sheet__grid--type" data-testid="ox-shoptree-grid">
         {types.map((type) => (
           <li key={type.slug}>
-            <Link to={type.to} className="ox-tile ox-tile--type" onClick={onNavigate}>
-              <span className="ox-tile__label">{type.label}</span>
+            <Link to={type.to} className="ox-sheet__tile ox-sheet__tile--type" onClick={onNavigate}>
+              <span className="ox-sheet__tile-label">{type.label}</span>
             </Link>
           </li>
         ))}

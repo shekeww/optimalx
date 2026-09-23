@@ -170,3 +170,198 @@ home component out of scope - see Deviations item 3)
 Every check the batch owns is green. `pnpm vitest run tests/listing` was run
 as an extra safety net (not in the required list) after the `useTaxonomyLinks`
 detour in Deviations item 3, and passes at 149/149.
+
+---
+
+## 6. Addendum (coordinator round, 2026-09-23): three defects found after handback
+
+### 6.1 Hydration mismatch on `/ar` (shop and offers)
+
+**Cause, two parts.**
+
+(a) The active-route test read `useTwilight().location`, which is empty
+during SSR and only filled in after hydration (the same gap `BottomTabBar`
+was already built around - see its own docblock, unchanged by this batch
+until now). On `/ar` this rendered "nothing active" on the server and,
+the instant the client filled `location` in, "this item's route matches" on
+the client - a hydration mismatch on any route where something should be
+active, and coincidentally "nothing should be active" on the home route
+specifically, which is why it surfaced there first.
+
+(b) The engine `Link` (`TanStackLinkAdapter`) spreads unknown props straight
+onto TanStack Router's own `Link`, which defaults `activeProps` to
+`{ className: 'active' }` (`STATIC_ACTIVE_OBJECT` in
+`@tanstack/react-router`'s `link.js`) the moment its own **fuzzy** match
+(`activeOptions` unset, `exact: false`) considers a route active. This is
+independent of (a) and was not introduced by this batch (the old NavBar's
+plain items were the same engine `Link` with no `activeOptions` either) -
+NAV-2026-09-23 §4.1's own exact-match rule is what exposed it as wrong,
+not new.
+
+**Fix.**
+
+- `app/components/layout/navLinks.ts`: added `useRouterPathname()`, moved
+  verbatim out of `BottomTabBar.tsx` (same `useRouterState` read, filled in
+  identically on both passes - this is the exact mechanism the coordinator's
+  own report named). `BottomTabBar.tsx` now imports it instead of keeping
+  its own private copy; `NavBar.tsx` uses it for every active-route test
+  (shop's `matchesShopRoute`, the plain items' `startsWith`), replacing
+  `useTwilight().location`.
+- `app/components/layout/Header/NavBar.tsx`: every engine `Link` this file
+  renders (the plain items, the المزيد dropdown's items) now carries
+  `activeOptions={{ exact: true }}`. `BaseLinkProps` does not declare
+  `activeOptions` (it is TanStack's own, reaching the adapter through its
+  `...rest` spread), so a local `NavLink` alias retypes `Link` to accept it
+  rather than casting at every call site.
+- `tests/layout/NavBar.test.tsx`: the router mock now drives a
+  `routerLocation` variable (matching `BottomTabBar`'s existing test
+  pattern) instead of `twilight.location`; added **"marks nothing active on
+  the home route (the coordinator hydration-mismatch report, 2026-09-23)"**,
+  asserting no `.ox-nav__link` on `/ar` carries `is-active` or
+  `aria-current`.
+- `tests/layout/NavBar.test.tsx` and `tests/layout/Header.test.tsx`: the
+  mock `Link` now destructures `activeOptions` out before spreading the
+  rest onto the DOM `<a>` (cosmetic - React otherwise warns about an
+  unrecognised DOM attribute; the mock is a dumb passthrough and never
+  needed to consume it before this).
+
+**Verified live** (curl, 2026-09-23, after the fix):
+- `/ar` (home): `ox-nav-shop` and `ox-nav-offers` both render bare
+  `class="ox-nav__link"` - no `is-active`, no `active`, no `aria-current`,
+  on **both** passes (the server HTML shown here is the same class the
+  client now computes, by construction, since both read the identical
+  router-state selector).
+- `/ar/offers`: shop and العروض both correctly carry `is-active
+  aria-current="page"`; العروض additionally carries TanStack's own `active
+  data-status="active"` now that it is exact - harmless (no stylesheet rule
+  ever targeted the bare `active` class) and correct (it is genuinely the
+  exact page).
+- `/ar/categories`, `/ar/protein/c9001`: only shop is active
+  (`matchesShopRoute` correctly matches `/categories` and the
+  `/{slug}/c{id}` shape), nothing else is.
+
+### 6.2 Shop sheet tiles render blank at 390
+
+**Cause.** The sheet's tiles were classed `ox-tile`/`ox-tile__label`/
+`ox-tile--goal`, which is the **home page's own** "browse by type" tile
+namespace (`_b2-home.scss` §4: `min-block-size: 158px`, its own flex-column
+body/art-overlay rules, `.ox-tile--*` tone modifiers). Those rules applied
+inside the sheet's 96/64/56px `grid-auto-rows` tracks, pushing every label
+out of the visible box and overflowing the row into the next heading -
+exactly as the coordinator measured.
+
+**Fix.** Renamed to a namespace of the sheet's own, everywhere this batch
+used it:
+- `app/components/layout/Header/ShopSheet.tsx`: `ox-tile`/`ox-tile--goal`/
+  `ox-tile--utility`/`ox-tile__label` → `ox-sheet__tile`/
+  `ox-sheet__tile--goal`/`ox-sheet__tile--utility`/`ox-sheet__tile-label`;
+  the goal tile's `Icon` also gained `className="ox-sheet__tile-icon"`.
+- `app/components/layout/Header/ShopTree.tsx`: its `grid`-mode tile (the
+  type tiles) renamed the same way.
+- `app/styles/06-ox/_b1-layout.scss` §8a: the whole tile rule block renamed
+  to match, with a comment naming the collision so it cannot recur.
+- Grepped `app/components/layout/` and `_b1-layout.scss` for any other
+  `ox-tile` this batch introduced (the mega panel, the drawer): none - both
+  already use their own namespaces (`ox-mega__goal`, `ox-drawer__row`).
+
+**Verified.** `pnpm exec sass` compiles the whole sheet clean; the live
+stylesheet now carries `.ox-sheet__tile` (24 declarations) as its own rule
+set, separate from the still-present, still-unrelated `.ox-tile` (home's
+own, 4 declarations) - no collision. `tests/layout/ShopSheet.test.tsx`'s
+existing tile-count assertions (6 goal / 10 type / 3 utility) pass unchanged
+since they key off `.ox-sheet__grid--*` , not the tile class itself.
+
+### 6.3 Grey discs on the account/cart buttons and a grey search block at 1440
+
+**Finding: a preview-only artifact, not this batch's code.**
+`app/components/layout/Header/MainBar.tsx` is **byte-for-byte unchanged**
+by this batch (confirmed against the copy read at the start of this batch
+and against the working tree now) - this batch's only touches near it were
+stylesheet selectors (`.ox-mainbar__inner` gap/`position`,
+`.ox-mainbar__search` flex basis), none of which reach `.ox-iconbtn`,
+`.ox-cartbtn`, `s-user-menu-login-btn` or the search pill's own shadow
+parts.
+
+Reading the served HTML on `/ar`: `SallaCartSummary` and `SallaUserMenu`
+render **nothing** server-side (`fallback={null}` on both `<Suspense>`
+boundaries, by the existing, pre-batch design - the real custom element
+mounts only once its lazy chunk resolves client-side). `SallaSearch`'s own
+`Suspense` fallback (`ox-search__placeholder`) also does not appear in the
+served HTML; instead the **real component's own** skeleton markup does
+(`class="s-skeleton-search"`, with `s-skeleton-pulse` blocks sized to the
+icon and the input) - meaning the lazy chunk resolved during SSR and the
+component itself chose to render its native loading state, because this
+preview's offline SDK has no real search/user/cart data to hydrate it with.
+This matches the coordinator's own follow-up hypothesis exactly: Salla's
+web components render their own skeleton state when the SDK they depend on
+never resolves, which the offline preview cannot avoid, and it is neither
+this theme's markup nor something this batch touched.
+
+**What this batch verified, not fixed** (there was nothing in our code to
+fix): `tests/layout/MainBar.test.tsx` (**new**), mocking the three Salla
+component modules to plain elements that echo the props/children
+`MainBar.tsx` actually passes them (jsdom cannot render a real custom
+element's shadow DOM either way, so this is the correct level to test at):
+- the search field renders `SallaSearch` with `inline`/`oval` (not the
+  collapsed glyph),
+- the account control receives `avatarOnly`/`showHeader`,
+- the cart control's slotted content is the drawn `<Icon name="cart">`
+  (`<svg class="ox-icon"><use href="#ox-cart">`), never
+  `sicon-shopping-bag`,
+- the wishlist link (a plain `<Link>`, not a Salla component, so it is
+  fully ours and fully testable) carries `sicon-heart`.
+
+All four pass, confirming this theme's own React tree is correct; a real
+store's SDK resolving real user/cart/search state would show its own
+resolved UI in the same slots, exactly as it does on every other page this
+build has not touched.
+
+**Files added for this addendum:** `app/components/layout/navLinks.ts`
+(`useRouterPathname`), `app/components/layout/BottomTabBar.tsx` (import
+swap only), `app/components/layout/Header/NavBar.tsx` (`activeOptions`,
+`useRouterPathname`), `app/components/layout/Header/ShopSheet.tsx`,
+`app/components/layout/Header/ShopTree.tsx`,
+`app/styles/06-ox/_b1-layout.scss` (§8a rename),
+`tests/layout/NavBar.test.tsx`, `tests/layout/Header.test.tsx`,
+`tests/layout/MainBar.test.tsx` (**new**).
+
+**Re-verified after the addendum:**
+
+```
+$ pnpm typecheck
+EXIT=0
+
+$ pnpm vitest run tests/layout tests/common
+ Test Files  9 passed (9)
+      Tests  113 passed (113)
+
+$ pnpm check:rtl && pnpm check:motion && pnpm check:strings
+check-rtl: 327 file(s), 0 problem(s)
+check-motion: 327 file(s), 0 problem(s)
+check-strings: 322 file(s), 0 problem(s)
+$ node scripts/check-copy.mjs locales/ar.json locales/en.json
+check-copy: 2 file(s), 0 problem(s)
+$ node scripts/check-claims.mjs
+check-claims: 32 file(s), 0 problem(s), 4 allowlisted
+$ node scripts/check-tokens.mjs
+check-tokens: 123 token(s) defined, 322 file(s) scanned, 0 problem(s)
+$ node scripts/check-identity.mjs
+check-identity: 327 file(s), 0 problem(s)
+
+# live preview, after the fix:
+$ curl -s http://localhost:3210/ar | grep -o 'data-testid="ox-nav-shop"[^>]*>\|data-testid="ox-nav-offers"[^>]*>'
+class="ox-nav__link" ... data-testid="ox-nav-shop"     # no is-active, no active
+class="ox-nav__link" data-testid="ox-nav-offers"        # no is-active, no active
+$ curl -s http://localhost:3210/ar/offers | grep -o 'data-testid="ox-nav-shop"[^>]*>\|data-testid="ox-nav-offers"[^>]*>'
+class="ox-nav__link is-active" ... aria-current="page"  # shop: catalogue route
+class="ox-nav__link is-active active" aria-current="page" data-status="active"  # offers: exact route
+```
+
+Note: this same shared machine's dev server went down twice during this
+addendum (once to a `500`, once to a dropped connection), through no
+command of this batch's - `git status` shows a large, unrelated set of
+concurrently-modified files (`vite.config.ts`, `app/dev/offline-api.ts`,
+`scripts/preview-offline.mjs`, several product/home/brands files) from
+other sessions running on the same tree throughout. Every curl above is
+from the run after the server came back up on its own; no server was
+started or stopped by this batch.

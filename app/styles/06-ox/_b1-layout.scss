@@ -1202,7 +1202,12 @@ a.ox-util__trust-link {
 // ---------------------------------------------------------------------------
 // 8a. Shop sheet (NAV-2026-09-23 §7.1.1) - the mobile catalogue, full height.
 // `ShopTree` in `grid` mode supplies the type tiles; the goal and utility
-// tiles are inline in `ShopSheet.tsx`. All three share `.ox-tile`.
+// tiles are inline in `ShopSheet.tsx`. All three share `.ox-sheet__tile`,
+// this surface's own namespace: `.ox-tile` already belongs to the home
+// "browse by type" tile (`_b2-home.scss` §4, `min-block-size: 158px` and its
+// own art/body overlay rules), and a shared class name here let those rules
+// apply to a 96/64/56px sheet tile, collapsing every label out of view
+// (coordinator finding, 2026-09-23).
 // ---------------------------------------------------------------------------
 .ox-sheet {
   position: fixed;
@@ -1294,7 +1299,7 @@ a.ox-util__trust-link {
 
 // One tile anatomy, three roles. Hit area is the whole tile (96/64/56, all
 // over the 44px floor).
-.ox-tile {
+.ox-sheet__tile {
   display: flex;
   align-items: center;
   gap: var(--ox-2);
@@ -1316,13 +1321,17 @@ a.ox-util__trust-link {
   }
 }
 
-.ox-tile--goal {
+.ox-sheet__tile--goal {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
 }
 
-.ox-tile__label {
+.ox-sheet__tile-icon {
+  flex: none;
+}
+
+.ox-sheet__tile-label {
   overflow: hidden;
   font-size: 13px;
   font-weight: var(--ox-w-ui);

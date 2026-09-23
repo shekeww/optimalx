@@ -94,9 +94,9 @@ export function ShopSheet({ id, open, onClose }: ShopSheetProps) {
           <ul className="ox-sheet__grid ox-sheet__grid--goal">
             {goals.map((goal) => (
               <li key={goal.slug}>
-                <Link to={goal.to} className="ox-tile ox-tile--goal" onClick={onClose}>
-                  <Icon name={goal.icon as OxIconName} size={24} />
-                  <span className="ox-tile__label">{goal.label}</span>
+                <Link to={goal.to} className="ox-sheet__tile ox-sheet__tile--goal" onClick={onClose}>
+                  <Icon name={goal.icon as OxIconName} size={24} className="ox-sheet__tile-icon" />
+                  <span className="ox-sheet__tile-label">{goal.label}</span>
                 </Link>
               </li>
             ))}
@@ -117,8 +117,8 @@ export function ShopSheet({ id, open, onClose }: ShopSheetProps) {
           <ul className="ox-sheet__grid ox-sheet__grid--utility">
             {otherCategories.map((node) => (
               <li key={node.slug}>
-                <Link to={node.to} className="ox-tile ox-tile--utility" onClick={onClose}>
-                  <span className="ox-tile__label">{node.label}</span>
+                <Link to={node.to} className="ox-sheet__tile ox-sheet__tile--utility" onClick={onClose}>
+                  <span className="ox-sheet__tile-label">{node.label}</span>
                 </Link>
               </li>
             ))}

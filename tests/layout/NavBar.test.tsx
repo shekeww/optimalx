@@ -9,9 +9,16 @@ const ar = loadDictionary('ar');
 const themeSettings: Record<string, unknown> = {};
 const twilight: Record<string, unknown> = {
   routeId: '/{-$locale}/',
-  location: { pathname: '/branch' },
   locale: 'ar',
 };
+// The router's own store, not `useTwilight().location`: that context is
+// empty during SSR and only filled in after hydration, so an active-route
+// test built on it renders "nothing active" on the server and "this item is
+// active" on the client the moment the item's route matches - a hydration
+// mismatch (coordinator finding, 2026-09-23). `useRouterPathname`
+// (navLinks.ts) reads this store instead, which is filled in identically on
+// both passes.
+const routerLocation: Record<string, unknown> = { pathname: '/' };
 const menuItems = [
   { id: 1, title: 'بروتين', url: '/protein/c1' },
   { id: 2, title: 'كرياتين', url: '/creatine/c2' },
@@ -24,6 +31,10 @@ vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
 );
 vi.mock('@salla.sa/twilight-theme-engine', () => ({ useTwilight: () => twilight }));
 vi.mock('@tanstack/react-router', () => ({
+  useRouterState: (options?: { select?: (state: unknown) => unknown }) => {
+    const state = { location: routerLocation };
+    return options?.select ? options.select(state) : state;
+  },
   // `useTaxonomyLinks.ts` prefers a route loader's taxonomy data; no test
   // here provides one, so this returns `undefined` and the hook falls back
   // to its own query, exactly like outside a `<RouterProvider>`.
@@ -39,7 +50,11 @@ vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
   category: { queries: { list: () => ({ queryKey: ['categories'], queryFn: async () => categories }) } },
 }));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
-  Link: ({ to, children, ...rest }: Record<string, unknown>) =>
+  // `activeOptions` is real TanStack Router `Link` API, consumed by the
+  // engine's own adapter and never reaching a DOM anchor; this mock is a
+  // dumb passthrough, so it is destructured out here rather than spread
+  // onto the `<a>` (React otherwise warns about an unrecognised DOM prop).
+  Link: ({ to, children, activeOptions: _activeOptions, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
   Image: ({ alt, src }: { alt: string; src?: string }) => <img alt={alt} src={src} />,
 }));
@@ -64,8 +79,8 @@ function stubWidths({ row, item, more }: { row: number; item: number; more: numb
 
 beforeEach(() => {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
-  twilight.location = { pathname: '/branch' };
   twilight.locale = 'ar';
+  routerLocation.pathname = '/';
   categories.length = 0;
   class RO {
     constructor(private cb: () => void) {}
@@ -237,7 +252,7 @@ describe('NavBar', () => {
   });
 
   it('marks تسوق active on a catalogue route and العلامات التجارية active on its own route', async () => {
-    twilight.location = { pathname: '/ar/offers' };
+    routerLocation.pathname = '/ar/offers';
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
     const shop = await screen.findByTestId('ox-nav-shop');
@@ -246,6 +261,19 @@ describe('NavBar', () => {
     expect(offers.getAttribute('aria-current')).toBe('page');
     const brands = await screen.findByTestId('ox-nav-brands');
     expect(brands.hasAttribute('aria-current')).toBe(false);
+  });
+
+  it('marks nothing active on the home route (the coordinator hydration-mismatch report, 2026-09-23)', async () => {
+    routerLocation.pathname = '/ar';
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    await screen.findByTestId('ox-nav-shop');
+    const links = document.querySelectorAll('.ox-nav__link');
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link.className, link.textContent ?? '').not.toContain('is-active');
+      expect(link.hasAttribute('aria-current'), link.textContent ?? '').toBe(false);
+    }
   });
 });
 
