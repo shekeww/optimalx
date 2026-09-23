@@ -33,6 +33,13 @@ export const OX_BRAND_ICON_NAMES = [
   'goal-recovery',
   'goal-hair-skin',
   'goal-ideal-weight',
+  // The four goals the owner's reference contact sheet carries and the theme
+  // did not (S6a fidelity pass, 2026-09-23). Drawn so the family is complete
+  // as the owner reviewed it; no caller yet.
+  'endurance',
+  'immunity',
+  'wellness',
+  'better-sleep',
   'authentic',
   'expiry',
   'shipping',
@@ -143,24 +150,20 @@ export const OX_UI_ICON_NAMES = [
  * detailed SVGs"). Fewer parts, fatter counters, the accent kept only where
  * it still reads. Every other symbol is already simple enough to hold at 16
  * and falls back to its standard drawing.
+ *
+ * The ten product-category symbols are deliberately absent: the owner
+ * restored them verbatim from the pre-redraw sprite on 2026-09-24, so they
+ * must paint as the one original drawing at every size, 16 and 20 included.
  */
 export const OX_SIMPLIFIED_ICON_NAMES = [
-  'protein',
-  'creatine',
-  'pre-workout',
-  'amino-acids',
-  'omega-3',
-  'vitamins-minerals',
-  'collagen-beauty',
-  'daily-health',
-  'snacks-bars',
-  'accessories',
   'goal-energy',
   'goal-performance',
   'goal-recovery',
   'goal-ideal-weight',
   'goal-general-health',
   'goal-hair-skin',
+  'endurance',
+  'wellness',
   'shield-check',
   'authentic',
   'truck',

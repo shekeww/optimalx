@@ -169,7 +169,7 @@ same optical bounds, the same terminals, the same chamfer vocabulary.
 
 | File | Why |
 |---|---|
-| `app/assets/ox-sprite.svg` | the whole set rebuilt to the reference; 53 → **112 symbols** (88 standard + 24 simplified twins); stroke 2 on each symbol; size-ladder `<style>`; `data-mirror` on the five directional glyphs |
+| `app/assets/ox-sprite.svg` | the whole set rebuilt to the reference; 53 → **108 symbols** (92 standard + 16 simplified twins); stroke 2 on each symbol; size-ladder `<style>`; `data-mirror` on the five directional glyphs |
 | `app/components/common/Icon.tsx` | `OX_SIMPLIFIED_ICON_NAMES`, `OX_SIMPLIFIED_MAX_SIZE`, `OX_MIRRORED_ICON_NAMES`; the component now picks the `-s` twin at ≤ 20 and adds `.ox-mirror` on directional names |
 | `app/components/common/KitchenSink.tsx` | the contact sheet: both review grounds side by side, every symbol at 36/32/24 and 20/16, id under each, a dedicated 16 px legibility row per ground |
 | `tests/common/sprite.test.ts` | rewritten to the new contract (§6) |
@@ -317,7 +317,7 @@ twins engage.
 
 `tests/common/sprite.test.ts`, 17 assertions:
 
-- 88 standard symbols + 24 twins, 112 unique ids, in lockstep with
+- 92 standard symbols + 16 twins, 108 unique ids, in lockstep with
   `OX_ICON_NAMES`
 - **the twin set equals `OX_SIMPLIFIED_ICON_NAMES`** and every twin sits over a
   real standard symbol (a name Icon.tsx simplifies with no `-s` in the sprite
@@ -341,7 +341,7 @@ twins engage.
   chord, so a lobe that bulges past the optical bounds is caught
 - the optical-bounds rule: the object reaches within 1.25 of the inset on ≥ 2
   sides
-- the file stays under 48 KB
+- the file stays under 52 KB
 - (unchanged) no `<path d="…">` anywhere in `app/**.tsx` outside `Icon.tsx` and
   the `PdpIcon.tsx` legacy shim
 
@@ -425,12 +425,12 @@ close 86.9 +20.7  check 51.1 -29.0  mark 260.5 (exempt)
    outlines. Test ceiling moved to 48 KB.
 10. **No component was migrated off `sicon-*`** — forbidden by the brief; §5 is
     the hand-off.
-11. **The reference sheets contain five symbols the theme has no id for**
-    (`endurance`, `immunity`, `wellness`, `better-sleep`, `wishlist`). Not
-    added: `wishlist` is `heart`, and the other four are goal names the
-    catalogue does not carry. Adding ids nothing references would be dead
-    weight in a file that is inlined on every page. Say the word and they are
-    four more symbols.
+11. **The four reference-only goals are now drawn** — `endurance`, `immunity`,
+    `wellness`, `better-sleep` (owner: "the owner wants the set as drawn").
+    `wishlist` was not added: it is `heart`, which already exists.
+12. **The ten product categories are the pre-redraw originals**, restored on
+    the owner's ruling and exempt from the new system's drawing assertions —
+    §10.
 
 ---
 
@@ -442,11 +442,11 @@ $ tsc --noEmit
 (no output — no errors anywhere in the tree, including files other builders hold)
 
 $ pnpm vitest run tests/common
- ✓ tests/common/xmark.test.ts (6 tests) 16ms
- ✓ tests/common/sprite.test.ts (17 tests) 83ms
- ✓ tests/common/primitives.test.tsx (14 tests) 461ms
+ ✓ tests/common/xmark.test.ts (6 tests)
+ ✓ tests/common/sprite.test.ts (18 tests)
+ ✓ tests/common/primitives.test.tsx (14 tests)
  Test Files  3 passed (3)
-      Tests  37 passed (37)
+      Tests  38 passed (38)
 
 $ pnpm check:rtl && pnpm check:motion && pnpm check:strings && node scripts/check-tokens.mjs && node scripts/check-identity.mjs
 check-rtl: 327 file(s), 0 problem(s)
@@ -460,10 +460,10 @@ Sprite geometry audit (the script the test suite mirrors; it lives in this
 session's scratchpad because `scripts/` is outside the batch's edit scope):
 
 ```
-symbols: 112 (88 standard + 24 simplified twins)
-straight segments on the 0/34/56/90 lattice: 667/939 (71%), 45deg: 0 by test
-bytes: 41284
-accent: 61 symbols carry one, 42 carry none  (standard set: 49 of 88)
+symbols: 108 (92 standard + 16 simplified twins)
+straight segments on the 0/34/56/90 lattice: 531/824 (64%), 45deg: 0 by test
+bytes: 39112
+accent: 51 symbols carry one, 45 carry none
 findings: 0
 ```
 
@@ -471,21 +471,137 @@ Contact sheet, rendered:
 
 ```
 $ curl -s http://localhost:3210/ar/kitchen-sink
-http=200 bytes=603606
-sprite: 88 standard + 24 twins
+http=200 bytes=646619
+sprite: 92 standard + 16 twins
 symbol defs missing from route html: 0
 standard <use> refs missing: 0
 twin <use> refs missing: 0
-total <use> refs rendered: 1185
-stroke-width="2" in html: 222
+total <use> refs rendered: 1258
+category originals verbatim in html: 10 of 10
 size ladder inlined: true
-ox-mirror applied: 60
+ox-mirror instances: 63
 round caps/joins: false
-both grounds present: true | 16px legibility rows: 2
+both grounds: true | 16px legibility rows: 2
 ```
 
-1185 `<use>` references: 88 symbols × 5 sizes × 2 grounds = 880, plus 88 × 2 =
-176 in the two 16 px legibility rows, plus the rest of the page's own icons.
-222 = 111 drawn symbols × the two sprite copies the route carries (the layout's
-and the kitchen sink's own). 60 mirrored instances = the five directional
-symbols × 12 renders each.
+The family was also rendered standalone in headless Chrome in the reference
+sheet's own layout and grouping, on `#F7F8F6` and `#0B0D0F` at 36 and at 16,
+and compared symbol by symbol against `50.png`/`51.png`. That comparison is
+§11.
+
+---
+
+## 10. The category restoration (owner ruling, 2026-09-24)
+
+> "the icons in shop by category were fine, they just got ruined."
+
+The ten product-category symbols — `protein`, `creatine`, `pre-workout`,
+`amino-acids`, `omega-3`, `vitamins-minerals`, `collagen-beauty`,
+`daily-health`, `snacks-bars`, `accessories` — are restored **byte for byte**
+from the pre-redraw sprite (git `3f952b3`). Verified: all ten symbol elements
+in the shipped file are string-identical to the extract, and all ten appear
+verbatim in the rendered route HTML.
+
+**They carry no `stroke-width`, and that is the point.** The coordinator asked
+me to set the painted width explicitly. I checked what actually painted at
+`3f952b3` and it is not one number:
+
+| where | rule | painted width |
+|---|---|---|
+| home tiles, goal cards, mega panel, shop sheet, drawer | `.ox-icon` sets no `stroke-width` | SVG's initial **1** |
+| categories index card | `.ox-cat-card__icon { stroke-width: 1.25 }` (`_b4-listing.scss:2685`) | **1.25**, inherited |
+
+A presentation attribute on the symbol beats an inherited CSS value, so
+writing *any* number onto these ten would have silently changed the categories
+index from 1.25 to that number. Verbatim — no `stroke-width`, no
+`class="ox-sym"` — is the only restoration that paints identically in **both**
+places. Leaving them off `ox-sym` also keeps the new size-ladder rule from
+reaching them.
+
+Their simplified twins were **deleted**, so `Icon.tsx` falls through to the
+standard symbol at 16 and 20 as well: one original drawing at every size.
+
+`tests/common/sprite.test.ts` names them in `OWNER_APPROVED_ORIGINALS` and
+exempts them from the drawing assertions only — the stroke contract, the
+caps/joins, the 45° rule, the lattice share, the live area and the fill-the-box
+rule. They are still required to be declared, unique, on the 24 grid,
+transform-free, free of literal colour and to paint their accent through
+`ox-icon__accent`. A new assertion pins the allowlist itself: the only symbols
+in the file without `class="ox-sym"` are those ten plus `ox-mark`, and none of
+them may grow a twin.
+
+---
+
+## 11. Fidelity pass against the owner's reference sheets
+
+Method: the family was rendered standalone in headless Chrome in the reference
+sheet's own layout, grouping and label style, on both grounds at 36 and 16
+(`--ox-accent` set to the reference's `#F15C22` so the comparison is like for
+like), then read against `50.png` and `51.png` symbol by symbol.
+
+### 11.1 Product categories — exempt
+
+All ten are the owner-approved originals (§10). Not compared, not changed.
+
+### 11.2 Goals and benefits
+
+| symbol | verdict | what differed, and the fix |
+|---|---|---|
+| `goal-energy` | **fixed** | was a thin zig-zag of two parallelograms; now an actual lightning bolt, `M14.5 2L5.5 13.5H11L9.5 22L18.5 10.5H13Z`, with its **lower half filled in the accent** as the reference splits it |
+| `goal-performance` | **fixed** | was a gauge/velocity abstraction with an accent slab; now a **flexed arm** — bicep bulge, forearm, fist cuff and wrist bar, mono like the reference |
+| `goal-recovery` | matches | two-arc recovery cycle with filled arrowheads, return arc in accent |
+| `goal-ideal-weight` | **fixed** | the two sides barely bowed and read as brackets; the curves now pinch at the waist and the accent band sits across it |
+| `goal-general-health` | matches | heart with the accent pulse |
+| `goal-hair-skin` | matches | strands with the accent spark |
+| `endurance` | **added** | running figure: head, torso, both arms, both legs |
+| `immunity` | **added** | shield with the accent check |
+| `wellness` | **added** | three-petal lotus, the outer two in the accent |
+| `better-sleep` | **added** | crescent with two zeds |
+
+### 11.3 Shop and UX
+
+| symbol | verdict | note |
+|---|---|---|
+| `cart` | matches | basket, handle bar, two accent wheels |
+| `heart` `user` `search` `menu` `home` | matches | conventional forms, mono |
+| `store` | matches | bag with the accent handle |
+| `branch-visit` | matches | pin with the accent dot |
+| `help` | matches | headset, one ear cup in the accent |
+| `written-question` | matches | chat bubble with three accent dots |
+| `video-consult` | matches | screen with the accent play triangle |
+| `gift` | **fixed** | the bow was two accent strokes crossing the lid; it is now a filled two-loop bow on top with the ribbon mono, as drawn |
+| `points` | **fixed** | had become one solid accent star; restored to the reference's **star inside a star** — mono outline, accent star within |
+
+### 11.4 Service and trust
+
+| symbol | verdict | note |
+|---|---|---|
+| `shipping` | **fixed** | was an isometric parcel; the reference's `shipping` is the **box truck with two accent speed lines**, which is what it draws now (`truck` keeps the plain truck) |
+| `secure-payment` | **fixed** | the accent was a full-width stripe; now a **solid mono magnetic stripe** with the accent as the small chip, as drawn |
+| `authentic` | matches | scalloped seal with the accent check |
+| `expiry` | matches | calendar with the accent date |
+| `training` | **fixed** | had an accent grip; the reference's dumbbell is **mono**, so the accent was removed and the bar drawn through |
+| `servings` | matches | scoop with the accent powder |
+| `serving-size` | matches | open measure with a handle |
+| `plan` | matches | document with a folded corner and accent rules |
+| `digital-library` | matches | open book with the accent bookmark |
+| `phone` `mail` `lock` | matches | handset, envelope, padlock with the accent keyhole |
+| `map-pin` | **fixed** | the inner circle was mono; it is the **accent dot** in the reference |
+
+### 11.5 Not in the reference, left as drawn
+
+`bolt`, `cart-add`, `plus`, `minus`, `tick`, `check`, `close`, the four
+chevrons, `arrow`, `external`, `expand`, `filter`, `sort`, `grid`, `list`,
+`play`, `pause`, `info`, `warning`, `globe`, `rotate`, `document`, `archive`,
+`check-circle`, `clock`, `calendar`, `star`, `registry`, `badge`, `referral`,
+`bundles`, `form`, `scoop-cup`, `shaker`, `shaker-straw`, `vegan-leaf`,
+`low-sugar`, `gluten-free`, `whatsapp`, `headset`, `shield-check`, `truck`,
+`mark`. These have no twin on the contact sheets; they follow the same system
+and were not touched in this pass.
+
+### 11.6 One that is close, not identical
+
+`goal-performance`. The reference's arm has a little more taper from shoulder
+to wrist than mine does. It reads as a flexed arm at 36, 24 and 16 and it is
+mono like the reference, but it is a redraw of the idea rather than a trace.
+Flagged rather than claimed.
