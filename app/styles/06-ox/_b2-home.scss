@@ -1330,11 +1330,15 @@ body {
 
 [dir='rtl'] .ox-tile__body {
   inset-inline-end: var(--ox-3);
+  // Physical LEFT in both languages (owner: "bottom left"): in RTL the
+  // flex cross-axis start is the right edge, so the items pin to flex-end.
+  align-items: flex-end;
   text-align: end;
 }
 
 [dir='ltr'] .ox-tile__body {
   inset-inline-start: var(--ox-3);
+  align-items: flex-start;
   text-align: start;
 }
 
