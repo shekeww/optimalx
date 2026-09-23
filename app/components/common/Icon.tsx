@@ -58,6 +58,13 @@ export const OX_BRAND_ICON_NAMES = [
   'minus',
   'bundles',
   'digital-library',
+  // Added by S6a (2026-09-23) with the redraw: the two trust marks the trust
+  // row was drawing with `sicon-*`, the training service, and the add-to-cart
+  // variant the card and the bundle row need.
+  'lock',
+  'badge',
+  'training',
+  'cart-add',
 ] as const;
 
 /**
@@ -83,6 +90,43 @@ export const OX_UI_ICON_NAMES = [
   'shaker',
   'shaker-straw',
   'star',
+  // The chrome set, drawn by S6a (2026-09-23) so a later batch can retire the
+  // `sicon-*` glyphs one line at a time (docs/build/progress/S6a.md section 4).
+  // Nothing here is wired up yet: the components that still carry `sicon-*`
+  // are owned by other builders. `chevron-start`/`chevron-end` are drawn in
+  // LTR geometry and mirror through `.ox-mirror`, like every other
+  // direction-indicating glyph in the theme.
+  'chevron-up',
+  'chevron-start',
+  'chevron-end',
+  'arrow',
+  'close',
+  'check',
+  'search',
+  'user',
+  'heart',
+  'home',
+  'menu',
+  'list',
+  'grid',
+  'filter',
+  'sort',
+  'play',
+  'pause',
+  'external',
+  'info',
+  'warning',
+  'globe',
+  'store',
+  'rotate',
+  'document',
+  'archive',
+  'check-circle',
+  'clock',
+  'calendar',
+  'mail',
+  'phone',
+  'map-pin',
   // The logo's X, traced from public/assets/brand/optimalx-mark.png into 18
   // straight-edged vertices (X-IDENTITY-2026-09-22.md §1.6). It is the mark,
   // so it is used sparingly and only
@@ -90,6 +134,59 @@ export const OX_UI_ICON_NAMES = [
   // scroll-to-top, a watermark behind a dark band. It is never a UI glyph and
   // never stands in for a chevron, a close or a tick.
   'mark',
+] as const;
+
+/**
+ * Symbols that ship a simplified optical twin, `#ox-{name}-s`, for 16 and 20
+ * (owner brief, 2026-09-23: "produce simplified optical variants for 16/20px
+ * and standard variants for 24/32/36px rather than mechanically scaling
+ * detailed SVGs"). Fewer parts, fatter counters, the accent kept only where
+ * it still reads. Every other symbol is already simple enough to hold at 16
+ * and falls back to its standard drawing.
+ */
+export const OX_SIMPLIFIED_ICON_NAMES = [
+  'protein',
+  'creatine',
+  'pre-workout',
+  'amino-acids',
+  'omega-3',
+  'vitamins-minerals',
+  'collagen-beauty',
+  'daily-health',
+  'snacks-bars',
+  'accessories',
+  'goal-energy',
+  'goal-performance',
+  'goal-recovery',
+  'goal-ideal-weight',
+  'goal-general-health',
+  'goal-hair-skin',
+  'shield-check',
+  'authentic',
+  'truck',
+  'whatsapp',
+  'phone',
+  'points',
+  'cart',
+  'digital-library',
+] as const;
+
+/** The size at or below which the simplified twin is used. */
+export const OX_SIMPLIFIED_MAX_SIZE = 20;
+
+/**
+ * The only symbols that mirror under RTL: navigation and direction. Every
+ * other symbol — and above all the brand-derived chamfer and `ox-mark` —
+ * keeps its geometry in both directions (DIRECTION 3.4, owner brief
+ * "preserve brand geometry in RTL"). The flip itself is the theme's existing
+ * `.ox-mirror` rule (`_primitives.scss`), not a new transform here.
+ */
+export const OX_MIRRORED_ICON_NAMES = [
+  'chevron-start',
+  'chevron-end',
+  'arrow',
+  'external',
+  'play',
 ] as const;
 
 export const OX_ICON_NAMES = [...OX_BRAND_ICON_NAMES, ...OX_UI_ICON_NAMES] as const;
@@ -120,7 +217,21 @@ export interface IconProps extends Omit<SVGAttributes<SVGSVGElement>, 'name'> {
  * strokes and `--ox-accent` for the one accent element. Never mirrored.
  */
 export function Icon({ name, size = 24, label, className, style, ...rest }: IconProps) {
-  const classes = ['ox-icon', `ox-icon--${size}`, className].filter(Boolean).join(' ');
+  // Two optical variants, not one drawing scaled: below 21 the simplified
+  // twin is used where one exists.
+  const simplified =
+    size <= OX_SIMPLIFIED_MAX_SIZE &&
+    (OX_SIMPLIFIED_ICON_NAMES as readonly string[]).includes(name);
+  const symbolId = simplified ? `ox-${name}-s` : `ox-${name}`;
+  const mirrored = (OX_MIRRORED_ICON_NAMES as readonly string[]).includes(name);
+  const classes = [
+    'ox-icon',
+    `ox-icon--${size}`,
+    mirrored ? 'ox-mirror' : null,
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const a11y = label
     ? { role: 'img' as const, 'aria-label': label }
     : { 'aria-hidden': true as const, focusable: 'false' as const };
@@ -134,7 +245,7 @@ export function Icon({ name, size = 24, label, className, style, ...rest }: Icon
       {...a11y}
       {...rest}
     >
-      <use href={`#ox-${name}`} />
+      <use href={`#${symbolId}`} />
     </svg>
   );
 }

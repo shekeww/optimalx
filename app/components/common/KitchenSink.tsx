@@ -36,7 +36,18 @@ const LATIN_NAME = 'Optimum Nutrition Gold Standard';
 const VARIANTS: ButtonVariant[] = ['primary', 'secondary', 'ghost', 'link'];
 const SIZES: ButtonSize[] = [40, 44, 48];
 const TONES: BadgeTone[] = ['popular', 'new', 'saving', 'note', 'stop', 'neutral'];
-const ICON_SIZES: OxIconSize[] = [16, 20, 24, 32];
+/** The S6a size ladder. 24/32/36 use the standard drawing; 16/20 use the
+ *  simplified twin where one exists (Icon.tsx swaps the href). */
+const ICON_SIZES_STANDARD: OxIconSize[] = [36, 32, 24];
+const ICON_SIZES_SIMPLIFIED: OxIconSize[] = [20, 16];
+
+/** The owner's two review grounds, verbatim from the reference contact
+ *  sheets. Dev fixture only: the storefront uses `--ox-paper` and
+ *  `.ox-band-dark`, which are within a point of these. */
+const GROUNDS = [
+  { id: 'light', label: 'light ground #F7F8F6', bg: '#F7F8F6', fg: 'var(--ox-ink)' },
+  { id: 'dark', label: 'dark ground #0B0D0F', bg: '#0B0D0F', fg: 'var(--ox-ink-on-dark)' },
+] as const;
 
 interface HoursFixture {
   day: string;
@@ -65,6 +76,77 @@ function Block({ title, note, children }: { title: string; note?: string; childr
   );
 }
 
+/**
+ * The contact sheet. One panel per review ground, each showing every symbol at
+ * the standard sizes (36/32/24) and the simplified sizes (20/16) with its id
+ * under it, plus a dedicated 16px legibility row at the foot of the panel.
+ * Rendered on both grounds side by side so a symbol that only works on one of
+ * them is visible in the same screenful.
+ */
+function IconSheet({ bg, fg }: { bg: string; fg: string }) {
+  return (
+    <div dir="ltr" style={{ background: bg, color: fg, padding: 12 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+          gap: 10,
+        }}
+      >
+        {OX_ICON_NAMES.map((name) => (
+          <div
+            key={name}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+              padding: 6,
+              border: '1px solid rgba(128,128,128,0.35)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                gap: 6,
+                minBlockSize: 38,
+              }}
+            >
+              {ICON_SIZES_STANDARD.map((size) => (
+                <Icon key={size} name={name} size={size} />
+              ))}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                gap: 6,
+                minBlockSize: 22,
+              }}
+            >
+              {ICON_SIZES_SIMPLIFIED.map((size) => (
+                <Icon key={size} name={name} size={size} />
+              ))}
+            </div>
+            <code style={{ fontSize: 10, opacity: 0.75 }}>{name}</code>
+          </div>
+        ))}
+      </div>
+      <p style={{ fontSize: 11, opacity: 0.75, margin: '14px 0 6px' }}>
+        16px legibility row — the whole family at the smallest step it ships at.
+      </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+        {OX_ICON_NAMES.map((name) => (
+          <Icon key={name} name={name} size={16} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Row({ children }: { children: ReactNode }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
@@ -86,36 +168,25 @@ export function KitchenSink() {
       <Sprite />
 
       <Block
-        title="Sprite"
-        note="Thirty-two symbols at 16, 20, 24 and 32. Each has exactly one accent element; none mirrors under RTL. A stray rounded join is a G2 finding."
+        title="Sprite contact sheet"
+        note="Eighty-eight symbols on both review grounds, at 36/32/24 (standard drawing) and 20/16 (simplified twin where one exists), with a dedicated 16px legibility row per ground. S6a, docs/build/progress/S6a.md: 24 grid, ~20x20 optical bounds, 2 unit stroke, square terminals, chamfers at the mark's 34/56, never 45, and the accent reserved for the one meaningful brand cut per symbol. A rounded join, a literal colour, or a glyph that closes up at 16 is a G2 finding."
       >
         <div
+          dir="ltr"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-            gap: 12,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+            gap: 16,
           }}
         >
-          {OX_ICON_NAMES.map((name) => (
-            <div
-              key={name}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, minBlockSize: 44 }}
-            >
-              {ICON_SIZES.map((size) => (
-                <Icon key={size} name={name} size={size} />
-              ))}
-              <code dir="ltr" style={{ fontSize: 11, color: 'var(--ox-fg-3)' }}>
-                {name}
-              </code>
+          {GROUNDS.map((ground) => (
+            <div key={ground.id}>
+              <p style={{ fontSize: 12, color: 'var(--ox-fg-3)', marginBlockEnd: 6 }}>
+                {ground.label}
+              </p>
+              <IconSheet bg={ground.bg} fg={ground.fg} />
             </div>
           ))}
-        </div>
-        <div className="ox-band-dark" style={{ marginBlockStart: 16, padding: 16 }}>
-          <Row>
-            {OX_ICON_NAMES.map((name) => (
-              <Icon key={name} name={name} size={24} />
-            ))}
-          </Row>
         </div>
       </Block>
 
