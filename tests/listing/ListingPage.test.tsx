@@ -465,6 +465,51 @@ describe('ListingPage, brand and static variants', () => {
   });
 });
 
+describe('ListingPage, the offers poster grid (owner brief 2026-09-24)', () => {
+  function offersData(overrides: Partial<ReturnType<typeof data>> = {}) {
+    return data({
+      page: { title: 'العروض', slug: 'product.index.offers', breadcrumbs: [] },
+      source: { type: 'offers' },
+      filters: undefined,
+      ...overrides,
+    });
+  }
+
+  it('renders the six posters above the grid, with an h2 and the anchor the posters point at', () => {
+    const { container } = renderWithProviders(<ListingPage {...offersData()} />);
+    const grid = container.querySelector('.ox-offers-posters');
+    expect(grid).not.toBeNull();
+    expect(grid?.querySelector('h2')?.textContent).toBe(t('ox.offers.posters_title'));
+    expect(screen.getAllByTestId('ox-poster-card')).toHaveLength(6);
+    // The grid sits before the product results in the DOM, "above" the list.
+    const bodyHtml = container.querySelector('.ox-listing__body')?.innerHTML ?? '';
+    expect(bodyHtml.indexOf('ox-offers-posters')).toBeLessThan(bodyHtml.indexOf('ox-listing__catalogue'));
+    expect(container.querySelector('#offers-grid')).not.toBeNull();
+    expect(container.querySelector('#offers-grid')?.classList.contains('ox-listing__catalogue')).toBe(true);
+  });
+
+  it('every poster is the unavailable placeholder today (no files on disk yet)', () => {
+    const { container } = renderWithProviders(<ListingPage {...offersData()} />);
+    const grid = container.querySelector('.ox-offers-posters');
+    expect(grid?.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(6);
+    expect(grid?.querySelectorAll('.ox-pcard__photo')).toHaveLength(0);
+  });
+
+  it("points the weekly-picks poster at the page's own grid anchor, not a bare /offers", () => {
+    renderWithProviders(<ListingPage {...offersData()} />);
+    const card = screen
+      .getAllByTestId('ox-poster-card')
+      .find((el) => el.getAttribute('data-poster') === 'weekly-picks');
+    expect(card?.getAttribute('href')).toBe('/offers#offers-grid');
+  });
+
+  it('does not render the poster grid or the #offers-grid anchor on any other listing', () => {
+    const { container } = renderWithProviders(<ListingPage {...data()} slug="whey-protein" />);
+    expect(container.querySelector('.ox-offers-posters')).toBeNull();
+    expect(container.querySelector('#offers-grid')).toBeNull();
+  });
+});
+
 describe('ListingPage, taxonomy head region (S1 step 5)', () => {
   it('renders the researched h1 for a taxonomy slug, and the dashboard name for any other', () => {
     // `page.title` is the dashboard name ("واي بروتين" in the fixture); the

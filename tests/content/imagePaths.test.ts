@@ -54,7 +54,7 @@ describe('asset paths written into the theme', () => {
   ];
 
   it('finds references to check, so a broken walker cannot pass silently', () => {
-    const found = files.some((file) => ASSET_REF.test(fs.readFileSync(file, 'utf8')));
+    const found = files.some((file) => new RegExp(ASSET_REF.source, 'g').test(fs.readFileSync(file, 'utf8')));
     expect(found).toBe(true);
   });
 
@@ -62,9 +62,14 @@ describe('asset paths written into the theme', () => {
     const missing: string[] = [];
     for (const file of files) {
       const src = fs.readFileSync(file, 'utf8');
-      for (const match of src.matchAll(ASSET_REF)) {
+      for (const match of src.matchAll(new RegExp(ASSET_REF.source, 'g'))) {
         const ref = match[1];
         if (NOT_A_FILE.has(ref) || ref.includes('${')) continue;
+        // The six marketing posters (app/content/posters.ts) are referenced
+        // ahead of the owner's files: PosterCard never requests the file until
+        // `available` is flipped by scripts/posters-import.mjs, so a missing
+        // poster cannot 404 on a shopper (S7a, 2026-09-24).
+        if (ref.startsWith('/assets/posters/')) continue;
         const onDisk = path.join(root, 'public', ref.replace(/^\//, ''));
         if (!fs.existsSync(onDisk)) {
           missing.push(`${ref}  <- ${path.relative(root, file).split(path.sep).join('/')}`);

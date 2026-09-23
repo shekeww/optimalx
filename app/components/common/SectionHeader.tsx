@@ -39,6 +39,7 @@ export function SectionHeader({
   title,
   as: Heading = 'h2',
   eyebrow,
+  subline,
   viewAll,
   actions,
   titleId,
@@ -54,6 +55,7 @@ export function SectionHeader({
       <Heading className={`ox-sh__title ${titleClass}`} id={titleId}>
         {title}
       </Heading>
+      {subline ? <p className="ox-sh__subline">{subline}</p> : null}
       {actions ? <div className="ox-sh__actions">{actions}</div> : null}
       {viewAll ? (
         <Link to={viewAll.to} className="ox-sh__link">

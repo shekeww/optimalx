@@ -68,11 +68,17 @@ export function OxPosters({ data }: OxBlockProps) {
     () =>
       POSTER_CARDS.map((card, index) => {
         const n = index + 1;
+        const ownImage = fieldText(fields, `image_${n}`);
         return {
           card,
-          photo: fieldText(fields, `image_${n}`) || card.photo,
+          photo: ownImage || card.photo,
           to: fieldText(fields, `link_${n}`) || posterHref(card, 'home', (slug) => bySlug(slug)),
           alt: fieldText(fields, `alt_${n}`) || t(card.altKey),
+          // A merchant-uploaded image is available the moment the owner sets
+          // the field, whether or not `scripts/posters-import.mjs` has ever
+          // run: `card.available` only tracks the SIX DEFAULT files this repo
+          // ships, never a URL the dashboard supplies on top of them.
+          available: Boolean(ownImage) || card.available,
         };
       }),
     [fields, bySlug, t]
@@ -153,7 +159,7 @@ export function OxPosters({ data }: OxBlockProps) {
           role="list"
           aria-roledescription={t('ox.listing.featured_carousel_role')}
         >
-          {cards.map(({ card, photo, to, alt }, index) => (
+          {cards.map(({ card, photo, to, alt, available }, index) => (
             <li
               className="ox-posters__slide"
               key={card.slug}
@@ -173,7 +179,7 @@ export function OxPosters({ data }: OxBlockProps) {
                 srcSet={card.srcSet}
                 to={to}
                 alt={alt}
-                available={card.available}
+                available={available}
                 loading={index < 2 ? 'eager' : 'lazy'}
               />
             </li>
