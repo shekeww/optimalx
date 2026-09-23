@@ -146,22 +146,45 @@ beforeEach(() => {
   listCalls.length = 0;
 });
 
-describe('the sample gate', () => {
-  it('ships off, with nothing real behind it', () => {
+describe('the gate, and what stays behind it', () => {
+  it('ships off; the starter bundle is real data, not a sample behind it', () => {
     expect(SHOW_SAMPLE_BUNDLES).toBe(false);
-    expect(REAL_BUNDLES).toEqual([]);
+    expect(REAL_BUNDLES).toEqual([
+      { id: 'starter', productSku: 'OX-041', memberSkus: ['OX-001', 'OX-015', 'OX-028'], discount: null },
+    ]);
     expect(REAL_COMPANION_SETS).toEqual([]);
   });
 
-  it('answers nothing for every product in the catalogue while it is off', () => {
+  it('offers the real bundle on its three member pages, and nowhere else, gate shut', () => {
+    for (const sku of ['OX-001', 'OX-015', 'OX-028']) {
+      const bundles = bundlesForProduct(idForSku(sku) as number);
+      expect(bundles, sku).toHaveLength(1);
+      expect(bundles[0]?.productSku).toBe('OX-041');
+    }
+    // Never on the bundle's own page, and never on an unrelated product.
+    expect(bundlesForProduct(idForSku('OX-041') as number)).toEqual([]);
+    const STARTER_SKUS = new Set(['OX-041', 'OX-001', 'OX-015', 'OX-028']);
+    for (const [sku, entry] of Object.entries(SALLA_IDS)) {
+      if (STARTER_SKUS.has(sku)) continue;
+      expect(bundlesForProduct(entry.id), sku).toEqual([]);
+    }
+  });
+
+  it('answers no companion set for every product while the gate is shut', () => {
     for (const entry of Object.values(SALLA_IDS)) {
-      expect(bundlesForProduct(entry.id)).toEqual([]);
       expect(companionsForProduct(entry.id)).toBeNull();
     }
   });
 });
 
-describe('the sample data itself', () => {
+describe('the starter bundle, real, and the sample companion sets behind the gate', () => {
+  it('REAL_BUNDLES resolves its own productSku and every memberSku to a real catalogue id', () => {
+    for (const bundle of REAL_BUNDLES) {
+      expect(idForSku(bundle.productSku), bundle.productSku).toBeTypeOf('number');
+      for (const sku of bundle.memberSkus) expect(idForSku(sku), sku).toBeTypeOf('number');
+    }
+  });
+
   it('states no discount anywhere', () => {
     const bundles = bundlesForProduct(WHEY.id as number, { sample: true });
     expect(bundles.length).toBeGreaterThan(0);
@@ -276,14 +299,14 @@ describe('FrequentlyBought with the sample set', () => {
 });
 
 describe('Bundle', () => {
-  it('renders nothing with the gate shut', async () => {
-    renderWithProviders(<Bundle product={WHEY as never} />);
+  it('renders nothing for a product that is not part of the real bundle', async () => {
+    renderWithProviders(<Bundle product={SHAKER as never} />);
     await waitFor(() => expect(screen.queryByTestId('ox-bundle-offer')).toBeNull());
     expect(listCalls).toEqual([]);
   });
 
-  it('shows the Salla bundle product, its members and no saving line', async () => {
-    const { container } = renderWithProviders(<Bundle product={WHEY as never} sample />);
+  it('shows the Salla bundle product, its members and no saving line — real, no sample flag needed (the member PDP renders the bundle card)', async () => {
+    const { container } = renderWithProviders(<Bundle product={WHEY as never} />);
     await screen.findByTestId('ox-bundle-offer');
     expect(screen.getByText('OX-041 starter')).toBeTruthy();
     expect(screen.getByText('OX-001 whey')).toBeTruthy();
@@ -293,7 +316,7 @@ describe('Bundle', () => {
   });
 
   it('adds the bundle through the bundle product’s own Salla button, once', async () => {
-    renderWithProviders(<Bundle product={WHEY as never} sample />);
+    renderWithProviders(<Bundle product={WHEY as never} />);
     await screen.findByTestId('ox-bundle-offer');
     const [button] = screen.getAllByRole('button');
     fireEvent.click(button as HTMLElement);

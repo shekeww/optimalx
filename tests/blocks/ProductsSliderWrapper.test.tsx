@@ -112,6 +112,24 @@ describe('ProductsSliderWrapper', () => {
     expect(list).toHaveBeenCalledTimes(2);
   });
 
+  // S9d, owner brief 2026-09-24: the related rail (the PDP's own
+  // `Alternatives.tsx`) asks for this so a real bundle never rides along as
+  // a "related" product.
+  it('drops a real bundle when excludeBundles is on, and treats a bundle-only source as empty', async () => {
+    list.mockResolvedValueOnce({
+      items: [
+        { id: 1, name: 'واي بروتين', type: 'product' },
+        { id: 2, name: 'حزمة البداية - اوبتيمال اكس', type: 'group_products' },
+      ],
+      next: null,
+    });
+    renderWithProviders(
+      <ProductsSliderWrapper source="latest" sliderId="rail-8" excludeBundles />
+    );
+    await waitFor(() => expect(screen.getAllByTestId('engine-product-card')).toHaveLength(1));
+    expect(screen.getByTestId('engine-product-card').textContent).toBe('واي بروتين');
+  });
+
   it('still removes itself when every source in the chain comes back empty', async () => {
     list.mockResolvedValue({ items: [], next: null });
     const { container } = renderWithProviders(

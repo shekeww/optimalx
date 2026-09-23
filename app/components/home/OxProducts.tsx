@@ -72,6 +72,7 @@ export function OxProducts({ data }: OxBlockProps) {
           viewAll={{ to: '/latest-products' }}
           gridId="ox-home-products"
           skeleton={<ProductsGridSkeleton />}
+          excludeBundles
         />
       </div>
     </section>

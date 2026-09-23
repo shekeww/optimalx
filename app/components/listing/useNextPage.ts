@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import type { ProductListLoaderData } from '@salla.sa/twilight-theme-engine/routes/product-listing';
+import { isBundleProduct } from '../product/lib/productType';
 
 /**
  * The next-page loader `ItemsList` calls in button mode, and the running count
@@ -40,9 +41,24 @@ export function cursorOf(next: string | null | undefined): string | undefined {
   return match ? decodeURIComponent(match[1]) : next;
 }
 
-export function useNextPage(data: ProductListLoaderData, sort: string): NextPage {
+export interface NextPageOptions {
+  /**
+   * Drops a real Salla bundle (`group_products`) from both the first page and
+   * every page `load` fetches after it (S9d), so `loadedCount` — the "عرض N
+   * منتج" line — counts what the grid actually shows, never a bundle a
+   * listing does not offer.
+   */
+  excludeBundles?: boolean;
+}
+
+export function useNextPage(
+  data: ProductListLoaderData,
+  sort: string,
+  { excludeBundles = false }: NextPageOptions = {}
+): NextPage {
   const { source, products, pagination } = data;
-  const firstPageCount = products.length;
+  const firstPage = excludeBundles ? products.filter((item) => !isBundleProduct(item)) : products;
+  const firstPageCount = firstPage.length;
   const nextCursorRef = useRef<string | null>(pagination?.next ?? null);
   const [loadedCount, setLoadedCount] = useState(firstPageCount);
   const [hasMore, setHasMore] = useState(Boolean(pagination?.next));
@@ -63,11 +79,12 @@ export function useNextPage(data: ProductListLoaderData, sort: string): NextPage
       ...(cursor !== undefined ? { cursor } : {}),
       sort,
     });
+    const items = excludeBundles ? result.items.filter((item) => !isBundleProduct(item)) : result.items;
     nextCursorRef.current = result.next ?? null;
     setHasMore(Boolean(result.next));
-    setLoadedCount((count) => count + result.items.length);
-    return { items: result.items, next: result.next ?? null };
-  }, [source.type, source.value, sort]);
+    setLoadedCount((count) => count + items.length);
+    return { items, next: result.next ?? null };
+  }, [source.type, source.value, sort, excludeBundles]);
 
   return { load, loadedCount, hasMore };
 }

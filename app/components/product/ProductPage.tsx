@@ -44,7 +44,8 @@ import { categorySlugOf, pdpFaqItems, prePurchaseRows } from './lib/faq';
 import { statCells } from './lib/stats';
 import { LABEL_EXPIRY, LABEL_FORM, LABEL_SERVINGS, LABEL_SERVING_SIZE } from './lib/specLine';
 import { isConsumablePack } from './lib/supply';
-import { bundleMembers, hasSupplyCalculator, isShippable, variantOf } from './lib/variant';
+import { hasSupplyCalculator, isShippable, variantOf } from './lib/variant';
+import { useBundleMembers } from './lib/bundleFallback';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
 import { toInternalPath } from '../layout/navLinks';
 
@@ -120,7 +121,7 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
   const isDigital = variant === 'digital';
   const isGiftCard = variant === 'giftCard';
   const isPhysical = variant === 'physical';
-  const members = isBundle ? bundleMembers(product) : [];
+  const members = useBundleMembers(product, isBundle);
   const faqItems = pdpFaqItems(t, product.category?.url);
   const settings = theme.settings as Record<string, unknown> | undefined;
   const payments = store.settings?.payments;

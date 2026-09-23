@@ -3,11 +3,11 @@
  *
  * ## What this file is, and what it deliberately is not
  *
- * The store has no bundles today. This map exists so the two surfaces
- * (`BelowFold/Bundle.tsx` and `BelowFold/FrequentlyBought.tsx`) can be built,
- * reviewed and seen working, and so the owner has one obvious place to define
- * a real bundle later. It is NOT a place where a price, a saving, a discount
- * or a shopping statistic is written down.
+ * The store has one real bundle today, the starter kit (owner brief
+ * 2026-09-24): this map is where it is defined, `BelowFold/Bundle.tsx` and
+ * `BelowFold/FrequentlyBought.tsx` read it, and the owner has one obvious
+ * place to add the next one. It is NOT a place where a price, a saving, a
+ * discount or a shopping statistic is written down.
  *
  * Three rules hold it to that, and every one of them is enforced by the shape
  * of the types rather than by discipline:
@@ -29,10 +29,10 @@
  *
  * 3. **The sample data is behind `SHOW_SAMPLE_BUNDLES`, which is `false`.**
  *    With the flag off, `bundlesForProduct` and `companionsForProduct` see
- *    only `REAL_BUNDLES` and `REAL_COMPANION_SETS`, both empty, so both
- *    surfaces render nothing and the product page looks exactly as it does
- *    today. The owner flips the flag to look at the surface, or fills the two
- *    real arrays to ship it.
+ *    `REAL_BUNDLES` (the starter kit) and `REAL_COMPANION_SETS` (still
+ *    empty), so the bundle card ships today and the completion row still
+ *    renders nothing. The owner flips the flag to preview a companion set
+ *    before it is real, or fills `REAL_COMPANION_SETS` to ship one.
  *
  * ## Why a bundle must name a Salla product
  *
@@ -108,29 +108,30 @@ export interface SampleOption {
 }
 
 /**
- * Real bundles, owner-defined. Empty today, and that emptiness is the whole
- * point: it is what makes the surface absent on the live store.
+ * Real bundles, owner-defined. One today: the starter kit (owner brief
+ * 2026-09-24), the same OX-041 `group_products` product the catalogue
+ * already carries, made of the three staples a first-time member needs
+ * (whey, creatine, a multivitamin). `bundlesForProduct` offers it on each
+ * member's own page; it never offers on the bundle's own page.
  */
-export const REAL_BUNDLES: OxBundle[] = [];
-
-/** Real companion sets, owner-defined. Empty today, for the same reason. */
-export const REAL_COMPANION_SETS: CompanionSet[] = [];
-
-/**
- * The one sample bundle, and it is not made up: OX-041 is a real
- * `group_products` product in the catalogue, and OX-001, OX-015 and OX-028 are
- * exactly the three SKUs its `bundle_items` column lists. So the card shows a
- * bundle that genuinely exists, composed of products that genuinely exist, at
- * prices the store itself returns.
- */
-const SAMPLE_BUNDLES: OxBundle[] = [
+export const REAL_BUNDLES: OxBundle[] = [
   {
-    id: 'sample-starter',
+    id: 'starter',
     productSku: 'OX-041',
     memberSkus: ['OX-001', 'OX-015', 'OX-028'],
     discount: null,
   },
 ];
+
+/** Real companion sets, owner-defined. Empty today, for the same reason. */
+export const REAL_COMPANION_SETS: CompanionSet[] = [];
+
+/**
+ * Sample bundles. Empty: the one sample that used to live here, the starter
+ * kit, is `REAL_BUNDLES` now, so there is nothing left to preview behind the
+ * gate until a second bundle exists.
+ */
+const SAMPLE_BUNDLES: OxBundle[] = [];
 
 /**
  * Sample companion sets.
@@ -214,6 +215,21 @@ export function bundlesForProduct(
     const pages = bundle.showOnSkus ?? bundle.memberSkus;
     return pages.some((sku) => matchesId(sku, productId));
   });
+}
+
+/**
+ * The bundle THIS product IS, when this is a bundle's own page. Used only as
+ * a fallback for the day the live store has not attached `consisted_products`
+ * yet (owner-checklist item 17): the PDP's own member list reads the API
+ * first (`lib/variant.ts`'s `bundleMembers`), and only asks this when that
+ * list comes back empty.
+ */
+export function bundleOfProduct(
+  productId: number | string,
+  { sample = SHOW_SAMPLE_BUNDLES }: SampleOption = {}
+): OxBundle | undefined {
+  const pool = sample ? [...REAL_BUNDLES, ...SAMPLE_BUNDLES] : REAL_BUNDLES;
+  return pool.find((bundle) => matchesId(bundle.productSku, productId));
 }
 
 /**

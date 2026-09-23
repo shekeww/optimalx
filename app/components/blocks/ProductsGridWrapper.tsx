@@ -8,6 +8,7 @@ import {
   type ProductsListSource,
 } from '@salla.sa/twilight-theme-engine/api/product';
 import { SectionHeader } from '../common/SectionHeader';
+import { isBundleProduct } from '../product/lib/productType';
 
 /** One thing to ask the catalogue for: a source and, where it needs one, its value. */
 export interface ProductsGridQuery {
@@ -35,6 +36,12 @@ export interface ProductsGridWrapperProps {
   /** Reserved-height placeholder while the first page loads. */
   skeleton?: ReactNode;
   className?: string;
+  /**
+   * Drops a real Salla bundle (`group_products`) from the results (S9d): a
+   * bundle is not a product in a shop-shelf grid. Off by default, so the
+   * offers grid keeps offering one the day it carries a real discount.
+   */
+  excludeBundles?: boolean;
 }
 
 /**
@@ -71,6 +78,7 @@ export function ProductsGridWrapper({
   gridId,
   skeleton,
   className,
+  excludeBundles = false,
 }: ProductsGridWrapperProps) {
   const queries = useMemo<ProductsGridQuery[]>(
     () => [{ source, ...(sourceValue !== undefined ? { sourceValue } : {}) }, ...(fallbacks ?? [])],
@@ -78,7 +86,7 @@ export function ProductsGridWrapper({
   );
 
   const { data, isPending } = useQuery({
-    queryKey: ['ox', 'home-grid', gridId, queries, count, sort ?? ''],
+    queryKey: ['ox', 'home-grid', gridId, queries, count, sort ?? '', excludeBundles],
     queryFn: async (): Promise<Product[]> => {
       for (const query of queries) {
         const result = await product.list({
@@ -87,7 +95,8 @@ export function ProductsGridWrapper({
           perPage: count,
           ...(sort !== undefined ? { sort } : {}),
         });
-        if (result.items.length > 0) return result.items.slice(0, count);
+        const items = excludeBundles ? result.items.filter((item) => !isBundleProduct(item)) : result.items;
+        if (items.length > 0) return items.slice(0, count);
       }
       return [];
     },

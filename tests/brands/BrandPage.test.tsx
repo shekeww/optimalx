@@ -237,6 +237,33 @@ describe('BrandPage', () => {
     expect(props.resetKey).toBe('9101-ourSuggest');
   });
 
+  // S9d, owner brief 2026-09-24: a real bundle is not a product on a brand's
+  // own shelf either.
+  it('drops a real bundle from the brand’s own grid and featured rail', () => {
+    const { container } = renderWithProviders(
+      <BrandPage
+        {...data({
+          products: [
+            { id: 1, name: 'Gold Standard Whey', url: `${ORIGIN}/p1`, image: { url: `${ORIGIN}/1.jpg` } },
+            { id: 2, name: 'Impact Whey', url: `${ORIGIN}/p2`, image: { url: `${ORIGIN}/2.jpg` } },
+            {
+              id: 3,
+              name: 'حزمة البداية - اوبتيمال اكس',
+              url: `${ORIGIN}/p3`,
+              image: { url: `${ORIGIN}/3.jpg` },
+              type: 'group_products',
+            },
+          ],
+        })}
+      />
+    );
+    // The grid (ProductGrid, through the engine ProductCard mock) and the
+    // featured rail (its own markup, no ProductCard) both drop the bundle.
+    expect(screen.getAllByTestId('engine-product-card')).toHaveLength(2);
+    expect(container.querySelectorAll('.ox-featured__item')).toHaveLength(2);
+    expect(screen.queryByText('حزمة البداية - اوبتيمال اكس')).toBeNull();
+  });
+
   it('routes out to the brand empty state when the brand has no products', () => {
     const { container } = renderWithProviders(
       <BrandPage {...data({ products: [], pagination: { next: null } })} />

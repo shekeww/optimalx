@@ -1,4 +1,6 @@
 import React from 'react';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
@@ -591,6 +593,29 @@ describe('ProductPage: the variants', () => {
     expect(container.querySelector('.ox-bundle')).not.toBeNull();
     expect(container.querySelector('.ox-nutrition')).toBeNull();
     expect(container.querySelector('.ox-supply')).toBeNull();
+  });
+
+  it('the real starter bundle (OX-041): its own PDP renders its three members from the fixture’s own consisted_products (S9d)', () => {
+    const details = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), 'fixtures', 'store', 'product-details.json'), 'utf8')
+    );
+    const starter = details['1141798217'];
+    expect(starter.type).toBe('group_products');
+    expect(starter.consisted_products).toHaveLength(3);
+
+    const { container } = renderPage({
+      id: starter.id,
+      name: starter.name,
+      url: starter.url,
+      type: starter.type,
+      description: starter.description,
+      consisted_products: starter.consisted_products,
+    });
+    const rows = container.querySelectorAll('.ox-bundle__row');
+    expect(rows).toHaveLength(3);
+    expect(container.querySelector('.ox-bundle')?.textContent).toContain('جولد ستاندرد');
+    expect(container.querySelector('.ox-bundle')?.textContent).toContain('كرياتين مونوهيدرات');
+    expect(container.querySelector('.ox-bundle')?.textContent).toContain('سنتروم للرجال ملتي فيتامين');
   });
 
   it('food: keeps the physical composition and adds the calories statistic', () => {

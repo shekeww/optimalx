@@ -62,6 +62,7 @@ export function Alternatives({ productId, categoryId, title }: AlternativesProps
       sourceValue={productId}
       fallbacks={fallbacks}
       exclude={productId}
+      excludeBundles
       perPage={RAIL_SIZE}
       sliderId={'ox-related-' + productId}
       title={title ?? t('ox.pdp.alternatives')}

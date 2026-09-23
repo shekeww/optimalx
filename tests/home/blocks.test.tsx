@@ -333,4 +333,23 @@ describe('OxProducts', () => {
       resolveSource(data('ox-products', { products: { source: 'categories', source_value: 9 } }))
     ).toEqual({ source: 'categories', sourceValue: 9 });
   });
+
+  // S9d, owner brief 2026-09-24: the starter bundle stops appearing as a
+  // product, so "أحدث المنتجات" never shows it, even when the catalogue's own
+  // `latest` order puts it in the page.
+  it('drops a real bundle from "أحدث المنتجات", and keeps the ordinary products beside it', async () => {
+    productList.mockClear();
+    productList.mockResolvedValueOnce({
+      items: [
+        { id: 1, name: 'واي بروتين', type: 'product' },
+        { id: 2, name: 'حزمة البداية - اوبتيمال اكس', type: 'group_products' },
+        { id: 3, name: 'كرياتين', type: 'product' },
+      ],
+      next: null,
+    } as never);
+    renderWithProviders(<OxProducts data={data('ox-products')} />);
+    await waitFor(() => expect(screen.getAllByTestId('engine-product-card')).toHaveLength(2));
+    const names = screen.getAllByTestId('engine-product-card').map((card) => card.textContent);
+    expect(names).toEqual(['واي بروتين', 'كرياتين']);
+  });
 });

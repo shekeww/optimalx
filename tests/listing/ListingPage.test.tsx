@@ -300,6 +300,28 @@ describe('ListingPage, category variant', () => {
     expect(historyPush).toHaveBeenCalledTimes(1);
     expect(String(historyPush.mock.calls[0][0])).toContain('sort=priceFromLowToTop');
   });
+
+  // S9d, owner brief 2026-09-24: the starter bundle stops appearing as a
+  // product in a category listing, and the "عرض N منتج" line counts only
+  // what the grid actually shows.
+  it('drops a real bundle from a category listing, and the loaded count reflects what is shown', () => {
+    const { container } = renderWithProviders(
+      <ListingPage
+        {...data({
+          products: [
+            { id: 1, name: 'Gold Standard Whey', url: `${ORIGIN}/p1` },
+            { id: 2, name: 'Impact Whey', url: `${ORIGIN}/p2` },
+            { id: 3, name: 'حزمة البداية - اوبتيمال اكس', url: `${ORIGIN}/p3`, type: 'group_products' },
+          ],
+        })}
+        slug="whey-protein"
+      />
+    );
+    expect(screen.getAllByTestId('engine-product-card')).toHaveLength(2);
+    expect(screen.queryByText('حزمة البداية - اوبتيمال اكس')).toBeNull();
+    const line = container.querySelector('.ox-listing__toolbar .ox-listing__progress');
+    expect(line?.textContent).toBe(t('ox.listing.showing', { count: 2 }));
+  });
 });
 
 describe('ListingPage, goal variant', () => {
@@ -444,6 +466,26 @@ describe('ListingPage, brand and static variants', () => {
     expect(empty?.querySelectorAll('.ox-empty__actions a')).toHaveLength(2);
   });
 
+  // S9d, owner brief 2026-09-24: the offers listing is one of the bundle's
+  // own contexts, so it keeps a real bundle among its products.
+  it('keeps a real bundle among the offers listing’s own products', () => {
+    renderWithProviders(
+      <ListingPage
+        {...data({
+          page: { title: 'العروض', slug: 'product.index.offers', breadcrumbs: [] },
+          source: { type: 'offers' },
+          products: [
+            { id: 1, name: 'Gold Standard Whey', url: `${ORIGIN}/p1` },
+            { id: 2, name: 'حزمة البداية - اوبتيمال اكس', url: `${ORIGIN}/p2`, type: 'group_products' },
+          ],
+          filters: undefined,
+        })}
+      />
+    );
+    expect(screen.getAllByTestId('engine-product-card')).toHaveLength(2);
+    expect(screen.getByText('حزمة البداية - اوبتيمال اكس')).toBeTruthy();
+  });
+
   it('gives a brand with nothing in stock its own empty state and a route to /brands', () => {
     const { container } = renderWithProviders(
       <ListingPage
@@ -512,11 +554,11 @@ describe('ListingPage, the offers poster grid (owner brief 2026-09-24)', () => {
     expect(container.querySelector('#offers-grid')?.classList.contains('ox-listing__catalogue')).toBe(true);
   });
 
-  it('every poster is the unavailable placeholder today (no files on disk yet)', () => {
+  it('every poster renders its photograph since the owner's files landed (2026-09-24)', () => {
     const { container } = renderWithProviders(<ListingPage {...offersData()} />);
     const grid = container.querySelector('.ox-offers-posters');
-    expect(grid?.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(6);
-    expect(grid?.querySelectorAll('.ox-pcard__photo')).toHaveLength(0);
+    expect(grid?.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(0);
+    expect(grid?.querySelectorAll('.ox-pcard__photo')).toHaveLength(6);
   });
 
   it("points the weekly-picks poster at the page's own grid anchor, not a bare /offers", () => {

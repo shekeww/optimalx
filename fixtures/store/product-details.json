@@ -2087,6 +2087,35 @@
     "weight": "3.35",
     "calories": null,
     "sku": "OX-041",
+    "consisted_products": [
+      {
+        "id": 1996831868,
+        "name": "جولد ستاندرد 100% واي بروتين - اوبتيموم نيوترشن",
+        "url": "https://optimalx.com.sa/جولد-ستاندرد-واي-بروتين-227-كجم-اوبتيمال-اكس/p1996831868",
+        "image": {
+          "url": "https://cdn.salla.sa/dPrxBd/274871ce-8e46-49f5-94fe-e6afb7bf9787-1000x706.44391408115-XwUlLMYWcZD4GN6lM2RR3L36Hj1vkrKOlaUDnioV.webp"
+        },
+        "quantity": 1
+      },
+      {
+        "id": 995134839,
+        "name": "كرياتين مونوهيدرات مطحون ناعم - اوبتيموم نيوترشن",
+        "url": "https://optimalx.com.sa/كرياتين-مونوهيدرات-600-جم-اوبتيموم-اوبتيمال-اكس/p995134839",
+        "image": {
+          "url": "https://cdn.salla.sa/dPrxBd/49c46216-644a-4a81-b41f-35f6d7d59feb-1000x1000-ONkQGRG8czPfVMbNSgOxpFioTnxOr8VWR7BM22BT.jpg"
+        },
+        "quantity": 1
+      },
+      {
+        "id": 1390995085,
+        "name": "سنتروم للرجال ملتي فيتامين - سنتروم",
+        "url": "https://optimalx.com.sa/سنتروم-للرجال-ملتي-فيتامين-30-قرصا-اوبتيمال-اكس/p1390995085",
+        "image": {
+          "url": "https://cdn.salla.sa/dPrxBd/58f711ff-cdc9-4301-ba94-b519e2aea0f4-1000x1000-FZvF6H2PAvtzCSHdd0uHyrm0DebAvjDlqkv1wMpT.jpg"
+        },
+        "quantity": 1
+      }
+    ],
     "mpn": null,
     "gtin": null,
     "price": 509,

@@ -29,7 +29,7 @@ import { RelatedGuides } from './RelatedGuides';
 import { listingSourceCopy } from './listingCopy';
 import { categoryEntity, listingGoal, listingSlug, listingVariant } from './resolve';
 import { nodeBySlug } from '../../content/taxonomy';
-import { ListingCategoryContext } from '../product/lib/productType';
+import { isBundleProduct, ListingCategoryContext } from '../product/lib/productType';
 import { currentSort, sortOptions } from './sortOptions';
 import { ListingHeader } from './ListingHeader';
 import { ListingToolbar } from './ListingToolbar';
@@ -126,10 +126,19 @@ export function ListingPage(props: ListingPageProps) {
   const node = source.type === 'categories' ? nodeBySlug(slug) : undefined;
   const entity = categoryEntity(props);
   const brand = variant === 'brand' ? (source.entity as Brand | undefined) : undefined;
+  // Only the offers static source keeps a real bundle among its products
+  // (S9d): everywhere else on this page a bundle is not a product a rail or
+  // a grid may show. Read early so both `useNextPage` and the rendered
+  // arrays below agree on the same excluded set.
+  const isOffers = source.type === 'offers';
+  const displayProducts = useMemo(
+    () => (isOffers ? products : products.filter((item) => !isBundleProduct(item))),
+    [products, isOffers]
+  );
 
   const sort = currentSort(query.sort);
   const options = useMemo(() => sortOptions(t), [t]);
-  const { load, loadedCount, hasMore } = useNextPage(props, sort);
+  const { load, loadedCount, hasMore } = useNextPage(props, sort, { excludeBundles: !isOffers });
 
   // The merchant can switch filters off for the whole store; the engine reads
   // the same two settings (product-listing.js: `showFilters`).
@@ -159,10 +168,10 @@ export function ListingPage(props: ListingPageProps) {
   // rows (owner amendment 2026-09-22, "New: S2d"); a brand, a search and the
   // three static sources keep the page they had.
   const isTypeOrGoalListing = variant === 'category' || variant === 'goal';
-  // Only the offers static source gets the poster grid (owner brief
-  // 2026-09-24): `variant` collapses every static source to `'static'`, so
-  // this checks `source.type` directly, the same way `listingSourceCopy` does.
-  const isOffers = source.type === 'offers';
+  // `isOffers` (the poster grid's own gate too, owner brief 2026-09-24) is
+  // read above, next to `displayProducts`; `variant` collapses every static
+  // source to `'static'`, so it checks `source.type` directly, the same way
+  // `listingSourceCopy` does.
 
   // THE H1 IS THE RESEARCHED HEAD TERM, NOT THE DASHBOARD NAME. The loader's
   // `page.title` is whatever the merchant typed into the category form
@@ -217,7 +226,7 @@ export function ListingPage(props: ListingPageProps) {
     <ListingCategoryContext.Provider value={node?.slug ?? null}>
       <HookSlot name="product:list.items.start" />
       <ProductGrid
-        products={products}
+        products={displayProducts}
         loader={load}
         resetKey={`${source.value ?? source.type}-${sort}`}
         hasMore={hasMore}
@@ -278,7 +287,7 @@ export function ListingPage(props: ListingPageProps) {
 
       <div className="ox-container ox-listing__body">
         {isOffers ? <OffersPosterGrid /> : null}
-        {isTypeOrGoalListing ? <FeaturedRail products={products} /> : null}
+        {isTypeOrGoalListing ? <FeaturedRail products={displayProducts} /> : null}
 
         {goal ? (
           <>

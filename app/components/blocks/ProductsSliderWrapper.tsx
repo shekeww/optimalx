@@ -8,6 +8,7 @@ import {
   type ProductsListSource,
 } from '@salla.sa/twilight-theme-engine/api/product';
 import { SectionHeader } from '../common/SectionHeader';
+import { isBundleProduct } from '../product/lib/productType';
 
 /** One thing to ask the catalogue for: a source and, where it needs one, its value. */
 export interface ProductsSliderQuery {
@@ -28,6 +29,8 @@ export interface ProductsSliderWrapperProps {
   fallbacks?: ProductsSliderQuery[];
   /** A product id dropped from the result: a rail never offers the page it is on. */
   exclude?: number | string;
+  /** Drops a real Salla bundle (`group_products`) from the results (S9d). */
+  excludeBundles?: boolean;
   perPage?: number;
   sort?: string;
   /** Rendered as a SectionHeader above the rail when given. */
@@ -60,6 +63,7 @@ export function ProductsSliderWrapper({
   sourceValue,
   fallbacks,
   exclude,
+  excludeBundles = false,
   perPage,
   sort,
   title,
@@ -72,8 +76,8 @@ export function ProductsSliderWrapper({
   const [isEmpty, setIsEmpty] = useState(false);
   // The params are read inside the loader, so the callback identity stays
   // stable and the web component is not asked to reload on every render.
-  const params = useRef({ source, sourceValue, fallbacks, exclude, perPage, sort });
-  params.current = { source, sourceValue, fallbacks, exclude, perPage, sort };
+  const params = useRef({ source, sourceValue, fallbacks, exclude, excludeBundles, perPage, sort });
+  params.current = { source, sourceValue, fallbacks, exclude, excludeBundles, perPage, sort };
 
   const loader = useCallback(async () => {
     const {
@@ -81,6 +85,7 @@ export function ProductsSliderWrapper({
       sourceValue: value,
       fallbacks: rest,
       exclude: skip,
+      excludeBundles: noBundles,
       perPage: size,
       sort: order,
     } = params.current;
@@ -93,10 +98,14 @@ export function ProductsSliderWrapper({
         ...(size !== undefined ? { perPage: size } : {}),
         ...(order !== undefined ? { sort: order } : {}),
       });
-      const items =
+      let items =
         skip === undefined
           ? result.items
           : result.items.filter((item) => String(item.id) !== String(skip));
+      // A real bundle is not a product a rail may offer (S9d), except the
+      // one rail this flag is never passed on: the member page's own bundle
+      // card, which offers the bundle on purpose.
+      if (noBundles) items = items.filter((item) => !isBundleProduct(item));
       last = { ...result, items };
       if (items.length > 0) break;
     }

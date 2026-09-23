@@ -339,7 +339,14 @@ export function childTypeFromName(name: string | null | undefined): ChildTypeKey
  */
 const BUNDLE_NAME_WORDS: readonly string[] = ['حزمة', 'باقة', 'bundle'].map(normalise);
 
-function isBundleProduct(product: { type?: string | null; name?: string | null }): boolean {
+/**
+ * Whether a product IS a bundle (S9d): the one predicate every rail, grid and
+ * listing filters on to keep a bundle out of a product list, and the same
+ * check `productTypeOf` runs first, below. `type === 'group_products'`
+ * Salla's own bundle type) or a name that starts with حزمة/باقة/bundle, the
+ * catalogue's own convention for one the API has not flagged that way yet.
+ */
+export function isBundleProduct(product: { type?: string | null; name?: string | null }): boolean {
   if (product.type === 'group_products') return true;
   const [first] = words(product.name ?? '');
   return first !== undefined && BUNDLE_NAME_WORDS.includes(first);

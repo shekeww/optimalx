@@ -104,6 +104,27 @@ describe('OxCategoryRail, a resolved category', () => {
     expect(screen.getByRole('list')).toBeTruthy();
   });
 
+  // S9d, owner brief 2026-09-24: a real bundle is not a product on a
+  // category shelf.
+  it('drops a real bundle from the rail, and does not count it toward the minimum', async () => {
+    liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
+    productList.mockResolvedValue({
+      items: [
+        ...products(1),
+        { id: 99, name: 'حزمة البداية - اوبتيمال اكس', type: 'group_products' },
+      ],
+      next: null,
+    } as never);
+    const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+    await waitFor(() => expect(productList).toHaveBeenCalled());
+    // One real product plus one bundle is still under MIN_PRODUCTS once the
+    // bundle is dropped, so the rail hides — proving the exclusion runs
+    // before the "at least two" gate, not after it.
+    await waitFor(() =>
+      expect(container.querySelector('[data-testid="ox-category-rail"]')).toBeNull()
+    );
+  });
+
   it('sends the view-all link to the category url and falls back to its name for the title', async () => {
     liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
     productList.mockResolvedValue({ items: products(4), next: null } as never);
@@ -111,6 +132,20 @@ describe('OxCategoryRail, a resolved category', () => {
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(4));
     const rail = screen.getByTestId('ox-category-rail');
     expect(rail.querySelector('a[href="/protein/c9001"]')).not.toBeNull();
+  });
+
+  it('drops a real bundle from an otherwise full rail, and shows every ordinary product beside it', async () => {
+    liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
+    productList.mockResolvedValue({
+      items: [
+        ...products(4),
+        { id: 99, name: 'حزمة البداية - اوبتيمال اكس', type: 'group_products' },
+      ],
+      next: null,
+    } as never);
+    renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+    await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(4));
+    expect(screen.queryByText('حزمة البداية - اوبتيمال اكس')).toBeNull();
   });
 
   it('lets the merchant title override win over the resolved category name', async () => {

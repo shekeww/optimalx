@@ -6,6 +6,7 @@ import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Icon } from '../common/Icon';
 import { SectionHeader } from '../common/SectionHeader';
 import { OxProductCard } from '../product/OxProductCard';
+import { isBundleProduct } from '../product/lib/productType';
 import { useTaxonomyLinks } from '../listing/useTaxonomyLinks';
 import { useRailProgress } from '../common/hooks/useRailProgress';
 import { useReducedMotion } from '../common/hooks/useReducedMotion';
@@ -107,7 +108,8 @@ export function OxCategoryRail({ data }: OxBlockProps) {
         sourceValue: [target.id],
         perPage: RAIL_PER_PAGE,
       });
-      return result.items;
+      // A real bundle is not a product on a category shelf (S9d).
+      return result.items.filter((item) => !isBundleProduct(item));
     },
     enabled: target !== undefined,
     staleTime: 5 * 60 * 1000,

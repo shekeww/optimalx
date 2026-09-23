@@ -16,6 +16,7 @@ import { ProductGrid } from '../listing/ProductGrid';
 import { appliedFilterCount, brandFilter } from '../listing/appliedFilters';
 import { currentSort, sortOptions } from '../listing/sortOptions';
 import { useNextPage } from '../listing/useNextPage';
+import { isBundleProduct } from '../product/lib/productType';
 import type { ListingPageProps } from '../listing/types';
 import { BrandBanner } from './BrandBanner';
 import { BrandExplore } from './BrandExplore';
@@ -56,9 +57,16 @@ export function BrandPage(props: ListingPageProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const brand = source.entity as BrandWithCount | undefined;
+  // A real bundle is not a product on a brand's own shelf either (S9d); the
+  // starter kit carries no supplier brand, so this never empties a real
+  // brand's page, only ever removes something that could not belong to one.
+  const displayProducts = useMemo(
+    () => products.filter((item) => !isBundleProduct(item)),
+    [products]
+  );
   const sort = currentSort(query.sort);
   const options = useMemo(() => sortOptions(t), [t]);
-  const { load, loadedCount, hasMore } = useNextPage(props, sort);
+  const { load, loadedCount, hasMore } = useNextPage(props, sort, { excludeBundles: true });
 
   // Every facet the loader sent except the brand one (see the docblock).
   const facets = useMemo(() => {
@@ -102,7 +110,7 @@ export function BrandPage(props: ListingPageProps) {
       <HookSlot name="product:list.start" />
 
       <div className="ox-container ox-listing__body">
-        <FeaturedRail products={products} />
+        <FeaturedRail products={displayProducts} />
 
         <div className="ox-listing__catalogue">
           <div id={GRID_ID} className="ox-listing__grid-head">
@@ -118,7 +126,7 @@ export function BrandPage(props: ListingPageProps) {
             <div className="ox-listing__main">
               <HookSlot name="product:list.items.start" />
               <ProductGrid
-                products={products}
+                products={displayProducts}
                 loader={load}
                 resetKey={`${source.value ?? source.type}-${sort}`}
                 hasMore={hasMore}
