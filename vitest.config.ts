@@ -4,6 +4,11 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   test: {
+    // The stylesheet-reading tests compile the whole theme once per file (about
+    // 3s cold); under a full parallel run on a loaded machine the 5s default
+    // timed them out (2026-09-24, every builder saw it). 20s keeps a real hang
+    // visible and lets a cold compile finish.
+    testTimeout: 20000,
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.tsx'],
