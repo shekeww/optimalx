@@ -1,6 +1,4 @@
 import { Suspense, lazy, useRef } from 'react';
-import { Link } from '@salla.sa/twilight-theme-engine/common';
-import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Logo } from './Logo';
 import { NavBar } from './NavBar';
@@ -76,18 +74,23 @@ export function SearchField({ className, collapsed = false }: SearchFieldProps) 
 
 /**
  * The desktop main bar: the lockup at the inline-start, the five nav items
- * beside it, the search pill, then wishlist, account and cart at the
- * inline-end.
+ * beside it, the search pill, then account and cart at the inline-end.
  *
  * The icon order is the design's: in Arabic the row reads from the end edge,
- * so the DOM order wishlist, account, cart puts the cart at the physical left
- * where the image has it. Wishlist is a plain link with the engine's count;
- * account and cart are the Salla web components, with our glyph in the cart's
- * icon slot (engine-surface 9.2 salla-cart-summary).
+ * so the DOM order account, cart puts the cart at the physical left where
+ * the image has it. Both are the Salla web components, with our glyph in
+ * each one's icon slot (engine-surface 9.2 salla-cart-summary).
+ *
+ * NO WISHLIST HEART (owner review 2026-09-24, item 3, header feature audit:
+ * "if anything can't be integrated in Shopify, delete it"). Shopify's
+ * storefront carries no native wishlist; the header's own heart link is
+ * removed along with the drawer's wishlist row, the PDP gallery's heart and
+ * the (unwired) `WishlistShare` buy-zone control. Decision table in
+ * `docs/build/progress/S9a-V3.md` and `docs/build/NAV-2026-09-23.md`'s
+ * 2026-09-24 addendum.
  */
 export function MainBar() {
   const { t } = useTranslation();
-  const wishlist = useWishlist();
   const actionsRef = useRef<HTMLDivElement>(null);
   useCartCountPill(actionsRef);
 
@@ -100,15 +103,6 @@ export function MainBar() {
       <SearchField className="ox-mainbar__search" />
 
       <div className="ox-mainbar__actions" ref={actionsRef}>
-        <Link
-          to="/account/wishlist"
-          className="ox-iconbtn ox-wishlist"
-          aria-label={t('ox.header.wishlist')}
-        >
-          <Icon name="heart" size={20} />
-          <CountPill count={wishlist?.count ?? 0} />
-        </Link>
-
         <Suspense fallback={null}>
           <SallaUserMenu avatarOnly showHeader className="ox-iconbtn">
             {/* Same slotting shape as the cart button below: the owner's

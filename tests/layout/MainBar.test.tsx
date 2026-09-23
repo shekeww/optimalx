@@ -17,7 +17,6 @@ import { renderWithProviders } from '../helpers/render';
  */
 
 const themeSettings: Record<string, unknown> = {};
-const wishlistValue: Record<string, unknown> = { ids: [], count: 0 };
 const menuItems: Array<{ id: number; title: string; url: string }> = [];
 const categories: unknown[] = [];
 
@@ -34,9 +33,6 @@ vi.mock('@tanstack/react-router', () => ({
 }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useTheme', () => ({
   useTheme: () => ({ color: {}, font: undefined, settings: themeSettings, isRTL: true }),
-}));
-vi.mock('@salla.sa/twilight-theme-engine/hooks/useWishlist', () => ({
-  useWishlist: () => wishlistValue,
 }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useStore', () => ({
   useStore: () => ({ name: 'اوبتيمال اكس', contacts: {}, settings: {} }),
@@ -93,7 +89,6 @@ const { MainBar } = await import('../../app/components/layout/Header/MainBar');
 
 beforeEach(() => {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
-  wishlistValue.count = 0;
   menuItems.length = 0;
   categories.length = 0;
 });
@@ -138,11 +133,9 @@ describe('MainBar', () => {
     expect(cart.querySelector('.sicon-shopping-bag')).toBeNull();
   });
 
-  it('renders the wishlist link with the drawn heart glyph (not sicon-heart)', () => {
+  it('renders no wishlist affordance (owner review 2026-09-24, item 3: Shopify has no native wishlist)', () => {
     renderWithProviders(<MainBar />);
-    const wishlist = screen.getByLabelText('المفضلة');
-    const icon = wishlist.querySelector('svg.ox-icon use');
-    expect(icon?.getAttribute('href')).toBe('#ox-heart');
-    expect(wishlist.querySelector('.sicon-heart')).toBeNull();
+    expect(screen.queryByLabelText('المفضلة')).toBeNull();
+    expect(document.querySelector('.ox-wishlist')).toBeNull();
   });
 });

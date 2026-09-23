@@ -125,6 +125,16 @@ describe('MobileDrawer', () => {
     unmount();
   });
 
+  it('renders no wishlist row (owner review 2026-09-24, item 3: Shopify has no native wishlist)', async () => {
+    const { unmount } = renderWithProviders(<Harness initialOpen />);
+    const drawer = await screen.findByTestId('ox-mobile-drawer');
+    expect(drawer.querySelector('[data-drawer-account] + [data-drawer-account]')).toBeNull();
+    expect(Array.from(drawer.querySelectorAll('a')).map((a) => a.textContent)).not.toContain(
+      ar['ox.header.wishlist']
+    );
+    unmount();
+  });
+
   it("lists حسب النوع before حسب الهدف, with protein's five children nested and the three non-services utility categories appended", async () => {
     const { unmount } = renderWithProviders(<Harness initialOpen />);
     const drawer = await screen.findByTestId('ox-mobile-drawer');

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Image } from '@salla.sa/twilight-theme-engine/common';
-import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
 import type { ProductGalleryProps } from '@salla.sa/twilight-theme-engine/product';
 import type { ProductImage } from '@salla.sa/twilight-theme-engine/types';
-import { Icon } from '../../common/Icon';
 import { PdpThumbRail } from './PdpThumbRail';
 import { promotionLabel } from '../lib/claims';
 
@@ -26,6 +24,11 @@ import { promotionLabel } from '../lib/claims';
  * Zoom is a transform on the image, never a colour change and never a filter,
  * and it is a real button with `aria-pressed` rather than a hover affordance
  * that a touch device could not reach.
+ *
+ * NO WISHLIST HEART on the plate (owner review 2026-09-24, item 3, header
+ * feature audit: "if anything can't be integrated in Shopify, delete it").
+ * Shopify's storefront carries no native wishlist; decision table in
+ * `docs/build/progress/S9a-V3.md`.
  */
 
 /** 2x the largest drawn slot: 358 at 390, 580 at 1440. */
@@ -39,7 +42,6 @@ function imagesOf(product: ProductGalleryProps['product']): ProductImage[] {
 
 export function PdpGallery({ product }: ProductGalleryProps) {
   const { t } = useTranslation();
-  const wishlist = useWishlist();
   const [active, setActive] = useState(0);
   const [zoomed, setZoomed] = useState(false);
   const images = imagesOf(product);
@@ -52,7 +54,6 @@ export function PdpGallery({ product }: ProductGalleryProps) {
   const index = Math.min(active, total - 1);
   const image = images[index];
   const badge = promotionLabel(product);
-  const inWishlist = wishlist.has(product.id);
 
   return (
     <div className={'ox-gallery' + (total > 1 ? ' ox-gallery--railed' : '')}>
@@ -101,16 +102,6 @@ export function PdpGallery({ product }: ProductGalleryProps) {
         </button>
 
         {badge ? <p className="ox-gallery__badge">{badge}</p> : null}
-
-        <button
-          type="button"
-          className={'ox-gallery__wish' + (inWishlist ? ' is-active' : '')}
-          onClick={() => wishlist.toggle(product.id)}
-          aria-pressed={inWishlist}
-          aria-label={t('ox.a11y.wishlist_toggle')}
-        >
-          <Icon name="heart" size={20} />
-        </button>
       </div>
     </div>
   );

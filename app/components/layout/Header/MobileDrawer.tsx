@@ -129,11 +129,14 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
     return { key: entry.key, label, to: resolveNavHref(entry, label, undefined) ?? '/' };
   });
 
-  // Wishlist and account leave the mobile bar, which carries the cart, and
-  // arrive here as their own group.
+  // Account leaves the mobile bar, which carries the cart, and arrives here
+  // as its own group. No wishlist row (owner review 2026-09-24, item 3,
+  // header feature audit): Shopify's storefront carries no native wishlist,
+  // so the row is removed along with the header heart, the PDP gallery's
+  // heart and the unwired buy-zone control (decision table,
+  // docs/build/progress/S9a-V3.md).
   const account: Array<{ key: string; label: string; to: string; icon: OxIconName }> = [
     { key: 'account', label: t('ox.nav.account'), to: '/account/profile', icon: 'user' },
-    { key: 'wishlist', label: t('ox.header.wishlist'), to: '/account/wishlist', icon: 'heart' },
   ];
 
   return (

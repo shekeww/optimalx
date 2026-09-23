@@ -419,10 +419,30 @@ a.ox-util__trust-link {
 // The account control's own slotted-icon wrapper (S8e, 2026-09-24): same
 // shape as `.ox-cartbtn__icon` above, minus the count-pill positioning
 // context the cart needs and this control does not.
+//
+// TWO ICONS FIXED TO ONE (owner review 2026-09-24, item 2). Verified over
+// CDP against the live DOM (`docs/build/progress/S9a-V3.md`): `salla-user-
+// menu` marks this span `hidden` in its signed-out render and shows its own
+// `.s-user-menu-login-btn` icomoon glyph instead — but `hidden` is a
+// presentational HTML attribute, and this rule's own `display: inline-flex`
+// is AUTHOR-origin CSS, which wins over the UA stylesheet's `[hidden] {
+// display: none }` regardless of specificity. So both glyphs painted at
+// once, side by side in the one 44px button (measured: the icomoon glyph at
+// x137-159, ours at x160-180 of a 1440 render). The component's own button
+// is the real, focusable, accessible control (`aria-label="user-icon"`);
+// this span is decorative (`Icon` with no `label` prop, `aria-hidden`). So
+// rather than let the component's own default win, this span is
+// positioned over the whole 44px button instead — `.ox-iconbtn` is already
+// `position: relative` — with `pointer-events: none` so the click still
+// reaches the real control beneath it; the button's own glyph is hidden
+// below so only the owner's icon paints.
 .ox-iconbtn__icon {
+  position: absolute;
+  inset: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 // `salla-cart-summary` renders its own count and a running total beside the
@@ -445,9 +465,12 @@ a.ox-util__trust-link {
   color: inherit;
 }
 
+// Hidden, not sized (S9a-V3, 2026-09-24): the owner's own glyph now paints
+// reliably via `.ox-iconbtn__icon` above, so Salla's own icomoon glyph
+// underneath it is the second icon that made the button read as doubled,
+// and it goes rather than staying sized to match.
 .ox-iconbtn .s-user-menu-login-btn svg {
-  inline-size: 22px;
-  block-size: 22px;
+  display: none;
 }
 
 // NOT `.ox-cart`. That name belongs to the CART PAGE's frame in
@@ -1137,8 +1160,10 @@ a.ox-util__trust-link {
   font-weight: var(--ox-w-read);
 }
 
-// Wishlist and account leave the mobile bar and arrive here as their own
-// group, separated by a rule rather than a heading.
+// Account leaves the mobile bar and arrives here as its own group,
+// separated by a rule rather than a heading (S9a-V3, 2026-09-24: the
+// wishlist row that used to sit beside it is gone, `:first-of-type` still
+// matches the one remaining item).
 .ox-drawer__account:first-of-type {
   border-block-start: 1px solid var(--ox-line);
   margin-block-start: var(--ox-2);

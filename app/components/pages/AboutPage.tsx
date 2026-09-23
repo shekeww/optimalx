@@ -19,6 +19,7 @@ import {
   ABOUT_WHY,
 } from '../../content/about';
 import { SERVICE_PHOTOS } from '../../content/services';
+import { STORE_PHOTOS, type StorePhoto } from '../../content/store-photos';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
 
 /**
@@ -70,6 +71,14 @@ export function AboutPage() {
 
   const page: Page = { title: t('ox.pages.about.h1'), slug: 'about' };
 
+  // S9a-V3 item 4 (gated): the owner's 'mark-wall' photograph (the lit
+  // orange X on the ribbed wall inside the store) is not in the manifest
+  // yet — the conductor adds it to `STORE_PHOTOS` once the owner's file
+  // lands. Read defensively so this line is inert until then and keeps
+  // today's band photo otherwise.
+  const markWall = (STORE_PHOTOS as Partial<Record<string, StorePhoto>>)['mark-wall'];
+  const bandPhoto = markWall?.photo ?? SERVICE_PHOTOS.services;
+
   return (
     <div className="ox-page ox-page--about">
       <OxBreadcrumb page={page} />
@@ -77,7 +86,7 @@ export function AboutPage() {
       <Band
         id="ox-about-band"
         className="ox-page--about__band"
-        photo={SERVICE_PHOTOS.services}
+        photo={bandPhoto}
         headingLevel="h1"
         line1={t('ox.pages.about.h1')}
         subline={t('ox.pages.about.lead')}

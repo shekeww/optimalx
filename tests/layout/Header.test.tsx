@@ -59,9 +59,6 @@ vi.mock('@salla.sa/twilight-theme-engine/hooks/useTheme', () => ({
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useStore', () => ({
   useStore: () => ({ name: 'اوبتيمال اكس', contacts: {}, settings: {} }),
 }));
-vi.mock('@salla.sa/twilight-theme-engine/hooks/useWishlist', () => ({
-  useWishlist: () => ({ ids: [], count: 2 }),
-}));
 vi.mock('@salla.sa/twilight-theme-engine/contexts', () => ({
   useCartContext: () => ({ cart: { count: 3 } }),
 }));
@@ -163,13 +160,11 @@ describe('Header', () => {
     expect(bar.textContent).not.toContain('{{threshold}}');
   });
 
-  it('carries the cart and wishlist counts as aria-hidden pills', () => {
+  it('renders no wishlist affordance (owner review 2026-09-24, item 3: Shopify has no native wishlist)', () => {
     setSettings({});
-    renderWithProviders(<Header />);
-    const pills = screen.getAllByTestId('ox-count-pill');
-    expect(pills.length).toBeGreaterThan(0);
-    for (const pill of pills) expect(pill.getAttribute('aria-hidden')).toBe('true');
-    expect(pills.map((p) => p.textContent)).toContain('2');
+    const { container } = renderWithProviders(<Header />);
+    expect(screen.queryAllByTestId('ox-count-pill')).toHaveLength(0);
+    expect(container.querySelector('.ox-wishlist')).toBeNull();
   });
 
   it('adds the mobile search row only on the routes that carry one', () => {
