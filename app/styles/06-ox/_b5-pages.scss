@@ -393,7 +393,15 @@
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scroll-snap-type: inline proximity;
-  scrollbar-width: thin;
+  // No native bar (owner item 2026-09-24, S8a), the thin one included: the
+  // table scrolls only below the width its 640px minimum fits, a phone,
+  // where the cut-off second column beside the pinned question column
+  // already shows there is more that way (tests/common/scrollers.test.ts).
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 // `separate`, not `collapse`: a collapsed table hands its borders to the

@@ -9,8 +9,9 @@ import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/d
 
 /**
  * The goal row (homepage-spec section 4): six dark photographic cards, each a
- * whole-card link with the accent slash, a glyph, a name, a line and the
- * outline parallelogram. The row is also the page's largest reveal, and the
+ * whole-card link with a glyph, a name, a line and the outline
+ * parallelogram, cut on the diagonal with no orange strap (owner item
+ * 2026-09-24, S8a). The row is also the page's largest reveal, and the
  * contract that matters there is that nothing is hidden before the client
  * decides to hide it: the server HTML carries no `data-reveal` at all.
  */
@@ -74,13 +75,22 @@ describe('OxGoals', () => {
     expect(cards[1].getAttribute('href')).toContain('/search?q=');
   });
 
-  it('is a dark card with a scrim and one accent slash, finished with no photograph', () => {
+  it('is a dark card with a scrim and no orange strap, finished with no photograph', () => {
     const { container } = renderWithProviders(<OxGoals data={data()} />);
     expect(container.querySelectorAll('.ox-goal__scrim')).toHaveLength(6);
-    expect(container.querySelectorAll('.ox-goal__slash')).toHaveLength(6);
-    // Both are decoration; the label already names the goal.
+    // Owner item 2026-09-24 (S8a): the strap is gone from the markup
+    // entirely; the diagonal cuts and the sharp corners carry the identity.
+    expect(container.querySelectorAll('.ox-goal__slash')).toHaveLength(0);
+    // Decoration; the label already names the goal.
     expect(container.querySelector('.ox-goal__scrim')?.getAttribute('aria-hidden')).toBe('true');
-    expect(container.querySelector('.ox-goal__slash')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('keeps the diagonal cuts and the sharp corners, and ships no strap rule (S8a)', () => {
+    const scss = fs.readFileSync(path.join(process.cwd(), 'app/styles/06-ox/_b2-home.scss'), 'utf8');
+    expect(scss).not.toContain('.ox-goal__slash');
+    const goalRule = scss.slice(scss.indexOf('\n.ox-goal {'), scss.indexOf('\n.ox-goal__photo,'));
+    expect(goalRule).toContain('border-radius: 0;');
+    expect(goalRule).toContain('clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px');
   });
 
   it('only ever points a card at a frame that exists on disk', () => {

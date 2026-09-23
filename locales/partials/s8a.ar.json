@@ -1,0 +1,22 @@
+{
+  "ox.home.poster.snacks_title": "سناكات وبروتين بار",
+  "ox.home.poster.snacks_line": "خيارات بروتين عملية بين الوجبات، بنكهات وأحجام مختلفة.",
+  "ox.home.poster.strength_title": "الأداء وبناء الجسم",
+  "ox.home.poster.strength_line": "بروتين وكرياتين وما قبل التمرين حسب روتينك.",
+  "ox.home.poster.cardio_title": "الطاقة والتحمل",
+  "ox.home.poster.cardio_line": "ما قبل التمرين والكافيين والإلكتروليت حسب احتياجك.",
+  "ox.home.poster.advisory_title": "اسأل قبل أن تشتري",
+  "ox.home.poster.advisory_line": "استشارة مكتوبة أو مرئية أو زيارة للفرع.",
+  "ox.home.poster.branch_title": "زرنا في المدينة المنورة",
+  "ox.home.poster.branch_line": "الخالدية، المدينة المنورة. اسأل فريق الفرع قبل أن تشتري.",
+  "ox.card.type.protein": "بروتين",
+  "ox.card.type.creatine": "كرياتين",
+  "ox.card.type.pre_workout": "ما قبل التمرين",
+  "ox.card.type.amino_acids": "أحماض أمينية",
+  "ox.card.type.omega_3": "أوميغا 3",
+  "ox.card.type.vitamins_minerals": "فيتامينات ومعادن",
+  "ox.card.type.collagen_beauty": "كولاجين وجمال",
+  "ox.card.type.daily_health": "الصحة اليومية",
+  "ox.card.type.snacks_bars": "سناكات وبارات",
+  "ox.card.type.accessories": "إكسسوارات"
+}

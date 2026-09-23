@@ -1583,5 +1583,15 @@
   "ox.pdp.advisory_line_base": "Book a free consultation.",
   "ox.pdp.advisory_cta": "Book your free consultation",
   "ox.pdp.advisory_whatsapp_cta": "Chat on WhatsApp",
-  "ox.pdp.advisory_whatsapp_text": "Hello, I would like a free consultation to choose the right product: {{product}}"
+  "ox.pdp.advisory_whatsapp_text": "Hello, I would like a free consultation to choose the right product: {{product}}",
+  "ox.card.type.protein": "Protein",
+  "ox.card.type.creatine": "Creatine",
+  "ox.card.type.pre_workout": "Pre-workout",
+  "ox.card.type.amino_acids": "Amino acids",
+  "ox.card.type.omega_3": "Omega-3",
+  "ox.card.type.vitamins_minerals": "Vitamins & minerals",
+  "ox.card.type.collagen_beauty": "Collagen & beauty",
+  "ox.card.type.daily_health": "Daily health",
+  "ox.card.type.snacks_bars": "Snacks & bars",
+  "ox.card.type.accessories": "Accessories"
 }

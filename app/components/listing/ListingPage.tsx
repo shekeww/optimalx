@@ -29,6 +29,7 @@ import { RelatedGuides } from './RelatedGuides';
 import { listingSourceCopy } from './listingCopy';
 import { categoryEntity, listingGoal, listingSlug, listingVariant } from './resolve';
 import { nodeBySlug } from '../../content/taxonomy';
+import { ListingCategoryContext } from '../product/lib/productType';
 import { currentSort, sortOptions } from './sortOptions';
 import { ListingHeader } from './ListingHeader';
 import { ListingToolbar } from './ListingToolbar';
@@ -208,8 +209,12 @@ export function ListingPage(props: ListingPageProps) {
 
   const crumbs = <OxBreadcrumb page={page} className="ox-crumbs" />;
 
+  // A card on a category page knows its category (owner item 2026-09-24,
+  // S8a): the facts line names the product's type from it when the payload
+  // carries no `product.category` of its own (`productType.ts`). Only a
+  // taxonomy node is passed; a goal or utility node maps to no type there.
   const grid = (
-    <>
+    <ListingCategoryContext.Provider value={node?.slug ?? null}>
       <HookSlot name="product:list.items.start" />
       <ProductGrid
         products={products}
@@ -244,7 +249,7 @@ export function ListingPage(props: ListingPageProps) {
         t={t}
       />
       <HookSlot name="product:list.items.end" />
-    </>
+    </ListingCategoryContext.Provider>
   );
 
   return (

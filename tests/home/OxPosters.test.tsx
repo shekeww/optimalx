@@ -3,18 +3,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { loadDictionary } from '../helpers/i18n';
-import { POSTER_CARDS } from '../../app/content/posters';
-import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
+import { CONTENT_CARDS, HOME_CAROUSEL, POSTER_CARDS } from '../../app/content/posters';
+import { HOME_BLOCK_FIELDS, HOME_BLOCK_HEIGHTS, type OxBlockData } from '../../app/components/home/defaults';
 
 const ar = loadDictionary('ar');
 
 /**
- * The poster carousel (owner brief 2026-09-24): six marketing posters, each
- * an image the owner supplies with its own baked-in headline, offer and CTA
- * (docs/build/progress/S7a.md). The contract this file holds:
+ * The "اكتشف أكثر" carousel (owner items 2026-09-24, S7a then S8a): ONE rail
+ * carrying both kinds of card, alternating offer, content, offer, content,
+ * starting with the InBody offer. The six offers are marketing posters the
+ * owner supplies with their own baked-in headline, offer and CTA
+ * (docs/build/progress/S7a.md); the five content cards are the theme's own
+ * photograph + title + line + angled arrow (restored from 4657b89, S8a). The
+ * contract this file holds:
  *
- *  - one card per `POSTER_CARDS` entry, in order, each a single link (never
- *    a nested control) carrying the angled strap, decorative only;
+ *  - eleven cards in the alternating order, each a single link (never a
+ *    nested control) carrying the angled strap, decorative only;
  *  - the UNAVAILABLE state (every entry's default today: no file on disk
  *    yet) renders the tinted plate with the alt text as a visible caption,
  *    never a broken `<img>`;
@@ -60,12 +64,94 @@ beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn();
 });
 
-describe('OxPosters, six posters, unavailable by default (no files on disk yet)', () => {
-  it('renders one card per POSTER_CARDS entry, each the tinted placeholder with the alt as a caption', () => {
+const MIXED_ORDER = [
+  'inbody-consult',
+  'snacks',
+  'weekly-picks',
+  'strength',
+  'bundle-her',
+  'cardio',
+  'bundle-him',
+  'advisory',
+  'weight-subscription',
+  'branch',
+  'bigramy-creatine',
+];
+
+const KINDS = MIXED_ORDER.map((_, index) => (index % 2 === 0 ? 'offer' : 'content'));
+
+describe('OxPosters, one rail of both kinds, alternating (S8a)', () => {
+  it('interleaves the six offers and the five content cards, offer first, starting with InBody', () => {
+    expect(HOME_CAROUSEL.map((entry) => entry.card.slug)).toEqual(MIXED_ORDER);
+    expect(HOME_CAROUSEL.map((entry) => entry.kind)).toEqual(KINDS);
+    expect(POSTER_CARDS).toHaveLength(6);
+    expect(CONTENT_CARDS).toHaveLength(5);
+  });
+
+  it('renders all eleven in that order, each kind in its own composition', () => {
     const { container } = renderWithProviders(<OxPosters data={data()} />);
     const cards = screen.getAllByTestId('ox-poster-card');
-    expect(cards).toHaveLength(POSTER_CARDS.length);
-    expect(cards.map((card) => card.getAttribute('data-poster'))).toEqual(
+    expect(cards.map((card) => card.getAttribute('data-poster'))).toEqual(MIXED_ORDER);
+    expect(cards.map((card) => card.getAttribute('data-kind'))).toEqual(KINDS);
+
+    // A content card: its own photograph behind a scrim, the title, the line
+    // and the angled arrow face (box 24, glyph 16); no poster placeholder.
+    for (const content of CONTENT_CARDS) {
+      const card = cards.find((el) => el.getAttribute('data-poster') === content.slug);
+      expect(card?.querySelector('.ox-pcard__frame')?.getAttribute('src')).toBe(content.photo);
+      expect(card?.querySelector('.ox-pcard__scrim')?.getAttribute('aria-hidden')).toBe('true');
+      expect(card?.querySelector('.ox-pcard__title')?.textContent).toBe(ar[content.titleKey]);
+      expect(card?.querySelector('.ox-pcard__line')?.textContent).toBe(ar[content.lineKey]);
+      const arrow = card?.querySelector('.ox-pcard__arrow');
+      expect(arrow?.classList.contains('ox-iconbtn--angled')).toBe(true);
+      expect(arrow?.getAttribute('aria-hidden')).toBe('true');
+      expect(arrow?.querySelector('svg')?.getAttribute('width')).toBe('16');
+      expect(card?.querySelector('.ox-pcard__placeholder')).toBeNull();
+    }
+    expect(container.querySelectorAll('.ox-pcard--content')).toHaveLength(CONTENT_CARDS.length);
+  });
+
+  it('names the branch visit on the advisory card, and links the two literal routes', () => {
+    renderWithProviders(<OxPosters data={data()} />);
+    const cards = screen.getAllByTestId('ox-poster-card');
+    const byy = (slug: string) => cards.find((card) => card.getAttribute('data-poster') === slug);
+    expect(byy('advisory')?.textContent).toContain('زيارة للفرع');
+    expect(byy('advisory')?.getAttribute('href')).toBe('/services');
+    expect(byy('branch')?.getAttribute('href')).toBe('/about');
+  });
+
+  it('resolves the type and goal content cards through the shared taxonomy links (a search until live)', () => {
+    renderWithProviders(<OxPosters data={data()} />);
+    const byy = (slug: string) =>
+      screen.getAllByTestId('ox-poster-card').find((card) => card.getAttribute('data-poster') === slug);
+    for (const slug of ['snacks', 'strength', 'cardio']) {
+      expect(byy(slug)?.getAttribute('href')).toMatch(/^\/search\?q=/);
+    }
+  });
+
+  it('links the snacks card to the live category once one resolves', async () => {
+    liveCategories.push({ id: 9009, name: 'سناكات', url: 'https://optimalx.com.sa/snacks-bars/c9009' });
+    renderWithProviders(<OxPosters data={data()} />);
+    await waitFor(() => {
+      const card = screen
+        .getAllByTestId('ox-poster-card')
+        .find((el) => el.getAttribute('data-poster') === 'snacks');
+      expect(card?.getAttribute('href')).toBe('/snacks-bars/c9009');
+    });
+  });
+
+  it('keeps the reserved height: both kinds share the 4:5 box, so the offer card still sets the row', () => {
+    expect(HOME_BLOCK_HEIGHTS['ox-posters']).toEqual({ mobile: 456, desktop: 477 });
+  });
+});
+
+describe('OxPosters, six offer posters, unavailable by default (no files on disk yet)', () => {
+  it('renders every offer as the tinted placeholder with the alt as a caption', () => {
+    const { container } = renderWithProviders(<OxPosters data={data()} />);
+    const offers = screen
+      .getAllByTestId('ox-poster-card')
+      .filter((card) => card.getAttribute('data-kind') === 'offer');
+    expect(offers.map((card) => card.getAttribute('data-poster'))).toEqual(
       POSTER_CARDS.map((card) => card.slug)
     );
 
@@ -81,7 +167,7 @@ describe('OxPosters, six posters, unavailable by default (no files on disk yet)'
   it('carries the angled strap, decorative only, never a nested link or button', () => {
     const { container } = renderWithProviders(<OxPosters data={data()} />);
     const straps = container.querySelectorAll('.ox-pcard__slash');
-    expect(straps).toHaveLength(POSTER_CARDS.length);
+    expect(straps).toHaveLength(HOME_CAROUSEL.length);
     straps.forEach((strap) => expect(strap.getAttribute('aria-hidden')).toBe('true'));
     expect(container.querySelectorAll('.ox-pcard button')).toHaveLength(0);
     expect(container.querySelectorAll('.ox-pcard a')).toHaveLength(0);
@@ -160,12 +246,12 @@ describe('OxPosters, the carousel on the rail primitive (S5a) and the sprite ico
     expect(track?.getAttribute('role')).toBe('list');
     expect(track?.getAttribute('aria-roledescription')).toBe(ar['ox.listing.featured_carousel_role']);
     const slides = container.querySelectorAll('.ox-posters__slide');
-    expect(slides).toHaveLength(POSTER_CARDS.length);
+    expect(slides).toHaveLength(HOME_CAROUSEL.length);
     expect(slides[0].getAttribute('aria-roledescription')).toBe(ar['ox.listing.featured_slide_role']);
     expect(slides[0].getAttribute('aria-label')).toBe(
       ar['ox.home.posters_slide_label']
         .replace('{{index}}', '1')
-        .replace('{{total}}', String(POSTER_CARDS.length))
+        .replace('{{total}}', String(HOME_CAROUSEL.length))
     );
 
     const cue = container.querySelector('.ox-rail__cue');
@@ -187,11 +273,11 @@ describe('OxPosters, the carousel on the rail primitive (S5a) and the sprite ico
     await waitFor(() => expect((arrows[0] as HTMLButtonElement).disabled).toBe(false));
   });
 
-  it('loads the first two cards eagerly and the rest lazily', () => {
+  it('loads the first two slides eagerly and the rest lazily (the second offer is the third slide)', () => {
     const { container } = renderWithProviders(<OxPosters data={data({ image_1: '/x.webp', image_2: '/y.webp' })} />);
     const images = container.querySelectorAll('.ox-pcard__photo');
     expect(images).toHaveLength(2);
     expect(images[0].getAttribute('loading')).toBe('eager');
-    expect(images[1].getAttribute('loading')).toBe('eager');
+    expect(images[1].getAttribute('loading')).toBe('lazy');
   });
 });

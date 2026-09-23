@@ -1,10 +1,11 @@
 /**
  * The card's meta lines. Line 1 (`cardSpecLine`, CARD-2026-09-23 section 3.4,
- * extended on the coordinator's addendum, 2026-09-23): the product's own root
- * category name, then servings, then the pack size, joined by the theme's own
- * divider; the dosage form when neither fact is present; otherwise null, so
- * the row keeps its reserved 18px empty rather than guessing at a fact the
- * product does not carry. Line 2 (`descriptionExcerpt`, restored on the same
+ * reshaped on the owner's 2026-09-24 item, S8a): "<type> | <servings or
+ * size>", the product's root TYPE (`productType.ts`, resolved by the card)
+ * then ONE fact, the servings, else the pack size, else the dosage form,
+ * joined by the theme's own divider; otherwise null, so the row keeps its
+ * reserved 18px empty rather than guessing at a fact the product does not
+ * carry. Line 2 (`descriptionExcerpt`, restored on the same
  * addendum): the first sentence of the description's own prose paragraph —
  * the former merchant-pitch line, now read off `description` instead of the
  * `subtitle` field it used before CARD-2026-09-23 removed it.
@@ -16,35 +17,40 @@ import { parseFragment, textOf, type OxNode } from './sanitizeHtml';
 import { parseSpecLineText, type SpecLine } from './specLine';
 import { specField, unitBearingWeight, PACK_SIZE_LABELS } from './stats';
 
-/** A hair space each side of the divider, so the line breathes without a gap. */
+/**
+ * A thin space each side of the divider (U+2009): wide enough that a digit
+ * before the bar and a digit after it never read as one number (S8a note 3,
+ * "أوميغا 3|90 حصة" at 13px), narrow enough that the line still reads as one.
+ */
 export const DIVIDER =
-  String.fromCharCode(0x200a) + String.fromCharCode(124) + String.fromCharCode(0x200a);
+  String.fromCharCode(0x2009) + String.fromCharCode(124) + String.fromCharCode(0x2009);
 
 export type Translate = (key: string, vars?: Record<string, unknown>) => string;
 
 /**
- * `cardSpecLine(product, spec, t)`: the product's root category name (when
- * the catalogue set one), then servings text, then the pack size (the spec
- * line's own field, else the product's own unit-bearing weight), joined by
- * `DIVIDER`; the dosage form when the line carries no fact at all; else null.
+ * `cardSpecLine(product, spec, t, typeName)`: the type name the card
+ * resolved (`productTypeOf` → `ox.card.type.<key>`, or null when no source
+ * could name it), then ONE fact: the servings text, else the pack size (the
+ * spec line's own field, else the product's own unit-bearing weight), else
+ * the dosage form; joined by `DIVIDER`; null when there is neither.
  *
- * Nothing here is inferred: the category is the catalogue's own
- * `product.category.name` (the same field `ProductPage.tsx` already reads
- * for the PDP's own breadcrumb/FAQ gates), and every other piece is either
- * the parsed spec line or the product's own `weight` field, exactly as
- * `stats.ts` and `specLine.ts` already read them for the PDP's own chips.
+ * One fact, not two (owner item 2026-09-24: "<type> · <servings or size>"):
+ * the row is one `nowrap` line, and with the type in front a second fact
+ * pushed the first behind the ellipsis on a two-up phone card. Nothing here
+ * is inferred: the type comes from `productType.ts`, which says nothing
+ * rather than guess, and every fact is the parsed spec line or the product's
+ * own `weight`, exactly as `stats.ts` and `specLine.ts` read them for the PDP.
  */
 export function cardSpecLine(
-  product: Pick<Product, 'weight' | 'category'>,
+  product: Pick<Product, 'weight'>,
   spec: SpecLine | null | undefined,
-  t: Translate
+  t: Translate,
+  typeName: string | null = null
 ): string | null {
-  const categoryName = product.category?.name?.trim() || null;
   const servings = spec?.servings != null ? t('ox.card.servings', { n: spec.servings }) : null;
   const pack = specField(spec, PACK_SIZE_LABELS) ?? unitBearingWeight(product.weight);
-  const factParts = [servings, pack].filter((value): value is string => Boolean(value));
-  const facts = factParts.length > 0 ? factParts.join(DIVIDER) : (spec?.form ?? null);
-  const parts = [categoryName, facts].filter((value): value is string => Boolean(value));
+  const fact = servings ?? pack ?? spec?.form ?? null;
+  const parts = [typeName?.trim() || null, fact].filter((value): value is string => Boolean(value));
   return parts.length > 0 ? parts.join(DIVIDER) : null;
 }
 

@@ -974,6 +974,21 @@ $ox-angle-tan: 0.6745;
   }
 }
 
+// Owner item 2026-09-24 (S8a): back to 24 everywhere — box 24, glyph 16,
+// lean 8. Five consumers wrap a 16px `Icon` in a span carrying the class
+// (the rail and nav arrow faces); four put the class straight on a 24px
+// `Icon` (GoalCard, CategoryTile, CategoriesIndex, FeaturedRail's cover CTA),
+// and since the S6b sprite swap that svg drew the 24-unit chevron edge to
+// edge inside the box: the enlarged arrow. Padding shrinks that svg's own
+// viewport to the same 16px the wrapped faces draw (24 - 2 x 1px border -
+// 2 x 3px = 16), and the 16 step's heavier stroke (`.ox-icon--16`, S6a
+// deviation 6) comes with it, so both constructions paint one arrow.
+.ox-icon.ox-iconbtn--angled {
+  box-sizing: border-box;
+  padding: 3px;
+  --ox-icon-stroke: 2.25px;
+}
+
 // ---------------------------------------------------------------------------
 // 7. SectionHeader (DIRECTION 5.2, A4)
 // ---------------------------------------------------------------------------
@@ -1362,11 +1377,36 @@ $ox-angle-tan: 0.6745;
 // ---------------------------------------------------------------------------
 // 12. Table (hours, nutrition, cart totals, order details)
 // ---------------------------------------------------------------------------
+// Scrolls sideways when a table outgrows its column, with no native bar
+// (owner item 2026-09-24, S8a: no horizontal scroller shows one).
 .ox-table-wrap {
   position: relative;
   inline-size: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Salla's own web components scroll some rows sideways from their own
+// stylesheet (loaded beside this one, not compiled from it): the header row
+// of every `salla-tabs`, the offer modal's product row, and Tailwind's
+// `overflow-x-auto` utility their markup carries. No native bar on those
+// either (owner item 2026-09-24, S8a). `.overflow-auto` and the components'
+// vertical panes (`max-height` plus `overflow: auto`: the size guide, the
+// offer drawer's accordion, the option content) are not horizontal
+// scrollers and keep their bars.
+.s-tabs-header,
+.s-offer-modal-body,
+.overflow-x-auto {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 .ox-table {
   inline-size: 100%;

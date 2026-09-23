@@ -1079,25 +1079,50 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-// The logo field: a fixed 3:2 box on a light ground (coordinator brief
-// 2026-09-23). The box reserves its own height through `aspect-ratio`, so a
-// logo that arrives late shifts nothing, and `contain` inside it means the
-// artwork is never cropped, stretched or recoloured - a third-party mark is
-// shown as its owner draws it or not at all.
-.ox-brand-tile__logobox {
+// The logo field: ONE FIXED BOX on every tile (owner brief 2026-09-24, item
+// 1(b)): every brand logo renders at the same size, on every surface this
+// tile draws, regardless of the tile's own width. The old `aspect-ratio: 3/2`
+// scaled the box to the TILE's width, which differs between the carousel
+// (139.8 to 202.7 across tiers) and the `/brands` grid (171 to 202.7) at the
+// same breakpoint, so two brands could sit in visibly different boxes at the
+// same viewport - the defect this fixes. A flat `block-size` per tier (72px
+// base, 96px from 1280 - the same two-step ladder the plate's own
+// `min-block-size` already uses) replaces it; `contain` on the `<img>` still
+// means the artwork is never cropped, stretched or recoloured, and it is the
+// ONLY scaling the logo itself gets - the box never scales BY the logo's own
+// aspect ratio.
+//
+// The name-mark fallback box is IDENTICAL (owner brief 2026-09-24, item
+// 1(b), "the name-mark fallback box identical"): same padding, same
+// centering, same floor height, so a brand with no artwork sits in the same
+// box a brand with one would. The logo box's height is a hard `block-size`
+// (an image inside it is always contained, never taller than the box); the
+// mark's is a `min-block-size` instead, so the one long catalogue name that
+// wraps to three lines (`Olimp Sport Nutrition`, the narrowest tier) grows
+// its own box rather than spilling text past a fixed one - still identical
+// at every normal name length, which is every other brand in the catalogue.
+.ox-brand-tile__logobox,
+.ox-brand-tile__mark {
   display: flex;
   align-items: center;
   justify-content: center;
   inline-size: 100%;
-  aspect-ratio: 3 / 2;
   padding: var(--ox-3);
+}
+
+.ox-brand-tile__logobox {
+  block-size: 72px;
   background: var(--ox-paper);
+}
+
+.ox-brand-tile__mark {
+  min-block-size: 72px;
 }
 
 // `logo_ground: "dark"` on the brand's own overlay row: the mark itself is
 // drawn in white (Optimum Nutrition and Dymatize both publish white-only
 // artwork), so the FIELD changes rather than the mark. Same box, same
-// padding, same 3:2 field, ink ground - the brand is shown exactly as its
+// padding, same fixed height, ink ground - the brand is shown exactly as its
 // owner draws it, and nothing is recoloured, inverted or composited.
 .ox-brand-tile__logobox--dark {
   background: var(--ox-ink);
@@ -1109,11 +1134,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   object-fit: contain;
 }
 
-// The NAME MARK: the brand's own name set in the theme's title weight, its
-// first grapheme in `--ox-accent-deep`. Deep, not `--ox-accent`: this is
-// TEXT, and X-IDENTITY §4.6 fixes the accent step for accent text at
-// #A82D07 (5.99:1 on the plate tints, where the bright accent is 3.5:1 and
-// fails AA at this size).
+// The NAME MARK's own text, inside the fixed box above: the brand's own name
+// set in the theme's title weight, its first grapheme in `--ox-accent-deep`.
+// Deep, not `--ox-accent`: this is TEXT, and X-IDENTITY §4.6 fixes the accent
+// step for accent text at #A82D07 (5.99:1 on the plate tints, where the
+// bright accent is 3.5:1 and fails AA at this size).
 .ox-brand-tile__mark {
   font-size: var(--ox-t-h3);
   font-weight: var(--ox-w-title);
@@ -1126,10 +1151,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
   color: var(--ox-accent-deep);
 }
 
-.ox-brand-tile__count {
-  color: var(--ox-fg-3);
-}
-
 @media (min-width: 768px) {
   .ox-brand-tile__plate {
     @include ox-x-corner(48px);
@@ -1140,6 +1161,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-brand-tile__plate {
     min-block-size: 176px;
     @include ox-x-corner(64px);
+  }
+
+  .ox-brand-tile__logobox {
+    block-size: 96px;
+  }
+
+  .ox-brand-tile__mark {
+    min-block-size: 96px;
   }
 }
 
@@ -2750,9 +2779,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding-block-start: var(--ox-1);
 }
 
+// No size of its own (owner item 2026-09-24, S8a): the 18px `font-size`
+// sized the retired font glyph; the svg's box and glyph are the shared
+// `.ox-iconbtn--angled` rule's alone.
 .ox-cat-card__arrow {
   margin-inline-start: auto;
-  font-size: 18px;
   color: var(--ox-accent-dark);
 }
 

@@ -1219,9 +1219,12 @@ body {
 // `--ox-tile-arrow` is `--ox-accent-dark` on every pastel tint (measured
 // 4.20 to 4.39:1 against it, the 3:1 graphical floor) and the card's one
 // literal `--ox-accent` on the black card, below.
+//
+// No size of its own (owner item 2026-09-24, S8a): the 18px `font-size`
+// sized the retired font glyph; the svg's box and glyph are the shared
+// `.ox-iconbtn--angled` rule's alone.
 .ox-tile__arrow {
   margin-inline-start: auto;
-  font-size: 18px;
   color: var(--ox-tile-arrow);
 }
 
@@ -1591,6 +1594,11 @@ body {
   );
 }
 
+// Owner item 2026-09-24 (S8a): the goal card's own strap is GONE — rule and
+// markup — and the card keeps its diagonal cuts and sharp corners alone. The
+// history and the two functions below stay because `.ox-pcard__slash` (the
+// poster carousel's own strap, §17) is still built from them.
+//
 // Owner review 2026-09-23, item 2: "the orange straps on cards should always
 // be angled" — a 34deg parallelogram again (it carried `skewX(var(--ox-skew))`
 // before the 2026-09-23 `small-angle` fix dropped it). Coordinator addendum,
@@ -1635,29 +1643,6 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
 @function ox-strap-width($thickness) {
   @return $thickness * $ox-strap-inv-cos34;
-}
-
-// `block-size` ordered first with the pragma on its own line —
-// `.ox-plan__arrow`'s own comment in this file traces the checker's
-// multi-line match issue this avoids. `inset-block-start: 6px * sin34` is
-// the same `gap * sin34` the short strap's outer-top vertex used — constant
-// across tiers, since `gap` (6px) never changes.
-.ox-goal__slash {
-  block-size: 90px; // ox-allow: small-angle
-  position: absolute;
-  z-index: 2;
-  inset-block-start: 3.3552px;
-  inset-inline-start: ox-strap-inset(ox-run(40px), 6px);
-  inline-size: ox-strap-width(10px);
-  background: var(--ox-accent);
-  transform: skewX(calc(-1 * var(--ox-skew)));
-  transform-origin: 0 0;
-  pointer-events: none;
-}
-
-[dir='ltr'] .ox-goal__slash {
-  inset-inline-start: auto;
-  inset-inline-end: ox-strap-inset(ox-run(40px), 6px);
 }
 
 .ox-goal__body {
@@ -1736,19 +1721,6 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   .ox-goal__body {
     padding: var(--ox-4);
   }
-
-  // Strap re-derived from this tier's own lean/run (56 / ox-run(56px)) so it
-  // starts parallel to the cut above; length grown to ~46% of this tier's
-  // 228px card (`docs/build/progress/S4a.md` has the exact figure).
-  .ox-goal__slash {
-    block-size: 103px; // ox-allow: small-angle
-    inset-inline-start: ox-strap-inset(ox-run(56px), 6px);
-    inline-size: ox-strap-width(11px);
-  }
-
-  [dir='ltr'] .ox-goal__slash {
-    inset-inline-end: ox-strap-inset(ox-run(56px), 6px);
-  }
 }
 
 @media (min-width: 1024px) {
@@ -1779,22 +1751,6 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
   .ox-goal__label {
     font-size: 19px;
-  }
-
-  // Strap re-derived from this tier's own lean/run (64 / ox-run(64px));
-  // length grown to ~46% of this tier's 400px card (180px — over the 158px
-  // 3.2 control-scale floor, so no `small-angle` pragma here: that rule
-  // governs elements BELOW the floor, and X-IDENTITY §2.3's own bar
-  // exemption already covers a thin travelling parallelogram like this one
-  // by name, the same reasoning the hero strap and footer wedge bars carry).
-  .ox-goal__slash {
-    block-size: 180px;
-    inset-inline-start: ox-strap-inset(ox-run(64px), 6px);
-    inline-size: ox-strap-width(12px);
-  }
-
-  [dir='ltr'] .ox-goal__slash {
-    inset-inline-end: ox-strap-inset(ox-run(64px), 6px);
   }
 }
 
@@ -1881,12 +1837,21 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
 // ---------------------------------------------------------------------------
 // 7. OxBrands: the shop-by-brand CAROUSEL (DIRECTION 6.2 row 6; owner brief
-//    2026-09-23 late, item 1)
+//    2026-09-23 late, item 1; hierarchy and eyebrow, owner brief 2026-09-24,
+//    item 1)
 // ---------------------------------------------------------------------------
 // The static strip is now a scroll-snap carousel on the shared rail primitive
 // (`_rail.scss`): 2.4 tiles visible at 390 so the next one peeks, 4 from 768,
 // 6 from 1280, gap `--ox-4`, no native scrollbar, the accent chevron cue at
 // the reading end and the progress strap under the row.
+//
+// NO EYEBROW (2026-09-24, item 1(a)): `OxBrands.tsx` no longer passes one, so
+// the section header is title + view-all only, the same shape `OxCategories`'
+// own header draws — which is what gives the two sections the identical
+// heading size and spacing the hierarchy item asks for (no scoped override
+// exists on either; `SectionHeader` renders the same `.ox-h2` either way).
+// The strap-sweep rule that used to animate the eyebrow's own accent line is
+// removed with it below: there is no longer an element for it to draw on.
 //
 // Why the tier jumps at 1280 and not at 1024: six tiles in a 1024 viewport
 // (container 960) is a 146.7px tile, and the corner cut's 1440 tier (lean 64,
@@ -1917,47 +1882,6 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
     background-position: center;
     opacity: 0.14;
     pointer-events: none;
-  }
-}
-
-// THE STRAP SWEEP (owner brief 2026-09-23 late, item 1: "the kinetic touch:
-// the strap sweep on reveal, once, never a hover lift").
-//
-// The strap is the section eyebrow's own accent rule — `.ox-sh__eyebrow::before`
-// in `_primitives.scss`, this section's ONE accent element (BUILD 3.1) —
-// widened to 40px here so the gesture reads, and opened from its inline-start
-// edge once when the block reveals. `transform` only, no colour, no size
-// animation, so it costs one composited frame and nothing else.
-//
-// `transform-origin` is written as arithmetic on `--direction-factor` rather
-// than the physical `right`/`left` keywords: RTL (factor -1) resolves to 100%,
-// the inline-start edge in this document's default direction, and LTR (factor
-// 1) resolves to 0%. One declaration, correct in both, no physical keyword.
-//
-// `useSectionReveal` never arms an element already on screen at hydration and
-// returns before observing under `prefers-reduced-motion`, so the SSR html and
-// the first client paint are identical and a visitor who asked for no motion
-// simply gets the strap at full width.
-.ox-brands__head {
-  .ox-sh__eyebrow::before {
-    inline-size: 40px;
-    transform-origin: calc(50% - var(--direction-factor) * 50%) center;
-    transition: transform var(--dur-slow) var(--ease-out);
-  }
-}
-
-[data-reveal='ready'] .ox-brands__head .ox-sh__eyebrow::before {
-  transform: scaleX(0);
-}
-
-[data-reveal='in'] .ox-brands__head .ox-sh__eyebrow::before {
-  transform: scaleX(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ox-brands__head .ox-sh__eyebrow::before {
-    transform: none;
-    transition: none;
   }
 }
 
@@ -3572,8 +3496,9 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
 // The angled strap stays (the brief is explicit) at the smallest lean/run
 // pair the identity ladder has (40/27, the "small arm-foot" size `GoalCard`'s
-// own 390 tier uses, `ox-strap-inset()`/`ox-strap-width()` defined once above
-// `.ox-goal__slash`) — there is no clip left to size a bigger strap against,
+// own 390 tier used before S8a removed its strap, `ox-strap-inset()`/
+// `ox-strap-width()` defined once above `.ox-goal__body`) — there is no clip
+// left to size a bigger strap against,
 // and a small corner accent risks less against artwork this theme has not
 // seen than the longer 135px bar the goal and plan cards carry. A residual,
 // honest risk, not a solved one: a real file whose tagline runs to within a
@@ -3596,6 +3521,103 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 [dir='ltr'] .ox-pcard__slash {
   inset-inline-start: auto;
   inset-inline-end: ox-strap-inset(ox-run(40px), 6px);
+}
+
+// The content card (owner item 2026-09-24, docs/build/progress/S8a.md): the
+// five text-and-photo cards restored from 4657b89 into the same rail as the
+// offer posters, alternating with them. Same box as the offer beside it
+// (`.ox-pcard`'s own 4:5, sharp corners, the strap above), so the row keeps
+// one height and reads as one set; the composition inside is the pre-S7a
+// one: the photograph low on the dark ground, a scrim deepening toward the
+// floor, then the title, the line and the angled arrow.
+//
+// The diagonal cuts come back on THIS kind only. S7a dropped them from the
+// offer posters because a clip cannot see where a logo or a tagline will
+// land in artwork nobody has inspected; these photographs are the theme's
+// own, so that reason does not reach them. lean 40 / run 27.0, the tier the
+// strap above is already built from (`ox-strap-inset(ox-run(40px), 6px)`
+// starts 6px inside exactly this cut): 27.0 / 309.2 = 8.7% of the narrowest
+// card the rail draws (the 390 and 1024 tiers, §17.2), inside the 24%
+// budget (X-IDENTITY §2.3). One tier, not three: the card's width moves
+// within 309 to 352px across the rail's four tiers, too little for a second
+// lean to earn its own breakpoint.
+.ox-pcard--content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  isolation: isolate;
+  padding: var(--ox-6);
+  clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+}
+
+.ox-pcard__frame,
+.ox-pcard__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+// Low enough that the card's own dark ground shows through, so five
+// unrelated photographs still read as one set (the goal card's own rule).
+.ox-pcard__frame {
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+.ox-pcard__frame[data-ready] { opacity: 0.46; }
+
+.ox-pcard__scrim {
+  background: linear-gradient(
+    to top,
+    rgb(14 16 20 / 0.92) 0%,
+    rgb(14 16 20 / 0.55) 46%,
+    rgb(14 16 20 / 0.15) 100%
+  );
+}
+
+.ox-pcard__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+}
+
+.ox-pcard__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  // Stated, not inherited: a global heading rule outranks the card's own
+  // `color` on `.ox-h3` and painted it near-black on the dark photograph.
+  color: var(--ox-paper);
+}
+
+.ox-pcard__line {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgb(255 255 255 / 0.78);
+}
+
+// The card's action: the shared angled face (box 24, glyph 16, lean 8,
+// `_primitives.scss`) in the accent, the goal card's own arrow treatment;
+// the hover strengthens the hairline, never a fill (S4a §2).
+.ox-pcard__arrow {
+  margin-block-start: var(--ox-2);
+  color: var(--ox-accent);
+}
+
+.ox-pcard--content:hover .ox-pcard__arrow {
+  border-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-pcard__frame { transition: none; }
 }
 
 // 17.3 The certification band (certification-band-spec)
@@ -3801,5 +3823,23 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
   .ox-cta-band__motif {
     inline-size: 220px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 20. The engine's two tab rows: no native scrollbar (owner item 2026-09-24,
+//     S8a)
+// ---------------------------------------------------------------------------
+// The base theme's "tabs products" and "special products" home blocks scroll
+// their tab row sideways through Tailwind's `overflow-x-auto`
+// (`04-components/home-blocks.scss`, the engine's own file). A merchant can
+// still add either block, and no horizontal scroller on this store shows a
+// native bar, so the bar is hidden here; the row keeps scrolling.
+.s-block--tabs-produtcs .tabs,
+.s-block--special-products .tabs {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }

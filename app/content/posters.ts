@@ -1,16 +1,20 @@
 import { pathForSku } from './salla-ids';
 
 /**
- * The six marketing posters (owner brief 2026-09-24): the "تصفح المزيد"/
- * "ابدأ من هنا" carousel on the home page AND the poster grid at the top of
- * `/offers` (docs/build/progress/S7a.md).
+ * The home carousel "اكتشف أكثر" and the offers page's poster grid.
  *
- * Every poster is an IMAGE the owner supplies, not a card this theme composes
- * from copy: the artwork carries its own headline, offer and CTA baked in, so
- * this map holds structure only — where the file lives, what widths exist,
- * where the card links, and the accessible name a screen reader needs since
- * the baked text is pixels, not a DOM node (`altKey`, claims-clean, MSA,
- * never a literal in `app/`).
+ * Two kinds of card (owner items 2026-09-24, S7a then S8a): the six offer
+ * posters below, which are ALSO the poster grid at the top of `/offers`
+ * (docs/build/progress/S7a.md), and the five content cards further down,
+ * restored from 4657b89 (docs/build/progress/S8a.md). The home carousel
+ * carries both in one rail, alternating (`HOME_CAROUSEL`).
+ *
+ * Every offer poster is an IMAGE the owner supplies, not a card this theme
+ * composes from copy: the artwork carries its own headline, offer and CTA
+ * baked in, so this map holds structure only — where the file lives, what
+ * widths exist, where the card links, and the accessible name a screen reader
+ * needs since the baked text is pixels, not a DOM node (`altKey`,
+ * claims-clean, MSA, never a literal in `app/`).
  *
  * `available` starts `false` on every entry: the six files are not on disk
  * yet (the owner drops them into `public/assets/posters/` later).
@@ -159,3 +163,118 @@ export function posterHref(
   }
   return card.to;
 }
+
+/**
+ * One content card (restored from 4657b89 on the owner's 2026-09-24 item,
+ * S8a): a photograph of the theme's own, a title, one line and the angled
+ * arrow, composed by this theme rather than baked into an image. Every card
+ * is a fact the store stands behind today: a product type it stocks, a goal
+ * it organises the catalogue by, the advisory it runs, the branch it has.
+ * None claims a campaign, a discount, a rating or a delivery time, so none
+ * is gated. Structure and locale keys only; `width`/`height` are each file's
+ * intrinsic pixels, measured, so the frame reserves its box.
+ */
+export interface ContentCardContent {
+  /** Stable id, also the `data-poster` test hook (4657b89's own ids). */
+  slug: string;
+  photo: string;
+  width: number;
+  height: number;
+  titleKey: string;
+  lineKey: string;
+  /**
+   * A type or goal slug from the taxonomy, resolved live through
+   * `useTaxonomyLinks().bySlug()` (a live category, else the menu, else the
+   * search for its own name), so a goal or a type links to one place on the
+   * whole page.
+   */
+  taxonomySlug?: string;
+  /** A literal route, for the cards that are not a collection. */
+  to?: string;
+}
+
+const CONTENT_KEY = 'ox.home.poster';
+
+export const CONTENT_CARDS: ContentCardContent[] = [
+  {
+    slug: 'snacks',
+    photo: '/assets/images/cat-snacks.webp',
+    width: 900,
+    height: 900,
+    titleKey: `${CONTENT_KEY}.snacks_title`,
+    lineKey: `${CONTENT_KEY}.snacks_line`,
+    taxonomySlug: 'snacks-bars',
+  },
+  {
+    slug: 'strength',
+    photo: '/assets/images/goal-strength-w.webp',
+    width: 712,
+    height: 828,
+    titleKey: `${CONTENT_KEY}.strength_title`,
+    lineKey: `${CONTENT_KEY}.strength_line`,
+    taxonomySlug: 'goal-performance',
+  },
+  {
+    slug: 'cardio',
+    photo: '/assets/images/band-cardio.webp',
+    width: 1227,
+    height: 639,
+    titleKey: `${CONTENT_KEY}.cardio_title`,
+    lineKey: `${CONTENT_KEY}.cardio_line`,
+    taxonomySlug: 'goal-energy',
+  },
+  {
+    slug: 'advisory',
+    photo: '/assets/images/services-band.jpg',
+    width: 1580,
+    height: 600,
+    titleKey: `${CONTENT_KEY}.advisory_title`,
+    lineKey: `${CONTENT_KEY}.advisory_line`,
+    to: '/services',
+  },
+  {
+    slug: 'branch',
+    photo: '/assets/images/about-store.webp',
+    width: 1226,
+    height: 576,
+    titleKey: `${CONTENT_KEY}.branch_title`,
+    lineKey: `${CONTENT_KEY}.branch_line`,
+    to: '/about',
+  },
+];
+
+/** A content card's destination: its literal route, else its taxonomy link. */
+export function contentHref(
+  card: ContentCardContent,
+  lookup: (slug: string) => PosterCategoryLink | undefined
+): string {
+  if (card.to) return card.to;
+  const link = card.taxonomySlug ? lookup(card.taxonomySlug) : undefined;
+  return link?.to ?? '/';
+}
+
+export type CarouselEntry =
+  | { kind: 'offer'; card: PosterCardContent; /** 1-based, the merchant field suffix. */ offerNumber: number }
+  | { kind: 'content'; card: ContentCardContent };
+
+/**
+ * Offer, content, offer, content, starting with the first offer (the InBody
+ * consultation), until one list runs out; whatever is left of the other
+ * follows in its own order. Six offers and five content cards give eleven
+ * slides, offers at both ends.
+ */
+export function interleave(
+  offers: readonly PosterCardContent[],
+  contents: readonly ContentCardContent[]
+): CarouselEntry[] {
+  const out: CarouselEntry[] = [];
+  const longest = Math.max(offers.length, contents.length);
+  for (let i = 0; i < longest; i += 1) {
+    if (i < offers.length) out.push({ kind: 'offer', card: offers[i], offerNumber: i + 1 });
+    if (i < contents.length) out.push({ kind: 'content', card: contents[i] });
+  }
+  return out;
+}
+
+/** The home carousel's eleven slides, in order. */
+export const HOME_CAROUSEL: CarouselEntry[] = interleave(POSTER_CARDS, CONTENT_CARDS);

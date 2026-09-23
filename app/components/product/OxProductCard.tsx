@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useContext, useMemo, useState } from 'react';
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { useWishlist } from '@salla.sa/twilight-theme-engine/hooks/useWishlist';
@@ -16,6 +16,7 @@ import { VariantChips, cardOption, defaultValueId } from './VariantChips';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
 import { cardSpecLine, descriptionExcerpt } from './lib/cardSpec';
+import { ListingCategoryContext, productTypeOf } from './lib/productType';
 import { bandBadges } from './lib/bandBadges';
 import { useHoverCapable } from './lib/useHoverCapable';
 import { monthsUntilExpiry } from './lib/supply';
@@ -41,9 +42,9 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  *                    same colour axis
  *   brand line       ONLY when `product.brand?.name` is set; not reserved
  *   title            two lines, ellipsised
- *   spec line        the root category name, then servings, then the pack
- *                    size, off the product's own category and parsed
- *                    description (`cardSpecLine`); always reserved
+ *   spec line        the product TYPE, then the servings or else the pack
+ *                    size (`cardSpecLine`); the type from `productTypeOf`,
+ *                    never guessed; always reserved
  *   excerpt line     the first sentence of the description's own prose
  *                    paragraph (`descriptionExcerpt`); restored on the
  *                    coordinator's 2026-09-23 addendum; always reserved
@@ -138,7 +139,19 @@ export const OxProductCard = memo(function OxProductCard({
    * then the pack size, off the same parsed description every stat cell and
    * chip on the product page already reads.
    */
-  const specLine = useMemo(() => cardSpecLine(product, spec, t), [product, spec, t]);
+  // The TYPE (owner item 2026-09-24, S8a): the API category, else the
+  // listing this card renders in, else the theme's own SKU membership, else
+  // an unambiguous name keyword; nothing when none answers
+  // (`lib/productType.ts`). Printed as the short card label
+  // (`ox.card.type.<key>`), not the taxonomy's own name: "الفيتامينات
+  // والمعادن" pushed the servings behind the ellipsis on a two-up phone card.
+  const listingCategory = useContext(ListingCategoryContext);
+  const typeKey = useMemo(
+    () => productTypeOf(product, { categorySlug: listingCategory }),
+    [product, listingCategory]
+  );
+  const typeName = typeKey ? t(`ox.card.type.${typeKey}`) : null;
+  const specLine = useMemo(() => cardSpecLine(product, spec, t, typeName), [product, spec, t, typeName]);
 
   /**
    * THE DESCRIPTION EXCERPT (coordinator addendum, 2026-09-23), restored

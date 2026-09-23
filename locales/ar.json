@@ -1583,5 +1583,15 @@
   "ox.pdp.advisory_line_base": "احجز استشارة مجانية.",
   "ox.pdp.advisory_cta": "احجز استشارتك المجانية",
   "ox.pdp.advisory_whatsapp_cta": "تواصل عبر واتساب",
-  "ox.pdp.advisory_whatsapp_text": "مرحبا، أريد استشارة مجانية لاختيار المنتج المناسب: {{product}}"
+  "ox.pdp.advisory_whatsapp_text": "مرحبا، أريد استشارة مجانية لاختيار المنتج المناسب: {{product}}",
+  "ox.card.type.protein": "بروتين",
+  "ox.card.type.creatine": "كرياتين",
+  "ox.card.type.pre_workout": "ما قبل التمرين",
+  "ox.card.type.amino_acids": "أحماض أمينية",
+  "ox.card.type.omega_3": "أوميغا 3",
+  "ox.card.type.vitamins_minerals": "فيتامينات ومعادن",
+  "ox.card.type.collagen_beauty": "كولاجين وجمال",
+  "ox.card.type.daily_health": "الصحة اليومية",
+  "ox.card.type.snacks_bars": "سناكات وبارات",
+  "ox.card.type.accessories": "إكسسوارات"
 }

@@ -24,11 +24,12 @@ export interface GoalCardProps {
 /**
  * One goal card (homepage-spec section 4).
  *
- * A dark photographic card: the frame, a scrim over it, the accent slash in
- * the top corner, a white glyph, the goal's name, one line under it, and a
- * small outline parallelogram that reads as the card's action. The whole card
- * is a single link and the parallelogram is a `span`, never a nested button
- * (DIRECTION 9.2).
+ * A dark photographic card: the frame, a scrim over it, a white glyph, the
+ * goal's name, one line under it, and a small outline parallelogram that
+ * reads as the card's action. The diagonal cuts and the sharp corners carry
+ * the identity; the orange strap is gone (owner item 2026-09-24, S8a). The
+ * whole card is a single link and the parallelogram is a `span`, never a
+ * nested button (DIRECTION 9.2).
  *
  * **It has to be finished without the photograph.** None of the six frames
  * exists yet. The card's own background is the dark plate and the scrim is a
@@ -53,7 +54,6 @@ export function GoalCard({ slug, label, line, icon, to, photo, index = 0 }: Goal
     >
       {photo ? <BandPhoto src={photo} className="ox-goal__photo" /> : null}
       <span className="ox-goal__scrim" aria-hidden="true" />
-      <span className="ox-goal__slash" aria-hidden="true" />
       <span className="ox-goal__body">
         <Icon name={icon} size={26} className="ox-goal__icon" />
         <span className="ox-goal__label">{label}</span>

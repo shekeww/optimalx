@@ -77,6 +77,8 @@ vi.mock('@salla.sa/twilight-components-react/rating-stars', () => ({
 }));
 
 const { OxProductCard } = await import('../../app/components/product/OxProductCard');
+const { DIVIDER } = await import('../../app/components/product/lib/cardSpec');
+const { ListingCategoryContext } = await import('../../app/components/product/lib/productType');
 
 const t = createT('ar');
 
@@ -200,50 +202,94 @@ describe('OxProductCard', () => {
       <OxProductCard product={makeProduct({ subtitle: 'واي بروتين معزول بلا سكر مضاف' })} />
     );
     const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(line).toBe(t('ox.card.servings', { n: 30 }));
+    // The fixture product is OX-001 (Gold Standard Whey): the theme's own
+    // SKU membership names its type (S8a item 5), then the one fact.
+    expect(line).toBe(`${t('ox.card.type.protein')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`);
     expect(line).not.toContain('واي بروتين');
   });
 
   it('keeps the spec-line row reserved and empty when the description carries no spec line', () => {
     // The height stays so a grid of mixed products shares one baseline, but
     // nothing is invented to fill it.
+    // A product no source can type (not in the membership, no keyword), so
+    // the row has nothing true to say.
     const { container } = renderWithProviders(
-      <OxProductCard product={makeProduct({ description: '<p>وصف عام بدون بيانات محددة.</p>' })} />
+      <OxProductCard
+        product={makeProduct({ id: 1, name: 'منتج', description: '<p>وصف عام بدون بيانات محددة.</p>' })}
+      />
     );
     const empty = container.querySelector('.ox-card-product__chips');
     expect(empty).not.toBeNull();
     expect(empty?.textContent).toBe('');
   });
 
-  it('joins servings and pack size with the divider, and falls back to the dosage form', () => {
+  it('prints ONE fact after the type: the servings, else the pack size, else the dosage form (S8a)', () => {
+    // An untyped product isolates the fact half of "<type> | <servings or size>".
+    const untyped = { id: 1, name: 'منتج' };
     const both = renderWithProviders(
       <OxProductCard
         product={makeProduct({
+          ...untyped,
           description: '<p>الحصص: 30 | حجم العبوة: 907 جم | الشكل: بودرة</p>',
         })}
       />
     );
     const line = both.container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(line).toContain(t('ox.card.servings', { n: 30 }));
-    expect(line).toContain('907 جم');
+    expect(line).toBe(t('ox.card.servings', { n: 30 }));
+    expect(line).not.toContain('907 جم');
     both.unmount();
+
+    const packOnly = renderWithProviders(
+      <OxProductCard product={makeProduct({ ...untyped, description: '<p>حجم العبوة: 907 جم | الشكل: بودرة</p>' })} />
+    );
+    expect(packOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('907 جم');
+    packOnly.unmount();
 
     // Neither servings nor a pack size, but a dosage form: the form alone.
     const formOnly = renderWithProviders(
-      <OxProductCard product={makeProduct({ description: '<p>الشكل: بودرة</p>' })} />
+      <OxProductCard product={makeProduct({ ...untyped, description: '<p>الشكل: بودرة</p>' })} />
     );
     expect(formOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
   });
 
-  it('prepends the root category name to the spec line, when the catalogue set one (coordinator addendum, 2026-09-23)', () => {
+  it('names the type from the API category first, mapped to its ROOT type name (S8a)', () => {
     const { container } = renderWithProviders(
       <OxProductCard
-        product={makeProduct({ category: { id: 9001, name: 'بروتين واي', url: '/protein/c9001' } })}
+        product={makeProduct({ category: { id: 9002, name: 'كرياتين', url: '/creatine/c9002' } })}
       />
     );
-    const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
-    expect(line.startsWith('بروتين واي')).toBe(true);
-    expect(line).toContain(t('ox.card.servings', { n: 30 }));
+    // The category outranks the SKU membership (OX-001 is protein).
+    expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
+      `${t('ox.card.type.creatine')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`
+    );
+  });
+
+  it('names the type from the category listing the card renders in (S8a)', () => {
+    const { container } = renderWithProviders(
+      <ListingCategoryContext.Provider value="omega-3">
+        <OxProductCard product={makeProduct({ id: 1, name: 'منتج' })} />
+      </ListingCategoryContext.Provider>
+    );
+    expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
+      `${t('ox.card.type.omega_3')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`
+    );
+  });
+
+  it('names the type from an unambiguous name, and prints no type rather than a wrong one (S8a)', () => {
+    const named = renderWithProviders(
+      <OxProductCard product={makeProduct({ id: 1, name: 'كرياتين مونوهيدرات - ثورن' })} />
+    );
+    expect(named.container.querySelector('.ox-card-product__chips')?.textContent).toBe(
+      `${t('ox.card.type.creatine')}${DIVIDER}${t('ox.card.servings', { n: 30 })}`
+    );
+    named.unmount();
+
+    const ambiguous = renderWithProviders(
+      <OxProductCard product={makeProduct({ id: 1, name: 'امينو انرجي - اوبتيموم نيوترشن' })} />
+    );
+    expect(ambiguous.container.querySelector('.ox-card-product__chips')?.textContent).toBe(
+      t('ox.card.servings', { n: 30 })
+    );
   });
 
   it('restores the description excerpt under the spec line, as the description\'s own prose sentence (coordinator addendum, 2026-09-23)', () => {

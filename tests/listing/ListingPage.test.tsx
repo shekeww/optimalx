@@ -65,11 +65,21 @@ vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
     isValid: () => true,
   }),
 }));
-vi.mock('@salla.sa/twilight-theme-engine/product', () => ({
-  ProductCard: ({ product }: { product: { name: string } }) => (
-    <article data-testid="engine-product-card">{product.name}</article>
-  ),
-}));
+// The stand-in card reports the listing category it was handed, so a test
+// can prove a card on a category page knows its category (S8a item 5).
+vi.mock('@salla.sa/twilight-theme-engine/product', async () => {
+  const { useContext } = await import('react');
+  const { ListingCategoryContext } = await import('../../app/components/product/lib/productType');
+  function ProductCard({ product }: { product: { name: string } }) {
+    const listingCategory = useContext(ListingCategoryContext);
+    return (
+      <article data-testid="engine-product-card" data-listing-category={listingCategory ?? ''}>
+        {product.name}
+      </article>
+    );
+  }
+  return { ProductCard };
+});
 vi.mock('@salla.sa/twilight-theme-engine/drawer', () => {
   const Drawer = ({ isOpen, children }: { isOpen: boolean; children: React.ReactNode }) =>
     isOpen ? <div data-testid="filters-drawer">{children}</div> : null;
@@ -195,6 +205,20 @@ describe('ListingPage, category variant', () => {
   it('renders the engine ProductCard per item so the card override applies', () => {
     renderWithProviders(<ListingPage {...data()} slug="whey-protein" />);
     expect(screen.getAllByTestId('engine-product-card')).toHaveLength(2);
+  });
+
+  it('tells every card the taxonomy category it renders in, so the card can name its type (S8a)', () => {
+    renderWithProviders(<ListingPage {...data()} slug="whey-protein" />);
+    const cards = screen.getAllByTestId('engine-product-card');
+    expect(cards).toHaveLength(2);
+    cards.forEach((card) => expect(card.getAttribute('data-listing-category')).toBe('whey-protein'));
+  });
+
+  it('tells a card nothing outside a taxonomy category (search, offers)', () => {
+    renderWithProviders(<ListingPage {...data({ source: { type: 'search', value: 'واي' } } as never)} />);
+    screen
+      .getAllByTestId('engine-product-card')
+      .forEach((card) => expect(card.getAttribute('data-listing-category')).toBe(''));
   });
 
   it('shows the category intro, the child chips and the FAQ from the content maps', () => {

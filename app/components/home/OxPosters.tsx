@@ -5,8 +5,8 @@ import { SectionHeader } from '../common/SectionHeader';
 import { useRailProgress } from '../common/hooks/useRailProgress';
 import { useReducedMotion } from '../common/hooks/useReducedMotion';
 import { useTaxonomyLinks } from '../listing/useTaxonomyLinks';
-import { POSTER_CARDS, posterHref } from '../../content/posters';
-import { PosterCard } from './PosterCard';
+import { HOME_CAROUSEL, contentHref, posterHref } from '../../content/posters';
+import { ContentPosterCard, PosterCard } from './PosterCard';
 import { useSectionReveal } from './useSectionReveal';
 import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 
@@ -19,9 +19,54 @@ import { fieldText, type OxBlockData, type OxBlockProps } from './defaults';
 const STEP_AT_DESKTOP = 3;
 
 /**
- * The poster carousel (owner brief 2026-09-24): six marketing posters, each
- * an image the owner supplies with its own baked-in headline, offer and CTA
- * (docs/build/progress/S7a.md), on the shared rail primitive (owner review
+ * The eleven slides with every destination and every string resolved: an
+ * offer's merchant field first (`image_N`/`link_N`/`alt_N`, N its own 1-6
+ * number), the content map second; a content card's literal route or its
+ * taxonomy link.
+ */
+function useCarouselCards(fields: OxBlockData) {
+  const { t } = useTranslation();
+  const { bySlug } = useTaxonomyLinks();
+  return useMemo(
+    () =>
+      HOME_CAROUSEL.map((entry) => {
+        if (entry.kind === 'content') {
+          const { card } = entry;
+          return {
+            kind: 'content' as const,
+            card,
+            to: contentHref(card, (slug) => bySlug(slug)),
+            title: t(card.titleKey),
+            line: t(card.lineKey),
+          };
+        }
+        const { card, offerNumber: n } = entry;
+        const ownImage = fieldText(fields, `image_${n}`);
+        return {
+          kind: 'offer' as const,
+          card,
+          photo: ownImage || card.photo,
+          to: fieldText(fields, `link_${n}`) || posterHref(card, 'home', (slug) => bySlug(slug)),
+          alt: fieldText(fields, `alt_${n}`) || t(card.altKey),
+          // A merchant-uploaded image is available the moment the owner sets
+          // the field, whether or not `scripts/posters-import.mjs` has ever
+          // run: `card.available` only tracks the SIX DEFAULT files this repo
+          // ships, never a URL the dashboard supplies on top of them.
+          available: Boolean(ownImage) || card.available,
+        };
+      }),
+    [fields, bySlug, t]
+  );
+}
+
+/**
+ * The "اكتشف أكثر" carousel (owner items 2026-09-24): ONE rail of two kinds
+ * of card, alternating offer, content, offer, content from the InBody offer
+ * (`HOME_CAROUSEL`, docs/build/progress/S8a.md). The six offers are
+ * marketing posters, each an image the owner supplies with its own baked-in
+ * headline, offer and CTA (docs/build/progress/S7a.md); the five content
+ * cards are the theme's own photograph, title, line and angled arrow. Both
+ * sit on the shared rail primitive (owner review
  * 2026-09-23 late night, item 2), sized so 1.15 of a card shows at 390 (a
  * peek of the next one), 2 at 768, 3 at 1024, 4 at 1440 — see the width
  * arithmetic in `_b2-home.scss` §17.2. A scroller that ends flush at the
@@ -44,17 +89,19 @@ const STEP_AT_DESKTOP = 3;
  * header (title and, from 1024, the arrow pair) stays inside `.ox-container`
  * above it, same split `OxBrands` uses for its own full-bleed background.
  *
- * **Destinations, merchant field first, content map second.** Each poster's
- * `image_N`/`link_N`/`alt_N` merchant field (`twilight.json`, `home.ox-posters`)
+ * **Destinations, merchant field first, content map second.** Each offer
+ * poster's `image_N`/`link_N`/`alt_N` merchant field (`twilight.json`,
+ * `home.ox-posters`, N = the offer's own 1-6 number, not its slide position)
  * overrides the content map's own `photo`/`to`/`altKey` when the owner has
  * filled it from the dashboard; with none, `posterHref()` resolves the
  * default (a live category for the one poster that needs it, `/offers`
- * elsewhere). `label`/`label_en` override the section's own title the same
- * way, per the active locale.
+ * elsewhere). A content card links its literal route or its taxonomy node
+ * through the same `useTaxonomyLinks()` every goal and type link uses
+ * (`contentHref()`). `label`/`label_en` override the section's own title,
+ * per the active locale.
  */
 export function OxPosters({ data }: OxBlockProps) {
   const { t, locale } = useTranslation();
-  const { bySlug } = useTaxonomyLinks();
   const reducedMotion = useReducedMotion();
   const revealRef = useSectionReveal<HTMLUListElement>();
   const trackRef = useRef<HTMLUListElement>(null);
@@ -63,26 +110,7 @@ export function OxPosters({ data }: OxBlockProps) {
   const [startIndex, setStartIndex] = useState(0);
 
   const fields: OxBlockData = data ?? { path: 'ox-posters' };
-
-  const cards = useMemo(
-    () =>
-      POSTER_CARDS.map((card, index) => {
-        const n = index + 1;
-        const ownImage = fieldText(fields, `image_${n}`);
-        return {
-          card,
-          photo: ownImage || card.photo,
-          to: fieldText(fields, `link_${n}`) || posterHref(card, 'home', (slug) => bySlug(slug)),
-          alt: fieldText(fields, `alt_${n}`) || t(card.altKey),
-          // A merchant-uploaded image is available the moment the owner sets
-          // the field, whether or not `scripts/posters-import.mjs` has ever
-          // run: `card.available` only tracks the SIX DEFAULT files this repo
-          // ships, never a URL the dashboard supplies on top of them.
-          available: Boolean(ownImage) || card.available,
-        };
-      }),
-    [fields, bySlug, t]
-  );
+  const cards = useCarouselCards(fields);
 
   const label =
     locale === 'en'
@@ -106,10 +134,9 @@ export function OxPosters({ data }: OxBlockProps) {
     <section className="ox-posters" data-testid="ox-posters">
       <div className="ox-container">
         <SectionHeader
-          // The carousel and the offers grid below it both read "تصفح
-          // المزيد", one after the other, so neither said what it was
-          // (UX-2026-09-24 P0-11). This one names what these tiles are:
-          // short doors into the goals, the types and the advisory.
+          // "اكتشف أكثر" over a subline naming both kinds of tile: offers,
+          // products and services (owner item 2026-09-24, S8a; the title
+          // is distinct from the offers grid's own, UX-2026-09-24 P0-11).
           title={label}
           subline={t('ox.home.posters_lead')}
           actions={
@@ -159,10 +186,10 @@ export function OxPosters({ data }: OxBlockProps) {
           role="list"
           aria-roledescription={t('ox.listing.featured_carousel_role')}
         >
-          {cards.map(({ card, photo, to, alt, available }, index) => (
+          {cards.map((entry, index) => (
             <li
               className="ox-posters__slide"
-              key={card.slug}
+              key={entry.card.slug}
               style={{ ['--i' as string]: String(index) }}
               ref={(node) => {
                 itemRefs.current[index] = node;
@@ -173,15 +200,27 @@ export function OxPosters({ data }: OxBlockProps) {
                 total: cards.length,
               })}
             >
-              <PosterCard
-                slug={card.slug}
-                photo={photo}
-                srcSet={card.srcSet}
-                to={to}
-                alt={alt}
-                available={available}
-                loading={index < 2 ? 'eager' : 'lazy'}
-              />
+              {entry.kind === 'offer' ? (
+                <PosterCard
+                  slug={entry.card.slug}
+                  photo={entry.photo}
+                  srcSet={entry.card.srcSet}
+                  to={entry.to}
+                  alt={entry.alt}
+                  available={entry.available}
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                />
+              ) : (
+                <ContentPosterCard
+                  slug={entry.card.slug}
+                  photo={entry.card.photo}
+                  photoWidth={entry.card.width}
+                  photoHeight={entry.card.height}
+                  title={entry.title}
+                  line={entry.line}
+                  to={entry.to}
+                />
+              )}
             </li>
           ))}
         </ul>

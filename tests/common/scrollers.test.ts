@@ -1,6 +1,8 @@
+// @vitest-environment node
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
+import { compiledRules, declared, type CompiledRule } from '../helpers/compiledCss';
 
 /**
  * Every horizontal scroller is a positioned containing block
@@ -120,5 +122,114 @@ describe('horizontal scrollers', () => {
     expect(block).toBeTruthy();
     expect(POSITIONED.test(ownDeclarations(block!.body))).toBe(true);
     expect(SCROLLER.test(ownDeclarations(block!.body))).toBe(true);
+  });
+});
+
+/**
+ * No horizontal scroller shows a native scrollbar (owner item 2026-09-24,
+ * S8a): every carousel, rail, chip row, tab row, thumb rail and table
+ * scroller keeps scrolling, by touch, trackpad, wheel and its own arrows,
+ * but hides the bar with `scrollbar-width: none` (Firefox, and Chromium
+ * from 121) plus `::-webkit-scrollbar { display: none }` (Safari, older
+ * Chromium). The peek of the next card, the rail cue and the progress strap
+ * are the affordance instead.
+ *
+ * Read off the COMPILED stylesheet (`tests/helpers/compiledCss.ts`), so a
+ * scroller declared inside a media query or a nested block is seen too; the
+ * block-level gate above only reads top-level source blocks.
+ */
+const X_SCROLL = /^(auto|scroll)\b/;
+
+/** Every compiled rule that scrolls sideways: `overflow-x`, or `overflow`'s first (x) value. */
+function horizontalScrollers(): CompiledRule[] {
+  return compiledRules().filter((rule) => {
+    const x = declared(rule, 'overflow-x');
+    const both = declared(rule, 'overflow');
+    return (x !== undefined && X_SCROLL.test(x)) || (both !== undefined && X_SCROLL.test(both));
+  });
+}
+
+function members(selector: string): string[] {
+  return selector.split(',').map((member) => member.trim());
+}
+
+/**
+ * A scroller that may keep a visible bar, each one argued. Empty: the one
+ * candidate the brief named, the services comparison table
+ * (`.ox-compare__scroller`), hides its bar too. It scrolls only below the
+ * width its 640px table fits (a phone), where the bar is an overlay the
+ * platform hides at rest anyway, and the cut-off second service column
+ * beside the pinned question column already shows there is more that way.
+ */
+const VISIBLE_BAR_ALLOWED = new Map<string, string>();
+
+/**
+ * The two engine home blocks the base theme styles with Tailwind's
+ * `overflow-x-auto` (`04-components/home-blocks.scss`, not ours to edit):
+ * `@apply` is resolved after Sass, so the compiled rules above never see
+ * them. Their bar is hidden from `_b2-home.scss` instead, and a new
+ * `overflow-x-auto` anywhere in the source fails the count below.
+ */
+const TAILWIND_SCROLLERS = ['.s-block--tabs-produtcs .tabs', '.s-block--special-products .tabs'];
+
+/**
+ * Horizontal scrollers declared by Salla's own web-component stylesheet
+ * (loaded beside ours, so never in the compiled Sass either), found by
+ * scanning the stylesheet the preview serves: every `salla-tabs` header, the
+ * offer modal's product row, and the `overflow-x-auto` utility. Their bars
+ * are hidden from `_primitives.scss`.
+ */
+const SALLA_SCROLLERS = ['.s-tabs-header', '.s-offer-modal-body', '.overflow-x-auto'];
+
+describe('horizontal scrollers hide the native bar', () => {
+  it('finds the scrollers it gates (a sanity floor, not an inventory)', () => {
+    expect(horizontalScrollers().length).toBeGreaterThanOrEqual(14);
+  });
+
+  it('declares scrollbar-width: none on every overflow-x auto or scroll rule', () => {
+    const offenders = horizontalScrollers()
+      .filter((rule) => declared(rule, 'scrollbar-width') !== 'none')
+      .filter((rule) => !members(rule.selector).every((member) => VISIBLE_BAR_ALLOWED.has(member)))
+      .map((rule) => `${rule.selector} (scrollbar-width: ${declared(rule, 'scrollbar-width') ?? 'unset'})`);
+    expect(offenders).toEqual([]);
+  });
+
+  it('hides the WebKit bar for every one of them too', () => {
+    const rules = compiledRules();
+    const hidden = new Set(
+      rules
+        .filter((rule) => declared(rule, 'display') === 'none')
+        .flatMap((rule) => members(rule.selector))
+        .filter((member) => member.endsWith('::-webkit-scrollbar'))
+    );
+    const offenders = horizontalScrollers()
+      .flatMap((rule) => members(rule.selector))
+      .filter((member) => !VISIBLE_BAR_ALLOWED.has(member))
+      .filter((member) => !hidden.has(`${member}::-webkit-scrollbar`));
+    expect(offenders).toEqual([]);
+  });
+
+  it('covers the Tailwind-applied scrollers the compiled Sass cannot see', () => {
+    const applied = scssFiles(STYLES_DIR).flatMap((file) =>
+      (fs.readFileSync(file, 'utf8').match(/@apply[^;]*\boverflow(-x)?-(auto|scroll)\b/g) ?? []).map(() => file)
+    );
+    expect(applied).toHaveLength(TAILWIND_SCROLLERS.length);
+    const rules = compiledRules();
+    const anyRule = (selector: string, property: string) =>
+      rules.some((rule) => members(rule.selector).includes(selector) && declared(rule, property) === 'none');
+    for (const selector of TAILWIND_SCROLLERS) {
+      expect(anyRule(selector, 'scrollbar-width'), selector).toBe(true);
+      expect(anyRule(`${selector}::-webkit-scrollbar`, 'display'), `${selector}::-webkit-scrollbar`).toBe(true);
+    }
+  });
+
+  it("covers Salla's own component scrollers, which load beside the theme's stylesheet", () => {
+    const rules = compiledRules();
+    const anyRule = (selector: string, property: string) =>
+      rules.some((rule) => members(rule.selector).includes(selector) && declared(rule, property) === 'none');
+    for (const selector of SALLA_SCROLLERS) {
+      expect(anyRule(selector, 'scrollbar-width'), selector).toBe(true);
+      expect(anyRule(`${selector}::-webkit-scrollbar`, 'display'), `${selector}::-webkit-scrollbar`).toBe(true);
+    }
   });
 });
