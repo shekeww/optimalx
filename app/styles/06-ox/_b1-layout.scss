@@ -142,12 +142,16 @@ body {
 
 .ox-utility__start {
   justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: var(--ox-4);
 }
 
 .ox-utility__end {
   justify-self: end;
 }
 
+.ox-util__branch,
 .ox-util__contact {
   display: inline-flex;
   align-items: center;
@@ -166,6 +170,10 @@ body {
     outline: 2px solid var(--ox-ink-on-dark);
     outline-offset: 2px;
   }
+}
+
+.ox-util__branch i {
+  font-size: 16px;
 }
 
 .ox-util__trust {
@@ -234,6 +242,10 @@ a.ox-util__trust-link {
 // Same component, same copy, same band tokens, a snap scroller instead of a
 // centred row.
 .ox-util__trust--scroller {
+  // DIRECTION 10.1's G2 scroller rule: every horizontal scroller is
+  // `position: relative` so an absolute descendant belongs to it, not to
+  // body. Measured `static` (S3c finding 7) before this fix.
+  position: relative;
   display: flex;
   gap: var(--ox-6);
   block-size: var(--ox-h-trust);
@@ -307,9 +319,18 @@ a.ox-util__trust-link {
 }
 
 .ox-mainbar__inner {
+  // `position: relative` so the mega panel (an absolute child of the nav's
+  // own `<li>`, `.ox-nav__item--mega` below) can size itself to this row's
+  // full width instead of the 54px `<li>` it used to hang from
+  // (NAV-2026-09-23 §5.1). The header itself stays `position: relative`
+  // too (`.ox-header` above); this is the panel's own containing block.
+  position: relative;
   display: none;
   align-items: center;
-  gap: 48px;
+  // 40, not 48 (NAV-2026-09-23 §1.4): the row grew from five items to six
+  // and the search pill's own floor moved with it, so all three numbers in
+  // this arithmetic changed together.
+  gap: 40px;
   block-size: var(--ox-h-bar);
 }
 
@@ -351,15 +372,13 @@ a.ox-util__trust-link {
   }
 }
 
-// 320, not 399. The pill was given a third of the bar and the nav row was
-// left whatever fell off the end, which is why its overflow control was
-// being laid out underneath the pill. 320 is still a field a brand name
-// types into comfortably, and it frees the 79px the row needed. Below the
-// width where even that fits, the pill gives up another 80 before anything
-// else moves.
+// 288, not 320 (NAV-2026-09-23 §1.4): the six-item row costs more than the
+// five-item row did, and the search pill gives up another 32 of basis and 8
+// of its floor so the row's own arithmetic clears the container at 1440
+// (588 nav box against a 541.6 cost, §1.4's table) without the pill wrapping.
 .ox-mainbar__search {
-  flex: 0 1 320px;
-  min-inline-size: 240px;
+  flex: 0 1 288px;
+  min-inline-size: 248px;
   margin-inline-start: auto;
 }
 
@@ -635,7 +654,10 @@ a.ox-util__trust-link {
 .ox-nav__list {
   display: flex;
   align-items: center;
-  gap: var(--ox-8);
+  // 24 (--ox-6), not 32 (--ox-8) (NAV-2026-09-23 §1.4): six items at the old
+  // gap cost more than the row's own box, and the row's own arithmetic is
+  // what the whole spec is sized against.
+  gap: var(--ox-6);
   flex: 1 1 auto;
   min-inline-size: 0;
   margin: 0;
@@ -648,6 +670,15 @@ a.ox-util__trust-link {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
+}
+
+// تسوق's own `<li>`: `position: static` so it stops being the mega panel's
+// containing block. `.ox-mainbar__inner` (a `position: relative` ancestor
+// two levels up) is the containing block instead, which is what lets the
+// panel span the container's full width rather than the 54px item it used
+// to hang from (NAV-2026-09-23 §5.1).
+.ox-nav__item--mega {
+  position: static;
 }
 
 .ox-nav__link {
@@ -722,42 +753,62 @@ a.ox-util__trust-link {
   }
 }
 
+// The one mega panel (NAV-2026-09-23 §5). It hangs from the bottom of the
+// main bar and is the container's own width: `inset-inline: 0` against the
+// `position: relative` main bar inner, not the 220px min carried over from
+// `.ox-nav__dropdown` above.
 .ox-mega {
-  inset-inline-start: 0;
+  inset-inline: 0;
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: var(--ox-8);
-  inline-size: min(var(--ox-container), calc(100vw - 2 * var(--ox-gutter)));
+  // Two columns (§5.2 "when the promo is absent"), proportioned to the
+  // spec's own 760:440 fallback split. `:has()` below promotes this to the
+  // three-column layout once column C exists in the DOM and the viewport
+  // clears 1280.
+  grid-template-columns: 1.73fr 1fr;
+  column-gap: var(--ox-8);
   padding: var(--ox-8);
+  min-block-size: 480px;
+  block-size: auto;
+  max-block-size: calc(100dvh - 200px);
+  overflow-y: auto;
 }
 
-.ox-mega__goals {
+.ox-mega__col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-mega__heading {
+  margin: 0 0 var(--ox-2);
+  color: var(--ox-fg-3);
+  font-size: 13px;
+  font-weight: var(--ox-w-title);
+}
+
+// Column A: حسب النوع. Two tracks, protein's five children nested under it.
+.ox-mega__tracks {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--ox-4);
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: var(--ox-6);
+}
+
+.ox-mega__track {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.ox-goalcard {
+.ox-mega__root {
   display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  block-size: 160px;
-  padding: 20px;
-  background: var(--ox-card);
-  border: 1px solid var(--ox-line);
-  border-radius: var(--ox-r-3);
+  align-items: center;
+  block-size: 36px;
   color: var(--ox-ink);
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
   text-decoration: none;
 
   &:hover {
-    border-color: var(--ox-line-3);
-  }
-
-  &:active {
-    background: var(--ox-fill);
+    color: var(--ox-accent-dark);
   }
 
   &:focus-visible {
@@ -766,29 +817,158 @@ a.ox-util__trust-link {
   }
 }
 
-.ox-goalcard__title {
+.ox-mega__children {
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.ox-mega__cats {
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+.ox-mega__child {
+  display: flex;
+  align-items: center;
+  block-size: 32px;
+  padding-inline-start: var(--ox-4);
+  color: var(--ox-fg-3);
+  font-size: 13px;
+  font-weight: var(--ox-w-read);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-ink);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
   }
 }
 
-.ox-mega__heading {
-  margin: 0 0 var(--ox-2);
-  color: var(--ox-ink-4);
-  font-weight: var(--ox-w-title);
+.ox-mega__divider {
+  block-size: 25px;
+
+  &::after {
+    content: '';
+    display: block;
+    margin-block: 12px;
+    border-block-start: 1px solid var(--ox-bd);
+  }
 }
 
-.ox-mega__link {
+// Column B: حسب الهدف. A 2-up grid; the tile stretches to whatever this
+// column's own track width is (142 at three columns, 214 at the two-column
+// fallback), so the grid never needs its own breakpoint.
+.ox-mega__goalgrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 92px;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-mega__goal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--ox-1);
+  block-size: 100%;
+  padding-inline: var(--ox-3);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-3);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  // No lift, no shadow, no scale (BUILD 3.4, DIRECTION 5 card default):
+  // border and fill only.
+  &:hover {
+    background: var(--ox-fill);
+    border-color: var(--ox-bd-2);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-mega__goal-label {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: var(--ox-w-title);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Column C: the promoted tile (`MegaPromo.tsx`). Hidden below 1280
+// regardless of configuration (§5.2); the breakpoint block below shows it
+// again and promotes the panel to three columns once it exists.
+.ox-mega__col-c {
+  display: none;
+}
+
+.ox-mega__promo {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ox-mega__promo-image {
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 312 / 226;
+  object-fit: cover;
+  background: var(--ox-plate);
+  border-radius: var(--ox-r-2);
+}
+
+.ox-mega__promo-title {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-block-start: var(--ox-2);
+  color: var(--ox-fg);
+  font-size: 18px;
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ox-mega__promo-link {
   display: flex;
   align-items: center;
-  block-size: 40px;
-  color: var(--ox-ink);
+  gap: var(--ox-1);
+  margin-block-start: var(--ox-3);
+  color: var(--ox-accent-dark);
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+}
+
+.ox-mega__promo-chevron {
+  font-size: 16px;
+}
+
+// The foot row: two "see everything" links, full panel width.
+.ox-mega__foot {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: var(--ox-6);
+  margin-block-start: var(--ox-4);
+  padding-block-start: var(--ox-4);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-mega__foot-link {
+  display: flex;
+  align-items: center;
+  block-size: 48px;
+  color: var(--ox-fg);
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
   text-decoration: none;
 
   &:hover {
@@ -1017,6 +1197,139 @@ a.ox-util__trust-link {
     outline: var(--ox-focus-ring);
     outline-offset: 2px;
   }
+}
+
+// ---------------------------------------------------------------------------
+// 8a. Shop sheet (NAV-2026-09-23 §7.1.1) - the mobile catalogue, full height.
+// `ShopTree` in `grid` mode supplies the type tiles; the goal and utility
+// tiles are inline in `ShopSheet.tsx`. All three share `.ox-tile`.
+// ---------------------------------------------------------------------------
+.ox-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ox-z-modal);
+  display: flex;
+  flex-direction: column;
+  block-size: 100dvh;
+  background: var(--ox-card);
+  color: var(--ox-ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateY(100%);
+  transition: transform var(--dur-base) var(--ease-in);
+}
+
+.ox-sheet.is-entered {
+  transform: translateY(0);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.ox-sheet__head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  block-size: 56px;
+  padding-inline: var(--ox-gutter);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-sheet__title {
+  margin: 0;
+}
+
+.ox-sheet__close {
+  color: var(--ox-ink);
+}
+
+.ox-sheet__body {
+  flex: 1 1 auto;
+  padding: var(--ox-4) var(--ox-gutter);
+}
+
+.ox-sheet__heading {
+  margin: 0 0 var(--ox-2);
+  color: var(--ox-fg-3);
+  font-size: 13px;
+  font-weight: var(--ox-w-title);
+}
+
+.ox-sheet__rule {
+  margin-block: var(--ox-6);
+  border: 0;
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-sheet__grid {
+  display: grid;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-sheet__grid--goal {
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 96px;
+}
+
+.ox-sheet__grid--type,
+.ox-sheet__grid--utility {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.ox-sheet__grid--type {
+  grid-auto-rows: 64px;
+}
+
+.ox-sheet__grid--utility {
+  grid-auto-rows: 56px;
+}
+
+.ox-sheet__foot {
+  flex: none;
+  padding: var(--ox-4) var(--ox-gutter);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+// One tile anatomy, three roles. Hit area is the whole tile (96/64/56, all
+// over the 44px floor).
+.ox-tile {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  block-size: 100%;
+  padding-inline: var(--ox-3);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: var(--ox-r-3);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:active {
+    background: var(--ox-fill);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-tile--goal {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.ox-tile__label {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-snug);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 // ---------------------------------------------------------------------------
@@ -1267,12 +1580,19 @@ body.ox-has-tabbar {
   padding: 0;
   list-style: none;
 
+  // Weight floor (owner review, 2026-09-23, item 1): the CR/VAT registration
+  // line carried no font-weight and no `.ox-*` role class
+  // (`RegistrationBlock.tsx`), so it rendered at 400 on the footer's
+  // near-black ground. `--ox-w-read` clears both the <16px floor (500) and
+  // the dark-ground floor (450) either way; `.ox-footer.ox-band-dark`
+  // (Footer.tsx) redeclares it to 600 here.
   li {
     display: flex;
     align-items: center;
     gap: var(--ox-2);
     color: var(--ox-ink-2-on-dark);
     font-size: 13px;
+    font-weight: var(--ox-w-read);
     line-height: var(--ox-lh-caption);
   }
 }
@@ -1393,7 +1713,11 @@ body.ox-has-tabbar {
 
   .ox-footer__inner {
     display: grid;
-    grid-template-columns: 1.7fr 1fr 1fr 1fr 1.6fr;
+    // Six tracks, not five (NAV-2026-09-23 §9): the footer gains a fifth
+    // link column (the six goals), so the registration block, the three
+    // existing columns, the new goals column and the brand block all get
+    // their own track.
+    grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr 1.6fr;
     align-items: start;
     gap: var(--ox-8);
     padding-block: 56px;
@@ -1421,6 +1745,21 @@ body.ox-has-tabbar {
     display: flex;
     flex-direction: column;
     gap: var(--ox-1);
+  }
+}
+
+@media (min-width: 1280px) {
+  // The mega panel's promoted tile (NAV-2026-09-23 §5.2): hidden below this
+  // width regardless of configuration. `:has()` promotes the panel from its
+  // two-column fallback to the spec's exact 560/296/312 split only once
+  // column C both exists (the merchant has configured it) and the viewport
+  // clears this floor.
+  .ox-mega:has(.ox-mega__col-c) {
+    grid-template-columns: minmax(0, 560px) minmax(0, 296px) minmax(0, 312px);
+  }
+
+  .ox-mega__col-c {
+    display: flex;
   }
 }
 
@@ -1456,6 +1795,17 @@ body.ox-has-tabbar {
   .ox-drawer__panel,
   .ox-footer__panel {
     transition: none;
+  }
+
+  .ox-sheet {
+    transform: none;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-in);
+  }
+
+  .ox-sheet.is-entered {
+    opacity: 1;
+    transition: opacity var(--dur-base) var(--ease-out);
   }
 }
 

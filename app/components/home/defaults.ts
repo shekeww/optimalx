@@ -163,17 +163,21 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // the store has zero brands, and the guides block has no entries. Same
   // reasoning as the newsletter and banner rows below.
   'ox-brands': { mobile: 0, desktop: 0 },
-  // Re-measured for the single-tier band (S2c, 2026-09-22; token arithmetic,
-  // not a live browser measurement — see docs/build/progress/S2c.md).
+  // Re-measured for the TWO-ROW band (owner review 2026-09-23 (late), item 3;
+  // token arithmetic, not a live browser measurement — see
+  // docs/build/progress/S4a.md). The row grew from three cards to six (the
+  // three channels rejoin the three plan doors), and mobile is no longer a
+  // horizontal scroller — it is ONE column of six stacked cards.
   // Mobile (358 container, --ox-12 padding): 48 pad-top + head stack 141
   // (eyebrow row 20 + gap 8 + h2 30 + gap 8 + 2-line subline 51, margin-end
-  // 24) + plans row 246 (232 card floor + 6/8 scroller focus padding) + 24
-  // gap + 44 CTA + 16 gap + 20 note + 48 pad-bottom = 588 (brief's "no
-  // taller than ~600 on the phone" floor holds).
-  // Desktop (--ox-16 padding, 1296 container, 3-up row): 64 + head stack 135
-  // (eyebrow 20 + gap 8 + h2 40 + gap 8 + 1-line subline 27, margin-end 32)
-  // + 280 card row + 32 gap + 44 CTA + 16 gap + 20 note + 64 = 655.
-  'ox-services': { mobile: 588, desktop: 655 },
+  // 24) + grid 1472 (six 232px cards + five 16px row gaps) + 24 gap + 44 CTA
+  // + 16 gap + 20 note + 48 pad-bottom = 1813.
+  // Desktop (--ox-16 padding, 1296 container, three-up from 1024 — two rows
+  // of three for six cards): 64 pad-top + head stack 135 (eyebrow 20 + gap 8
+  // + h2 40 + gap 8 + 1-line subline 27, margin-end 32) + grid 544 (two
+  // 260px card rows + one 24px row gap) + 24 gap + 44 CTA + 16 gap + 20 note
+  // + 64 pad-bottom = 911.
+  'ox-services': { mobile: 1813, desktop: 911 },
   'ox-guides': { mobile: 0, desktop: 0 },
   'ox-branch': { mobile: 268, desktop: 184 },
   // No certification holds the per-product evidence a badge needs, so the

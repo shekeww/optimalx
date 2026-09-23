@@ -1,94 +1,159 @@
 import { useEffect, useRef } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import type { TaxonomyLink } from '../../listing/useTaxonomyLinks';
+import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { Icon, type OxIconName } from '../../common/Icon';
-import { useDialogFocus } from '../../common/useDialogFocus';
+import { MegaPromo } from './MegaPromo';
 
 export interface MegaPanelProps {
   id: string;
   /** The nav item that owns the panel, for `aria-labelledby`. */
   labelledBy: string;
-  goals: TaxonomyLink[];
-  types: TaxonomyLink[];
+  /** Fires on a link click and on the closing focusout (NAV-2026-09-23 §5.5). */
   onClose: () => void;
+  /** Fires on Escape only: closes AND returns focus to the trigger. */
+  onEscape: () => void;
   /** Kept open while the pointer is inside either the item or the panel. */
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
 }
 
 /**
- * The "المنتجات" mega panel (DIRECTION 5.1 NavBar): six goal cards in a 3 by
- * 2 grid over columns 1 to 8, the ten type roots over 9 to 12, closed by a
- * "كل المنتجات" link. A plain popover, not `SallaMenu`, because the
- * dashboard menu component renders nested lists and cannot host the cards.
+ * The one mega panel in the header (NAV-2026-09-23 §5): three columns under
+ * تسوق — حسب النوع (the ten type roots, protein's five children nested),
+ * حسب الهدف (the six goals) and the promoted tile — closed by a foot row of
+ * two "see everything" links.
  *
- * Both columns come from `useTaxonomyLinks` (Contract C) now, not the
- * dashboard menu: a goal or type resolves to its live category once the
- * merchant creates one, and to a search for its own name otherwise
- * (PLAN-final C15), the same fallback every other taxonomy link in the theme
- * uses.
+ * It is a **disclosure**, not a menu and not a dialog (§5.5): no
+ * `useDialogFocus`, no `role="group"`, no `tabIndex`. A hover-opened,
+ * non-modal popover that traps focus strands a keyboard visitor, which is
+ * exactly the defect this rewrite removes (S3c finding 1). The panel stays a
+ * DOM child of its `<li>` so Tab order runs trigger, column A, column B,
+ * column C, the foot row, then the next nav item, with no code needed to
+ * make that true.
  *
- * Focus is trapped while it is open and Escape hands focus back to the item
- * that opened it (DIRECTION 9.4).
+ * Both columns come from `useTaxonomyLinks` (Contract C): a type or goal
+ * resolves to its live category once the merchant creates one, and to a
+ * search for its own name otherwise (PLAN-final C15).
  */
 export function MegaPanel({
   id,
   labelledBy,
-  goals,
-  types,
   onClose,
+  onEscape,
   onPointerEnter,
   onPointerLeave,
 }: MegaPanelProps) {
   const { t } = useTranslation();
+  const { types, goals, utility } = useTaxonomyLinks();
   const panelRef = useRef<HTMLDivElement>(null);
-  useDialogFocus(panelRef, true);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') onEscape();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onEscape]);
+
+  // Closing on focusout: when focus leaves the `<li>` this panel sits in
+  // (trigger + panel), the panel closes. No `stopPropagation` anywhere in
+  // this file, so the drawer's own Escape keeps working (§5.5).
+  useEffect(() => {
+    const li = panelRef.current?.parentElement;
+    if (!li) return;
+    const onFocusOut = (event: FocusEvent) => {
+      const next = event.relatedTarget as Node | null;
+      if (!next || !li.contains(next)) onClose();
+    };
+    li.addEventListener('focusout', onFocusOut);
+    return () => li.removeEventListener('focusout', onFocusOut);
   }, [onClose]);
+
+  // §5.2's own split: the first five type roots (protein's children nested
+  // under it) in track one, the last five plus the non-services utility
+  // categories in track two. الاستشارات والخدمات is never in this column:
+  // slot 4 (اسأل قبل أن تشتري) already owns `/services`, and a second anchor
+  // for the same page is the duplicate-entry defect this document removes.
+  const trackOne = types.slice(0, 5);
+  const trackTwo = types.slice(5, 10);
+  const otherCategories = utility.filter((node) => node.slug !== 'services');
 
   return (
     <div
       id={id}
       ref={panelRef}
       className="ox-mega"
-      role="group"
       aria-labelledby={labelledBy}
-      tabIndex={-1}
       data-testid="ox-mega-panel"
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
-      <ul className="ox-mega__goals">
-        {goals.map((goal) => (
-          <li key={goal.slug}>
-            <Link to={goal.to} className="ox-goalcard" onClick={onClose}>
-              <Icon name={goal.icon as OxIconName} size={32} />
-              <span className="ox-goalcard__title ox-h3">{goal.label}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <section className="ox-mega__col ox-mega__col-a" aria-label={t('ox.nav.by_type')}>
+        <h3 className="ox-mega__heading">{t('ox.nav.by_type')}</h3>
+        <div className="ox-mega__tracks">
+          <ul className="ox-mega__track">
+            {trackOne.map((type) => (
+              <li key={type.slug}>
+                <Link to={type.to} className="ox-mega__root" onClick={onClose}>
+                  {type.label}
+                </Link>
+                {type.children.length > 0 ? (
+                  <ul className="ox-mega__children">
+                    {type.children.map((child) => (
+                      <li key={child.slug}>
+                        <Link to={child.to} className="ox-mega__child" onClick={onClose}>
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+          <ul className="ox-mega__track">
+            {trackTwo.map((type) => (
+              <li key={type.slug}>
+                <Link to={type.to} className="ox-mega__root" onClick={onClose}>
+                  {type.label}
+                </Link>
+              </li>
+            ))}
+            <li className="ox-mega__divider" role="presentation" aria-hidden="true" />
+            {otherCategories.map((node) => (
+              <li key={node.slug}>
+                <Link to={node.to} className="ox-mega__root" onClick={onClose}>
+                  {node.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-      <div className="ox-mega__cats">
-        <p className="ox-mega__heading ox-small">{t('ox.nav.categories_short')}</p>
-        <ul>
-          {types.map((type) => (
-            <li key={type.slug}>
-              <Link to={type.to} className="ox-mega__link" onClick={onClose}>
-                {type.label}
+      <section className="ox-mega__col ox-mega__col-b" aria-label={t('ox.nav.by_goal')}>
+        <h3 className="ox-mega__heading">{t('ox.nav.by_goal')}</h3>
+        <ul className="ox-mega__goalgrid">
+          {goals.map((goal) => (
+            <li key={goal.slug}>
+              <Link to={goal.to} className="ox-mega__goal" onClick={onClose}>
+                <Icon name={goal.icon as OxIconName} size={24} />
+                <span className="ox-mega__goal-label">{goal.label}</span>
               </Link>
             </li>
           ))}
         </ul>
-        <Link to="/categories" className="ox-mega__all" onClick={onClose}>
-          {t('ox.nav.all_products')}
+      </section>
+
+      <MegaPromo onNavigate={onClose} />
+
+      <div className="ox-mega__foot">
+        <Link to="/categories" className="ox-mega__foot-link" onClick={onClose}>
+          {t('ox.nav.all_types')}
+        </Link>
+        <Link to="/brands" className="ox-mega__foot-link" onClick={onClose}>
+          {t('ox.nav.all_brands')}
         </Link>
       </div>
     </div>

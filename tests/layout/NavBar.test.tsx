@@ -3,12 +3,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { loadDictionary } from '../helpers/i18n';
-import { MENU } from '../../app/content/taxonomy';
-import { SECONDARY_NAV } from '../../app/content/nav';
+import { MORE_NAV } from '../../app/content/nav';
 
 const ar = loadDictionary('ar');
 const themeSettings: Record<string, unknown> = {};
-const twilight: Record<string, unknown> = { routeId: '/{-$locale}/', location: { pathname: '/branch' } };
+const twilight: Record<string, unknown> = {
+  routeId: '/{-$locale}/',
+  location: { pathname: '/branch' },
+  locale: 'ar',
+};
 const menuItems = [
   { id: 1, title: 'بروتين', url: '/protein/c1' },
   { id: 2, title: 'كرياتين', url: '/creatine/c2' },
@@ -20,6 +23,12 @@ vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
   (await import('../helpers/i18n')).i18nModuleMock('ar')
 );
 vi.mock('@salla.sa/twilight-theme-engine', () => ({ useTwilight: () => twilight }));
+vi.mock('@tanstack/react-router', () => ({
+  // `useTaxonomyLinks.ts` prefers a route loader's taxonomy data; no test
+  // here provides one, so this returns `undefined` and the hook falls back
+  // to its own query, exactly like outside a `<RouterProvider>`.
+  useRouter: () => undefined,
+}));
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useTheme', () => ({
   useTheme: () => ({ color: {}, font: undefined, settings: themeSettings, isRTL: true }),
 }));
@@ -35,9 +44,10 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Image: ({ alt, src }: { alt: string; src?: string }) => <img alt={alt} src={src} />,
 }));
 
-const { NavBar, fitCount } = await import('../../app/components/layout/Header/NavBar');
-const { matchesSlug, pathSegments } = await import('../../app/components/layout/Header/useHeaderMenu');
-const { resolveNavHref } = await import('../../app/components/layout/navLinks');
+const { NavBar, computeFold } = await import('../../app/components/layout/Header/NavBar');
+const { matchesShopRoute, resolveNavHref, stripLocale, withLocale } = await import(
+  '../../app/components/layout/navLinks'
+);
 
 const realRect = Element.prototype.getBoundingClientRect;
 
@@ -46,8 +56,8 @@ function stubWidths({ row, item, more }: { row: number; item: number; more: numb
   Element.prototype.getBoundingClientRect = function rect(this: Element) {
     let width = 0;
     if (this.classList.contains('ox-nav') || this.classList.contains('ox-nav__list')) width = row;
+    else if (this.getAttribute('data-nav-item') === 'more') width = more;
     else if (this.hasAttribute('data-nav-item')) width = item;
-    else if (this.classList.contains('ox-nav__item--more')) width = more;
     return { width, height: 0, top: 0, left: 0, right: width, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
   };
 }
@@ -55,6 +65,7 @@ function stubWidths({ row, item, more }: { row: number; item: number; more: numb
 beforeEach(() => {
   for (const key of Object.keys(themeSettings)) delete themeSettings[key];
   twilight.location = { pathname: '/branch' };
+  twilight.locale = 'ar';
   categories.length = 0;
   class RO {
     constructor(private cb: () => void) {}
@@ -72,139 +83,169 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('fitCount', () => {
-  it('keeps every item when the row fits', () => {
-    expect(fitCount([100, 100, 100], 400, 96)).toBe(3);
+describe('computeFold', () => {
+  const items = [
+    { key: 'shop', width: 57.7, pin: true },
+    { key: 'offers', width: 49.3 },
+    { key: 'brands', width: 103.9 },
+    { key: 'services', width: 121.1, pin: true },
+    { key: 'guides', width: 34.5 },
+    { key: 'more', width: 55.1 },
+  ];
+
+  it('folds nothing when the row fits (1440, nav box 588)', () => {
+    expect(computeFold(items, 588, 24)).toEqual(new Set());
   });
 
-  it('makes room for the overflow control once it is needed', () => {
-    expect(fitCount([150, 150, 150], 300, 96)).toBe(1);
-    expect(fitCount([150, 150, 150], 400, 96)).toBe(2);
+  it('folds only الأدلة at 1280 (nav box 508), keeping تسوق and اسأل قبل أن تشتري', () => {
+    expect(computeFold(items, 508, 24)).toEqual(new Set(['guides']));
   });
 
-  it('can end up with nothing visible on an impossibly narrow row', () => {
-    expect(fitCount([150], 100, 96)).toBe(0);
+  it('folds العروض and العلامات التجارية too at 1024 (nav box 292)', () => {
+    expect(computeFold(items, 292, 24)).toEqual(new Set(['guides', 'brands', 'offers']));
   });
 
-  it('counts the row gap, which is what the overflow was overlapping the search with', () => {
-    expect(fitCount([100, 100, 100], 400, 96, 32)).toBe(3);
-    expect(fitCount([100, 100, 100, 100], 400, 96, 32)).toBe(2);
-    expect(fitCount([100, 100, 100, 100], 400, 96, 0)).toBe(4);
+  it('never folds a pinned item even on an impossibly narrow row', () => {
+    const folded = computeFold(items, 0, 24);
+    expect(folded.has('shop')).toBe(false);
+    expect(folded.has('services')).toBe(false);
+    expect(folded.has('more')).toBe(false);
   });
 });
 
-describe('slug matching', () => {
-  it('reads the segments of a category URL, origin, query and hash ignored', () => {
-    expect(pathSegments('/goal-energy/c3')).toEqual(['goal-energy', 'c3']);
-    expect(pathSegments('https://x.com/ar/goal-energy/c3?a=1#b')).toEqual(['ar', 'goal-energy', 'c3']);
-    expect(pathSegments('/')).toEqual([]);
+describe('matchesShopRoute', () => {
+  it('matches every catalogue route named in §7.3', () => {
+    for (const path of [
+      '/categories',
+      '/offers',
+      '/latest-products',
+      '/most-sales-products',
+      '/brands',
+      '/brands/some-brand',
+      '/tags/some-tag',
+      '/whey-protein/c9001',
+      '/whey-protein/p9001',
+      '/some-brand/brand-9001',
+      '/some-tag/tag-9001',
+    ]) {
+      expect(matchesShopRoute(path), path).toBe(true);
+    }
   });
 
-  it('matches the slug wherever it sits in the path', () => {
-    expect(matchesSlug('/goal-energy/c3', 'goal-energy')).toBe(true);
-    expect(matchesSlug('https://x.com/ar/goal-energy/c3', 'goal-energy')).toBe(true);
-    expect(matchesSlug('/protein/c1', 'goal-energy')).toBe(false);
+  it('does not match a non-catalogue route', () => {
+    for (const path of ['/services', '/blog', '/branch', '/about', '/contact', '/']) {
+      expect(matchesShopRoute(path), path).toBe(false);
+    }
+  });
+});
+
+describe('stripLocale', () => {
+  it('removes a two-letter locale segment', () => {
+    expect(stripLocale('/ar/offers')).toBe('/offers');
+    expect(stripLocale('/en/account/profile')).toBe('/account/profile');
+  });
+
+  it('leaves an unprefixed path alone', () => {
+    expect(stripLocale('/offers')).toBe('/offers');
+    expect(stripLocale('/')).toBe('/');
+  });
+});
+
+describe('withLocale', () => {
+  it('prefixes a bare path with the active locale', () => {
+    expect(withLocale('/categories', 'ar')).toBe('/ar/categories');
+    expect(withLocale('/categories', 'en')).toBe('/en/categories');
+  });
+
+  it('defaults to ar when no locale is known', () => {
+    expect(withLocale('/categories', undefined)).toBe('/ar/categories');
+  });
+
+  it('does not double-prefix an already-prefixed path', () => {
+    expect(withLocale('/ar/categories', 'ar')).toBe('/ar/categories');
   });
 });
 
 describe('NavBar', () => {
-  it("carries the design's five items, in order, with the advisory among them", async () => {
+  it("carries the design's six items, in order, تسوق and اسأل قبل أن تشتري pinned", async () => {
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
-    await waitFor(() => expect(screen.getByText('المنتجات')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('ox-nav-shop')).toBeTruthy());
     const labels = Array.from(document.querySelectorAll('[data-nav-item] a, [data-nav-item] button')).map(
       (node) => node.textContent
     );
-    // The advisory sits fourth, beside the shopping pillars, not last where
-    // the overflow control would take it first (see NavBar.tsx).
-    expect(labels).toEqual(['المنتجات', 'المكملات', 'البروتين', 'اسأل قبل أن تشتري', 'المزيد']);
-    expect(screen.getByTestId('ox-nav-services').getAttribute('href')).toBe('/services');
-    await waitFor(() => expect(screen.queryByTestId('ox-nav-overflow-control')).toBeNull());
+    expect(labels).toEqual(['تسوق', 'العروض', 'العلامات التجارية', 'اسأل قبل أن تشتري', 'الأدلة', 'المزيد']);
   });
 
-  it('المنتجات is a plain link to the full listing while show_goal_nav is off', async () => {
+  it('hides العروض when show_offers_nav is false, keeping the other five', async () => {
+    themeSettings.show_offers_nav = false;
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
-    const link = await screen.findByTestId('ox-nav-products');
+    await waitFor(() => expect(screen.getByTestId('ox-nav-shop')).toBeTruthy());
+    expect(screen.queryByTestId('ox-nav-offers')).toBeNull();
+    const labels = Array.from(document.querySelectorAll('[data-nav-item] a, [data-nav-item] button')).map(
+      (node) => node.textContent
+    );
+    expect(labels).toEqual(['تسوق', 'العلامات التجارية', 'اسأل قبل أن تشتري', 'الأدلة', 'المزيد']);
+  });
+
+  it('تسوق is a raw, locale-prefixed anchor that opens the mega panel on focus', async () => {
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const link = await screen.findByTestId('ox-nav-shop');
     expect(link.tagName).toBe('A');
-    expect(link.getAttribute('href')).toBe('/latest-products');
-    expect(link.getAttribute('aria-expanded')).toBeNull();
-  });
+    expect(link.getAttribute('href')).toBe('/ar/categories');
+    expect(link.getAttribute('aria-expanded')).toBe('false');
 
-  it('المنتجات opens the goals and types mega panel once show_goal_nav is on', async () => {
-    themeSettings.show_goal_nav = true;
-    stubWidths({ row: 2000, item: 100, more: 96 });
-    renderWithProviders(<NavBar />);
-    const link = await screen.findByTestId('ox-nav-products');
     fireEvent.focus(link);
     const panel = await screen.findByTestId('ox-mega-panel');
-    const goalCards = Array.from(panel.querySelectorAll<HTMLAnchorElement>('.ox-goalcard'));
-    expect(goalCards).toHaveLength(6);
-    // Only goal-energy exists in the mocked menu tree.
-    expect(goalCards[0].getAttribute('href')).toBe('/goal-energy/c3');
-    expect(goalCards[1].getAttribute('href')).toContain('/search?q=');
-    const typeLinks = Array.from(panel.querySelectorAll<HTMLAnchorElement>('.ox-mega__cats a'));
-    expect(typeLinks.length).toBeGreaterThan(0);
+    expect(link.getAttribute('aria-expanded')).toBe('true');
+    expect(panel.querySelectorAll('h3.ox-mega__heading').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('المكملات opens a dropdown of the ten types with protein expandable', async () => {
+  it('Escape inside the mega panel closes it and returns focus to تسوق', async () => {
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
-    const link = await screen.findByTestId('ox-nav-supplements');
-    expect(link.getAttribute('href')).toBe('/categories');
+    const link = await screen.findByTestId('ox-nav-shop');
     fireEvent.focus(link);
-    const panel = await screen.findByTestId('ox-nav-types-panel');
-    expect(panel.querySelectorAll(':scope > li')).toHaveLength(10);
-    const proteinChildren = panel.querySelectorAll('.ox-nav__subdropdown a');
-    expect(proteinChildren.length).toBe(5);
+    const panel = await screen.findByTestId('ox-mega-panel');
+
+    fireEvent.keyDown(panel, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByTestId('ox-mega-panel')).toBeNull());
+    expect(document.activeElement).toBe(link);
   });
 
-  it('البروتين resolves to its live category and lists its five children', async () => {
-    stubWidths({ row: 2000, item: 100, more: 96 });
-    renderWithProviders(<NavBar />);
-    const link = await screen.findByTestId('ox-nav-protein');
-    await waitFor(() => expect(link.getAttribute('href')).toBe('/protein/c1'));
-    fireEvent.focus(link);
-    const panel = await screen.findByTestId('ox-nav-protein-panel');
-    expect(panel.querySelectorAll('li')).toHaveLength(5);
-  });
-
-  it('المزيد is a toggle button listing the four utility categories then the standing pages', async () => {
-    stubWidths({ row: 2000, item: 100, more: 96 });
+  it('المزيد lists whatever folded off the row plus the three standing pages', async () => {
+    stubWidths({ row: 292, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
     const button = await screen.findByTestId('ox-nav-more');
     expect(button.tagName).toBe('BUTTON');
     fireEvent.click(button);
     const panel = await screen.findByTestId('ox-nav-more-panel');
     const links = Array.from(panel.querySelectorAll('a')).map((a) => a.textContent);
-    // The four utility categories (unresolved in this mock, so each falls
-    // back to its taxonomy name key) followed by the standing pages, both
-    // read from the same content maps and locale keys the component reads
-    // (app/content/taxonomy.ts MENU.utility, app/content/nav.ts SECONDARY_NAV).
-    const expectedMoreLinks = [
-      ...MENU.utility.map((node) => ar[node.nameKey]),
-      ...SECONDARY_NAV.map((entry) => ar[entry.labelKey]),
-    ];
-    expect(links).toEqual(expect.arrayContaining(expectedMoreLinks));
+    // The row is too narrow (292) for anything but the two pinned items and
+    // المزيد itself, so العروض، العلامات التجارية and الأدلة all folded in.
+    expect(links).toEqual(
+      expect.arrayContaining([
+        'الأدلة',
+        'العلامات التجارية',
+        'العروض',
+        ...MORE_NAV.map((entry) => ar[entry.labelKey]),
+      ])
+    );
+    expect(document.querySelectorAll('[data-nav-item]')).toHaveLength(3);
   });
 
-  it('moves the trailing items into the automatic overflow control on a narrow row', async () => {
-    stubWidths({ row: 400, item: 150, more: 96 });
-    renderWithProviders(<NavBar />);
-
-    const more = await screen.findByTestId('ox-nav-overflow-control');
-    expect(more).toBeTruthy();
-
-    const shown = document.querySelectorAll('[data-nav-item]');
-    expect(shown.length).toBe(2);
-  });
-
-  it('marks the item matching the current path as the current page', async () => {
-    twilight.location = { pathname: '/services' };
+  it('marks تسوق active on a catalogue route and العلامات التجارية active on its own route', async () => {
+    twilight.location = { pathname: '/ar/offers' };
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
-    const services = await screen.findByTestId('ox-nav-services');
-    expect(services.getAttribute('aria-current')).toBe('page');
+    const shop = await screen.findByTestId('ox-nav-shop');
+    expect(shop.getAttribute('aria-current')).toBe('page');
+    const offers = await screen.findByTestId('ox-nav-offers');
+    expect(offers.getAttribute('aria-current')).toBe('page');
+    const brands = await screen.findByTestId('ox-nav-brands');
+    expect(brands.hasAttribute('aria-current')).toBe(false);
   });
 });
 
@@ -228,5 +269,14 @@ describe('resolveNavHref', () => {
     expect(
       resolveNavHref({ key: 'p', labelKey: 'p', slug: 'protein', to: '/latest-products' }, 'x', menuTree)
     ).toBe('/protein/c1');
+  });
+
+  it('drops the origin from an absolute menu URL', () => {
+    const absolute = [
+      { id: 1, title: 'بروتين', url: 'https://optimalx.com.sa/protein/c9001', children: [] },
+    ] as never;
+    expect(resolveNavHref({ key: 'p', labelKey: 'p', slug: 'protein' }, 'x', absolute)).toBe(
+      '/protein/c9001'
+    );
   });
 });

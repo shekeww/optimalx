@@ -156,13 +156,50 @@ describe('BottomTabBar', () => {
     expect(screen.queryByTestId('ox-tabbar')).toBeNull();
   });
 
-  it('asks the header for the drawer instead of navigating on the categories tab', () => {
+  it('opens the shop sheet instead of navigating on the تسوق tab', () => {
     const listener = vi.fn();
-    window.addEventListener('ox:drawer-open', listener);
+    window.addEventListener('ox:shop-open', listener);
     renderWithProviders(<BottomTabBar />);
-    fireEvent.click(screen.getByTestId('ox-tab-categories'));
+    const shop = screen.getByTestId('ox-tab-shop');
+    expect(shop.tagName).toBe('BUTTON');
+    expect(shop.getAttribute('aria-haspopup')).toBe('dialog');
+    fireEvent.click(shop);
     expect(listener).toHaveBeenCalled();
-    window.removeEventListener('ox:drawer-open', listener);
+    window.removeEventListener('ox:shop-open', listener);
+  });
+
+  it('lights تسوق on every catalogue route, exact-match only elsewhere', () => {
+    for (const path of ['/categories', '/offers', '/whey-protein/c9001']) {
+      routerLocation.pathname = path;
+      const view = renderWithProviders(<BottomTabBar />);
+      const shop = screen.getByTestId('ox-tab-shop');
+      expect(shop.className, path).toContain('is-active');
+      view.unmount();
+    }
+
+    routerLocation.pathname = '/services';
+    const view = renderWithProviders(<BottomTabBar />);
+    expect(screen.getByTestId('ox-tab-shop').className).not.toContain('is-active');
+    view.unmount();
+  });
+
+  it('matches routes exactly, not with path.includes()', () => {
+    // The old test at BottomTabBar.tsx:91 matched `/cart` inside
+    // `/account/cart-anything` (S3c finding 9). An exact/prefix test never
+    // lights two tabs for one route.
+    routerLocation.pathname = '/account/cart-anything';
+    renderWithProviders(<BottomTabBar />);
+    const cart = screen.getByText('السلة').closest('a');
+    const account = screen.getByText('حسابي').closest('a');
+    expect(cart?.className).not.toContain('is-active');
+    expect(account?.className).toContain('is-active');
+  });
+
+  it('draws the cart icon rather than sicon-shopping-bag', () => {
+    renderWithProviders(<BottomTabBar />);
+    const cart = screen.getByText('السلة').closest('a');
+    expect(cart?.querySelector('.ox-icon')).not.toBeNull();
+    expect(cart?.querySelector('.sicon-shopping-bag')).toBeNull();
   });
 });
 
@@ -264,7 +301,20 @@ describe('Footer', () => {
       expect(found.length).toBeGreaterThan(0);
       return found;
     });
-    expect(headings).toEqual(['عن اوبتيمال اكس', 'خدمة العملاء', 'المنتجات']);
+    expect(headings).toEqual(['عن اوبتيمال اكس', 'خدمة العملاء', 'المنتجات', 'حسب الهدف']);
+  });
+
+  it('carries the six goal links in its own column (NAV-2026-09-23 §9)', async () => {
+    renderWithProviders(<Footer />);
+    const columns = await screen.findByTestId('ox-footer-columns');
+    await waitFor(() => {
+      const heading = Array.from(columns.querySelectorAll('.ox-footer__heading')).find(
+        (node) => node.textContent === 'حسب الهدف'
+      );
+      expect(heading).toBeTruthy();
+      const goalColumn = heading?.closest('.ox-footer__col');
+      expect(goalColumn?.querySelectorAll('li a').length).toBe(6);
+    });
   });
 
   it('drops a policy link the merchant has not published, and never invents one', async () => {

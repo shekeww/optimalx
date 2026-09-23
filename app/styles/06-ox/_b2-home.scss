@@ -1179,6 +1179,14 @@ body {
 // gap), against roughly a 136px column at that width - narrower than the
 // single-column phone `.ox-need__line` used to measure against, so this
 // carries the smallest type-scale step, `--ox-t-micro`.
+//
+// Weight floor (owner review, 2026-09-23, item 1): `--ox-t-micro` is
+// 11.5-12px, under the 16px line the floor applies below, and this rule
+// carried no font-weight (no `.ox-*` role class in `CategoryTile.tsx`
+// either), so it rendered at 400 — on the tinted cards and, worse, on
+// `.ox-tile--black`'s and the `vitamins-minerals` art card's near-black
+// ground. `--ox-w-read` clears both the <16px floor (500) and the
+// dark-ground floor (450) at its 550 root value.
 .ox-tile__line {
   z-index: 1;
   display: -webkit-box;
@@ -1186,6 +1194,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-read);
   line-height: 1.35;
   color: var(--ox-fg-2);
 }
@@ -1587,21 +1596,37 @@ body {
 // multi-line match issue this avoids. Control-scale (92px tall), the same
 // named 3.2 exception `.ox-iconbtn--angled` and the sized CTA buttons already
 // carry, not a band- or panel-scale cut.
+//
+// Owner review 2026-09-23 (late), item 1: mirrored horizontally to the
+// physical top-RIGHT, in both languages — PHYSICAL, not logical, matching
+// the card's own corner cuts above (never mirrored under `[dir='ltr']`) and
+// sitting along the top-right diagonal cut those corners already carry. In
+// the RTL default, inline-START is the physical right edge (this file's own
+// Conventions line), so the base rule now pins `inset-inline-start`; in LTR,
+// inline-END is the physical right edge, so the `[dir='ltr']` override pins
+// `inset-inline-end` — the exact swap of the pre-2026-09-23-late pair, which
+// pinned physical LEFT in both rules the same way. The skew is NEGATED
+// (`calc(-1 * var(--ox-skew))`) rather than left as `var(--ox-skew)`: moving
+// the bar to the opposite corner without flipping its own lean would repeat
+// the same absolute slant on the other side, which reads as the strap
+// sliding sideways rather than the mirrored gesture the owner asked for —
+// the mark's own two chevrons (X-IDENTITY §1.3) are mirror images of each
+// other for the same reason, never one shape translated.
 .ox-goal__slash {
   block-size: 92px; // ox-allow: small-angle
   position: absolute;
   z-index: 2;
   inset-block-start: -4px;
-  inset-inline-end: -4px;
+  inset-inline-start: -4px;
   inline-size: 20px;
   background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
+  transform: skewX(calc(-1 * var(--ox-skew)));
   pointer-events: none;
 }
 
 [dir='ltr'] .ox-goal__slash {
-  inset-inline-end: auto;
-  inset-inline-start: -4px;
+  inset-inline-start: auto;
+  inset-inline-end: -4px;
 }
 
 .ox-goal__body {
@@ -1660,8 +1685,13 @@ body {
   color: var(--ox-accent);
 }
 
+// Owner review 2026-09-23 (late), item 2: no fill on hover either — the
+// shared class's own background is transparent now, so brightening it back
+// to a translucent orange square on hover would reintroduce exactly the
+// filled face the owner asked removed. The border strengthens to full
+// `currentColor` instead, a hairline-to-solid transition rather than a fill.
 .ox-goal:hover .ox-goal__cta .ox-iconbtn--angled {
-  background: rgba(var(--ox-accent-rgb), 0.22);
+  border-color: currentColor;
 }
 
 @media (min-width: 640px) {
@@ -1851,9 +1881,19 @@ body {
   object-fit: contain;
 }
 
-.ox-brands__name {
+// The name-on-plate fallback (owner review 2026-09-23 (late), item 4): a
+// brand with no logo still reads as a finished tile rather than a blank
+// plate. Cairo 700 (`--ox-w-title`; Cairo itself is the theme's one font
+// stack already, nothing new to load) with the first character in accent.
+.ox-brands__mark {
+  display: block;
+  font-weight: var(--ox-w-title);
   color: var(--ox-fg-2);
   text-align: center;
+}
+
+.ox-brands__mark-first {
+  color: var(--ox-accent);
 }
 
 @media (min-width: 1024px) {
@@ -1870,12 +1910,21 @@ body {
 }
 
 // ---------------------------------------------------------------------------
-// 8. OxServices: the advisory band, one tier (S2 design-audit 2026-09-22)
+// 8. OxServices: the advisory band, TWO ROWS of three (owner review
+//    2026-09-23 (late), item 3 — see docs/build/progress/S4a.md for the full
+//    audit). The 2026-09-20 batch first built this as one six-card band
+//    (three channels, three plans); S2c split it on 2026-09-22, moving the
+//    channels to `/services` on the "six cards read as six equivalent
+//    things" reading. The owner's explicit instruction rejoins them, but as
+//    two visually distinct rows rather than one mixed row of six: row one
+//    is the three "ask before you buy" channels (an upright card — icon,
+//    name, one-line summary, a live price, a CTA to that channel's own
+//    product), row two is the three photographic plan doors, unchanged.
 // ---------------------------------------------------------------------------
 // Flat `--ox-graphite` plus ONE skewed ground motif — never per-card slashes,
 // which is the identity rule (one angled band edge per section) the two-tier
-// build broke by drawing five skewed elements in one section. Three
-// photographic doors, and the band's one filled CTA sits under the row.
+// build broke by drawing five skewed elements in one section. The band's one
+// filled CTA sits under both rows.
 .ox-services {
   position: relative;
 }
@@ -1996,6 +2045,12 @@ body {
 
 // Clamped to 2 lines (rule 2: never 1, and the reserved height at 320 is
 // only correct if this cannot grow past what 390 measures).
+//
+// Weight floor (owner review, 2026-09-23, item 1): this line carried no
+// `.ox-*` role class and no font-weight of its own, so it rendered at the
+// browser default (400) on `--ox-graphite` — the "dark band text reads thin"
+// defect. `--ox-w-read` is 600 here (`.ox-band-dark` on the section
+// redeclares it), clearing the 450 dark-ground floor.
 .ox-services__subline {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -2004,32 +2059,109 @@ body {
   margin: 0;
   max-inline-size: 56ch;
   color: var(--ox-fg-3);
+  font-weight: var(--ox-w-read);
 }
 
-// The mobile snap scroller (rule 2: overflow-x, never overflow-inline).
+// ONE COLUMN at 390 (owner review 2026-09-23 (late), item 3): six cards read
+// as two answered questions in DOM order — three channels, then three plans
+// — not a strip to swipe through, so this is no longer the horizontal
+// snap-scroller the three-card band used. Two columns from 768, three (two
+// rows of three) from 1024, in the media queries below.
 .ox-plans {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 74%;
+  grid-template-columns: 1fr;
   gap: var(--ox-4);
   margin: 0;
-  padding-block: 6px 8px;
-  padding-inline: 0;
+  padding: 0;
   list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: inline mandatory;
-  scroll-padding-inline: var(--ox-4);
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .ox-plans__slide {
   min-inline-size: 0;
-  scroll-snap-align: start;
+}
+
+// One channel door: an upright card (icon, name, one line, a live price, a
+// CTA), never a photograph — the plain ground is what tells row one from
+// row two at a glance even once the grid below joins them into one three-up
+// track. Same floor height as `.ox-plan` so the two rows read as one system.
+.ox-channel-door {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-block-size: 232px;
+  padding: 20px;
+  border-radius: var(--ox-r-3);
+  background: var(--ox-graphite-3);
+  color: var(--ox-fg);
+  text-decoration: none;
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+  @include ox-focus(2px);
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px var(--ox-accent);
+  }
+}
+
+.ox-channel-door__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
+  block-size: 100%;
+}
+
+.ox-channel-door__icon {
+  flex: none;
+  color: var(--ox-accent);
+  margin-block-end: var(--ox-1);
+}
+
+.ox-channel-door__title {
+  color: var(--ox-fg);
+}
+
+.ox-channel-door__line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-inline-size: 40ch;
+  color: var(--ox-fg-2);
+}
+
+.ox-channel-door__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  margin-block-start: auto;
+  padding-block-start: var(--ox-3);
+}
+
+.ox-channel-door__price {
+  color: var(--ox-fg);
+}
+
+// Matches `.ox-channel__free` (`_blocks.scss`, the /services card): weight
+// only, no colour of its own — it inherits `.ox-channel-door__price`.
+.ox-channel-door__free {
+  font-weight: var(--ox-w-figure);
+}
+
+.ox-channel-door__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-accent);
+}
+
+.ox-channel-door:hover .ox-channel-door__cta .ox-iconbtn--angled {
+  border-color: currentColor;
 }
 
 // One photographic door. Hover: 1px accent inset ring, no translate
@@ -2182,14 +2314,21 @@ body {
   align-items: center;
   justify-content: center;
   inline-size: 24px;
-  background: rgba(var(--ox-accent-rgb), 0.16);
+  // Owner review 2026-09-23 (late), item 2: no background fill — the same
+  // fix `.ox-iconbtn--angled` carries in `_primitives.scss`, reproduced here
+  // rather than shared because this selector predates that class (see the
+  // comment above this rule for why `PlanCard.tsx` cannot simply take the
+  // shared class in markup). The border is `currentColor` at 60% opacity,
+  // matching the glyph colour already set below.
+  background: transparent;
+  border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
   color: var(--ox-accent);
   font-size: 18px;
   @include ox-x-corner(8px);
 }
 
 .ox-plan:hover .ox-plan__arrow {
-  background: rgba(var(--ox-accent-rgb), 0.26);
+  border-color: currentColor;
 }
 
 // The band's ONE filled CTA, under the row — not one per card.
@@ -2206,16 +2345,12 @@ body {
 
 @media (min-width: 768px) {
   .ox-plans {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-auto-columns: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--ox-6);
-    overflow-x: visible;
-    scroll-snap-type: none;
-    padding-block: 0;
   }
 
-  .ox-plan {
+  .ox-plan,
+  .ox-channel-door {
     min-block-size: 260px;
   }
 
@@ -2224,7 +2359,13 @@ body {
   }
 }
 
+// Three columns from 1024 — two rows of three for the six cards (owner
+// review 2026-09-23 (late), item 3).
 @media (min-width: 1024px) {
+  .ox-plans {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .ox-services__motif {
     inset-inline-end: -56px;
     inline-size: 220px;
@@ -2401,7 +2542,9 @@ body {
 }
 
 // The brand primary again, for the same reasons as `.ox-plan__cta` above: one
-// technique for the shape, and 19px is the floor for white on the accent.
+// technique for the shape. Ink on the accent (owner review, 2026-09-23, item
+// 2; DIRECTION 2.2) clears AA at any size, so 19px here is this control's own
+// sizing choice, not a contrast floor.
 .ox-campaign__cta {
   position: relative;
   display: inline-flex;
@@ -3005,25 +3148,28 @@ body {
   block-size: 100%;
 }
 
-// Same construction as `.ox-goal__slash` (item 2): a 34deg parallelogram at
-// the physical top-left, independent of the (now diagonal) corner cuts
-// above. `block-size` ordered first with the pragma on its own line, same
-// reason `.ox-goal__slash` and `.ox-plan__arrow` give.
+// Same construction as `.ox-goal__slash` (item 2), and the same 2026-09-23
+// (late) mirror (item 1): physical top-RIGHT in both languages, along the
+// diagonal corner cuts above, skew negated so the strap reads as the
+// mirrored gesture rather than the same slant translated sideways — see
+// `.ox-goal__slash`'s own comment in this file for the full reasoning.
+// `block-size` ordered first with the pragma on its own line, same reason
+// `.ox-goal__slash` and `.ox-plan__arrow` give.
 .ox-pcard__slash {
   block-size: 92px; // ox-allow: small-angle
   position: absolute;
   z-index: 2;
   inset-block-start: -4px;
-  inset-inline-end: -4px;
+  inset-inline-start: -4px;
   inline-size: 20px;
   background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
+  transform: skewX(calc(-1 * var(--ox-skew)));
   pointer-events: none;
 }
 
 [dir='ltr'] .ox-pcard__slash {
-  inset-inline-end: auto;
-  inset-inline-start: -4px;
+  inset-inline-start: auto;
+  inset-inline-end: -4px;
 }
 
 // The treatment the goal and plan cards already use: the frame sits low

@@ -13,7 +13,9 @@ import { Icon } from '../common/Icon';
 import { VariantChips, cardOption, defaultValueId } from './VariantChips';
 import { RatingRow } from './RatingRow';
 import { parseSpecLine } from './lib/specLine';
-import { specField, unitBearingWeight, PACK_SIZE_LABELS } from './lib/stats';
+import { cardSpecLine } from './lib/cardSpec';
+import { bandBadges } from './lib/bandBadges';
+import { useHoverCapable } from './lib/useHoverCapable';
 import { monthsUntilExpiry } from './lib/supply';
 import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
 
@@ -25,34 +27,43 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  * It never renders the engine `ProductCard`: that component performs the
  * registry lookup itself, so calling it from here would recurse on every card.
  *
- * The target, and what each part is gated on:
+ * The target, and what each part is gated on (CARD-2026-09-23):
  *
  *   wishlist heart   reading-start corner of the plate
- *   saving pill      the opposite corner, ONLY on a real `is_on_sale` with a
- *                    regular price above the sale price
+ *   badge stack      the opposite corner, at most two, in the section 6.2
+ *                    priority: out of stock (suppresses every other one),
+ *                    saving, new, a real dietary tag, expiry within 6 months
  *   colour swatches  the trailing edge of the plate, ONLY when the product
- *                    carries real option colours (see `colourSwatches`)
+ *                    carries real option colours (see `colourSwatches`) AND
+ *                    the card's own chip row is not already choosing the
+ *                    same colour axis
+ *   brand line       ONLY when `product.brand?.name` is set; not reserved
  *   title            two lines, ellipsised
- *   meta line        category (or brand) then the serving count
+ *   spec line        servings, then the pack size, off the product's own
+ *                    parsed description (`cardSpecLine`); always reserved
  *   price row        the amount, plus the struck regular price on a sale
- *   savings line     the same real saving, in the go colour
  *   action row       quantity stepper + Salla's own add button, outlined
  *   buy row          a full-width accent CTA: Salla's own quick buy where
  *                    `can_quick_buy` is on, otherwise a link to the product
  *
  * Every row keeps its height when its content is absent, which is what lets a
  * row of mixed products put every price on one baseline. The rating slot in
- * particular stays 20px tall at zero reviews (B28) and the savings slot stays
- * 18px tall off a sale, instead of collapsing and dragging the buttons up on
- * one card out of five.
+ * particular stays 20px tall at zero reviews (B28), instead of collapsing and
+ * dragging the buttons up on one card out of five. A sold-out card is a
+ * different render, not a variant of this one (section 5): see
+ * `SoldOutControl` and `BuyControls`'s own early return.
  */
 
-/** 2x the widest slot the card ever occupies (171 at 390, 243 at 1440): A8. */
-const CARD_IMAGE_WIDTHS = [150, 300, 500] as const;
-const CARD_IMAGE_SIZES = '(min-width: 1024px) 211px, 45vw';
-/** A hair space each side of the divider, so the line breathes without a gap. */
-const DIVIDER =
-  String.fromCharCode(0x200a) + String.fromCharCode(124) + String.fromCharCode(0x200a);
+/**
+ * The candidate ceiling is 300, not the platform's default 500 (CARD-2026-09-23
+ * section 11, DIRECTION 10.4 A8): a phone at DPR 3 asks for about 414 whatever
+ * `sizes` says and takes the largest candidate at or below that plus the
+ * browser's own tolerance, so capping the list at 300 is what keeps a plate at
+ * 300 x 300 x 4 bytes (360 KB) instead of the 500 file's 1 MB. Four plates on
+ * the first viewport then total 1.44 MB against the 1.4 MB listing line.
+ */
+const CARD_IMAGE_WIDTHS = [160, 220, 300] as const;
+const CARD_IMAGE_SIZES = '(min-width: 1024px) 272px, (min-width: 640px) 30vw, 138px';
 /** At most four dots fit the plate's trailing edge without crowding the badge. */
 const MAX_SWATCHES = 4;
 
@@ -69,38 +80,83 @@ export const OxProductCard = memo(function OxProductCard({
   const wishlist = useWishlist();
   const spec = useMemo(() => parseSpecLine(product.description), [product.description]);
   const swatches = useMemo(() => colourSwatches(product), [product]);
+  const hoverCapable = useHoverCapable();
 
   const inWishlist = wishlist.has(product.id);
   const outOfStock = product.is_out_of_stock || product.status === 'out';
   const saving = savingOf(product);
   const percent = savingPercent(product);
   const price = effectivePrice(product);
-  const expiryMonths = monthsUntilExpiry(spec?.expiry);
-  const hoverImage = product.images?.find((image) => image.url && image.url !== product.image?.url);
+  const expiryDate = spec?.expiry ?? null;
+  const expiryMonths = monthsUntilExpiry(expiryDate);
 
   /**
-   * THE MERCHANT'S OWN ONE LINE, not a serving count.
-   *
-   * The line used to read "8 حصة". The owner asked for something that earns
-   * its row on every product, and the catalogue answers the question: the
-   * lead this design wanted was "category | serving count", but the store has
-   * ZERO categories and ZERO brands in Salla, so the lead was always empty and
-   * the row was a scoop count and nothing else. A scoop count does not help
-   * anyone choose between two proteins.
-   *
-   * `subtitle` is set on all 47 products and is the merchant's own pitch for
-   * that specific product: what it is and why it is worth the price. It is
-   * already published on the product page, so surfacing it here asserts
-   * nothing new; it is the only per-product line in the catalogue that is both
-   * universal and persuasive.
-   *
-   * The options that would normally sit here are all closed: per-serving
-   * pricing is banned outright by the spec, ratings and review counts and
-   * bestseller flags have no data and are banned, stock is "in stock" on all
-   * 47 so it discriminates nothing, brand and category are empty, and a
-   * delivery promise needs a carrier agreement the store does not have.
+   * THE STOCK LINE (CARD-2026-09-23 sections 0.2 and 3.6): text only, no
+   * icon, no bar, and never the number itself — the gate is verbatim from the
+   * claims table, on the platform's own `can_show_remained_quantity` flag,
+   * never inferred from a low number alone.
    */
-  const pitch = trimmedText(product.subtitle);
+  const stockQuantity = typeof product.quantity === 'number' ? product.quantity : null;
+  const showsLimitedQty =
+    !outOfStock &&
+    product.can_show_remained_quantity === true &&
+    product.is_hidden_quantity !== true &&
+    stockQuantity !== null &&
+    stockQuantity > 0 &&
+    stockQuantity <= 5;
+  // Gated behind a hover-capable pointer (CARD-2026-09-23 section 11): mounted
+  // only after hydration confirms `(hover: hover) and (pointer: fine)`, so a
+  // touch phone never fetches or decodes a second plate photograph it cannot
+  // act on. `useHoverCapable()` starts `false`, so the server tree and the
+  // first client tree both omit it and hydration never has to reconcile one.
+  const hoverImageSource = product.images?.find(
+    (image) => image.url && image.url !== product.image?.url
+  );
+  const hoverImage = hoverCapable ? hoverImageSource : undefined;
+
+  /**
+   * THE CARD'S BRAND LINE (CARD-2026-09-23 section 3.2), reserved only when
+   * present: the catalogue carries zero brands today, so a reserved row would
+   * cost every card the same 26px hole `OxProductCard.tsx` already removed for
+   * the rating row, for the same reason.
+   */
+  const brandName = trimmedText(product.brand?.name);
+
+  /**
+   * THE CARD'S SPEC LINE (CARD-2026-09-23 section 3.4) replaces the merchant's
+   * free-text `subtitle` pitch, which rendered as a single ellipsised line cut
+   * mid word ("واى ايزوليت نقى بـ 25 ج...") and was never a spec: servings,
+   * then the pack size, off the same parsed description every stat cell and
+   * chip on the product page already reads.
+   */
+  const specLine = useMemo(() => cardSpecLine(product, spec, t), [product, spec, t]);
+
+  // ONE axis, one control and one preview, never both (section 3.7): when the
+  // card's own chip row already lets a shopper choose a colour, the plate's
+  // preview dots for that same axis are redundant and are suppressed.
+  const chipOption = outOfStock ? null : cardOption(product);
+  const showSwatchDots = swatches.length > 0 && chipOption?.type !== 'color';
+
+  // THE BADGE STACK, capped at two, in the priority section 6.2 sets. A real
+  // out-of-stock flag suppresses every other one on its own (rendered
+  // separately below); past that, the saving pill outranks "new", which
+  // outranks a real dietary tag, which outranks an expiry within six months.
+  const tagBadge = outOfStock ? null : (bandBadges(product)[0] ?? null);
+  const badgeCandidates: { id: 'saving' | 'new' | 'tag' | 'expiry'; show: boolean }[] = [
+    { id: 'saving', show: !outOfStock && saving !== null },
+    { id: 'new', show: !outOfStock && saving === null && isNewProduct(product) },
+    { id: 'tag', show: !outOfStock && tagBadge !== null },
+    {
+      id: 'expiry',
+      show: !outOfStock && expiryMonths !== null && expiryMonths >= 0 && expiryMonths < 6 && expiryDate !== null,
+    },
+  ];
+  const visibleBadges = new Set(
+    badgeCandidates
+      .filter((candidate) => candidate.show)
+      .slice(0, 2)
+      .map((candidate) => candidate.id)
+  );
 
   const classes = [
     'ox-card-product',
@@ -146,7 +202,7 @@ export const OxProductCard = memo(function OxProductCard({
               `discount_percentage`, printed verbatim; the amount is the
               difference between two prices the catalogue actually holds.
               Neither is ever computed from a price the store has not set. */}
-          {!outOfStock && saving !== null ? (
+          {visibleBadges.has('saving') ? (
             <Badge tone="saving" className="ox-card-product__saving-badge">
               {percent !== null ? (
                 <>
@@ -159,11 +215,15 @@ export const OxProductCard = memo(function OxProductCard({
               )}
             </Badge>
           ) : null}
-          {!outOfStock && saving === null && isNewProduct(product) ? (
-            <Badge tone="new">{t('ox.common.new')}</Badge>
+          {visibleBadges.has('new') ? <Badge tone="new">{t('ox.common.new')}</Badge> : null}
+          {visibleBadges.has('tag') && tagBadge ? (
+            <Badge tone="tag">
+              <Icon name={tagBadge.glyph} size={12} />
+              {t(tagBadge.labelKey)}
+            </Badge>
           ) : null}
-          {expiryMonths !== null && expiryMonths >= 0 && expiryMonths < 6 && spec?.expiry ? (
-            <Badge tone="note">{t('ox.card.expiry', { date: spec.expiry })}</Badge>
+          {visibleBadges.has('expiry') ? (
+            <Badge tone="note">{t('ox.card.expiry', { date: expiryDate })}</Badge>
           ) : null}
         </BadgeStack>
         <button
@@ -175,7 +235,7 @@ export const OxProductCard = memo(function OxProductCard({
         >
           <i className="sicon-heart" aria-hidden="true" />
         </button>
-        {swatches.length > 0 ? (
+        {showSwatchDots ? (
           <ul className="ox-card-product__swatches" aria-label={t('ox.card.colours')}>
             {swatches.slice(0, MAX_SWATCHES).map((swatch) => (
               <li
@@ -196,12 +256,17 @@ export const OxProductCard = memo(function OxProductCard({
       </div>
 
       <div className="ox-card-product__body">
+        {brandName ? (
+          <p className="ox-card-product__brand">
+            <Bdi>{brandName}</Bdi>
+          </p>
+        ) : null}
         <h3 className="ox-card-product__name">
           <Link to={product.url} className="ox-card-product__title-link">
             <Bdi>{product.name}</Bdi>
           </Link>
         </h3>
-        <p className="ox-card-product__chips">{pitch ? <Bdi>{pitch}</Bdi> : null}</p>
+        <p className="ox-card-product__chips">{specLine ? <Bdi>{specLine}</Bdi> : null}</p>
         {/* The WRAPPER is conditional too, not just its contents.
             `RatingRow` already renders null below a real review count, but the
             box around it kept `min-block-size: 20px`, so every card on this
@@ -232,6 +297,9 @@ export const OxProductCard = memo(function OxProductCard({
         {/* No savings line under the price (owner call, 2026-09-22): the pill
             in the image corner already states the saving, and the extra row
             stretched every card for a figure printed twice. */}
+        {showsLimitedQty ? (
+          <p className="ox-card-product__stock">{t('ox.card.limited_qty')}</p>
+        ) : null}
         {withoutAddButton ? null : <BuyControls product={product} outOfStock={outOfStock} />}
       </div>
     </article>
@@ -245,6 +313,12 @@ export const OxProductCard = memo(function OxProductCard({
  * the whole of it: the options modal, the cart request, the toast, and the
  * notify-me form when the status is out-and-notify. We size and colour it and
  * we hand it a quantity. Nothing here ever calls `salla.cart`.
+ *
+ * **Sold out is a different render, not a subset of this one** (CARD-2026-09-23
+ * section 5): no stepper, no variant chips, no buy CTA, one full-width
+ * control. Returning early here, rather than threading `outOfStock` through
+ * every row below, is what keeps the in-stock branch from having to reason
+ * about a state it can no longer reach.
  */
 function BuyControls({ product, outOfStock }: { product: Product; outOfStock: boolean }) {
   const { t } = useTranslation();
@@ -262,7 +336,7 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
 
   // The stepper is suppressed on a product with options ONLY while the card
   // cannot choose them. Once it can, quantity is meaningful again.
-  const showsStepper = (allowsQuantity(product) || Boolean(option)) && !outOfStock;
+  const showsStepper = !outOfStock && (allowsQuantity(product) || Boolean(option));
 
   const decrease = useCallback(() => setQuantity((n) => Math.max(1, n - 1)), []);
   const increase = useCallback(
@@ -285,6 +359,18 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
     const salla = (window as unknown as { salla?: { form?: { onSubmit?: (a: string, b: Event) => void } } }).salla;
     salla?.form?.onSubmit?.('cart.addItem', e.nativeEvent);
   }, []);
+
+  // Every hook above is called unconditionally, so this early return (a plain
+  // branch, not a hook) is safe: no hook may follow it. No stepper, no
+  // variant chips, no buy CTA — one full-width control, and nothing built
+  // above is used past this point for a sold-out product.
+  if (outOfStock) {
+    return (
+      <div className="ox-card-product__action ox-card-product__action--out">
+        <SoldOutControl product={product} />
+      </div>
+    );
+  }
 
   // ONE grid, not a row plus a sibling (owner review, 2026-09-23, item 2):
   // below 768 the stepper takes its own row and the add button joins
@@ -325,7 +411,7 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
           submit={Boolean(option)}
         />
       </div>
-      {outOfStock ? null : <BuyNow product={product} />}
+      <BuyNow product={product} />
     </div>
   );
 
@@ -369,6 +455,52 @@ function BuyControls({ product, outOfStock }: { product: Product; outOfStock: bo
       <input type="hidden" name="quantity" value={String(showsStepper ? quantity : 1)} />
       {controls}
     </form>
+  );
+}
+
+/**
+ * The sold-out card's one control (CARD-2026-09-23 section 5).
+ *
+ * Salla's own notify-me path renders when the product can actually offer one
+ * — a real `notify_availability` payload, or a status the platform itself
+ * marked `out-and-notify` — and nothing is invented when it cannot. The
+ * fallback is an honest, focusable "unavailable" state rather than a
+ * `<button disabled>`: a disabled control leaves the tab order and explains
+ * nothing to a shopper who lands on it.
+ */
+function SoldOutControl({ product }: { product: Product }) {
+  const { t } = useTranslation();
+  const canNotify = Boolean(product.notify_availability) || product.status === 'out-and-notify';
+
+  if (canNotify) {
+    return (
+      <div className="ox-card-product__notify-slot">
+        <WebComponentBoundary label={`card notify ${product.id}`}>
+          <SallaAddProductButtonCore
+            productId={product.id}
+            productType={product.type}
+            productStatus={product.status}
+            width="wide"
+            fill="outline"
+            loaderPosition="center"
+            aria-label={t('ox.card.notify_me')}
+          >
+            <span className="ox-card-product__notify-label">{t('ox.card.notify_me')}</span>
+          </SallaAddProductButtonCore>
+        </WebComponentBoundary>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="ox-card-product__unavailable"
+      aria-disabled="true"
+      onClick={(event) => event.preventDefault()}
+    >
+      {t('ox.card.unavailable')}
+    </button>
   );
 }
 

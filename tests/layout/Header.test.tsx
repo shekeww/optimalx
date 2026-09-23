@@ -186,17 +186,15 @@ describe('Header', () => {
     expect(document.body.classList.contains('menu-opened')).toBe(false);
   });
 
-  it('opens the mega panel from المنتجات on hover/focus once show_goal_nav is on', async () => {
-    // The panel is opt-in now: the approved design carries five nav items on
-    // the bar, and a sixth "goals" item would not fit beside them.
-    setSettings({ show_goal_nav: true });
+  it('opens the mega panel from تسوق on hover/focus, no setting gates it', async () => {
+    setSettings({});
     renderWithProviders(<Header />);
-    const products = screen.getByTestId('ox-nav-products');
-    expect(products.getAttribute('aria-expanded')).toBe('false');
+    const shop = screen.getByTestId('ox-nav-shop');
+    expect(shop.getAttribute('aria-expanded')).toBe('false');
 
-    fireEvent.focus(products);
+    fireEvent.focus(shop);
     await waitFor(() => expect(screen.getByTestId('ox-mega-panel')).toBeTruthy());
-    expect(products.getAttribute('aria-expanded')).toBe('true');
+    expect(shop.getAttribute('aria-expanded')).toBe('true');
 
     act(() => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
@@ -231,19 +229,33 @@ describe('Header', () => {
     expect(document.documentElement.style.getPropertyValue('--ox-header-h')).toBe('');
   });
 
-  it('keeps المنتجات a plain link (no panel) when show_goal_nav is off, and by default', () => {
-    // The panel stays opt-in because the bar cannot carry a sixth item beside
-    // the advisory at 1440 (the measurement is in NavBar's docblock).
-    for (const settings of [{ show_goal_nav: false }, {}]) {
-      setSettings(settings);
-      const view = renderWithProviders(<Header />);
-      expect(screen.getByTestId('ox-nav-products').getAttribute('aria-expanded')).toBeNull();
-      view.unmount();
-    }
+  it('gates العروض on show_offers_nav, on by default', () => {
+    setSettings({});
+    const bare = renderWithProviders(<Header />);
+    expect(screen.getByTestId('ox-nav-offers')).toBeTruthy();
+    bare.unmount();
 
-    setSettings({ show_goal_nav: true });
+    setSettings({ show_offers_nav: false });
     renderWithProviders(<Header />);
-    expect(screen.getByTestId('ox-nav-products').getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByTestId('ox-nav-offers')).toBeNull();
+  });
+
+  it('opens the shop sheet on the ox:shop-open event and closes it on Escape', async () => {
+    setSettings({});
+    const { openShopSheet } = await import('../../app/components/layout/Header/Header');
+    renderWithProviders(<Header />);
+    expect(screen.queryByTestId('ox-shop-sheet')).toBeNull();
+
+    act(() => openShopSheet());
+
+    await waitFor(() => expect(screen.getByTestId('ox-shop-sheet')).toBeTruthy());
+    expect(document.body.classList.contains('modal-is-open')).toBe(true);
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    });
+    await waitFor(() => expect(screen.queryByTestId('ox-shop-sheet')).toBeNull());
+    expect(document.body.classList.contains('modal-is-open')).toBe(false);
   });
 
   it('carries the utility strip whether or not its two outer zones have content', () => {

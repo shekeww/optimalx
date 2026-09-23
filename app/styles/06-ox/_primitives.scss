@@ -64,10 +64,13 @@ $ox-angle-tan: 0.6745;
 //
 // CALL IT WITH NO ARGUMENTS. The default fill is `--ox-accent`, the logo's
 // orange, and it is the only orange a resting solid CTA may draw anywhere on
-// the site: a second one on a repeated button reads as a second brand. White
-// on it measures 3.58:1, which clears the floor ONLY as large text, so 19/700
-// is the smallest label this fill may legally carry and a button too small for
-// that label gives up its glyph and its padding instead of its type.
+// the site: a second one on a repeated button reads as a second brand.
+// INK ON ACCENT (owner review, 2026-09-23, item 2; DIRECTION 2.2): the label
+// colour is `--ox-on-accent`, which is `--ox-ink` (#12171E) now, not white.
+// Ink on `--ox-accent` measures 5.01:1, clearing AA at any size or weight, so
+// this fill carries a label at whatever size the button needs — no label-size
+// floor to protect, unlike the white pairing (3.58:1, large-text only) this
+// replaces.
 //
 // `$fill` therefore exists for reversed grounds, where the accent itself is
 // the thing that fails — not for buttons that would like a smaller label.
@@ -78,14 +81,14 @@ $ox-angle-tan: 0.6745;
 // `--ox-btn-primary-size` rather than repeating `19px` at each call site, so
 // the one owner-set ratio (0.9 of the 19px floor) reaches all of them from
 // here. Block-size, the parallelogram and the one-line rule are untouched:
-// none of them are driven by this token.
+// none of them are driven by this token. The ratio is still 0.9 of 19px by
+// the owner's own instruction, not because ink needs a size floor — it does
+// not, at 5.01:1 the size and weight are free to move.
 @mixin ox-primary-face($fill: var(--ox-accent), $hover: var(--ox-accent-dark)) {
   background: #{$fill};
   border-color: #{$fill};
   color: var(--ox-on-accent);
   font-weight: var(--ox-w-title);
-  // 19px is still the documented floor for white on `--ox-accent` (large-text
-  // exemption); 0.9 of it is the owner's own instruction, not a new floor.
   --ox-btn-primary-size: calc(19px * 0.9);
   font-size: var(--ox-btn-primary-size);
 
@@ -499,9 +502,9 @@ $ox-angle-tan: 0.6745;
     transition-timing-function: var(--ease-out);
   }
 
-  // The filled label carries the page's only reversed type, so it is set at
-  // 19/700: at the shipped 15/600 the white on accent measures under 4.5:1 for
-  // the size and reads thin against the fill.
+  // Ink on accent (owner review, 2026-09-23, item 2; DIRECTION 2.2) clears
+  // 4.5:1 at any size, so this label no longer needs a size floor to stay
+  // legal — see `ox-primary-face`'s own comment above.
   &--primary {
     // Label size comes from the mixin's own `--ox-btn-primary-size` token
     // now (owner review, 2026-09-23, item 2); no separate literal here to
@@ -952,8 +955,19 @@ $ox-angle-tan: 0.6745;
   justify-content: center;
   inline-size: 24px;
   flex: none;
-  background: rgba(var(--ox-accent-rgb), 0.12);
+  // Owner review 2026-09-23, item 2: NO background fill. A filled face was
+  // the complaint; a fully transparent, unbordered clip shows nothing at all
+  // on either a pale tint or a dark photograph, so the corner-cut shape is
+  // traced by a 1px border instead of the old fill. `currentColor` so the
+  // border always matches whatever accent the caller already set on `color`
+  // (every caller colours the glyph, never the background), mixed to 60%
+  // opacity so the outline reads as a hairline next to the glyph rather than
+  // a second stroke. `color-mix()` is not new browser-support surface: it
+  // already ships in `02-generic/common.scss` and
+  // `04-components/add-product-toast.scss`.
+  background: transparent;
   color: inherit;
+  border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
   clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
   [dir='ltr'] & {
     clip-path: polygon(0 0, calc(100% - #{ox-run(8px)}) 0, 100% 8px, 100% 100%, 0 100%);

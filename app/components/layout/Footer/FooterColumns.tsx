@@ -8,6 +8,7 @@ import { digitsOnly } from '../../blocks/href';
 import { FOOTER_COLUMNS, findMenuLink, type NavEntry } from '../../../content/nav';
 import { Icon } from '../../common/Icon';
 import { useMediaQuery } from '../../common/hooks/useMediaQuery';
+import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { resolveNavHref } from '../navLinks';
 import { useHeaderMenu } from '../Header/useHeaderMenu';
 
@@ -68,6 +69,7 @@ export function FooterColumns() {
   const { t } = useTranslation();
   const store = useStore();
   const { items } = useHeaderMenu();
+  const { goals } = useTaxonomyLinks();
   const { data: footerMenu } = useQuery({
     queryKey: ['menu', 'footer'],
     queryFn: () => menu.footer(),
@@ -131,6 +133,21 @@ export function FooterColumns() {
           </Column>
         );
       })}
+      {/* The fifth column (NAV-2026-09-23 §9): the six goal links, so the
+          goal axis reaches SSR HTML from every route, not `/categories`
+          alone. Taxonomy links, not `FOOTER_COLUMNS`: their labels come from
+          `ox.tax.<key>.name`, not `ox.footer.*`. */}
+      <Column heading={t('ox.nav.by_goal')} collapsible={collapsible}>
+        <ul>
+          {goals.map((goal) => (
+            <li key={goal.slug}>
+              <Link to={goal.to} className="ox-footer__link">
+                {goal.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Column>
     </nav>
   );
 }

@@ -1,0 +1,14 @@
+{
+  "ox.nav.shop": "Shop",
+  "ox.nav.shop_sheet_label": "Shop by type or goal",
+  "ox.nav.by_type": "By type",
+  "ox.nav.by_goal": "By goal",
+  "ox.nav.other_categories": "Other sections",
+  "ox.nav.all_types": "All types",
+  "ox.nav.all_brands": "All brands",
+  "ox.nav.promo_label": "Picked for you",
+  "ox.nav.mega_label": "Shop menu",
+  "ox.nav.close_shop": "Close shop menu",
+  "ox.card.limited_qty": "Limited quantity",
+  "ox.card.unavailable": "Unavailable"
+}

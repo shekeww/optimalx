@@ -130,6 +130,43 @@ describe('OxBrands', () => {
     await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
     expect(screen.getAllByRole('listitem')).toHaveLength(4);
   });
+
+  it('sorts by product count, heaviest first (owner review 2026-09-23 (late), item 4)', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [
+      { id: '1', name: 'Light', url: '/l', logo: '', products_count: 1 },
+      { id: '2', name: 'Heavy', url: '/h', logo: '', products_count: 7 },
+    ];
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    const names = Array.from(container.querySelectorAll('.ox-brands__link')).map((el) => el.textContent);
+    expect(names[0]).toContain('Heavy');
+    expect(names[1]).toContain('Light');
+  });
+
+  it('caps the strip at 24 brands', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = Array.from({ length: 30 }, (unused, index) => ({
+      id: String(index),
+      name: `Brand ${index}`,
+      url: `/b${index}`,
+      logo: '',
+      products_count: 30 - index,
+    }));
+    renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    expect(screen.getAllByRole('listitem')).toHaveLength(24);
+  });
+
+  it('renders a name mark, first letter in its own span, when a brand has no logo', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [{ id: '1', name: 'Optimum Nutrition', url: '/on', logo: '' }];
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    const mark = container.querySelector('.ox-brands__mark');
+    expect(mark?.textContent).toBe('Optimum Nutrition');
+    expect(mark?.querySelector('.ox-brands__mark-first')?.textContent).toBe('O');
+  });
 });
 
 describe('OxBanner', () => {

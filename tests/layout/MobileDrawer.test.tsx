@@ -113,17 +113,55 @@ describe('MobileDrawer', () => {
   it('publishes the same site map the bar does, with the advisory once', async () => {
     const { unmount } = renderWithProviders(<Harness initialOpen />);
     const drawer = await screen.findByTestId('ox-mobile-drawer');
-    const labels = Array.from(drawer.querySelectorAll('.ox-drawer__list > li > a')).map(
-      (node) => node.textContent
-    );
-    // It used to be typed into the drawer's own page list and left off the
-    // desktop bar entirely, which gave the store two different site maps.
-    // It comes from `HEADER_NAV` now, so it is on both and duplicated on
-    // neither.
+    const labels = Array.from(drawer.querySelectorAll('a')).map((node) => node.textContent);
+    // اسأل قبل أن تشتري is one of `HEADER_NAV`'s own plain rows, so it is on
+    // both the bar and the drawer and duplicated on neither.
     expect(labels.filter((label) => label === 'اسأل قبل أن تشتري')).toHaveLength(1);
     expect(labels).toContain('الأدلة');
+    // فرع المدينة المنورة now lives inside المزيد's own accordion (§6.1),
+    // not as a flat top-level row.
     expect(labels).toContain('فرع المدينة المنورة');
     expect(labels).toContain(ar['ox.nav.contact']);
+    unmount();
+  });
+
+  it('lists حسب النوع before حسب الهدف, with protein's five children nested and the three non-services utility categories appended', async () => {
+    const { unmount } = renderWithProviders(<Harness initialOpen />);
+    const drawer = await screen.findByTestId('ox-mobile-drawer');
+    const groupLabels = Array.from(
+      drawer.querySelectorAll('.ox-drawer__group > .ox-drawer__row > span')
+    ).map((node) => node.textContent);
+    expect(groupLabels).toEqual([ar['ox.nav.by_type'], ar['ox.nav.by_goal'], ar['ox.nav.more']]);
+
+    const typeGroup = drawer.querySelectorAll('.ox-drawer__group')[0];
+    expect(typeGroup.querySelectorAll('.ox-drawer__sublist a')).toHaveLength(5);
+    // 10 type roots + 3 utility categories (bundles, digital library, gift
+    // cards; services is excluded, §5.2/§6.1).
+    expect(typeGroup.querySelectorAll(':scope > .ox-drawer__panel > .ox-drawer__panel-inner > ul > li'))
+      .toHaveLength(13);
+
+    const moreGroup = drawer.querySelectorAll('.ox-drawer__group')[2];
+    const moreLabels = Array.from(moreGroup.querySelectorAll('a')).map((a) => a.textContent);
+    expect(moreLabels).toEqual([
+      ar['ox.nav.about_brand'],
+      ar['ox.nav.branch'],
+      ar['ox.nav.contact'],
+    ]);
+    unmount();
+  });
+
+  it('opening one accordion closes the others (goals open by default, the menu button's own default)', async () => {
+    const { unmount } = renderWithProviders(<Harness initialOpen />);
+    const drawer = await screen.findByTestId('ox-mobile-drawer');
+    const [typeToggle, goalToggle] = Array.from(
+      drawer.querySelectorAll<HTMLButtonElement>('.ox-drawer__group > .ox-drawer__row')
+    );
+    expect(goalToggle.getAttribute('aria-expanded')).toBe('true');
+    expect(typeToggle.getAttribute('aria-expanded')).toBe('false');
+
+    fireEvent.click(typeToggle);
+    expect(typeToggle.getAttribute('aria-expanded')).toBe('true');
+    expect(goalToggle.getAttribute('aria-expanded')).toBe('false');
     unmount();
   });
 

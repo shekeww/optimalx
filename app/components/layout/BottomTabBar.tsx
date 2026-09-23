@@ -4,14 +4,17 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { CountPill } from './Header/MainBar';
+import { Icon } from '../common/Icon';
 import { useCartCount } from '../commerce/useCartCount';
-import { openMobileDrawer } from './Header/Header';
+import { openShopSheet } from './Header/Header';
+import { matchesShopRoute, stripLocale } from './navLinks';
 
 /**
  * Body classes that hide the bar: the engine sets `menu-opened` and
- * `modal-is-open` (engine-surface 10.3, 10.6) and the product batch adds
- * `ox-sticky-bar` while the PDP buy bar is showing. Two fixed bars would take
- * 120px of a 660px viewport (DIRECTION 5.1 BottomTabBar).
+ * `modal-is-open` (engine-surface 10.3, 10.6; the shop sheet also adds
+ * `modal-is-open`) and the product batch adds `ox-sticky-bar` while the PDP
+ * buy bar is showing. Two fixed bars would take 120px of a 660px viewport
+ * (DIRECTION 5.1 BottomTabBar).
  */
 export const HIDING_BODY_CLASSES = ['menu-opened', 'modal-is-open', 'ox-sticky-bar'];
 
@@ -56,17 +59,24 @@ function useRouterPathname(): string {
 }
 
 /**
- * The mobile bottom tab bar (DIRECTION 5.1 BottomTabBar, 10.2).
+ * The mobile bottom tab bar (NAV-2026-09-23 §7).
  *
  * Five equal tabs, 56 tall plus the safe area, fixed below 1024 only, and
  * gated on the `show_bottom_tabbar` theme setting. It unmounts (rather than
  * hides) under a drawer, a modal or the PDP sticky bar, so the fixed layer is
  * released instead of being parked behind them.
+ *
+ * Every active state is an exact match against a stripped (locale removed)
+ * pathname, replacing the old `path.includes(match)` test that lit "السلة"
+ * inside `/account/cart-anything` (S3c finding 9). `تسوق` replaces
+ * `التصنيفات`: it opens the full-height catalogue sheet rather than the side
+ * drawer scrolled to a group, so one control no longer does both the site
+ * map's job and the catalogue's.
  */
 export function BottomTabBar() {
   const { t } = useTranslation();
   const { settings } = useTheme();
-  const path = useRouterPathname();
+  const path = stripLocale(useRouterPathname() || '/');
   // The SDK-backed count, not `useCartContext`: the engine never mounts the
   // cart provider, so the context reads null on every route (commerce
   // useCartCount). `null` means "not known yet" and renders an empty pill.
@@ -87,8 +97,11 @@ export function BottomTabBar() {
 
   if (!mounted) return null;
 
-  const isHome = path === '/' || /^\/[a-z]{2}\/?$/.test(path);
-  const current = (match: string) => path.includes(match);
+  const isHome = path === '/';
+  const isShop = matchesShopRoute(path);
+  const isSearch = path === '/search';
+  const isCart = path === '/cart';
+  const isAccount = path === '/account' || path.startsWith('/account/');
 
   return (
     <nav className="ox-tabbar" aria-label={t('ox.nav.quick_label')} data-testid="ox-tabbar">
@@ -106,19 +119,24 @@ export function BottomTabBar() {
         <li>
           <button
             type="button"
-            className="ox-tab"
-            data-testid="ox-tab-categories"
-            onClick={() => openMobileDrawer('categories')}
+            className={`ox-tab${isShop ? ' is-active' : ''}`}
+            aria-haspopup="dialog"
+            // The sheet is what hides this bar while it is open (§7.4:
+            // `modal-is-open`), so a rendered instance of this button is
+            // never itself the trigger of an already-open sheet.
+            aria-expanded={false}
+            data-testid="ox-tab-shop"
+            onClick={() => openShopSheet()}
           >
-            <i className="sicon-menu" aria-hidden="true" />
-            <span className="ox-tab__label">{t('ox.nav.categories_short')}</span>
+            <i className="sicon-grid" aria-hidden="true" />
+            <span className="ox-tab__label">{t('ox.nav.shop')}</span>
           </button>
         </li>
         <li>
           <Link
             to="/search"
-            className={`ox-tab${current('/search') ? ' is-active' : ''}`}
-            {...(current('/search') ? { 'aria-current': 'page' } : {})}
+            className={`ox-tab${isSearch ? ' is-active' : ''}`}
+            {...(isSearch ? { 'aria-current': 'page' } : {})}
           >
             <i className="sicon-search" aria-hidden="true" />
             <span className="ox-tab__label">{t('ox.nav.search')}</span>
@@ -127,11 +145,17 @@ export function BottomTabBar() {
         <li>
           <Link
             to="/cart"
-            className={`ox-tab${current('/cart') ? ' is-active' : ''}`}
-            {...(current('/cart') ? { 'aria-current': 'page' } : {})}
+            className={`ox-tab${isCart ? ' is-active' : ''}`}
+            {...(isCart ? { 'aria-current': 'page' } : {})}
           >
             <span className="ox-tab__icon">
-              <i className="sicon-shopping-bag" aria-hidden="true" />
+              {/* DRAWN, not `sicon-shopping-bag`: that glyph is not in the
+                  loaded face, so the browser falls through to an emoji font
+                  and paints a colour bag beside four monochrome tabs
+                  (MainBar.tsx has the full measurement). This is the same
+                  `<Icon name="cart" />` the main bar and the mobile header
+                  already use, so one glyph serves all three. */}
+              <Icon name="cart" size={20} />
               <CountPill count={cartCount ?? 0} />
             </span>
             <span className="ox-tab__label">{t('ox.header.cart')}</span>
@@ -140,8 +164,8 @@ export function BottomTabBar() {
         <li>
           <Link
             to="/account/profile"
-            className={`ox-tab${current('/account') ? ' is-active' : ''}`}
-            {...(current('/account') ? { 'aria-current': 'page' } : {})}
+            className={`ox-tab${isAccount ? ' is-active' : ''}`}
+            {...(isAccount ? { 'aria-current': 'page' } : {})}
           >
             <i className="sicon-user" aria-hidden="true" />
             <span className="ox-tab__label">{t('ox.nav.account')}</span>

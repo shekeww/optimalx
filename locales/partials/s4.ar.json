@@ -1,0 +1,7 @@
+{
+  "ox.listing.featured_prev": "المنتجات السابقة",
+  "ox.listing.featured_next": "المنتجات التالية",
+  "ox.listing.featured_slide_label": "المنتج {{index}} من {{total}}",
+  "ox.listing.featured_carousel_role": "عرض دائري",
+  "ox.listing.featured_slide_role": "شريحة"
+}

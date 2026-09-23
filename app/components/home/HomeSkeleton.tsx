@@ -163,17 +163,17 @@ export function BrandsSkeleton() {
 }
 
 /**
- * The advisory row is three dark cards on the light ground now, not a dark
- * band, so the placeholder is a heading bar on the page ground with three
- * dark blocks under it. A near-black rectangle where a light section is about
- * to land is a flash, and so is the reverse.
+ * The advisory band is TWO ROWS of three now (owner review 2026-09-23
+ * (late), item 3: the three channels rejoin the three plan doors), so the
+ * placeholder reserves six dark blocks, not three, matching the six real
+ * cards `OxServices` mounts underneath it.
  */
 export function ServicesSkeleton() {
   return (
     <BlockSkeleton path="ox-services" className="ox-skel-services">
       <SkeletonBar width="30%" />
       <div className="ox-skel-grid ox-skel-grid--channels">
-        {rows(3).map((index) => (
+        {rows(6).map((index) => (
           <SkeletonBlock key={index} height="100%" className="ox-skel-dark" />
         ))}
       </div>

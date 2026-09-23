@@ -1885,9 +1885,11 @@ body.ox-account {
 
   // THE TWO BRAND BUTTONS, in the toast as everywhere else. They had the right
   // fills and the wrong everything else: a rounded rectangle at the inherited
-  // label size, which on an accent fill is white under 4.5:1. The toast is the
-  // moment a shopper decides between "go to the cart" and "keep looking", so
-  // it gets the same pair of buttons as the page that sent them here.
+  // label size. `ox-primary-face` now labels its fill in ink (owner review,
+  // 2026-09-23, item 2; DIRECTION 2.2), which clears 4.5:1 regardless. The
+  // toast is the moment a shopper decides between "go to the cart" and "keep
+  // looking", so it gets the same pair of buttons as the page that sent them
+  // here.
   &__button {
     border-radius: 0;
     min-block-size: 44px;

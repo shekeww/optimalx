@@ -1,0 +1,7 @@
+{
+  "ox.listing.featured_prev": "Previous products",
+  "ox.listing.featured_next": "Next products",
+  "ox.listing.featured_slide_label": "Product {{index}} of {{total}}",
+  "ox.listing.featured_carousel_role": "carousel",
+  "ox.listing.featured_slide_role": "slide"
+}

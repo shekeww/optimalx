@@ -7,6 +7,7 @@ import { AnnouncementBar } from './AnnouncementBar';
 import { MainBar } from './MainBar';
 import { MobileDrawer } from './MobileDrawer';
 import { MobileHeader } from './MobileHeader';
+import { ShopSheet } from './ShopSheet';
 import { UtilityBar } from './UtilityBar';
 import { UtilityTrust } from './UtilityTrust';
 import { useHeaderHeightVar } from './useHeaderHeightVar';
@@ -25,6 +26,18 @@ export interface DrawerOpenDetail {
 export function openMobileDrawer(group: DrawerOpenDetail['group'] = 'categories') {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent<DrawerOpenDetail>(DRAWER_OPEN_EVENT, { detail: { group } }));
+}
+
+/**
+ * `تسوق` opens the catalogue sheet the same way the drawer opens: a DOM
+ * event, so `BottomTabBar` (outside the header) needs no shared state
+ * (NAV-2026-09-23 §7.1).
+ */
+export const SHOP_OPEN_EVENT = 'ox:shop-open';
+
+export function openShopSheet() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(SHOP_OPEN_EVENT));
 }
 
 const SallaAdvertisement = lazy(() =>
@@ -126,9 +139,11 @@ export function Header() {
   const leafRouteId = useLeafRouteId();
   const [menuOpen, setMenuOpen] = useState(false);
   const [group, setGroup] = useState<'goals' | 'categories'>('goals');
+  const [shopOpen, setShopOpen] = useState(false);
   const adSlotRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const drawerId = useId();
+  const shopSheetId = useId();
 
   useHeaderHeightVar(headerRef);
 
@@ -140,6 +155,12 @@ export function Header() {
     };
     window.addEventListener(DRAWER_OPEN_EVENT, onOpen);
     return () => window.removeEventListener(DRAWER_OPEN_EVENT, onOpen);
+  }, []);
+
+  useEffect(() => {
+    const onOpen = () => setShopOpen(true);
+    window.addEventListener(SHOP_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(SHOP_OPEN_EVENT, onOpen);
   }, []);
 
   // FIXED at every width, regardless of this setting (owner call,
@@ -199,6 +220,8 @@ export function Header() {
         initialGroup={group}
         onClose={() => setMenuOpen(false)}
       />
+
+      <ShopSheet id={shopSheetId} open={shopOpen} onClose={() => setShopOpen(false)} />
 
       <HookSlot name="header:end" />
     </header>

@@ -188,18 +188,25 @@
      store whose dashboard has not been updated yet. Do not "fix" these back
      into aliases; update both sides together instead.
 
-     Contrast, remeasured against the lighter ground: white on #F54915 is
-     3.59:1, so an accent fill carries a label only at 19px/700 and above,
-     which is what .ox-btn--primary is. #F54915 on paper is 3.44:1, fine for
-     the large bold price and not for small text; small accent text uses
+     Contrast (owner review, 2026-09-23, item 2 — DIRECTION 2.2 mandates ink
+     on accent, superseding the "white label, size floor" reading below):
+     white on #F54915 measures 3.59:1, which clears AA only as large text
+     (>=18.67px bold) — the shipped global primary label (0.9 x 19px =
+     17.1px, --ox-btn-primary-size) sits under that floor, so a white label on
+     this fill fails AA at the size the site actually ships. --ox-on-accent is
+     --ox-ink (#12171E) instead: ink on #F54915 measures 5.01:1, which clears
+     AA at any size or weight, so no accent-filled control needs a label-size
+     exemption to stay legal. #F54915 on paper is 3.44:1, fine for the large
+     bold price and not for small text; small accent text uses
      --ox-accent-dark, which is 4.59:1 on paper and so clears AA for body
      copy, with less headroom than it had on the cream. */
   /* ONE ORANGE. #F54915 is the logo's, and it is the only fill any solid call
      to action on this site draws — the hero's, the card's, the cart's. A
      button that could not carry a label at this fill was briefly darkened
      instead; that is no longer allowed, because a second orange on a repeated
-     button reads as a second brand. The LABEL yields to the fill: 19px/700 is
-     the floor, and a cell too narrow for it drops its glyph, not its type. */
+     button reads as a second brand. INK ON ACCENT (owner review, 2026-09-23,
+     item 2) is what actually keeps the label legal now — see --ox-on-accent
+     below — not a size floor on the fill. */
   --ox-accent: #F54915;
   /* The darker steps are for TEXT and for HOVER, never for a resting fill.
      --ox-accent-dark is 4.59:1 on paper, so it is what small accent text uses
@@ -210,7 +217,22 @@
   --ox-accent-light: #F98A6B;
   --ox-accent-rgb: 245, 73, 21;
   --ox-accent-soft: #FDEEE8;
-  --ox-on-accent: #FFFFFF;
+  /* INK ON ACCENT (owner review, 2026-09-23, item 2; DIRECTION 2.2): #12171E
+     on #F54915 measures 5.01:1, clearing AA (4.5:1) at any size or weight;
+     white on the same fill is 3.59:1, large-text only. var(--ox-ink) rather
+     than a literal: this token is ours, never touched by applyTheme(), so
+     the two names stay one source. Every accent-filled label and icon in the
+     theme (the primary button face, the card/PDP/sticky buy-now, the cart
+     count pill, the nutrition "more" dot) reads this token, so the fix is
+     total from here. */
+  /* Owner override, 2026-09-23 03:30 (screenshot of the 404 CTA in ink):
+     "the orange CTA is the global primary button", meaning the brand look,
+     white on #F54915, on every primary control. Recorded contrast: 3.59:1,
+     which passes only as large text (18.67px bold and up); the 0.9 primary
+     label (17.1px) is therefore an owner-accepted deviation from DIRECTION
+     2.2 and WCAG AA for normal text, not an oversight. The ink alternative
+     (var(--ox-ink), 5.01:1) stays one edit away on this line. */
+  --ox-on-accent: #ffffff;
 
   /* ---------- Ours: ground and surfaces ----------
      The ground is light and close to neutral, by owner decision.

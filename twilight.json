@@ -318,6 +318,16 @@
       "description": null
     },
     {
+      "id": "show_offers_nav",
+      "type": "boolean",
+      "format": "switch",
+      "label": "إظهار العروض في القائمة الرئيسية",
+      "label_en": "Show offers in the main navigation",
+      "icon": "sicon-toggle-off",
+      "value": true,
+      "description": "أوقف الخيار إذا لم يوجد عرض فعلي حاليا"
+    },
+    {
       "id": "branch_map_url",
       "type": "string",
       "format": "text",

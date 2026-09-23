@@ -51,10 +51,15 @@ const HOST = arg('host', '127.0.0.1');
  * categories. It is a switch, not a default: nothing else about the snapshot
  * changes, and the honest-empty behaviour is one unset variable away.
  *
- * `fixtures/store/overlay/brands.json` (S2e, 2026-09-22) joined the same
- * switch: the live store also has zero brands, so four sample rows there let
- * `OxBrands` be seen locally the same way the overlay categories let the
- * category pages be seen (see `docs/build/offline-preview.md`).
+ * `fixtures/store/overlay/brands.json` (S2e, 2026-09-22; derived from the
+ * live catalogue on 2026-09-23, owner review item 4 — 21 real supplier
+ * brands, `docs/build/progress/S4a.md` has the full mapping) joined the same
+ * switch: the live store also has zero brands, so this snapshot lets
+ * `OxBrands` and `/brands` be seen locally the same way the overlay
+ * categories let the category pages be seen (see
+ * `docs/build/offline-preview.md`). `overlay/brand-membership.json` is the
+ * brand-id -> product-id map that `--source=brands` filters against, the
+ * same mechanism `overlay/membership.json` already gives categories.
  */
 const OVERLAY = process.env.OFFLINE_TAXONOMY === '1';
 const OVERLAY_DIR = join(SNAPSHOT, 'overlay');
@@ -97,6 +102,24 @@ function flattenCategories(list) {
 }
 
 /**
+ * The real Salla `/brands` endpoint returns brands GROUPED BY FIRST LETTER
+ * (`{[char]: Brand[]}`, confirmed against `@salla.sa/twilight-theme-engine`'s
+ * own `routes/brands.js`: the loader treats `brand.list()`'s data as already
+ * keyed by letter and only sorts the keys). Grouped here by `ar_char` (the
+ * storefront's default direction) rather than served as a flat array, so the
+ * offline preview matches that contract instead of relying on the accident
+ * that `Object.values([...]).flat()` happens to still work on a flat array.
+ */
+function groupBrandsByChar(list) {
+  const groups = {};
+  for (const item of list ?? []) {
+    const char = item.ar_char || item.en_char || '#';
+    (groups[char] ??= []).push(item);
+  }
+  return groups;
+}
+
+/**
  * The PLATFORM string bundle the engine reads, which is NOT the same thing as
  * the theme's own `locales/`.
  *
@@ -135,6 +158,8 @@ const snapshot = {
   menus: loadTaxonomy('menus.json', { header: [], footer: [] }),
   /** Overlay category id -> product ids; empty unless OFFLINE_TAXONOMY=1. */
   membership: OVERLAY ? loadTaxonomy('membership.json', {}) : {},
+  /** Overlay brand id -> product ids; empty unless OFFLINE_TAXONOMY=1. */
+  brandMembership: OVERLAY ? loadTaxonomy('brand-membership.json', {}) : {},
   home: load('home-components.json', []),
   apps: load('apps.json', { snippets: [], settings: { apps: {} } }),
   translations: platformStrings(),
@@ -168,6 +193,13 @@ function selectProducts(source, values, keyword) {
       if (!OVERLAY) return [];
       const wanted = new Set(
         values.flatMap((id) => snapshot.membership[String(id)] ?? []).map(String)
+      );
+      return all.filter((p) => wanted.has(String(p.id)));
+    }
+    case 'brands': {
+      if (!OVERLAY) return [];
+      const wanted = new Set(
+        values.flatMap((id) => snapshot.brandMembership[String(id)] ?? []).map(String)
       );
       return all.filter((p) => wanted.has(String(p.id)));
     }
@@ -279,7 +311,12 @@ function route(pathname, url) {
   }
 
   if (seg[0] === 'brands') {
-    if (seg.length === 1) return { body: ok(snapshot.brands), note: 'store has ZERO brands' };
+    if (seg.length === 1) {
+      const emptyNote = OVERLAY
+        ? `${snapshot.brands.length} overlay brands (OFFLINE_TAXONOMY=1)`
+        : 'store has ZERO brands';
+      return { body: ok(groupBrandsByChar(snapshot.brands)), note: emptyNote };
+    }
     const found = snapshot.brands.find((b) => String(b.id) === String(seg[1]));
     return found
       ? { body: ok(found), note: `brand ${seg[1]}` }

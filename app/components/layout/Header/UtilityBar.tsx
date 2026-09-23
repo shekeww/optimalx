@@ -1,11 +1,18 @@
+import { Link } from '@salla.sa/twilight-theme-engine/common';
+import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { ContactAffordance } from './ContactAffordance';
 import { CountryControl } from './CountryControl';
 import { UtilityTrust } from './UtilityTrust';
 
 /**
- * The utility strip above the header: contact at the inline-start, the three
- * trust items centred, the country control at the inline-end, on the same
- * near-black as the header so the two read as one band.
+ * The utility strip above the header: the branch link then the WhatsApp
+ * affordance at the inline-start, the three trust items centred, the country
+ * control at the inline-end, on the same near-black as the header so the two
+ * read as one band.
+ *
+ * The branch moved here from `المزيد` (NAV-2026-09-23 §4.2): it is the
+ * store's one physical proof and it was three taps away. It is a standing
+ * route, so unlike the WhatsApp affordance it is never gated.
  *
  * The bar always renders. The old rule ("hide the whole strip when the
  * merchant has written no promise") went with the promise line: the three
@@ -17,10 +24,15 @@ import { UtilityTrust } from './UtilityTrust';
  * the header as a snap scroller (see `Header`).
  */
 export function UtilityBar() {
+  const { t } = useTranslation();
   return (
     <div className="ox-utility" data-testid="ox-utility-bar">
       <div className="ox-utility__inner ox-container">
         <div className="ox-utility__start">
+          <Link to="/branch" className="ox-util__branch" data-testid="ox-utility-branch">
+            <i className="sicon-store" aria-hidden="true" />
+            <span>{t('ox.nav.branch')}</span>
+          </Link>
           <ContactAffordance />
         </div>
         <UtilityTrust />

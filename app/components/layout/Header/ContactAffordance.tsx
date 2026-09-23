@@ -41,7 +41,12 @@ export function ContactAffordance({ className }: ContactAffordanceProps) {
       data-testid="ox-utility-contact"
     >
       <Icon name="whatsapp" size={16} />
-      <span>{t('ox.header.contact_us')}</span>
+      {/* واتساب, not تواصل معنا (NAV-2026-09-23 §4.2, §9): the footer's own
+          تواصل معنا already points at `/contact`, and two anchors on one
+          route sharing that exact text while pointing at two different URLs
+          (this one goes to wa.me) is the duplicate-link-text defect §9
+          names. */}
+      <span>{t('ox.footer.whatsapp')}</span>
     </a>
   );
 }

@@ -1,0 +1,14 @@
+{
+  "ox.nav.shop": "تسوق",
+  "ox.nav.shop_sheet_label": "تسوق حسب النوع أو الهدف",
+  "ox.nav.by_type": "حسب النوع",
+  "ox.nav.by_goal": "حسب الهدف",
+  "ox.nav.other_categories": "أقسام أخرى",
+  "ox.nav.all_types": "كل الأنواع",
+  "ox.nav.all_brands": "كل العلامات التجارية",
+  "ox.nav.promo_label": "مختار لك",
+  "ox.nav.mega_label": "قائمة التسوق",
+  "ox.nav.close_shop": "إغلاق قائمة التسوق",
+  "ox.card.limited_qty": "كمية محدودة",
+  "ox.card.unavailable": "غير متوفر"
+}

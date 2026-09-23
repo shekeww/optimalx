@@ -29,13 +29,19 @@ export interface NavEntry {
   /** A store contact channel rather than a page. */
   kind?: 'whatsapp';
   /**
-   * Which of `NavBar`'s taxonomy dropdowns this item opens, if any:
-   * `products` (goals column + types column + "كل المنتجات"), `types` (the
-   * ten type roots, protein expandable), `protein` (protein's five
-   * children) or `more` (the four utility categories plus the standing
-   * pages). An entry with no `dropdown` is a plain link.
+   * Which of `NavBar`'s panels this item opens, if any: `mega` (the one
+   * catalogue mega panel, NAV-2026-09-23 §5) or `more` (the shelf: the
+   * utility-folded items plus `MORE_NAV`'s standing pages). An entry with no
+   * `dropdown` is a plain link.
    */
-  dropdown?: 'products' | 'types' | 'protein' | 'more';
+  dropdown?: 'mega' | 'more';
+  /**
+   * Never folded into the automatic overflow as the row narrows
+   * (NAV-2026-09-23 §1.4): `shop` and `services` are the store's two
+   * shopping pillars, and letting either disappear first is the defect this
+   * spec removes. `fitCount`/`computeFold` skip a pinned item entirely.
+   */
+  pin?: true;
 }
 
 export interface FooterColumn {
@@ -45,42 +51,40 @@ export interface FooterColumn {
 }
 
 /**
- * The header row, in order from the RTL start: products, supplements,
- * protein, the advisory, more. Five items, taxonomy-built (PLAN-ship §1 item
- * 5, Batch S1 step 3), replacing the fixed `supplements`/`meal-plans` slugs
- * that pointed at categories the taxonomy never named.
+ * The header row, in order from the RTL start: shop, offers, brands, the
+ * advisory, guides, more (NAV-2026-09-23 §1). Six items, one axis of entry
+ * per slot, replacing the five-item row that put three doors
+ * (المنتجات/المكملات/البروتين) into the one catalogue and carried no offers,
+ * no brands and no goals.
  *
- * `المنتجات` opens the mega panel (goals column + types column + "كل
- * المنتجات") and falls back to its own `to` when `show_goal_nav` is off, so
- * the merchant's opt-in still governs whether a full panel or a plain link
- * sits first (PLAN-ship keeps this gating; only what it toggles changed).
- * `المكملات` opens a dropdown of the ten type roots, protein expandable to
- * its five children. `البروتين` is a live link with its own five-child
- * dropdown. `اسأل قبل أن تشتري` is the advisory, unchanged in position and
- * wording (PLAN-final: keeping it fourth, beside the shopping pillars, is
- * what makes it visible at the commonest desktop width; see NavBar.tsx for
- * the measured widths this row is sized against). `المزيد` opens the four
- * utility categories plus the standing pages this row has no room for
- * (guides, the branch, about, contact): it replaces `meal-plans` (removed,
- * conductor §5 decision: the label contradicted the services disclaimer)
- * and the old trailing `about-brand` link.
+ * `تسوق` is the one mega panel trigger (types column + goals column + the
+ * promoted tile) and keeps a real `to` (`/categories`) so a keyboard or no-JS
+ * visitor still reaches the index. `العروض` is gated on
+ * `settings.show_offers_nav !== false` by `NavBar` itself (a header item that
+ * appears after hydration shifts the row, so the gate has to run before this
+ * array is read, not inside it). `العلامات التجارية` and `الأدلة` are never
+ * gated. `تسوق` and `اسأل قبل أن تشتري` are `pin`ned: the row's own
+ * arithmetic (NavBar.tsx) folds `الأدلة` first, then `العلامات التجارية`,
+ * then `العروض`, into `المزيد` as the viewport narrows, but the two shopping
+ * pillars never fold.
  */
 export const HEADER_NAV: NavEntry[] = [
-  { key: 'products', labelKey: 'ox.nav.products', to: '/latest-products', dropdown: 'products' },
-  { key: 'supplements', labelKey: 'ox.nav.supplements', to: '/categories', dropdown: 'types' },
-  { key: 'protein', labelKey: 'ox.nav.protein', slug: 'protein', dropdown: 'protein' },
-  { key: 'services', labelKey: 'ox.nav.services', to: '/services' },
+  { key: 'shop', labelKey: 'ox.nav.shop', to: '/categories', dropdown: 'mega', pin: true },
+  { key: 'offers', labelKey: 'ox.nav.offers', to: '/offers' },
+  { key: 'brands', labelKey: 'ox.nav.brands', to: '/brands' },
+  { key: 'services', labelKey: 'ox.nav.services', to: '/services', pin: true },
+  { key: 'guides', labelKey: 'ox.nav.guides', to: '/blog' },
   { key: 'more', labelKey: 'ox.nav.more', dropdown: 'more' },
 ];
 
 /**
- * The standing pages the desktop `more` dropdown and the mobile drawer both
- * list, guides before the utility categories reach them their own row. About
- * moved here from the old trailing `about-brand` header item; the two
- * surfaces publish one site map, so an entry added here reaches both.
+ * The three standing pages the desktop `more` dropdown and the mobile
+ * drawer's own `المزيد` accordion both list (NAV-2026-09-23 §6.1). The
+ * branch also gets its own link in the utility strip (`UtilityBar`), which
+ * is three taps closer on desktop; it stays here too because the drawer has
+ * no utility strip of its own.
  */
-export const SECONDARY_NAV: NavEntry[] = [
-  { key: 'guides', labelKey: 'ox.nav.guides', to: '/blog' },
+export const MORE_NAV: NavEntry[] = [
   { key: 'about-brand', labelKey: 'ox.nav.about_brand', to: '/about' },
   { key: 'branch', labelKey: 'ox.nav.branch', to: '/branch' },
   { key: 'contact', labelKey: 'ox.nav.contact', to: '/contact' },

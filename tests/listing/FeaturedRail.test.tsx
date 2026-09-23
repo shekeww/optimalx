@@ -1,15 +1,16 @@
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 
 /**
  * The first row of every type and goal category listing (owner amendment
- * 2026-09-22, "New: S2d"): a horizontal snap scroller of featured products,
- * hidden below two products, `role="list"`, keyboard reachable through the
- * card's own link, and priced through `Price` rather than a hand-formatted
- * number.
+ * 2026-09-22, "New: S2d"; rebuilt into a cover carousel, owner item
+ * 2026-09-23): a scroll-snap carousel of featured products, hidden below two
+ * products, `role="list"` with carousel/slide `aria-roledescription`s,
+ * keyboard reachable through the card's own link and the prev/next buttons,
+ * and priced through `Price` rather than a hand-formatted number.
  */
 
 vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
@@ -18,7 +19,17 @@ vi.mock('@salla.sa/twilight-theme-engine/i18n', async () =>
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
-  Image: ({ alt, src }: { alt: string; src?: string }) => <img alt={alt} src={src} />,
+  Image: ({
+    alt,
+    src,
+    priority,
+    className,
+  }: {
+    alt: string;
+    src?: string;
+    priority?: boolean;
+    className?: string;
+  }) => <img alt={alt} src={src} className={className} data-loading={priority ? 'eager' : 'lazy'} />,
 }));
 // Mirrors the engine's own SAR rendering (tests/common/primitives.test.tsx).
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
@@ -104,6 +115,67 @@ describe('FeaturedRail', () => {
     const heading = container.querySelector('#listing-featured-title');
     expect(section.getAttribute('aria-labelledby')).toBe('listing-featured-title');
     expect(heading?.textContent).toBe(t('ox.listing.featured_title'));
+  });
+
+  it('marks the first two cover images eager and the rest lazy', () => {
+    const products = Array.from({ length: 4 }, (unused, i) => product(i + 1));
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    const images = container.querySelectorAll('.ox-featured__img');
+    expect(images).toHaveLength(4);
+    expect([...images].map((img) => img.getAttribute('data-loading'))).toEqual([
+      'eager',
+      'eager',
+      'lazy',
+      'lazy',
+    ]);
+  });
+});
+
+describe('FeaturedRail carousel', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('carries carousel semantics: a roledescription on the row and a position label on every slide', () => {
+    const products = Array.from({ length: 3 }, (unused, i) => product(i + 1));
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    const row = container.querySelector('.ox-featured__row') as HTMLElement;
+    expect(row.getAttribute('aria-roledescription')).toBe(t('ox.listing.featured_carousel_role'));
+    const items = container.querySelectorAll('.ox-featured__item');
+    expect(items).toHaveLength(3);
+    expect(items[0].getAttribute('aria-roledescription')).toBe(t('ox.listing.featured_slide_role'));
+    expect(items[0].getAttribute('aria-label')).toBe(
+      t('ox.listing.featured_slide_label', { index: 1, total: 3 })
+    );
+    expect(items[2].getAttribute('aria-label')).toBe(
+      t('ox.listing.featured_slide_label', { index: 3, total: 3 })
+    );
+  });
+
+  it('hides the prev/next controls once two covers already show everything', () => {
+    const products = Array.from({ length: 2 }, (unused, i) => product(i + 1));
+    renderWithProviders(<FeaturedRail products={products} />);
+    expect(screen.queryByRole('button', { name: t('ox.listing.featured_next') })).toBeNull();
+    expect(screen.queryByRole('button', { name: t('ox.listing.featured_prev') })).toBeNull();
+  });
+
+  it('shows prev/next once there are more covers than fit two-up, prev disabled at the start', () => {
+    const products = Array.from({ length: 6 }, (unused, i) => product(i + 1));
+    renderWithProviders(<FeaturedRail products={products} />);
+    const prev = screen.getByRole('button', { name: t('ox.listing.featured_prev') }) as HTMLButtonElement;
+    const next = screen.getByRole('button', { name: t('ox.listing.featured_next') }) as HTMLButtonElement;
+    expect(prev.disabled).toBe(true);
+    expect(next.disabled).toBe(false);
+  });
+
+  it('next scrolls the carousel forward by two covers and re-enables prev', () => {
+    const products = Array.from({ length: 6 }, (unused, i) => product(i + 1));
+    renderWithProviders(<FeaturedRail products={products} />);
+    const next = screen.getByRole('button', { name: t('ox.listing.featured_next') });
+    fireEvent.click(next);
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+    const prev = screen.getByRole('button', { name: t('ox.listing.featured_prev') }) as HTMLButtonElement;
+    expect(prev.disabled).toBe(false);
   });
 });
 

@@ -34,10 +34,15 @@
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
   border-radius: var(--ox-r-4, 16px);
-  transition: transform var(--dur-fast) var(--ease-out);
+  // CARD-2026-09-23 section 7/S3c finding 6: no lift, no scale, no shadow.
+  // The border colour is what moves on hover, and the second product image
+  // (`.ox-card-product__img--hover`) is the real payload; a translateY on
+  // every card in a grid is a named template tell BUILD 3.4 and DIRECTION 5's
+  // card default both rule out.
+  transition: border-color var(--dur-fast) var(--ease-out);
 
   &:hover {
-    transform: translateY(-2px);
+    border-color: var(--ox-bd-2);
   }
 }
 
@@ -91,10 +96,12 @@
   transition: opacity var(--dur-fast) var(--ease-out);
 }
 
-@media (hover: hover) {
-  .ox-card-product:hover .ox-card-product__img--hover {
-    opacity: 1;
-  }
+// No `@media (hover: hover)` guard here any more (CARD-2026-09-23 section 11):
+// `useHoverCapable()` already gates whether this element mounts at all, off
+// the same query, so a touch pointer never has it in the DOM to transition in
+// the first place.
+.ox-card-product:hover .ox-card-product__img--hover {
+  opacity: 1;
 }
 
 .ox-card-product__badges {
@@ -134,6 +141,7 @@
 .ox-card-product__body {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   gap: var(--ox-2);
 }
 
@@ -182,13 +190,17 @@
   }
 }
 
+// The spec line (CARD-2026-09-23 section 3.4): 13/600, --ox-ink-4 (4.93:1 on
+// --ox-card, clears AA so it may carry information). --ox-w-ui rather than
+// the quieter --ox-w-quiet this rule carried for the old merchant pitch line,
+// which read as a caption rather than a fact.
 .ox-card-product__chips {
   display: block;
   min-block-size: 18px;
   margin: 0;
   overflow: hidden;
   font-size: 13px;
-  font-weight: var(--ox-w-quiet);
+  font-weight: var(--ox-w-ui);
   line-height: 18px;
   color: var(--ox-ink-4);
   white-space: nowrap;
@@ -212,6 +224,11 @@
   position: relative;
   z-index: 2;
   min-block-size: 44px;
+  // DIRECTION 4.4's equal-height mechanism: the body now grows to fill a
+  // stretched card (see `.ox-card-product__body`'s own `flex`), and this
+  // pushes to the bottom of it, so an optional row above (the brand line)
+  // changing a card's own content height never moves where the buttons sit.
+  margin-block-start: auto;
 }
 
 .ox-card-product__add {
@@ -226,6 +243,24 @@
 
 .ox-card-product.is-out .ox-card-product__plate {
   opacity: 0.72;
+}
+
+// Equal height in a mixed row (CARD-2026-09-23 section 5, DIRECTION 4.4): a
+// sold-out card drops the variant chips row and the quantity row entirely
+// rather than merely emptying them, which would make it 92px shorter than an
+// in-stock neighbour on the same row. The body reserves the live card's own
+// height instead — 252 at 390 (title 44 + spec 18 + price 30 + chips 32 +
+// gaps + the one 44px control), 260 from 1024 up (title 46) — and the notify
+// control keeps `margin-block-start: auto` (`_b4-listing.scss`) to sit flush
+// with the bottom regardless.
+.ox-card-product.is-out .ox-card-product__body {
+  min-block-size: 252px;
+}
+
+@media (min-width: 1024px) {
+  .ox-card-product.is-out .ox-card-product__body {
+    min-block-size: 260px;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1281,10 +1316,11 @@
   // it, so it takes the mixin instead. Same fill, same weight, same hover,
   // same 22 degrees. One definition; the two can no longer drift.
   //
-  // 19px is the floor for white on `--ox-accent`, and this button is the one
-  // place on the site with room to spare for it. The clip removes the border
-  // on the cut edges, which costs nothing on a filled button, and the run is
-  // 21px at 52 tall, so the padding carries it plus breathing room.
+  // Ink on `--ox-accent` (owner review, 2026-09-23, item 2; DIRECTION 2.2)
+  // clears AA at any size, so 19px here is a sizing choice, not a contrast
+  // floor. The clip removes the border on the cut edges, which costs nothing
+  // on a filled button, and the run is 21px at 52 tall, so the padding
+  // carries it plus breathing room.
   // THE BUY ZONE IS A PAIR NOW, and the pair is the hero's pair. The hero sets
   // a primary and a secondary CTA side by side; the product card carries the
   // same two; this page carried only one, so a shopper who had already decided
@@ -2989,10 +3025,10 @@ label.ox-fbt__row {
 // reports success, so Salla keeps owning the quantity, the options, the
 // validation and the toast (CLAUDE.md: cart logic stays Salla's).
 //
-// 19px is the floor for white on `--ox-accent`, not a preference: the pairing
-// measures 3.59:1, which clears the contrast floor only as large text, and
-// large text means 14pt bold — 18.67px. This button has the room, so unlike
-// the card's CTA it keeps the legal size.
+// Ink on `--ox-accent` (owner review, 2026-09-23, item 2; DIRECTION 2.2)
+// measures 5.01:1, clearing AA at any size or weight — white on the same
+// fill was 3.59:1, legal only as large text (≥18.67px bold). 19px here is
+// this button's own sizing choice, not a contrast requirement any more.
 // ---------------------------------------------------------------------------
 .ox-buy__actions {
   display: flex;

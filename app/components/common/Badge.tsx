@@ -3,9 +3,11 @@ import type { HTMLAttributes } from 'react';
 /**
  * The colour pairs from DIRECTION 5.3 ProductCard: graphite for real
  * popularity data, an outlined card for "new", go for savings, note for low
- * stock and expiry, stop for out of stock. Never orange, never a shadow.
+ * stock and expiry, stop for out of stock, and the same outline for `tag`
+ * (CARD-2026-09-23 section 6.2: a real dietary tag off the product's own
+ * Salla tags, never inferred). Never orange, never a shadow.
  */
-export type BadgeTone = 'popular' | 'new' | 'saving' | 'note' | 'stop' | 'neutral';
+export type BadgeTone = 'popular' | 'new' | 'saving' | 'note' | 'stop' | 'neutral' | 'tag';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
