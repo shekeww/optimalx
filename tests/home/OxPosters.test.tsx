@@ -145,8 +145,8 @@ describe('OxPosters, one rail of both kinds, alternating (S8a)', () => {
   });
 });
 
-describe('OxPosters, six offer posters, unavailable by default (no files on disk yet)', () => {
-  it('renders every offer as the tinted placeholder with the alt as a caption', () => {
+describe('OxPosters, six offer posters, available since the owner\'s files landed (2026-09-24)', () => {
+  it('renders every offer as its photograph with the alt text, never a placeholder', () => {
     const { container } = renderWithProviders(<OxPosters data={data()} />);
     const offers = screen
       .getAllByTestId('ox-poster-card')
@@ -155,12 +155,14 @@ describe('OxPosters, six offer posters, unavailable by default (no files on disk
       POSTER_CARDS.map((card) => card.slug)
     );
 
-    // Every entry is `available: false` today: the placeholder plate, never
-    // a broken `<img>`.
-    expect(container.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(POSTER_CARDS.length);
-    expect(container.querySelectorAll('.ox-pcard__photo')).toHaveLength(0);
+    // Every entry is `available: true` since scripts/posters-import.mjs ran on
+    // the owner's six files (2026-09-24): the photograph with its alt text,
+    // never the placeholder plate.
+    expect(container.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(0);
+    const photos = container.querySelectorAll('.ox-pcard__photo');
+    expect(photos).toHaveLength(POSTER_CARDS.length);
     for (const card of POSTER_CARDS) {
-      expect(screen.getByText(ar[card.altKey])).toBeTruthy();
+      expect(screen.getByAltText(ar[card.altKey])).toBeTruthy();
     }
   });
 
@@ -224,7 +226,9 @@ describe('OxPosters, merchant field overrides (twilight.json home.ox-posters)', 
     const img = first.querySelector('.ox-pcard__photo') as HTMLImageElement;
     expect(img.getAttribute('src')).toBe('/assets/posters/owner-upload.webp');
     expect(img.getAttribute('alt')).toBe('نص بديل من لوحة التحكم');
-    expect(container.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(POSTER_CARDS.length - 1);
+    // The other five render their own imported photographs.
+    expect(container.querySelectorAll('.ox-pcard__placeholder')).toHaveLength(0);
+    expect(container.querySelectorAll('.ox-pcard__photo')).toHaveLength(POSTER_CARDS.length);
   });
 
   it('overrides the section title from label/label_en, per the active locale', () => {
@@ -276,7 +280,9 @@ describe('OxPosters, the carousel on the rail primitive (S5a) and the sprite ico
   it('loads the first two slides eagerly and the rest lazily (the second offer is the third slide)', () => {
     const { container } = renderWithProviders(<OxPosters data={data({ image_1: '/x.webp', image_2: '/y.webp' })} />);
     const images = container.querySelectorAll('.ox-pcard__photo');
-    expect(images).toHaveLength(2);
+    // All six offers carry a photograph now; the content cards between them
+    // draw theirs through BandPhoto, so only the offers are counted here.
+    expect(images).toHaveLength(POSTER_CARDS.length);
     expect(images[0].getAttribute('loading')).toBe('eager');
     expect(images[1].getAttribute('loading')).toBe('lazy');
   });
