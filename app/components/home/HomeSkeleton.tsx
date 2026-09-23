@@ -156,9 +156,11 @@ export function PostersSkeleton() {
 }
 
 export function BrandsSkeleton() {
-  // Null, not a placeholder: the store has zero brands, so `OxBrands` renders nothing today,
-  // and its row reserves 0. A skeleton here would promise content that
-  // never arrives and then collapse (tests/home/optionalBlocks.test.ts).
+  // Still null after the hierarchy move next to `ox-categories` (owner brief
+  // 2026-09-24, item 1(d)): the store has zero brands, so `OxBrands` renders
+  // nothing today, and its row reserves 0. A skeleton here would promise
+  // content that never arrives and then collapse
+  // (tests/home/optionalBlocks.test.ts).
   return null;
 }
 
@@ -231,20 +233,40 @@ export function FaqSkeleton() {
 }
 
 /**
- * The two optional blocks draw no placeholder.
+ * `ox-banner` draws no placeholder.
  *
- * A skeleton is a promise that something is about to land there. Both of these
- * render null until the merchant turns them on, so the promise was false: the
- * pair put 588px of grey above the footer on a phone and then took it away on
- * scroll. Drawing nothing is the honest placeholder for a block that may well
- * be nothing, and it matches the 0 their rows now reserve.
+ * A skeleton is a promise that something is about to land there. This block
+ * renders null until the merchant uploads an image, so the promise was
+ * false: it used to put grey above the footer on a phone and then take it
+ * away on scroll. Drawing nothing is the honest placeholder for a block that
+ * may well be nothing, and it matches the 0 its row still reserves.
  */
-export function NewsletterSkeleton() {
+export function BannerSkeleton() {
   return null;
 }
 
-export function BannerSkeleton() {
-  return null;
+/**
+ * A real placeholder now (owner brief 2026-09-24, item 2): `show_newsletter`
+ * defaults to true, so this band renders on every fresh install and the
+ * "draws no placeholder" reasoning above no longer holds for it. `.ox-skel-
+ * news` was declared in `_b2-home.scss` section 12 and never used, since
+ * this function always returned null before today - exactly the shape this
+ * band needs. Two bars stand for the band's own headline and line, one block
+ * for its `/services` button, and one block for the newsletter plate as a
+ * whole (its own title, line, form and privacy line folded into one
+ * rectangle - the placeholder does not have to draw every line inside it to
+ * reserve the right total height; `HOME_BLOCK_HEIGHTS['ox-newsletter']`
+ * already sets the box).
+ */
+export function NewsletterSkeleton() {
+  return (
+    <BlockSkeleton path="ox-newsletter" className="ox-skel-news">
+      <SkeletonBar width="45%" height={30} />
+      <SkeletonBar width="75%" />
+      <SkeletonBlock height={44} />
+      <SkeletonBlock height={202} />
+    </BlockSkeleton>
+  );
 }
 
 /**

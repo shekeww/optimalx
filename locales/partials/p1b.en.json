@@ -21,12 +21,12 @@
   "ox.blocks.hours.prayer_note": "We close for prayer and reopen after.",
   "ox.blocks.guide.read_time": "{{minutes}} minute read",
   "ox.blocks.guide.label": "Guide",
-  "ox.newsletter.title": "One fact a week",
+  "ox.newsletter.title": "Join the OptimalX newsletter",
   "ox.newsletter.body": "A short note about a product or a common question. No daily offers.",
   "ox.newsletter.placeholder": "Your email",
   "ox.newsletter.button": "Subscribe",
-  "ox.newsletter.success": "Subscribed. The first note reaches you next week.",
+  "ox.newsletter.success": "Subscribed. Thank you.",
   "ox.newsletter.privacy": "We use your email for this note only, and you can unsubscribe at any time.",
   "ox.newsletter.invalid": "Check the format of the email address.",
-  "ox.newsletter.error": "Your subscription did not go through on our side. Try again in a moment."
+  "ox.newsletter.error": "Could not subscribe right now, please try again."
 }

@@ -1,5 +1,4 @@
 import { Image, Link } from '@salla.sa/twilight-theme-engine/common';
-import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import type { Brand } from '@salla.sa/twilight-theme-engine/routes/brands';
 import { Bdi } from '../common/Bdi';
 import { toInternalPath } from '../layout/navLinks';
@@ -13,13 +12,18 @@ import { toInternalPath } from '../layout/navLinks';
  * `_b2-home.scss`/`_b4-listing.scss` on `.ox-brand-tile__plate` so the clip
  * never sits on the focusable element and clips its focus ring — §7.1's
  * `focus-clipped` rule), the brand's own artwork when the API carries one,
- * else the NAME MARK (first grapheme in `--ox-accent`, Cairo 700), and one
- * count line.
+ * else the NAME MARK (first grapheme in `--ox-accent`, Cairo 700). The logo
+ * field is a fixed-height box with no ground of its own (coordinator
+ * addendum, 2026-09-24: the artwork sits on the plate, transparent, never a
+ * paper or ink fill behind it); the name mark carries no box at all, only
+ * its text, centred by the plate itself.
  *
- * The count is `products_count` from the API and nothing else. It is absent
- * when the payload has no number: a brand tile never states a count the
- * store cannot stand behind (GOV-013), and never infers one from the number
- * of products that happen to be loaded on the page.
+ * NO COUNT ON THE TILE, anywhere (owner brief 2026-09-24, item 1(c)): the
+ * home carousel, the `/brands` index grid and every other surface this tile
+ * draws state a name and nothing else. `products_count` stays on
+ * `BrandWithCount` because `OxBrands` still sorts by it; the tile itself
+ * simply never reads the field. The brand's own banner (`BrandBanner.tsx`,
+ * not this component) keeps its own count.
  *
  * No hover lift (BUILD 3.4, `docs/build/progress/S3c.md` finding 6): hover
  * is a border and a plate value step, never a translate.
@@ -73,9 +77,7 @@ export interface BrandTileProps {
 }
 
 export function BrandTile({ brand, className, sizes = '208px' }: BrandTileProps) {
-  const { t } = useTranslation();
   const [first, rest] = splitMark(brand.name);
-  const count = typeof brand.products_count === 'number' ? brand.products_count : null;
 
   return (
     // toInternalPath: the API publishes this URL absolute (P0-14).
@@ -113,11 +115,6 @@ export function BrandTile({ brand, className, sizes = '208px' }: BrandTileProps)
             </Bdi>
           </span>
         )}
-        {count !== null ? (
-          <span className="ox-brand-tile__count ox-small">
-            {t('ox.brands.products_count', { count })}
-          </span>
-        ) : null}
       </span>
     </Link>
   );

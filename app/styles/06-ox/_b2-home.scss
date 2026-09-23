@@ -3804,9 +3804,40 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
   margin-block-start: var(--ox-2);
 }
 
+// The newsletter's own IDENTITY PLATE (owner brief 2026-09-24, item 2: "a
+// conversion block on the identity plate, corner cut per §3.3"): a raised
+// graphite ground on the band's dark ground with the mark's own corner cut
+// (X-IDENTITY §3.3/3.4, `ox-x-corner`) — the same construction
+// `.ox-services__offer` already carries on its OWN dark band (`--ox-graphite-3`
+// is that band's established "raised" tone too: `.ox-band-dark .ox-input`
+// already reads on it, two rules above in `_primitives.scss`, so the plate and
+// the form's own input share one ground with no new token). The plate is its
+// own component under "one angled gesture per component": the band keeps its
+// `.ox-cta-band__motif` wedge, the plate carries the cut, same as the
+// services band's motif and its offer plate coexist. Title + line + the 48px
+// form slot + the privacy line, with this padding, clears the 158px law's
+// floor (§3.2) at every width the band renders (`defaults.ts`'s own measured
+// total for the whole band has the itemisation).
 .ox-cta-band__newsletter {
-  padding: 0;
-  background: none;
+  position: relative;
+  padding: var(--ox-6);
+  background: var(--ox-graphite-3);
+  @include ox-x-corner(40px, start);
+}
+
+// The privacy line's own link (item 2), resolved by `OxCtaBand` against the
+// merchant's own footer menu and rendered only here — `blocks/ArticleExtras`
+// passes no `privacyUrl`, so the blog placement keeps its plain sentence.
+.ox-cta-band__newsletter .ox-newsletter__privacy-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .ox-cta-band__newsletter {
+    @include ox-x-corner(48px, start);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -3823,6 +3854,12 @@ $ox-strap-inv-cos34: 1.20627; // 1 / cos34
 
   .ox-cta-band__motif {
     inline-size: 220px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-cta-band__newsletter {
+    @include ox-x-corner(64px, start);
   }
 }
 

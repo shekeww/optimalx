@@ -131,6 +131,17 @@ describe('OxBrands', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(4);
   });
 
+  // Owner brief 2026-09-24, item 1(a): no section eyebrow, so the heading
+  // carries the same size and spacing as `OxCategories`' own header (neither
+  // passes one now).
+  it('carries no eyebrow above its title (hierarchy, item 1(a))', async () => {
+    for (const key of Object.keys(brandGroups)) delete brandGroups[key];
+    brandGroups.a = [{ id: '1', name: 'A', url: '/a', logo: '' }];
+    const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
+    await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
+    expect(container.querySelector('.ox-sh__eyebrow')).toBeNull();
+  });
+
   it('sorts by product count, heaviest first (owner review 2026-09-23 (late), item 4)', async () => {
     for (const key of Object.keys(brandGroups)) delete brandGroups[key];
     brandGroups.a = [
@@ -169,9 +180,11 @@ describe('OxBrands', () => {
   });
 
   // The 2026-09-23 (late) owner brief: the strip becomes a CAROUSEL of plated
-  // tiles, each stating one live count, with the shared rail primitive's cue
-  // instead of a native scrollbar.
-  it('states a count only when the API sends one, never an inferred number', async () => {
+  // tiles with the shared rail primitive's cue instead of a native scrollbar.
+  // The 2026-09-24 owner brief, item 1(c): the tile never states a count,
+  // even when the API sends one - `products_count` still drives the sort
+  // (the next test) but is never printed.
+  it('never states a count on the tile, whether or not the API sends one', async () => {
     for (const key of Object.keys(brandGroups)) delete brandGroups[key];
     brandGroups.a = [
       { id: '1', name: 'Counted', url: '/c', logo: '', products_count: 7 },
@@ -179,9 +192,7 @@ describe('OxBrands', () => {
     ];
     const { container } = renderWithProviders(<OxBrands data={data('ox-brands')} />);
     await waitFor(() => expect(screen.getByTestId('ox-brands')).toBeTruthy());
-    const counts = container.querySelectorAll('.ox-brand-tile__count');
-    expect(counts).toHaveLength(1);
-    expect(counts[0].textContent).toBe(ar['ox.brands.products_count'].replace('{{count}}', '7'));
+    expect(container.querySelectorAll('.ox-brand-tile__count')).toHaveLength(0);
   });
 
   it('is a carousel: the row and every slide say so, and each tile takes the corner-cut plate', async () => {

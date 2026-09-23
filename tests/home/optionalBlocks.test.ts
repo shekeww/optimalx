@@ -41,9 +41,14 @@ import { BLOCK_SKELETONS } from '../../app/components/home/HomeSkeleton';
  * `ox-brands` does for zero brands - and the live store has zero categories
  * today (`fixtures/store/categories.json`), so every one of the eight rail
  * instances is in that state right now.
+ *
+ * `ox-newsletter` LEFT this list on 2026-09-24 (owner brief, item 2):
+ * `show_newsletter` now defaults to true in `twilight.json`, so the CTA band
+ * (`OxCtaBand`, folding in `OxNewsletter`'s form) renders on every fresh
+ * install, the merchant switch notwithstanding, and reserves a real height
+ * again like `ox-categories` did when it left this list.
  */
 const GATED = [
-  'ox-newsletter',
   'ox-banner',
   'ox-brands',
   'ox-guides',

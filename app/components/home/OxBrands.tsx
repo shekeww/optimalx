@@ -15,11 +15,22 @@ import { useSectionReveal } from './useSectionReveal';
  * (owner brief 2026-09-23 late: "complete the design of shop by brand
  * section, carousel and page").
  *
- * What it is now: a section eyebrow, an h2, a "عرض الكل" link to `/brands`,
- * and a horizontal snap carousel of brand tiles — 2.4 visible at 390 so the
- * next tile peeks, 4 from 768, 6 from 1280, gap `--ox-4`. Each tile is
- * `BrandTile`: a plate carrying the mark's own arm-foot corner cut, the
- * brand's artwork or its NAME MARK, and one live `products_count` line.
+ * What it is now: an h2 (no eyebrow — owner brief 2026-09-24, item 1(a): the
+ * section carries the same heading weight as "تصفح حسب النوع", which a
+ * second, smaller label row above it would undercut), a "عرض الكل" link to
+ * `/brands`, and a horizontal snap carousel of brand tiles — 2.4 visible at
+ * 390 so the next tile peeks, 4 from 768, 6 from 1280, gap `--ox-4`. Each
+ * tile is `BrandTile`: a plate carrying the mark's own arm-foot corner cut
+ * and the brand's artwork or its NAME MARK — no count on the tile (item
+ * 1(c); `products_count` still drives the sort below).
+ *
+ * HIERARCHY (owner brief 2026-09-24, item 1(d)): this section is
+ * conversion-critical and is registered directly after `ox-categories` and
+ * before the first `ox-category-rail` instance in `DEFAULT_HOME_COMPONENTS`
+ * (`defaults.ts`) and in `twilight.json`'s own component order, which the
+ * two files keep in lockstep (`tests/home/defaults.test.ts`). Nothing in
+ * this component decides its own position; it renders wherever the home
+ * composition places the `ox-brands` path.
  *
  * Shown from ONE brand up (owner call, 2026-09-22): the store carries real
  * supplier brands and a single tile still reads as a real strip. Sorted by
@@ -107,7 +118,6 @@ export function OxBrands({ data }: OxBlockProps) {
       <div className="ox-container" ref={revealRef}>
         <div className="ox-brands__head">
           <SectionHeader
-            eyebrow={t('ox.home.brands_label')}
             title={t('ox.home.brands_title')}
             titleId="ox-brands-title"
             as="h2"

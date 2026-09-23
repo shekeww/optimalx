@@ -52,16 +52,21 @@ export const HOME_BLOCK_PATHS = [
   'ox-posters',
   'ox-products-secondary',
   'ox-categories',
+  // MOVED (owner brief 2026-09-24, item 1(d)): shop-by-brand is conversion-
+  // critical and now sits directly after the type grid - "which type" is
+  // answered, "which brand" follows it immediately - carrying the type
+  // section's own heading weight (no eyebrow: `OxBrands`' docblock). It used
+  // to sit after `ox-services`; the S2c reasoning right below still holds for
+  // the category rail and the advisory band, which stay adjacent to the type
+  // grid they answer.
+  'ox-brands',
   // MOVED (S2c, 2026-09-22): directly after the type grid, ahead of the
-  // brand strip - the grid asks "which one", this band answers "ask us", and
-  // the two belong next to each other more than either belongs next to the
-  // brand strip.
+  // advisory band - the grid asks "which one", this band answers "ask us".
   // One rail per type root with products (S2e, 2026-09-22): sits right after
   // the type grid it answers, one registered path drawn up to eight times in
   // `DEFAULT_HOME_COMPONENTS` below.
   'ox-category-rail',
   'ox-services',
-  'ox-brands',
   'ox-guides',
   'ox-branch',
   'ox-certifications',
@@ -168,7 +173,16 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   'ox-category-rail': { mobile: 0, desktop: 0 },
   // Both of these render nothing today and reserving for them was pure shift:
   // the store has zero brands, and the guides block has no entries. Same
-  // reasoning as the newsletter and banner rows below.
+  // reasoning as the banner row below.
+  //
+  // STILL 0/0 AFTER THE HIERARCHY MOVE (owner brief 2026-09-24, item 1(d)):
+  // `ox-brands` moved up next to `ox-categories` in `HOME_BLOCK_PATHS`, but
+  // the reason it reserves nothing has not changed - `fixtures/store/
+  // brands.json` (the live store, not the offline overlay S4d's 21 brands
+  // live in) is still `[]`, so `OxBrands` still renders null on the real
+  // storefront. Reserving here would put a blank box directly under "تصفح
+  // حسب النوع" instead of above the footer, which is a worse position for the
+  // same defect `tests/home/optionalBlocks.test.ts` exists to catch.
   'ox-brands': { mobile: 0, desktop: 0 },
   // THE OFFER FIRST (owner brief 2026-09-24, S7c). Unlike the two entries
   // above, this pair is READ OFF THE RUNNING PAGE, not derived from the
@@ -204,19 +218,39 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // resolver returns an empty list and the band renders null.
   'ox-certifications': { mobile: 0, desktop: 0 },
   'ox-faq': { mobile: 371, desktop: 439 },
-  // Both of these are off until the merchant turns them on: the newsletter
-  // behind the `show_newsletter` setting, the banner behind an uploaded image.
-  // Until then each renders null, so reserving their old 320 and 268 put 588px
-  // of grey placeholder above the footer on a phone and then collapsed it on
-  // scroll, which is the largest layout jump on the page. DIRECTION 6.2 already
-  // says the banner's row reserves 0 on both viewports; the map simply did not
-  // agree with it. A store that does turn one on takes a shift on that block
-  // instead, which is the smaller of the two costs and affects nobody today.
-  // `ox-newsletter` is the CTA band's slot too now (OxCtaBand, S2c 2026-09-22):
-  // the headline, line and CTA ship behind the same `show_newsletter` gate as
-  // the form, so this block is still fully off or fully on, never a headline
-  // with no reserved room for the form beneath it. See OxCtaBand's docblock.
-  'ox-newsletter': { mobile: 0, desktop: 0 },
+  // `ox-banner` is off until the merchant uploads an image; until then it
+  // renders null, so reserving its old 268 put grey placeholder above the
+  // footer that collapsed on scroll, which was the largest layout jump on
+  // the page before this fix. DIRECTION 6.2 already says this row reserves 0
+  // on both viewports; the map simply did not agree with it. A store that
+  // does upload one takes the shift on this block instead, the smaller of
+  // the two costs and one that affects nobody today.
+  //
+  // `ox-newsletter` LEFT THIS REASONING (owner brief 2026-09-24, item 2):
+  // `show_newsletter` now defaults to true in `twilight.json`, so the CTA
+  // band - the headline, line, CTA and the folded-in `OxNewsletter` form,
+  // one gate, `OxCtaBand`'s own docblock - renders on every fresh install,
+  // and reserving 0 here would reproduce the exact defect this comment used
+  // to describe, now on every store instead of none. Computed by token
+  // arithmetic against `_b2-home.scss`'s own spacing scale and the shipped
+  // copy's character counts (`ox.home.cta_headline`/`cta_line`,
+  // `ox.newsletter.title`/`line`/`privacy`) at 390 (container 358, column
+  // layout) and 1440 (container 1296, row layout from 1024, so the row's
+  // height is its taller child, not a sum) - NOT measured on a live rendered
+  // page (no headless-browser tool available this batch); flagged for a
+  // follow-up re-measurement once the page is checked in an actual browser.
+  //
+  // Mobile: band pad-block 96 (--ox-12 x2) + copy 138 (title 30 + gap 8 +
+  // line 48, two lines at the 358-wide column + gap 8 + the 44px /services
+  // button) + inner gap 24 (--ox-6) + the newsletter plate 250 (pad 48,
+  // --ox-6 x2 + title 30 + gap 12 + line 48, two lines at the 310-wide
+  // padded column + gap 12 + the 48px form slot + gap 12 + privacy 40, two
+  // lines with the policy link folded in) = 508.
+  // Desktop: row layout, so the band is pad-block 128 (--ox-16 x2) + the
+  // taller of the two columns - the plate at 220 (pad 48 + title 40 + gap 12
+  // + line 26 + gap 12 + slot 48 + gap 12 + privacy 22, every line single at
+  // this width) against the copy at 126 - so 128 + 220 = 348.
+  'ox-newsletter': { mobile: 508, desktop: 348 },
   'ox-banner': { mobile: 0, desktop: 0 },
 };
 

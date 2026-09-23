@@ -418,8 +418,8 @@
       "label": "إظهار نموذج النشرة البريدية",
       "label_en": "Show the newsletter form",
       "icon": "sicon-toggle-off",
-      "value": false,
-      "description": "يظهر النموذج في التذييل وصفحات المحتوى عند تفعيله"
+      "value": true,
+      "description": "مفعل افتراضيا في الصفحة الرئيسية والمقالات؛ أطفئه لإخفاء النموذج"
     },
     {
       "id": "claim_official_distributors",
@@ -1099,6 +1099,50 @@
       ]
     },
     {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d106",
+      "title": {
+        "ar": "شريط العلامات التجارية",
+        "en": "Brand strip"
+      },
+      "icon": "sicon-award-ribbon",
+      "path": "home.ox-brands",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "brands",
+          "key": "b2f1d000-0000-4000-8000-000000000018",
+          "type": "items",
+          "format": "dropdown-list",
+          "label": "العلامات التجارية",
+          "label_en": "Brands",
+          "description": "يختفي الشريط إذا قل عددها عن أربع",
+          "icon": "sicon-keyboard_arrow_down",
+          "source": "brands",
+          "multichoice": true,
+          "searchable": true,
+          "options": [],
+          "selected": [],
+          "value": [],
+          "required": false,
+          "minLength": 4,
+          "maxLength": 24
+        },
+        {
+          "id": "image",
+          "key": "b2f1d000-0000-4000-8000-000000000301",
+          "type": "string",
+          "format": "image",
+          "label": "صورة الخلفية",
+          "label_en": "Background image",
+          "description": "خلفية خفيفة خلف الشريط؛ اتركها فارغة فلا تظهر صورة",
+          "placeholder": "e.g. https://hostname.com/image.jpg",
+          "icon": "sicon-image",
+          "value": null,
+          "required": false
+        }
+      ]
+    },
+    {
       "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d10d",
       "title": {
         "ar": "شريط تصنيف",
@@ -1178,50 +1222,6 @@
           "icon": "sicon-format-text-alt",
           "value": null,
           "multilanguage": true,
-          "required": false
-        }
-      ]
-    },
-    {
-      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d106",
-      "title": {
-        "ar": "شريط العلامات التجارية",
-        "en": "Brand strip"
-      },
-      "icon": "sicon-award-ribbon",
-      "path": "home.ox-brands",
-      "is_default": true,
-      "fields": [
-        {
-          "id": "brands",
-          "key": "b2f1d000-0000-4000-8000-000000000018",
-          "type": "items",
-          "format": "dropdown-list",
-          "label": "العلامات التجارية",
-          "label_en": "Brands",
-          "description": "يختفي الشريط إذا قل عددها عن أربع",
-          "icon": "sicon-keyboard_arrow_down",
-          "source": "brands",
-          "multichoice": true,
-          "searchable": true,
-          "options": [],
-          "selected": [],
-          "value": [],
-          "required": false,
-          "minLength": 4,
-          "maxLength": 24
-        },
-        {
-          "id": "image",
-          "key": "b2f1d000-0000-4000-8000-000000000301",
-          "type": "string",
-          "format": "image",
-          "label": "صورة الخلفية",
-          "label_en": "Background image",
-          "description": "خلفية خفيفة خلف الشريط؛ اتركها فارغة فلا تظهر صورة",
-          "placeholder": "e.g. https://hostname.com/image.jpg",
-          "icon": "sicon-image",
-          "value": null,
           "required": false
         }
       ]

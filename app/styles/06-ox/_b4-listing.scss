@@ -1092,38 +1092,24 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // ONLY scaling the logo itself gets - the box never scales BY the logo's own
 // aspect ratio.
 //
-// The name-mark fallback box is IDENTICAL (owner brief 2026-09-24, item
-// 1(b), "the name-mark fallback box identical"): same padding, same
-// centering, same floor height, so a brand with no artwork sits in the same
-// box a brand with one would. The logo box's height is a hard `block-size`
-// (an image inside it is always contained, never taller than the box); the
-// mark's is a `min-block-size` instead, so the one long catalogue name that
-// wraps to three lines (`Olimp Sport Nutrition`, the narrowest tier) grows
-// its own box rather than spilling text past a fixed one - still identical
-// at every normal name length, which is every other brand in the catalogue.
-.ox-brand-tile__logobox,
-.ox-brand-tile__mark {
+// TRANSPARENT (coordinator addendum, 2026-09-24, same day): no
+// `--ox-paper`/`--ox-ink` fill and no border behind a brand's artwork,
+// anywhere this tile draws - the plate underneath is still `--ox-plate` with
+// its own hairline, so the logo simply sits on the plate rather than on a
+// second, inner ground. `logo_ground: "dark"` is not read here for the same
+// reason S4d.md §4.1 already put it: no overlay row sets it any more (the
+// two white-only marks ship in their ink variant instead), so the modifier
+// class below is declared and never matched - left in place, inert, rather
+// than deleted, in case a future asset needs it back.
+.ox-brand-tile__logobox {
   display: flex;
   align-items: center;
   justify-content: center;
   inline-size: 100%;
+  block-size: 72px;
   padding: var(--ox-3);
 }
 
-.ox-brand-tile__logobox {
-  block-size: 72px;
-  background: var(--ox-paper);
-}
-
-.ox-brand-tile__mark {
-  min-block-size: 72px;
-}
-
-// `logo_ground: "dark"` on the brand's own overlay row: the mark itself is
-// drawn in white (Optimum Nutrition and Dymatize both publish white-only
-// artwork), so the FIELD changes rather than the mark. Same box, same
-// padding, same fixed height, ink ground - the brand is shown exactly as its
-// owner draws it, and nothing is recoloured, inverted or composited.
 .ox-brand-tile__logobox--dark {
   background: var(--ox-ink);
 }
@@ -1134,11 +1120,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
   object-fit: contain;
 }
 
-// The NAME MARK's own text, inside the fixed box above: the brand's own name
-// set in the theme's title weight, its first grapheme in `--ox-accent-deep`.
-// Deep, not `--ox-accent`: this is TEXT, and X-IDENTITY §4.6 fixes the accent
-// step for accent text at #A82D07 (5.99:1 on the plate tints, where the
-// bright accent is 3.5:1 and fails AA at this size).
+// The NAME MARK keeps only its text (coordinator addendum, 2026-09-24): no
+// box, no padding, no background - the plate's own `align-items: center` /
+// `justify-content: center` already centres it, so a brand with no artwork
+// reads as its name, set in the theme's title weight, first grapheme in
+// `--ox-accent-deep`. Deep, not `--ox-accent`: this is TEXT, and X-IDENTITY
+// §4.6 fixes the accent step for accent text at #A82D07 (5.99:1 on the plate
+// tints, where the bright accent is 3.5:1 and fails AA at this size).
 .ox-brand-tile__mark {
   font-size: var(--ox-t-h3);
   font-weight: var(--ox-w-title);
@@ -1165,10 +1153,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
   .ox-brand-tile__logobox {
     block-size: 96px;
-  }
-
-  .ox-brand-tile__mark {
-    min-block-size: 96px;
   }
 }
 
@@ -1339,18 +1323,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-weight: var(--ox-w-ui);
 }
 
-// The banner's logo field: the tile's box at banner size, on the same
-// asset-declared ground, so a white-only mark reads here exactly as it does
-// in the grid. The box reserves its own height, so the banner's text does not
-// move when the file lands.
+// The banner's logo field: the tile's box at banner size (coordinator
+// addendum, 2026-09-24: a fixed `block-size` in place of the old
+// `aspect-ratio: 3/2`, transparent like every other logo box - no
+// `--ox-paper` fill and no border). The box still reserves its own height,
+// so the banner's text does not move when the file lands.
 .ox-brandhero__logobox {
   display: flex;
   align-items: center;
   justify-content: center;
   inline-size: 160px;
-  aspect-ratio: 3 / 2;
+  block-size: 108px;
   padding: var(--ox-3);
-  background: var(--ox-paper);
 }
 
 .ox-brandhero__logobox--dark {

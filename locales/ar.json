@@ -830,14 +830,14 @@
   "ox.blocks.hours.prayer_note": "نغلق وقت الصلاة ونرجع بعدها.",
   "ox.blocks.guide.read_time": "قراءة {{minutes}} دقائق",
   "ox.blocks.guide.label": "دليل",
-  "ox.newsletter.title": "معلومة واحدة كل أسبوع",
+  "ox.newsletter.title": "اشترك في نشرة اوبتيمال اكس",
   "ox.newsletter.body": "رسالة قصيرة عن منتج أو سؤال شائع. بدون إغراقك بعروض يومية.",
   "ox.newsletter.placeholder": "بريدك الإلكتروني",
   "ox.newsletter.button": "اشترك",
-  "ox.newsletter.success": "اشتركت. أول رسالة توصلك الأسبوع القادم.",
+  "ox.newsletter.success": "تم الاشتراك. شكرا لك.",
   "ox.newsletter.privacy": "نستخدم بريدك لهذه الرسالة فقط، ويمكنك إلغاء الاشتراك في أي وقت.",
   "ox.newsletter.invalid": "تأكد من صيغة البريد الإلكتروني.",
-  "ox.newsletter.error": "لم يكتمل الاشتراك من جهتنا. حاول مرة أخرى بعد قليل.",
+  "ox.newsletter.error": "تعذر الاشتراك الآن، حاول مرة أخرى.",
   "ox.home.band_card_cta": "اعرف التفاصيل",
   "ox.home.band_eyebrow": "المعلومة أولا، ثم القرار",
   "ox.home.band_subline": "نختار تشكيلة محدودة، ونشرح ما على الملصق، ونرشح ما يناسب هدفك. لا نكتب أنظمة غذائية ولا نفسر تحاليل.",
@@ -1593,5 +1593,6 @@
   "ox.card.type.collagen_beauty": "كولاجين وجمال",
   "ox.card.type.daily_health": "الصحة اليومية",
   "ox.card.type.snacks_bars": "سناكات وبارات",
-  "ox.card.type.accessories": "إكسسوارات"
+  "ox.card.type.accessories": "إكسسوارات",
+  "ox.newsletter.line": "عروض مختارة وأدلة قصيرة تصلك أولا. لا رسائل مزعجة."
 }
