@@ -242,6 +242,7 @@ it holds, and which tool produced each raw file.
 | `pnpm preview:offline` | snapshot API + `vite dev`, wired together |
 | `pnpm serve:store` | the snapshot API on its own (`--port`, `--host`) |
 | `pnpm snapshot:store` | rebuild `fixtures/store/*.json` from `raw/` |
+| `pnpm gen:products-en` | rebuild `fixtures/store/overlay/products.en.json` from the CSV's English twins (S9f) |
 
 | env var | default | meaning |
 | --- | --- | --- |
@@ -406,3 +407,65 @@ strings come from the bundled `locales/en.json`; the platform-string bundle
 as breadcrumb labels still reads Arabic until Salla serves the English
 bundle on the live store. Combine with the overlay: `OFFLINE_TAXONOMY=1
 OFFLINE_LANGS=ar,en pnpm preview:offline`.
+
+### English *product data* on `/en` (S9f, 2026-09-24)
+
+Owner report: "in english version, products names and data are appearing in
+arabic." `OFFLINE_LANGS=ar,en` above makes the theme render `/en` at all;
+until this batch, everything it rendered — product names, subtitles,
+descriptions, search results, category and menu names — still came from the
+Arabic snapshot, because `scripts/serve-store.mjs` served one static
+capture regardless of the request's language. That was a gap in the
+**mock only**: the live theme engine always sends `accept-language:
+<locale>` on every storefront API call
+(`node_modules/@salla.sa/twilight-theme-engine/dist/chunk-O6XXHXC4.js`,
+`sharedHeaders()`/`api.hooks.beforeRequest`), and the real Salla API
+answers a product's translation whenever the merchant has entered one —
+the live store just has none entered yet (see
+`docs/build/owner-checklist.md` item 30).
+
+**How the mock answers `accept-language: en` now:**
+
+```
+node scripts/gen-products-en.mjs
+```
+
+reads every product's English name/subtitle/description from
+`docs/build/research/optimalx-catalogue.csv` (keyed by SKU), gates each one
+through `scripts/check-copy.mjs`'s rules and `scripts/check-claims.mjs`'s
+rules (plus a small literal list for the English claims
+`FINAL-claims-source.md` §3 names — cures, treats, guaranteed, fastest,
+burns fat, clinically proven — that check-claims.mjs's own English coverage
+does not include), and writes the clean twins to
+`fixtures/store/overlay/products.en.json`, keyed by the numeric product id.
+As of 2026-09-24: **43 of 47** products got a twin; **4** (OX-021, OX-023,
+OX-026, OX-035) were excluded because their description cites a
+third-party "best-selling" ranking, which trips the superlative rule —
+those four keep showing their real Arabic name on `/en` until the CSV is
+reworded, exactly like an untranslated product on the live store would.
+Never invented, never edited for meaning: an excluded or twin-less product
+is reported by the script, not silently patched.
+
+`scripts/serve-store.mjs` reads the request's `accept-language` header (or
+a `?lang=` query param, for curling the mock by hand — `scripts/lang-
+overlay.mjs`'s `resolveLang()`) and, for `en`, overlays that file onto
+`products`, product `details` and `search` results
+(`fixtures/store/products.json` / `product-details.json` stay
+byte-identical; the overlay is computed once at boot, not per request).
+Category and menu names are translated the same way, from the taxonomy's
+own `ox.tax.<key>.name` strings in `locales/en.json` matched by slug
+(`app/content/taxonomy.json`) — visible only under `OFFLINE_TAXONOMY=1`,
+since the store has no real categories yet. **Brand names need no
+overlay**: `fixtures/store/overlay/brands.json` already carries Latin
+names only (`NOW Foods`, `Optimum Nutrition`, …) and the theme renders
+`brand.name` in both languages, so there is no Arabic brand name being
+shown that needs translating.
+
+Verify without disturbing the shared preview on `:5178`/`:3210` — run a
+second instance on a spare port:
+
+```
+node scripts/serve-store.mjs --port 5199 &
+curl -s http://127.0.0.1:5199/store/v1/products?source=latest -H "accept-language: en"   # English names
+curl -s http://127.0.0.1:5199/store/v1/products?source=latest                             # Arabic, untouched
+```

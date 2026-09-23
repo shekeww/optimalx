@@ -29,6 +29,7 @@
     "gen:taxonomy-ids": "node scripts/gen-taxonomy-ids.mjs",
     "gen:icon-mask": "node scripts/gen-icon-mask.mjs",
     "gen:taxonomy-fixture": "node scripts/gen-taxonomy-fixture.mjs",
+    "gen:products-en": "node scripts/gen-products-en.mjs",
     "preview:local": "node scripts/preview-local.mjs"
   },
   "dependencies": {
