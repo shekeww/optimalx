@@ -41,10 +41,18 @@
 .ox-rail__track {
   display: flex;
   gap: var(--ox-4);
-  margin: 0;
-  padding: 0;
+  // A rail scrolls sideways only (owner, 2026-09-24: "no vertical scrolling
+  // in carousels"). With `overflow-x: auto` alone the block axis computes to
+  // `auto` too, and the reveal's 14px rise on the children (`.ox-reveal`)
+  // made every armed rail scroll up and down by that much until it settled.
+  // `overflow-y: hidden` closes that axis; the 4px block padding, taken back
+  // by the negative margin so nothing moves, keeps a card's hover lift and
+  // its focus ring inside the scrollport instead of clipped.
+  margin: -4px 0;
+  padding: 4px 0;
   list-style: none;
   overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior-inline: contain;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;

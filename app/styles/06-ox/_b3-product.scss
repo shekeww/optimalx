@@ -100,10 +100,12 @@
 // wrapper above takes `z-index: 1` to sit above them explicitly.
 .ox-card-product__band {
   @include ox-plate-band;
+  pointer-events: none;
 }
 
 .ox-card-product__mark {
   @include ox-plate-mark;
+  pointer-events: none;
 }
 
 .ox-card-product__img {
@@ -114,6 +116,12 @@
   inline-size: 100%;
   block-size: 100%;
   object-fit: contain;
+  // The image paints above the title link's stretched layer (the `::after`
+  // below has no z-index), so it used to swallow every tap: the photo, the
+  // largest part of the card, opened nothing (owner, 2026-09-24). It is
+  // paint only; a tap falls through to the stretched link and opens the
+  // product. The raised controls (chips, add, buy) keep their own targets.
+  pointer-events: none;
 }
 
 .ox-card-product__img--hover {
@@ -148,6 +156,9 @@
   inset-block-start: 0;
   inset-inline-start: 0;
   z-index: 1;
+  // Labels, not controls: a tap on a badge opens the product like the rest
+  // of the plate.
+  pointer-events: none;
 }
 
 // `.ox-card-product__wish` is gone outright (owner review, 2026-09-24: "if
@@ -1096,6 +1107,37 @@
   font-size: 15px;
   font-weight: var(--ox-w-figure);
   text-align: center;
+}
+
+// The Shopify port's quantity control (snippets/quantity.liquid there) reuses
+// this stepper with an <input type="number"> in the value slot, because the
+// engine's salla-quantity-input has no Shopify equivalent. An input keeps its
+// intrinsic 20ch width unless told otherwise, and that pushed the buy row 78px
+// past a phone's edge on the live store (measured 2026-09-24). This theme
+// never renders the element, so the rule costs it nothing.
+input.ox-supply__value {
+  inline-size: 48px;
+  min-inline-size: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--ox-w-figure);
+  background: transparent;
+  border: 0;
+  appearance: textfield;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
 }
 
 .ox-supply__result {
