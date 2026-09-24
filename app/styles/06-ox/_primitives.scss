@@ -41,7 +41,7 @@ $ox-angle-tan: 0.6745;
 }
 
 // The angled call to action: a parallelogram on the same 34 degrees (was 22
-// — X-IDENTITY-2026-09-22.md §2.1) as every other angled edge in the
+// - X-IDENTITY-2026-09-22.md §2.1) as every other angled edge in the
 // identity, leaning top-inline-end to
 // bottom-inline-start so it matches the wedge and the hero split.
 //
@@ -68,21 +68,21 @@ $ox-angle-tan: 0.6745;
 // INK ON ACCENT (owner review, 2026-09-23, item 2; DIRECTION 2.2): the label
 // colour is `--ox-on-accent`, which is `--ox-ink` (#12171E) now, not white.
 // Ink on `--ox-accent` measures 5.01:1, clearing AA at any size or weight, so
-// this fill carries a label at whatever size the button needs — no label-size
+// this fill carries a label at whatever size the button needs, no label-size
 // floor to protect, unlike the white pairing (3.58:1, large-text only) this
 // replaces.
 //
 // `$fill` therefore exists for reversed grounds, where the accent itself is
-// the thing that fails — not for buttons that would like a smaller label.
+// the thing that fails, not for buttons that would like a smaller label.
 //
 // THE LABEL SIZE IS ONE TOKEN (owner review, 2026-09-23, item 2): every
-// primary button — the hero CTA, the PDP and card buy-now, the sticky bar,
-// cart checkout, the sized `ox-angled()` primaries — reads its font-size from
+// primary button, the hero CTA, the PDP and card buy-now, the sticky bar,
+// cart checkout, the sized `ox-angled()` primaries, reads its font-size from
 // `--ox-btn-primary-size` rather than repeating `19px` at each call site, so
 // the one owner-set ratio (0.9 of the 19px floor) reaches all of them from
 // here. Block-size, the parallelogram and the one-line rule are untouched:
 // none of them are driven by this token. The ratio is still 0.9 of 19px by
-// the owner's own instruction, not because ink needs a size floor — it does
+// the owner's own instruction, not because ink needs a size floor, it does
 // not, at 5.01:1 the size and weight are free to move.
 @mixin ox-primary-face($fill: var(--ox-accent), $hover: var(--ox-accent-dark)) {
   background: #{$fill};
@@ -190,7 +190,7 @@ $ox-angle-tan: 0.6745;
 // The plate ground: the PDP gallery's own grey band and orange mark behind a
 // product photograph (owner review, 2026-09-24: the card's own plate now
 // carries the same ground, scaled down). Two mixins, one definition each, so
-// the gallery and the card read off the same rule and cannot drift apart —
+// the gallery and the card read off the same rule and cannot drift apart -
 // `_b3-product.scss`'s `.ox-gallery__band`/`.ox-gallery__mark` and
 // `.ox-card-product__band`/`.ox-card-product__mark` both `@include` these.
 // Every value is a percentage of the plate itself, so the same rule scales
@@ -442,7 +442,7 @@ a[href]:focus-visible {
   // S6a deviation 6: the 16px step of the size ladder takes a slightly
   // heavier relative stroke so the glyph holds; the sprite's own inline
   // <style> sets stroke-width from this custom property
-  // (docs/build/progress/S6a.md §5, deviation 6 — moved here from the
+  // (docs/build/progress/S6a.md §5, deviation 6, moved here from the
   // sprite's <style> block, the tidier home for it).
   &--16 { inline-size: 16px; block-size: 16px; --ox-icon-stroke: 2.25px; }
   &--20 { inline-size: 20px; block-size: 20px; }
@@ -506,7 +506,7 @@ a[href]:focus-visible {
 
   // The angle is the identity, so it is on by default for every sized CTA.
   // The inline padding carries the run at each end (run + 16px of breathing
-  // room) so the label never sits on the cut — X-IDENTITY-2026-09-22.md §2.4:
+  // room) so the label never sits on the cut, X-IDENTITY-2026-09-22.md §2.4:
   // at 34° the run grew from 16/18/19 to 27.0/29.7/32.4, so the old
   // 32/34/36 padding left the label only 4.3px clear of the cut.
   &--s40 { block-size: 40px; padding-inline: 43px; @include ox-angled(40px); }
@@ -554,7 +554,7 @@ a[href]:focus-visible {
 
   // Ink on accent (owner review, 2026-09-23, item 2; DIRECTION 2.2) clears
   // 4.5:1 at any size, so this label no longer needs a size floor to stay
-  // legal — see `ox-primary-face`'s own comment above.
+  // legal, see `ox-primary-face`'s own comment above.
   &--primary {
     // Label size comes from the mixin's own `--ox-btn-primary-size` token
     // now (owner review, 2026-09-23, item 2); no separate literal here to
@@ -571,7 +571,7 @@ a[href]:focus-visible {
 
   // Square keeps the ordinary bordered treatment: with no clip there is
   // nothing for the painted edge to solve, and the pseudo-element would just
-  // sit under a real border. Block no longer qualifies — it is clipped now,
+  // sit under a real border. Block no longer qualifies, it is clipped now,
   // so it needs the painted outline like every other secondary.
   &--secondary.ox-btn--square {
     background: var(--ox-surface);
@@ -931,7 +931,7 @@ a[href]:focus-visible {
 }
 
 .ox-badge {
-  // ox-allow: small-angle — notch only (the clip-path below), no lean;
+  // ox-allow: small-angle, notch only (the clip-path below), no lean;
   // check-identity's mixin-name detection cannot see an inlined ox-x-notch
   // shape, so this declaration is ordered first to carry the pragma on the
   // line the checker's block-size match resolves to.
@@ -946,11 +946,11 @@ a[href]:focus-visible {
   line-height: var(--ox-lh-flat);
   white-space: nowrap;
   // X-IDENTITY-2026-09-22.md §3.3: "Price tag / saving badge" and "Badge
-  // (الأكثر طلبا, جديد)" both read notch only, t4/j14.0, no lean — this is
+  // (الأكثر طلبا, جديد)" both read notch only, t4/j14.0, no lean, this is
   // the one class both share. A notch is axis-aligned, so it is legal at any
   // size (§3.2) and costs nothing in RTL. Inlined rather than
   // `@include ox-x-notch(4px, 14px)`: `_x-motif.scss` is imported *after*
-  // this file (`_index.scss`'s load order is load-bearing — `_x-motif.scss`
+  // this file (`_index.scss`'s load order is load-bearing, `_x-motif.scss`
   // itself calls this file's `ox-run()`), so the mixin is not yet defined at
   // this point in the merged Sass source.
   clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
@@ -974,7 +974,7 @@ a[href]:focus-visible {
 
 // Owner review 2026-09-23, item 4: the OptimalX angled button shape
 // (`ox-angled()`), scaled down as a small "a bit angled" icon-button for a
-// card's arrow affordance — the goal/type-tile arrow, the featured-rail
+// card's arrow affordance, the goal/type-tile arrow, the featured-rail
 // cover CTA, the plan-card CTA arrow. `ox-angled()` itself is unusable at
 // this size: §2.4's own "any control narrower than run / 0.24 loses the
 // parallelogram" rule puts the floor at 67.5px for a 44px-tall run, and this
@@ -984,7 +984,7 @@ a[href]:focus-visible {
 // for the reason `.ox-badge` above already gives: `_x-motif.scss` loads
 // after this file, so its mixins are not yet defined here.
 //
-// This is the shared class other builders attach in markup — handed off to
+// This is the shared class other builders attach in markup, handed off to
 // CategoryTile.tsx/OxCategories.tsx's owner per docs/build/progress/S2g.md,
 // since this batch does not edit those two files. `.ox-goal__cta`'s and
 // `.ox-plan__arrow`'s own rules (`_b2-home.scss`) and `.ox-featured__cta`'s
@@ -996,7 +996,7 @@ a[href]:focus-visible {
 // control, so the pragma sits on the `block-size` line the checker's
 // `small-angle` rule resolves to, the same placement `.ox-badge` uses.
 .ox-iconbtn--angled {
-  // ox-allow: small-angle — ordered first (`.ox-badge` above already traces
+  // ox-allow: small-angle, ordered first (`.ox-badge` above already traces
   // why: the checker's own multi-line match bug otherwise loses the pragma
   // when block-size is not a block's first declaration).
   block-size: 24px; // ox-allow: small-angle
@@ -1024,7 +1024,7 @@ a[href]:focus-visible {
   }
 }
 
-// Owner item 2026-09-24 (S8a): back to 24 everywhere — box 24, glyph 16,
+// Owner item 2026-09-24 (S8a): back to 24 everywhere, box 24, glyph 16,
 // lean 8. Five consumers wrap a 16px `Icon` in a span carrying the class
 // (the rail and nav arrow faces); four put the class straight on a 24px
 // `Icon` (GoalCard, CategoryTile, CategoriesIndex, FeaturedRail's cover CTA),

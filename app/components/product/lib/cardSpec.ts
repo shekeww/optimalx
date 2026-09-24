@@ -1,8 +1,8 @@
 /**
  * The card's one meta line (`cardSpecLine`, reshaped again on the owner's
  * 2026-09-24 items, S8g and the card-compaction pass): "<type> · <subcategory>"
- * — the product's root TYPE label, then the CHILD's own label after it when
- * the product belongs to one (`productType.ts`, resolved by the card) — for
+ * - the product's root TYPE label, then the CHILD's own label after it when
+ * the product belongs to one (`productType.ts`, resolved by the card), for
  * a typed product; "باقة · <n> منتجات" for a real bundle, the count only
  * when the API's own member list carries one, else "باقة" alone; or, when no
  * source can type the product at all, the ONE fallback fact (the pack size,
@@ -38,7 +38,7 @@ export type Translate = (key: string, vars?: Record<string, unknown>) => string;
 
 /**
  * `cardSpecLine(product, spec, t, typeInfo, bundleMemberCount)`: the facts
- * line, in priority order —
+ * line, in priority order -
  *
  *  1. a bundle (`typeInfo.kind === 'bundle'`): `ox.card.bundle` alone, or
  *     joined with `ox.card.bundle_count` when `bundleMemberCount` is a real,
@@ -46,7 +46,7 @@ export type Translate = (key: string, vars?: Record<string, unknown>) => string;
  *  2. a typed product (`typeInfo.kind === 'type'`): the root's own
  *     `ox.card.type.<root>` label, joined with the child's
  *     `ox.card.type.<child>` label when `typeInfo.child` resolved one;
- *  3. neither: the one fallback fact — the pack size (the spec line's own
+ *  3. neither: the one fallback fact, the pack size (the spec line's own
  *     field, else the product's own unit-bearing weight), else the dosage
  *     form; null when there is none, so the row keeps its reserved 18px
  *     empty rather than guessing at a fact the product does not carry.

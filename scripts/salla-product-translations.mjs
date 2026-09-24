@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// salla-product-translations.mjs — writes the live store's English product
+// salla-product-translations.mjs, writes the live store's English product
 // translations: the `translations.en` object Salla's Update Product
 // endpoint accepts (PUT /admin/v2/products/{id} or
 // /admin/v2/products/sku/{sku}, scope products.read_write; the
 // multi-language variables docs.salla.dev/421122m0 documents for products
 // are name, description, promotion titles and metadata title/description/
-// url — the storefront's own product response already names the
+// url, the storefront's own product response already names the
 // promotional-line field `subtitle` (fixtures/store/product-details.json),
 // which this script sends as `translations.en.subtitle`; verify that field
 // name against the live docs before ever running --apply, since this
@@ -25,7 +25,7 @@
 // are only attempted when the store has actually created its categories
 // (docs/build/taxonomy-ids.json, written by scripts/salla-categories.mjs
 // --apply); docs/build/store-write-log.md carries no category_create entry
-// yet, so today this is always "skipped" — reported, never invented.
+// yet, so today this is always "skipped", reported, never invented.
 //
 // THIS SESSION: dry run only. --apply is implemented and unit-tested with
 // an injected fetch, but is never invoked here.
@@ -99,7 +99,7 @@ export function buildCategoryTranslationPlan({
   if (!fs.existsSync(taxonomyIdsPath)) {
     return {
       skipped: true,
-      reason: `${taxonomyIdsPath} not found — the store has not created its categories yet (no category_create entry in docs/build/store-write-log.md); run scripts/salla-categories.mjs --apply first`,
+      reason: `${taxonomyIdsPath} not found \u2014 the store has not created its categories yet (no category_create entry in docs/build/store-write-log.md); run scripts/salla-categories.mjs --apply first`,
     };
   }
   const ids = JSON.parse(fs.readFileSync(taxonomyIdsPath, 'utf8'));
@@ -132,7 +132,7 @@ function summarizeProductRows(rows) {
  */
 export function formatPlanTable(productRows, categoryPlan) {
   const lines = [];
-  lines.push('Product translations (dry run — no network call):');
+  lines.push('Product translations (dry run \u2014 no network call):');
   lines.push('SKU     | Salla id    | status  | name (en)');
   for (const row of productRows) {
     const name = row.payload?.translations.en.name ?? '';
@@ -147,7 +147,7 @@ export function formatPlanTable(productRows, categoryPlan) {
   }
 
   if (categoryPlan.skipped) {
-    lines.push(`Category translations: skipped — ${categoryPlan.reason}`);
+    lines.push(`Category translations: skipped \u2014 ${categoryPlan.reason}`);
   } else {
     lines.push(`Category translations (${categoryPlan.rows.length} node(s)):`);
     for (const row of categoryPlan.rows) lines.push(`  ${row.slug} -> id ${row.id ?? '-'} [${row.status}]`);

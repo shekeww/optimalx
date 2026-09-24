@@ -2,7 +2,7 @@
 // contact page's grey branch panel): "components such as this gray rectangle
 // in image, to all have the shape of the primary CTA shape, being angled."
 //
-// SHAPE ONLY — no fill, no border. `ox-angled()` (_primitives.scss) never
+// SHAPE ONLY, no fill, no border. `ox-angled()` (_primitives.scss) never
 // sets a background either; this mixin follows the same split so it composes
 // with whatever fill a caller already carries (a grey `--ox-plate` panel, a
 // tinted card, a bordered surface), exactly the way `ox-x-corner()` and
@@ -11,12 +11,12 @@
 // WHY NOT THE BUTTON'S OWN RUN. The primary CTA's `ox-angled($h)` computes
 // `run = h * 0.6745` (tan 34°) off the CONTROL's own block-size, because a
 // button's whole box is the lean: a 48px button leans its full 48px and runs
-// 32.4px. A content panel is not a control — it can be 300px tall and 1200px
+// 32.4px. A content panel is not a control, it can be 300px tall and 1200px
 // wide, and cutting a run at the full-height tangent would eat nearly a third
 // of a short panel's own width for no reason connected to its size. The plate
 // therefore leans a DAMPENED height (`ox-plate-lean`) rather than its own
 // block-size, then runs that dampened lean through the identity's own
-// `ox-run()` — same tangent, same function, nothing re-derived — so the two
+// `ox-run()`, same tangent, same function, nothing re-derived, so the two
 // constructions can never drift apart at the trig level even though they
 // answer different questions.
 //
@@ -24,10 +24,10 @@
 // block-size) capped at `$ox-plate-lean-max` (40px, from roughly 200px tall
 // up), matching the owner brief's own worked examples: 120px tall -> lean 24
 // (exact), a full-width 300px-tall panel -> lean capped at 40 ("leans about
-// 40px" — exact). Both land well inside the 24 % run/inline-size budget
+// 40px", exact). Both land well inside the 24 % run/inline-size budget
 // X-IDENTITY-2026-09-22.md §2.3 sets for a cut into a filled panel: the
 // capped run is 27.0px (`ox-run(40px)`), which is under 24 % of anything
-// wider than 112.5px — every plate this mixin is called on.
+// wider than 112.5px, every plate this mixin is called on.
 //
 // FOCUS RINGS (X-IDENTITY §7.1 `focus-clipped`; the pattern
 // `.ox-cat-rail__arrow` documents for a control, applied here to a panel).
@@ -37,8 +37,8 @@
 // default) grows `padding-inline` by the SAME run plus the theme's own
 // breathing room (`var(--ox-4)`, the button convention: run + 16px). The cut
 // boundary at any block position never sits farther than `$run` from its own
-// edge, so content inset by `run + 16px` — including a `:focus-visible` ring
-// growing 2px past its own control — clears the diagonal at every height, as
+// edge, so content inset by `run + 16px`, including a `:focus-visible` ring
+// growing 2px past its own control, clears the diagonal at every height, as
 // long as the content stays in normal flow inside the padding box (nothing
 // this mixin is applied to positions a focusable child outside it).
 @use 'sass:math';
@@ -55,7 +55,7 @@ $ox-plate-lean-max: 40px;
 }
 
 // `$h` is the plate's own typical/minimum rendered block-size (the same
-// design-time contract `ox-angled($h)`/`ox-wedge($h)` already use — not a
+// design-time contract `ox-angled($h)`/`ox-wedge($h)` already use, not a
 // live DOM measurement). `$pad` grows `padding-inline` to clear the cut and
 // any focus ring inside it; pass `false` only when a caller already manages
 // its own inline clearance (see this file's own doc comment).

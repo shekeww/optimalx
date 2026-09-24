@@ -21,7 +21,7 @@ const DIR = 'docs/live-theme';
 function minifyJs(src) {
   // LF, always. The source files are checked out with CRLF on Windows, and the
   // stylesheet this script carries inside a template literal keeps whatever
-  // line endings it was read with — so the artifact differed from the same
+  // line endings it was read with, so the artifact differed from the same
   // artifact built anywhere else, byte for byte, while being identical CSS.
   // That is harmless to a browser and fatal to a read-back check: it reports a
   // mismatch on every publish and there is no way to tell that one from a real
@@ -134,8 +134,8 @@ function minifyJs(src) {
  * dropped on the floor: the minified skin was a different stylesheet from the
  * source it was generated from, and nothing said so.
  *
- * So `{};,>~+` collapse on both sides, which is safe — none of them can be a
- * combinator that a preceding space is carrying meaning for — and `:` collapses
+ * So `{};,>~+` collapse on both sides, which is safe, none of them can be a
+ * combinator that a preceding space is carrying meaning for, and `:` collapses
  * only AFTER itself. The cost is that `color : red` keeps one space; the source
  * does not write declarations that way, and correctness is worth the byte.
  */
@@ -152,7 +152,7 @@ function minifyCss(src) {
  * A selector this minifier must not change the meaning of.
  *
  * ` :` is a DESCENDANT COMBINATOR followed by a pseudo-class, and losing the
- * space turns it into a compound selector that matches something else — or, as
+ * space turns it into a compound selector that matches something else, or, as
  * happened here, nothing at all. This counts them on both sides and refuses to
  * write a file where the count moved. It is the specific regression that got
  * past review once, so it is the one with a guard on it.

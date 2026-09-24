@@ -5,14 +5,14 @@ import type { SVGAttributes } from 'react';
  * inline `<svg><use href="#ox-mark"/></svg>` against the already-inlined
  * sprite (`app/assets/ox-sprite.svg`), the same pattern
  * `app/components/home/PlanCard.tsx:46` uses via `<Icon name="mark">`. Never
- * a `url()` image request, never an `<img>`, no new render-blocking asset —
+ * a `url()` image request, never an `<img>`, no new render-blocking asset -
  * this component adds no bytes the sprite does not already ship.
  *
  * `<Icon name="mark">` already covers the generic case; this component exists
  * for callers that need the mark specifically (the watermark, the 404/empty
  * figure, the header lockup) and want a typed `tone` rather than a bare
  * `className`/`color`, so a caller cannot casually reach for `--ox-accent`
- * (BUILD 3.1 reserves it for interactive elements — see the watermark fix in
+ * (BUILD 3.1 reserves it for interactive elements, see the watermark fix in
  * §4.1/§9 judge change 18) without naming it explicitly.
  */
 const TONE_VAR: Record<XMarkTone, string> = {
@@ -34,7 +34,7 @@ export interface XMarkProps extends Omit<SVGAttributes<SVGSVGElement>, 'name' | 
    * component is used (watermark, 404/empty figure, header lockup ground). */
   tone?: XMarkTone;
   /** Accessible name. Without it the mark is `aria-hidden` (the default:
-   * every current use — watermark, figure, lockup ground — is decorative). */
+   * every current use, watermark, figure, lockup ground, is decorative). */
   label?: string;
 }
 
@@ -55,5 +55,6 @@ export function XMark({ size = 24, tone = 'current', label, className, style, ..
     >
       <use href="#ox-mark" />
     </svg>
+
   );
 }

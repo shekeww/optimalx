@@ -44,8 +44,8 @@ export function cursorOf(next: string | null | undefined): string | undefined {
 export interface NextPageOptions {
   /**
    * Drops a real Salla bundle (`group_products`) from both the first page and
-   * every page `load` fetches after it (S9d), so `loadedCount` — the "عرض N
-   * منتج" line — counts what the grid actually shows, never a bundle a
+   * every page `load` fetches after it (S9d), so `loadedCount`, the "عرض N
+   * منتج" line, counts what the grid actually shows, never a bundle a
    * listing does not offer.
    */
   excludeBundles?: boolean;

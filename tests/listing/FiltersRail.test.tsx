@@ -28,6 +28,7 @@ vi.mock('@salla.sa/twilight-components-react/filters', () => ({
   SallaFilters: (props: Record<string, unknown>) => {
     sallaFiltersProps(props);
     return <div data-testid="salla-filters" data-id={String(props.id)} />;
+
   },
 }));
 
@@ -53,11 +54,13 @@ beforeEach(() => {
 describe('FiltersRail', () => {
   it('renders nothing with no filters at all', () => {
     const { container } = renderWithProviders(<FiltersRail filters={[]} />);
+
     expect(container.querySelector('.ox-filters')).toBeNull();
   });
 
-  it('passes every non-brand filter through untouched — no group invented', () => {
+  it('passes every non-brand filter through untouched \u2014 no group invented', () => {
     renderWithProviders(<FiltersRail filters={[PRICE_FILTER]} />);
+
     expect(sallaFiltersProps).toHaveBeenCalledWith(
       expect.objectContaining({ filters: [PRICE_FILTER] })
     );
@@ -66,6 +69,7 @@ describe('FiltersRail', () => {
 
   it('relabels only the brand group, to the theme’s own Arabic heading', () => {
     renderWithProviders(<FiltersRail filters={[PRICE_FILTER, BRAND_FILTER]} />);
+
     const passed = sallaFiltersProps.mock.calls[0][0].filters as Filter[];
     expect(passed[0]).toBe(PRICE_FILTER); // untouched, same reference
     expect(passed[1].key).toBe('brand');
@@ -75,6 +79,7 @@ describe('FiltersRail', () => {
 
   it('is data-gated: no brand key in the payload, no relabel and no chip row', () => {
     renderWithProviders(<FiltersRail filters={[PRICE_FILTER]} />);
+
     const passed = sallaFiltersProps.mock.calls[0][0].filters as Filter[];
     expect(passed[0].label).toBe('السعر');
     expect(document.querySelector('.ox-filters__applied')).toBeNull();
@@ -83,6 +88,7 @@ describe('FiltersRail', () => {
   it('renders an applied chip per selected brand value, from the URL', () => {
     location = { pathname: '/whey-protein/c1', searchStr: '?brand=7' };
     const { container } = renderWithProviders(<FiltersRail filters={[BRAND_FILTER]} />);
+
     const chips = container.querySelectorAll('.ox-filters__applied .ox-chip');
     expect(chips).toHaveLength(1);
     expect(chips[0].textContent).toContain('Optimum Nutrition');
@@ -95,6 +101,7 @@ describe('FiltersRail', () => {
       writable: true,
     });
     const { container } = renderWithProviders(<FiltersRail filters={[BRAND_FILTER]} />);
+
     const removeButtons = container.querySelectorAll('.ox-chip__remove');
     expect(removeButtons).toHaveLength(2);
     fireEvent.click(removeButtons[0]);

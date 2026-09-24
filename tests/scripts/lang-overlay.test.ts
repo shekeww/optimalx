@@ -1,4 +1,4 @@
-// Unit tests for scripts/lang-overlay.mjs — the pure helpers
+// Unit tests for scripts/lang-overlay.mjs, the pure helpers
 // scripts/serve-store.mjs uses to answer `accept-language: en` (S9f).
 // Every function here is synchronous and takes plain data, so none of
 // these tests touch the filesystem or start the mock's HTTP server.

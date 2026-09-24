@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * preview-offline.mjs — one command that brings up the theme against the
+ * preview-offline.mjs, one command that brings up the theme against the
  * local snapshot instead of `https://api.salla.dev`.
  *
  * It starts two processes and keeps them together:
- *   1. `scripts/serve-store.mjs` — the snapshot API on OFFLINE_API_PORT.
+ *   1. `scripts/serve-store.mjs`, the snapshot API on OFFLINE_API_PORT.
  *   2. `vite dev` with `VITE_API_URL` pointed at it, which
  *      `app/dev/offline-api.ts` turns into a redirect of every Salla request.
  *
  * Everything both processes print is also appended to `.offline-preview.log`,
- * so the run can be audited afterwards — `grep 429` over it is the proof that
+ * so the run can be audited afterwards, `grep 429` over it is the proof that
  * the challenged host was never contacted.
  *
  * Ctrl-C stops both. No dependencies beyond node.

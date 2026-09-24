@@ -56,7 +56,7 @@ import { fieldText, type OxBlockProps } from './defaults';
 // and throws away 225px from each side: the burnt-in type sits outside the
 // visible window and never renders. Measured, not assumed.
 //
-// The upside is that nothing collides — the hero lays its own headline in the
+// The upside is that nothing collides, the hero lays its own headline in the
 // OTHER half (copy starts at x=847, the photo ends at x=856) so there is no
 // second headline in the same corner. The cost is that the artwork's message is
 // lost. A frame whose type must be read belongs in a full-bleed band, where the
@@ -225,6 +225,7 @@ export function OxHero({ data }: OxBlockProps) {
             return (
               <picture key={src} className="ox-hero__frame" data-active={i === slide ? '' : undefined}>
                 {portrait ? <source media="(min-width: 640px)" srcSet={src} /> : null}
+
                 <img
                   className="ox-hero__img"
                   src={portrait || src}
@@ -237,10 +238,13 @@ export function OxHero({ data }: OxBlockProps) {
                   {...(first && !image ? { 'data-testid': 'ox-hero-default-photo' } : {})}
                   {...(first && image ? { 'data-priority': 'true', 'data-mobile-src': mobileImage } : {})}
                 />
+
               </picture>
+
             );
           })}
           </div>
+
           {showVideo ? (
             <video
               ref={videoRef}
@@ -254,6 +258,7 @@ export function OxHero({ data }: OxBlockProps) {
               aria-hidden="true"
               tabIndex={-1}
             />
+
           ) : null}
           {slides.length > 1 ? (
             <div className="ox-hero__dots" role="group" aria-label={t('ox.home.hero_slides_label')}>
@@ -272,11 +277,15 @@ export function OxHero({ data }: OxBlockProps) {
                   }}
                 >
                   <span className="ox-sr-only">{t('ox.home.hero_slide_n', { n: i + 1 })}</span>
+
                 </button>
+
               ))}
             </div>
+
           ) : null}
         </div>
+
         {/* One flat gradient over the whole frame, never a blur (render budget
             rule 2). It is what keeps white type legible on a photograph the
             store has not shot yet as well as on the one it has. */}
@@ -298,22 +307,28 @@ export function OxHero({ data }: OxBlockProps) {
             data-testid="ox-hero-video-toggle"
           >
             <Icon name={playing ? 'pause' : 'play'} size={24} />
+
           </button>
+
         ) : null}
       </div>
+
 
       <div className="ox-hero__inner ox-container">
         <div className="ox-hero__text">
           {/* The eyebrow the reference sets above the headline: who this shop
               is, in one line, before the question is asked. */}
           <p className="ox-hero__eyebrow">{eyebrow || t('ox.home.hero_eyebrow')}</p>
+
           <h1 className="ox-hero__headline ox-display">
             {headline || t('ox.home.hero_headline')}
           </h1>
+
           {/* The reference sets a light Latin line under the headline. A
               merchant subline replaces it, because a store that writes its own
               second line means it rather than the lockup. */}
           <p className="ox-hero__sub ox-lead">{subline || t('ox.home.hero_subline')}</p>
+
           <div className="ox-hero__actions">
             <Button
               {...linkProps(primaryUrl)}
@@ -322,10 +337,12 @@ export function OxHero({ data }: OxBlockProps) {
               className="ox-cta-wedge"
               iconEnd={
                 <Icon name="chevron-end" size={24} />
+
               }
             >
               {primaryLabel}
             </Button>
+
             <Button
               {...linkProps(secondaryUrl)}
               variant="secondary"
@@ -334,9 +351,14 @@ export function OxHero({ data }: OxBlockProps) {
             >
               {secondaryLabel}
             </Button>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
   );
 }

@@ -8,7 +8,7 @@ import { bundleOfProduct, idsForSkus, SHOW_SAMPLE_BUNDLES } from '../../../conte
  * A bundle PDP's own member list (BUILD S9d): the live API's own
  * `consisted_products` when the platform has sent one, else the content
  * map's member SKUs, fetched live through the engine's own `selected`
- * source — the fallback the store needs until the owner attaches the
+ * source, the fallback the store needs until the owner attaches the
  * bundle's items in the dashboard (owner-checklist item 17). Never a number
  * invented here: every member below is a product the catalogue actually
  * returned.

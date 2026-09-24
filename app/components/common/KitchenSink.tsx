@@ -66,13 +66,21 @@ function Block({ title, note, children }: { title: string; note?: string; childr
   return (
     <section dir="ltr" style={{ marginBlockEnd: 40 }}>
       <h3 style={{ fontSize: 17, fontWeight: 700, marginBlockEnd: note ? 4 : 12 }}>{title}</h3>
+
+
       {note ? (
         <p style={{ fontSize: 13, color: 'var(--ox-fg-3)', marginBlockEnd: 12, lineHeight: 1.6 }}>
           {note}
         </p>
+
+
       ) : null}
       <div dir="rtl">{children}</div>
+
+
     </section>
+
+
   );
 }
 
@@ -116,8 +124,12 @@ function IconSheet({ bg, fg }: { bg: string; fg: string }) {
             >
               {ICON_SIZES_STANDARD.map((size) => (
                 <Icon key={size} name={name} size={size} />
+
+
               ))}
             </div>
+
+
             <div
               style={{
                 display: 'flex',
@@ -129,21 +141,39 @@ function IconSheet({ bg, fg }: { bg: string; fg: string }) {
             >
               {ICON_SIZES_SIMPLIFIED.map((size) => (
                 <Icon key={size} name={name} size={size} />
+
+
               ))}
             </div>
+
+
             <code style={{ fontSize: 10, opacity: 0.75 }}>{name}</code>
+
+
           </div>
+
+
         ))}
       </div>
+
+
       <p style={{ fontSize: 11, opacity: 0.75, margin: '14px 0 6px' }}>
-        16px legibility row — the whole family at the smallest step it ships at.
+        16px legibility row: the whole family at the smallest step it ships at.
       </p>
+
+
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
         {OX_ICON_NAMES.map((name) => (
           <Icon key={name} name={name} size={16} />
+
+
         ))}
       </div>
+
+
     </div>
+
+
   );
 }
 
@@ -152,6 +182,8 @@ function Row({ children }: { children: ReactNode }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
       {children}
     </div>
+
+
   );
 }
 
@@ -184,11 +216,21 @@ export function KitchenSink() {
               <p style={{ fontSize: 12, color: 'var(--ox-fg-3)', marginBlockEnd: 6 }}>
                 {ground.label}
               </p>
+
+
               <IconSheet bg={ground.bg} fg={ground.fg} />
+
+
             </div>
+
+
           ))}
         </div>
+
+
       </Block>
+
+
 
       <Block title="Button" note="Four variants, three heights, and every state.">
         {VARIANTS.map((variant) => (
@@ -198,16 +240,28 @@ export function KitchenSink() {
                 <Button key={size} variant={variant} size={size}>
                   {`${variant} ${size}`}
                 </Button>
+
+
               ))}
             </Row>
+
+
           </div>
+
+
         ))}
         <Row>
           <Button disabled>disabled</Button>
+
+
           <Button ariaDisabled>aria-disabled</Button>
+
+
           <Button loading={loading} onClick={() => setLoading((value) => !value)}>
             toggle loading
           </Button>
+
+
           <Button
             confirmed={confirmed}
             confirmedLabel="تمت الإضافة"
@@ -215,33 +269,67 @@ export function KitchenSink() {
           >
             أضف إلى السلة
           </Button>
+
+
           <Button iconStart={<Icon name="truck" size={20} />}>with icon</Button>
           <Button href="https://example.com">as anchor</Button>
+
+
         </Row>
+
+
         <div style={{ marginBlockStart: 12 }}>
           <Button block>block</Button>
+
+
         </div>
+
+
         <div className="ox-band-dark" style={{ marginBlockStart: 16, padding: 16 }}>
           <Row>
             <Button>primary on dark</Button>
+
+
             <Button variant="secondary">secondary on dark</Button>
+
+
             <Button variant="ghost">ghost on dark</Button>
+
+
           </Row>
+
+
         </div>
+
+
       </Block>
+
+
 
       <Block title="Chip and Badge" note="Spec chips are static; filter chips are controls.">
         <ChipRow>
           <Chip icon="servings">60 حصة</Chip>
+
+
           <Chip icon="serving-size">31 غرام</Chip>
+
+
           <Chip icon="form">بودرة</Chip>
+
+
           <Chip icon="expiry" size="pdp">
             2027-04
           </Chip>
+
+
         </ChipRow>
+
+
         <div style={{ marginBlockStart: 12 }}>
           <ChipRow>
             <Chip kind="filter">بدون منبهات</Chip>
+
+
             <Chip
               kind="filter"
               selected={selectedChip}
@@ -249,6 +337,8 @@ export function KitchenSink() {
             >
               محلل مائيا
             </Chip>
+
+
             {chips.map((chip) => (
               <Chip
                 key={chip}
@@ -258,25 +348,47 @@ export function KitchenSink() {
               >
                 {chip}
               </Chip>
+
+
             ))}
           </ChipRow>
+
+
         </div>
+
+
         <div style={{ marginBlockStart: 12 }}>
           <Row>
             {TONES.map((tone) => (
               <Badge key={tone} tone={tone}>
                 {tone}
               </Badge>
+
+
             ))}
           </Row>
+
+
         </div>
+
+
         <div style={{ marginBlockStart: 12, position: 'relative', inlineSize: 200, blockSize: 60 }}>
           <BadgeStack>
             <Badge tone="saving">وفر 15</Badge>
+
+
             <Badge tone="note">صلاحية قريبة</Badge>
+
+
           </BadgeStack>
+
+
         </div>
+
+
       </Block>
+
+
 
       <Block
         title="SectionHeader"
@@ -290,8 +402,14 @@ export function KitchenSink() {
             title="فرعنا في المدينة المنورة"
             viewAll={{ to: '/branch' }}
           />
+
+
         </div>
+
+
       </Block>
+
+
 
       <Block title="Price and Bdi" note="Money only through useMoney().format(), inside an isolate wrapper.">
         <Row>
@@ -300,14 +418,28 @@ export function KitchenSink() {
           <Price amount={50} go />
           <Price amount={0} size="small" />
         </Row>
+
+
         <p style={{ marginBlockStart: 12 }}>
           {AR_SENTENCE} <Bdi>{LATIN_NAME}</Bdi>.
+
+
         </p>
+
+
         <p>
           رقم الطلب <Bdi ltr>#OX-2026-0042</Bdi>
+
+
         </p>
+
+
         <p style={{ maxInlineSize: 240 }}>{LONG_AR_NAME}</p>
+
+
       </Block>
+
+
 
       <Block
         title="Skeleton"
@@ -317,37 +449,69 @@ export function KitchenSink() {
           {[1, 2].map((n) => (
             <Skeleton key={n}>
               <SkeletonBlock height={160} />
+
+
               <div style={{ display: 'grid', gap: 8, marginBlockStart: 12 }}>
                 <SkeletonBar width="80%" />
                 <SkeletonBar width="60%" />
                 <SkeletonCircle width={40} />
+
+
               </div>
+
+
             </Skeleton>
+
+
           ))}
         </div>
+
+
       </Block>
+
+
 
       <Block title="Accordion" note="One row open at a time; the last row is locked open and has no control.">
         <Accordion
           items={[
             { id: 'ks-acc-1', title: 'ما الفرق بين الايزوليت والكونسنتريت؟', children: <p>{AR_SENTENCE}</p> },
+
+
             { id: 'ks-acc-2', title: 'كم سكوب في اليوم؟', children: <p>{AR_SENTENCE}</p> },
+
+
             { id: 'ks-acc-3', title: 'تنبيه', children: <p>{AR_SENTENCE}</p>, locked: true },
+
+
           ]}
           defaultOpen={['ks-acc-1']}
         />
+
+
       </Block>
+
+
 
       <Block title="Tabs" note="Roving tabindex; ArrowLeft is next under RTL.">
         <Tabs
           label="kitchen sink tabs"
           items={[
             { id: 'facts', label: 'الحقائق الغذائية', children: <p>{AR_SENTENCE}</p> },
+
+
             { id: 'usage', label: 'طريقة الاستخدام', children: <p>{AR_SENTENCE}</p> },
+
+
             { id: 'reviews', label: 'التقييمات', children: <p>{AR_SENTENCE}</p> },
+
+
           ]}
         />
+
+
       </Block>
+
+
 
       <Block title="Table" note="Header 44 on plate, rows 48, numbers end-aligned, no zebra.">
         <Table<HoursFixture>
@@ -362,6 +526,8 @@ export function KitchenSink() {
           rowKey={(row) => row.day}
           rowClassName={(row, index) => (index === 0 ? 'is-today' : undefined)}
         />
+
+
         <div style={{ marginBlockStart: 16 }}>
           <TableWrap>
             <Table<HoursFixture>
@@ -377,9 +543,17 @@ export function KitchenSink() {
               rows={ROWS}
               rowKey={(row) => row.day}
             />
+
+
           </TableWrap>
+
+
         </div>
+
+
       </Block>
+
+
 
       <Block title="EmptyState and Tooltip" note="The tooltip never appears on touch.">
         <EmptyState
@@ -387,29 +561,59 @@ export function KitchenSink() {
           title="سلتك فارغة"
           body="ابدأ من هدفك، أو تصفح حسب النوع."
           primary={<Button>تسوق حسب هدفك</Button>}
+
+
           secondary={<Button variant="secondary">تصفح حسب النوع</Button>}
+
+
           footer={
             <ChipRow>
               <Chip kind="filter">واي بروتين</Chip>
+
+
               <Chip kind="filter">كرياتين</Chip>
+
+
             </ChipRow>
+
+
           }
         />
+
+
         <div style={{ marginBlockStart: 16 }}>
           <Row>
             <Tooltip label="أضف إلى المفضلة">
               <button type="button" className="ox-btn ox-btn--ghost ox-btn--s44" aria-label="أضف إلى المفضلة">
                 <Icon name="tick" size={20} />
+
+
               </button>
+
+
             </Tooltip>
+
+
             <Tooltip label="شارك" placement="top">
               <button type="button" className="ox-btn ox-btn--ghost ox-btn--s44" aria-label="شارك">
                 <Icon name="gift" size={20} />
+
+
               </button>
+
+
             </Tooltip>
+
+
           </Row>
+
+
         </div>
+
+
       </Block>
+
+
 
       <Block
         title="Panel, PanelRow and PanelRowGroup"
@@ -421,15 +625,33 @@ export function KitchenSink() {
             <PanelRow label="الحجم" value={<Bdi>907g</Bdi>} />
             <PanelRow label="عدد الحصص" value="32" />
           </Panel>
+
+
           <Panel title="ما الذي نساعدك فيه" tone="plate">
             <p className="ox-body">{AR_SENTENCE}</p>
+
+
           </Panel>
+
+
           <Panel title="مع إجراء" action={<Button variant="link">عرض الكل</Button>}>
+
+
             <p className="ox-body">{AR_SENTENCE}</p>
+
+
           </Panel>
+
+
         </PanelRowGroup>
+
+
         <PanelRowGroup>{null}</PanelRowGroup>
+
+
       </Block>
+
+
 
       <Block
         title="StatStrip"
@@ -438,16 +660,32 @@ export function KitchenSink() {
         <StatStrip
           cells={[
             { id: 'a', value: <Bdi>20g</Bdi>, label: 'بروتين', sub: 'في الحصة' },
+
+
             { id: 'b', value: <Bdi>150</Bdi>, label: 'سعرة حرارية', sub: 'في الحصة' },
+
+
             { id: 'c', glyph: 'vegan-leaf', label: 'نباتي', sub: <Bdi>Vegan</Bdi> },
+
+
             { id: 'd', value: <Bdi>907g</Bdi>, label: 'حجم العبوة' },
+
+
           ]}
         />
+
+
         <div style={{ marginBlockStart: 16 }}>
           <StatStrip cells={[{ id: 'one', value: <Bdi>60</Bdi>, label: 'حصة' }]} />
         </div>
+
+
         <StatStrip cells={[]} />
+
+
       </Block>
+
+
 
       <Block
         title="Band"
@@ -460,9 +698,15 @@ export function KitchenSink() {
           subline={AR_SENTENCE}
           badges={[
             { id: 'v', glyph: 'vegan-leaf', label: 'نباتي', latin: <Bdi>Vegan</Bdi> },
+
+
             { id: 's', glyph: 'low-sugar', label: 'منخفض السكر', latin: <Bdi>Low Sugar</Bdi> },
+
+
           ]}
         />
+
+
         <div style={{ marginBlockStart: 16 }}>
           <Band
             photo="/assets/images/services-band.jpg"
@@ -471,36 +715,78 @@ export function KitchenSink() {
             wedge={false}
             lockup={false}
             action={<Button>احجز موعدا</Button>}
+
+
           />
         </div>
+
+
       </Block>
+
+
 
       <Block
         title="Utilities"
         note="The visually hidden text below is announced but never painted; the containers set the gutter."
       >
         <p className="ox-sr-only">نص مخفي بصريا فقط</p>
+
+
         <div className="ox-container" style={{ outline: '1px dashed var(--ox-line-2)' }}>
           <p className="ox-body">ox-container</p>
+
+
         </div>
+
+
         <div className="ox-container--narrow" style={{ outline: '1px dashed var(--ox-line-2)' }}>
           <p className="ox-body">ox-container--narrow</p>
+
+
         </div>
+
+
         <div className="ox-container--text" style={{ outline: '1px dashed var(--ox-line-2)' }}>
           <p className="ox-body">ox-container--text</p>
+
+
         </div>
+
+
         <div style={{ marginBlockStart: 12 }}>
           <p className="ox-display">ox-display</p>
+
+
           <p className="ox-h1">ox-h1</p>
+
+
           <p className="ox-h2">ox-h2</p>
+
+
           <p className="ox-h3">ox-h3</p>
+
+
           <p className="ox-lead">ox-lead</p>
+
+
           <p className="ox-body">ox-body</p>
+
+
           <p className="ox-small">ox-small</p>
+
+
           <p className="ox-micro">ox-micro</p>
+
+
         </div>
+
+
       </Block>
+
+
     </div>
+
+
   );
 }
 

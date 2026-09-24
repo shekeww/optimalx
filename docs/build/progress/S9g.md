@@ -1,4 +1,4 @@
-# S9g — the language switch becomes obvious
+# S9g, the language switch becomes obvious
 
 Builder S9g, 2026-09-24. Owner instruction, quoted: "arabic and english
 language switch can be confusing, as the other would only see the country;

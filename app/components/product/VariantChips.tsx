@@ -59,7 +59,7 @@ export interface VariantChipsProps {
    * The card's own `<form>` id (owner review, 2026-09-24: the chooser now
    * renders on the plate, outside that form in the DOM, so each radio
    * carries the standard HTML `form` attribute to stay part of its
-   * submission — the same mechanism a native `<button form="…">` uses, no
+   * submission, the same mechanism a native `<button form="…">` uses, no
    * hidden mirror field needed). Omitted where the card renders no form at
    * all (no option to submit).
    */
@@ -78,9 +78,9 @@ function trimmed(value: unknown): string | null {
 /**
  * Colour names a merchant commonly types when Salla sends no colour code at
  * all (the listing endpoint's `option.values[]` carries a value's NAME and
- * nothing else — see the note on `swatchFill`). Matched against the value's
+ * nothing else, see the note on `swatchFill`). Matched against the value's
  * own trimmed name, Arabic exact and English case-insensitive; a name that
- * does not match — a flavour like "شوكولاتة" or a size like "1 كجم" — is not
+ * does not match, a flavour like "شوكولاتة" or a size like "1 كجم", is not
  * a colour, and never becomes one by guessing.
  *
  * Exported (owner review, 2026-09-23, item 3): one table, and
@@ -145,8 +145,8 @@ export function namedColor(name: string): string | null {
  * shape a product-detail request carries) puts one there. Failing both, the
  * NAME itself is checked against `NAMED_COLORS`: a shaker whose four values
  * are أسود/أبيض/أخضر/أزرق carries none of the above, and every one of those
- * words is a real colour the swatch can paint. A name that matches nothing —
- * a flavour, a size — returns null, and the swatch renders as a text pill
+ * words is a real colour the swatch can paint. A name that matches nothing -
+ * a flavour, a size, returns null, and the swatch renders as a text pill
  * instead: NEVER a letter, which cannot tell four colours starting with the
  * same Arabic letter apart.
  */
@@ -165,7 +165,7 @@ function swatchFill(value: ProductOptionValue): SwatchFill | null {
  * The plate photograph a chosen value points to, when it carries one of its
  * own (owner review, 2026-09-24: the chooser now sits on the plate itself,
  * so picking a value should show what it looks like). Only an `image`-kind
- * fill ever swaps the packshot — a colour swatch is a preview circle, not a
+ * fill ever swaps the packshot, a colour swatch is a preview circle, not a
  * second photograph, and painting one from a hex would be exactly the guess
  * `swatchFill`'s own comment above already refuses to make. Not observably
  * live on this catalogue today: no processed fixture carries a per-value
@@ -220,15 +220,16 @@ export function VariantChips({ option, uid, value, onChange, formId }: VariantCh
 
   return (
     <fieldset className="ox-card-product__variants">
-      {/* The option's own name, from the merchant's data — "اللون", "النكهة".
+      {/* The option's own name, from the merchant's data, "اللون", "النكهة".
           Screen-reader only: the swatches are self-describing on screen, and a
           card in a grid has no room for a second label row. */}
       <legend className="ox-sr-only">{option.name}</legend>
+
       {visible.map((v) => {
         const id = `${uid}-${option.id}-${v.id}`;
         const fill = swatchFill(v);
         const checked = String(value) === String(v.id);
-        // A value with no colour — a flavour, a size — is a TEXT pill, never
+        // A value with no colour, a flavour, a size, is a TEXT pill, never
         // a letter circle: four values that all start with the same Arabic
         // letter (أسود/أبيض/أخضر/أزرق) are not four different letters.
         const isText = fill === null;
@@ -251,6 +252,7 @@ export function VariantChips({ option, uid, value, onChange, formId }: VariantCh
               onChange={() => onChange(v.id)}
               {...(formId ? { form: formId } : {})}
             />
+
             <span
               className={'ox-swatch__face' + (isText ? ' ox-swatch__face--text' : '')}
               aria-hidden="true"
@@ -264,16 +266,21 @@ export function VariantChips({ option, uid, value, onChange, formId }: VariantCh
             >
               {isText ? v.name : null}
             </span>
+
             <span className="ox-sr-only">{v.name}</span>
+
           </label>
+
         );
       })}
       {hiddenCount > 0 ? (
         <span className="ox-card-product__variant-more" aria-hidden="true">
           {'+' + hiddenCount}
         </span>
+
       ) : null}
     </fieldset>
+
   );
 }
 

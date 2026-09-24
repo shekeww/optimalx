@@ -46,7 +46,7 @@ export interface ErrorStateProps {
  * rendering because a data source is down, and a second data-driven block is
  * the last thing to add to that page.
  *
- * The figure is the brand mark, `--ox-plate-2` not accent — see NotFound's
+ * The figure is the brand mark, `--ox-plate-2` not accent, see NotFound's
  * doc comment (X-IDENTITY-2026-09-22.md §4.3/§6, BUILD 3.1).
  */
 export function ErrorState({ error, reset }: ErrorStateProps) {
@@ -55,26 +55,35 @@ export function ErrorState({ error, reset }: ErrorStateProps) {
   if (code === null) return null;
   if (code === 404) return <NotFound showLatest={false} />;
 
+
   return (
     <div className="ox-page ox-page--error" data-testid="ox-error-state">
       <section className="ox-state">
         <XMark size={64} tone="plate-2" className="ox-state__mark" />
         <h1 className="ox-state__title ox-h1">{t('ox.error.generic_title')}</h1>
+
         <p className="ox-state__body ox-lead">{t('ox.error.generic_body')}</p>
+
         <div className="ox-state__actions">
           {reset ? (
             <Button size={48} variant="primary" onClick={reset}>
               {t('ox.common.retry')}
             </Button>
+
           ) : null}
           <Button to="/" size={48} variant={reset ? 'secondary' : 'primary'}>
             {t('ox.error.home')}
           </Button>
+
         </div>
+
         <p className="ox-state__code ox-small" data-testid="ox-error-code">
           {t('ox.error.code', { code })}
         </p>
+
       </section>
+
     </div>
+
   );
 }

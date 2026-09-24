@@ -88,8 +88,10 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
       value:
         amount === 0 ? (
           <span className="ox-stats__free">{t('ox.common.free')}</span>
+
         ) : (
           <Price amount={amount} />
+
         ),
       label: t('ox.services.stat_price'),
     });
@@ -98,6 +100,7 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
     cells.push({
       id: 'reply',
       value: <Bdi>{replyHours}</Bdi>,
+
       label: t('ox.services.stat_reply'),
       sub: t('ox.services.stat_reply_unit'),
     });
@@ -124,7 +127,7 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
             under an angled scrim on the identity's own skew (var(--ox-skew),
             never a literal degree). This is the LIGHT-ground header of a
             long-form section, not the dark advisory band X-IDENTITY-2026-09-
-            22.md §4.5 measures (`.ox-plan`, section 8 of _b2-home.scss) — its
+            22.md §4.5 measures (`.ox-plan`, section 8 of _b2-home.scss), its
             own opaque-plate-to-40%-see-through scrim keeps the same 0-60% "no
             photograph under the text" floor by construction rather than by
             the §4.5 formula, since that formula is a dark-ground (--ox-band-
@@ -137,12 +140,16 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
         <h2 id={titleId} className="ox-service__title ox-h2">
           {t(page.titleKey)}
         </h2>
+
         <p className="ox-service__sub ox-lead">{t(page.sublineKey)}</p>
+
       </header>
+
 
       <StatStrip cells={cells} className="ox-service__stats" />
 
       <p className="ox-service__lead ox-body">{t(page.introKey)}</p>
+
 
       <PanelRowGroup>
         <Panel title={t(page.scopeTitleKey)} tone="plate">
@@ -151,32 +158,45 @@ export function ServiceSection({ page, productId }: ServiceSectionProps) {
               <li key={key} className="ox-scope__item ox-body">
                 <Icon name="tick" size={20} className="ox-scope__tick" />
                 <span>{t(key)}</span>
+
               </li>
+
             ))}
           </ul>
+
         </Panel>
+
         {page.prepareKey ? (
           <Panel title={t('ox.services.prepare_title')}>
             <p className="ox-body">{t(page.prepareKey)}</p>
+
           </Panel>
+
         ) : null}
         {page.outputKey ? (
           <Panel title={t('ox.services.output_title')}>
             <p className="ox-body">{t(page.outputKey)}</p>
+
           </Panel>
+
         ) : null}
       </PanelRowGroup>
+
 
       <p className="ox-service-limit ox-small" data-testid={`ox-service-limit-${page.slug}`}>
         {t(page.footerKey)}
       </p>
 
+
       <div className="ox-service__actions">
         <Button to={ctaTo} size={48} variant="primary">
           {t(page.ctaKey)}
         </Button>
+
       </div>
+
     </section>
+
   );
 }
 

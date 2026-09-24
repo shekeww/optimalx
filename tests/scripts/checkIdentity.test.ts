@@ -1,5 +1,5 @@
 // Unit tests for scripts/check-identity.mjs: the pure per-rule functions,
-// and the one thing that has to be true for the gate to mean anything — a
+// and the one thing that has to be true for the gate to mean anything, a
 // planted, illegal angle must fail it.
 import fs from 'node:fs';
 import os from 'node:os';

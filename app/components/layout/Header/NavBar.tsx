@@ -126,6 +126,9 @@ export function NavBar() {
   const listRef = useRef<HTMLUListElement>(null);
   const shopTriggerRef = useRef<HTMLAnchorElement>(null);
   const moreTriggerRef = useRef<HTMLButtonElement>(null);
+  // Up only while Escape returns focus to تسوق, so that focus does not
+  // reopen the panel it just closed (the trigger opens on focus otherwise).
+  const escapeFocus = useRef(false);
   // `measure` needs the current links on every call but must keep a stable
   // identity across renders (a new function each render would re-fire the
   // effects below on every render, which set state, which renders again -
@@ -337,7 +340,16 @@ export function NavBar() {
                   data-testid="ox-nav-shop"
                   onPointerEnter={() => schedule(link.key)}
                   onPointerLeave={() => schedule(null)}
-                  onFocus={() => schedule(link.key)}
+                  onFocus={() => {
+                    // The focus MegaPanel's Escape hands back is the
+                    // visitor closing the panel, not asking for it: without
+                    // this gate the return of focus scheduled the panel
+                    // open again 120ms after Escape had closed it, so
+                    // Escape looked like it did nothing from the keyboard
+                    // (chrome batch probe, 2026-09-24).
+                    if (escapeFocus.current) return;
+                    schedule(link.key);
+                  }}
                   onBlur={(event) => {
                     // Tab from تسوق lands on the panel's first link, inside
                     // this same `<li>`: that is the visitor walking into the
@@ -362,7 +374,11 @@ export function NavBar() {
                     onClose={() => close(link.key)}
                     onEscape={() => {
                       close(link.key);
+                      // The focus event fires inside focus() itself, so the
+                      // gate is up only for that one synchronous dispatch.
+                      escapeFocus.current = true;
                       shopTriggerRef.current?.focus();
+                      escapeFocus.current = false;
                     }}
                     onPointerEnter={cancelClose}
                     onPointerLeave={() => schedule(null)}

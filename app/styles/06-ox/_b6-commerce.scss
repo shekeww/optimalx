@@ -524,10 +524,11 @@
   }
 }
 
-// The cart page owns the bottom of the viewport while the bar is up.
-body.ox-sticky-bar .ox-cart {
-  padding-block-end: var(--ox-h-sticky);
-}
+// No cart-only reserve for the bar any more (review 2026-09-24, P2): the page
+// reserves the bar's height at the end of `.app-inner` while the bar is up
+// (_b1-layout.scss section 9, `body.ox-sticky-bar .app-inner`), the same way
+// the product page does under its sticky buy bar, so the cart ends on its own
+// `--ox-16` rhythm above (section 1) and nothing here pads it a second time.
 
 // ---------------------------------------------------------------------------
 // 5. Thank-you (DIRECTION 6.10)

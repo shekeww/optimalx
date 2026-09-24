@@ -43,7 +43,7 @@
 
 /* `html:root` rather than `:root`. Salla sets --color-primary* on :root from
    the dashboard's brand colour, at the same specificity as ours, so which one
-   wins comes down to which sheet loads last — and a snippet's load order is
+   wins comes down to which sheet loads last, and a snippet's load order is
    not something this file gets to guarantee. Adding the type selector makes
    ours (0,1,1) against their (0,1,0) and settles it. The storefront also
    carries `--theme-primary-color` INLINE on <html>, which cannot be overridden
@@ -264,7 +264,7 @@ body.theme-raed{
 /* THE SECONDARY, painted rather than bordered. The clip removes the border on
    the cut edges, so an outline button cannot use `border`: the ELEMENT is the
    edge colour and an inset pseudo carries the fill, both wearing the same clip.
-   Hover moves the STROKE and leaves the fill alone — recolouring the pseudo
+   Hover moves the STROKE and leaves the fill alone, recolouring the pseudo
    repaints the whole face and reads as a second shape sliding over a button
    that already has an edge. */
 .theme-raed .s-button-outline{
@@ -1955,7 +1955,7 @@ h4.s-product-card-price,.s-product-card-sale-price h4{
    drop the radius: a rounded box under a clip rounds the corners BEFORE the
    cut and leaves a nick at each flat edge. The inline padding comes down from
    the base 34, because a card cell is narrow and the 19px label is the one
-   thing that may not shrink — white on the accent is legal only at that size. */
+   thing that may not shrink, white on the accent is legal only at that size. */
 .s-product-card-content-footer .s-button-element{
   width:100%;
   height:44px;

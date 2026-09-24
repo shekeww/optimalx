@@ -1,18 +1,18 @@
 /**
  * The product TYPE the card's facts line prints (owner items 2026-09-24,
  * docs/build/progress/S8a.md and S8g.md): `productTypeOf` answers one of
- * three ways —
+ * three ways -
  *
  *   { kind: 'bundle' }                     a real Salla bundle (S8g item 3)
  *   { kind: 'type', root, child }          one of the ten root types
  *                                          (`app/content/taxonomy.json`), and
- *                                          — when the product belongs to a
- *                                          child category — that child too
+ *                                          - when the product belongs to a
+ *                                          child category, that child too
  *                                          (S8g item 2)
  *   null                                    no source can say
  *
  * A bundle is `product.type === 'group_products'` (Salla's own bundle type)
- * OR a name that starts with حزمة/باقة/bundle — the S8a keyword veto for
+ * OR a name that starts with حزمة/باقة/bundle, the S8a keyword veto for
  * those words becomes a positive answer instead of silence, and it is
  * checked FIRST, before any of the four type sources below, so a bundle
  * never also gets typed as one of its own members' types.
@@ -203,7 +203,7 @@ const TYPE_KEYWORDS: Record<ProductTypeKey, readonly string[]> = {
 /**
  * Brand-neutral words per PROTEIN CHILD (S8g item 2's own list): only the
  * words that name that one subcategory and nothing wider, so "بروتين" alone
- * (which names the whole root) is never a child keyword — a name that says
+ * (which names the whole root) is never a child keyword, a name that says
  * only "بروتين" answers at the root and stays silent at the child, which is
  * the honest answer until the SKU membership or the category names it.
  */
@@ -219,7 +219,7 @@ const CHILD_KEYWORDS: Record<string, readonly string[]> = {
  * Words that make any keyword answer unsafe: an "energy" blend is filed
  * under pre-workout by the owner while its name reads amino acids (امينو
  * انرجي). Present, the name says nothing. (A bundle name is no longer a veto
- * here — `productTypeOf` checks for one before this table ever runs, see the
+ * here, `productTypeOf` checks for one before this table ever runs, see the
  * file header.)
  */
 const VETO_WORDS: readonly string[] = ['انرجي', 'energy'];
@@ -385,7 +385,7 @@ function childTypeOf(
 
 /**
  * The product's type: a bundle, a root (with an optional child), or nothing
- * — see the file header for the full rule.
+ * - see the file header for the full rule.
  */
 export function productTypeOf(
   product: Pick<Product, 'name'> & {

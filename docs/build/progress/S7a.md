@@ -20,7 +20,7 @@ Two mid-session coordinator updates folded in, as instructed:
    in every rewrite below. A third concurrent change was found while
    re-reading: `docs/build/UX-2026-09-24.md` P0-11 (a sibling batch, S7d)
    had already renamed the carousel's own heading to `ox.home.posters_title`
-   = "ابدأ من هنا" with a new `ox.home.posters_lead` subline — kept as-is;
+   = "ابدأ من هنا" with a new `ox.home.posters_lead` subline, kept as-is;
    this batch's own `label`/`label_en` merchant-field override sits on top
    of it rather than reverting it (§8 records a related bug found in that
    same edit, not fixed here since it is outside this batch's files).
@@ -35,27 +35,27 @@ and `app/content/salla-ids.ts` before use, not assumed from the brief.
 | # | slug | kind | what the artwork says (owner's own marketing) | link target, verified |
 |---|---|---|---|---|
 | 1 | `inbody-consult` | offer | استشارة مجانية + فحص InBody مجاني، اختر هدفك، احجز الآن | `pathForSku('OX-046')` → `/p1051830221`, the branch-visit booking product (`fixtures/store/products.json` line 3145: `"id": 1051830221, "name": "زيارة الفرع في المدينة المنورة"`, price 0). Confirmed live in `app/content/salla-ids.ts`. |
-| 2 | `weekly-picks` | offer | الأكثر طلبا هذا الأسبوع، أي منتجين بـ 196 ريال، باي1 خذ1 مجانا | Home carousel: `/offers`. On `/offers` itself: `/offers#offers-grid` (the page's own product grid anchor — a poster cannot usefully link to the page it is already on; see §5 for the bug this caught). |
-| 3 | `bundle-her` | bundle | باقة لها، خصم 20%، بروتين + Opti-Women + شيكر أخضر | No product whose name contains "باقة"/"حزمة" AND "لها" exists — searched `fixtures/store/products.json` for `"name":.*(حزمة\|باقة)`, one hit only: `"حزمة البداية - اوبتيمال اكس"` (id 1141798217, SKU OX-041). Falls back to it: `pathForSku('OX-041')` → `/p1141798217`. |
+| 2 | `weekly-picks` | offer | الأكثر طلبا هذا الأسبوع، أي منتجين بـ 196 ريال، باي1 خذ1 مجانا | Home carousel: `/offers`. On `/offers` itself: `/offers#offers-grid` (the page's own product grid anchor, a poster cannot usefully link to the page it is already on; see §5 for the bug this caught). |
+| 3 | `bundle-her` | bundle | باقة لها، خصم 20%، بروتين + Opti-Women + شيكر أخضر | No product whose name contains "باقة"/"حزمة" AND "لها" exists, searched `fixtures/store/products.json` for `"name":.*(حزمة\|باقة)`, one hit only: `"حزمة البداية - اوبتيمال اكس"` (id 1141798217, SKU OX-041). Falls back to it: `pathForSku('OX-041')` → `/p1141798217`. |
 | 4 | `bundle-him` | bundle | باقة له، خصم 20%، بروتين + Opti-Men + شيكر أسود | Same search, same result (no "باقة له" product either): `pathForSku('OX-041')` → `/p1141798217`. |
-| 5 | `weight-subscription` | subscription | اشتراك 3 أشهر لإدارة الوزن، 696 ريال، + InBody مجاني | No product name contains "اشتراك" or "خطة" (`grep` of `fixtures/store/products.json` for `خطة` finds only the PDF guide's subtitle, not a product name). Falls back to `/services#plans` — the anchor added to `OxServices.tsx`'s plans row for this exact purpose (§4). |
-| 6 | `bigramy-creatine` | offer | كرياتين بيج رامي، باي1 خذ1 مجانا + شيكر Big Ramy مجاني | No "بيج رامي"/"Big Ramy" product in the catalogue (checked both creatine products that do exist: `كرياتين مونوهيدرات - ثورن` id 779499389, `كرياتين مونوهيدرات مطحون ناعم - اوبتيموم نيوترشن` id 995134839 — neither is Big Ramy). Falls back to the live `creatine` taxonomy category through `useTaxonomyLinks` (`app/content/taxonomy.json` already carries this type root, slug `creatine`), and to `/offers` while that category has not resolved yet (the fixture store has zero live categories today, same pre-existing condition every other taxonomy-linked block in this theme already documents). |
+| 5 | `weight-subscription` | subscription | اشتراك 3 أشهر لإدارة الوزن، 696 ريال، + InBody مجاني | No product name contains "اشتراك" or "خطة" (`grep` of `fixtures/store/products.json` for `خطة` finds only the PDF guide's subtitle, not a product name). Falls back to `/services#plans`, the anchor added to `OxServices.tsx`'s plans row for this exact purpose (§4). |
+| 6 | `bigramy-creatine` | offer | كرياتين بيج رامي، باي1 خذ1 مجانا + شيكر Big Ramy مجاني | No "بيج رامي"/"Big Ramy" product in the catalogue (checked both creatine products that do exist: `كرياتين مونوهيدرات - ثورن` id 779499389, `كرياتين مونوهيدرات مطحون ناعم - اوبتيموم نيوترشن` id 995134839, neither is Big Ramy). Falls back to the live `creatine` taxonomy category through `useTaxonomyLinks` (`app/content/taxonomy.json` already carries this type root, slug `creatine`), and to `/offers` while that category has not resolved yet (the fixture store has zero live categories today, same pre-existing condition every other taxonomy-linked block in this theme already documents). |
 
 ---
 
 ## 2. Files changed
 
-- **`app/content/posters.ts`** (rewritten) — six `PosterCardContent` entries
+- **`app/content/posters.ts`** (rewritten), six `PosterCardContent` entries
   replacing the old five content-derived cards; `posterHref()`, a pure
   resolver (no hook) taking a `context: 'home' | 'offers'` and a category
   lookup callback; `available: false` on every entry.
-- **`app/components/home/PosterCard.tsx`** (rewritten) — `<Link>` wrapping
+- **`app/components/home/PosterCard.tsx`** (rewritten), `<Link>` wrapping
   `<img>` (srcset at [450, 720, 1125], `sizes`, `aspect-ratio: 4/5`, real
   `width`/`height`) when `available`; a tinted `.ox-pcard__placeholder` +
   `.ox-pcard__caption` (the alt text, visible) when not; sharp corners; the
   angled strap kept at the smallest identity-ladder tier; no diagonal cuts
   (§6 explains why, and which of the two brief-offered options was taken).
-- **`app/components/home/OxPosters.tsx`** (rewritten) — merchant field
+- **`app/components/home/OxPosters.tsx`** (rewritten), merchant field
   (`image_N`/`link_N`/`alt_N`/`label`/`label_en`) read first, content map
   second, per card, inside one `useMemo`; a merchant-supplied image is
   treated as available immediately, independent of `scripts/posters-import.mjs`
@@ -64,51 +64,51 @@ and `app/content/salla-ids.ts` before use, not assumed from the brief.
   link in the theme uses) replaces the old bespoke inline category query;
   the S5a rail markup, the S6b `Icon` nav arrows and the S7d subline are all
   byte-for-byte unchanged.
-- **`app/components/home/defaults.ts`** — `HOME_BLOCK_HEIGHTS['ox-posters']`
-  re-measured for the 4:5 card (mobile 456, desktop 477; was 369/387 — §3
+- **`app/components/home/defaults.ts`**, `HOME_BLOCK_HEIGHTS['ox-posters']`
+  re-measured for the 4:5 card (mobile 456, desktop 477; was 369/387, §3
   has the arithmetic); `HOME_BLOCK_FIELDS['ox-posters']` gains the 20 new
   merchant fields, every one `null` (parity with `twilight.json`, and with
   the "ships every merchant field empty" test in `tests/home/defaults.test.ts`).
-- **`twilight.json`** — `home.ox-posters` block gains 20 fields
+- **`twilight.json`**, `home.ox-posters` block gains 20 fields
   (`image_1..6`, `link_1..6`, `alt_1..6`, `label`, `label_en`), every
   `"value": null`. §7's fixed test forbids a non-empty default value; the
   `description`/`placeholder` text on each field tells the owner what it is
   for and what it defaults to instead.
-- **`app/components/listing/ListingPage.tsx`** — new local `OffersPosterGrid()`
+- **`app/components/listing/ListingPage.tsx`**, new local `OffersPosterGrid()`
   component (not exported, mirrors the file's own existing pattern of small
   composed sub-components like `FeaturedRail`), rendered above the grid only
   when `source.type === 'offers'`; the results wrapper carries
   `id="offers-grid"` on that one variant only.
-- **`app/routes/offers.tsx`** — `offersHeadExtend()` wraps the shared
+- **`app/routes/offers.tsx`**, `offersHeadExtend()` wraps the shared
   `listingHeadExtend()` and overrides `title`/`description` from new
   `ox.seo.offers.*` keys, since the static `offers` source has no taxonomy
   node for the shared extension to key off (§1's own logic only fires for a
   category/goal slug).
-- **`app/components/home/OxServices.tsx`** — `BandRow` takes an optional
-  `id` prop; the plans row now carries `id="plans"` — the
+- **`app/components/home/OxServices.tsx`**, `BandRow` takes an optional
+  `id` prop; the plans row now carries `id="plans"`, the
   weight-subscription poster's `/services#plans` fallback, one attribute,
   per the brief.
-- **`app/styles/06-ox/_b2-home.scss`** — `.ox-pcard` family rebuilt: the two
+- **`app/styles/06-ox/_b2-home.scss`**, `.ox-pcard` family rebuilt: the two
   per-tier `@media` blocks that used to hold the clip-path/strap-width
   overrides are gone; `.ox-pcard` is `aspect-ratio: 4/5` with no clip-path;
   new `.ox-pcard__placeholder`/`.ox-pcard__caption`; `.ox-pcard__slash` is
   one fixed size (no more three tiers). `.ox-posters__slide` and the nav/
   arrow rules (S5a/S6b) are untouched.
-- **`app/styles/06-ox/_b4-listing.scss`** — new §16, the offers poster grid
+- **`app/styles/06-ox/_b4-listing.scss`**, new §16, the offers poster grid
   (`.ox-offers-posters`/`__title`/`__grid`, 1-up below 768, 2-up from 768,
   3-up from 1280, per the brief).
-- **`locales/ar.json`/`locales/en.json`** — the five old poster keys
+- **`locales/ar.json`/`locales/en.json`**, the five old poster keys
   (`ox.home.poster.*`, 15 lines each locale) deleted; nine new keys merged in
   from the new partial (`node scripts/i18n-merge.mjs` → 9 added, 0 updated,
   both locales).
-- **`locales/partials/s7a.ar.json`/`s7a.en.json`** (new) — the six poster
+- **`locales/partials/s7a.ar.json`/`s7a.en.json`** (new), the six poster
   `alt` keys, `ox.offers.posters_title`, `ox.seo.offers.title`/
   `.description` (measured to SEO-ENG-010's target ranges, §9).
-- **`scripts/posters-import.mjs`** (new) — Node + Python/PIL, §4.
-- **`tests/home/OxPosters.test.tsx`** (rewritten) — 11 tests, §10.
-- **`tests/listing/ListingPage.test.tsx`** (new describe block) — 4 tests,
+- **`scripts/posters-import.mjs`** (new), Node + Python/PIL, §4.
+- **`tests/home/OxPosters.test.tsx`** (rewritten), 11 tests, §10.
+- **`tests/listing/ListingPage.test.tsx`** (new describe block), 4 tests,
   §10.
-- **`docs/build/progress/S7a.md`** — this file.
+- **`docs/build/progress/S7a.md`**, this file.
 
 `app/components/home/HomeSkeleton.tsx` was read (per the brief's own list)
 but needed no edit: `PostersSkeleton()`'s four placeholder blocks already
@@ -133,7 +133,7 @@ at the 1440 probe (the 4-visible tier). `.ox-pcard` traded its old flat
 
 Everything else in the block (the `SectionHeader` row, the nav, the rail's
 own cue/progress-strap addition) is unchanged by this batch, so only the
-card term of the previous total moves — a delta, the same method S5a itself
+card term of the previous total moves, a delta, the same method S5a itself
 used for its own +7px rail-primitive adjustment, not a fresh live
 re-derivation of the whole block:
 
@@ -142,7 +142,7 @@ re-derivation of the whole block:
 
 `HOME_BLOCK_HEIGHTS['ox-posters']` is now `{ mobile: 456, desktop: 477 }`.
 Read back live (§11): `.s-block--ox-posters` on `/ar` reserves
-`min-height:clamp(456px, calc(448.2px + 2vw), 477px)` — the exact
+`min-height:clamp(456px, calc(448.2px + 2vw), 477px)`, the exact
 `clampHeight(456, 477)` output, confirmed on the running page, not only in
 the unit test.
 
@@ -153,19 +153,19 @@ the unit test.
 Node + Python/PIL via `child_process.spawnSync`. `python` is tried before
 `python3` (`python3` on this machine is the Microsoft Store alias stub that
 refuses to run; `python` at `C:\Python314\python.exe`, with Pillow 12.3.0, is
-the real one — both probed live with `--version` before picking one, so the
+the real one, both probed live with `--version` before picking one, so the
 script fails loudly rather than silently picking a broken binary elsewhere).
 
 **What it does.** Reads `public/assets/posters/*.{png,jpg,jpeg,webp}`; a file
 matches a slug either by exact basename (`inbody-consult.png`) or through
 `public/assets/posters/map.json` (`{"<file>": "<slug>"}`), map entries taking
-precedence, and — when both a plain original and this script's own prior
-`<slug>.webp` output exist for one slug — prefers the non-`.webp` original,
+precedence, and, when both a plain original and this script's own prior
+`<slug>.webp` output exist for one slug, prefers the non-`.webp` original,
 so a re-run always re-derives from the pristine file rather than
 re-compressing an already-compressed one. For each resolved slug: opens the
 source once in Python/Pillow, writes `<slug>.webp` (1125 wide),
 `<slug>-720.webp`, `<slug>-450.webp`, quality 82, each proportional to the
-SOURCE file's own aspect ratio (never cropped — the brief's own "4:5
+SOURCE file's own aspect ratio (never cropped, the brief's own "4:5
 preserved" is read as "do not force a ratio the source does not have", since
 the owner's real files are expected to already be close to 4:5 and the
 import's job is resizing, not correcting). Prints a table, then flips that
@@ -175,14 +175,14 @@ declaration (§7.1 explains why this is two plain `indexOf` calls, not a
 single regex).
 
 **On an empty (or missing) folder:** prints exactly `no posters yet` plus
-what to do next, and exits 0 —
+what to do next, and exits 0 -
 
 ```
 $ node scripts/posters-import.mjs
 no posters yet
 Drop the six poster files into public\assets\posters\, named exactly one slug
 each (inbody-consult.png, weekly-picks.jpg, bundle-her.png, bundle-him.png,
-weight-subscription.png, bigramy-creatine.png — any of .png/.jpg/.jpeg/.webp),
+weight-subscription.png, bigramy-creatine.png, any of .png/.jpg/.jpeg/.webp),
 or keep your own filenames and add a map.json ({"<file>": "<slug>"}). Then run
 `node scripts/posters-import.mjs` again.
 ```
@@ -199,19 +199,19 @@ or, once all six exist, `All six posters processed.`
 
 ### 4.1 Tested live, three passes, each cleaned up afterward
 
-No poster files and no `available: true` are left anywhere in the tree —
+No poster files and no `available: true` are left anywhere in the tree -
 confirmed after every pass (`grep -c "available: false" app/content/posters.ts`
 → 6, `grep -c "available: true"` → 0, `public/assets/posters/` absent).
 
-1. **Empty folder** — the exact output quoted above, exit 0.
+1. **Empty folder**, the exact output quoted above, exit 0.
 2. **Exact-slug filenames** (`inbody-consult.png` at 900×1120,
    `weekly-picks.jpg` at 900×1120, both a synthetic 4:5 test image): produced
    `<slug>.webp` at **1125×1400**, `<slug>-720.webp` at **720×896**,
-   `<slug>-450.webp` at **450×560** for both — the source's own 900:1120
+   `<slug>-450.webp` at **450×560** for both, the source's own 900:1120
    ratio held exactly at every output width, confirmed by
    `PIL.Image.open(...).size` on all six output files directly, not
    asserted. Flipped both slugs' `available` to `true`. A second run
-   reported `already true` for both and left the other four untouched —
+   reported `already true` for both and left the other four untouched -
    idempotent.
 3. **`map.json`** (`{"my-export-03.png": "bundle-her"}`, an arbitrary
    filename at 1000×1250): resolved to `bundle-her`, produced the same three
@@ -222,13 +222,13 @@ confirmed after every pass (`grep -c "available: false" app/content/posters.ts`
 
 The first `markAvailable()` used one regex, `slug: '<slug>'[\s\S]*?available:\s*false`.
 A lazy quantifier backtracks until the WHOLE pattern matches; once a slug's
-own `available` was already `true`, the regex did not simply fail — it kept
+own `available` was already `true`, the regex did not simply fail, it kept
 extending past that `true` and matched the NEXT entry's `available: false`
 instead, flipping the wrong slug (`weekly-picks` was found flipped to `true`
 after only `inbody-consult` had ever been processed, on the second/idempotency
 run). Rewritten to two plain `text.indexOf()` calls (find `slug: '<slug>'`,
 then the nearest `available:` after it, then read and replace only that
-value) — no backtracking, no cross-entry match possible. Re-verified clean
+value), no backtracking, no cross-entry match possible. Re-verified clean
 across all three passes above after the fix; the corrupted test state
 (`weekly-picks: true`) was reverted by hand before re-testing.
 
@@ -239,7 +239,7 @@ across all three passes above after the fix; the corrupted test state
 `posterHref()`'s offers-page branch for `weekly-picks` originally returned
 the bare fragment `#offers-grid`. `PosterCard` runs every `to` through the
 theme's own `toInternalPath()` (`app/components/layout/navLinks.ts`), which
-prefixes anything not already starting with `/` — a bare fragment included —
+prefixes anything not already starting with `/`, a bare fragment included -
 so the rendered `href` was `/#offers-grid`: a link to the HOME route's own
 hash, not a same-page scroll on `/offers`. Caught by
 `tests/listing/ListingPage.test.tsx`'s new "points the weekly-picks poster at
@@ -249,7 +249,7 @@ path, `/offers#offers-grid`, which survives `toInternalPath` unchanged.
 
 ---
 
-## 6. The diagonal corner cuts: dropped, not reduced — and why
+## 6. The diagonal corner cuts: dropped, not reduced, and why
 
 The brief offered two options for the cuts S3b/S4a gave `.ox-pcard`
 (top-right and bottom-left, 34°): reduce them to the smallest identity-ladder
@@ -263,11 +263,11 @@ guess, not a safe one. Sharp corners (`border-radius: 0`) stay regardless,
 per the brief.
 
 The angled orange strap stays (the brief is explicit that it should), rebuilt
-at the smallest lean/run pair the identity ladder has (40/27 — the tier
+at the smallest lean/run pair the identity ladder has (40/27, the tier
 `GoalCard`'s own 390 probe uses) since there is no clip left to size a bigger
 one against. **This is a residual, honest risk, not a solved one**: the
 strap sits at the physical top-right, the same zone the brief names as
-holding "a vertical tagline" — a real file whose tagline runs to within a
+holding "a vertical tagline", a real file whose tagline runs to within a
 few pixels of that corner can still visually collide with it. Flagged in the
 SCSS itself (`.ox-pcard__slash`'s own comment) and here, for the visual QA
 pass the owner or a later batch should do once the six real files land and
@@ -281,8 +281,8 @@ substitute for.
 ### 7.1 A merchant-uploaded image was hidden behind the "no file yet" placeholder
 
 `OxPosters.tsx`'s `available` prop was originally wired straight to
-`card.available` — the content map's own flag, which only
-`scripts/posters-import.mjs` ever flips — even for a poster whose `image_N`
+`card.available`, the content map's own flag, which only
+`scripts/posters-import.mjs` ever flips, even for a poster whose `image_N`
 merchant field IS set. That would have hidden a merchant's own dashboard
 upload behind the unavailable placeholder until someone ALSO ran the import
 script for that slug's unrelated default file, which makes no sense: a
@@ -301,11 +301,11 @@ treats a merchant image as available before the import script ever runs".
 
 While re-reading `OxPosters.tsx` per the coordinator's instruction, its
 `<SectionHeader subline={t('ox.home.posters_lead')} />` call (added by S7d,
-still in-flight — `docs/build/progress/S7d.md` exists but was untracked at
+still in-flight, `docs/build/progress/S7d.md` exists but was untracked at
 the time this was checked, so that batch had not finished) was checked
 against `app/components/common/SectionHeader.tsx`. `SectionHeaderProps` DOES
 declare `subline?: ReactNode` (line 24), but the component function never
-destructures it — it falls into the `...rest` spread and lands on `<header
+destructures it, it falls into the `...rest` spread and lands on `<header
 {...rest}>` as an inert, invalid DOM attribute, never rendered as visible
 text. Confirmed by reading the whole file (`grep -n subline` → one hit, the
 type declaration only) and by inspecting the render body directly.
@@ -313,7 +313,7 @@ type declaration only) and by inspecting the render body directly.
 **Not fixed here.** `SectionHeader.tsx` is a shared primitive with 15+ call
 sites, is not named anywhere in this batch's brief, and a concurrent batch
 was already mid-edit on the exact feature (the subline) that exposed the
-bug — fixing it here risks colliding with that batch's own save. This
+bug, fixing it here risks colliding with that batch's own save. This
 batch's own `ox.home.posters_lead` consumption (inherited from that same
 concurrent edit, not authored by this batch) is therefore visually silent
 today: the section header shows only the title until `SectionHeader.tsx`
@@ -327,7 +327,7 @@ conductor) rather than worked around.
 ## 9. A second cross-batch finding, flagged not fixed: `tests/content/imagePaths.test.ts` cannot see this batch's own asset references inside the full suite
 
 `app/content/posters.ts` intentionally references six files that are not on
-disk yet (`/assets/posters/<slug>.webp`) — by design: the path has to be
+disk yet (`/assets/posters/<slug>.webp`), by design: the path has to be
 stable and known ahead of time so `scripts/posters-import.mjs` can write the
 owner's file to exactly that path later, and `PosterCard` never actually
 requests it until `available` is true (§6), which is the same "never fire a
@@ -356,13 +356,13 @@ this batch:
    (empirically: 0 missing reported) because of that carried-over state.
 
 Not this batch's file to fix (not in the file list this brief gives), and
-not this batch's bug to have introduced — the shared mutable regex was
+not this batch's bug to have introduced, the shared mutable regex was
 already there; this batch's six new references are just the first case this
 session to land after another `it` block in the same file ran first and left
 state behind. **Left exactly as found**, with this finding recorded for
 whoever owns that test: the fix is resetting `ASSET_REF.lastIndex = 0`
 before the second test's own loop (or a fresh `RegExp` per use), and
-separately, a narrower content question the same owner should decide —
+separately, a narrower content question the same owner should decide -
 whether `/assets/posters/*` belongs in the file's own `NOT_A_FILE`-style
 allowlist now that a poster's path is legitimately, deliberately unresolved
 until the owner's import runs, and the component itself never requests it
@@ -378,8 +378,8 @@ i18n-merge.mjs` → 9 added, 0 updated, both locales):
 
 | key | value | length |
 |---|---|---|
-| `ox.posters.*.alt` ×6 | the six strings the brief supplies verbatim (AR) plus a claims-clean English twin composed for this batch | — |
-| `ox.offers.posters_title` | AR "العروض والباقات والاشتراكات" / EN "Offers, bundles and subscriptions" | — |
+| `ox.posters.*.alt` ×6 | the six strings the brief supplies verbatim (AR) plus a claims-clean English twin composed for this batch |, |
+| `ox.offers.posters_title` | AR "العروض والباقات والاشتراكات" / EN "Offers, bundles and subscriptions" |, |
 | `ox.seo.offers.title` | AR "عروض المكملات الغذائية والباقات \| اوبتيمال اكس" / EN "Supplement Offers and Bundles in Saudi Arabia \| OptimalX" | AR 46 (target 45-55), EN 56 (target 50-60) |
 | `ox.seo.offers.description` | AR "تصفح عروض اوبتيمال اكس على المكملات: منتجات بأسعار مخفضة وباقات موفرة وخطط استشارية، مع الشحن إلى جميع مدن السعودية من فرع المدينة المنورة." / EN "Browse OptimalX supplement offers: discounted products, money-saving bundles and advisory plans, shipped across Saudi Arabia from our Medina branch." | AR 139 (target 130-150), EN 148 (target 140-160) |
 
@@ -399,7 +399,7 @@ theme's copy rules.
 
 ## 11. Tests
 
-### `tests/home/OxPosters.test.tsx` — rewritten, 11/11 green
+### `tests/home/OxPosters.test.tsx`, rewritten, 11/11 green
 
 One card per `POSTER_CARDS` entry with the correct `data-poster` slugs; the
 unavailable placeholder (alt as a visible caption, zero `<img>` elements) as
@@ -416,7 +416,7 @@ fix); the rail primitive's markup (S5a) and the `Icon`-drawn nav arrows
 (S6b) both intact; `loading="eager"` on the first two cards, `"lazy"` past
 them.
 
-### `tests/listing/ListingPage.test.tsx` — new describe block, 4/4 green
+### `tests/listing/ListingPage.test.tsx`, new describe block, 4/4 green
 
 The six posters render above the product grid with the
 `ox.offers.posters_title` h2 (asserted before the `ox-listing__catalogue`
@@ -466,7 +466,7 @@ $ node scripts/check-jsonld.mjs tests/fixtures/jsonld/*.json
 
 (The brief's own verification chain writes `node scripts/check-jsonld.mjs`
 with no arguments; run bare, it prints `no files matched` and exits 1,
-because the script always needs a file glob — `package.json`'s own
+because the script always needs a file glob, `package.json`'s own
 `check:jsonld` script supplies one, and that is the form run above. Not a
 finding in this batch's own work; noted so the bare form is not mistaken for
 a regression.)
@@ -483,7 +483,7 @@ compiles clean (only the pre-existing @import deprecation warnings)
 ```
 
 `scripts/posters-import.mjs` on an empty `public/assets/posters/`: prints
-`no posters yet` plus the owner instructions, exits 0 — §4 has the full
+`no posters yet` plus the owner instructions, exits 0, §4 has the full
 transcript and the three live import passes that followed and were cleaned
 up afterward. Final state re-confirmed: `grep -c "available: false"
 app/content/posters.ts` → 6, `grep -c "available: true"` → 0,
@@ -502,11 +502,11 @@ app/content/posters.ts` → 6, `grep -c "available: true"` → 0,
   والاشتراكات"; six `data-poster` values in the SSR HTML, in the exact order
   `inbody-consult, weekly-picks, bundle-her, bundle-him,
   weight-subscription, bigramy-creatine`; six `.ox-pcard__placeholder`
-  elements, zero `.ox-pcard__photo` — all six cards render in the
+  elements, zero `.ox-pcard__photo`, all six cards render in the
   unavailable state with the alt text as a caption, live, on the real page,
   not only in a unit test.
 - `/ar`: `.s-block--ox-posters` reserves `min-height:clamp(456px, calc(448.2px
-  + 2vw), 477px)` — the exact re-measured value from §3, confirmed on the
+  + 2vw), 477px)`, the exact re-measured value from §3, confirmed on the
   running page. The carousel's own cards do not appear in this route's SSR
   HTML (`useTaxonomyLinks`/the category query mount client-side for this
   block), the same pre-existing condition `docs/build/progress/S4a.md`/`S5a.md`
@@ -524,46 +524,46 @@ app/content/posters.ts` → 6, `grep -c "available: true"` → 0,
    image (nothing else on the page adds text on top of them).
 2. Drop them into `public/assets/posters/`, named exactly one of:
    `inbody-consult`, `weekly-picks`, `bundle-her`, `bundle-him`,
-   `weight-subscription`, `bigramy-creatine` — any of `.png`/`.jpg`/`.jpeg`/
+   `weight-subscription`, `bigramy-creatine`, any of `.png`/`.jpg`/`.jpeg`/
    `.webp`. (Keeping your own export filenames is fine too: add
    `public/assets/posters/map.json` mapping each filename to its slug,
    `{"my-export-01.png": "inbody-consult", ...}`.)
 3. Run `node scripts/posters-import.mjs`. It resizes each to three widths,
    prints a table, and turns that poster on everywhere it appears (the home
-   carousel and the `/offers` grid) — no other step, no deploy, no code
+   carousel and the `/offers` grid), no other step, no deploy, no code
    change.
 4. Run it again any time you replace a file; it always re-derives from
    whichever original it finds that run, never from its own previous output.
 5. To change a poster's picture, link or alt text without touching the file
    on disk at all, use the dashboard fields instead (Theme settings → the
    poster carousel block → Poster 1-6 image/link/alt, and the section title
-   override) — those always win over the file this script writes.
+   override), those always win over the file this script writes.
 
 ---
 
 ## 14. Deviations, consolidated
 
-1. **The diagonal corner cuts are dropped, not reduced** (§6) — the safer of
+1. **The diagonal corner cuts are dropped, not reduced** (§6), the safer of
    the two options the brief offered, given files that do not exist yet.
 2. **The angled strap is a residual, honest risk** (§6): it sits in the same
    physical corner the brief names as holding a vertical tagline. Flagged in
    the SCSS and here for a visual QA pass once real files land.
 3. **`SectionHeader.tsx`'s `subline` prop is declared but never rendered**
-   (§8) — a cross-batch bug found, not fixed (out of this batch's files, a
+   (§8), a cross-batch bug found, not fixed (out of this batch's files, a
    concurrent batch is mid-edit on the exact feature).
 4. **`tests/content/imagePaths.test.ts` cannot see this batch's own asset
    references when run inside the full suite** (§9), due to a pre-existing
-   shared-global-regex bug in that file — found, not fixed (out of this
+   shared-global-regex bug in that file, found, not fixed (out of this
    batch's files); confirmed the underlying rule (never fire a request for a
    file that cannot arrive) is actually upheld by the `available` gate, by
    running the test in isolation.
-5. **`locales/partials/s7a.*`, not `s7.*`** — the brief's own text names
+5. **`locales/partials/s7a.*`, not `s7.*`**, the brief's own text names
    `locales/partials/s7.ar.json`/`s7.en.json`; every sibling batch in this
    session (`s7b`, `s7c`, `s7d`) names its partial after its own batch
    letter, and this batch is S7a, so `s7a.*` was used for consistency with
    that established, already-shipped convention rather than the brief's
    literal (and likely shorthand) spelling.
 6. **Two bugs were found and fixed inside this batch's own new code before
-   they shipped** (§4.2, §5, §7.1) — recorded in full above per the "if the
+   they shipped** (§4.2, §5, §7.1), recorded in full above per the "if the
    plan turns out wrong, report it" rule, not silently absorbed into a clean
    diff.

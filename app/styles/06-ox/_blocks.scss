@@ -6,13 +6,13 @@
 
 // ---------------------------------------------------------------------------
 // 1. OxBranch (S9c: the branch photograph is the block itself, not a
-//    panel beside one — `.ox-cover`/`.ox-cover__*`, `_covers.scss` — retiring
+//    panel beside one, `.ox-cover`/`.ox-cover__*`, `_covers.scss`, retiring
 //    the split-panel grid this section drew under DIRECTION 5.2/6.12/4.5;
 //    S9h swaps the ground photograph itself for the storefront)
 // ---------------------------------------------------------------------------
 
-// The single content stack — title, rating, offer, address, hours, actions,
-// pickup note — in the SAME composition at every width (S9c direction §6):
+// The single content stack, title, rating, offer, address, hours, actions,
+// pickup note, in the SAME composition at every width (S9c direction §6):
 // no two-column split, on the cover or off it.
 .ox-branch__head,
 .ox-branch__meta {

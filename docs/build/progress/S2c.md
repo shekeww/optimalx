@@ -1,4 +1,4 @@
-# S2c: advisory band, brand band, CTA band — progress (2026-09-22)
+# S2c: advisory band, brand band, CTA band, progress (2026-09-22)
 
 Batch: S2c, from `docs/build/brief-S2-2026-09-22.md` (S2c section + the
 2026-09-22 evening owner amendments), extended mid-batch (after a session
@@ -21,7 +21,7 @@ batch introduced (see "Pre-existing, unrelated failures").
    `ox.services.title` headline, a new `ox.home.band_subline`, the three
    `PlanCard` doors, one filled `ox-angled(44px)` CTA under the row (home
    only, `routeOut`), and the limit-of-our-work line. Ground is flat
-   `--ox-graphite` plus one skewed motif (`--ox-skew`) — never a per-card
+   `--ox-graphite` plus one skewed motif (`--ox-skew`), never a per-card
    slash. The three `ChannelCard`s moved out entirely.
 2. **Channels moved to the top of `/services`.** `ServicesHub` mounts a new
    channels section (heading `ox.services.channels_title`, the three
@@ -33,7 +33,7 @@ batch introduced (see "Pre-existing, unrelated failures").
    `ox.home.band_card_cta`. Verified (grep, both current-session and the
    committed values): `ox.content.services.training_where` still carries
    "داخل المدينة المنورة" and `ox.content.services.video_desc` still carries
-   "مكتوبة" — the two guardrails in the brief's S2c decisions — untouched by
+   "مكتوبة", the two guardrails in the brief's S2c decisions, untouched by
    this batch, rule 4 (no edits) held throughout.
 4. **Brand band.** `OxBrands` gained a section header (`ox.home.brands_title`,
    new key), a manifest `image` field exposed as `--ox-band-image` (painted
@@ -41,7 +41,7 @@ batch introduced (see "Pre-existing, unrelated failures").
 5. **CTA band.** New `OxCtaBand.tsx`, reusing the `ox-newsletter` registry
    slot (see "Deviations" for why): headline/line (new keys
    `ox.home.cta_headline`/`ox.home.cta_line`), one filled CTA to `/services`,
-   an image slot, `OxNewsletter` folded in — the whole band behind
+   an image slot, `OxNewsletter` folded in, the whole band behind
    `show_newsletter`.
 6. **Native newsletter subscribe, researched as asked.** `grep -rliE
    "newsletter|subscribe" node_modules/@salla.sa/twilight-theme-engine` (all
@@ -49,16 +49,16 @@ batch introduced (see "Pre-existing, unrelated failures").
    stays gated with no `subscribe` prop wired, exactly as it shipped before
    this batch. Recorded as the open question, not decided.
 7. **X-IDENTITY-2026-09-22.md §§2-4 applied**, `_x-motif.scss` confirmed
-   absent (`ls` — no such file):
+   absent (`ls`, no such file):
    - §4.5 (faded photographic cards): `.ox-plan__scrim` rewritten to the
-     doc's own literal gradient (`236deg` RTL / `124deg` LTR — a
+     doc's own literal gradient (`236deg` RTL / `124deg` LTR, a
      `linear-gradient()` angle is outside `--ox-angle`/`--ox-skew`'s reach,
      so the doc's own literal values are correct here, not a hand-picked
      degree), the four stops (0.94/0.78/0.60/0.46) and the photo opacity
      (0.55, in the shared `[data-ready]` rule section 5 already declares).
      Because the darkest stop sits at the top-inline-start corner (both
      directions, worked through in `PlanCard`'s docblock), `.ox-plan__body`
-     moved from a bottom-aligned stack to `justify-content: flex-start` —
+     moved from a bottom-aligned stack to `justify-content: flex-start` -
      content now lives in the one zone the doc's measured floor (alpha
      ≥ 0.60 for `--ox-ink-on-dark` over a worst-case white pixel) actually
      clears.
@@ -67,15 +67,15 @@ batch introduced (see "Pre-existing, unrelated failures").
      (bottom-inline-end) corner; confirmed no corner-cut mixin is used
      anywhere on `.ox-plan`.
    - §3.2 (158px law): found and fixed a real violation this batch had
-     already introduced — `.ox-brands__accent` was a 20px-tall `skewX`
+     already introduced, `.ox-brands__accent` was a 20px-tall `skewX`
      rectangle, and 3.2 reserves an angle below 158px block-size for sprite
      symbols only. Removed the `transform`; the bar is accent-coloured, not
-     angled, now. See "Requests to other batches" — the section's angled
+     angled, now. See "Requests to other batches", the section's angled
      primitive is a pending item, not invented under time pressure.
    - `.ox-services__motif`/`--hair` and `.ox-cta-band__motif` are unchanged
      (`skewX(var(--ox-skew))` on elements spanning the full band height, well
      over 158px) and will pick up 34° automatically once `tokens.css`'s
-     `--ox-angle` is updated by whichever batch owns that file — confirmed
+     `--ox-angle` is updated by whichever batch owns that file, confirmed
      via `git diff` that this batch never touched `tokens.css`.
    - `--x-motif.scss`'s `ox-lean-corner`/`ox-notch`/`ox-step-edge` mixins:
      **pending**, file does not exist. Nothing in this batch's scope needed
@@ -87,51 +87,51 @@ batch introduced (see "Pre-existing, unrelated failures").
 
 ## Files changed
 
-- `app/components/home/OxServices.tsx` — rewrite: single tier, eyebrow +
+- `app/components/home/OxServices.tsx`, rewrite: single tier, eyebrow +
   subline, motif, one CTA, retired-key removal.
-- `app/components/home/PlanCard.tsx` — rewrite: faded photo + §4.5 scrim,
+- `app/components/home/PlanCard.tsx`, rewrite: faded photo + §4.5 scrim,
   watermark, top-start content, hover ring not lift, `--ox-icon-mono` glyph.
-- `app/components/home/OxBrands.tsx` — section header, `image` field,
+- `app/components/home/OxBrands.tsx`, section header, `image` field,
   accent bar (un-angled per §3.2).
-- `app/components/home/OxCtaBand.tsx` — new.
-- `app/components/home/OxNewsletterBlock.tsx` — now renders `OxCtaBand`.
-- `app/components/home/defaults.ts` — `ox-services` moved directly after
+- `app/components/home/OxCtaBand.tsx`, new.
+- `app/components/home/OxNewsletterBlock.tsx`, now renders `OxCtaBand`.
+- `app/components/home/defaults.ts`, `ox-services` moved directly after
   `ox-categories` (ahead of `ox-brands`); `ox-services` height re-measured
   (588/655, was 796/342); `ox-brands`/`ox-newsletter` gained `image`
   (+`headline`/`line` on newsletter) in `HOME_BLOCK_FIELDS`; heights/gating
   otherwise unchanged.
-- `app/components/home/index.ts` — export `OxCtaBand`.
-- `app/components/pages/ServicesHub.tsx` — new channels section at the top;
+- `app/components/home/index.ts`, export `OxCtaBand`.
+- `app/components/pages/ServicesHub.tsx`, new channels section at the top;
   `OxServices` mount unchanged except the channels no longer live inside it.
-- `app/components/pages/ServiceSection.tsx` — faded photo header (light-ground
+- `app/components/pages/ServiceSection.tsx`, faded photo header (light-ground
   variant, see "Deviations").
-- `app/content/services.ts` — `HOME_PLANS` gained `photo` (each plan's own
+- `app/content/services.ts`, `HOME_PLANS` gained `photo` (each plan's own
   destination frame) and the training icon changed `form` → `goal-performance`
   (the sprite's dumbbell; `form` drew a wedge, the wrong glyph for a session).
-- `app/styles/06-ox/_primitives.scss` — `.ox-icon__accent` gained the
+- `app/styles/06-ox/_primitives.scss`, `.ox-icon__accent` gained the
   `--ox-icon-mono` indirection (fallback preserves the other ~50 callers);
   `.ox-icon--mono` added.
-- `app/styles/06-ox/_b2-home.scss` — section 7 (OxBrands: image band, header,
+- `app/styles/06-ox/_b2-home.scss`, section 7 (OxBrands: image band, header,
   accent), section 8 rewritten (OxServices/PlanCard, single tier, §4.5
   scrim, watermark), dead section 18 (two-tier CSS) deleted, new section 19
   (OxCtaBand); the shared `.ox-plan__photo[data-ready]` opacity (section 5,
   S2b's `OxGoals`/`GoalCard` section, shared selector) updated 0.48 → 0.55
-  per §4.5 — the one line in that section this batch owns.
-- `app/styles/06-ox/_b5-pages.scss` — `.ox-service__head` faded-photo
+  per §4.5, the one line in that section this batch owns.
+- `app/styles/06-ox/_b5-pages.scss`, `.ox-service__head` faded-photo
   treatment (light-ground, `.ox-service__photo`/`__scrim`), new channels
   section reuses the existing `.ox-hub__channel`/`.ox-channels` primitives
   unchanged.
-- `twilight.json` — `home.ox-services` moved ahead of `home.ox-brands`;
+- `twilight.json`, `home.ox-services` moved ahead of `home.ox-brands`;
   `home.ox-brands` gained an `image` field; `home.ox-newsletter` gained
   `image`/`headline`/`line`.
 - `locales/partials/s2.ar.json` / `s2.en.json`, `locales/ar.json` /
-  `en.json` — six new keys (below), Arabic-first, no existing value touched.
-- `tests/home/OxServices.test.tsx` — rewritten for the single-tier band (no
+  `en.json`, six new keys (below), Arabic-first, no existing value touched.
+- `tests/home/OxServices.test.tsx`, rewritten for the single-tier band (no
   more channel/slash/reply assertions inside `OxServices`; new assertions
   for the watermark, the one CTA, the retired keys never rendering).
-- `tests/pages/ServicesHub.test.tsx` — two new tests for
+- `tests/pages/ServicesHub.test.tsx`, two new tests for
   `ox.home.services_reply` under the channels section.
-- `tests/home/OxCtaBand.test.tsx` — new, 7 tests (gate, headline/line
+- `tests/home/OxCtaBand.test.tsx`, new, 7 tests (gate, headline/line
   fallback and override, CTA href, `--ox-band-image`, the folded-in form,
   claims sweep).
 
@@ -140,7 +140,7 @@ batch introduced (see "Pre-existing, unrelated failures").
 Computed from the token arithmetic (spacing scale, line-heights, the
 `clamp()` this file's own `clampHeight()` emits) and cross-checked against
 the live SSR HTML's `min-height` style, **not measured in a rendered browser
-viewport** — this environment has no devtools/screenshot access, only `curl`.
+viewport**, this environment has no devtools/screenshot access, only `curl`.
 Flagged honestly rather than presented as a live measurement.
 
 **`ox-services` (the advisory band):**
@@ -149,7 +149,7 @@ Flagged honestly rather than presented as a live measurement.
   floor + 6/8 scroller focus padding) + 24 gap + 44 CTA + 16 gap + 20 note +
   48 pad-bottom = **588**.
 - 320 (container 288): same skeleton; the plans row height is unchanged (the
-  232px card floor is a `min-block-size`, independent of container width —
+  232px card floor is a `min-block-size`, independent of container width -
   only the cards' own width shrinks, 213px vs 265px). The subline's 56ch cap
   does not bind at 288px, so before this batch's fix it could wrap to 3
   lines (588 + ~25 = ~613), a real under-reservation; clamped to 2 lines
@@ -159,7 +159,7 @@ Flagged honestly rather than presented as a live measurement.
   `min-block-size: 260px` + row gap) + 32 gap + 44 CTA + 16 gap + 20 note +
   64 = **655**.
 - Verified end to end: the SSR HTML's `.s-block--ox-services` carries
-  `style="min-height:clamp(588px, calc(563.114px + 6.381vw), 655px)"` —
+  `style="min-height:clamp(588px, calc(563.114px + 6.381vw), 655px)"` -
   the exact `HOME_BLOCK_HEIGHTS['ox-services']` value, resolved by
   `clampHeight()` and read back off the live page.
 
@@ -172,11 +172,11 @@ has no matching skeleton shape for.
 
 ## Retired keys
 
-- `ox.home.plans_title` — was the advisory band's section title; superseded
+- `ox.home.plans_title`, was the advisory band's section title; superseded
   by the live `ox.services.title`.
-- `ox.home.plans_tier_title` — was the second tier's heading; no tier left to
+- `ox.home.plans_tier_title`, was the second tier's heading; no tier left to
   head once the channels moved out.
-- `ox.home.plan_cta` — was the per-card CTA label; superseded by the new
+- `ox.home.plan_cta`, was the per-card CTA label; superseded by the new
   `ox.home.band_card_cta` (and the band's one CTA, which reads
   `ox.common.view_all`).
 
@@ -205,7 +205,7 @@ token, no diacritic, no em-dash), then confirmed by the gates below.
 
 - **Whoever owns `_x-motif.scss`/`check-identity.mjs`** (not yet built):
   `OxBrands` currently has ONE accent element (the un-skewed bar) and NO
-  angled primitive — X-IDENTITY §3.2's 158px law forbids a CSS angle on an
+  angled primitive, X-IDENTITY §3.2's 158px law forbids a CSS angle on an
   element that small, and the brand strip has no other element ≥158px tall to
   carry one. Per §3.2 the compliant device is a sprite symbol with an
   internal 34° diagonal; this batch did not invent one under time pressure.
@@ -215,14 +215,14 @@ token, no diacritic, no em-dash), then confirmed by the gates below.
   batch): `ServicesSkeleton()`'s placeholder shape
   (`.ox-skel-grid--channels`, three dark blocks under a bar) is now a rough
   approximation of the single-tier band rather than the two-tier one it was
-  written for — the reserved *height* is exact (verified against the live
+  written for, the reserved *height* is exact (verified against the live
   `clamp()`), only the internal skeleton shape is stale. Not fixed here
   (restricted file). `KitchenSink.tsx` already wires `OxBrands`/`OxServices`/
   `OxNewsletterBlock` generically through `HOME_BLOCK_FIELDS`, so it picked
   up this batch's new fields with no edit needed; it shows one state per
   block (matching the file's pre-existing pattern, e.g. `OxBanner`'s two
   panels), not the full no-data/live-data/merchant-selection/missing-image
-  matrix the brief asks for — verified instead through this batch's own
+  matrix the brief asks for, verified instead through this batch's own
   vitest suite (`tests/home/OxServices.test.tsx`,
   `tests/pages/ServicesHub.test.tsx`), which does cover: no image (default
   band), merchant image, merchant title override, `routeOut` on/off, missing
@@ -231,7 +231,7 @@ token, no diacritic, no em-dash), then confirmed by the gates below.
 - **Conductor**: the three retired keys (above) are ready to delete once
   every reader is confirmed clear; `ox.home.services_title`/
   `ox.home.services_intro` were found already orphaned (zero references in
-  `app/`) independent of this batch — pre-existing, flagged not fixed.
+  `app/`) independent of this batch, pre-existing, flagged not fixed.
   Native-newsletter-subscribe question stays open (see "Steps done" 6):
   no SDK transport exists today.
 
@@ -243,7 +243,7 @@ token, no diacritic, no em-dash), then confirmed by the gates below.
   CLS-safe, and both files/tables are split across ownership
   (`HomeSkeleton.tsx` restricted to S2b; `defaults.ts`'s height table is
   this batch's for band/brand/CTA entries, but the skeleton shape is not).
-  Reusing the slot means the whole band — headline, line, CTA and the form —
+  Reusing the slot means the whole band, headline, line, CTA and the form -
   shares one `show_newsletter` gate and one 0/0 reservation, all already
   correct and already tested (`tests/home/optionalBlocks.test.ts` unchanged,
   still green). Documented at length in `OxCtaBand.tsx`'s own docblock.
@@ -268,7 +268,7 @@ token, no diacritic, no em-dash), then confirmed by the gates below.
   touching a shared rule.
 - **34° scrim angle is a literal `236deg`/`124deg`, not
   `calc(var(--ox-skew))`.** Every other instruction in this batch's brief
-  says "tokens only, never a literal degree" — X-IDENTITY §4.5 is the one
+  says "tokens only, never a literal degree", X-IDENTITY §4.5 is the one
   documented exception, because a `linear-gradient()` direction is not
   reachable through `--ox-angle`/`--ox-skew` (those feed `skewX()`/
   `clip-path`, not gradient angles), and the doc itself declares the two
@@ -308,11 +308,11 @@ check-tokens: 117 token(s) defined, 310 file(s) scanned, 0 problem(s)
 ```
 
 `curl -s "http://localhost:3210/ar?storeId=1888890798" | grep -a -c "ox-services"` → `1` (matching line found;
-the block is DIRECTION's own lazy-loaded shell — only `ox-hero`/`ox-goals`/
+the block is DIRECTION's own lazy-loaded shell, only `ox-hero`/`ox-goals`/
 `ox-products`, the three "priority" blocks, render full markup in the raw
 SSR HTML, confirmed against `DefaultHome.tsx`'s own docblock: "the same lazy
 wrapper... on the first three blocks." `ox-services` renders its real
-skeleton with the exact reserved height instead — see "Measured numbers" —
+skeleton with the exact reserved height instead, see "Measured numbers" -
 and hydrates to the real cards client-side, which this batch's vitest suite
 verifies directly since a raw curl cannot).
 
@@ -333,7 +333,7 @@ Zero raw `ox.` keys on either page.
 
 `pnpm vitest run` (whole suite) currently reports 51 failures, all in
 `tests/layout/Header.test.tsx`, `tests/layout/chrome.test.tsx`,
-`tests/listing/ListingPage.test.tsx` and `tests/i18n-keys.test.ts` — none of
+`tests/listing/ListingPage.test.tsx` and `tests/i18n-keys.test.ts`, none of
 them files this batch touched. Root cause traced to
 `app/components/listing/useTaxonomyLinks.ts:73`
 (`TypeError: Cannot read properties of undefined (reading 'matches')` in
@@ -354,14 +354,14 @@ flow through with no edit needed, at their default (empty) state. The
 no-data / live-data / merchant-selection / missing-image matrix the brief
 asks for is instead exercised by this batch's own tests:
 - `OxBrands`: hidden under 4 (`tests/home/blocks.test.tsx`), 4+ live brands,
-  a brand with no logo (name-on-plate fallback) — all pre-existing coverage,
+  a brand with no logo (name-on-plate fallback), all pre-existing coverage,
   untouched by this batch and still green.
 - `OxServices`/`PlanCard`: no merchant image (default dark ground), merchant
   image set, merchant title override, `routeOut` true/false, a plan with no
   photo file (`BandPhoto`'s null-on-error path, covered by
   `tests/content/imagePaths.test.ts` for path resolution and by this batch's
   rewritten `OxServices.test.tsx` for the render itself).
-- `OxCtaBand`: `tests/home/OxCtaBand.test.tsx` (new, 7 tests, all green) —
+- `OxCtaBand`: `tests/home/OxCtaBand.test.tsx` (new, 7 tests, all green) -
   hidden while `show_newsletter` is off, locale-fallback headline/line,
   merchant headline/line override, the one CTA's href, `--ox-band-image` set
   only when a merchant image exists, the newsletter form folding in under

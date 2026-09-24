@@ -36,16 +36,20 @@ export function FooterBottom() {
               name="copyright"
               context={{ storeName: store?.name }}
               fallback={<Copyright storeName={store?.name} />}
+
             />
           </Suspense>
+
         </p>
+
 
         {showTagline ? (
           <p className="ox-footer__en" lang="en" dir="ltr" data-testid="ox-footer-en-tagline">
             <span className="ox-latin-track">{t('ox.footer.en_tagline')}</span>
+
             {/* This line is always `dir="ltr"` (an English tagline), so the
                 chevron always points at its own reading end, right, and never
-                mirrors under the page's `[dir="rtl"]` — even though
+                mirrors under the page's `[dir="rtl"]`, even though
                 `chevron-end` is one of Icon.tsx's five auto-mirrored names.
                 The inline `transform: none` outranks `.ox-mirror`'s
                 `[dir='rtl']` rule (that rule carries no `!important`), which
@@ -55,9 +59,13 @@ export function FooterBottom() {
                 (_b1-layout.scss, owned elsewhere) already paints this accent
                 through the class the Icon component carries. */}
             <Icon name="chevron-end" size={14} style={{ transform: 'none' }} />
+
           </p>
+
         ) : null}
       </div>
+
     </div>
+
   );
 }

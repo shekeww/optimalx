@@ -113,7 +113,7 @@ export function appliedFilterCount(search: string | null | undefined): number {
 // ---------------------------------------------------------------------------
 // The brand facet (S2f item 6). The listing loader's `filters` field is the
 // engine's own generic shape (`Filter { key, label, type, values }`,
-// `@salla.sa/twilight-theme-engine/api/product`) — the same array
+// `@salla.sa/twilight-theme-engine/api/product`), the same array
 // `FiltersRail`/`FiltersDrawer` hand `salla-filters` whole. There is no fixed
 // spelling for "the brand one" published anywhere, so it is found by its OWN
 // `key` rather than guessed at from a URL param name, and everything below

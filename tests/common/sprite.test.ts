@@ -15,7 +15,7 @@ import { ALIASES } from '../../scripts/import-owner-icons.mjs';
  * G2 reviewer cannot check by eye across ~95 symbols at five sizes.
  *
  * The weight assertion changed direction. The old file set `stroke-width` on
- * the sprite's root `<svg>` and this suite *forbade* it on a `<symbol>` — but
+ * the sprite's root `<svg>` and this suite *forbade* it on a `<symbol>`, but
  * `<use>` clones a symbol into a shadow tree that inherits from the `<use>`
  * element, not from the sprite root, so the root value never reached a
  * rendered path and every icon in the live theme drew at SVG's initial
@@ -53,20 +53,20 @@ const SYMBOLS: Sym[] = [...SOURCE.matchAll(/<symbol\s+([^>]*)>([\s\S]*?)<\/symbo
  * scripts/import-owner-icons.mjs, plus four aliases that are byte-for-byte
  * copies of one of those 47 under a name our components already call
  * (`ox-heart` = wishlist, `ox-headset` = help, `ox-truck` = shipping,
- * `ox-shield-check` = authentic — the same ALIASES map the generator uses, so
+ * `ox-shield-check` = authentic, the same ALIASES map the generator uses, so
  * the two never drift). This supersedes the ten-symbol
  * `OWNER_APPROVED_ORIGINALS` allowlist from the pre-S8b sprite: the owner's
  * newest delivery covers the ten product categories too (their previous
- * "restored verbatim, no class=ox-sym" exemption is gone — they now carry the
+ * "restored verbatim, no class=ox-sym" exemption is gone, they now carry the
  * full stroke contract like every other owner symbol).
  *
  * These 51 ids are exempt from the drawing-language assertions this suite
- * otherwise enforces — lattice angles, no primitive shapes, live-area fill,
- * accent share — because that geometry is the owner's, not drawn to our
+ * otherwise enforces, lattice angles, no primitive shapes, live-area fill,
+ * accent share, because that geometry is the owner's, not drawn to our
  * system. They still have to be declared, unique, on the 24 grid,
  * transform-free on `<symbol>`/`<path>`, carry `class="ox-sym"` and the full
  * stroke contract, and paint their accent only through our two classes with
- * no literal colour — the generator enforces all of that at import time, and
+ * no literal colour, the generator enforces all of that at import time, and
  * this suite re-checks it on the committed file.
  */
 const OWNER_MANIFEST = JSON.parse(
@@ -263,7 +263,7 @@ describe('ox-sprite.svg', () => {
     expect(SYMBOLS.find((symbol) => symbol.id === 'ox-mark')?.attrs['data-mirror']).toBeUndefined();
   });
 
-  // Every symbol carries the full stroke contract now, owner-drawn or not —
+  // Every symbol carries the full stroke contract now, owner-drawn or not -
   // the pre-S8b exemption that let the ten category originals skip
   // class="ox-sym" is gone (see OWNER_EXEMPT above). Only #ox-mark, which is
   // not drawn to the icon grid at all, stays off it.
@@ -301,13 +301,13 @@ describe('ox-sprite.svg', () => {
   // The weight law, carried where it actually reaches a rendered path: on the
   // symbol. A value on the sprite root never crosses the `<use>` boundary.
   // stroke-width is checked separately below, scoped to nonOwnerDrawn: an
-  // owner-exempt symbol may carry its own value (2026-09-24 ruling, item 1 —
+  // owner-exempt symbol may carry its own value (2026-09-24 ruling, item 1 -
   // e.g. goal-ideal-weight's 2.3), but fill/stroke/miterlimit/class are never
   // part of that per-file override, so they stay asserted on every symbol.
   // `ox-star-fill` (S9j, 2026-09-25) is the one drawn symbol whose fill is
   // not "none" by design: it is `star` repainted solid via ALIAS_ATTRS for
   // the Google-rating accent-fill row, so its own fill is asserted here
-  // instead of the shared default — a precise, single-id exemption, not a
+  // instead of the shared default, a precise, single-id exemption, not a
   // broadening of the rule to every OWNER_EXEMPT symbol.
   const FILL_OVERRIDDEN = new Set(['ox-star-fill']);
   it('sets the stroke contract on every drawn symbol', () => {
@@ -331,7 +331,7 @@ describe('ox-sprite.svg', () => {
 
   // Owner-exempt symbols may carry their own caps/joins (2026-09-24 ruling:
   // item 1's per-file override, e.g. goal-ideal-weight's round caps/joins;
-  // item 2's category override, the ten product categories' round joins) —
+  // item 2's category override, the ten product categories' round joins) -
   // scoped to nonOwnerDrawn, same reasoning as the stroke-width test above.
   it('declares square caps and miter joins on every non-owner symbol', () => {
     expect(nonOwnerDrawn.filter((s) => s.attrs['stroke-linecap'] !== 'square').map((s) => s.id)).toEqual([]);
@@ -351,7 +351,7 @@ describe('ox-sprite.svg', () => {
 
   // Item 2 of the owner's 2026-09-24 ruling: "sharp angled icons such as the
   // product categories to be a bit rounded on the edges if it does not ruin
-  // the shape" — corners only, caps stay square, no geometry touched. Ids
+  // the shape", corners only, caps stay square, no geometry touched. Ids
   // derived from the manifest's own category field rather than hardcoded, so
   // this stays in step with optimal-x-icons/icons.json.
   it('rounds only the corners of the ten product-category symbols, not the caps', () => {
@@ -389,10 +389,10 @@ describe('ox-sprite.svg', () => {
   });
 
   // Scoped per-symbol rather than a raw SOURCE regex (2026-09-24: the header
-  // comment and two owner rulings now legitimately contain "round" — a
-  // per-file override, item 1, and the product-category corners, item 2 —
+  // comment and two owner rulings now legitimately contain "round", a
+  // per-file override, item 1, and the product-category corners, item 2 -
   // both confined to OWNER_EXEMPT symbols). Owner-drawn rounded rects
-  // (rx/ry) are a separate, scoped check below — the owner's set may use
+  // (rx/ry) are a separate, scoped check below, the owner's set may use
   // them.
   it('has no rounded linecap or linejoin outside owner-exempt symbols, and no bevel anywhere', () => {
     const offenders = SYMBOLS.filter(
@@ -406,7 +406,7 @@ describe('ox-sprite.svg', () => {
 
   // rx/ry (a rounded rect corner) is one of the primitive-shape features the
   // owner's set may use (omega-3, vitamins-minerals draw a capsule with
-  // <rect rx="3">) — no primitive shape at all is a drawing-language
+  // <rect rx="3">), no primitive shape at all is a drawing-language
   // assertion OWNER_EXEMPT carves out. Everything we still draw stays
   // path-only with square corners.
   it('has no rx/ry outside the owner-drawn symbols', () => {
@@ -421,13 +421,13 @@ describe('ox-sprite.svg', () => {
     expect(SOURCE).toContain('.ox-icon--16{--ox-icon-stroke:2.25px}');
     // S6b deviation 6: the bump also lives in _primitives.scss's own
     // `.ox-icon--16` rule now (the tidier home for it, docs/build/progress/
-    // S6a.md deviation 6) — additive, not a replacement of the assertion
+    // S6a.md deviation 6), additive, not a replacement of the assertion
     // above, since app/assets/ox-sprite.svg is another batch's file.
     expect(PRIMITIVES_SOURCE).toMatch(/&--16\s*\{[^}]*--ox-icon-stroke:\s*2\.25px/);
   });
 
   // viewBox is one of the five attributes a source root may override
-  // (2026-09-24 ruling, item 1 — goal-ideal-weight's own "1 1 22 22"), so the
+  // (2026-09-24 ruling, item 1, goal-ideal-weight's own "1 1 22 22"), so the
   // default is only asserted outside OWNER_EXEMPT.
   it('draws every non-owner symbol on the 24 grid, with no transform on <symbol> or <path>', () => {
     const nonOwnerSymbols = SYMBOLS.filter((s) => !OWNER_EXEMPT.has(s.id));

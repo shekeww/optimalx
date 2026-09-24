@@ -53,18 +53,18 @@
   justify-content: center;
   // A TRUE 1:1 square at every width, with nothing left to cap it (owner
   // review, 2026-09-23, item 3): the old `max-block-size` cap (132px flat,
-  // 184px raised for the 1024-up listing grid) fought this exact property —
+  // 184px raised for the 1024-up listing grid) fought this exact property -
   // at the grid's own 306px cell (274px of card content once the card's own
   // padding is out) the cap held the plate to 184px tall against a 274px
   // wide box, a rectangle rather than a square. `aspect-ratio` alone already
-  // reserves the correct square space before the image loads — the cap was
+  // reserves the correct square space before the image loads, the cap was
   // never needed for CLS, only a stand-in for it.
   aspect-ratio: 1 / 1;
   overflow: hidden;
   // THE PLATE GROUND (owner review, 2026-09-24): the PDP gallery's own page
   // ground, so the band and mark below have a surface to sit on. `--ox-bg`
   // equals `--ox-card` in light mode (both `#FFFFFF`), so this is a
-  // no-visible-difference declaration against the card's own white surface —
+  // no-visible-difference declaration against the card's own white surface -
   // section 3.1's recorded departure from a grey plate (a lossy photograph's
   // own baked-in white ground reading as a rectangle inside a grey box) still
   // holds, because the ground here is white, not grey; only the band and the
@@ -74,16 +74,16 @@
 
   // The engine's own `<Image>` wraps the `<img>` in its own `position:
   // relative` div carrying its OWN `aspect-ratio: 1/1` (inline style,
-  // theme-engine's CLS mechanism — `Image.tsx`'s own contract), but as a
+  // theme-engine's CLS mechanism, `Image.tsx`'s own contract), but as a
   // flex child with no explicit size it sizes to its content rather than to
-  // the plate, so its square could disagree with the plate's own and —
-  // through `overflow: hidden` on that same wrapper — clip whatever the
+  // the plate, so its square could disagree with the plate's own and -
+  // through `overflow: hidden` on that same wrapper, clip whatever the
   // mismatch cut off. Pinning it flush to the plate (the same box every
-  // other direct child here already sits in — the badges, the swatch column
+  // other direct child here already sits in, the badges, the swatch column
   // and the variant chooser are all `position: absolute` too) removes the
   // ambiguity and, as a second effect, is what actually makes the hover
   // image's own wrapper land exactly over the resting one instead of beside
-  // it in the flex row. `:has()` reaches this wrapper specifically — it
+  // it in the flex row. `:has()` reaches this wrapper specifically, it
   // carries no class of its own to select by.
   > :has(> .ox-card-product__img) {
     position: absolute;
@@ -95,8 +95,8 @@
 // Off the shared `ox-plate-band`/`ox-plate-mark` mixins (`_primitives.scss`),
 // the same definition the PDP gallery's own `.ox-gallery__band`/
 // `.ox-gallery__mark` use, so the two surfaces cannot drift apart. Rendered
-// before the image in `OxProductCard.tsx`, so plain DOM paint order — no
-// z-index of their own needed — keeps them behind the packshot; the image
+// before the image in `OxProductCard.tsx`, so plain DOM paint order, no
+// z-index of their own needed, keeps them behind the packshot; the image
 // wrapper above takes `z-index: 1` to sit above them explicitly.
 .ox-card-product__band {
   @include ox-plate-band;
@@ -142,7 +142,7 @@
 }
 
 // CARD-2026-09-23 section 8: the second image's cross fade and the hover
-// border both go instant under reduced motion, never removed outright — the
+// border both go instant under reduced motion, never removed outright, the
 // second image is information, not decoration, so it still swaps.
 @media (prefers-reduced-motion: reduce) {
   .ox-card-product,
@@ -162,7 +162,7 @@
 }
 
 // `.ox-card-product__wish` is gone outright (owner review, 2026-09-24: "if
-// anything can't be integrated in Shopify, delete it" — the header audit's
+// anything can't be integrated in Shopify, delete it", the header audit's
 // own ruling, extended to the card's heart the same day). The PDP gallery
 // keeps its own wishlist control (`.ox-gallery__wish`), a separate decision.
 
@@ -258,7 +258,7 @@
 }
 
 // The stock line (CARD-2026-09-23 sections 0.2/3.6): text only, no icon, no
-// bar, --ox-note (5.69:1 on --ox-card). Not reserved when absent — unlike the
+// bar, --ox-note (5.69:1 on --ox-card). Not reserved when absent, unlike the
 // spec line, a low-quantity notice is genuinely rare and reserving it would
 // cost every other card an 18px hole.
 .ox-card-product__stock {
@@ -299,7 +299,7 @@
 // it, which would make it shorter than an in-stock neighbour on the same
 // row. RECOMPUTED (owner review, 2026-09-24): the variant chooser moved onto
 // the plate and the excerpt/consult rows are gone outright, both of which
-// shrank the live body itself, so the reservation shrinks with it — measured
+// shrank the live body itself, so the reservation shrinks with it, measured
 // live (`getBoundingClientRect`) on the catalogue's own listing: **204** at
 // 390 (title 44 + chips 18 + price 30 + action 88, three 8px gaps) against a
 // sold-out body's own natural 160 (title + chips + price + one 44px
@@ -551,7 +551,7 @@
 // THE IMAGE'S OWN FRAME, WHICH IS THE ZOOM CONTROL NOW (S2f item 5, owner
 // review 2026-09-22): a tap or a click anywhere on the photograph enlarges
 // it, so the separate labelled button this replaced (`.ox-gallery__zoom`,
-// bottom-start of the plate, "تكبير الصورة") no longer has anything to draw —
+// bottom-start of the plate, "تكبير الصورة") no longer has anything to draw -
 // the whole plate is the tap target instead. `cursor: zoom-in` is the one
 // visible affordance a pointer gets; the accessible name (`ox.pdp.zoom_label`)
 // and `aria-pressed` carry the control for a keyboard or a screen reader.
@@ -893,6 +893,16 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: var(--ox-2);
+
+  // The saving badge is two flex items, the label and the `Price` span, and
+  // `.ox-badge` is inline-flex, so the space between them in the markup is a
+  // collapsible space at the end of an anonymous flex item and never paints
+  // (the label ran straight into the amount on both platforms; review
+  // 2026-09-24, P2). The gap is that space: the same 4px the product card's
+  // own pill already carries (`.ox-card-product__saving-badge`, _b4-listing).
+  .ox-badge--saving {
+    gap: var(--ox-1);
+  }
 }
 
 .ox-pdp__tax,
@@ -1438,13 +1448,13 @@ input.ox-supply__value {
   // THE UN-UPGRADED STATE, exactly as the product card handles it, and for the
   // same measured reason: `salla-add-product-button` only becomes a button when
   // Salla's SDK registers the custom element, and when it does not the host
-  // sits there as an unstyled inline box with a bare label — no fill, no shape,
+  // sits there as an unstyled inline box with a bare label, no fill, no shape,
   // no glyph. That is what "the colour of the buttons on the product page
   // changed" looks like: not a colour that moved, a button that never arrived.
   //
   // So the HOST carries the hero's primary face itself and hands it over the
   // instant the real element appears. Same mixin, same fill, same 19px floor,
-  // same 22 degrees — the product page's one call to action is the hero's CTA
+  // same 22 degrees, the product page's one call to action is the hero's CTA
   // in both states rather than only in the lucky one.
   .sticky-product-bar salla-add-product-button:not(:has(.s-button-element)) {
     display: inline-flex;
@@ -1467,7 +1477,7 @@ input.ox-supply__value {
 
     // The painted outline's FILL, at z-index -1 rather than 0, and that sign is
     // the whole rule. The clip removes a real border, so the edge is the
-    // element's own background and this inset pseudo is the inside — but the
+    // element's own background and this inset pseudo is the inside, but the
     // label here is a BARE TEXT NODE from the engine's form, not an element,
     // so it cannot be lifted above the fill the way `ox-secondary-face` lifts
     // its children with `> *`. In painting order a negative-z-index child lands
@@ -1562,11 +1572,11 @@ body.is-sticky-product-bar.product-single {
 
 // ---------------------------------------------------------------------------
 // 9b. The buy zone below 768, REBUILT (UX-2026-09-24 P0-3: "the mobile buy
-// row overlaps itself" — the previous design's own `.ox-buy__actions {
+// row overlaps itself", the previous design's own `.ox-buy__actions {
 // position: absolute; inset-block-end: 0 }` anchored buy-now to `.ox-buy`'s
 // own bottom edge on the theory that the qty/add row was the last thing in
 // the form, but `.ox-buy`'s own box ends there too, so buy-now painted
-// directly on top of the add button and the stepper instead of below them —
+// directly on top of the add button and the stepper instead of below them -
 // measured live: `.ox-buy__now` y288 h48, `salla-quantity-input` y290 h40,
 // `salla-add-product-button` y284 h52, all three overlapping.
 //
@@ -1575,7 +1585,7 @@ body.is-sticky-product-bar.product-single {
 // this is now three real, IN-FLOW rows, never an absolute overlay: row A the
 // stepper alone (120×44, flush to the reading start); row B add-to-cart
 // alone, full width, with its own real label restored (not icon-only any
-// more — a full-width control has the room); row C buy-now, full width,
+// more, a full-width control has the room); row C buy-now, full width,
 // already exactly 358×48 at this breakpoint from its own pre-existing
 // `@media (max-width: 639px)` rule further down this file, unaffected by
 // this section.
@@ -1585,7 +1595,7 @@ body.is-sticky-product-bar.product-single {
     position: relative;
   }
 
-  // Row A / row B, 12px apart — the label's own reading gap, not the 8px
+  // Row A / row B, 12px apart, the label's own reading gap, not the 8px
   // spacing token, since UX-2026-09-24 names 12 specifically.
   .sticky-product-bar {
     grid-template-columns: 1fr;
@@ -1594,14 +1604,14 @@ body.is-sticky-product-bar.product-single {
   }
 
   // Row A: the stepper alone, flush to the reading start, 120 wide (was
-  // 140 — UX-2026-09-24's own re-measurement).
+  // 140, UX-2026-09-24's own re-measurement).
   .sticky-product-bar__quantity {
     justify-self: start;
     inline-size: 120px;
   }
 
   // Row B: FULL WIDTH now (was 40%, with buy-now absolutely positioned
-  // beside it — the layout P0-3 replaces). No `justify-self: start` any
+  // beside it, the layout P0-3 replaces). No `justify-self: start` any
   // more: the row's own single column already stretches a full-width item.
   .sticky-product-bar > *:not(.sticky-product-bar__quantity) {
     inline-size: 100%;
@@ -1621,17 +1631,17 @@ body.is-sticky-product-bar.product-single {
   // THE FULL LABEL IS BACK (UX-2026-09-24 P0-3): a 358px-wide row has room
   // for "أضف إلى السلة" and the glyph both, so the icon-only treatment (and
   // its own zero-margin glyph adjustment) this block used to carry is
-  // removed outright rather than merely unused — nothing here still hides
+  // removed outright rather than merely unused, nothing here still hides
   // the word.
   //
   // STRAIGHT, not angled: the old 40%-width button measured 91px wide,
   // under X-IDENTITY §2.4's own `run / 0.24` floor for `ox-angled(48px)`
-  // (`ox-run(48px)` = 32.4, floor = 32.4 / 0.24 = 135px) — illegal on the
+  // (`ox-run(48px)` = 32.4, floor = 32.4 / 0.24 = 135px), illegal on the
   // identity document's own terms, not merely cramped. The fix widens the
   // button to full row width (358px, well clear of the floor) AND drops the
   // parallelogram (`border-radius: var(--ox-r-2)` in its place), per
   // UX-2026-09-24's own explicit instruction, so buy-now (row C) stays the
-  // page's one angled control at this breakpoint — the same "one angled
+  // page's one angled control at this breakpoint, the same "one angled
   // gesture reads as intentional, two read as noise" reasoning X-IDENTITY
   // §3.3 already gives for the product card. `clip-path: none` cancels the
   // base (desktop) rule's own `ox-angled(52px)`, with the `[dir='ltr']`
@@ -1649,7 +1659,7 @@ body.is-sticky-product-bar.product-single {
   }
 
   // Row C: buy-now, a REAL SIBLING now, not an absolutely positioned
-  // overlay — `.ox-buy__actions` simply flows after the form, 12px below
+  // overlay, `.ox-buy__actions` simply flows after the form, 12px below
   // row B (UX-2026-09-24's own row gap), which is what actually fixes the
   // overlap: there is no longer a `position: absolute` for `.ox-buy`'s own
   // box to mis-measure against. `display: grid` is UX-2026-09-24's own
@@ -1664,19 +1674,19 @@ body.is-sticky-product-bar.product-single {
 }
 
 // ---------------------------------------------------------------------------
-// 9c. The PDP's colour swatches (`salla-product-options`, light DOM —
+// 9c. The PDP's colour swatches (`salla-product-options`, light DOM -
 // docs/build/engine-surface.md §15.1) (owner review, 2026-09-23, item 3)
 //
 // Salla always supplies the merchant's own `color` per value here
 // (fixtures/store/product-details.json, product 1673105563's "اللون" option;
 // confirmed identical against the live SSR payload), painted as an inline
-// style, so this never touches the colour itself — only the ring, the crop
+// style, so this never touches the colour itself, only the ring, the crop
 // and the spacing. The rendered order is `option.details`'s own array order,
 // unchanged by anything below.
 // ---------------------------------------------------------------------------
 .s-product-options-colors-wrapper {
   // Ring width (2px outline + 2px offset = 4px) plus 2px, so the last dot's
-  // ring never sits flush on the row's own edge — the owner-reported crop.
+  // ring never sits flush on the row's own edge, the owner-reported crop.
   padding-inline: 6px;
   overflow: visible;
 }
@@ -1826,7 +1836,7 @@ body.is-sticky-product-bar.product-single {
   min-block-size: 48px;
   // Label size: this button's own JSX carries `.ox-btn--primary`, which now
   // reads `--ox-btn-primary-size` off the shared mixin (owner review,
-  // 2026-09-23, item 2) — no separate literal needed here.
+  // 2026-09-23, item 2), no separate literal needed here.
 }
 
 @media (min-width: 1024px) {
@@ -2092,17 +2102,28 @@ body.is-sticky-product-bar.product-single {
 // ---------------------------------------------------------------------------
 .ox-strip {
   position: relative;
+  // The rule under the tabs sits on the wrapper, not on the list: the list
+  // below takes the `.ox-rail__track` block padding, and a border on the
+  // list would move 4px away from the tabs with that padding. On the wrapper
+  // it stays exactly where it was, flush under the 44px tab row.
+  border-block-end: 1px solid var(--ox-bd-2);
 }
 
 .ox-strip__list {
   position: relative;
   display: flex;
   gap: var(--ox-6);
-  margin: 0;
-  padding: 0;
+  // Sideways only (the `.ox-rail__track` treatment, `_rail.scss`): with
+  // `overflow-x: auto` alone the block axis computed to `auto` too, and the
+  // indicator's 1px over the rule gave the strip 1px of up-and-down play
+  // below 1024. `overflow-y: hidden` closes that axis; the 4px block
+  // padding, taken back by the negative margin so nothing moves, keeps the
+  // tab's 2px-offset focus ring inside the scrollport instead of clipped.
+  margin: -4px 0;
+  padding: 4px 0;
   overflow-x: auto;
+  overflow-y: hidden;
   list-style: none;
-  border-block-end: 1px solid var(--ox-bd-2);
   scroll-snap-type: x proximity;
   scrollbar-width: none;
 
@@ -2141,7 +2162,10 @@ body.is-sticky-product-bar.product-single {
 // what keeps the movement on the compositor instead of on layout.
 .ox-strip__ind {
   position: absolute;
-  inset-block-end: -1px;
+  // 3px up from the list's padding edge, which sits 4px under the tabs: the
+  // bar's bottom lands 1px under the tab row, over the wrapper's rule, the
+  // same place `-1px` put it when the list carried the rule itself.
+  inset-block-end: 3px;
   inset-inline-start: 0;
   inline-size: 1px;
   block-size: 3px;
@@ -3155,8 +3179,8 @@ label.ox-fbt__row {
 //
 // THE PRIMARY HALF OF A PAIR. The engine's form owns the stepper and the add
 // button, and the add button is the SECONDARY above; this is the accent. The
-// two together are the hero's own pair — one filled call to action and one
-// painted outline, on the same 22 degrees — so the product page, the card and
+// two together are the hero's own pair, one filled call to action and one
+// painted outline, on the same 22 degrees, so the product page, the card and
 // the first screen all speak with the same two buttons.
 //
 // It is a proxy rather than a second cart path: the component clicks the
@@ -3165,7 +3189,7 @@ label.ox-fbt__row {
 // validation and the toast (CLAUDE.md: cart logic stays Salla's).
 //
 // Ink on `--ox-accent` (owner review, 2026-09-23, item 2; DIRECTION 2.2)
-// measures 5.01:1, clearing AA at any size or weight — white on the same
+// measures 5.01:1, clearing AA at any size or weight, white on the same
 // fill was 3.59:1, legal only as large text (≥18.67px bold). 19px here is
 // this button's own sizing choice, not a contrast requirement any more.
 // ---------------------------------------------------------------------------
@@ -3192,8 +3216,8 @@ label.ox-fbt__row {
   inline-size: 100%;
   // MIN, not a fixed block-size (S2f item 4, owner review 2026-09-22: the
   // label was clipped at its bottom edge). `--ox-lh-flat` (1.2) is tight
-  // enough that Cairo's Arabic descenders — deeper than a Latin font's at the
-  // same size — can paint past a fixed box's bottom edge, which is exactly
+  // enough that Cairo's Arabic descenders, deeper than a Latin font's at the
+  // same size, can paint past a fixed box's bottom edge, which is exactly
   // what a hard `clip-path` (`ox-angled`, below) then cuts off. `min-block-size`
   // lets the box grow the few pixels a real descender needs instead of
   // holding it to a height the glyph does not fit.
@@ -3203,7 +3227,7 @@ label.ox-fbt__row {
   border-radius: 0;
   font-family: inherit;
   // Label size: the mixin above now sets `--ox-btn-primary-size` (owner
-  // review, 2026-09-23, item 2) — no separate literal needed here.
+  // review, 2026-09-23, item 2), no separate literal needed here.
   // Cairo needs about 1.6 to clear its own Arabic descenders at 16-18px,
   // not the flat 1.2 a one-line button label defaults to elsewhere: at 19px,
   // 1.2 gives a 22.8px line box against Cairo's own deeper descent metric,

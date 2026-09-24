@@ -1,5 +1,5 @@
 // Builds app/assets/ox-sprite.svg from the owner's delivered icon system
-// (optimal-x-icons/, read-only input — see docs/build/progress/S8b.md). The
+// (optimal-x-icons/, read-only input, see docs/build/progress/S8b.md). The
 // owner's 47 drawings become the sprite of record from 2026-09-24; nothing in
 // optimal-x-icons/ is redrawn or "improved" here, only translated into our
 // sprite's existing contract (docs/build/progress/S6a.md §1.2, S6d.md §2):
@@ -17,32 +17,32 @@
 //   3. converts the owner's two inline accent styles to our accent classes
 //      (style="stroke:var(--ox-accent,#FF4A1A)" -> class="ox-icon__accent
 //      ox-icon__accent--stroke"; style="fill:var(--ox-accent,#FF4A1A)"[;
-//      stroke:none] -> class="ox-icon__accent" stroke="none" — both fill
+//      stroke:none] -> class="ox-icon__accent" stroke="none", both fill
 //      forms mean "this element's whole paint is the accent", which is
 //      exactly what ox-icon__accent already is in _primitives.scss) and any
 //      other inline style to the equivalent presentation attributes, so no
 //      <style> and no literal colour survives;
 //   4. self-closes empty <path>/<circle>/<rect> tags (the owner writes
 //      <path…></path>; our sprite and scripts/gen-icon-mask.mjs's <path…/>
-//      matcher both expect the self-closed form — purely a tag-syntax
+//      matcher both expect the self-closed form, purely a tag-syntax
 //      normalisation, the geometry is untouched);
 //   5. wraps the result in our <symbol> shell, with data-mirror="1" where
 //      icons.json's rtlFlip says so.
 // <circle>, <rect> and any other element the owner drew (including a
-// <g transform="…"> wrapper on three icons) are kept exactly as drawn — nested
+// <g transform="…"> wrapper on three icons) are kept exactly as drawn, nested
 // content aside from the empty elements above is never touched.
 //
 // Two owner rulings, 2026-09-24 (docs/build/ICONS-2026-09-24.md, this file's
 // own header note), layered on top of step 5's shell:
 //   a. the source root's own viewBox, stroke-width, stroke-linecap,
-//      stroke-linejoin and overflow — when it carries one — ship on the
+//      stroke-linejoin and overflow, when it carries one, ship on the
 //      <symbol> in place of the shell default (ownerSvgRootAttrs); an
 //      override file (app/assets/icon-overrides/, readOwnerSource above) is
 //      exactly this case, e.g. goal-ideal-weight's own 2.3 stroke and round
 //      caps/joins;
 //   b. the ten product-category symbols (manifest category
-//      "product-categories") additionally take stroke-linejoin="round" —
-//      corners only, caps stay square, no geometry touched — via
+//      "product-categories") additionally take stroke-linejoin="round" -
+//      corners only, caps stay square, no geometry touched, via
 //      CATEGORY_ATTRS, applied after (a) so it wins even though the owner's
 //      category files also spell out the default "miter" themselves.
 //
@@ -56,13 +56,13 @@
 // A fifth, `star-fill` (S9j, 2026-09-25), is not an owner drawing: `star` is
 // one of the "remaining" symbols below, not one of the owner's 47, so
 // `star-fill` instead copies `star`'s current sprite geometry and repaints it
-// solid via ALIAS_ATTRS. It still goes through this same alias path — copied
-// by the generator, never hand-edited into the sprite — so it stays in step
+// solid via ALIAS_ATTRS. It still goes through this same alias path, copied
+// by the generator, never hand-edited into the sprite, so it stays in step
 // with `star` if that drawing ever changes.
 //
 // Every id Icon.tsx names that is neither one of the owner's 47 nor one of
 // these four aliases is carried forward unchanged from the sprite already on
-// disk when this script runs (git HEAD a5049de) — the "remaining" symbols the
+// disk when this script runs (git HEAD a5049de), the "remaining" symbols the
 // owner's set does not cover, with their -s twins where they have one. That
 // is what makes two runs idempotent: the owner-derived symbols are a pure
 // function of optimal-x-icons/svg/*.svg (untouched, read-only), and the
@@ -111,7 +111,7 @@ export const ALIASES = {
 /**
  * Shell paint attributes an alias may override (owner ruling, 2026-09-25,
  * S9j): `star-fill` is `star`'s geometry painted solid, because a
- * presentation attribute on a `<symbol>` — `star`'s own `fill="none"` — always
+ * presentation attribute on a `<symbol>`, `star`'s own `fill="none"`, always
  * outranks a CSS fill declared on the `<use>` that references it, so the
  * Google-rating fill row's stylesheet rule could never have worked. Every
  * other alias has no entry here and keeps the shell's plain `fill="none"
@@ -133,7 +133,7 @@ const SHELL_DEFAULTS = {
 /**
  * Owner ruling, 2026-09-24, item 2: "sharp angled icons such as the product
  * categories [should be] a bit rounded on the edges if it does not ruin the
- * shape." Corners only — caps stay square, no path data touched — keyed by
+ * shape." Corners only, caps stay square, no path data touched, keyed by
  * the owner's manifest category (optimal-x-icons/icons.json).
  * @type {Record<string, Record<string, string>>}
  */
@@ -186,7 +186,7 @@ export function ownerSvgInner(source) {
 export function convertAccentStyles(inner) {
   let out = inner;
   // Fill accent (a plane): with or without an explicit ";stroke:none", the
-  // owner's meaning is the same — this element's whole paint is the accent —
+  // owner's meaning is the same, this element's whole paint is the accent -
   // which is exactly what class="ox-icon__accent" already is
   // (_primitives.scss: fill: var(--ox-icon-mono, var(--ox-accent)); stroke:
   // none). The explicit stroke="none" attribute is added too so the paint is
@@ -200,7 +200,7 @@ export function convertAccentStyles(inner) {
     /\sstyle="stroke:var\(--ox-accent,#FF4A1A\)"/g,
     ' class="ox-icon__accent ox-icon__accent--stroke"'
   );
-  // Anything else: presentation attributes, not a style block — and never a
+  // Anything else: presentation attributes, not a style block, and never a
   // literal colour.
   out = out.replace(/\sstyle="([^"]*)"/g, (_all, decls) => {
     const attrs = decls
@@ -273,8 +273,8 @@ export function renderOwnerSymbol(id, svgSource, mirror, categoryAttrs = {}, att
  * An alias whose source is not an owner manifest icon but a symbol already in
  * the sprite (S9j, 2026-09-25: `star-fill` from `star`). Reuses
  * `renderOwnerSymbol`'s same pipeline by wrapping the existing symbol's own
- * body in a synthetic root carrying its viewBox, so the two alias paths — an
- * owner file, or an existing symbol — produce the same shell guarantees.
+ * body in a synthetic root carrying its viewBox, so the two alias paths, an
+ * owner file, or an existing symbol, produce the same shell guarantees.
  * @param {string} id e.g. "ox-star-fill"
  * @param {string} existingSymbolFull the full "<symbol …>…</symbol>" markup
  * @param {Record<string, string>} [attrOverrides]
@@ -315,19 +315,19 @@ function baseName(id) {
 
 const HEADER = `<!--
   OptimalX icon sprite. Built by scripts/import-owner-icons.mjs (S8b,
-  2026-09-24) from the owner's delivered icon system, optimal-x-icons/ — the
+  2026-09-24) from the owner's delivered icon system, optimal-x-icons/ \u2014 the
   sprite of record from this date. See docs/build/progress/S8b.md and
   docs/build/ICONS-2026-09-24.md for the mapping table and the rules the
   remaining, non-owner symbols still follow.
 
   * The owner's 47 drawings ship as delivered: metadata stripped, inline
     accent styles converted to class="ox-icon__accent"(--stroke) so the theme
-    token (--ox-accent) paints them, everything else — geometry, <circle>,
-    <rect>, <g transform> — untouched.
+    token (--ox-accent) paints them, everything else \u2014 geometry, <circle>,
+    <rect>, <g transform> \u2014 untouched.
   * Four ids are aliases, a byte-for-byte copy of an owner drawing under a
     name our components already call: ox-heart = wishlist, ox-headset = help,
     ox-truck = shipping, ox-shield-check = authentic. A fifth, ox-star-fill
-    (S9j, 2026-09-25), copies ox-star instead — not an owner drawing — and
+    (S9j, 2026-09-25), copies ox-star instead \u2014 not an owner drawing \u2014 and
     repaints it fill="currentColor" for the Google-rating fill row.
   * data-mirror="1" follows icons.json's rtlFlip for the owner's symbols and
     aliases (cart, shipping, written-question, and truck by inheriting

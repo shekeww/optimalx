@@ -124,7 +124,7 @@ These are the exact tokens the 667 edits used, with the plain-MSA form that keep
 ### 3.5 Banned constructions (the machine-output tells)
 
 Arabic:
-- The em-dash (—), anywhere. Use a comma, a colon, a full stop, or parentheses.
+- The em-dash (-), anywhere. Use a comma, a colon, a full stop, or parentheses.
 - "في عالم اليوم", "في عصرنا الحالي", "في ظل التطور السريع"
 - "دعنا / دعونا نستكشف / نتعمق / نلقي نظرة"
 - "ليس مجرد X، بل Y" and "ليس فقط X بل أيضا Y" as a reflex

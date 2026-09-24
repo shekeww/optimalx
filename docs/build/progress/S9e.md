@@ -49,14 +49,14 @@ Root cause, found by sampling the rendered pixel at the triangle
 __wash`, `_b3-product.scss`) composited over `rgb(255,255,255)` (`body`):
 the wash is a flat `inset: 0` tint painted over the WHOLE band box,
 independent of the section's own `background`, which the four page-hero
-callers (`.ox-page--*__band`) already set to `transparent` — but only from
+callers (`.ox-page--*__band`) already set to `transparent`, but only from
 1024 up.
 
 Fix, `_b5-pages.scss` §2a only: `background: transparent` and the wash
 reset move to the base (unconditional) rule for the four page-band
 selectors, so the fix applies at every tier, not only >=1024. Below 1024 the
 band's headline/sub/badges/lockup sit BELOW the 160px photo strip (`.ox-bband`'s
-own `padding-block-start: 184px`) — genuinely off the photograph, and now on
+own `padding-block-start: 184px`), genuinely off the photograph, and now on
 the page's own light ground rather than the band's dark rectangle, so the
 shipped reversed ("on-dark") ink fails contrast there. A new
 `@media (max-width: 1023px)` block scoped to the same four selectors swaps
@@ -66,7 +66,7 @@ block's full height, the text sits on the photograph again (on
 `.ox-bband__scrim`'s own darkening gradient), and the shipped on-dark ink is
 correct and untouched.
 
-The lockup (`Wordmark`, `tone="dark"` loads the reversed cream file — a raster
+The lockup (`Wordmark`, `tone="dark"` loads the reversed cream file, a raster
 asset, not `currentColor`, so no CSS filter can retint it without also
 wrecking the accent, per `Wordmark.tsx`'s own doc comment) needed a second,
 markup-level fix: `Band.tsx` now renders BOTH tones
@@ -87,9 +87,9 @@ Screenshots and before/after are recorded in the build log below.
    cinematic-gradient/glow precedent this item's own gradients and glow
    follow), `docs/build/progress/S9c.md` §2, `scripts/check-identity.mjs`
    (`one-angled-per-block` counts *kinds* within one selector's own body,
-   never across a family — confirmed by a clean run after the edit, no
+   never across a family, confirmed by a clean run after the edit, no
    pragma needed), `Band.tsx`, `_b5-pages.scss` §2, `_b3-product.scss` §12
-   (`.ox-bband`, out of scope — PDP's `BrandBand.tsx` is a separate
+   (`.ox-bband`, out of scope, PDP's `BrandBand.tsx` is a separate
    component that only shares this CSS), `Wordmark.tsx`.
 
 2. Item 1. Restructured `OfferStrip` (`OxServices.tsx`): the photo moved out
@@ -103,7 +103,7 @@ Screenshots and before/after are recorded in the build log below.
    screenshot): the mobile gradient was too heavy (opaque graphite from 45%
    of the band down, hiding the lower half of the photo). Changed the <768
    `.ox-offer__photo-scrim` to `linear-gradient(to bottom, transparent 60%,
-   color-mix(in srgb, var(--ox-graphite-3) 85%, transparent) 100%)` —
+   color-mix(in srgb, var(--ox-graphite-3) 85%, transparent) 100%)` -
    transparent through 60% of the band, then a ramp to 85% graphite (never
    fully opaque) over the last 40%, so the door and the advisor stay visible
    and only the seam into the facts darkens. Re-ran `sass` compile,
@@ -112,9 +112,9 @@ Screenshots and before/after are recorded in the build log below.
 4. Item 2. Sampled the rendered pixel at the about-page band's triangle
    corner at 1440 (headless, CDP): `rgb(226,226,227)`, which is
    `rgba(14,17,23,0.12)` (`.ox-bband__wash`) composited over `rgb(255,255,255)`
-   (`body`) — confirmed by `document.elementFromPoint` returning the
-   (already-transparent) section itself at that point, so the wash — a flat
-   `inset: 0` sibling span, independent of the section's own `background` —
+   (`body`), confirmed by `document.elementFromPoint` returning the
+   (already-transparent) section itself at that point, so the wash, a flat
+   `inset: 0` sibling span, independent of the section's own `background` -
    was the paint source, not the section. Moved `background: transparent`
    and a `.ox-bband__wash { background: transparent; }` reset to the BASE
    (unconditional) rule for the four `.ox-page--*__band` selectors in
@@ -127,33 +127,33 @@ Screenshots and before/after are recorded in the build log below.
    render) and the matching CSS toggle in `_b5-pages.scss` §2a (global
    default: dark visible; the four page-band selectors flip it below 1024).
    `PDP`'s own `BrandBand.tsx` never carries one of the four classes, so it
-   is provably unaffected — confirmed by grep, it is a separate component
+   is provably unaffected, confirmed by grep, it is a separate component
    file that only imports `Wordmark` and `Icon`, not `Band`.
 
 5. Fixed two tests broken by the dual-Wordmark markup
    (`tests/pages/shared-surfaces.test.tsx`, `tests/pages/AboutPage.test.tsx`):
    both queried `getByTestId('ox-wordmark')`, now ambiguous with two marks;
    rewritten to query `.ox-bband__lockup-mark--dark img` (or assert
-   `getAllByTestId` length 2) — see those files' own diffs for the exact
+   `getAllByTestId` length 2), see those files' own diffs for the exact
    assertions.
 
 6. Verification: `pnpm typecheck` (clean), `pnpm vitest run tests/home
-   tests/pages` (339 passed, 1 failed — `tests/home/posterRow.test.ts`'s
+   tests/pages` (339 passed, 1 failed, `tests/home/posterRow.test.ts`'s
    "draws every card... sharp corners" test, which touches `.ox-pcard`, a
    selector this batch never edited; it passes standalone
    (`pnpm vitest run tests/home/posterRow.test.ts`, 5/5) and fails only
    inside the full multi-file run, so it is pre-existing cross-file
-   flakiness in the suite, not a regression from this batch — reported to
+   flakiness in the suite, not a regression from this batch, reported to
    the conductor rather than "fixed" under this batch's own scope), `node
    scripts/check-tokens.mjs` (0 problems), `node scripts/check-identity.mjs`
-   (0 problems — `one-angled-per-block` held: `.ox-services__offer`'s
+   (0 problems, `one-angled-per-block` held: `.ox-services__offer`'s
    `ox-x-corner` and `.ox-offer__photo-frame`'s `ox-wedge` are two different
    selectors, each carrying exactly one kind), `node scripts/check-strings.mjs`
    (0 problems).
 
 7. Screenshots and measurements (chrome-headless-shell over CDP, the S8f
-   method; a raw Node `WebSocket` client against the DevTools protocol —
-   no `ws`/`playwright` package is installed in this repo — scratch scripts
+   method; a raw Node `WebSocket` client against the DevTools protocol -
+   no `ws`/`playwright` package is installed in this repo, scratch scripts
    in the session scratchpad). NOTE: navigating to the bare `/` (no locale
    prefix) hung indefinitely in the headless browser even though the
    server's own 307 redirect to `/ar` was instant over `curl`; every
@@ -182,9 +182,9 @@ Screenshots and before/after are recorded in the build log below.
    post-fix, i.e. with the reduced mobile gradient from step 3).
 
    **Item 2**, `/ar/about`: `s9e-about-before-390.png` /
-   `s9e-about-before-1440.png` (pre-fix — the 1440 shot shows the two grey
+   `s9e-about-before-1440.png` (pre-fix, the 1440 shot shows the two grey
    triangles at the plate's cut corners; sampled `rgb(226,226,227)`) and
-   `s9e-about-after-390.png` / `s9e-about-after-1440.png` (post-fix — the
+   `s9e-about-after-390.png` / `s9e-about-after-1440.png` (post-fix, the
    1440 triangles now sample exact `rgb(255,255,255)`, matching the page
    background pixel-for-pixel; the 390 shot shows the heading/subline/lockup
    now in page ink on the page's own white ground, with the reversed-cream

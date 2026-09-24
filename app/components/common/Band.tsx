@@ -38,7 +38,7 @@ export interface BandProps {
 /**
  * The dark full-width section break the whole site shares: a photograph under
  * two flat overlays, the wedge at the brand's 34 degrees (X-IDENTITY-2026-09-22.md
- * §2.1, was 22 — `.ox-bband__wedge`'s `skewX(var(--ox-skew))` re-derives
+ * §2.1, was 22, `.ox-bband__wedge`'s `skewX(var(--ox-skew))` re-derives
  * automatically), a one or two line
  * statement, an optional badge row and the lockup.
  *
@@ -47,7 +47,7 @@ export interface BandProps {
  * duplication is on purpose: `BrandBand` is shipped and verified against the
  * approved image and is not reopened to make this generic.
  *
- * `.ox-bband__plate` (S7b, 2026-09-24) wraps the photo and its scrim only —
+ * `.ox-bband__plate` (S7b, 2026-09-24) wraps the photo and its scrim only -
  * not the wash, not the wedge straps: those keep painting the whole section
  * exactly as before. The plate alone carries the page-hero cut
  * (`_b5-pages.scss` §2, `ox-angled()` at the primary CTA's own angle), so a
@@ -93,20 +93,26 @@ export function Band({
         <img className="ox-bband__photo" src={photo} alt={alt} loading="lazy" decoding="async" />
         <span className="ox-bband__scrim" aria-hidden="true" />
       </div>
+
       <span className="ox-bband__wash" aria-hidden="true" />
       {wedge ? (
         <>
           <span className="ox-bband__wedge ox-bband__wedge--wide" aria-hidden="true" />
           <span className="ox-bband__wedge ox-bband__wedge--thin" aria-hidden="true" />
         </>
+
       ) : null}
 
       <div className="ox-bband__inner">
         <Heading className="ox-bband__headline" id={titleId}>
           <span className="ox-bband__line">{line1}</span>
+
           {line2 ? <span className="ox-bband__line">{line2}</span> : null}
+
         </Heading>
+
         {subline ? <p className="ox-bband__sub">{subline}</p> : null}
+
 
         {badges.length > 0 ? (
           <ul className="ox-bband__badges">
@@ -114,20 +120,29 @@ export function Band({
               <li className="ox-bband__badge" key={badge.id}>
                 <span className="ox-bband__ring">
                   <Icon name={badge.glyph} size={16} />
+
                 </span>
+
                 <span className="ox-bband__badge-text">
                   <span className="ox-bband__badge-ar">{badge.label}</span>
+
                   {badge.latin ? (
                     <span className="ox-bband__badge-latin">{badge.latin}</span>
+
                   ) : null}
                 </span>
+
               </li>
+
             ))}
           </ul>
+
         ) : null}
 
         {action ? <div className="ox-bband__action">{action}</div> : null}
+
       </div>
+
 
       {lockup ? (
         <p className="ox-bband__lockup">
@@ -150,8 +165,10 @@ export function Band({
             className="ox-bband__lockup-mark ox-bband__lockup-mark--light"
           />
         </p>
+
       ) : null}
     </section>
+
   );
 }
 

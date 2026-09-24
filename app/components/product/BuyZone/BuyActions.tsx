@@ -31,7 +31,7 @@ export interface BuyActionsProps {
  * The redirect waits for the component's own `success` event rather than firing
  * on click, because clicking is not adding: a product with options opens the
  * chooser instead, and an out-of-stock product opens the notify control. If the
- * add never succeeds the shopper is never moved, which is the correct failure —
+ * add never succeeds the shopper is never moved, which is the correct failure -
  * a buy-now that navigates to an empty cart is worse than one that does nothing.
  *
  * `failed` clears the listener so a later, unrelated success cannot strand a
@@ -86,7 +86,9 @@ export function BuyActions({ product, anchorRef }: BuyActionsProps) {
             on the card and the sticky bar. */}
         {t('ox.pdp.buy_now')}
       </button>
+
     </div>
+
   );
 }
 

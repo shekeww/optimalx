@@ -1,11 +1,11 @@
-# S2g: owner review items — progress (2026-09-23)
+# S2g: owner review items, progress (2026-09-23)
 
 Batch: the five owner review items on `docs/build/X-IDENTITY-2026-09-22.md` and
 `docs/build/progress/XID.md`'s handoff table, plus one mid-task addition (the
 `.ox-plan__watermark` `check-identity` finding). Read `X-IDENTITY-2026-09-22.md`
 and `XID.md` in full before starting, per the brief.
 
-## 1. Header fixed on every viewport — done
+## 1. Header fixed on every viewport, done
 
 **Finding: `.ox-header` was already correctly `position: fixed` at every width,
 with no override anywhere in the cascade.** Grepped every `position:` in
@@ -15,7 +15,7 @@ positional. Compiled CSS confirms `.ox-header{display:block;position:fixed;...}`
 (06-ox, loads last) sits after `.store-header{display:none}` / `@media
 (min-width:768px){.store-header{display:block}}` (04-components, loads first)
 at equal specificity, so `.ox-header` wins the cascade unconditionally, at
-320/390/768/1440 alike — confirmed by fetching the live compiled bundle
+320/390/768/1440 alike, confirmed by fetching the live compiled bundle
 (`http://localhost:3210/@tanstack-start/styles.css?...`):
 
 ```css
@@ -54,11 +54,11 @@ every width, not just desktop):
 routes that matter most.** `--ox-header-h`'s own default (144px below 1024,
 tokens.css) assumes the mobile header is ONE row (announce 40 + mobilebar 64 +
 trust-scroller 40). `Header.tsx`'s `has-search-row` class
-(`SEARCH_ROW_ROUTES` — home, PDP, listing, search, brands, tags, offers,
+(`SEARCH_ROW_ROUTES`, home, PDP, listing, search, brands, tags, offers,
 latest, sales) adds a SECOND row, `SearchField` at 40px tall plus
 `padding-block-end: var(--ox-3)` (12px) = 52px, that the token's default never
 accounted for. `useHeaderHeightVar`'s `ResizeObserver` corrects it, but only
-*after* hydration and only inside a `useEffect` (runs after paint) — so on
+*after* hydration and only inside a `useEffect` (runs after paint), so on
 every one of those routes, `.app-inner` reserved 52px too little on first
 paint and the page's own top content started sliding out from under the fixed
 header. That is the "not fixed" the owner saw: the header itself never moved,
@@ -108,25 +108,25 @@ SSR-confirmed: `curl http://localhost:3210/ar?storeId=1888890798` carries
 
 Drawer/mega panel: `.ox-mega` is `position:absolute; inset-block-start:100%`
 inside its own `.ox-nav__item` (`position:relative`), so it opens directly
-under the nav row inside the header's own box — never clipped, never under a
+under the nav row inside the header's own box, never clipped, never under a
 lower z-index than the header (`--ox-z-overlay` > `--ox-z-sticky`). Not
 touched; already correct.
 
-## 2. Hero shapes — done
+## 2. Hero shapes, done
 
 `app/styles/06-ox/_b2-home.scss` section 2 (`.ox-hero__photo`, `.ox-hero__scrim`,
 `.ox-hero__edge`), `@media (min-width: 640px)` block. The 320/390 mobile
 corner-cut construction (lines ~476-539, `max-width: 639px`) is untouched, as
-instructed — this item is desktop-only (the split doesn't exist below 640).
+instructed, this item is desktop-only (the split doesn't exist below 640).
 
 **Black panel's edge, pushed 7% of hero width further left** (mid-point of the
 6-8% asked for): pane `inline-size` 60% → **53%** of the 1440 hero band
 (0.60 − 0.07 = 0.53; 0.07 × 1440 = 100.8px, 864px → 763.2px). The lean stays
-300px (band height 560 unchanged, so the vertical breakpoint stays 46.43% —
+300px (band height 560 unchanged, so the vertical breakpoint stays 46.43% -
 260/560) and the run stays the *same absolute* 202.4px (run = lean × tan34° =
 300 × 0.6745085 = 202.35, unaffected by the pane's own width). Only the run's
 expression as a *percentage of the now-narrower box* changes:
-202.4 / 763.2 = **26.52%** (was 202.4 / 864 = 23.43%) — recomputing this, not
+202.4 / 763.2 = **26.52%** (was 202.4 / 864 = 23.43%), recomputing this, not
 reusing the old 23.43% against the new box, is what keeps the cut at exactly
 34° after the resize; reusing the old percentage against a narrower box would
 have left the top of the cut in place and only dragged the foot left,
@@ -148,11 +148,11 @@ clip-path: polygon(0 0, 100% 0, 100% 100%, 26.52% 100%, 0 46.43%);
 vertical edge (its `inline-size`, 53%, the flat run for the top 46.43% of the
 band) rather than at the stale 51%, which was computed off the *pre-X-IDENTITY
 22° polygon*'s numbers (the code comment cited `96.7%/73.3%`) and never
-re-derived when the 34° cut shipped — it was already floating inside the
+re-derived when the 34° cut shipped, it was already floating inside the
 photograph before this batch's pane-width change, not a value my own edit
 displaced. 53 > 51, so this reads as "pushed right" against the code's own
-established convention (`inset-inline-end` measured from the reading END —
-the left edge in RTL — so a larger number moves the bar physically right).
+established convention (`inset-inline-end` measured from the reading END -
+the left edge in RTL, so a larger number moves the bar physically right).
 `inline-size` 10px → **20px** (×2, "double the strap's weight").
 
 ```scss
@@ -191,7 +191,7 @@ inline-size: 20px;
 
 `node scripts/check-identity.mjs` stays green (0 problems, see "Verified by").
 
-## 3. Services page — done
+## 3. Services page, done
 
 **Advisory band no longer full-bleed on `/services`.**
 `app/components/pages/ServicesHub.tsx`: `<OxServices className="ox-page__bleed
@@ -210,14 +210,14 @@ this file).
 
 Without `.ox-page__bleed`, `.ox-hub__advisory` is a regular child of
 `.ox-page--bleed`, which already gives it `max-inline-size:
-var(--ox-container)` — enough on its own to sit inside the container. But
+var(--ox-container)`, enough on its own to sit inside the container. But
 `OxServices` *also* wraps its own content in `.ox-container.ox-services__inner`
 (needed for its other, full-bleed caller, the home page): without dropping
 `padding-inline`, the page wrapper's own gutter padding and the inner
 `.ox-container`'s `min(1296px, 100% - 2×gutter)` calc would both apply,
 insetting the row twice. Dropping `padding-inline` to 0 here lets the inner
 `.ox-container` do the only inset, so the band's content lands at exactly the
-same width as every other section — not narrower. `border-radius:
+same width as every other section, not narrower. `border-radius:
 var(--ox-r-3)` gives it its own radius; `.ox-services--banded` already carries
 `overflow: hidden` (clips its own ground motif), so the radius clips cleanly
 with it, no separate `overflow` declaration needed.
@@ -226,14 +226,14 @@ with it, no separate `overflow` declaration needed.
 Grepped `app/styles` for `400px` and for every `grid-template-columns` in
 `_b5-pages.scss`/`_blocks.scss`: `.ox-channels` was already
 `grid-template-columns: repeat(3, minmax(0, 1fr))` at ≥768px, not a fixed
-`400px 400px 400px` track — likely fixed by concurrent work already landed in
+`400px 400px 400px` track, likely fixed by concurrent work already landed in
 this session (git status shows other listing/filters files mid-edit). Applied
 the requested end-state anyway, since it is a real, if smaller, improvement:
 between 768px and ~872px (3 × 280px + 2 gaps) a rigid three-column track
 squeezed each of the three `ChannelCard`s under a comfortable width rather
 than reflowing; `auto-fit` fixes that band without changing anything above it
 (there are only 3 `SERVICE_CHANNELS` items, so `auto-fit` never grows past 3
-columns regardless of viewport — nothing to cap).
+columns regardless of viewport, nothing to cap).
 
 ```scss
 @media (min-width: 768px) {
@@ -254,7 +254,7 @@ guessed at a fix with nothing to visually verify it against in this
 environment; SSR-confirmed both `.ox-hub__advisory` and `.ox-channels` render
 with the classes above on `/ar/services`.
 
-## 4. The angled OptimalX button shape on card actions — done
+## 4. The angled OptimalX button shape on card actions, done
 
 New shared class, `app/styles/06-ox/_primitives.scss` (after `.ox-badge-stack`):
 
@@ -277,31 +277,31 @@ New shared class, `app/styles/06-ox/_primitives.scss` (after `.ox-badge-stack`):
 
 Not `ox-angled()` (the CTA parallelogram) at this size: §2.4's own rule ("any
 control narrower than run / 0.24 loses the parallelogram") puts the minimum
-viable width at 67.5px for a 44px-tall run, and this is a 24px *square* — the
+viable width at 67.5px for a 44px-tall run, and this is a 24px *square*, the
 full parallelogram would eat most of the box. Used the mark's single
 arm-foot corner cut instead (lean 8px, `ox-run(8px)` = 5.4px), which reads as
 "a bit angled" at control scale without needing the CTA's own width floor.
 `block-size` ordered first with the `ox-allow: small-angle` pragma on that
 line, matching `.ox-badge`'s own established fix immediately above it in the
 same file (the checker's `sizeLine` resolution loses a pragma placed next to a
-non-first declaration when the match spans a line break — traced and fixed
+non-first declaration when the match spans a line break, traced and fixed
 the same way there this session).
 
 - **Goal cards** (`GoalCard.tsx`, mine to edit): added the class directly to
   the arrow `<i>`. Retired `.ox-goal__cta`'s own skewed-border pseudo
-  (`_b2-home.scss` section 5) so the card keeps exactly one angled gesture —
-  now on the arrow alone — rather than stacking a second one next to it; the
+  (`_b2-home.scss` section 5) so the card keeps exactly one angled gesture -
+  now on the arrow alone, rather than stacking a second one next to it; the
   label is plain text beside the icon-button.
 - **Featured-rail cover CTA** (`FeaturedRail.tsx` + `_b4-listing.scss` section
   15): same class added directly to the arrow `<i>`. Added the corner cut to
   `.ox-featured__plate` (the cover image), lean 40 (run 27.0) below 1024, lean
-  64 (run 43.2) from 1024 up, via `@include ox-x-corner()` (available here —
+  64 (run 43.2) from 1024 up, via `@include ox-x-corner()` (available here -
   `_x-motif.scss` loads before `_b4-listing.scss`). §3.3's own table also
   names a 390-specific lean-48/run-32.4 step; skipped rather than adding a new
   breakpoint `.ox-featured__item`'s own sizing rule has no other precedent
-  for at that width — flagged, not silently dropped (same precedent
+  for at that width, flagged, not silently dropped (same precedent
   `_x-motif.scss`'s `.ox-x-divider` comment sets).
-- **Plan-card CTA arrow** (`_b2-home.scss` section 8, CSS only — `PlanCard.tsx`
+- **Plan-card CTA arrow** (`_b2-home.scss` section 8, CSS only, `PlanCard.tsx`
   is on the do-not-touch list): reproduced the same shape directly on the
   existing `.ox-plan__arrow` selector via `@include ox-x-corner(8px)`
   (available here too), since the class itself can't reach markup it isn't
@@ -312,23 +312,23 @@ the same way there this session).
 
 Contrast/touch targets: the drawn box is 24×24 (≥24px, the brief's own floor);
 `@include ox-hit-area` was considered for a 44×44 invisible target but
-**dropped** — every one of these arrows sits inside a single larger `<Link>`
+**dropped**, every one of these arrows sits inside a single larger `<Link>`
 that already owns the click/focus target (the whole card, or the whole CTA
 row), so a second, independently-focusable hit area on the icon would be a
 nested interactive target inside another interactive element, which
 DIRECTION 9.2 already rules out elsewhere in this codebase (GoalCard's own
 comment: "never a nested button"). No new outline/focus-visible was added for
-the same reason — there is nothing here for it to focus independently.
+the same reason, there is nothing here for it to focus independently.
 
 `node scripts/check-identity.mjs`: 0 problems (verified after fixing the
 `small-angle` pragma-ordering issue above, see "Verified by").
 
-## 5. Remaining XID handoff items — done
+## 5. Remaining XID handoff items, done
 
 **Listing header divider** (`app/styles/06-ox/_b4-listing.scss`,
 `.ox-listing__title-row`): reproduced `.ox-x-divider`'s own construction
 (hairline + one stepped tab at 62%) as a `border-block-end` plus one `::after`
-rather than the class itself — `.ox-x-divider` is a *separate element* with
+rather than the class itself, `.ox-x-divider` is a *separate element* with
 its *own* nested `::after` for the step, and this row can't take a new
 wrapping element (`ListingPage.tsx`, which owns this markup, is on the S2 do-
 not-touch list), so the border stands in for the divider's line and leaves
@@ -358,10 +358,10 @@ not-touch list), so the border stands in for the divider's line and leaves
 
 **Active filter chip step motif** (`app/styles/06-ox/_primitives.scss`,
 `.ox-chip--filter.is-selected` / `[aria-pressed='true']`): notch t4/j14.0,
-inlined (same reason `.ox-badge` inlines its own — `_x-motif.scss` loads
+inlined (same reason `.ox-badge` inlines its own, `_x-motif.scss` loads
 after this file). No pragma needed: `block-size: 36px` lives on the parent
 `&--filter` rule, a different selector from `&.is-selected`, so the
-checker's same-selector `small-angle` match never fires here — confirmed by
+checker's same-selector `small-angle` match never fires here, confirmed by
 the 0-problem run.
 
 **`ox-x-bullet` on the ServicePdp next-steps list**
@@ -374,34 +374,34 @@ new `ox-service__steps` class (`list-style: none`, flex column); a paired
 
 ## Files changed
 
-- `app/styles/06-ox/_b1-layout.scss` — header reserved-height fix for
+- `app/styles/06-ox/_b1-layout.scss`, header reserved-height fix for
   `has-search-row` routes below 1024 (item 1).
-- `app/styles/06-ox/_b2-home.scss` — hero pane/scrim/strap arithmetic (item
+- `app/styles/06-ox/_b2-home.scss`, hero pane/scrim/strap arithmetic (item
   2); `.ox-goal__cta` simplified, its old skewed pseudo removed (item 4);
   `.ox-plan__arrow` given the icon-button shape (item 4); `.ox-plan__watermark`
   colour/opacity fix (coordinator addendum).
-- `app/components/home/GoalCard.tsx` — `ox-iconbtn--angled` added to the
+- `app/components/home/GoalCard.tsx`, `ox-iconbtn--angled` added to the
   arrow icon (item 4).
-- `app/components/pages/ServicesHub.tsx` — `OxServices` call no longer
+- `app/components/pages/ServicesHub.tsx`, `OxServices` call no longer
   carries `ox-page__bleed` (item 3).
-- `app/styles/06-ox/_b5-pages.scss` — `.ox-page--bleed > .ox-hub__advisory`
+- `app/styles/06-ox/_b5-pages.scss`, `.ox-page--bleed > .ox-hub__advisory`
   containment + radius (item 3).
-- `app/styles/06-ox/_blocks.scss` — `.ox-channels` grid track (item 3).
-- `app/styles/06-ox/_primitives.scss` — `.ox-iconbtn--angled` (item 4);
+- `app/styles/06-ox/_blocks.scss`, `.ox-channels` grid track (item 3).
+- `app/styles/06-ox/_primitives.scss`, `.ox-iconbtn--angled` (item 4);
   active filter chip notch (item 5).
-- `app/components/listing/FeaturedRail.tsx` — `ox-iconbtn--angled` on the
+- `app/components/listing/FeaturedRail.tsx`, `ox-iconbtn--angled` on the
   cover CTA arrow (item 4).
-- `app/styles/06-ox/_b4-listing.scss` — `.ox-featured__plate` corner cut
+- `app/styles/06-ox/_b4-listing.scss`, `.ox-featured__plate` corner cut
   (item 4); `.ox-listing__title-row` divider (item 5).
-- `app/components/product/variants/ServicePdp.tsx` — `ox-x-bullet` markup on
+- `app/components/product/variants/ServicePdp.tsx`, `ox-x-bullet` markup on
   the next-steps list (item 5).
-- `app/styles/06-ox/_b3-product.scss` — `.ox-service__steps`/`.ox-service__step`
+- `app/styles/06-ox/_b3-product.scss`, `.ox-service__steps`/`.ox-service__step`
   CSS (item 5).
 
 ## Deviations
 
 - Featured-rail corner cut skips §3.3's 390-specific lean-48/run-32.4 step
-  (uses the 320 value, lean 40, through to 1024) — no existing breakpoint at
+  (uses the 320 value, lean 40, through to 1024), no existing breakpoint at
   that width for this element; flagged above, not silently dropped.
 - `.ox-channels`'s reported `400px 400px 400px` fixed track was not present in
   the working tree at the start of this batch; applied the requested
@@ -409,7 +409,7 @@ new `ox-service__steps` class (`list-style: none`, flex column); a paired
   reproduce the "squeezed into a narrow right-hand column" defect anywhere
   else on `/services` after reading every section's CSS.
 - `ox-hit-area`/independent focus was deliberately **not** added to the new
-  icon-buttons (see item 4) — every one sits inside a single larger link and
+  icon-buttons (see item 4), every one sits inside a single larger link and
   DIRECTION 9.2 already forbids a nested interactive target.
 - `.ox-plan__watermark` (`_b2-home.scss`) is outside this batch's originally
   named surfaces (it is `PlanCard.tsx`'s CSS, and that file is on the S2
@@ -434,9 +434,9 @@ new `ox-service__steps` class (`list-style: none`, flex column); a paired
 - `node scripts/check-tokens.mjs` → `123 token(s) defined, 312 file(s)
   scanned, 0 problem(s)`.
 - `node scripts/check-identity.mjs` → `315 file(s), 0 problem(s)` (one round
-  of `small-angle` pragma-ordering fixes needed first — see item 4 — then
+  of `small-angle` pragma-ordering fixes needed first, see item 4, then
   clean, including the coordinator's `.ox-plan__watermark` finding).
-- Live curl, `http://localhost:3210` (retried until it answered 200 — it 500'd
+- Live curl, `http://localhost:3210` (retried until it answered 200, it 500'd
   on the first attempt, per the brief's own note about concurrent writers):
   - `curl -s "http://localhost:3210/ar?storeId=1888890798"` → header carries
     `class="store-header ox-header has-search-row"`; 6 `ox-iconbtn--angled`
@@ -444,7 +444,7 @@ new `ox-service__steps` class (`list-style: none`, flex column); a paired
     present.
   - `curl -s "http://localhost:3210/ar/services?storeId=1888890798"` →
     `.ox-hub__advisory` present (no `ox-page__bleed`); `.ox-channels` present;
-    3 `.ox-plan__arrow` and 3 `.ox-plan__watermark` (the three plan cards —
+    3 `.ox-plan__arrow` and 3 `.ox-plan__watermark` (the three plan cards -
     the home page's own `OxServices` instance renders 0 plan cards in this
     fixture/overlay, unrelated to this batch, so `/services` is where the
     watermark/arrow fix was actually exercised).
@@ -459,7 +459,7 @@ new `ox-service__steps` class (`list-style: none`, flex column); a paired
     `check-identity`'s `unmirrored` rule, which is file-wide).
   - `curl -sL "http://localhost:3210/ar/p487045117"` (a service PDP, OX-044)
     → HTTP 500, body shows `"Failed to load store settings. Make sure
-    VITE_STORE_DOMAIN..."` — an environment/fixture failure unrelated to this
+    VITE_STORE_DOMAIN..."`, an environment/fixture failure unrelated to this
     batch (confirmed on a second SKU, `p2000960449`, same error). Fell back to
     `tests/product/ServicePdp.test.tsx` (6/6 passed), which renders this
     component directly and covers the bullet markup.

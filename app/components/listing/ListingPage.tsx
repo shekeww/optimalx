@@ -51,8 +51,8 @@ const OFFERS_GRID_ID = 'offers-grid';
  * above the product grid, so an offer, a bundle or a subscription a plain
  * product card cannot show gets its own tile. `weekly-picks`'s own link
  * resolves to `#offers-grid` here (`posterHref`'s `'offers'` context) rather
- * than `/offers` — a poster cannot usefully link to the page it is already
- * on — which is why this grid, not `OxPosters`, owns `OFFERS_GRID_ID`.
+ * than `/offers`, a poster cannot usefully link to the page it is already
+ * on, which is why this grid, not `OxPosters`, owns `OFFERS_GRID_ID`.
  */
 function OffersPosterGrid() {
   const { t } = useTranslation();
@@ -61,6 +61,7 @@ function OffersPosterGrid() {
   return (
     <div className="ox-offers-posters">
       <h2 className="ox-offers-posters__title ox-h2">{t('ox.offers.posters_title')}</h2>
+
       <ul className="ox-offers-posters__grid" role="list">
         {POSTER_CARDS.map((card) => (
           <li key={card.slug}>
@@ -74,9 +75,12 @@ function OffersPosterGrid() {
               loading="lazy"
             />
           </li>
+
         ))}
       </ul>
+
     </div>
+
   );
 }
 
@@ -185,7 +189,9 @@ export function ListingPage(props: ListingPageProps) {
   const title = isSearch ? (
     <>
       {t('ox.search.results_prefix')} <Bdi lang={null}>{queryText}</Bdi>
+
     </>
+
   ) : researched && researched !== node?.h1Key ? (
     researched
   ) : (
@@ -199,10 +205,13 @@ export function ListingPage(props: ListingPageProps) {
   const copy = listingSourceCopy(source.type, variant);
   const intro = brand ? (
     <BrandIntro brand={brand} />
+
   ) : node ? (
     <CategoryIntro introKey={node.introKey} />
+
   ) : copy.introKey ? (
     <CategoryIntro introKey={copy.introKey} clamp={false} />
+
   ) : null;
 
   const toolbarSort = options.length > 0 && !isZero ? { value: sort, options, onChange: onSortChange } : null;
@@ -215,6 +224,7 @@ export function ListingPage(props: ListingPageProps) {
   const toolbarFilters =
     showFilters && !isZero ? { count: filterCount, onOpen: () => setFiltersOpen(true) } : null;
   const chips = goal ? null : <ChildChips categories={entity?.sub_categories} slug={slug} />;
+
 
   const crumbs = <OxBreadcrumb page={page} className="ox-crumbs" />;
 
@@ -244,21 +254,27 @@ export function ListingPage(props: ListingPageProps) {
                 <Button variant="primary" size={48} to="/">
                   {t('ox.nav.goals')}
                 </Button>
+
               }
               secondary={
                 copy.secondary ? (
                   <Button variant="secondary" size={48} to={copy.secondary.to}>
                     {t(copy.secondary.labelKey)}
                   </Button>
+
                 ) : undefined
               }
             />
+
           </div>
+
         }
         t={t}
       />
+
       <HookSlot name="product:list.items.end" />
     </ListingCategoryContext.Provider>
+
   );
 
   return (
@@ -266,8 +282,10 @@ export function ListingPage(props: ListingPageProps) {
       {goal ? (
         <>
           <div className="ox-container">{crumbs}</div>
+
           <GoalHero goal={goal} image={entity?.image} gridId={GRID_ID} titleId="listing-title" />
         </>
+
       ) : (
         <div className="ox-listing__band">
           <div className="ox-container ox-listing__band-inner">
@@ -277,10 +295,14 @@ export function ListingPage(props: ListingPageProps) {
               as="h1"
               titleId="listing-title"
               media={brand ? <BrandHeader brand={brand} /> : undefined}
+
               intro={intro}
             />
+
           </div>
+
         </div>
+
       )}
 
       <HookSlot name="product:list.start" />
@@ -289,10 +311,13 @@ export function ListingPage(props: ListingPageProps) {
         {isOffers ? <OffersPosterGrid /> : null}
         {isTypeOrGoalListing ? <FeaturedRail products={displayProducts} /> : null}
 
+
         {goal ? (
           <>
             <GoalIntro goal={goal} />
+
             <Explainer goal={goal} />
+
             {goal.groups?.length
               ? goal.groups.map((group) => (
                   <SubNeeds
@@ -302,18 +327,23 @@ export function ListingPage(props: ListingPageProps) {
                     intro={t(group.introKey)}
                     needs={group.subNeeds}
                   />
+
                 ))
               : <SubNeeds needs={goal.subNeeds} />}
+
           </>
+
         ) : null}
 
         {isZero ? (
           <ZeroResults query={queryText} />
+
         ) : (
           <div className="ox-listing__catalogue" id={isOffers ? OFFERS_GRID_ID : undefined}>
             <div id={GRID_ID} className="ox-listing__grid-head">
               {goal ? (
                 <ListingHeader title={t('ox.goal.grid_title')} as="h2" titleId={GRID_TITLE_ID} />
+
               ) : null}
               <ListingToolbar
                 chips={chips}
@@ -322,23 +352,35 @@ export function ListingPage(props: ListingPageProps) {
                 count={
                   loadedCount > 0 ? (
                     <LoadMore loadedCount={loadedCount} hasMore={hasMore} />
+
                   ) : null
                 }
               />
+
             </div>
+
 
             <div className={`ox-listing__results${showFilters ? ' has-rail' : ''}`}>
               {showFilters ? <FiltersRail filters={filters} /> : null}
+
               <div className="ox-listing__main">{grid}</div>
+
             </div>
+
           </div>
+
         )}
 
         {isTypeOrGoalListing ? <ExploreLinks node={node} /> : null}
+
         <CategoryFaq slug={slug} />
+
         <RelatedGuides slug={slug} />
+
         {goal ? <NeedHelp goal={goal} /> : null}
+
       </div>
+
 
       {showFilters ? (
         <FiltersDrawer
@@ -346,17 +388,22 @@ export function ListingPage(props: ListingPageProps) {
           isOpen={filtersOpen}
           onClose={() => setFiltersOpen(false)}
         />
+
       ) : null}
 
       {showTestimonials ? (
         <div className="ox-container">
           <RenderWhenVisible estimatedHeight="360px">
             <Testimonials data={{}} />
+
           </RenderWhenVisible>
+
         </div>
+
       ) : null}
 
       <HookSlot name="product:list.end" />
     </div>
+
   );
 }

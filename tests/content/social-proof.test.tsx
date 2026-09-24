@@ -136,11 +136,13 @@ describe('isQuotable: the claims filter on reprinted reviews', () => {
 describe('StoreRating', () => {
   it('renders nothing when the evidence is absent', () => {
     renderWithProviders(<StoreRating value={null} />);
+
     expect(screen.queryByTestId('ox-store-rating')).toBeNull();
   });
 
   it('renders the figure, names the store as its subject, and links to the source', () => {
     renderWithProviders(<StoreRating value={readStoreRating(withProof())} />);
+
     const el = screen.getByTestId('ox-store-rating');
 
     expect(el.textContent).toContain('5.0');
@@ -158,12 +160,13 @@ describe('StoreRating', () => {
     for (const key of Object.keys(settings)) delete settings[key];
   });
 
-  // S9j, 2026-09-25: the accent-fill row draws the solid `star-fill` icon —
+  // S9j, 2026-09-25: the accent-fill row draws the solid `star-fill` icon -
   // `star` itself is outline-only and a CSS fill can never override a
   // <symbol>'s own presentation attribute, which is why the stars used to
   // render empty.
   it('draws the base row in the plain outline star and the fill row in the solid star', () => {
     renderWithProviders(<StoreRating value={readStoreRating(withProof())} />);
+
     const el = screen.getByTestId('ox-store-rating');
     const baseUses = el.querySelectorAll('.ox-gr__row--base use');
     const fillUses = el.querySelectorAll('.ox-gr__row--fill use');

@@ -3,11 +3,11 @@
 // each batch owns exactly its own partial (PLAN-final 2.1, SCSS seam).
 @import 'primitives';
 // The shared branch cover shape (S9c): right after primitives so
-// `OxBranch`/`BranchGallery` can `@include ox-angled()` from it — it calls
+// `OxBranch`/`BranchGallery` can `@include ox-angled()` from it, it calls
 // `ox-run()`, which primitives defines.
 @import 'covers';
 // The shared plate shape (S9b, owner ruling 2026-09-24): right after
-// primitives so every later partial can `@include ox-plate()` — it calls
+// primitives so every later partial can `@include ox-plate()`, it calls
 // `ox-run()`, which primitives defines.
 @import 'plates';
 @import 'x-motif';

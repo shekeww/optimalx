@@ -1,12 +1,12 @@
-# Store data runbook — categories, brands, product assignments
+# Store data runbook, categories, brands, product assignments
 
 What `scripts/salla-auth.mjs` and `scripts/salla-categories.mjs` do, in the order the owner runs them, and
 the dashboard alternative for every step in case a script step is blocked. The scripts are dependency-free
-Node 20 (`node scripts/salla-auth.mjs`, `node scripts/salla-categories.mjs ...` — no `pnpm` script exists for
+Node 20 (`node scripts/salla-auth.mjs`, `node scripts/salla-categories.mjs ...`, no `pnpm` script exists for
 them; `package.json` is frozen until S7). Nothing in this document was run this session: **`--apply` has not
 been executed**; only `--plan` (offline, read-only) has.
 
-## 1. Preflight — Partners app scopes and install
+## 1. Preflight, Partners app scopes and install
 
 The write path needs the Partner app **755989931** to carry the scopes `categories.read_write`,
 `brands.read_write`, `products.read_write`, with the redirect URL `http://localhost:8787/callback`
@@ -41,7 +41,7 @@ one command without touching the file.
 # 1. Get a token: opens a browser tab, waits on a local callback, writes .salla-token.json
 node scripts/salla-auth.mjs
 
-# 2. Look before writing anything — this makes NO network call
+# 2. Look before writing anything, this makes NO network call
 node scripts/salla-categories.mjs --plan --brands --assign --images
 
 # 3. Apply, once the plan output looks right
@@ -51,27 +51,27 @@ node scripts/salla-categories.mjs --apply --brands --assign --images
 `salla-auth.mjs` binds its callback server to `127.0.0.1:8787` only (never `0.0.0.0`) and prints an
 authorize URL: `https://accounts.salla.sa/oauth2/auth?client_id=...&response_type=code&redirect_uri=...
 &scope=offline_access&state=<random>`. Open it, approve the app, and the script exchanges the code for a
-token pair and writes `.salla-token.json` (`{access_token, refresh_token, expires_at, scope}`) — it never
+token pair and writes `.salla-token.json` (`{access_token, refresh_token, expires_at, scope}`), it never
 prints a token, only "received"/"written". A mismatched `state` on the callback is rejected before any
 token exchange is attempted. Refresh a token whose `expires_at` has passed with `node scripts/salla-auth.mjs
 --refresh` (needs the stored `refresh_token`).
 
 `salla-categories.mjs --apply` is idempotent: it matches each of the 25 taxonomy categories and each brand
-by `metadata_url` first, then by exact name, and reuses the existing id instead of creating a duplicate — a
+by `metadata_url` first, then by exact name, and reuses the existing id instead of creating a duplicate, a
 second `--apply` run after a partial failure is safe to re-run. Parents (`protein`) are always created
 before their five children. Every write is read back with a `GET` immediately after and diffed against what
 was sent; the read-back result is what lands in the log (§6), never an assumption that the write succeeded.
 
 Flags:
-- `--brands` also creates the brands from `FINAL-catalogue.md` §B (plus two documented gaps —
+- `--brands` also creates the brands from `FINAL-catalogue.md` §B (plus two documented gaps -
   `Centrum` and `Myprotein`, both used by a real SKU but missing from §B's table; add proper research for
   them there when convenient).
-- `--assign` sets `categories = [leaf, parent?, ...goals]` and `brand_id` on all 47 products from
+- `--assign` sets `categories = [leaf, parent? ...goals]` and `brand_id` on all 47 products from
   `docs/build/salla-ids.json`.
 - `--images` sets each category's `image` to its `image_sku` product's photo URL (from
   `fixtures/store/products.json`, the same offline snapshot the theme preview reads). If the API rejects a
   URL for a field that expects an upload, the run logs `image rejected (set manually per the runbook)` for
-  that category and continues — it does not fail the whole run. Set the image by hand in that case:
+  that category and continues, it does not fail the whole run. Set the image by hand in that case:
   المنتجات > التصنيفات > (category) > الصورة.
 
 On success, `docs/build/taxonomy-ids.json` is written (`{slug: id}` for all 25 categories) and
@@ -81,7 +81,7 @@ On success, `docs/build/taxonomy-ids.json` is written (`{slug: id}` for all 25 c
 
 `api.salla.dev` answers requests from this machine's IP with a Cloudflare challenge: `HTTP 429` with the
 header `Cf-Mitigated: challenge`. `scripts/salla-lib.mjs`'s client checks for that exact signature and
-stops immediately — no retry, since retrying a challenge only spends the API's rate limit for no gain. If
+stops immediately, no retry, since retrying a challenge only spends the API's rate limit for no gain. If
 `--plan` or `--apply` prints that message:
 
 1. Run `node scripts/salla-auth.mjs` **locally** as in §3 (the OAuth callback needs a browser; the sandbox
@@ -91,7 +91,7 @@ stops immediately — no retry, since retrying a challenge only spends the API's
    dependency-free) and the files they read (`app/content/taxonomy.json`, `docs/build/research/
    optimalx-catalogue.csv`, `docs/build/salla-ids.json`, `fixtures/store/products.json`) to the sandbox.
 4. Export the access token from step 1 as an environment variable instead of copying the token file:
-   `SALLA_ACCESS_TOKEN=<value from .salla-token.json's access_token>` — `resolveAccessToken()` reads this
+   `SALLA_ACCESS_TOKEN=<value from .salla-token.json's access_token>`, `resolveAccessToken()` reads this
    before it ever looks at `.salla-token.json`, so the sandbox never needs the file.
 5. Run `node scripts/salla-categories.mjs --apply --brands --assign --images` in the sandbox.
 6. Copy `docs/build/store-write-log.md`'s new run section and `docs/build/taxonomy-ids.json` back into the
@@ -102,16 +102,16 @@ stops immediately — no retry, since retrying a challenge only spends the API's
 Every write the script makes can be done by hand in المتجر > المنتجات:
 
 1. **Categories** (المنتجات > التصنيفات > إضافة تصنيف): create the 10 type categories, then the 5 protein
-   subcategories (parent = بروتين), then the 4 utility categories, then the 6 goal collections — 25 total,
+   subcategories (parent = بروتين), then the 4 utility categories, then the 6 goal collections, 25 total,
    from `docs/build/research/FINAL-catalogue.md` §A (or `app/content/taxonomy.json` once S1 has landed it).
    Set each one's SEO URL (الرابط المخصص) to the Latin slug in the table exactly (e.g. `protein`,
-   `whey-protein`, `goal-energy`) — the theme's routes assume `metadata_url === slug`.
+   `whey-protein`, `goal-energy`), the theme's routes assume `metadata_url === slug`.
 2. **Brands** (المنتجات > الماركات): create the brands from §B (plus Centrum and Myprotein, see §3).
 3. **Product assignments**: for each of the 47 products, open it and set: تصنيف المنتج (categories) to its
    leaf category, its parent when the leaf has one, and every goal collection listed in the `categories`
    column of `docs/build/research/optimalx-catalogue.csv`; set الماركة (brand) from the same row's `brand`
    column.
-4. **Category images**: المنتجات > التصنيفات > (category) > الصورة — use the `image_sku` product's own
+4. **Category images**: المنتجات > التصنيفات > (category) > الصورة, use the `image_sku` product's own
    photo (`fixtures/store/products.json`, field `image.url`, or just save the photo from the live product
    page) so the category tile matches a real product in the catalogue.
 
@@ -125,7 +125,7 @@ After any `--apply` run (script or by hand):
 - Spot-check a few of the 47 products: categories array contains the leaf + parent (if any) + every goal the
   CSV lists; brand set.
 - `docs/build/store-write-log.md`: the new `## Run <run-id>` section lists every id created, with a
-  `Read-back` column of `match` (no diff) — anything else needs a look before trusting the run.
+  `Read-back` column of `match` (no diff), anything else needs a look before trusting the run.
 - `docs/build/taxonomy-ids.json`: `{slug: id}` for all 25 slugs, no `null`/missing entries.
 - Rebuild the theme's SKU→category resolver where relevant (S1's `app/content/taxonomy-ids.ts`
   generator reads this file once it exists) and re-run the offline preview to see the categories reflected
@@ -140,7 +140,7 @@ node scripts/salla-categories.mjs --rollback <run-id>
 `<run-id>` is the id printed at the end of the `--apply` run and recorded in
 `docs/build/store-write-log.md`'s `## Run <run-id>` heading. Rollback:
 
-- Deletes every category/brand **that run created** (never one it merely reused — a category that already
+- Deletes every category/brand **that run created** (never one it merely reused, a category that already
   existed before the run is left untouched).
 - Restores every touched product's `categories`/`brand_id` to the exact pre-write state recorded in that
   run's log entry (the `before` snapshot taken by the read-back immediately before the write).

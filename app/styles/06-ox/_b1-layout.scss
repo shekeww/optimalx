@@ -674,22 +674,87 @@ a.ox-util__trust-link {
 }
 
 // Below 1024 the pill is a glyph that opens Salla's own search modal.
+//
+// The component's placeholder mode ships a whole inline field of its own
+// (a 220px wrapper, a 60px-tall input wrapper, the glyph and a text button
+// reading the engine's own placeholder), and the 44px the old rules put on
+// the trigger and the outer wrapper alone left that field standing around
+// them: on every page without the search row (/about, /categories) the
+// "glyph" was a 220x72 block printed over the wordmark (review 2026-09-24,
+// P1). Every box from the outer wrapper down to the button is the same
+// 44x44 now, with `min-inline-size: 0` and `max-inline-size` because the
+// component's own minimum is what held the 220; the glyph sits centred
+// (14 = (44 - 16) / 2, the engine's fixed 16px icon) and the button fills
+// the box with its text invisible but still the control's accessible name.
 .ox-search--collapsed {
-  inline-size: auto;
+  flex: 0 0 44px;
+  inline-size: 44px;
+  block-size: 44px;
+  overflow: hidden;
 
-  .s-search-placeholder-trigger,
-  .s-search-placeholder-wrapper {
-    display: inline-flex;
+  > div,
+  salla-search,
+  .s-search-placeholder-wrapper,
+  .s-search-input-wrapper {
+    display: flex;
     align-items: center;
     justify-content: center;
     inline-size: 44px;
+    min-inline-size: 0;
+    max-inline-size: 44px;
     block-size: 44px;
+    min-block-size: 0;
+    max-block-size: 44px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .s-search-input-wrapper {
+    position: relative;
+  }
+
+  .s-search-icon-wrap {
+    position: absolute;
+    inset-block-start: 14px;
+    inset-inline-start: 14px;
+    inline-size: 16px;
+    block-size: 16px;
+    margin: 0;
+    transform: none;
+    color: var(--ox-ink-on-dark);
+    font-size: 18px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .s-search-icon {
+    position: static;
+    inset: auto;
+    color: inherit;
+  }
+
+  .s-search-placeholder-trigger {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 44px;
+    block-size: 44px;
+    min-inline-size: 0;
+    min-block-size: 0;
+    max-block-size: 44px;
     padding: 0;
     background: none;
     border: 0;
     border-radius: 0;
-    color: var(--ox-ink-on-dark);
-    font-size: 22px;
+    color: transparent;
+    font-size: 0;
+    line-height: 44px;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--ox-ink-on-dark);
+      outline-offset: -2px;
+    }
   }
 }
 

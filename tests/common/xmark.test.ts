@@ -1,6 +1,6 @@
 // Geometry tests for the mark itself (X-IDENTITY-2026-09-22.md §1.6/§7.2),
 // run against the `d` string XMark.tsx draws through the sprite
-// (`#ox-mark`, the 24-grid path) — no SVG library, since the path is only
+// (`#ox-mark`, the 24-grid path), no SVG library, since the path is only
 // ever `M x y L x y … Z`.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -44,7 +44,7 @@ function parseSubpaths(d: string): Point[][] {
       current = [];
       i += 1;
     } else {
-      throw new Error(`unexpected command "${command}" — only M, L, Z are legal`);
+      throw new Error(`unexpected command "${command}" \u2014 only M, L, Z are legal`);
     }
   }
   if (current.length) subpaths.push(current);
@@ -106,7 +106,7 @@ describe('the mark (#ox-mark, 24-grid path)', () => {
     // locked-line arithmetic: no arm collapses toward a point, and no arm's
     // bounding span reaches the viewBox's own width (which would mean two
     // arms had merged into one shape, or the channel between the chevrons
-    // had closed — owner note 5's "must keep the channel constant").
+    // had closed, owner note 5's "must keep the channel constant").
     const xs = subpaths.flatMap((ring) => ring.map((p) => p.x));
     const width = Math.max(...xs) - Math.min(...xs);
     expect(width).toBeCloseTo(24, 0);

@@ -14,7 +14,7 @@
  * and served locally by `scripts/serve-store.mjs`.
  *
  * WHY A REQUEST SHIM AND NOT JUST THE ENV VAR. `VITE_API_URL` looks like the
- * switch — the engine reads it in `resolveRuntimeEnv()` — but that value is
+ * switch, the engine reads it in `resolveRuntimeEnv()`, but that value is
  * DEAD. It is written into the runtime-env object and never read again: the
  * API client hardcodes its prefix
  *
@@ -29,7 +29,7 @@
  * browser, and the Salla SDK's own XHR calls.
  *
  * WHERE IT IS IMPORTED. `app/router.tsx`, and only there. That is the one
- * module both runtimes evaluate before any loader runs — the worker's entry is
+ * module both runtimes evaluate before any loader runs, the worker's entry is
  * TanStack's own `server-entry`, so an import in `app/server.ts` is never
  * executed.
  *
@@ -39,7 +39,7 @@
 
 /**
  * Injected by `vite.config.ts` from `process.env.VITE_API_URL` at config load.
- * A literal substitution, so it survives every environment — including the
+ * A literal substitution, so it survives every environment, including the
  * workerd SSR runner, where `process.env` is empty.
  */
 declare const __OX_OFFLINE_API_BASE__: string;
@@ -136,7 +136,7 @@ function isBlocked(href: string, block: boolean): boolean {
 
 function blockError(href: string): Error {
   return new Error(
-    `[offline-api] BLOCKED ${href} — this machine is under Cloudflare bot mitigation on api.salla.dev ` +
+    `[offline-api] BLOCKED ${href} \u2014 this machine is under Cloudflare bot mitigation on api.salla.dev ` +
       `and every request re-arms it. The redirect to the local snapshot did not catch this call; ` +
       `see docs/build/offline-preview.md.`
   );
@@ -226,7 +226,7 @@ export {};
  * WHY BOTH. This module is part of the client bundle, which is a deferred
  * module at the END of the body. The Salla twilight SDK is a module in the
  * HEAD, so it executes FIRST and would reach api.salla.dev from the page
- * before the bundle ever ran — re-arming the very mitigation this exists to
+ * before the bundle ever ran, re-arming the very mitigation this exists to
  * avoid. `app/routes/__root.tsx` renders this string as the first script in
  * the document, ahead of everything. Both installs share one flag, so
  * whichever lands first wins and the other is a no-op.

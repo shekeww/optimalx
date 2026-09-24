@@ -6,15 +6,15 @@ import type { SVGAttributes } from 'react';
  * accent element.
  *
  * `authentic`, `shipping` and `help` are a legacy trio: `shield-check`,
- * `truck` and `headset` are aliases of them (S8b, 2026-09-24 — before that,
+ * `truck` and `headset` are aliases of them (S8b, 2026-09-24, before that,
  * S2a redraws; the owner's delivered icon system reversed which name is the
  * source). `scripts/import-owner-icons.mjs` copies the owner's
  * `authentic`/`shipping`/`help` drawing byte-for-byte under the `shield-check`
  * /`truck`/`headset` id, so all six names render identically; call sites
- * under a path this batch could not edit still depend on the exact old ids —
+ * under a path this batch could not edit still depend on the exact old ids -
  * `app/components/layout/Header/UtilityTrust.tsx` (`authentic`, `shipping`),
  * `app/components/listing/ZeroResults.tsx` and
- * `app/routes/account.notifications.tsx` (`help`) — which is why all three
+ * `app/routes/account.notifications.tsx` (`help`), which is why all three
  * old names stay (docs/build/progress/S2a.md has the full list, including a
  * few more `help` callers this batch left alone rather than edit without a
  * reason). Do not point a new caller at an old name; the conductor removes
@@ -78,7 +78,7 @@ export const OX_BRAND_ICON_NAMES = [
   'cart-add',
   // The owner's delivered icon system (S8b, 2026-09-24) carries two names our
   // set did not have: `wishlist` (the heart already covers wishlist actions
-  // as `heart`, so this is the owner's own drawing under its own id — no
+  // as `heart`, so this is the owner's own drawing under its own id, no
   // caller yet, follow-up in docs/build/progress/S8b.md) and `offers` (a
   // gift-box-with-ribbon mark for العروض; the nav item and the offers page
   // heading are the flagged follow-up, not edited by this batch).
@@ -114,7 +114,7 @@ export const OX_UI_ICON_NAMES = [
   // CSS fill declared on the <use> that references it, so the empty `star`
   // outline can never be painted solid by CSS alone. Generated as an alias
   // of `star` (scripts/import-owner-icons.mjs, ALIAS_ATTRS), never hand-drawn
-  // or mirrored — see OX_MIRRORED_ICON_NAMES below.
+  // or mirrored, see OX_MIRRORED_ICON_NAMES below.
   'star-fill',
   // The chrome set, drawn by S6a (2026-09-23) so a later batch can retire the
   // `sicon-*` glyphs one line at a time (docs/build/progress/S6a.md section 4).
@@ -172,7 +172,7 @@ export const OX_UI_ICON_NAMES = [
  *
  * The owner's 47 delivered symbols (S8b, 2026-09-24,
  * docs/build/progress/S8b.md) are deliberately absent, including the four
- * aliases sourced from one (`shield-check`, `truck`, `headset` — and `heart`,
+ * aliases sourced from one (`shield-check`, `truck`, `headset`, and `heart`,
  * which was never in this list): the owner's brief ships one drawing per
  * icon, so they paint as that one drawing at every size, 16 and 20 included.
  * `whatsapp` is the only symbol left that ships a twin.
@@ -184,13 +184,13 @@ export const OX_SIMPLIFIED_MAX_SIZE = 20;
 
 /**
  * The only symbols that mirror under RTL: navigation and direction. Every
- * other symbol — and above all the brand-derived chamfer and `ox-mark` —
+ * other symbol, and above all the brand-derived chamfer and `ox-mark` -
  * keeps its geometry in both directions (DIRECTION 3.4, owner brief
  * "preserve brand geometry in RTL"). The flip itself is the theme's existing
  * `.ox-mirror` rule (`_primitives.scss`), not a new transform here.
  *
  * `cart`, `shipping` and `written-question` are the owner's own `rtlFlip`
- * icons (optimal-x-icons/icons.json, S8b 2026-09-24) — the same three the
+ * icons (optimal-x-icons/icons.json, S8b 2026-09-24), the same three the
  * owner's own CSS mirrors (`ox-icons.css`: `[dir="rtl"] .ox-icon--cart,
  * .ox-icon--shipping, .ox-icon--written-question`). `truck` follows its alias
  * source, `shipping`; `heart`/`wishlist`, `headset`/`help` and
@@ -265,6 +265,8 @@ export function Icon({ name, size = 24, label, className, style, ...rest }: Icon
       {...rest}
     >
       <use href={`#${symbolId}`} />
+
     </svg>
+
   );
 }

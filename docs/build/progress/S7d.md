@@ -1,4 +1,4 @@
-# S7d — the P0 gate: the cart, the booking, the links, the mirror
+# S7d, the P0 gate: the cart, the booking, the links, the mirror
 
 Builder S7d, 2026-09-23. Brief: `docs/build/UX-2026-09-24.md` (designer S6c's
 live audit), P0 items 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 16, 17, 18.
@@ -38,13 +38,13 @@ route in the tree produced one.
 The real cart defect is in section 1. The real link defect (24 absolute
 anchors per page) is in section 3, and it is a different bug with the same
 symptom class, so the one resolution rule was still built and is still the
-fix — it just is not what made the cart a 500.
+fix, it just is not what made the cart a 500.
 
 `/ar/about` (P0-17) is in section 12.
 
 ---
 
-## 1. P0-1 — the cart route crashed
+## 1. P0-1, the cart route crashed
 
 **Root cause, three layers deep.**
 
@@ -56,7 +56,7 @@ fix — it just is not what made the cart a 500.
 2. `useCartData` conflated three different states in one `null`: "still
    asking the SDK", "this visitor has no cart" and "the request failed". Its
    `loading` was `cartId === null || !data`, so a cart id that never arrived,
-   or a detail request that errored, both read as *loading for ever* — which
+   or a detail request that errored, both read as *loading for ever*, which
    is what put the engine cart skeleton on `/ar/cart` at 1440 and would put it
    in front of a shopper whose cart request fails.
 3. The route's head passed the engine's platform key straight through, so the
@@ -70,8 +70,8 @@ fix — it just is not what made the cart a 500.
   `common.errors.500` + `common.elements.back_home`), and
   `commerceHeadExtend({ noindex: true, titleKey: 'ox.titles.cart' })`.
 - `app/components/commerce/useCartData.ts`: `cartId` is now
-  `number | null | undefined` — undefined is "still asking", null is "no cart"
-  — every SDK hop is optional (`window.salla?.cart?.api?.getCurrentCartId?.()`,
+  `number | null | undefined`, undefined is "still asking", null is "no cart"
+  - every SDK hop is optional (`window.salla?.cart?.api?.getCurrentCartId?.()`,
   and a missing or non-thenable return resolves to "no cart" instead of
   throwing `Cannot read properties of undefined (reading 'then')`), and
   loading is react-query's own `isPending`, so an **errored** request resolves
@@ -101,11 +101,11 @@ the first pass).
 
 ---
 
-## 2. P0-2 — the booking product had no way to book
+## 2. P0-2, the booking product had no way to book
 
 **Root cause.** `ProductPage` mounted the engine `AddToCartForm` for
-`service` and `booking` products. That form renders shipping fields — the
-English `Weight 0.1` and `Quantity` rows and a `0` total — and its quantity
+`service` and `booking` products. That form renders shipping fields, the
+English `Weight 0.1` and `Quantity` rows and a `0` total, and its quantity
 input and add button stayed as `s-skeleton` pulses, while the only words that
 looked like a control were a `<p class="ox-service__slot-note">`.
 
@@ -136,15 +136,15 @@ text.
 ### The InBody line (coordinator addendum, P0-12's third leg)
 
 The booking page now carries the theme's **one** InBody sentence, read through
-`t(SERVICES_HUB.inbodyKey)` from `app/content/services.ts` — never a second
-wording — gated on `inbodyIncluded(settings)` from `product/lib/claims.ts`, and
+`t(SERVICES_HUB.inbodyKey)` from `app/content/services.ts`, never a second
+wording, gated on `inbodyIncluded(settings)` from `product/lib/claims.ts`, and
 placed under the booking control as a fact line. Measured on the page:
 `قياس تكوين الجسم (InBody) مجانا في الفرع.` (whatever S7c's key now says, this
 page says the same thing, because it is the same key).
 
 ---
 
-## 3. P0-14 — twenty four links per page left the build
+## 3. P0-14, twenty four links per page left the build
 
 **Root cause.** The live category API, the dashboard menu, `product.url`,
 `brand.url` and `article.url` all publish **absolute** URLs
@@ -156,13 +156,13 @@ Arabic.
 
 **The one rule**, in `app/components/layout/navLinks.ts`:
 
-- `toInternalPath(url)` — origin dropped, query and hash kept (`toPath` drops
+- `toInternalPath(url)`, origin dropped, query and hash kept (`toPath` drops
   the query, which is right for matching a menu URL against a route set and
   wrong for a destination: the taxonomy's own fallback IS `/search?q=…`);
-- `withLocale(path, locale)` — now idempotent for **any** locale segment, not
+- `withLocale(path, locale)`, now idempotent for **any** locale segment, not
   only the active one, so `/en/about` never becomes `/ar/en/about`;
-- `toHref(url, locale)` — both halves, for a raw `<a href>`;
-- `localeSegmentOf(pathname)` — the served page's own locale segment, for a
+- `toHref(url, locale)`, both halves, for a raw `<a href>`;
+- `localeSegmentOf(pathname)`, the served page's own locale segment, for a
   destination built at click time.
 
 Applied **at the source** where one edit fixes many surfaces:
@@ -182,16 +182,16 @@ survival, and that no resolved href carries an origin.
 `optimalx.com.sa`.
 
 **Verified live**, after scrolling the whole page so every lazy block mounts:
-`/ar` at 390 — 62 anchors, **0** absolute, **0** internal hrefs without a
-locale segment (was 24 of 58); `/ar/brands` — 62 anchors, 0 absolute;
-`/ar/blog` — 31 anchors, 0 absolute.
+`/ar` at 390, 62 anchors, **0** absolute, **0** internal hrefs without a
+locale segment (was 24 of 58); `/ar/brands`, 62 anchors, 0 absolute;
+`/ar/blog`, 31 anchors, 0 absolute.
 
 ---
 
-## 4. P0-10 — "buy now" did not buy
+## 4. P0-10, "buy now" did not buy
 
 **Root cause.** `can_quick_buy` is false on all 47 products, so the card's
-accent CTA fell back to an `<a>` to the product page — an orange button
+accent CTA fell back to an `<a>` to the product page, an orange button
 reading "buy now" that navigated.
 
 **Fix.** The owner's decision (label stays `اشتري الآن`, control stays the
@@ -210,7 +210,7 @@ angled primary) is kept and the control now does what it says. New
 `OxProductCard.BuyNow` uses it; `BuyZone/BuyActions` (the PDP's buy-now, which
 already proxied the form's button) now shares the same implementation and
 stopped hard-coding `/cart`. A product with `has_options` keeps a link to the
-PDP — the one case where a link is the honest control, because the card cannot
+PDP, the one case where a link is the honest control, because the card cannot
 make the variant choice for the shopper.
 
 **Verified.** `tests/product/buyNow.test.ts` drives the three paths (success →
@@ -221,7 +221,7 @@ options.
 
 ---
 
-## 5. P0-4 — `/ar/services` rendered zoomed out
+## 5. P0-4, `/ar/services` rendered zoomed out
 
 **Reproduced, then bisected in the running page** (CSS injected at document
 start, one declaration per run, `window.innerWidth` and
@@ -230,21 +230,21 @@ start, one declaration per run, `window.innerWidth` and
 | injected | 390 viewport | 502 viewport |
 | --- | --- | --- |
 | nothing (baseline) | **720 / 720** | **720 / 720** |
-| `.ox-tabbar { display: none }` | 720 / 720 | — |
-| `.ox-services__motif { display: none }` | 720 / 720 | — |
-| `* { max-inline-size: 320px }` | 720 / 720 | — |
-| `.ox-compare__scroller { min-inline-size: 0 }` | 720 / 720 | — |
-| `.ox-compare__scroller { contain: inline-size }` | 720 / 720 | — |
-| `.ox-compare { display: none }` | **390 / 390** | — |
-| `.ox-compare__table { min-inline-size: 0 }` | **390 / 390** | — |
-| `.ox-compare__scroller { position: relative }` | **390 / 390** | — |
+| `.ox-tabbar { display: none }` | 720 / 720 |, |
+| `.ox-services__motif { display: none }` | 720 / 720 |, |
+| `* { max-inline-size: 320px }` | 720 / 720 |, |
+| `.ox-compare__scroller { min-inline-size: 0 }` | 720 / 720 |, |
+| `.ox-compare__scroller { contain: inline-size }` | 720 / 720 |, |
+| `.ox-compare { display: none }` | **390 / 390** |, |
+| `.ox-compare__table { min-inline-size: 0 }` | **390 / 390** |, |
+| `.ox-compare__scroller { position: relative }` | **390 / 390** |, |
 
 So the audit's diagnosis holds: the comparison table's 640 px minimum escapes
 its own scroller, because a **static** scroller with a sticky column hands
 that column's containing block to the initial containing block. The document's
 minimum width then lands at 720 whatever the viewport is (720 at 390 and at
 502, which is why the number never moved), and Chrome widens the layout
-viewport to it — the page at about 54 %.
+viewport to it, the page at about 54 %.
 
 **Fix.** `position: relative` on `.ox-compare__scroller`
 (`app/styles/06-ox/_b5-pages.scss`), with the derivation in the comment.
@@ -264,7 +264,7 @@ be argued for there.
 
 ---
 
-## 6. P0-5 — lookup keys visible to shoppers
+## 6. P0-5, lookup keys visible to shoppers
 
 **Root cause.** Two different mechanisms, and only one of them is ours.
 
@@ -286,7 +286,7 @@ strings in the page text.
 
 **Recorded, not fixed:** the engine's own blog page prints `blocks.footer.blog`
 as its `h1` and `common.titles.home` in its own breadcrumb by calling `t()`
-itself against the platform bundle — it does not read `page.title`, and it does
+itself against the platform bundle, it does not read `page.title`, and it does
 not read this theme's dictionary (measured: `common.titles.home` renders as a
 key there while the same key resolves everywhere the theme renders it). Those
 resolve from Salla's CDN in production and cannot resolve in the offline
@@ -295,11 +295,11 @@ this batch.
 
 ---
 
-## 7. P0-6 — the product breadcrumb named a page the visitor never chose
+## 7. P0-6, the product breadcrumb named a page the visitor never chose
 
 **Root cause.** `OxBreadcrumb` built its fallback second crumb from
 `page.parent`, which the engine fills with **the last page the visitor
-visited** — measured as `الطاقة` at 1440 and the branch page's own title at
+visited**, measured as `الطاقة` at 1440 and the branch page's own title at
 390, for the same shaker, both linking to the shaker itself.
 
 **Fix.** `ProductPage` passes an explicit `trail`: home, the product's own
@@ -315,7 +315,7 @@ came from.
 
 ---
 
-## 8. P0-9 — the spec table printed twice, once as a run-on
+## 8. P0-9, the spec table printed twice, once as a run-on
 
 **Root cause, and it is a data fact.** 46 of the 47 catalogue descriptions
 carry the details table as a real `<table>`, which `splitDescription` already
@@ -325,7 +325,7 @@ was created and kept the cells**: the store itself serves
 second render of our table; it was the merchant payload.
 
 **Fix.** `product/lib/nutritionTable.ts` drops a paragraph whose text begins
-with the details table's own two heading cells welded together — two headings
+with the details table's own two heading cells welded together, two headings
 with nothing between them is not a sentence anyone typed, and it is what a
 stripped `<th><th>` pair always leaves behind. Everything the paragraph holds
 is already in the details panel.
@@ -338,7 +338,7 @@ flattened table and an ordinary paragraph that merely contains the word
 
 ---
 
-## 9. P0-13 — the supply calculator ran on a bottle
+## 9. P0-13, the supply calculator ran on a bottle
 
 **Root cause.** The gate was `hasSupplyCalculator(product.type)` plus
 "`servings` is a number". A reusable shaker (`الشكل: عبوة`, `الحصص: 1`)
@@ -362,7 +362,7 @@ nothing else changes.
 
 ---
 
-## 10. P0-11 — two adjacent sections under one heading
+## 10. P0-11, two adjacent sections under one heading
 
 `ox.home.posters_title` is now `ابدأ من هنا` / `Start here` with the descriptor
 `ox.home.posters_lead` under it, and `ox.home.offers_title` is `العروض` /
@@ -373,13 +373,13 @@ block now renders only while `settings.show_offers_nav !== false`, which is the
 gate NAV 1.3 already defines for the header item.
 
 **Verified live** on `/ar` at 390, after scrolling every block into view: the
-h2 order is `تسوق حسب هدفك`, `أحدث المنتجات`, `ابدأ من هنا`, `العروض` —
+h2 order is `تسوق حسب هدفك`, `أحدث المنتجات`, `ابدأ من هنا`, `العروض` -
 zero duplicate headings on the page; the offers view-all resolves to
 `/ar/offers`.
 
 ---
 
-## 11. P0-8 — the `/en` hero was not mirrored
+## 11. P0-8, the `/en` hero was not mirrored
 
 **Root cause.** The photo pane, the scrim, the accent strap and both corner
 wedges were all placed **logically** (`inset-inline-end`) and then pinned back
@@ -398,7 +398,7 @@ values). The five side overrides are gone.
 | --- | --- | --- | --- |
 | `.ox-hero__photo` | x 0 w 928 | x 0 w 929 | **x 497 w 928** |
 | `.ox-hero__text` | x 846 w 514 | x 66 w 596 (inside the photo) | **x 65 w 601** |
-| `.ox-hero__edge` (skewed box) | x 521 w 488 | — | **x 416 w 488** |
+| `.ox-hero__edge` (skewed box) | x 521 w 488 |, | **x 416 w 488** |
 | `.ox-hero__wedge` pair | x -50, x 4 | x -50, x 4 | **x 1367, x 1326** |
 
 Mirroring `/ar` about the band centre gives exactly the `/en` numbers: the
@@ -411,14 +411,14 @@ to re-open, not a builder's.
 
 ---
 
-## 12. P0-17 — `/ar/about` returning the 404 page
+## 12. P0-17, `/ar/about` returning the 404 page
 
 **Not reproducible as a route defect, and the hypothesis is disproved**
 (section 0: the match-id warning is not a double prefix).
 
 - Client navigation, the exact path the audit walked: loaded `/ar/branch` at
   1440, clicked the footer's `من نحن` (`a[href="/ar/about"]`), and the page
-  that mounted was the story — `location.href` `/ar/about`, title
+  that mounted was the story, `location.href` `/ar/about`, title
   `من نحن: متجر مكملات من المدينة المنورة | اوبتيمال اكس`, `h1` `من نحن`, no
   404 markup.
 - Cold full loads: `/ar/about` answered 200 on every attempt.
@@ -434,7 +434,7 @@ error boundary this route family actually hit) and the link rule.
 
 ---
 
-## 13. P0-7 — the branch promised hours it did not have
+## 13. P0-7, the branch promised hours it did not have
 
 Two code changes and two settings.
 
@@ -471,7 +471,7 @@ defaults. The default ships with the theme and takes effect on install.
 
 ---
 
-## 14. P0-16 — the mobile hero was a poster with its own text cropped
+## 14. P0-16, the mobile hero was a poster with its own text cropped
 
 **Root cause, and it is not a crop.** `hero-creatine-mobile.webp` is
 **byte-identical** to the desktop file (both md5
@@ -481,9 +481,9 @@ Arabic headline and four English/Arabic benefit rows occupy its right third.
 The desktop split hides that third outside the photo pane; a 390 x 300 band
 cannot.
 
-**Fix.** `DEFAULT_HERO_MOBILE` is now `/assets/images/hero-home-mobile.jpg` —
+**Fix.** `DEFAULT_HERO_MOBILE` is now `/assets/images/hero-home-mobile.jpg` -
 the file DIRECTION 8.1 names for this slot, 780 x 1040 at 3:4, the store's own
-shakers, no captions and no signage in frame — and the phone band anchors it
+shakers, no captions and no signage in frame, and the phone band anchors it
 with `object-position: center top`, so `cover` keeps the subject rather than
 the floor.
 
@@ -493,7 +493,7 @@ the floor.
 
 ---
 
-## 15. P0-18 — the contact page promised email and had none
+## 15. P0-18, the contact page promised email and had none
 
 Measured first: `/ar/contact` renders exactly two channel rows, WhatsApp and
 phone, and there is no `@` anywhere in `main`, because the email row is
@@ -529,7 +529,7 @@ value in `p1a`.
    email clause), `p1a` `ox.content.branch.intro` (the hours promise moved into
    the gated tail). Everything else ships in `locales/partials/s7d.{ar,en}.json`
    (9 keys) and was merged with `pnpm i18n:merge`.
-4. **`twilight.json` carries two of the six settings the audit lists** —
+4. **`twilight.json` carries two of the six settings the audit lists** -
    see section 13. The rest is owner data and a claims risk.
 5. **The scroller test carries an eight-entry allowlist** of pre-existing
    static scrollers whose subtrees hold no positioned descendant. Making all

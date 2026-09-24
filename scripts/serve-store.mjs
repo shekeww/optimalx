@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * serve-store.mjs — a stand-in for `https://api.salla.dev/store/v1`, served
+ * serve-store.mjs, a stand-in for `https://api.salla.dev/store/v1`, served
  * off the snapshot in `fixtures/store/`.
  *
  * node:http only. No dependencies, no network, no request ever leaves this
@@ -60,7 +60,7 @@ const HOST = arg('host', '127.0.0.1');
  * changes, and the honest-empty behaviour is one unset variable away.
  *
  * `fixtures/store/overlay/brands.json` (S2e, 2026-09-22; derived from the
- * live catalogue on 2026-09-23, owner review item 4 — 21 real supplier
+ * live catalogue on 2026-09-23, owner review item 4, 21 real supplier
  * brands, `docs/build/progress/S4a.md` has the full mapping) joined the same
  * switch: the live store also has zero brands, so this snapshot lets
  * `OxBrands` and `/brands` be seen locally the same way the overlay
@@ -77,7 +77,7 @@ const OVERLAY_DIR = join(SNAPSHOT, 'overlay');
 function load(name, fallback) {
   const path = join(SNAPSHOT, name);
   if (!existsSync(path)) {
-    console.warn(`[store-api] snapshot missing: fixtures/store/${name} — serving a fallback`);
+    console.warn(`[store-api] snapshot missing: fixtures/store/${name} \u2014 serving a fallback`);
     return fallback;
   }
   return JSON.parse(readFileSync(path, 'utf8'));
@@ -89,7 +89,7 @@ function loadTaxonomy(name, fallback) {
   const path = join(OVERLAY_DIR, name);
   if (!existsSync(path)) {
     console.warn(
-      `[store-api] OFFLINE_TAXONOMY=1 but fixtures/store/overlay/${name} is missing — run node scripts/gen-taxonomy-fixture.mjs; serving the snapshot instead`
+      `[store-api] OFFLINE_TAXONOMY=1 but fixtures/store/overlay/${name} is missing \u2014 run node scripts/gen-taxonomy-fixture.mjs; serving the snapshot instead`
     );
     return load(name, fallback);
   }
@@ -171,7 +171,7 @@ function loadSettingsOverlay() {
   const path = join(OVERLAY_DIR, 'settings.json');
   if (!existsSync(path)) {
     console.warn(
-      '[store-api] OFFLINE_TAXONOMY=1 but fixtures/store/overlay/settings.json is missing — serving the snapshot\'s settings unchanged'
+      '[store-api] OFFLINE_TAXONOMY=1 but fixtures/store/overlay/settings.json is missing \u2014 serving the snapshot\'s settings unchanged'
     );
     return {};
   }
@@ -246,7 +246,7 @@ if (Object.keys(productImageOverlay).length) {
  * CSV's English twins) supplies name/subtitle/description for `accept-
  * language: en`; a product with no twin there keeps its Arabic fields,
  * same as a merchant who has not translated it yet. Computed once at boot
- * — the overlay file is static — never per request. The Arabic path
+ * - the overlay file is static, never per request. The Arabic path
  * (`snapshot.products`, `snapshot.details`, `snapshot.categories`,
  * `snapshot.menus`) is untouched by any of this.
  */
@@ -260,12 +260,12 @@ const detailsEn = overlayDetails(snapshot.details, productsEnOverlay);
  * (`app/content/taxonomy.json`). Only visible at all under
  * `OFFLINE_TAXONOMY=1` (the store has zero real categories today), but
  * computed unconditionally since it is cheap and the Arabic arrays are
- * empty by default anyway — overlaying an empty array is a no-op.
+ * empty by default anyway, overlaying an empty array is a no-op.
  */
 function loadFromRoot(relPath, fallback) {
   const filePath = join(ROOT, relPath);
   if (!existsSync(filePath)) {
-    console.warn(`[store-api] missing: ${relPath} — serving a fallback for English category/menu names`);
+    console.warn(`[store-api] missing: ${relPath} \u2014 serving a fallback for English category/menu names`);
     return fallback;
   }
   return JSON.parse(readFileSync(filePath, 'utf8'));
@@ -289,11 +289,11 @@ const empty = () => ok(null);
  * has zero orders and zero reviews, so there is no bestseller and no rating to
  * rank by. Inventing one would be a fabricated claim. `categories`, `brands`,
  * `tags` and `related` return nothing because the store genuinely has no
- * taxonomy and no curated relations — the empty rails are what a visitor meets.
+ * taxonomy and no curated relations, the empty rails are what a visitor meets.
  * The one exception is `categories` under OFFLINE_TAXONOMY=1, answered from
  * the overlay's membership map (the taxonomy's own SKU lists, by product id).
  *
- * `lang` picks the Arabic array or its English overlay (S9f) — membership,
+ * `lang` picks the Arabic array or its English overlay (S9f), membership,
  * on-sale and id filtering are language-independent, so only the source
  * array changes.
  */
@@ -391,7 +391,7 @@ function route(pathname, url, lang) {
   if (seg[0] === 'menus') {
     const slot = seg[1] === 'footer' ? 'footer' : 'header';
     const items = (lang === 'en' ? menusEn : snapshot.menus)[slot] ?? [];
-    return { body: ok(items), note: `${slot} menu — ${items.length} item(s)` };
+    return { body: ok(items), note: `${slot} menu \u2014 ${items.length} item(s)` };
   }
 
   if (p === 'component/list') {
@@ -402,7 +402,7 @@ function route(pathname, url, lang) {
 
   if (seg[0] === 'products' && seg[2] === 'details') {
     const found = (lang === 'en' ? detailsEn : snapshot.details)[String(seg[1])];
-    if (found) return { body: ok(found), note: `product ${seg[1]} — ${found.name}` };
+    if (found) return { body: ok(found), note: `product ${seg[1]} \u2014 ${found.name}` };
     // Unknown id: 404 so the loader's `orThrow` renders the theme's Not Found
     // rather than a broken product page.
     return { body: { status: 404, success: false, error: { message: 'Product not found' } }, code: 404, note: `unknown product ${seg[1]}` };
@@ -421,7 +421,7 @@ function route(pathname, url, lang) {
       (c) => String(c.id) === String(seg[1]) || (c.id_ !== undefined && String(c.id_) === String(seg[1]))
     );
     return found
-      ? { body: ok(found), note: `category ${seg[1]} — ${found.name}` }
+      ? { body: ok(found), note: `category ${seg[1]} \u2014 ${found.name}` }
       : { body: { status: 404, success: false, error: { message: 'Category not found' } }, code: 404, note: emptyNote };
   }
 
@@ -474,7 +474,7 @@ function route(pathname, url, lang) {
         real_shipping_cost: 0,
         options: [],
       }),
-      note: 'STUB — cart is not emulated offline',
+      note: 'STUB \u2014 cart is not emulated offline',
     };
   }
 
@@ -483,7 +483,7 @@ function route(pathname, url, lang) {
     return { body: snapshot.translations, raw: true, note: 'platform strings, derived from locales/ar.json' };
   }
 
-  return { body: empty(), note: 'UNKNOWN PATH — empty envelope (200)', unknown: true };
+  return { body: empty(), note: 'UNKNOWN PATH \u2014 empty envelope (200)', unknown: true };
 }
 
 /*
@@ -566,7 +566,7 @@ const server = createServer((req, res) => {
   if (result.unknown) unknownPaths.add(url.pathname);
   const query = url.search ? ` ${decodeURIComponent(url.search)}` : '';
   console.log(
-    `[store-api] ${String(code)} ${req.method} ${url.pathname}${query} — ${result.note} [lang=${lang}] (${Buffer.byteLength(payload)}B)`
+    `[store-api] ${String(code)} ${req.method} ${url.pathname}${query} \u2014 ${result.note} [lang=${lang}] (${Buffer.byteLength(payload)}B)`
   );
 });
 

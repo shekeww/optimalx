@@ -1,4 +1,4 @@
-// lang-overlay.mjs — pure, synchronous helpers that turn the Arabic
+// lang-overlay.mjs, pure, synchronous helpers that turn the Arabic
 // snapshot `scripts/serve-store.mjs` serves by default into its English
 // twin for `accept-language: en`. No filesystem, no network, no side
 // effects: every function here takes plain data in and returns new plain
@@ -8,8 +8,8 @@
 // merchant has one and the request carries `accept-language: en`
 // (confirmed: node_modules/@salla.sa/twilight-theme-engine's
 // `sharedHeaders()` sets that header from the engine's own locale on every
-// call). The offline snapshot has no such mechanism — it is one static
-// capture — so this module is what makes the mock behave the same way the
+// call). The offline snapshot has no such mechanism, it is one static
+// capture, so this module is what makes the mock behave the same way the
 // real API does for a merchant who HAS entered English translations,
 // using the CSV twins `scripts/gen-products-en.mjs` already vetted.
 
@@ -20,7 +20,7 @@
 /**
  * One product, overlaid with its English twin when the overlay carries one
  * for that product's id. A product with no twin in the overlay is returned
- * unchanged (Arabic) — never invented.
+ * unchanged (Arabic), never invented.
  * @param {Record<string, any>} product
  * @param {Record<string, EnglishFields>} overlay  product id (string) -> English fields
  * @returns {Record<string, any>}
@@ -67,7 +67,7 @@ export function slugFromCategoryUrl(url) {
 /**
  * slug -> English name, built once from the 25-node taxonomy and the
  * theme's own `ox.tax.<key>.name` strings. A node with no matching locale
- * key is left out of the map — never invented.
+ * key is left out of the map, never invented.
  * @param {{ nodes: { slug: string, key: string }[] }} taxonomy
  * @param {Record<string, string>} enLocale
  * @returns {Map<string, string>}
@@ -103,7 +103,7 @@ export function overlayCategories(categories, nameMap) {
 }
 
 /**
- * One menu item (`title`, not `name`; `children`, not `sub_categories` —
+ * One menu item (`title`, not `name`; `children`, not `sub_categories` -
  * `scripts/gen-taxonomy-fixture.mjs`'s own shape), recursively overlaid.
  * @param {any} item
  * @param {Map<string, string>} nameMap
@@ -126,7 +126,7 @@ export function overlayMenus(menus, nameMap) {
 /**
  * The two-letter language the engine's `accept-language` header (or a
  * manual `?lang=` query override, for curling the mock by hand) asks for.
- * Anything other than `en` resolves to `ar`, the snapshot's own language —
+ * Anything other than `en` resolves to `ar`, the snapshot's own language -
  * the Arabic path must never depend on this parsing being exhaustive.
  * @param {string | undefined | null} acceptLanguageHeader
  * @param {string | undefined | null} queryLang

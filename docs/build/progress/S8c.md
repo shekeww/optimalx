@@ -1,6 +1,6 @@
 # S8c: the free advisory + InBody CTA on the product page
 
-Batch: the owner's 2026-09-24 brief — "the free advisory and InBody test
+Batch: the owner's 2026-09-24 brief, "the free advisory and InBody test
 should be shown on product pages at the bottom, in the way of: can't decide
 what you need? contact us, book a free advisory with a free InBody test …
 linking to the services page or with direct WhatsApp contact; what we offer
@@ -12,8 +12,8 @@ is highly conversional." Claims law: `docs/build/research/FINAL-claims-source.md
 ## 1. What ships
 
 `app/components/product/BelowFold/AdvisoryCta.tsx`, mounted at the bottom of
-every boxed product page — after the related rail and the FAQ, before the
-sticky bar and the footer — and never on a service or booking product:
+every boxed product page, after the related rail and the FAQ, before the
+sticky bar and the footer, and never on a service or booking product:
 
 ```
 section[data-testid="ox-pdp-advisory"]
@@ -29,7 +29,7 @@ section[data-testid="ox-pdp-advisory"]
 Read live off `/ar/x/p1673105563` (boxed, §5): the primary opens
 `/ar/p1051830221` (the branch-visit product, the same route S7c's offer strip
 opens), and with `whatsapp_number` unset on this store the secondary renders
-as the text link to `/ar/services`, labelled `كل الخدمات` — both gates
+as the text link to `/ar/services`, labelled `كل الخدمات`, both gates
 verified in both states in `tests/product/AdvisoryCta.test.tsx`.
 
 ---
@@ -47,13 +47,13 @@ and `_b2-home.scss` section 8 (S7c):
 1. **The two blocks disagree on where the heading lives.** The offer strip's
    heading is the band's own `<h2>`, rendered OUTSIDE the strip, in
    `OxServices`'s own header. This block has no band around it, so its
-   heading has to live INSIDE the plate — a different DOM shape, not a prop
+   heading has to live INSIDE the plate, a different DOM shape, not a prop
    away.
 2. **The two blocks disagree on their button breakpoint.** `.ox-offer__actions`
    switches to a row at `640px` (`_b2-home.scss`); the brief asks this block
    to switch "at 768". Reusing the exact `.ox-offer__action` selector would
    have made one class mean two breakpoints depending on which file loaded
-   last — not a design choice available to make cleanly.
+   last, not a design choice available to make cleanly.
 3. **The two blocks disagree on content shape.** The offer strip lists two
    independent FACTS (advice is free; InBody is free) with a gated reply-time
    cue; this block states ONE sentence whose tail changes on a gate, and its
@@ -63,13 +63,13 @@ Given that, "never edit `_b2-home.scss`" is the load-bearing half of the
 brief's sentence: the plate's VISUAL identity (the graphite-3 ground, the
 mark's own corner cut, full-width 48px buttons) is reproduced in the new
 `_b7-advisory.scss` partial with its own `.ox-advisory*` selectors, and
-`OxServices.tsx` is not imported from, or edited, at all — it was not in the
+`OxServices.tsx` is not imported from, or edited, at all, it was not in the
 touched-file list this report needed to justify, and its own 21 tests
 (`tests/home/OxServices.test.tsx`) are unaffected. `.ox-band-dark`, an
 existing token-repointing utility class (`app/styles/tokens.css`, already
 loaded ahead of the `06-ox` layer, not owned by this batch), is applied to
 the plate `<div>` so its children's `.ox-h3`/`.ox-body`/`.ox-small` type
-classes resolve to on-dark ink automatically — the same mechanism the offer
+classes resolve to on-dark ink automatically, the same mechanism the offer
 strip's own section relies on, reused rather than reinvented.
 
 ### 2.2 `settings` arrives as a prop, not a second `useTheme()` call
@@ -86,9 +86,9 @@ itself, so this file reads exactly the shape every sibling `BelowFold`/
 
 The brief names three `ox.pdp.*` keys explicitly (`advisory_title`,
 `advisory_line`, `advisory_whatsapp_text`) and describes two more behaviours
-with no key name attached: the two button labels, and — "the InBody clause
+with no key name attached: the two button labels, and, "the InBody clause
 renders only when `inbodyIncluded(settings)`; without it the line ends after
-'مجانية'" — a SECOND sentence, not a substring of the first one spliced at
+'مجانية'", a SECOND sentence, not a substring of the first one spliced at
 runtime (which would have meant storing half a sentence in a locale value,
 banned by the fragment reading badly on its own and by `check-copy`'s
 per-value dialect/diacritic scan needing a complete sentence to score). Four
@@ -118,7 +118,7 @@ The closing note is `SERVICES_HUB.cardFooterKey`
 (`ox.content.services.card_footer`), the exact key `OxServices.tsx`'s own
 `TrustRow`-adjacent note and `ServicePdp.tsx`'s scope line do not use (that
 one is `ox.pdp.medical_line`) but the brief's own quoted sentence matches
-this key's value byte for byte — the same reused-key discipline S7c
+this key's value byte for byte, the same reused-key discipline S7c
 documented for its own closing line. The primary action is
 `channelById('visit')?.to ?? '/services'`, the identical expression S7c's
 `OfferStrip` uses for its own primary, so a future change to the branch-visit
@@ -129,8 +129,8 @@ conceptually, even though it is written in two files.
 
 `ContactRow.tsx` and `OxWhatsApp.tsx` both fall back to
 `store.contacts.whatsapp` when `whatsapp_number` is empty; the brief's own
-sentence for this block names one setting only — "rendered ONLY when
-`settings.whatsapp_number` is set" — so `AdvisoryCta` reads `settingText(
+sentence for this block names one setting only, "rendered ONLY when
+`settings.whatsapp_number` is set", so `AdvisoryCta` reads `settingText(
 settings, 'whatsapp_number')` alone. `digitsOnly()` (`app/components/blocks/
 href.ts`) still strips everything but the Western digits before the number
 reaches the `wa.me` URL, the same function every other WhatsApp link in the
@@ -148,10 +148,10 @@ theme calls.
 | `app/components/product/ProductPage.tsx` | One import, one mount (`isService ? null : <div className="ox-container"><AdvisoryCta .../></div>`), right before the sticky bar; every other block unchanged. |
 | `locales/partials/s8c.ar.json`, `s8c.en.json` | New: the six keys in 2.3. |
 | `locales/ar.json`, `locales/en.json` | Mirrored via `pnpm i18n:merge` (6 added, 0 updated each). |
-| `tests/product/AdvisoryCta.test.tsx` | New: 5 tests — the full line, the InBody-off short line, the WhatsApp href (number, encoding, `{{product}}`), the no-WhatsApp fallback link, the reused closing line. |
+| `tests/product/AdvisoryCta.test.tsx` | New: 5 tests, the full line, the InBody-off short line, the WhatsApp href (number, encoding, `{{product}}`), the no-WhatsApp fallback link, the reused closing line. |
 | `tests/product/ProductPage.test.tsx` | One new test: the block mounts after the related rail and before the sticky bar on a physical product, and is absent on `service` and `booking`. |
 
-`OxServices.tsx` and `app/components/common/` were not touched — see 2.1.
+`OxServices.tsx` and `app/components/common/` were not touched, see 2.1.
 
 ---
 
@@ -168,7 +168,7 @@ pnpm vitest run tests/product tests/home tests/common
 
 The one failing file is `tests/common/sprite.test.ts`, pre-existing and
 unrelated: `app/assets/ox-sprite.svg` was already modified in the working
-tree before this batch started (not by any file this batch touched — an
+tree before this batch started (not by any file this batch touched, an
 icon-geometry regression in `ox-wellness`/`ox-user`/`ox-offers`/`ox-gift`/
 `ox-map-pin`/`ox-heart`, outside this batch's file list). Isolated:
 
@@ -213,7 +213,7 @@ or stopped it):
   title, the full line with the live `InBody` clause (`inbody_included` is
   unset on this store, which defaults true), and the closing note all render
   verbatim; primary `<a href="/ar/p1051830221">احجز استشارتك المجانية</a>`;
-  secondary is `<a href="/ar/services">كل الخدمات</a>` — this store has no
+  secondary is `<a href="/ar/services">كل الخدمات</a>`, this store has no
   `whatsapp_number` configured, so the fallback path is what a live read
   finds, and the WhatsApp path itself is covered by
   `AdvisoryCta.test.tsx`'s own `settings={{ whatsapp_number: … }}` case. The
@@ -227,16 +227,16 @@ or stopped it):
 
 ## 5. Deviations
 
-1. **`OfferStrip` was not exported, lifted, or imported anywhere** — see
+1. **`OfferStrip` was not exported, lifted, or imported anywhere**, see
    decision 2.1. `OxServices.tsx` is unedited.
-2. **Four locale keys beyond the three the brief named verbatim** — see
+2. **Four locale keys beyond the three the brief named verbatim**, see
    decision 2.3: the two button labels and the InBody-off short line each
    needed a key name, and the brief gave their VALUES but not their KEYS.
 3. **The WhatsApp gate does not fall back to `store.contacts.whatsapp`**,
-   unlike `ContactRow.tsx`/`OxWhatsApp.tsx` — see decision 2.5. Reversible by
+   unlike `ContactRow.tsx`/`OxWhatsApp.tsx`, see decision 2.5. Reversible by
    adding the same `?? store?.contacts?.whatsapp` this file's siblings
    already carry, if the owner wants the two behaviours to match.
 4. **`tests/common/sprite.test.ts` fails**, pre-existing and outside this
-   batch's file list (see §4) — reported, not touched, per the brief's own
+   batch's file list (see §4), reported, not touched, per the brief's own
    "edit only" list, which does not include `app/assets/ox-sprite.svg` or
    that test file.

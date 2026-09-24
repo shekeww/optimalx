@@ -25,7 +25,7 @@
 //   Every width keeps the ORIGINAL file's own aspect ratio (never cropped);
 //   quality 82 on all three.
 //
-// Requires Python 3 with Pillow (PIL) on PATH — confirmed present in this
+// Requires Python 3 with Pillow (PIL) on PATH, confirmed present in this
 // environment as `python` (not `python3`, which is the Microsoft Store alias
 // stub on this machine); both are tried, in that order, before failing.
 
@@ -175,7 +175,7 @@ function outputPath(slug, width, maxWidth) {
  * `slug: '<slug>'[\s\S]*?available:\s*false` in one pattern, and because a
  * lazy quantifier backtracks until the WHOLE pattern matches, it would walk
  * straight past this entry's own `available: true` (once already flipped)
- * to the NEXT entry's `available: false` and flip that one by mistake — caught
+ * to the NEXT entry's `available: false` and flip that one by mistake, caught
  * live while testing this script (docs/build/progress/S7a.md records it).
  * Two plain `indexOf` calls have no backtracking to go wrong.
  *
@@ -223,7 +223,7 @@ function main() {
     console.log(
       `Drop the six poster files into ${path.relative(REPO_ROOT, POSTERS_DIR)}${path.sep}, named ` +
         'exactly one slug each (inbody-consult.png, weekly-picks.jpg, bundle-her.png, ' +
-        'bundle-him.png, weight-subscription.png, bigramy-creatine.png — any of .png/.jpg/' +
+        'bundle-him.png, weight-subscription.png, bigramy-creatine.png \u2014 any of .png/.jpg/' +
         '.jpeg/.webp), or keep your own filenames and add a map.json ' +
         '({"<file>": "<slug>"}). Then run `node scripts/posters-import.mjs` again.'
     );

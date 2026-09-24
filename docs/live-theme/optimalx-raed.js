@@ -777,7 +777,7 @@
 
   /* THESE MUST MATCH optimalx-raed.css, and they did not.
      This block is the fallback the built parts need if the stylesheet ever
-     fails to arrive, so it carries its own copy of the tokens — and that copy
+     fails to arrive, so it carries its own copy of the tokens, and that copy
      was left on the first target's warm cream and its #EE4D22 orange after the
      stylesheet moved to the logo's #F54915 on a neutral ground. The stylesheet
      wins in practice (it is `html:root` against this `:root`), so the clash

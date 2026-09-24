@@ -19,7 +19,7 @@ export const RAIL_PER_PAGE = 8;
 const MIN_PRODUCTS = 2;
 /**
  * The number of 300px cards a 1024 container (960px) fits three of with the
- * 16px gap (932px used of 960) — where `SectionHeader`'s own `actions` slot
+ * 16px gap (932px used of 960), where `SectionHeader`'s own `actions` slot
  * first shows the arrows, and the step every press moves (owner brief
  * 2026-09-23 late night, item 1: every carousel adopts the shared rail
  * primitive, same STEP_AT_DESKTOP convention `OxBrands`/`FeaturedRail` use).
@@ -152,8 +152,11 @@ export function OxCategoryRail({ data }: OxBlockProps) {
                 >
                   <span className="ox-cat-rail__arrow-face ox-iconbtn--angled" aria-hidden="true">
                     <Icon name="chevron-start" size={16} />
+
                   </span>
+
                 </button>
+
                 <button
                   type="button"
                   className="ox-cat-rail__arrow ox-cat-rail__arrow--next"
@@ -163,12 +166,17 @@ export function OxCategoryRail({ data }: OxBlockProps) {
                 >
                   <span className="ox-cat-rail__arrow-face ox-iconbtn--angled" aria-hidden="true">
                     <Icon name="chevron-end" size={16} />
+
                   </span>
+
                 </button>
+
               </div>
+
             ) : undefined
           }
         />
+
         {/* The shared rail primitive (`_rail.scss`): no native scrollbar, the
             accent chevron cue at the reading end, and the progress strap
             under the row. */}
@@ -193,9 +201,12 @@ export function OxCategoryRail({ data }: OxBlockProps) {
                 })}
               >
                 <OxProductCard product={item} index={index} />
+
               </li>
+
             ))}
           </ul>
+
           <button
             type="button"
             className="ox-rail__cue"
@@ -205,9 +216,13 @@ export function OxCategoryRail({ data }: OxBlockProps) {
             <span className="ox-rail__cue-arm" aria-hidden="true" />
             <span className="ox-rail__cue-arm ox-rail__cue-arm--down" aria-hidden="true" />
           </button>
+
           <div className="ox-rail__progress" />
         </div>
+
       </div>
+
     </section>
+
   );
 }

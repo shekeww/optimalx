@@ -15,13 +15,13 @@ import { useSectionReveal } from './useSectionReveal';
  * (owner brief 2026-09-23 late: "complete the design of shop by brand
  * section, carousel and page").
  *
- * What it is now: an h2 (no eyebrow — owner brief 2026-09-24, item 1(a): the
+ * What it is now: an h2 (no eyebrow, owner brief 2026-09-24, item 1(a): the
  * section carries the same heading weight as "تصفح حسب النوع", which a
  * second, smaller label row above it would undercut), a "عرض الكل" link to
- * `/brands`, and a horizontal snap carousel of brand tiles — 2.4 visible at
+ * `/brands`, and a horizontal snap carousel of brand tiles, 2.4 visible at
  * 390 so the next tile peeks, 4 from 768, 6 from 1280, gap `--ox-4`. Each
  * tile is `BrandTile`: a plate carrying the mark's own arm-foot corner cut
- * and the brand's artwork or its NAME MARK — no count on the tile (item
+ * and the brand's artwork or its NAME MARK, no count on the tile (item
  * 1(c); `products_count` still drives the sort below).
  *
  * HIERARCHY (owner brief 2026-09-24 item 2, screenshots, superseding S8d
@@ -53,7 +53,7 @@ import { useSectionReveal } from './useSectionReveal';
  * so the arrows exist at 1024 and up exactly as the brief asks and touch
  * scroll-snap is the only mechanism below it.
  *
- * Motion: the one kinetic touch is the STRAP SWEEP — the section eyebrow's
+ * Motion: the one kinetic touch is the STRAP SWEEP, the section eyebrow's
  * accent rule opens from its inline-start edge once, on reveal, transform
  * only (`_b2-home.scss`). `useSectionReveal` never arms an element that is
  * already on screen at hydration and returns before observing under
@@ -141,8 +141,11 @@ export function OxBrands({ data }: OxBlockProps) {
                   >
                     <span className="ox-brands__arrow-face ox-iconbtn--angled" aria-hidden="true">
                       <Icon name="chevron-start" size={16} />
+
                     </span>
+
                   </button>
+
                   <button
                     type="button"
                     className="ox-brands__arrow ox-brands__arrow--next"
@@ -152,13 +155,19 @@ export function OxBrands({ data }: OxBlockProps) {
                   >
                     <span className="ox-brands__arrow-face ox-iconbtn--angled" aria-hidden="true">
                       <Icon name="chevron-end" size={16} />
+
                     </span>
+
                   </button>
+
                 </div>
+
               ) : undefined
             }
           />
+
         </div>
+
         {/* The shared rail primitive (`_rail.scss`): no native scrollbar, the
             accent chevron cue at the reading end, and the progress strap under
             the row. `useRailProgress` writes the position straight onto the
@@ -188,8 +197,10 @@ export function OxBrands({ data }: OxBlockProps) {
                   sizes="(min-width: 1280px) 203px, (min-width: 768px) 168px, 140px"
                 />
               </li>
+
             ))}
           </ul>
+
           <button
             type="button"
             className="ox-rail__cue"
@@ -199,9 +210,13 @@ export function OxBrands({ data }: OxBlockProps) {
             <span className="ox-rail__cue-arm" aria-hidden="true" />
             <span className="ox-rail__cue-arm ox-rail__cue-arm--down" aria-hidden="true" />
           </button>
+
           <div className="ox-rail__progress" />
         </div>
+
       </div>
+
     </section>
+
   );
 }

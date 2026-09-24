@@ -70,7 +70,7 @@ export interface CategoryTileProps {
  *
  * The card carries no angled cut of its own (coordinator addendum, owner
  * review 2026-09-23, removed the notch/corner-cut `.ox-tile::before` and
- * `.ox-tile__art` used to share — plain rectangles now, at every tier). The
+ * `.ox-tile__art` used to share, plain rectangles now, at every tier). The
  * footer arrow shares `_primitives.scss`'s `.ox-iconbtn--angled` (S2g) with
  * `GoalCard`'s own CTA arrow, on both the tinted and the art card, so every
  * type/goal tile draws the same arrow.
@@ -98,6 +98,7 @@ export function CategoryTile({
     <span className="ox-tile__foot">
       <Icon name="chevron-end" size={24} className="ox-tile__arrow ox-iconbtn--angled" />
     </span>
+
   );
 
   return (
@@ -125,19 +126,28 @@ export function CategoryTile({
           <span className="ox-tile__body">
             <Icon name={icon} size={36} className="ox-tile__icon" />
             <span className="ox-tile__name">{label}</span>
+
             <span className="ox-tile__line">{line}</span>
+
             {foot}
           </span>
+
         </>
+
       ) : (
         <>
           <Icon name={icon} size={32} className="ox-tile__icon" />
           <span className="ox-tile__image" aria-hidden="true" style={{ backgroundImage }} />
+
           <span className="ox-tile__name">{label}</span>
+
           <span className="ox-tile__line">{line}</span>
+
           {foot}
         </>
+
       )}
     </Link>
+
   );
 }

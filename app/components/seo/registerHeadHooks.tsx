@@ -77,7 +77,7 @@ const BRANCH_STREET_FALLBACK = 'ox.seo.branch.street';
  *
  * `mapUrl` (-> `hasMap`, VISIT-2026-09-24 §4.6) prefers the merchant's own
  * `google_place_url`, then `branch_map_url`, then falls back to
- * `BRANCH_LISTING.listingUrl` — the same audited, public Google Business
+ * `BRANCH_LISTING.listingUrl`, the same audited, public Google Business
  * Profile URL `BranchMap.tsx` falls back to for its own "open in Google
  * Maps" link, so a fresh install still publishes one real, checkable map
  * link rather than none.
@@ -156,6 +156,7 @@ export function registerHeadHooks() {
       const json = siteJsonLd(twilight?.store, twilight?.locale ?? 'ar', settings, translate);
       if (!json) return null;
       return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
+
     },
     50
   );

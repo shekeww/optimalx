@@ -62,7 +62,7 @@ import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
  *   price row        the amount, plus the struck regular price on a sale
  *   stock line       ONLY on a live `can_show_remained_quantity` quantity
  *                    of 1 to 5; the number itself never prints
- *   action row       quantity stepper + Salla's own add button, outlined —
+ *   action row       quantity stepper + Salla's own add button, outlined -
  *                    a real bundle without the API's own `can_add` gets a
  *                    link to its own page instead (S8g item 3), the same
  *                    honest fallback a product with options already gets
@@ -107,14 +107,13 @@ export const OxProductCard = memo(function OxProductCard({
 
   const outOfStock = product.is_out_of_stock || product.status === 'out';
   const saving = savingOf(product);
-  const percent = savingPercent(product);
   const price = effectivePrice(product);
   const expiryDate = spec?.expiry ?? null;
   const expiryMonths = monthsUntilExpiry(expiryDate);
 
   /**
    * THE STOCK LINE (CARD-2026-09-23 sections 0.2 and 3.6): text only, no
-   * icon, no bar, and never the number itself — the gate is verbatim from the
+   * icon, no bar, and never the number itself, the gate is verbatim from the
    * claims table, on the platform's own `can_show_remained_quantity` flag,
    * never inferred from a low number alone.
    */
@@ -151,7 +150,7 @@ export const OxProductCard = memo(function OxProductCard({
    */
   // THE TYPE (owner items 2026-09-24, S8a and S8g): a real bundle, else the
   // API category, else the listing this card renders in, else the theme's
-  // own SKU membership, else an unambiguous name keyword — resolved for both
+  // own SKU membership, else an unambiguous name keyword, resolved for both
   // the root and its child, nothing when no source answers
   // (`lib/productType.ts`). Printed as the short card labels
   // (`ox.card.type.<key>`), not the taxonomy's own name: "الفيتامينات
@@ -176,7 +175,7 @@ export const OxProductCard = memo(function OxProductCard({
   );
 
   // THE VARIANT CHOOSER, ON THE PLATE NOW (owner review, 2026-09-24): never
-  // sold out, and never a bundle — a bundle's own add path is a link to its
+  // sold out, and never a bundle, a bundle's own add path is a link to its
   // page (`BuyControls`'s early return below), never a card-composed add, so
   // the plate never offers a chooser it cannot honour. `option` feeds both
   // this row and the passive preview-dot suppression below, computed once.
@@ -186,7 +185,7 @@ export const OxProductCard = memo(function OxProductCard({
     option ? defaultValueId(option) : null
   );
   // A chosen value with its own photograph swaps the plate image; a colour
-  // alone never does (`valueImageUrl`'s own comment — painting a photograph
+  // alone never does (`valueImageUrl`'s own comment, painting a photograph
   // from a hex would be a guess this file already refuses to make).
   const variantImageUrl = useMemo(() => valueImageUrl(option, valueId), [option, valueId]);
 
@@ -270,39 +269,42 @@ export const OxProductCard = memo(function OxProductCard({
         ) : null}
         <BadgeStack className="ox-card-product__badges">
           {outOfStock ? <Badge tone="stop">{t('ox.card.out_of_stock')}</Badge> : null}
+
           {/* The bundle badge (S8g item 3): a real Salla bundle must present as
               one, not as a product, so this outranks every promotional badge
               below it. Same tone as the PDP's own informational badge
               (`ox.pdp.official_distributors`), never a promo colour. */}
           {visibleBadges.has('bundle') ? <Badge tone="neutral">{t('ox.card.bundle')}</Badge> : null}
-          {/* The saving pill. The percentage is the platform's own
-              `discount_percentage`, printed verbatim; the amount is the
-              difference between two prices the catalogue actually holds.
-              Neither is ever computed from a price the store has not set. */}
+
+          {/* The saving pill: the amount in riyals, the difference between two
+              prices the catalogue actually holds (`savingOf`), never a
+              percentage. The claims law (FINAL-claims-source.md section 5)
+              states a saving in riyals only, so the platform's own
+              `discount_percentage` is not printed any more (review
+              2026-09-24); the Shopify card's pill carries the same markup,
+              the label, the amount and the riyal mark. Nothing here is
+              computed from a price the store has not set. */}
           {visibleBadges.has('saving') ? (
             <Badge tone="saving" className="ox-card-product__saving-badge">
-              {percent !== null ? (
-                <>
-                  {t('ox.pdp.save_label')} <span className="ox-card-product__percent">{percent}</span>
-                </>
-              ) : (
-                <>
-                  {t('ox.pdp.save_label')} <Price amount={saving ?? undefined} currency={product.currency} />
-                </>
-              )}
+              {t('ox.pdp.save_label')} <Price amount={saving ?? undefined} currency={product.currency} />
             </Badge>
           ) : null}
           {visibleBadges.has('new') ? <Badge tone="new">{t('ox.common.new')}</Badge> : null}
+
           {visibleBadges.has('tag') && tagBadge ? (
             <Badge tone="tag">
               <Icon name={tagBadge.glyph} size={12} />
+
               {t(tagBadge.labelKey)}
             </Badge>
+
           ) : null}
           {visibleBadges.has('expiry') ? (
             <Badge tone="note">{t('ox.card.expiry', { date: expiryDate })}</Badge>
+
           ) : null}
         </BadgeStack>
+
         {showSwatchDots ? (
           <ul className="ox-card-product__swatches" aria-label={t('ox.card.colours')}>
             {swatches.slice(0, MAX_SWATCHES).map((swatch) => (
@@ -317,13 +319,16 @@ export const OxProductCard = memo(function OxProductCard({
                 style={{ ['--ox-swatch' as string]: swatch.color }}
               >
                 <span className="ox-sr-only">{swatch.name}</span>
+
               </li>
+
             ))}
           </ul>
+
         ) : null}
         {/* THE VARIANT CHOOSER, ON THE PLATE (owner review, 2026-09-24, item
             3): bottom-start, over the image, so it costs the body zero
-            height. Never sold out, never a bundle — see `option`'s own
+            height. Never sold out, never a bundle, see `option`'s own
             comment above. `option === null` still renders (an empty,
             `:not(:empty)`-gated box in `_b4-listing.scss`), so the DOM shape
             does not depend on which one product in a grid happens to carry
@@ -337,14 +342,18 @@ export const OxProductCard = memo(function OxProductCard({
             onChange={setValueId}
             formId={formId}
           />
+
         ) : null}
       </div>
+
 
       <div className="ox-card-product__body">
         {brandName ? (
           <p className="ox-card-product__brand">
             <Bdi>{brandName}</Bdi>
+
           </p>
+
         ) : null}
         <h3 className="ox-card-product__name">
           {/* `product.url` is absolute (`https://optimalx.com.sa/...`), and an
@@ -352,8 +361,11 @@ export const OxProductCard = memo(function OxProductCard({
               visitor back into Arabic (UX-2026-09-24 P0-14). */}
           <Link to={toInternalPath(product.url)} className="ox-card-product__title-link">
             <Bdi>{product.name}</Bdi>
+
           </Link>
+
         </h3>
+
         <p className="ox-card-product__chips">{specLine ? <Bdi>{specLine}</Bdi> : null}</p>
         {/* The WRAPPER is conditional too, not just its contents.
             `RatingRow` already renders null below a real review count, but the
@@ -371,17 +383,23 @@ export const OxProductCard = memo(function OxProductCard({
               count={product.rating?.count ?? 0}
               size={12}
             />
+
           </div>
+
         ) : null}
         <div className="ox-card-product__price">
           <Price amount={price} size="card" currency={product.currency} />
+
           {product.is_on_sale ? (
             <>
               <span className="ox-sr-only">{t('ox.pdp.was_price_label')}</span>
+
               <Price amount={product.regular_price} currency={product.currency} was />
             </>
+
           ) : null}
         </div>
+
         {/* No savings line under the price (owner call, 2026-09-22): the pill
             in the image corner already states the saving, and the extra row
             stretched every card for a figure printed twice. The
@@ -391,6 +409,7 @@ export const OxProductCard = memo(function OxProductCard({
             per the brief, rather than retired with it. */}
         {showsLimitedQty ? (
           <p className="ox-card-product__stock">{t('ox.card.limited_qty')}</p>
+
         ) : null}
         {withoutAddButton ? null : (
           <BuyControls
@@ -400,9 +419,12 @@ export const OxProductCard = memo(function OxProductCard({
             option={option}
             formId={formId}
           />
+
         )}
       </div>
+
     </article>
+
   );
 });
 
@@ -423,7 +445,7 @@ export const OxProductCard = memo(function OxProductCard({
  * **Neither is a bundle without the API's own permission** (S8g item 3): a
  * multi-product bundle cannot be composed from a listing card the way a
  * single coloured product can, so it gets no stepper and no add button
- * either — only a link to its own page, unless `can_add` says the platform
+ * either, only a link to its own page, unless `can_add` says the platform
  * itself allows adding it from here.
  *
  * **The chooser itself lives on the plate now** (owner review, 2026-09-24,
@@ -479,18 +501,20 @@ function BuyControls({
 
   // Every hook above is called unconditionally, so this early return (a plain
   // branch, not a hook) is safe: no hook may follow it. No stepper, no
-  // variant chips, no buy CTA — one full-width control, and nothing built
+  // variant chips, no buy CTA, one full-width control, and nothing built
   // above is used past this point for a sold-out product.
   if (outOfStock) {
     return (
       <div className="ox-card-product__action ox-card-product__action--out">
         <SoldOutControl product={product} />
+
       </div>
+
     );
   }
 
   // A real bundle whose own page has to compose the add (S8g item 3): no
-  // stepper, no add button, one link — read defensively, the way
+  // stepper, no add button, one link, read defensively, the way
   // `bundleMembers` reads `consisted_products`, since neither field is
   // declared on the engine's own Product type. `can_add` is not present on
   // any product in this catalogue today, so this is the honest state until
@@ -505,14 +529,16 @@ function BuyControls({
         >
           {t('ox.card.buy_now')}
         </Link>
+
       </div>
+
     );
   }
 
   // ONE grid, not a row plus a sibling (owner review, 2026-09-23, item 2):
   // below 768 the stepper takes its own row and the add button joins
   // buy-now on the next one, which needs all three as grid items of one
-  // container — buy-now used to be a plain sibling after this div, which
+  // container, buy-now used to be a plain sibling after this div, which
   // cannot regroup across a breakpoint on its own.
   const controls = (
     <div className="ox-card-product__action">
@@ -526,10 +552,13 @@ function BuyControls({
             disabled={quantity <= 1}
           >
             <Icon name="minus" size={16} />
+
           </button>
+
           {/* `output` is a live region by default, so the new figure is
               announced without an explicit aria-live on a card in a grid. */}
           <output className="ox-card-product__qty-value">{quantity}</output>
+
           <button
             type="button"
             className="ox-card-product__qty-btn"
@@ -538,8 +567,11 @@ function BuyControls({
             disabled={max !== null && quantity >= max}
           >
             <Icon name="plus" size={16} />
+
           </button>
+
         </div>
+
       ) : null}
       <div className="ox-card-product__add-slot">
         <AddButton
@@ -547,9 +579,13 @@ function BuyControls({
           quantity={showsStepper ? quantity : null}
           submit={Boolean(option)}
         />
+
       </div>
+
       <BuyNow product={product} />
+
     </div>
+
   );
 
   // No option to choose: nothing here needs a `<form>` around it. A form
@@ -571,14 +607,17 @@ function BuyControls({
       {/* Salla reads the product from the form, not from the button. The
           chosen value itself comes from the plate's own radios, associated
           with this form by `form={formId}` (VariantChips.tsx) even though
-          they render outside it in the DOM — the standard HTML mechanism a
+          they render outside it in the DOM, the standard HTML mechanism a
           `<button form="…">` uses, so `new FormData(form)` still carries it. */}
       <input type="hidden" name="id" value={String(product.id)} />
+
       {/* The stepper above is a React control, so the number it holds has to be
           put into the form as a field of its own for FormData to see it. */}
       <input type="hidden" name="quantity" value={String(showsStepper ? quantity : 1)} />
+
       {controls}
     </form>
+
   );
 }
 
@@ -586,8 +625,8 @@ function BuyControls({
  * The sold-out card's one control (CARD-2026-09-23 section 5).
  *
  * Salla's own notify-me path renders when the product can actually offer one
- * — a real `notify_availability` payload, or a status the platform itself
- * marked `out-and-notify` — and nothing is invented when it cannot. The
+ * - a real `notify_availability` payload, or a status the platform itself
+ * marked `out-and-notify`, and nothing is invented when it cannot. The
  * fallback is an honest, focusable "unavailable" state rather than a
  * `<button disabled>`: a disabled control leaves the tab order and explains
  * nothing to a shopper who lands on it.
@@ -610,9 +649,13 @@ function SoldOutControl({ product }: { product: Product }) {
             aria-label={t('ox.card.notify_me')}
           >
             <span className="ox-card-product__notify-label">{t('ox.card.notify_me')}</span>
+
           </SallaAddProductButtonCore>
+
         </WebComponentBoundary>
+
       </div>
+
     );
   }
 
@@ -625,6 +668,7 @@ function SoldOutControl({ product }: { product: Product }) {
     >
       {t('ox.card.unavailable')}
     </button>
+
   );
 }
 
@@ -680,7 +724,9 @@ function BuyNow({ product }: { product: Product }) {
               button carried is gone from every "اشتر الآن" control. */}
           {label}
         </SallaAddProductButtonCore>
+
       </WebComponentBoundary>
+
     );
   }
 
@@ -695,6 +741,7 @@ function BuyNow({ product }: { product: Product }) {
       >
         {label}
       </Link>
+
     );
   }
 
@@ -719,6 +766,7 @@ function BuyNow({ product }: { product: Product }) {
     >
       {label}
     </button>
+
   );
 }
 
@@ -741,19 +789,19 @@ function quickBuyAmount(product: Pick<Product, 'base_currency_price'>): number |
  *
  * **Why the visible element changed.** `salla-add-product-button` gets no
  * click handler of its own until the SDK script from
- * cdn.assets.salla.network has loaded and registered it — a gap the owner
+ * cdn.assets.salla.network has loaded and registered it, a gap the owner
  * saw three times as the add control simply doing nothing ("keeps
  * deleting"). CSS alone cannot fix that: a themed, un-upgraded custom
  * element still LOOKS like a button but has no click behaviour at all, so a
  * tap in that gap was a silent no-op regardless of how it was styled. The
  * fix is a real, native `<button>`, rendered in the server HTML, that is
- * clickable from the first paint the way only a real HTML element can be —
+ * clickable from the first paint the way only a real HTML element can be -
  * and that never touches the cart itself (CLAUDE.md: cart logic stays
  * Salla's). Salla's own component stays mounted, in `.ox-card-product__add-
  * native` right below, visually clipped rather than `display:none` (a
  * hidden-but-connected host still does real work when clicked), and this
  * button waits for it to be ready (`whenCustomElementReady`, immediate if it
- * already is) and then clicks THAT — the exact proxy pattern `BuyNow` below
+ * already is) and then clicks THAT, the exact proxy pattern `BuyNow` below
  * already uses for the card's own buy CTA.
  *
  * **The label tells the shopper which tap opens a chooser.** A product with
@@ -770,7 +818,7 @@ function quickBuyAmount(product: Pick<Product, 'base_currency_price'>): number |
  * quantity number to be injected", salla.dev doc-422692), which is what makes
  * the stepper real rather than decorative. It is passed only when the stepper
  * is on screen, so every product that has no stepper keeps exactly the
- * request it sent before this rebuild — and since it is a React prop on the
+ * request it sent before this rebuild, and since it is a React prop on the
  * hidden element, the proxied click always carries whatever the stepper reads
  * at the moment of the tap, with nothing extra to wire up here.
  */
@@ -799,7 +847,7 @@ function AddButton({
         .closest('.ox-card-product__add-slot')
         ?.querySelector(ADD_BUTTON_TAG);
       // Structurally always present (rendered a few lines below, in the same
-      // slot) — defensive only, matching `BuyNow`'s own guard on the same
+      // slot), defensive only, matching `BuyNow`'s own guard on the same
       // query, never a silent no-op in practice.
       if (!host) return;
       setPending(true);
@@ -843,7 +891,7 @@ function AddButton({
         className={'ox-card-product__add' + (pending ? ' is-loading' : '')}
         // ALWAYS SET, not only on the narrow card that needs it. Below the
         // 240px container query (`_b4-listing.scss`) the label's own text is
-        // hidden and only the cart glyph shows, in a fixed 44px box — an
+        // hidden and only the cart glyph shows, in a fixed 44px box, an
         // icon has no name of its own, so `aria-label` is what keeps the
         // button's accessible name the same word a wide card prints.
         aria-label={label}
@@ -855,24 +903,27 @@ function AddButton({
         onClick={handleClick}
       >
         <span className="ox-card-product__add-label">{label}</span>
+
         {pending ? (
           <span
             className="ox-card-product__add-loader"
             role="status"
             aria-label={t('ox.common.loading')}
           />
+
         ) : null}
       </button>
+
       {/* SALLA'S OWN BUTTON, MOUNTED BUT NEVER SEEN (S9i). Clipped
           (`.ox-card-product__add-native`, `_b4-listing.scss`), not
           `display:none`: a hidden-but-connected host is still a real,
           clickable element the proxy above can reach with `.click()`; a
           `display:none` one risks the component skipping its own connected
-          work. `aria-hidden` keeps it out of the accessibility tree — the
+          work. `aria-hidden` keeps it out of the accessibility tree, the
           button above is the one control a shopper, sighted or not, is ever
           meant to find. */}
       <span className="ox-card-product__add-native" aria-hidden="true">
-        {/* CORE, NOT THE DEFERRED EXPORT — unchanged reasoning from before
+        {/* CORE, NOT THE DEFERRED EXPORT, unchanged reasoning from before
             this batch: `SallaAddProductButton` is wrapped in the package's
             `HydrationBoundary`, which mounts the real custom element only
             once an IntersectionObserver fires, and measured on the home grid
@@ -892,7 +943,7 @@ function AddButton({
             aria-label={label}
             // `type="submit"` makes the component render a real submit button
             // and return early from its own click handler, so the FORM adds
-            // the product — with the chosen option in the payload — instead
+            // the product, with the chosen option in the payload, instead
             // of the component adding it optionless. The proxy above still
             // reaches this exact button; only who calls `.click()` on it
             // moved.
@@ -900,10 +951,15 @@ function AddButton({
             {...(quantity !== null ? { quantity } : {})}
           >
             <span className="ox-card-product__add-label">{label}</span>
+
           </SallaAddProductButtonCore>
+
         </WebComponentBoundary>
+
       </span>
+
     </>
+
   );
 }
 
@@ -913,27 +969,6 @@ function trimmedText(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const out = value.trim();
   return out.length > 0 ? out : null;
-}
-
-/**
- * The platform's own discount percentage, verbatim, or null.
- *
- * Salla sends it as a formatted string ("51%"), so it is printed rather than
- * recomputed: a percentage derived here could disagree with the one the
- * dashboard shows. A zero or unparseable figure yields null and the badge
- * falls back to the amount.
- */
-function savingPercent(product: Pick<Product, 'discount_percentage'>): string | null {
-  const raw = trimmedText(product.discount_percentage);
-  if (raw === null) return null;
-  const numeric = Number(raw.replace('%', '').trim());
-  // `Number.isFinite(NaN)` is false, so the old `isFinite(n) && n <= 0` guard
-  // skipped its own branch for anything unparseable and returned the raw
-  // string. An Arabic-Indic figure such as "٥١٪" (whose percent sign is not
-  // the ASCII one being stripped) was printed verbatim as the saving, and the
-  // savings line rendered with it, against this function's own contract above.
-  if (!Number.isFinite(numeric) || numeric <= 0) return null;
-  return raw;
 }
 
 /** The catalogue's per-order cap, or null when it sets none. */

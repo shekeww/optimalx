@@ -172,14 +172,19 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
         <OxBreadcrumb page={page} trail={crumbs} className="ox-crumbs ox-pdp__crumbs" />
         <HookSlot name="product:start" context={hookContext} />
 
+
         <div className="ox-pdp__top" id={'product-' + product.id}>
           <div className="ox-pdp__media">
             <PdpGallery product={product} />
+
           </div>
+
 
           <div className="ox-pdp__buy">
             <HookSlot name="product:details.start" context={hookContext} />
+
             <HookSlot name="product:single.description.start" context={hookContext} />
+
 
             <PdpTitleBlock
               product={product}
@@ -187,11 +192,14 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
               hasReviews={showsReviews && reviewCount > 0}
             />
 
+
             {isService ? (
               <ServicePdp product={product} spec={parts.specLine} settings={settings} />
+
             ) : (
               <>
                 <StatCards cells={stats} />
+
                 <PdpPriceBlock
                   product={product}
                   servings={showsSupply ? parts.specLine?.servings : null}
@@ -201,19 +209,26 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                   language={locale}
                   payments={payments}
                 />
+
                 {/* Digital goods and gift codes carry their expiry in the
                     chip row inside the form instead, so this would be the
                     same fact twice on those two compositions. */}
                 {isDigital || isGiftCard ? null : (
                   <ExpiryLine expiry={parts.specLine?.expiry} />
+
                 )}
               </>
+
             )}
 
             <HookSlot name="product:single.description" context={hookContext} />
+
             <HookSlot name="product:single.description.end" context={hookContext} />
+
             <HookSlot name="product:details.end" context={hookContext} />
+
             <HookSlot name="product:single.form.start" context={hookContext} />
+
 
             {/* A service and a booking do not mount the engine form at all
                 (UX-2026-09-24 P0-2). `AddToCartForm` renders shipping fields
@@ -231,13 +246,16 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                   isDigital || isGiftCard ? (
                     <>
                       <SpecChips spec={parts.specLine} settings={settings} />
+
                       <SpecFacts
                         spec={parts.specLine}
                         settings={settings}
                         skip={[LABEL_SERVINGS, LABEL_SERVING_SIZE, LABEL_EXPIRY, LABEL_FORM]}
                         title={t('ox.pdp.facts')}
                       />
+
                     </>
+
                   ) : null
                 }
                 afterForm={
@@ -248,22 +266,28 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                      shopper chose are what reaches the cart. A service is
                      booked rather than bought, and never reaches this form. */
                   <BuyActions product={product} anchorRef={buyZoneRef} />
+
                 }
               />
+
             )}
 
             <HookSlot name="product:single.form.end" context={hookContext} />
 
+
             {isService ? null : (
               <>
                 <PaymentMarks payments={payments} />
+
                 <DeliveryPromise
                   settings={settings}
                   currency={product.currency}
                   shippable={isShippable(product)}
                   storeCity={store?.country}
                 />
+
               </>
+
             )}
 
             {/* DIRECTION lists the trust grid on the physical, digital and
@@ -272,9 +296,12 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                 scope line. */}
             {isGiftCard || isService ? null : (
               <TrustGrid settings={settings} digital={isDigital} payments={payments} />
+
             )}
           </div>
+
         </div>
+
 
         <SallaOffer />
 
@@ -285,7 +312,9 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
         {isService ? null : (
           <RenderWhenVisible>
             <AddAlso productId={product.id} categoryId={product.category?.id ?? null} />
+
           </RenderWhenVisible>
+
         )}
 
         {/* The completion row and the bundle offer. Both are absent until a
@@ -308,21 +337,29 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
         {isService ? null : (
           <>
             <FrequentlyBought product={product} />
+
             <Bundle product={product} />
+
           </>
+
         )}
       </div>
+
 
       {isService ? null : (
         <div className="ox-container">
           <BrandBand product={product} categorySlug={categorySlugOf(product.category?.url)} />
+
         </div>
+
       )}
 
       <div className="ox-container ox-pdp__below">
         <AnchorStrip items={tabs} />
 
+
         {members.length > 0 ? <BundleMembers members={members} /> : null}
+
 
         <InfoPanels>
           {hasDetails ? (
@@ -330,22 +367,29 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
               product={product}
               spec={parts.specLine}
               footer={<PrePurchaseInfo warning={parts.warning} rows={prePurchaseRows(t)} />}
+
             />
           ) : null}
           {hasMethod ? (
             <HowToUse
               steps={parts.howToUse}
               footer={showsSupply ? <SupplyCalculator servings={parts.specLine?.servings} /> : null}
+
             />
           ) : null}
           {hasNutrition ? (
             <NutritionTable data={parts.nutrition} servingSize={parts.specLine?.servingSize} />
+
           ) : null}
         </InfoPanels>
 
+
         <Description html={parts.bodyHtml} />
+
         <Faq items={faqItems} />
+
       </div>
+
 
       {showsReviews ? (
         <RenderWhenVisible>
@@ -361,11 +405,15 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
             {reviewCount > 0 ? null : (
               <div className="ox-pdp__no-reviews" data-testid="ox-pdp-no-reviews">
                 <p className="ox-pdp__no-reviews-line">{t('ox.pdp.no_reviews')}</p>
+
                 <p className="ox-pdp__no-reviews-line">{t('ox.pdp.no_reviews_ask')}</p>
+
                 <Button to="/services" variant="secondary" size={44}>
                   {t('ox.nav.services')}
                 </Button>
+
               </div>
+
             )}
             {/* Mounted at zero too, which is what lets the first review be
                 left at all: the element renders nothing for a visitor who
@@ -380,30 +428,42 @@ export function ProductPage({ product: initialProduct, page }: ProductPageProps)
                 renders. */}
             <salla-comments key={commentsKey} item-id={product.id} type="product" />
           </div>
+
         </RenderWhenVisible>
+
       ) : null}
 
       <HookSlot name="product:related.start" context={hookContext} />
+
       <RenderWhenVisible>
         <div className="ox-container">
           <RelatedRail productId={product.id} categoryId={product.category?.id ?? null} />
+
         </div>
+
       </RenderWhenVisible>
+
       <HookSlot name="product:related.end" context={hookContext} />
+
       <HookSlot name="product:end" context={hookContext} />
+
 
       {/* The free advisory + InBody CTA (owner brief 2026-09-24): after the
           related rail and the FAQ, before the footer. Never on a service or
-          booking product — that page IS one of the advisory channels, and it
+          booking product, that page IS one of the advisory channels, and it
           would be selling itself. */}
       {isService ? null : (
         <div className="ox-container">
           <AdvisoryCta productName={product.name} settings={settings} />
+
         </div>
+
       )}
 
       {isService ? null : <StickyBar product={product} anchorRef={buyZoneRef} />}
+
     </div>
+
   );
 }
 

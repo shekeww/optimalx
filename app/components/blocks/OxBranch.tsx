@@ -82,7 +82,7 @@ function readSetting(settings: unknown, key: string): string {
  * (`.ox-cover`/`.ox-cover__*`/`.ox-cover--storefront-block`, `_covers.scss`),
  * with the title, `StoreRating`, the offer line, the address, the hours
  * table (its own translucent ink plate), the booking and directions actions
- * and the pickup note all inside the frame on paper text — one composition
+ * and the pickup note all inside the frame on paper text, one composition
  * at every width, never a two-column split. Every string is a locale key
  * and every fact (address, hours, number, pickup hours) comes from theme
  * settings, so an unset setting removes its row instead of printing a promise.
@@ -145,28 +145,36 @@ export function OxBranch({
       <div className="ox-branch__head">
         {showEyebrow ? (
           <p className="ox-branch__eyebrow ox-small">{t('ox.blocks.branch.eyebrow')}</p>
+
         ) : null}
         <Heading className={Heading === 'h1' ? 'ox-h1' : 'ox-h2'}>
           {t('ox.blocks.branch.title')}
         </Heading>
+
         <StoreRating variant="rail" />
         {showsOffer ? (
           <p className="ox-branch__offer ox-body">{t(SERVICES_HUB.inbodyKey)}</p>
+
         ) : null}
         <p className="ox-branch__address ox-body">{intro ?? address}</p>
+
       </div>
+
 
       <div className="ox-branch__meta">
         {rows.length > 0 ? (
           <div className="ox-branch__hours-plate">
             <HoursTable rows={rows} now={now} status={status} />
+
           </div>
+
         ) : null}
 
         <div className="ox-branch__actions">
           <Button to={visit?.to ?? '/services'} size={48} variant="primary">
             {t('ox.content.services.visit_cta_short')}
           </Button>
+
           <Button
             href={BRANCH_LISTING.directionsUrl}
             size={48}
@@ -174,9 +182,11 @@ export function OxBranch({
             target="_blank"
             rel="noopener noreferrer"
             iconStart={<Icon name="map-pin" size={20} />}
+
           >
             {t('ox.blocks.branch.directions')}
           </Button>
+
           {whatsappHref ? (
             <Button
               href={whatsappHref}
@@ -184,9 +194,11 @@ export function OxBranch({
               target="_blank"
               rel="noopener noreferrer"
               iconStart={<Icon name="whatsapp" size={20} />}
+
             >
               {t('ox.blocks.branch.whatsapp')}
             </Button>
+
           ) : null}
           {/* The home block was a 184px card whose only control was
               WhatsApp, with no route to the branch page at all
@@ -198,16 +210,21 @@ export function OxBranch({
             <Button to="/branch" size={48} variant="secondary">
               {t('ox.branch.view_page')}
             </Button>
+
           ) : null}
         </div>
+
 
         <p className="ox-branch__pickup ox-small">
           {pickupHours
             ? t('ox.blocks.branch.pickup_note_timed', { hours: pickupHours })
             : t('ox.blocks.branch.pickup_note')}
         </p>
+
       </div>
+
     </>
+
   );
 
   return (
@@ -237,10 +254,14 @@ export function OxBranch({
           <span className="ox-cover__scrim" aria-hidden="true" />
           <span className="ox-cover__glow" aria-hidden="true" />
           <div className="ox-cover__body">{content}</div>
+
         </div>
+
       ) : (
         <div className="ox-branch__content--flat">{content}</div>
+
       )}
     </section>
+
   );
 }

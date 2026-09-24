@@ -38,7 +38,7 @@ export function readSymbolBody(source, id) {
 /**
  * Turns a symbol body into the SVG-in-a-data-URI a CSS mask needs: every
  * `<path>`'s `d`, stroked by the wrapper's own defaults unless it carries the
- * accent class, which is filled solid instead — a mask has no colour, so the
+ * accent class, which is filled solid instead, a mask has no colour, so the
  * distinction the accent makes through `<Icon>` (a second, orange element) is
  * drawn here as "part of the silhouette" instead, the closest a one-colour
  * mask gets to the same shape.

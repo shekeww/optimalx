@@ -68,12 +68,14 @@ beforeEach(() => {
 describe('OxCategoryRail, resolution', () => {
   it('renders nothing with no rootSlug and no merchant selection', async () => {
     const { container } = renderWithProviders(<OxCategoryRail data={data()} />);
+
     await waitFor(() => expect(container).toBeTruthy());
     expect(container.querySelector('[data-testid="ox-category-rail"]')).toBeNull();
   });
 
   it('renders nothing while the rootSlug has not resolved to a live category id', async () => {
     const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(container).toBeTruthy());
     expect(container.querySelector('[data-testid="ox-category-rail"]')).toBeNull();
     expect(productList).not.toHaveBeenCalled();
@@ -83,6 +85,7 @@ describe('OxCategoryRail, resolution', () => {
     liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 1 });
     productList.mockResolvedValue({ items: products(1), next: null } as never);
     const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(productList).toHaveBeenCalled());
     await waitFor(() =>
       expect(container.querySelector('[data-testid="ox-category-rail"]')).toBeNull()
@@ -95,6 +98,7 @@ describe('OxCategoryRail, a resolved category', () => {
     liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
     productList.mockResolvedValue({ items: products(8), next: null } as never);
     renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(8));
     expect(productList.mock.calls[0][0]).toMatchObject({
       source: 'categories',
@@ -116,9 +120,10 @@ describe('OxCategoryRail, a resolved category', () => {
       next: null,
     } as never);
     const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(productList).toHaveBeenCalled());
     // One real product plus one bundle is still under MIN_PRODUCTS once the
-    // bundle is dropped, so the rail hides — proving the exclusion runs
+    // bundle is dropped, so the rail hides, proving the exclusion runs
     // before the "at least two" gate, not after it.
     await waitFor(() =>
       expect(container.querySelector('[data-testid="ox-category-rail"]')).toBeNull()
@@ -129,6 +134,7 @@ describe('OxCategoryRail, a resolved category', () => {
     liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
     productList.mockResolvedValue({ items: products(4), next: null } as never);
     renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(4));
     const rail = screen.getByTestId('ox-category-rail');
     expect(rail.querySelector('a[href="/protein/c9001"]')).not.toBeNull();
@@ -144,6 +150,7 @@ describe('OxCategoryRail, a resolved category', () => {
       next: null,
     } as never);
     renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(4));
     expect(screen.queryByText('حزمة البداية - اوبتيمال اكس')).toBeNull();
   });
@@ -153,6 +160,7 @@ describe('OxCategoryRail, a resolved category', () => {
     productList.mockResolvedValue({ items: products(3), next: null } as never);
     renderWithProviders(
       <OxCategoryRail data={data({ rootSlug: 'protein', title: 'عنوان التاجر' })} />
+
     );
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(3));
     expect(screen.getByTestId('ox-category-rail').textContent).toContain('عنوان التاجر');
@@ -164,6 +172,7 @@ describe('OxCategoryRail, the rail primitive (owner review 2026-09-23 late night
     liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
     productList.mockResolvedValue({ items: products(3), next: null } as never);
     const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(3));
 
     const row = container.querySelector('.ox-cat-rail__scroller');
@@ -179,6 +188,7 @@ describe('OxCategoryRail, the rail primitive (owner review 2026-09-23 late night
     liveCategories.push({ id: 9001, name: 'بروتين', url: '/protein/c9001', products_count: 14 });
     productList.mockResolvedValue({ items: products(8), next: null } as never);
     const { container } = renderWithProviders(<OxCategoryRail data={data({ rootSlug: 'protein' })} />);
+
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(8));
 
     const arrows = container.querySelectorAll('.ox-cat-rail__arrow');
@@ -205,6 +215,7 @@ describe('OxCategoryRail, a merchant selection', () => {
           category: [{ id: 9099, name: 'واي بروتين', url: '/whey-protein/c9099' }],
         })}
       />
+
     );
     await waitFor(() => expect(screen.getAllByTestId('ox-product-card')).toHaveLength(2));
     expect(productList.mock.calls[0][0]).toMatchObject({ sourceValue: [9099] });

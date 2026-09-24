@@ -42,7 +42,7 @@ export interface FiltersRailProps {
  * ## The brand group (S2f item 6)
  *
  * `salla-filters` already draws whatever group is in `filters[]`, brand
- * included, the moment the payload carries one — nothing is invented or
+ * included, the moment the payload carries one, nothing is invented or
  * fetched separately. What this adds is the theme's own Arabic heading for
  * that ONE group (`brandFilter` finds it by its own `key`, never a guess at a
  * URL param spelling) and a row of applied-brand chips above the widget, each
@@ -89,7 +89,9 @@ export function FiltersRail({ filters, id = 'filters-menu', className }: Filters
     >
       <div className="ox-filters__head">
         <p className="ox-filters__title">{t('ox.filter.title')}</p>
+
       </div>
+
       {chips.length > 0 ? (
         <div className="ox-filters__applied">
           <ChipRow>
@@ -103,13 +105,19 @@ export function FiltersRail({ filters, id = 'filters-menu', className }: Filters
               >
                 {chip.label}
               </Chip>
+
             ))}
           </ChipRow>
+
         </div>
+
       ) : null}
       <div className="ox-filters__body">
         <SallaFilters id={id} filters={labeled as SallaFiltersFilters} />
+
       </div>
+
     </aside>
+
   );
 }

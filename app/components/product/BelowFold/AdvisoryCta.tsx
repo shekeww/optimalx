@@ -43,7 +43,7 @@ export interface AdvisoryCtaProps {
  * Claims gates (docs/build/research/FINAL-claims-source.md §3,
  * docs/brand/voice-ksa.md §6): the InBody clause renders only while
  * `inbodyIncluded(settings)` is true, and the line ends after "free
- * consultation" without it — a measurement at the branch, never a diagnosis
+ * consultation" without it, a measurement at the branch, never a diagnosis
  * or an outcome. The WhatsApp button renders only once the owner has written
  * `whatsapp_number`; with none set the secondary action is a text link to
  * `/services` instead of a channel the store has not configured.
@@ -77,9 +77,11 @@ export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
         <h2 className="ox-advisory__title ox-h3" id="ox-advisory-title">
           {t('ox.pdp.advisory_title')}
         </h2>
+
         <p className="ox-advisory__line ox-body">
           {t(showsInbody ? 'ox.pdp.advisory_line' : 'ox.pdp.advisory_line_base')}
         </p>
+
         <div className="ox-advisory__actions">
           <Button
             to={visit?.to ?? '/services'}
@@ -89,6 +91,7 @@ export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
           >
             {t('ox.pdp.advisory_cta')}
           </Button>
+
           {waHref ? (
             <Button
               href={waHref}
@@ -97,14 +100,17 @@ export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
               target="_blank"
               rel="noopener noreferrer"
               iconStart={<Icon name="whatsapp" size={20} />}
+
               className="ox-advisory__action"
             >
               {t('ox.pdp.advisory_whatsapp_cta')}
             </Button>
+
           ) : (
             <Button to="/services" variant="link" className="ox-advisory__action">
               {t('ox.services.view_all')}
             </Button>
+
           )}
           <Button
             href={BRANCH_LISTING.directionsUrl}
@@ -112,17 +118,25 @@ export function AdvisoryCta({ productName, settings }: AdvisoryCtaProps) {
             target="_blank"
             rel="noopener noreferrer"
             iconStart={<Icon name="map-pin" size={20} />}
+
             className="ox-advisory__action"
           >
             {t('ox.pdp.advisory_directions')}
           </Button>
+
         </div>
+
         <div className="ox-advisory__foot">
           {rating ? <StoreRating variant="inline" value={rating} /> : null}
+
           <p className="ox-advisory__note ox-small">{t(SERVICES_HUB.cardFooterKey)}</p>
+
         </div>
+
       </div>
+
     </section>
+
   );
 }
 

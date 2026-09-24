@@ -1,10 +1,10 @@
-# S8b — the owner's icon system, applied globally
+# S8b, the owner's icon system, applied globally
 
 Builder S8b, 2026-09-24. The owner delivered the official Optimal X icon
 system in `optimal-x-icons/` (`README.md`, `icons.json`, `sprite.svg`,
 `svg/*.svg`, `ox-icons.css`, `shopify/snippets/ox-icon.liquid`) with the
-instruction: **"apply it globally."** It is read-only input — nothing in it
-is redrawn or "improved" — and becomes the sprite of record for the 47 names
+instruction: **"apply it globally."** It is read-only input, nothing in it
+is redrawn or "improved", and becomes the sprite of record for the 47 names
 it covers. This batch built the generator that imports it,
 `scripts/import-owner-icons.mjs`, ran it, and updated everything that reads
 the sprite's contract.
@@ -17,7 +17,7 @@ the sprite's contract.
 twins, all ours) to 95 (94 standard + 1 twin): the owner's 47 drawings, 4
 aliases that copy one of those 47 under a name our components already call,
 and 43 symbols the owner's set does not cover, carried forward unchanged. The
-file shrank — 41,588 → 33,266 bytes — mostly because 15 of the 16 old twins
+file shrank, 41,588 → 33,266 bytes, mostly because 15 of the 16 old twins
 went away (the owner ships one drawing per icon; only `whatsapp` still has a
 simplified twin). `Icon.tsx`'s public API (`Icon`, `OxIconName`, `size`,
 `label`) did not change; no component was touched.
@@ -51,16 +51,16 @@ Per owner SVG (`optimal-x-icons/icons.json` drives the loop):
      ox-icon__accent--stroke"`.
    - `style="fill:var(--ox-accent,#FF4A1A);stroke:none"` **and**
      `style="fill:var(--ox-accent,#FF4A1A)"` (two files, `goal-energy` and
-     `points`, omit the explicit `;stroke:none` but mean the same thing — the
+     `points`, omit the explicit `;stroke:none` but mean the same thing, the
      element's whole paint is the accent) both become `class="ox-icon__accent"
      stroke="none"`. `_primitives.scss`'s `.ox-icon__accent` already sets
      `stroke: none`, so the explicit attribute is redundant with the
      stylesheet and correct before it loads either way. **This is the one
      place the generator reads two source forms as one case rather than
-     verbatim per the brief's two named patterns** — flagged in §7.
+     verbatim per the brief's two named patterns**, flagged in §7.
    - Any other inline style is converted to presentation attributes
      (`prop:value` → `prop="value"`); none occurred in the 47 files (only the
-     three forms above exist — verified by grepping every `style="…"` in
+     three forms above exist, verified by grepping every `style="…"` in
      `optimal-x-icons/svg/*.svg`), so this path is defensive, exercised only
      by its unit test.
    - The generator **throws** rather than ship a literal colour: every
@@ -70,12 +70,12 @@ Per owner SVG (`optimal-x-icons/icons.json` drives the loop):
    matcher, both expect `<path…/>`. `<path>`, `<circle>` and `<rect>` are
    self-closed; `<g transform="…">` (three icons: `omega-3`,
    `vitamins-minerals`, `snacks-bars`) is left alone since it has children.
-   Geometry is untouched — this is a tag-syntax normalisation only.
+   Geometry is untouched, this is a tag-syntax normalisation only.
 5. **Mirror.** `data-mirror="1"` is added when `icons.json`'s `rtlFlip` is
    `true` for that icon (or, for an alias, for its source icon).
 
 **`<circle>`, `<rect>` and `<g transform>` are kept exactly as the owner drew
-them** — nothing in this pipeline touches geometry, only metadata, style
+them**, nothing in this pipeline touches geometry, only metadata, style
 syntax and tag closing.
 
 **The four aliases** (`ALIASES` in the script) are a byte-for-byte copy of an
@@ -83,15 +83,15 @@ owner symbol under a name our components already call:
 
 | our id | copies owner's | verified against |
 |---|---|---|
-| `ox-heart` | `wishlist` | `heart` callers are wishlist/favourite actions (`MainBar`, `WishlistShare`, `OxProductCard`, `PdpGallery`) — same concept as the owner's `wishlist` |
+| `ox-heart` | `wishlist` | `heart` callers are wishlist/favourite actions (`MainBar`, `WishlistShare`, `OxProductCard`, `PdpGallery`), same concept as the owner's `wishlist` |
 | `ox-headset` | `help` | the owner's `help` SVG is a headset drawing (two ear cups, a curved band); our `headset` callers (`KitchenSink`, `ZeroResults`, `ContactPage`) are all "talk to support" |
 | `ox-truck` | `shipping` | the owner's `shipping` SVG is a box truck; `truck` callers (`UtilityTrust`, `TrustGrid`, `DeliveryPromise`) all mean "we ship" |
-| `ox-shield-check` | `authentic` | **checked, not assumed**: both `shield-check` call sites (`Header/UtilityTrust.tsx:26`, `product/BuyZone/TrustGrid.tsx:70`) key the trust item `'authentic'` with label `ox.trust.authentic_short` — they mean authenticity/genuineness, not a generic "verified/secure" badge, so `authentic`'s 14-point seal + accent check is the right source |
+| `ox-shield-check` | `authentic` | **checked, not assumed**: both `shield-check` call sites (`Header/UtilityTrust.tsx:26`, `product/BuyZone/TrustGrid.tsx:70`) key the trust item `'authentic'` with label `ox.trust.authentic_short`, they mean authenticity/genuineness, not a generic "verified/secure" badge, so `authentic`'s 14-point seal + accent check is the right source |
 
 **Carry-forward.** Every symbol the sprite already on disk declares, whose
 base name (strip `ox-` and a trailing `-s`) is neither one of the owner's 47
-names nor one of the four alias ids, is copied verbatim — full
-`<symbol>…</symbol>` markup, byte for byte — into the new file. This is what
+names nor one of the four alias ids, is copied verbatim, full
+`<symbol>…</symbol>` markup, byte for byte, into the new file. This is what
 makes two runs idempotent without a second input file: the owner-derived
 symbols are a pure function of `optimal-x-icons/svg/*.svg` (untouched,
 read-only), and the carried-forward symbols are copied from whatever the
@@ -109,16 +109,16 @@ $ diff <run 1 output> <run 2 output>    # identical
 
 ## 3. The mapping table
 
-### 3.1 Product categories (10) — the owner's newest delivery supersedes the pre-redraw restoration
+### 3.1 Product categories (10), the owner's newest delivery supersedes the pre-redraw restoration
 
 All ten replace the S6a/S10 "restored verbatim, no `class=ox-sym`" originals
 (git `3f952b3`). They now carry the full stroke contract like every other
-symbol — that old exemption is retired (`tests/common/sprite.test.ts` no
+symbol, that old exemption is retired (`tests/common/sprite.test.ts` no
 longer has an `OWNER_APPROVED_ORIGINALS` allowlist).
 
 | owner name | our id | consumers (S6a count, 2026-09-23, not re-counted) |
 |---|---|---|
-| `protein` | `ox-protein` | 26 — taxonomy, type tiles, `OxCategories`, `MegaPanel`, `ShopSheet` |
+| `protein` | `ox-protein` | 26, taxonomy, type tiles, `OxCategories`, `MegaPanel`, `ShopSheet` |
 | `creatine` | `ox-creatine` | 12 |
 | `pre-workout` | `ox-pre-workout` | 9 |
 | `amino-acids` | `ox-amino-acids` | 6 |
@@ -133,7 +133,7 @@ longer has an `OWNER_APPROVED_ORIGINALS` allowlist).
 
 | owner name | our id | consumers |
 |---|---|---|
-| `goal-energy` | `ox-goal-energy` | 6 — `content/goals.ts`, `OxGoals`, `MegaPanel`, posters |
+| `goal-energy` | `ox-goal-energy` | 6, `content/goals.ts`, `OxGoals`, `MegaPanel`, posters |
 | `goal-performance` | `ox-goal-performance` | 10 |
 | `goal-recovery` | `ox-goal-recovery` | 4 |
 | `goal-ideal-weight` | `ox-goal-ideal-weight` | 5 |
@@ -149,7 +149,7 @@ longer has an `OWNER_APPROVED_ORIGINALS` allowlist).
 | owner name | our id | consumers |
 |---|---|---|
 | `cart` | `ox-cart` | 9, + `--ox-cart-glyph` mask (`gen-icon-mask.mjs`) |
-| `wishlist` | `ox-wishlist` (new) | none yet — `heart` already covers wishlist actions; the owner's own drawing ships under its own id for a future caller |
+| `wishlist` | `ox-wishlist` (new) | none yet, `heart` already covers wishlist actions; the owner's own drawing ships under its own id for a future caller |
 | `user` | `ox-user` | chrome, not yet wired (S6a §5 swap list) |
 | `search` | `ox-search` | chrome, not yet wired |
 | `menu` | `ox-menu` | chrome, not yet wired |
@@ -159,7 +159,7 @@ longer has an `OWNER_APPROVED_ORIGINALS` allowlist).
 | `help` | `ox-help` | 1, legacy (`ZeroResults`, `account.notifications`) |
 | `written-question` | `ox-written-question` | 7 |
 | `video-consult` | `ox-video-consult` | 4 |
-| `offers` | `ox-offers` (new) | none yet — **follow-up**: the nav item العروض (`NavBar`/`MegaPanel`) and the offers page heading are candidates, not edited by this batch |
+| `offers` | `ox-offers` (new) | none yet, **follow-up**: the nav item العروض (`NavBar`/`MegaPanel`) and the offers page heading are candidates, not edited by this batch |
 | `gift` | `ox-gift` | 4 |
 | `points` | `ox-points` | 4 |
 
@@ -186,7 +186,7 @@ longer has an `OWNER_APPROVED_ORIGINALS` allowlist).
 See §2's table above (`ox-heart`, `ox-headset`, `ox-truck`, `ox-shield-check`).
 Confirmed via a fresh grep: `headset` renders through `KitchenSink.tsx`,
 `ZeroResults.tsx`, `ContactPage.tsx` (as an `icon:` prop, not a literal JSX
-attribute — hence "consumers" above cites S6a's counts, which walked the same
+attribute, hence "consumers" above cites S6a's counts, which walked the same
 indirection); `shield-check` through `UtilityTrust.tsx` and `TrustGrid.tsx`.
 
 ---
@@ -196,7 +196,7 @@ indirection); `shield-check` through `UtilityTrust.tsx` and `TrustGrid.tsx`.
 43 ids the owner's 47 do not cover, carried forward from the sprite at git
 `a5049de`, governed by `docs/build/progress/S6a.md` / `S6d.md`, exempt from
 nothing in the test suite (full stroke contract, lattice, live-area, accent
-share — all still enforced):
+share, all still enforced):
 
 `chevron-down`, `chevron-up`, `chevron-start`, `chevron-end`, `arrow`,
 `close`, `check`, `plus`, `minus`, `filter`, `sort`, `grid`, `list`, `play`,
@@ -209,11 +209,11 @@ share — all still enforced):
 `whatsapp` is the only symbol left with a simplified twin (`ox-whatsapp-s`).
 `mark` is exempt from the stroke contract on separate grounds (it is the logo
 mark, not drawn to the icon grid, pinned byte-for-byte by
-`scripts/check-identity.mjs`'s `mark-drift` rule) — unaffected by this batch,
+`scripts/check-identity.mjs`'s `mark-drift` rule), unaffected by this batch,
 verified unchanged (`check-identity: 331 file(s), 0 problem(s)`).
 
 A grep across `app/**` for `<Icon name=` and `href="#ox-` turned up no id
-beyond these 43 plus the owner's 47 and the 4 aliases — nothing is missing.
+beyond these 43 plus the owner's 47 and the 4 aliases, nothing is missing.
 
 ---
 
@@ -224,7 +224,7 @@ beyond these 43 plus the owner's 47 and the 4 aliases — nothing is missing.
 - **Unchanged, ours:** `chevron-start`, `chevron-end`, `arrow`, `external`,
   `play`.
 - **New, from the owner's manifest (`rtlFlip: true`):** `cart`, `shipping`,
-  `written-question` — the same three the owner's own `ox-icons.css` mirrors
+  `written-question`, the same three the owner's own `ox-icons.css` mirrors
   (`[dir="rtl"] .ox-icon--cart, .ox-icon--shipping,
   .ox-icon--written-question { transform: scaleX(-1) }`), so our
   `data-mirror`/`.ox-mirror` mechanism now agrees with the owner's own CSS by
@@ -245,11 +245,11 @@ directly rather than a redraw: the owner's SVGs default to **`#FF4A1A`**
 (`style="…var(--ox-accent,#FF4A1A)…"`), but the theme's live token is
 `--ox-accent` → `--color-primary` → **`#EE4D22`** in `tokens.css` (the Salla
 dashboard is the source of truth for that value). The generator never emits
-the owner's `#FF4A1A` fallback — it strips the whole `style` attribute and
+the owner's `#FF4A1A` fallback, it strips the whole `style` attribute and
 relies on the CSS class, so **the token wins**, exactly as `_primitives.scss`
 already defines it. No sprite or stylesheet change was needed for this; flagged
 for the owner in case `#FF4A1A` (rather than the dashboard's `#EE4D22`) was the
-intended brand orange — that is a dashboard + `tokens.css` decision, not a
+intended brand orange, that is a dashboard + `tokens.css` decision, not a
 sprite one.
 
 ---
@@ -259,8 +259,8 @@ sprite one.
 1. **Two accent-fill style forms treated as one case.** The brief names two
    exact conversions (`…;stroke:none` → class+attr; the bare stroke form →
    class). Two files, `goal-energy.svg` and `points.svg`, use a third,
-   unnamed form — `style="fill:var(--ox-accent,#FF4A1A)"` with no
-   `;stroke:none` — for a symbol whose entire body is one accent-filled path.
+   unnamed form, `style="fill:var(--ox-accent,#FF4A1A)"` with no
+   `;stroke:none`, for a symbol whose entire body is one accent-filled path.
    Since `.ox-icon__accent` already sets `stroke: none` in `_primitives.scss`,
    and the alternative (leaving it unconverted) would ship a literal colour,
    the generator treats this as the same case as the `;stroke:none` form:
@@ -273,7 +273,7 @@ sprite one.
    allowlist (`OWNER_APPROVED_ORIGINALS`) is retired; they now carry the same
    full stroke contract as every other symbol. This is the brief's own
    instruction ("the owner's 47 names as they are … including … "), not an
-   independent call — flagged because it reverses a decision from two batches
+   independent call, flagged because it reverses a decision from two batches
    ago.
 3. **`OWNER_EXEMPT` (the test's exemption set) covers the 4 aliases too, not
    only the 47 named in the brief.** The aliases are byte-for-byte copies of
@@ -286,9 +286,9 @@ sprite one.
 4. **`gen-icon-mask.mjs`'s `--ox-cart-glyph` mask now omits the cart's
    wheels.** The owner draws the cart's two wheels as `<circle>` elements
    (the accent); `gen-icon-mask.mjs`'s `maskDataUri` only ever matched
-   `<path>` elements (pre-existing, out of this batch's edit scope — not in
+   `<path>` elements (pre-existing, out of this batch's edit scope, not in
    the constraints list). Running it (§8) produced a mask with the basket
-   outline only, no wheels — a real, visible regression in the sticky buy bar
+   outline only, no wheels, a real, visible regression in the sticky buy bar
    and the card's native add-button glyph versus the previous own-drawn cart
    (whose wheels were `<path>` pill shapes). Flagged as a follow-up for
    whoever owns `scripts/gen-icon-mask.mjs`: it needs to also match
@@ -302,7 +302,7 @@ sprite one.
    into more tests than existed before (e.g. "no primitive shape" used to be
    one `SOURCE`-wide regex; it is now scoped to `nonOwnerDrawn`).
 6. **`tests/product/productType.test.ts` fails** ("Cannot find module
-   `../../app/components/product/lib/productType`") — both that test file and
+   `../../app/components/product/lib/productType`"), both that test file and
    the module it imports are untracked (`git status`), mid-write by the
    concurrent S8a builder on product components. Unrelated to this batch,
    not touched, confirmed pre-existing by `git status`.
@@ -314,12 +314,12 @@ sprite one.
 ```
 $ node scripts/gen-icon-mask.mjs
 gen-icon-mask: wrote --ox-cart-glyph from #ox-cart to app\styles\tokens.css
-# (the cart's wheels are missing from the mask — deviation 4 above; the
+# (the cart's wheels are missing from the mask, deviation 4 above; the
 # generated token's basket outline is otherwise correct and matches #ox-cart)
 
 $ pnpm typecheck
 $ tsc --noEmit
-(no output — no errors)
+(no output, no errors)
 
 $ pnpm vitest run tests/common tests/scripts tests/home tests/layout tests/product
  ✓ tests/common/sprite.test.ts (22 tests)
@@ -328,7 +328,7 @@ $ pnpm vitest run tests/common tests/scripts tests/home tests/layout tests/produ
  ...
  Test Files  1 failed | 52 passed (53)
       Tests  705 passed (705)
- FAIL tests/product/productType.test.ts — pre-existing, unrelated (§7.6)
+ FAIL tests/product/productType.test.ts, pre-existing, unrelated (§7.6)
 
 $ node scripts/check-identity.mjs
 check-identity: 331 file(s), 0 problem(s)
@@ -351,7 +351,7 @@ ox-icon--32: 177             ox-icon--36: 170
 both ground labels ("light ground #F7F8F6", "dark ground #0B0D0F"): present
 ```
 
-Sprite size: **41,588 → 33,266 bytes** (95 symbols vs. the previous 108 —
+Sprite size: **41,588 → 33,266 bytes** (95 symbols vs. the previous 108 -
 fewer bytes despite new geometry, mostly from dropping 15 of 16 simplified
 twins the owner's one-drawing-per-icon delivery makes unnecessary).
 

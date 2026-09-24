@@ -11,6 +11,7 @@ vi.mock('@salla.sa/twilight-theme-engine/i18n', async () => (await import('./i18
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
   useMoney: () => ({
     format: (amount: unknown) => <span data-testid="money">{String(amount)}</span>,
+
     parse: Number,
     isValid: () => true,
   }),
@@ -20,6 +21,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     React.createElement('a', { href: to as string, ...rest }, children as React.ReactNode),
   Image: ({ alt, src, className }: Record<string, unknown>) => (
     <img alt={String(alt ?? '')} src={src as string} className={className as string} />
+
   ),
 }));
 // The mock stands in for Salla's web component and records the props that
@@ -35,7 +37,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
 // TWO SHAPES NOW (S9i). The regular add (and the sold-out notify control,
 // which shares this stub) is proxied to by `AddButton`'s own real `<button>`
 // via `document.querySelector('salla-add-product-button')`, so ITS stub has
-// to be that literal tag — a plain `<button>` stand-in would never be found
+// to be that literal tag, a plain `<button>` stand-in would never be found
 // by that query, the same way jsdom's real registry would never find one.
 // `BuyNow`'s quick-buy branch is untouched by this batch and keeps the
 // original `<button>` stand-in its own tests still check `.className` on.
@@ -55,12 +57,14 @@ const addButtonStub = ({ children, ...rest }: Record<string, unknown>) => {
       <button type="button" {...shared} className={String(rest.className ?? '')}>
         {children as React.ReactNode}
       </button>
+
     );
   }
   return (
     <salla-add-product-button {...shared} class={String(rest.className ?? '')}>
       {children as React.ReactNode}
     </salla-add-product-button>
+
   );
 };
 vi.mock('@salla.sa/twilight-components-react/add-product-button', () => ({
@@ -70,7 +74,7 @@ vi.mock('@salla.sa/twilight-components-react/add-product-button', () => ({
 // The SDK script this stub stands in for (S9i, PDP-ADD-DIAG-2026-09-24.md):
 // jsdom's own Custom Elements registry never defines this tag on its own,
 // and `AddButton`'s proxy waits on exactly that (`whenCustomElementReady`),
-// so every test in this file gets it pre-registered — a harmless class, since
+// so every test in this file gets it pre-registered, a harmless class, since
 // the stub above never relies on any behaviour of its own, only on being a
 // real, connected element a click and two events can be driven through, the
 // same contract `tests/product/buyNow.test.ts` already tests directly.
@@ -87,11 +91,13 @@ vi.mock('@salla.sa/twilight-components-react/button', () => ({
     >
       {children as React.ReactNode}
     </button>
+
   ),
 }));
 vi.mock('@salla.sa/twilight-components-react/rating-stars', () => ({
   SallaRatingStars: ({ value }: { value: number }) => (
     <span data-testid="rating-stars">{value}</span>
+
   ),
 }));
 
@@ -148,6 +154,7 @@ function makeProduct(overrides: Record<string, unknown> = {}) {
 describe('OxProductCard', () => {
   it('renders no engine card markup at all (the override must replace it)', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('.s-product-card-vertical')).toBeNull();
     expect(container.querySelector('.s-product-card-content-footer')).toBeNull();
     expect(container.querySelector('.ox-card-product')).not.toBeNull();
@@ -155,11 +162,13 @@ describe('OxProductCard', () => {
 
   it('carries the data-ox-product attribute B6 names its view transitions by', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('[data-ox-product="1996831868"]')).not.toBeNull();
   });
 
   it('keeps the fixed-height rows so a grid of cards shares one baseline', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     for (const cls of [
       '.ox-card-product__name',
       '.ox-card-product__chips',
@@ -172,6 +181,7 @@ describe('OxProductCard', () => {
 
   it('renders the brand line only when the product actually carries one (CARD 3.2)', () => {
     const withBrand = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const brand = withBrand.container.querySelector('.ox-card-product__brand');
     expect(brand).not.toBeNull();
     expect(brand?.textContent).toBe('Optimum Nutrition');
@@ -181,12 +191,14 @@ describe('OxProductCard', () => {
     // this catalogue that carry no brand at all.
     const noBrand = renderWithProviders(
       <OxProductCard product={makeProduct({ brand: undefined })} />
+
     );
     expect(noBrand.container.querySelector('.ox-card-product__brand')).toBeNull();
   });
 
   it('collapses the rating row entirely rather than reserving an empty one', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     // The row used to render as an empty 20px box. That is the right call for
     // the savings line, where a row genuinely mixes products with and without
     // one; it is the wrong call here, because NO product on this store has a
@@ -199,12 +211,14 @@ describe('OxProductCard', () => {
   it('draws the rating row when a product genuinely carries one', () => {
     const rated = { ...makeProduct(), rating: { stars: 4.5, count: 12 } };
     const { container } = renderWithProviders(<OxProductCard product={rated as never} />);
+
     expect(container.querySelector('.ox-card-product__rating')).not.toBeNull();
   });
 
   it('shows the stars only when the store has real reviews', () => {
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ rating: { count: 12, stars: 4 } })} />
+
     );
     expect(container.querySelector('.ox-rating')).not.toBeNull();
     expect(container.querySelector('.ox-rating__value')?.textContent).toBe('4.0');
@@ -218,6 +232,7 @@ describe('OxProductCard', () => {
     // `subtitle` is ignored entirely, even when the merchant has typed one.
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ subtitle: 'واي بروتين معزول بلا سكر مضاف' })} />
+
     );
     const line = container.querySelector('.ox-card-product__chips')?.textContent ?? '';
     // The fixture product is OX-001 (Gold Standard Whey): the theme's own
@@ -237,6 +252,7 @@ describe('OxProductCard', () => {
       <OxProductCard
         product={makeProduct({ id: 1, name: 'منتج', description: '<p>وصف عام بدون بيانات محددة.</p>' })}
       />
+
     );
     const empty = container.querySelector('.ox-card-product__chips');
     expect(empty).not.toBeNull();
@@ -246,11 +262,12 @@ describe('OxProductCard', () => {
   it('never prints a servings count again; the one fallback fact is the pack size, else the dosage form, when nothing can type the product (S8g item 1)', () => {
     const untyped = { id: 1, name: 'منتج' };
 
-    // Servings alone, and no type: the row goes empty now, not "30 حصة" —
+    // Servings alone, and no type: the row goes empty now, not "30 حصة" -
     // the owner's item 1 ends the servings-count fact on the card outright.
     // The PDP's own supply calculator and spec chips keep reading it.
     const servingsOnly = renderWithProviders(
       <OxProductCard product={makeProduct({ ...untyped, description: '<p>الحصص: 30</p>' })} />
+
     );
     expect(servingsOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('');
     servingsOnly.unmount();
@@ -263,6 +280,7 @@ describe('OxProductCard', () => {
           description: '<p>الحصص: 30 | حجم العبوة: 907 جم | الشكل: بودرة</p>',
         })}
       />
+
     );
     const line = both.container.querySelector('.ox-card-product__chips')?.textContent ?? '';
     expect(line).toBe('907 جم');
@@ -271,6 +289,7 @@ describe('OxProductCard', () => {
 
     const packOnly = renderWithProviders(
       <OxProductCard product={makeProduct({ ...untyped, description: '<p>حجم العبوة: 907 جم | الشكل: بودرة</p>' })} />
+
     );
     expect(packOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('907 جم');
     packOnly.unmount();
@@ -278,6 +297,7 @@ describe('OxProductCard', () => {
     // Neither a pack size nor servings that count, but a dosage form: the form alone.
     const formOnly = renderWithProviders(
       <OxProductCard product={makeProduct({ ...untyped, description: '<p>الشكل: بودرة</p>' })} />
+
     );
     expect(formOnly.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
   });
@@ -287,6 +307,7 @@ describe('OxProductCard', () => {
       <OxProductCard
         product={makeProduct({ category: { id: 9002, name: 'كرياتين', url: '/creatine/c9002' } })}
       />
+
     );
     // The category outranks the SKU membership (OX-001 is protein); its own
     // real child (whey_protein) never pairs with this different root either
@@ -300,7 +321,9 @@ describe('OxProductCard', () => {
     const { container } = renderWithProviders(
       <ListingCategoryContext.Provider value="omega-3">
         <OxProductCard product={makeProduct({ id: 1, name: 'منتج' })} />
+
       </ListingCategoryContext.Provider>
+
     );
     expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
       t('ox.card.type.omega_3')
@@ -311,7 +334,9 @@ describe('OxProductCard', () => {
     const { container } = renderWithProviders(
       <ListingCategoryContext.Provider value="whey-isolate">
         <OxProductCard product={makeProduct({ id: 1, sku: null, name: 'منتج' })} />
+
       </ListingCategoryContext.Provider>
+
     );
     expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
       `${t('ox.card.type.protein')}${DIVIDER}${t('ox.card.type.whey_isolate')}`
@@ -321,6 +346,7 @@ describe('OxProductCard', () => {
   it('names the type from an unambiguous name, and prints no type rather than a wrong one (S8a)', () => {
     const named = renderWithProviders(
       <OxProductCard product={makeProduct({ id: 1, name: 'كرياتين مونوهيدرات - ثورن' })} />
+
     );
     expect(named.container.querySelector('.ox-card-product__chips')?.textContent).toBe(
       t('ox.card.type.creatine')
@@ -329,9 +355,10 @@ describe('OxProductCard', () => {
 
     const ambiguous = renderWithProviders(
       <OxProductCard product={makeProduct({ id: 1, name: 'امينو انرجي - اوبتيموم نيوترشن' })} />
+
     );
     // No source can type it (a veto word); the row falls back to the one
-    // universal fact the description carries — the dosage form here, since
+    // universal fact the description carries, the dosage form here, since
     // "حجم الحصة" is a per-serving size, not the pack size, and the servings
     // count itself never prints (S8g item 1).
     expect(ambiguous.container.querySelector('.ox-card-product__chips')?.textContent).toBe('بودرة');
@@ -344,6 +371,7 @@ describe('OxProductCard', () => {
           description: `${SPEC}<p>حزمة البداية تجمع ثلاثة منتجات أساسية. مناسبة للمبتدئين.</p>`,
         })}
       />
+
     );
     expect(container.querySelector('.ox-card-product__excerpt')).toBeNull();
     expect(container.textContent).not.toContain('حزمة البداية تجمع ثلاثة منتجات أساسية');
@@ -351,6 +379,7 @@ describe('OxProductCard', () => {
 
   it('invents no stars on a store with no reviews (B28)', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     // The gate that matters is still here and unchanged: no stars, no count,
     // nothing invented. What changed is that the empty BOX no longer reserves
     // its 20px, because it is empty on every card at once and so reserves a
@@ -362,6 +391,7 @@ describe('OxProductCard', () => {
   it('badges only from real product flags: out of stock and a real saving', () => {
     const out = renderWithProviders(
       <OxProductCard product={makeProduct({ is_out_of_stock: true, status: 'out' })} />
+
     );
     expect(out.container.querySelector('.ox-badge--stop')).not.toBeNull();
     expect(out.container.querySelector('.ox-badge--popular')).toBeNull();
@@ -370,18 +400,21 @@ describe('OxProductCard', () => {
       <OxProductCard
         product={makeProduct({ is_on_sale: true, regular_price: 300, sale_price: 240 })}
       />
+
     );
     expect(sale.container.querySelector('.ox-badge--saving')).not.toBeNull();
   });
 
   it('never renders a "new" badge without a real created_at inside the window', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('.ox-badge--new')).toBeNull();
   });
 
   it('renders a real dietary tag off the product\'s own Salla tags (CARD 6.2 badge 4)', () => {
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ tags: [{ id: 1, name: 'نباتي' }] })} />
+
     );
     const tag = container.querySelector('.ox-badge--tag');
     expect(tag).not.toBeNull();
@@ -399,6 +432,7 @@ describe('OxProductCard', () => {
           description: SPEC.replace('2029-03', nearExpiry()) + '<p>وصف.</p>',
         })}
       />
+
     );
     const badges = container.querySelectorAll('.ox-card-product__badges > *');
     expect(badges.length).toBe(2);
@@ -411,6 +445,7 @@ describe('OxProductCard', () => {
   it('shows the limited-quantity line only on the exact gate, and never prints the number', () => {
     const shown = renderWithProviders(
       <OxProductCard product={makeProduct({ quantity: 3, can_show_remained_quantity: true })} />
+
     );
     const stock = shown.container.querySelector('.ox-card-product__stock');
     expect(stock?.textContent).toBe(t('ox.card.limited_qty'));
@@ -419,6 +454,7 @@ describe('OxProductCard', () => {
 
     const hidden = renderWithProviders(
       <OxProductCard product={makeProduct({ quantity: 3, can_show_remained_quantity: false })} />
+
     );
     expect(hidden.container.querySelector('.ox-card-product__stock')).toBeNull();
   });
@@ -428,6 +464,7 @@ describe('OxProductCard', () => {
     // in the files per the brief, so this only proves the card stopped
     // rendering it, not that the key was deleted.
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('.ox-card-product__consult')).toBeNull();
     expect(container.textContent).not.toContain(t('ox.card.free_consult'));
   });
@@ -447,6 +484,7 @@ describe('OxProductCard', () => {
     };
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ options: [colourOption] })} />
+
     );
     // The chip row is the control for this axis (`cardOption` picks the
     // same colour option), so the plate's own preview dots for it are
@@ -457,6 +495,7 @@ describe('OxProductCard', () => {
 
   it('passes the product to the engine add button instead of adding to cart itself', () => {
     renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const button = screen.getByTestId('add-button');
     expect(button.getAttribute('data-product-id')).toBe('1996831868');
   });
@@ -466,11 +505,13 @@ describe('OxProductCard', () => {
     // button opens the options modal, and the same label on both kinds of
     // product made that modal a surprise.
     const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.add'));
     plain.unmount();
 
     const withOptions = renderWithProviders(
       <OxProductCard product={makeProduct({ has_options: true })} />
+
     );
     expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.choose_options'));
     withOptions.unmount();
@@ -481,6 +522,7 @@ describe('OxProductCard', () => {
       <OxProductCard
         product={makeProduct({ has_options: true, add_to_cart_label: 'اطلب الآن' })}
       />
+
     );
     expect(screen.getByTestId('add-button').textContent).toContain('اطلب الآن');
   });
@@ -492,10 +534,12 @@ describe('OxProductCard', () => {
     // unconditionally rather than only for the narrow case CSS alone cannot
     // express in a jsdom test.
     const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(screen.getByTestId('add-button').getAttribute('aria-label')).toBe(t('ox.card.add'));
     plain.unmount();
 
     renderWithProviders(<OxProductCard product={makeProduct({ has_options: true })} />);
+
     expect(screen.getByTestId('add-button').getAttribute('aria-label')).toBe(
       t('ox.card.choose_options')
     );
@@ -504,11 +548,12 @@ describe('OxProductCard', () => {
   // -------------------------------------------------------------------------
   // The add column's visible control (S9i): a real, native <button>, in the
   // rendered tree from the first render, that proxies to Salla's own hidden
-  // component rather than being it — see `AddButton`'s own doc comment.
+  // component rather than being it, see `AddButton`'s own doc comment.
   // -------------------------------------------------------------------------
 
   it('renders the theme\'s own real button in the add column, with Salla\'s component mounted but hidden beside it', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const themed = container.querySelector('button.ox-card-product__add');
     expect(themed).not.toBeNull();
     expect(themed?.getAttribute('type')).toBe('button');
@@ -523,6 +568,7 @@ describe('OxProductCard', () => {
 
   it('shows a loading state on the themed button while its click is queued, and clears it once Salla reports success', async () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const themed = container.querySelector('button.ox-card-product__add') as HTMLButtonElement;
     const native = container.querySelector('salla-add-product-button') as HTMLElement;
     const clicked = vi.fn();
@@ -543,6 +589,7 @@ describe('OxProductCard', () => {
 
   it('restores the themed button after Salla reports a failed add, rather than leaving it stuck', async () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const themed = container.querySelector('button.ox-card-product__add') as HTMLButtonElement;
     const native = container.querySelector('salla-add-product-button') as HTMLElement;
 
@@ -563,6 +610,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     const themed = container.querySelector('button.ox-card-product__add') as HTMLButtonElement;
     const native = container.querySelector('salla-add-product-button') as HTMLElement;
@@ -579,6 +627,7 @@ describe('OxProductCard', () => {
 
   it('renders no wishlist heart any more (owner review, 2026-09-24: header audit, delete what Shopify cannot carry)', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('.ox-card-product__wish')).toBeNull();
     expect(screen.queryByLabelText(t('ox.a11y.wishlist_toggle'))).toBeNull();
   });
@@ -591,11 +640,12 @@ describe('OxProductCard', () => {
 
   it('prints no saving badge and no savings line off a sale', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('.ox-card-product__saving-badge')).toBeNull();
     expect(container.querySelector('.ox-price--was')).toBeNull();
   });
 
-  it('prints the saving from real sale data and never from a computed one', () => {
+  it('prints the saving in riyals from real sale data, never as a percentage (claims law section 5)', () => {
     const { container } = renderWithProviders(
       <OxProductCard
         product={makeProduct({
@@ -606,8 +656,14 @@ describe('OxProductCard', () => {
         })}
       />
     );
-    // The pill carries the platform's own percentage string, verbatim.
-    expect(container.querySelector('.ox-card-product__percent')?.textContent).toBe('23%');
+    // The pill carries the difference between the two catalogue prices, in
+    // riyals, through `Price` (the same markup as the Shopify card's pill);
+    // the platform's own `discount_percentage` is never printed, because the
+    // claims law states a saving in riyals only.
+    const pill = container.querySelector('.ox-card-product__saving-badge');
+    expect(pill?.querySelector('[data-testid="money"]')?.textContent).toBe('70');
+    expect(pill?.textContent).not.toContain('%');
+    expect(container.querySelector('.ox-card-product__percent')).toBeNull();
     // The struck regular price is the catalogue's own number.
     const prices = container.querySelectorAll('.ox-card-product__price [data-testid="money"]');
     expect(Array.from(prices).map((node) => node.textContent)).toEqual(['240', '310']);
@@ -616,13 +672,14 @@ describe('OxProductCard', () => {
     expect(container.querySelector('.ox-card-product__saving')).toBeNull();
   });
 
-  it('never prints the saving twice: no percentage means the line stays empty', () => {
+  it('prints the pill once, with no savings line under the price', () => {
     const { container } = renderWithProviders(
       <OxProductCard
         product={makeProduct({ is_on_sale: true, regular_price: 310, sale_price: 240 })}
       />
+
     );
-    // The pill falls back to the amount; there is no line under the price.
+    // The pill is the one reading of the saving; there is no line under the price.
     expect(container.querySelector('.ox-card-product__saving-badge')).not.toBeNull();
     expect(container.querySelector('.ox-card-product__saving')).toBeNull();
   });
@@ -639,6 +696,7 @@ describe('OxProductCard', () => {
           discount_percentage: '23%',
         })}
       />
+
     );
     expect(container.querySelector('.ox-card-product__saving-badge')).toBeNull();
     expect(container.querySelector('.ox-card-product__buy')).toBeNull();
@@ -662,6 +720,7 @@ describe('OxProductCard', () => {
           notify_availability: { channels: ['email'], subscribed: false },
         })}
       />
+
     );
     expect(withFlag.container.querySelector('.ox-card-product__unavailable')).toBeNull();
     expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.notify_me'));
@@ -669,12 +728,14 @@ describe('OxProductCard', () => {
 
     const outAndNotify = renderWithProviders(
       <OxProductCard product={makeProduct({ is_out_of_stock: true, status: 'out-and-notify' })} />
+
     );
     expect(screen.getByTestId('add-button').textContent).toContain(t('ox.card.notify_me'));
   });
 
   it('draws swatches only from colours the merchant really set', () => {
     const none = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(none.container.querySelector('.ox-card-product__swatches')).toBeNull();
     none.unmount();
 
@@ -688,6 +749,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     expect(named.container.querySelector('.ox-card-product__swatches')).toBeNull();
     named.unmount();
@@ -707,6 +769,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     const dots = real.container.querySelectorAll('.ox-card-product__swatch');
     expect(dots.length).toBe(2);
@@ -721,6 +784,7 @@ describe('OxProductCard', () => {
   it('renders the variant chooser on the plate, not below it, so it costs the body no height (owner review, 2026-09-24, item 3)', () => {
     // No option at all: the row is still there, on the plate, empty.
     const plain = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const plate = plain.container.querySelector('.ox-card-product__plate');
     const plainRow = plate?.querySelector('.ox-card-product__variants');
     expect(plainRow).not.toBeNull();
@@ -741,6 +805,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     const row = withOption.container.querySelector(
       '.ox-card-product__plate .ox-card-product__variants'
@@ -760,6 +825,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     const form = container.querySelector('form.ox-card-product__form');
     expect(form).not.toBeNull();
@@ -788,6 +854,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     const img = container.querySelector<HTMLImageElement>('.ox-card-product__img');
     // The first value is the default and carries its own photograph.
@@ -806,6 +873,7 @@ describe('OxProductCard', () => {
 
   it('feeds the stepper value into the Salla button quantity instead of faking it', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     const add = screen.getByTestId('add-button');
     expect(add.getAttribute('data-quantity')).toBe('1');
     expect(add.getAttribute('data-fill')).toBe('outline');
@@ -823,6 +891,7 @@ describe('OxProductCard', () => {
   it('stops the stepper at the catalogue max and never below one', () => {
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ max_quantity: 2 })} />
+
     );
     const [minus, plus] = Array.from(
       container.querySelectorAll<HTMLButtonElement>('.ox-card-product__qty-btn')
@@ -842,6 +911,7 @@ describe('OxProductCard', () => {
       { max_quantity: 1 },
     ]) {
       const view = renderWithProviders(<OxProductCard product={makeProduct(overrides)} />);
+
       expect(view.container.querySelector('.ox-card-product__qty')).toBeNull();
       // A stepper that is not on screen must not leave a quantity behind: the
       // request has to be exactly the one the card sent before it existed.
@@ -857,6 +927,7 @@ describe('OxProductCard', () => {
     // mechanism) rather than moving the shopper one page closer to a second
     // press.
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('a.ox-card-product__buy')).toBeNull();
     const buy = container.querySelector('button.ox-card-product__buy');
     expect(buy).not.toBeNull();
@@ -867,6 +938,7 @@ describe('OxProductCard', () => {
   it('keeps a link on a product whose variant has to be chosen first', () => {
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ has_options: true })} />
+
     );
     const buy = container.querySelector('a.ox-card-product__buy');
     expect(buy).not.toBeNull();
@@ -881,6 +953,7 @@ describe('OxProductCard', () => {
       <OxProductCard
         product={makeProduct({ url: 'https://optimalx.com.sa/whey/p1996831868' })}
       />
+
     );
     const hrefs = Array.from(container.querySelectorAll('a')).map((a) => a.getAttribute('href'));
     expect(hrefs.length).toBeGreaterThan(0);
@@ -893,6 +966,7 @@ describe('OxProductCard', () => {
   it('uses the platform quick buy where the platform has enabled it', () => {
     const { container } = renderWithProviders(
       <OxProductCard product={makeProduct({ can_quick_buy: true })} />
+
     );
     // No hand-rolled checkout: the CTA becomes the same Salla component with
     // the engine's own flag, and the anchor fallback is gone.
@@ -906,6 +980,7 @@ describe('OxProductCard', () => {
 
   it('adds no rating row markup and no popularity badge of its own', () => {
     const { container } = renderWithProviders(<OxProductCard product={makeProduct()} />);
+
     expect(container.querySelector('.ox-rating')).toBeNull();
     expect(container.querySelector('.ox-badge--popular')).toBeNull();
     expect(container.textContent).not.toContain('%');
@@ -928,6 +1003,7 @@ describe('OxProductCard', () => {
 
   it('shows the bundle badge and the "باقة" facts line alone with no member count carried', () => {
     const { container } = renderWithProviders(<OxProductCard product={bundleProduct()} />);
+
     const badges = container.querySelectorAll('.ox-card-product__badges > *');
     expect(badges.length).toBe(1);
     expect(badges[0].textContent).toBe(t('ox.card.bundle'));
@@ -945,6 +1021,7 @@ describe('OxProductCard', () => {
           ],
         })}
       />
+
     );
     expect(container.querySelector('.ox-card-product__chips')?.textContent).toBe(
       `${t('ox.card.bundle')}${DIVIDER}${t('ox.card.bundle_count', { n: 3 })}`
@@ -953,6 +1030,7 @@ describe('OxProductCard', () => {
 
   it('offers no add-to-cart from the card; only a link to the bundle\'s own page (S8g item 3)', () => {
     const { container } = renderWithProviders(<OxProductCard product={bundleProduct()} />);
+
     expect(container.querySelector('.ox-card-product__qty')).toBeNull();
     expect(screen.queryByTestId('add-button')).toBeNull();
     // The plate never offers a chooser the bundle's own link-only add path
@@ -966,6 +1044,7 @@ describe('OxProductCard', () => {
 
   it('adds normally once the API\'s own can_add says the card may', () => {
     renderWithProviders(<OxProductCard product={bundleProduct({ can_add: true })} />);
+
     expect(screen.getByTestId('add-button')).toBeTruthy();
   });
 });

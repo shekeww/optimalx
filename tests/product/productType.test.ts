@@ -235,8 +235,8 @@ describe('the child resolvers, the same four sources one level down (S8g item 2)
     expect(childTypeFromName('سيريس ماس ماس جينر - اوبتيموم نيوترشن')).toBe('mass_gainer');
     expect(childTypeFromName('Gold Standard 100% Whey')).toBe('whey_protein');
     expect(childTypeFromName('Plant Protein Blend')).toBe('plant_protein');
-    // A name naming both واي and ايزوليت is ambiguous at the child level —
-    // never guessed — even though the membership resolves it (next test).
+    // A name naming both واي and ايزوليت is ambiguous at the child level -
+    // never guessed, even though the membership resolves it (next test).
     expect(childTypeFromName('ايزو 100 واي ايزوليت محلل مائيا - ديماتيز')).toBeNull();
     // "بروتين" alone names only the ROOT, never a child.
     expect(childTypeFromName('ستاكد بروتين - ايفليوشن نيوترشن')).toBeNull();
@@ -249,7 +249,7 @@ describe('productTypeOf, the four sources in order, over real catalogue names', 
 
   it('prefers the API category, and never pairs a stale child with a different root', () => {
     const product = { ...whey, category: { name: 'كرياتين', url: '/creatine/c9002' } };
-    // OX-001's own SKU is in whey_protein, but the root here is creatine —
+    // OX-001's own SKU is in whey_protein, but the root here is creatine -
     // childBelongsToRoot rejects the mismatch rather than printing
     // "كرياتين · واي بروتين".
     expect(productTypeOf(product, { categorySlug: 'protein' })).toEqual({
@@ -333,7 +333,7 @@ describe('productTypeOf, the bundle kind (S8g item 3)', () => {
     // Only the FIRST word triggers the bundle answer, the same convention
     // the catalogue itself uses; a product that happens to mention "باقة"
     // later in its name (here, inside the "مع ..." add-in) is not a bundle
-    // just because of that — it still types normally, from its own head word.
+    // just because of that, it still types normally, from its own head word.
     expect(productTypeOf({ id: 1, sku: null, name: 'شيكر مع باقة هدايا' })).toEqual({
       kind: 'type',
       root: 'accessories',

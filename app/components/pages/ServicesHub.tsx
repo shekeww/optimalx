@@ -39,7 +39,7 @@ export const SERVICES_FAQ: FaqRowKeys[] = [1, 2, 3, 4].map((n) => ({
  * services (DIRECTION 6.11, PLAN-final 5.3).
  *
  * Composition, top to bottom: breadcrumb, the dark cover band (contained in
- * the page gutter, its plate cut like the primary CTA — owner item
+ * the page gutter, its plate cut like the primary CTA, owner item
  * 2026-09-24, S7b) carrying the page's only h1 and its one primary action,
  * the intro in the text measure,
  * the advisory band (`OxServices`, the same section the home page draws,
@@ -104,6 +104,7 @@ export function ServicesHub() {
     <div className="ox-page ox-page--bleed ox-page--services">
       <OxBreadcrumb page={page} />
 
+
       <Band
         id="ox-hub-band"
         className="ox-page--services__band"
@@ -115,15 +116,20 @@ export function ServicesHub() {
           <Button to={heroTo} size={48} variant="primary">
             {t(SERVICES_HUB.ctaPrimaryKey)}
           </Button>
+
         }
       />
+
 
       <section className="ox-hub-intro" aria-labelledby="ox-hub-intro-title">
         <h2 id="ox-hub-intro-title" className="ox-sr-only">
           {t('ox.services.title')}
         </h2>
+
         <p className="ox-hub-intro__lead ox-lead">{t(SERVICES_HUB.introKey)}</p>
+
       </section>
+
 
       {/* THE OFFER, both rows of it: the three ways to ask and the three
           programmes the asking leads to, in the same band `OxServices` draws
@@ -139,7 +145,7 @@ export function ServicesHub() {
           NOT full bleed here (owner review 2026-09-23, item 3): the home page
           opens on nothing else dark, while this page already opened on the
           dark hero band above (contained in the page gutter since S7b,
-          2026-09-24 — it was never meant to be full bleed either), and a
+          2026-09-24, it was never meant to be full bleed either), and a
           second full-width near-black band directly under it read as one
           long band rather than two sections.
           `.ox-hub__advisory` (`_b5-pages.scss`) sits it inside the page's own
@@ -148,9 +154,11 @@ export function ServicesHub() {
           action is the written-question door itself. */}
       <OxServices className="ox-hub__advisory" routeOut={false} />
 
+
       <p className="ox-hub__medical ox-small" data-testid="ox-medical-line">
         {t('ox.services.medical_line')}
       </p>
+
 
       {/* Between the advisory section and the five full sections: the visitor
           has just seen the three ways in and the three programmes, and the
@@ -168,11 +176,14 @@ export function ServicesHub() {
         }))}
       />
 
+
       <div className="ox-services-list">
         {SERVICE_PAGES.map((service) => (
           <ServiceSection key={service.slug} page={service} />
+
         ))}
       </div>
+
 
       <HowItWorks
         className="ox-hub__how"
@@ -185,14 +196,18 @@ export function ServicesHub() {
           <h2 id="ox-hub-faq" className="ox-h2">
             {t('ox.services.faq_title')}
           </h2>
+
           <Accordion
             items={faqRows.map((row) => ({
               id: row.id,
               title: row.question,
               children: <p className="ox-body">{row.answer}</p>,
+
             }))}
           />
+
         </section>
+
       ) : null}
 
       <ContactRow
@@ -201,13 +216,18 @@ export function ServicesHub() {
         phone={store?.contacts?.phone ?? store?.contacts?.mobile}
       />
 
+
       <p className="ox-hub__foot ox-small">
         <Button to="/branch" variant="link">
           {t('ox.nav.branch')}
         </Button>
+
       </p>
 
+
       <VisitStickyBar anchorSelector={VISIT_STICKY_ANCHOR} />
+
     </div>
+
   );
 }

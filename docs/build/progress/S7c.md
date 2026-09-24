@@ -22,8 +22,8 @@ The owner's screenshot of the live band at 1890 shows six cards and two grey
 notes. Read as a shopper rather than as a builder, it fails in five places:
 
 1. **The offer is the least visible thing on the band.** The two facts the
-   owner wants seen first — the advice is free, and the branch measures body
-   composition with InBody for nothing — were a 14px note under a row title
+   owner wants seen first, the advice is free, and the branch measures body
+   composition with InBody for nothing, were a 14px note under a row title
    and a 14px line inside the third card. The heading and the six card titles
    all outrank them.
 2. **Nothing looks pressable.** Every one of the six cards ended in an accent
@@ -92,7 +92,7 @@ and focus ring; the button carries both. The detached chevron icon-buttons
 **4. The recommended door is the written question, and its eyebrow is NOT
 "ابدأ من هنا".** The brief asks for that string; `ox.home.band_title_services`
 is already exactly "ابدأ من هنا" and it is the band's own h2 on `/services`,
-so the brief's string would have put the same two words twice on one screen —
+so the brief's string would have put the same two words twice on one screen -
 the defect S5c existed to fix. The eyebrow is `ox.home.door_recommended` =
 "البداية المقترحة" instead: same job, no collision, and it never reads as a
 second, competing "start here". The door is the written question because it is
@@ -120,7 +120,7 @@ card. All four are gone. The text block moved to the foot of the card on a
 solid `--ox-ink` 0.92 plate (P1-20's fix, and what lets the card carry a list
 of inclusions without a contrast argument per line). With no text over the
 photograph any more, 4.5's alpha floor no longer binds the scrim, so the scrim
-was lightened and the frame raised to 0.9 — see 4.4.
+was lightened and the frame raised to 0.9, see 4.4.
 
 **8. The band no longer reveals.** X-IDENTITY 5.1's table reads "Advisory band
 | nothing", and this band was staggering two rows against it. It is also an
@@ -169,7 +169,7 @@ locales and on the new partials).
 `_note`, `ox.home.services_reply`, `ox.home.band_card_cta`,
 `ox.content.services.visit_cta_short`, `written_cta_short`, `video_cta`,
 `training_cta`, `card_footer`, `ox.common.free`, `ox.blocks.branch.address`,
-and — as the plan cards' included items — six existing scope keys:
+and, as the plan cards' included items, six existing scope keys:
 `written_scope_1`, `written_scope_3`, `training_scope_4`, `training_scope_1`,
 `video_scope_1`, `video_scope_2`. Every inclusion a card promises is a line its
 own destination page already lists.
@@ -231,13 +231,13 @@ top and the sides to 32 and leaves the foot at 24.
 | space under a door CTA | 24 / 24 / 24 | 24 | 24 | 24 |
 | plan heights | 340 x3 | 380 x3 | 380 x3 | 380 x3 |
 | space under a plan CTA | 24 / 24 / 24 | 24 | 24 | 24 |
-| plan plate, share of the card | 65.3 / 77.7 / 77.7 % | — | — | 62.2 / 73.8 / 73.8 % |
+| plan plate, share of the card | 65.3 / 77.7 / 77.7 % |, |, | 62.2 / 73.8 / 73.8 % |
 
 **Equal per ROW, which is what grid stretch can promise.** At 1024 and 1440 the
 three doors are one row and measure identically. At 768 the grid is 2-up: doors
 one and two are one row and are equal (269.2), door three is a row of its own
 at 243.7. At 390 every card is its own row, so each is exactly as tall as its
-own copy — which is the brief's other requirement ("sized to their content, no
+own copy, which is the brief's other requirement ("sized to their content, no
 empty half") and the reason the old 232/260 floor is gone.
 
 The plan cards keep a floor (340 / 380) because the photograph needs a band to
@@ -249,9 +249,9 @@ why the nutrition card (no price row) shows more photograph than the other two.
 | | 390 | 768 | 1024 | 1440 |
 |---|---|---|---|---|
 | block-size | 296.8 | 188.4 | 162.9 | 164 |
-| inline-size | 358 | — | — | 1296 (1232 on `/services`) |
+| inline-size | 358 |, |, | 1296 (1232 on `/services`) |
 | padding | 24 | 32 | 32 | 32 |
-| fact text | 18 / 700 | — | — | 20 / 700 |
+| fact text | 18 / 700 |, |, | 20 / 700 |
 
 The strip declares NO block-size, so `check-identity`'s `small-angle` rule has
 nothing to match; and it measures over 158 at every tier, 162.9 at its
@@ -259,7 +259,7 @@ tightest, so X-IDENTITY 3.2's floor for a panel-scale cut holds on its own
 terms rather than by a pragma. The clip reads
 `polygon(0 0, calc(100% - 27px) 0, 100% 40px, 100% 100%, 0 100%)` in RTL: lean
 40, run 27.0, the top inline-start corner, 7.5 % of the plate at 390 and 2.1 %
-at 1440 — both far inside 2.3's 24 % budget.
+at 1440, both far inside 2.3's 24 % budget.
 
 ### 4.4 Contrast, for the three things that changed colour
 
@@ -277,7 +277,7 @@ at 1440 — both far inside 2.3's 24 % budget.
   because it departs from 4.5's table: that table sets a floor for a photograph
   that CARRIES TEXT, and this card carries none any more. The 236/124 degree
   directions and the two-rule mirroring are unchanged. Before the change, the
-  one visible band of each card rendered as a black rectangle — the same empty
+  one visible band of each card rendered as a black rectangle, the same empty
   photograph the audit raised, moved to the top of the card.
 
 ### 4.5 Reserved height and layout shift
@@ -299,7 +299,7 @@ at 1440 — both far inside 2.3's 24 % budget.
 | **total** | **2740.4** | **1523.5** |
 
 Read back live: the lazy shell reserves **2740** at 390 and **1524** at 1440
-against a mounted band of 2740.4 and 1523.5 — inside half a pixel at both ends.
+against a mounted band of 2740.4 and 1523.5, inside half a pixel at both ends.
 
 **Two late-growth sources were found and removed while measuring this.** The
 door's price and the plan's price both arrive from React Query AFTER mount, so
@@ -346,7 +346,7 @@ At 1440 no shift is attributed to the band at all.
 two differences and no third: the h2 is **ابدأ من هنا**, and there is no
 view-all link. Measured there: band 1481.5 at 1440 and 2698.4 at 390, strip
 164 / 296.8, doors 271.6 x3 and 259.8 / 235.6 / 234.6, plans 380 / 340, 24
-under every CTA — the same numbers as the home band, less the link. The offer strip appears exactly once on that page (asserted in
+under every CTA, the same numbers as the home band, less the link. The offer strip appears exactly once on that page (asserted in
 `tests/pages/ServicesHub.test.tsx`), inside `.ox-hub__advisory`, never in the
 masthead.
 
@@ -364,7 +364,7 @@ into this file rather than pointed at.
 
 | Item | Applied | How, or why not |
 |---|---|---|
-| **P0-12** InBody says two things, once each | yes | One sentence (`SERVICES_HUB.inbodyKey`), stated once on the band, asserted by test. The audit's longer conditional wording was not adopted — see 2.2. Its third leg (render it on the booking product page, `ServicePdp.tsx`) is outside this batch's files and stays open. |
+| **P0-12** InBody says two things, once each | yes | One sentence (`SERVICES_HUB.inbodyKey`), stated once on the band, asserted by test. The audit's longer conditional wording was not adopted, see 2.2. Its third leg (render it on the booking product page, `ServicePdp.tsx`) is outside this batch's files and stays open. |
 | **P1-20** plan cards put everything in the top fifth | yes | `.ox-plan__body { margin-block-start: auto }` plus the solid plate, exactly the audit's fix, extended with the included list and the price the brief asks for. |
 | **P1-7** `عرض الكل` twelve times | partly | The band's own button is now `ox.services.view_all` = "كل الخدمات" and a text link. Not "كل الخدمات والاشتراكات": no subscription product exists. The other eleven instances belong to `SectionHeader` and the rails. |
 | **P1-9** the comparison table has holes; the band says "three" while the page details five | no | The row holds exactly three doors, so "ثلاث طرق تسأل بها" is true of the row it titles, and the same title on the home page (where no five-service table exists) would lose accurate information by dropping the count. The mismatch is between the TABLE and the page, and `ServiceCompare` plus the missing `services.ts` comparison fields are not this batch's files. Left for the batch that fills the table. |
@@ -453,7 +453,7 @@ The four allowlisted claims findings are the pre-existing
 9. **Two files the brief allowed were not edited at all**:
    `app/components/pages/ServicesHub.tsx` (no change needed, and S7b is editing
    its masthead) and `_b5-pages.scss` (the band's own rule there is still
-   correct — the `/services` band measures 1296 wide with the strip at 1232).
+   correct, the `/services` band measures 1296 wide with the strip at 1232).
    `claims.ts` and `twilight.json` needed no new gate.
 10. **The browser work was done with headless Chrome over the DevTools
     protocol**, not the chrome-devtools MCP tools, which are not attached to

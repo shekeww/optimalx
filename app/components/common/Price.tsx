@@ -32,7 +32,7 @@ const SAR_GLYPH_CLASS = 'sicon-sar';
 /**
  * The glyph size token (owner addendum, 2026-09-23): 10% larger than the
  * `.ox-price__mark` context it sits in (`_primitives.scss`'s own
- * `font-size: 0.85em`, section 8 — out of this batch's file scope, so the
+ * `font-size: 0.85em`, section 8, out of this batch's file scope, so the
  * scale is applied here instead, as an inline style, which always outranks
  * that rule's `.sicon-sar { font-size: inherit }` regardless of specificity).
  * Only the glyph itself moves: the digits, the mark's sr-only text and the
@@ -80,8 +80,11 @@ function withWrittenCurrency(node: ReactNode, mark: string): ReactNode {
     return (
       <span className="ox-price__mark" role="img" aria-label={mark} key={element.key ?? undefined}>
         <i className="sicon-sar" aria-hidden="true" style={{ fontSize: SAR_GLYPH_SCALE }} />
+
         <span className="ox-sr-only">{mark}</span>
+
       </span>
+
     );
   }
   if (element.props.children === undefined) return element;
@@ -119,6 +122,8 @@ export function Price({
   return (
     <span className={classes} {...rest}>
       {was ? <s>{formatted}</s> : formatted}
+
     </span>
+
   );
 }

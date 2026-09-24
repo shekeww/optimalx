@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// salla-categories.mjs — takes the owner's taxonomy and brands into the live
+// salla-categories.mjs, takes the owner's taxonomy and brands into the live
 // Salla store: 25 categories (10 type roots, 5 protein children, 4 utility,
 // 6 goals), the brands in FINAL-catalogue.md §B, and the 47 product
 // assignments (categories + brand_id), all idempotent and reversible.
@@ -161,7 +161,7 @@ function addSku(node, sku) {
  * Builds the 25 taxonomy nodes with `skus`/`imageSku` populated from the
  * CSV's `categories` column: the leaf slug first, then any `goal-*` slugs.
  * A leaf with a parent (the five protein children) also credits the
- * parent — "every whey-protein SKU is also protein" (PLAN §2 Batch S1).
+ * parent, "every whey-protein SKU is also protein" (PLAN §2 Batch S1).
  * @param {ProductRow[]} rows
  * @returns {TaxonomyNode[]}
  */
@@ -286,7 +286,7 @@ export const BRAND_SOURCE = [
   { name: 'Born Winner', arabic: 'بورن وينر' },
   { name: 'BombBar', arabic: 'بومبار' },
   // OX-028 (سنتروم للرجال) and OX-039/OX-040 (ماي بروتين, peanut butter and
-  // oats) use these two brands; neither has a row in FINAL-catalogue.md §B —
+  // oats) use these two brands; neither has a row in FINAL-catalogue.md §B -
   // a research gap, not a script defect. Both transliterations are the ones
   // the CSV's own name_ar column already uses. Flagged again in
   // docs/build/store-data-runbook.md for the owner to backfill proper §B
@@ -308,8 +308,8 @@ export function brandSlug(name) {
 /**
  * The brand list to create: FINAL-catalogue.md §B plus the documented
  * Centrum gap-fill, always in full (the dashboard tree should match the
- * plan even for a §B brand no current SKU uses yet). Warns — does not
- * silently drop — about any CSV brand this list still does not cover.
+ * plan even for a §B brand no current SKU uses yet). Warns, does not
+ * silently drop, about any CSV brand this list still does not cover.
  * @param {ProductRow[]} rows
  */
 export function resolveBrands(rows) {
@@ -357,7 +357,7 @@ export function buildCategoryBody(node, name) {
 export function buildBrandBody(brand) {
   return {
     name: brand.name,
-    description: `${brand.arabic} — علامة ${brand.name} للمكملات الغذائية، متوفرة في اوبتيمال اكس.`,
+    description: `${brand.arabic} \u2014 علامة ${brand.name} للمكملات الغذائية، متوفرة في اوبتيمال اكس.`,
     metadata_url: brandSlug(brand.name),
     translations: {
       en: { name: brand.name, description: `${brand.name} supplements, available at OptimalX.` },
@@ -404,7 +404,7 @@ export function runPlan({ nodes, names, brands, assignments, flags }) {
     const name = nameFor(node, names);
     const indent = node.parent ? '    ' : '  ';
     lines.push(
-      `${indent}${node.slug} — ${name.ar} / ${name.en} (parent: ${node.parent ?? '-'}, skus: ${node.skus.length}, image_sku: ${node.imageSku ?? '-'})`
+      `${indent}${node.slug} \u2014 ${name.ar} / ${name.en} (parent: ${node.parent ?? '-'}, skus: ${node.skus.length}, image_sku: ${node.imageSku ?? '-'})`
     );
   }
   if (flags.brands) {
@@ -465,7 +465,7 @@ async function listAll(client, pathname) {
   return results;
 }
 
-/** metadata_url match first, then exact name match — idempotency key order
+/** metadata_url match first, then exact name match, idempotency key order
  * from the plan's Accept criteria. */
 export function findExistingCategory(existing, node, arName) {
   return existing.find((c) => c.metadata_url === node.slug) ?? existing.find((c) => c.name === arName) ?? null;
@@ -559,7 +559,7 @@ export async function assignProductCategories(client, assignment, categoryIdBySl
 }
 
 /** The `image_sku` product's cdn image URL, from the offline fixture
- * snapshot — the same image the theme's overlay renders for the category. */
+ * snapshot, the same image the theme's overlay renders for the category. */
 export function imageUrlForSku(sku, products) {
   return products.find((p) => p.sku === sku)?.image?.url ?? null;
 }

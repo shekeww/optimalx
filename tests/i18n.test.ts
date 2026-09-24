@@ -124,7 +124,7 @@ describe('locales', () => {
   });
 
   it('has no em-dash (U+2014) in any value', () => {
-    const offenders = [...arEntries, ...enEntries].filter(([, v]) => v.includes('—'));
+    const offenders = [...arEntries, ...enEntries].filter(([, v]) => v.includes('\u2014'));
     expect(offenders).toEqual([]);
   });
 
@@ -148,7 +148,7 @@ describe('locales', () => {
       'sample/ar.json',
       JSON.stringify({
         a: 'شكراً',
-        b: 'نص — نص',
+        b: 'نص \u2014 نص',
         c: 'وش تبي',
         d: 'موقع نظيف',
         // The machine-output tell, in each language, plus the stacked-question

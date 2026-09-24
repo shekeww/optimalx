@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * snapshot-store.mjs — turn the Admin-API dumps in `fixtures/store/raw/` into
+ * snapshot-store.mjs, turn the Admin-API dumps in `fixtures/store/raw/` into
  * the exact response bodies `https://api.salla.dev/store/v1/*` would send, so
  * `scripts/serve-store.mjs` can answer the theme from disk.
  *
@@ -16,7 +16,7 @@
  *
  * IT MAKES NO NETWORK CALLS. Re-running it is free and deterministic.
  *
- * REFRESHING THE SNAPSHOT — see docs/build/offline-preview.md. In short: call
+ * REFRESHING THE SNAPSHOT, see docs/build/offline-preview.md. In short: call
  * the MCP tools listed in `RAW_SOURCES` below, overwrite the matching file in
  * `fixtures/store/raw/`, then run `node scripts/snapshot-store.mjs`.
  *
@@ -402,7 +402,7 @@ function mapProduct(admin, { detail }) {
     mpn: admin.mpn ?? null,
     gtin: admin.gtin ?? null,
     price,
-    /** 0 when nothing is discounted — the same signal the live API sends. */
+    /** 0 when nothing is discounted, the same signal the live API sends. */
     sale_price: onSale ? sale : 0,
     regular_price: regular,
     starting_price: null,
@@ -507,7 +507,7 @@ function menuItems(name) {
  *
  * These are the blocks of the theme that is live in the dashboard, not this
  * theme's `ox-*` blocks, so `app/routes/index.tsx` will not recognise them and
- * will render the twelve default OptimalX blocks instead — which is exactly
+ * will render the twelve default OptimalX blocks instead, which is exactly
  * what a visitor meets today. Serving the real list rather than an empty one
  * keeps the snapshot truthful about what the dashboard holds.
  */
@@ -539,7 +539,7 @@ const written = [
   write('meta.json', {
     generated_at: new Date().toISOString(),
     generator: 'scripts/snapshot-store.mjs',
-    transport: 'Salla Admin API via MCP — no request is made to api.salla.dev',
+    transport: 'Salla Admin API via MCP \u2014 no request is made to api.salla.dev',
     store: { id: store.id, name: store.name, url: store.url, currency: storeRaw.currency },
     counts: {
       products: listProducts.length,
@@ -558,5 +558,5 @@ const written = [
 mkdirSync(OUT, { recursive: true });
 for (const f of written) console.log(`wrote fixtures/store/${f.name} (${f.bytes} bytes)`);
 console.log(
-  `\n${listProducts.length} products, ${categories.length} categories, 0 brands, ${reviews.pagination?.total ?? 0} reviews — no network call was made.`
+  `\n${listProducts.length} products, ${categories.length} categories, 0 brands, ${reviews.pagination?.total ?? 0} reviews \u2014 no network call was made.`
 );

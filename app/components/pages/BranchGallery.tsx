@@ -87,8 +87,8 @@ function galleryCovers(inbodyOn: boolean, showStorefront: boolean): GalleryCover
  * photograph, a cinematic two-gradient scrim and an accent glow behind an
  * overlay statement, a supporting line and the angled arrow chip, reading as
  * one clickable surface rather than a captioned photograph. The old visible
- * `<figcaption>` under each tile is retired — the overlay statement is the
- * accessible content now, real DOM text rather than a caption — but every
+ * `<figcaption>` under each tile is retired, the overlay statement is the
+ * accessible content now, real DOM text rather than a caption, but every
  * `ox.content.branch.photo_*` key stays registered in the locale
  * (`content/branch.ts`), unrendered. `srcset` is built only from the
  * manifest's own `widths` (`store-photos.ts`), never a slot width table of
@@ -99,7 +99,7 @@ function galleryCovers(inbodyOn: boolean, showStorefront: boolean): GalleryCover
  * `showStorefront` (S9h, owner screenshots 2026-09-24): `OxBranch`'s own
  * cover shows the storefront photograph now too (item 1), so `BranchPage`
  * passes `false` here to avoid printing the identical photograph twice on
- * one page — three tiles, `.ox-branch-gallery__list--3` (three-up from
+ * one page, three tiles, `.ox-branch-gallery__list--3` (three-up from
  * 640px). Defaults to `true` (all four) for any caller that does not sit
  * under a storefront cover.
  */
@@ -145,14 +145,21 @@ export function BranchGallery({ className, showStorefront = true }: BranchGaller
               <span className="ox-cover__glow" aria-hidden="true" />
               <span className="ox-cover__body">
                 <span className="ox-cover__statement">{statement}</span>
+
                 <span className="ox-cover__row">
                   <span className="ox-cover__line">{line}</span>
+
                   <span className="ox-cover__arrow ox-iconbtn--angled" aria-hidden="true">
                     <Icon name="chevron-end" size={16} />
+
                   </span>
+
                 </span>
+
               </span>
+
             </>
+
           );
 
           return (
@@ -168,6 +175,7 @@ export function BranchGallery({ className, showStorefront = true }: BranchGaller
                 >
                   {body}
                 </a>
+
               ) : (
                 <Link
                   className={coverClasses}
@@ -177,12 +185,16 @@ export function BranchGallery({ className, showStorefront = true }: BranchGaller
                 >
                   {body}
                 </Link>
+
               )}
             </li>
+
           );
         })}
       </ul>
+
     </section>
+
   );
 }
 

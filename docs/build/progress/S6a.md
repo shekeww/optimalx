@@ -1,4 +1,4 @@
-# S6a — the OptimalX icon system
+# S6a, the OptimalX icon system
 
 Builder S6a, 2026-09-23. Three briefs in one night, each superseding the last:
 the owner's first note ("the lightweight icons do not fit the premium, bold,
@@ -28,7 +28,7 @@ the symbol into a shadow tree that inherits from the **`<use>` element**, not
 from the sprite root, so the root's 1.8 never reached a single rendered path.
 `.ox-icon` (`_primitives.scss`) sets `stroke: currentColor` and `fill: none`
 but no width, so every symbol in the live theme drew at SVG's initial
-`stroke-width: 1` — **0.67 px at a 16 px icon, 1 px at 24**. The same file's
+`stroke-width: 1`, **0.67 px at a 16 px icon, 1 px at 24**. The same file's
 `vector-effect: non-scaling-stroke` is inert for the same reason: it is not an
 inherited property, so it never crosses the `<use>` boundary either.
 
@@ -42,10 +42,10 @@ paint.
 | Rule | Value |
 |---|---|
 | Grid | 24 × 24 master, `viewBox="0 0 24 24"` |
-| Optical bounds | ≈ 20 × 20 — every drawn point inside `[2, 22]`, and the object reaches within 1.25 of that inset on **at least two** sides |
+| Optical bounds | ≈ 20 × 20, every drawn point inside `[2, 22]`, and the object reaches within 1.25 of that inset on **at least two** sides |
 | Stroke | **2** units, declared on each `<symbol>` as a presentation attribute |
 | Terminals | `square`. Never `round`, never `butt` |
-| Joins | `miter`, `stroke-miterlimit="4"` — the limit is what stops a long miter spike |
+| Joins | `miter`, `stroke-miterlimit="4"`, the limit is what stops a long miter spike |
 | Fill | `none` on the symbol; accent parts fill or stroke through their class |
 | Elements | `<path>` only. No `<circle>`, `<rect>`, `<line>`, no `rx`/`ry`, no `transform` |
 
@@ -59,7 +59,7 @@ everything:
   and panel where a corner would otherwise be square (`… V19.65 L17.5 21 …`);
 - it is the **lean** of the nutrition bar, the scoop handle, the free-from
   slash, the bolt;
-- it is the **cross** in `close` — one steep arm and one shallow arm, the
+- it is the **cross** in `close`, one steep arm and one shallow arm, the
   mark's two angles crossing.
 
 **45° never appears.** That is the one angle X-IDENTITY §2.1 rules out by name,
@@ -72,7 +72,7 @@ Measured across the whole file: **667 of 939 straight segments (71 %)** sit on
 the 0 / 34 / 56 / 90 lattice; the rest are the figurative parts a real object
 needs (a bolt's kink, a molecule's bond, a wheat ear).
 
-Curves are allowed where the object has one — a capsule end, a drop, a heart
+Curves are allowed where the object has one, a capsule end, a drop, a heart
 lobe, a wheel, a lens, a clock face. Revision 1 read the system as "no curves
 anywhere" and that is exactly what produced the tub reduced to a box and the
 user reduced to a square.
@@ -82,27 +82,27 @@ user reduced to a square.
 
 ### 1.4 Colour and the accent
 
-The body of every icon is **`stroke="currentColor"`** — graphite on the light
+The body of every icon is **`stroke="currentColor"`**, graphite on the light
 ground, paper on the dark. The accent rides on one of two classes, so the
 **theme token** drives it and no colour is hardcoded anywhere in the file:
 
 | class | resolves to | used for |
 |---|---|---|
-| `ox-icon__accent` | `fill: var(--ox-icon-mono, var(--ox-accent))` | a filled brand part — the bolt's lower half, the video play triangle, the chip on the card, the keyhole |
-| `ox-icon__accent ox-icon__accent--stroke` | `stroke: var(--ox-accent)` | a coloured line — the pulse in the heart, the check in the shield, the recovery arrow, the ribbon on the gift |
+| `ox-icon__accent` | `fill: var(--ox-icon-mono, var(--ox-accent))` | a filled brand part, the bolt's lower half, the video play triangle, the chip on the card, the keyhole |
+| `ox-icon__accent ox-icon__accent--stroke` | `stroke: var(--ox-accent)` | a coloured line, the pulse in the heart, the check in the shield, the recovery arrow, the ribbon on the gift |
 
 Both already exist in `app/styles/06-ox/_primitives.scss`; this batch added no
 CSS to the stylesheet.
 
 **"Do not place a tiny orange slash inside every icon."** 49 of the 88 standard
-symbols carry an accent, 39 are pure mono — every chevron, the magnifier, the
+symbols carry an accent, 39 are pure mono, every chevron, the magnifier, the
 bust, the menu, the house, the grid, the envelope, the clock. Where the accent
 appears it is a *part of the object*, never a sticker.
 
 **A colour note for the owner.** The reference sheets render the accent as
 **#F15C22**. The theme's live token is `--ox-accent` → `--color-primary` →
 **#EE4D22** in `tokens.css` (the dashboard is the source of truth). Nothing is
-hardcoded here, so the icons take whatever the token says — but the two values
+hardcoded here, so the icons take whatever the token says, but the two values
 are not the same orange, and if the reference sheet's #F15C22 is the intended
 brand colour, that is a change to `--color-primary` in the Salla dashboard plus
 `tokens.css`, not to the sprite. Flagged, not decided.
@@ -113,7 +113,7 @@ Per the brief: "produce simplified optical variants for 16/20px and standard
 variants for 24/32/36px rather than mechanically scaling detailed SVGs."
 
 - **Standard** symbol: `#ox-{name}`, used at 24, 32, 36.
-- **Simplified twin**: `#ox-{name}-s`, used at 20 and 16 — fewer parts, fatter
+- **Simplified twin**: `#ox-{name}-s`, used at 20 and 16, fewer parts, fatter
   counters, the accent kept only where it still reads (the amino-acid chain
   loses its fourth node and its bond stub; the tub loses its neck ring; the
   points star drops its outline and becomes one solid accent).
@@ -147,7 +147,7 @@ existing `.ox-mirror` class, not a new transform):
 `chevron-start`, `chevron-end`, `arrow`, `external`, `play`.
 
 `chevron-down` and `chevron-up` are vertical and do not mirror. **`ox-mark`
-never mirrors**, and neither does any chamfer, tub foot or brand cut — the test
+never mirrors**, and neither does any chamfer, tub foot or brand cut, the test
 asserts the mark carries no `data-mirror`.
 
 ### 1.7 Optical weight
@@ -177,7 +177,7 @@ same optical bounds, the same terminals, the same chamfer vocabulary.
 
 `app/components/common/Sprite.tsx` is unchanged: it already inlines the file
 verbatim. No stylesheet, no component outside `common/`, and no `sicon-*` call
-site was touched — five other builders hold those files.
+site was touched, five other builders hold those files.
 
 ---
 
@@ -218,7 +218,7 @@ three accent dots) · `video-consult` (screen + accent play) · `branch-visit`
 (clipboard/document + accent rules) · `headset` / `help` (headset, one ear cup
 in accent) · `whatsapp` (bubble + accent handset).
 
-### 3.4 Universal UI — conventional on purpose
+### 3.4 Universal UI, conventional on purpose
 
 `cart` (basket + handle + accent wheels) · `heart` · `user` · `search` ·
 `menu` · `home` · `store` (bag + accent handle) · `map-pin` · `phone` ·
@@ -240,31 +240,31 @@ handle; a cart is a basket on two wheels.
 ## 4. The inventory, with usage sites
 
 Counted across `app/**` on 2026-09-23. Every id in the previous sprite survives,
-so no call site broke. "—" means drawn but not yet called (it exists so a later
+so no call site broke. "-" means drawn but not yet called (it exists so a later
 batch can retire a `sicon-*`).
 
-**Brand family (45 ids).** `protein` (26 refs — taxonomy, type tiles,
+**Brand family (45 ids).** `protein` (26 refs, taxonomy, type tiles,
 `OxCategories`, `MegaPanel`, `ShopSheet`, `useTaxonomyLinks`) · `creatine` (12)
 · `pre-workout` (9) · `amino-acids` (6) · `omega-3` (6) ·
 `vitamins-minerals` (7) · `collagen-beauty` (5) · `daily-health` (6) ·
 `snacks-bars` (6, + `content/posters.ts`) · `accessories` (5) ·
 `goal-energy` (6) · `goal-general-health` (4) · `goal-performance` (10) ·
-`goal-recovery` (4) · `goal-hair-skin` (4) · `goal-ideal-weight` (5) —
+`goal-recovery` (4) · `goal-hair-skin` (4) · `goal-ideal-weight` (5) -
 all from `content/goals.ts`, `OxGoals`, `MegaPanel`, posters ·
 `shield-check` (2, `Header/UtilityTrust`, `BuyZone/TrustGrid`) · `truck` (9,
 `UtilityTrust`, `TrustGrid`, `DeliveryPromise` ×4, common KitchenSink) ·
-`lock` — · `badge` — · `secure-payment` (3) · `expiry` (8) · `tick` (7) ·
+`lock`, · `badge`, · `secure-payment` (3) · `expiry` (8) · `tick` (7) ·
 `written-question` (7) · `video-consult` (4) · `branch-visit` (9) ·
-`training` — · `plan` (8) · `headset` (6) · `help` (1, legacy) ·
+`training`, · `plan` (8) · `headset` (6) · `help` (1, legacy) ·
 `authentic` (4, legacy) · `shipping` (7, legacy) · `servings` (9) ·
 `serving-size` (4) · `form` (5) · `points` (4) · `gift` (4) · `referral` (1) ·
-`bundles` (1) · `digital-library` (2) · `bolt` — · `cart` (9) · `cart-add` — ·
+`bundles` (1) · `digital-library` (2) · `bolt`, · `cart` (9) · `cart-add`, ·
 `plus` (4) · `minus` (2).
 
 **UI family (43 ids).** `whatsapp` (8) · `registry` (3) · `vegan-leaf` (6) ·
 `low-sugar` (3) · `gluten-free` (3) · `scoop-cup` / `shaker` /
 `shaker-straw` (`BelowFold/HowToUse`) · `star` (4, `RatingRow`,
-`StoreRating`) · `expand` — · `chevron-down` (6, legacy: `NavBar` ×2,
+`StoreRating`) · `expand`, · `chevron-down` (6, legacy: `NavBar` ×2,
 `CountryControl`, `FooterColumns`, `PdpThumbRail`, `NutritionTable`) ·
 `mark` (3, `XMark`, `PlanCard`) · and the 31 chrome symbols drawn for §5's
 swap and not yet wired: `chevron-up`, `chevron-start`, `chevron-end`, `arrow`,
@@ -327,7 +327,7 @@ twins engage.
 - at least 30 % of the set is monochrome ("do not place a tiny orange slash
   inside every icon")
 - the accent is painted only through the two accent classes, and **no literal
-  colour appears in the file** — the token drives it
+  colour appears in the file**, the token drives it
 - `fill`, `stroke`, `stroke-width="2"`, `stroke-miterlimit="4"` and
   `class="ox-sym"` on every drawn symbol
 - **`stroke-linecap="square"` and `stroke-linejoin="miter"` on every symbol**
@@ -336,7 +336,7 @@ twins engage.
 - `viewBox="0 0 24 24"` everywhere; no `transform`; no primitive shape element
 - **no 45° edge** outside the three conventional UI glyphs
 - **> 60 % of straight edges on the mark's 0/34/56/90 lattice** (actual: 71 %)
-- **every drawn point inside `[2, 22]`** — arcs and cubics are sampled through
+- **every drawn point inside `[2, 22]`**, arcs and cubics are sampled through
   a real endpoint-to-centre arc parameterisation, not approximated by their
   chord, so a lobe that bulges past the optical bounds is caught
 - the optical-bounds rule: the object reaches within 1.25 of the inset on ≥ 2
@@ -354,15 +354,15 @@ symbol's own family median. Reported, not enforced (§1.7).
 
 | Family | n | median | spread |
 |---|---|---|---|
-| type | 10 | 168.4 | 114.0 – 221.5 |
-| goal | 6 | 128.3 | 83.3 – 151.2 |
-| trust | 9 | 174.7 | 142.6 – 205.5 |
-| service | 8 | 150.6 | 127.2 – 190.4 |
-| catalogue | 15 | 139.5 | 90.0 – 233.3 |
-| commerce | 3 | 167.0 | 151.5 – 195.1 |
-| chrome | 21 | 137.7 | 100.0 – 208.0 |
-| mark (linear glyphs) | 15 | 72.0 | 36.0 – 176.0 |
-| simplified twins | 24 | 153.1 | 99.6 – 228.4 |
+| type | 10 | 168.4 | 114.0, 221.5 |
+| goal | 6 | 128.3 | 83.3, 151.2 |
+| trust | 9 | 174.7 | 142.6, 205.5 |
+| service | 8 | 150.6 | 127.2, 190.4 |
+| catalogue | 15 | 139.5 | 90.0, 233.3 |
+| commerce | 3 | 167.0 | 151.5, 195.1 |
+| chrome | 21 | 137.7 | 100.0, 208.0 |
+| mark (linear glyphs) | 15 | 72.0 | 36.0, 176.0 |
+| simplified twins | 24 | 153.1 | 99.6, 228.4 |
 
 Per symbol (standard set; `id ink dev`):
 
@@ -404,8 +404,8 @@ close 86.9 +20.7  check 51.1 -29.0  mark 260.5 (exempt)
    reference sheets, which put a chevron beside a molecular structure.
 2. **`stroke-width` is 2, not 2.25**, per the owner's brief. The 16 px step
    takes 2.25 through the sprite's `<style>` so the glyph holds.
-3. **45° survives in three universal glyphs** — the magnifier handle and the
-   two arrowheads — because the brief requires the universal set to stay
+3. **45° survives in three universal glyphs**, the magnifier handle and the
+   two arrowheads, because the brief requires the universal set to stay
    conventional. Named exceptions in the test.
 4. **`sicon-sar` is not redrawn** (§5, last row).
 5. **The accent token is #EE4D22, the reference renders #F15C22** (§1.4). The
@@ -415,7 +415,7 @@ close 86.9 +20.7  check 51.1 -29.0  mark 260.5 (exempt)
    scope. One line there would be the tidier home for it.
 7. **`_primitives.scss:392` `vector-effect: non-scaling-stroke` is dead code**
    on `.ox-icon` (not an inherited property, never crosses the `<use>`
-   boundary). Not removed — another builder owns the file. Follow-up.
+   boundary). Not removed, another builder owns the file. Follow-up.
 8. **`Icon.tsx` gained logic**, not only type-union additions: the `-s`
    selection and the `.ox-mirror` class. The coordinator's implementation notes
    authorise this and it is the only way the two optical variants and RTL
@@ -423,13 +423,13 @@ close 86.9 +20.7  check 51.1 -29.0  mark 260.5 (exempt)
 9. **The sprite is 41.3 KB raw** (≈ 6 KB gzipped), inlined on every route, up
    from 14.5 KB. That is 112 drawn symbols at 2 units instead of 53 hairline
    outlines. Test ceiling moved to 48 KB.
-10. **No component was migrated off `sicon-*`** — forbidden by the brief; §5 is
+10. **No component was migrated off `sicon-*`**, forbidden by the brief; §5 is
     the hand-off.
-11. **The four reference-only goals are now drawn** — `endurance`, `immunity`,
+11. **The four reference-only goals are now drawn**, `endurance`, `immunity`,
     `wellness`, `better-sleep` (owner: "the owner wants the set as drawn").
     `wishlist` was not added: it is `heart`, which already exists.
 12. **The ten product categories are the pre-redraw originals**, restored on
-    the owner's ruling and exempt from the new system's drawing assertions —
+    the owner's ruling and exempt from the new system's drawing assertions -
     §10.
 
 ---
@@ -439,7 +439,7 @@ close 86.9 +20.7  check 51.1 -29.0  mark 260.5 (exempt)
 ```
 $ pnpm typecheck
 $ tsc --noEmit
-(no output — no errors anywhere in the tree, including files other builders hold)
+(no output, no errors anywhere in the tree, including files other builders hold)
 
 $ pnpm vitest run tests/common
  ✓ tests/common/xmark.test.ts (6 tests)
@@ -495,9 +495,9 @@ and compared symbol by symbol against `50.png`/`51.png`. That comparison is
 
 > "the icons in shop by category were fine, they just got ruined."
 
-The ten product-category symbols — `protein`, `creatine`, `pre-workout`,
+The ten product-category symbols, `protein`, `creatine`, `pre-workout`,
 `amino-acids`, `omega-3`, `vitamins-minerals`, `collagen-beauty`,
-`daily-health`, `snacks-bars`, `accessories` — are restored **byte for byte**
+`daily-health`, `snacks-bars`, `accessories`, are restored **byte for byte**
 from the pre-redraw sprite (git `3f952b3`). Verified: all ten symbol elements
 in the shipped file are string-identical to the extract, and all ten appear
 verbatim in the rendered route HTML.
@@ -513,8 +513,8 @@ me to set the painted width explicitly. I checked what actually painted at
 
 A presentation attribute on the symbol beats an inherited CSS value, so
 writing *any* number onto these ten would have silently changed the categories
-index from 1.25 to that number. Verbatim — no `stroke-width`, no
-`class="ox-sym"` — is the only restoration that paints identically in **both**
+index from 1.25 to that number. Verbatim, no `stroke-width`, no
+`class="ox-sym"`, is the only restoration that paints identically in **both**
 places. Leaving them off `ox-sym` also keeps the new size-ladder rule from
 reaching them.
 
@@ -522,7 +522,7 @@ Their simplified twins were **deleted**, so `Icon.tsx` falls through to the
 standard symbol at 16 and 20 as well: one original drawing at every size.
 
 `tests/common/sprite.test.ts` names them in `OWNER_APPROVED_ORIGINALS` and
-exempts them from the drawing assertions only — the stroke contract, the
+exempts them from the drawing assertions only, the stroke contract, the
 caps/joins, the 45° rule, the lattice share, the live area and the fill-the-box
 rule. They are still required to be declared, unique, on the 24 grid,
 transform-free, free of literal colour and to paint their accent through
@@ -539,7 +539,7 @@ sheet's own layout, grouping and label style, on both grounds at 36 and 16
 (`--ox-accent` set to the reference's `#F15C22` so the comparison is like for
 like), then read against `50.png` and `51.png` symbol by symbol.
 
-### 11.1 Product categories — exempt
+### 11.1 Product categories, exempt
 
 All ten are the owner-approved originals (§10). Not compared, not changed.
 
@@ -548,7 +548,7 @@ All ten are the owner-approved originals (§10). Not compared, not changed.
 | symbol | verdict | what differed, and the fix |
 |---|---|---|
 | `goal-energy` | **fixed** | was a thin zig-zag of two parallelograms; now an actual lightning bolt, `M14.5 2L5.5 13.5H11L9.5 22L18.5 10.5H13Z`, with its **lower half filled in the accent** as the reference splits it |
-| `goal-performance` | **fixed** | was a gauge/velocity abstraction with an accent slab; now a **flexed arm** — bicep bulge, forearm, fist cuff and wrist bar, mono like the reference |
+| `goal-performance` | **fixed** | was a gauge/velocity abstraction with an accent slab; now a **flexed arm**, bicep bulge, forearm, fist cuff and wrist bar, mono like the reference |
 | `goal-recovery` | matches | two-arc recovery cycle with filled arrowheads, return arc in accent |
 | `goal-ideal-weight` | **fixed** | the two sides barely bowed and read as brackets; the curves now pinch at the waist and the accent band sits across it |
 | `goal-general-health` | matches | heart with the accent pulse |
@@ -570,7 +570,7 @@ All ten are the owner-approved originals (§10). Not compared, not changed.
 | `written-question` | matches | chat bubble with three accent dots |
 | `video-consult` | matches | screen with the accent play triangle |
 | `gift` | **fixed** | the bow was two accent strokes crossing the lid; it is now a filled two-loop bow on top with the ribbon mono, as drawn |
-| `points` | **fixed** | had become one solid accent star; restored to the reference's **star inside a star** — mono outline, accent star within |
+| `points` | **fixed** | had become one solid accent star; restored to the reference's **star inside a star**, mono outline, accent star within |
 
 ### 11.4 Service and trust
 

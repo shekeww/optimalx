@@ -2,7 +2,7 @@
 // The rail primitive: one scroller, one cue, one progress strap.
 // ---------------------------------------------------------------------------
 // Coordinator brief, 2026-09-23: every carousel in this theme hides the native
-// scrollbar and states its own position instead, in the identity's language —
+// scrollbar and states its own position instead, in the identity's language -
 // an angled ACCENT CHEVRON at the reading end of the rail (the mark's own arm,
 // X-IDENTITY §1.3's chevron, drawn at 34° through `--ox-skew` and nothing
 // else), which pulses once when the block reveals and doubles as the "next"
@@ -28,7 +28,7 @@
 // Identity: the two cue arms are the only angled elements here, they are thin
 // parallelogram BARS (X-IDENTITY §2.3's bar exemption: a bar's run is its own
 // travel, not a bite out of its inline-size) and they carry no block-size of
-// their own — they are sized by `inset-block`, so the 158px law's target
+// their own, they are sized by `inset-block`, so the 158px law's target
 // never applies to them. Nothing here animates a `clip-path`; the one
 // animation is the cue's single pulse, on `transform` and `opacity` only.
 

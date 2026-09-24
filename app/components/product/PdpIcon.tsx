@@ -10,7 +10,7 @@ import type { SVGAttributes } from 'react';
  * elsewhere, not through this file), and `cart`/`plus`/`minus` moved to the
  * sprite as new brand symbols (BUILD.md 3.5's weight law and accent rule).
  *
- * Two call sites this batch could not edit still import this export —
+ * Two call sites this batch could not edit still import this export -
  * `app/components/layout/Header/MainBar.tsx:124` and
  * `.../Header/MobileHeader.tsx:69`, both under the Header batch's restricted
  * path (docs/build/progress/S2a.md lists the request). This file now draws
@@ -60,8 +60,10 @@ export function PdpIcon({ name, size = 20, label, className, ...rest }: PdpIconP
     >
       {PATHS[name].map((d) => (
         <path key={d} d={d} />
+
       ))}
     </svg>
+
   );
 }
 

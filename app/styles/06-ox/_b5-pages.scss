@@ -50,7 +50,7 @@
 // screenshot): every filled plate takes the primary CTA's angled shape.
 // 200px is a conservative floor for this rule's own consumers (the branch
 // panel with its hours table, the scope and pickup-steps panels, the about
-// page's registration panel) — all render well past it, so the lean is
+// page's registration panel), all render well past it, so the lean is
 // already at `_plates.scss`'s own 40px cap; `ox-plate()` reruns the maths if
 // a shorter plate ever calls this tone.
 .ox-panel--plate {
@@ -151,7 +151,7 @@
 // section only (matched below by its own selector, `.ox-hub__advisory`,
 // rather than the marker class), which draws its own inner container so its
 // type still sits on the measure. The cover band above it is a plain child
-// (S7b, 2026-09-24: it was never meant to bleed — the h1 and the CTA read the
+// (S7b, 2026-09-24: it was never meant to bleed, the h1 and the CTA read the
 // owner's screenshot as touching the viewport edge, which this fixed).
 .ox-page--bleed {
   max-inline-size: none;
@@ -221,12 +221,12 @@
   // The masthead's own ground (S9e item 2, owner brief 2026-09-24, an
   // about-page screenshot: "the other grey space caused by the angle is to
   // be the same colour as the page background, not grey"). `.ox-bband`'s own
-  // dark background (`_b3-product.scss` §12, PDP's `BrandBand` — a
+  // dark background (`_b3-product.scss` §12, PDP's `BrandBand`, a
   // different component that only shares this CSS, per `Band.tsx`'s own
   // docblock, and stays out of scope here) and `.ox-bband__wash`'s flat
   // `inset: 0` tint together painted the rectangle `ox-angled()`'s own two
   // uncut corners (X-IDENTITY §2.5) leave showing once the plate's diagonal
-  // cut removes the photograph from them — the plate covers only the
+  // cut removes the photograph from them, the plate covers only the
   // photograph, never the whole band, so those two triangles showed the
   // fill rather than the page. These four page-hero callers alone drop
   // both, at every tier (not only >=1024, where this already ran).
@@ -239,7 +239,7 @@
 
 // Both tones of the lockup render (`Band.tsx`'s own two-`Wordmark` markup,
 // S9e item 2): the reversed cream file is the default everywhere `.ox-bband`
-// appears — matching what PDP's own `BrandBand` still ships, unmodified —
+// appears, matching what PDP's own `BrandBand` still ships, unmodified -
 // and the page-ink file stays inert until a caller's own tier rule (below)
 // says otherwise.
 .ox-bband__lockup-mark--dark {
@@ -253,8 +253,8 @@
 // 2a. The plate cut (owner item 2026-09-24: contain the masthead in the page
 // gutter, angle its borders like the primary CTA). `.ox-bband__plate`
 // (`Band.tsx`) wraps only the photo and its scrim, at exactly the box they
-// already occupied, so `ox-angled()` — the identity's one parallelogram
-// primitive, X-IDENTITY-2026-09-22.md §2/§3.4 — is the block's one angled
+// already occupied, so `ox-angled()`, the identity's one parallelogram
+// primitive, X-IDENTITY-2026-09-22.md §2/§3.4, is the block's one angled
 // gesture; the wash and the wedge straps stay outside it, unclipped, exactly
 // as before. Lean is the plate's own rendered block-size at each tier (mobile
 // 160px, the photo strip; 1024-and-up 360px, the page override below), so
@@ -304,7 +304,7 @@
 // `padding-block-start: 184px`), genuinely off the photograph and now on the
 // page's own ground (above) rather than the dark rectangle that used to sit
 // under it, so the shipped reversed ink fails contrast there. Page ink
-// instead — one legible outcome per tier, the brief's own instruction: from
+// instead, one legible outcome per tier, the brief's own instruction: from
 // 1024 the plate covers the block's full height and the text sits on the
 // photograph again, on `.ox-bband__scrim`'s own darkening gradient, so the
 // reversed ink is correct there and nothing in this block reaches that tier.
@@ -969,7 +969,7 @@
 
 // The four other photographs, now integrated covers (S9c: one shared shape
 // with `OxBranch`'s own ground, `.ox-cover`/`.ox-cover__*` in `_covers.scss`,
-// each tile the whole clickable card) — two-up from 640px, a scroll-snap
+// each tile the whole clickable card), two-up from 640px, a scroll-snap
 // rail below it, the plain fallback the direction names, not `.ox-rail`
 // (`_rail.scss`), whose chevron cue and progress strap are built for a
 // carousel longer than four static tiles. Every tile now carries the same
@@ -1434,7 +1434,7 @@
 
 .ox-state__mark {
   // The brand mark (X-IDENTITY-2026-09-22.md §4.3/§6), not accent (BUILD
-  // 3.1 — the mark's own `tone="plate-2"` prop sets colour; DIRECTION 5.6's
+  // 3.1, the mark's own `tone="plate-2"` prop sets colour; DIRECTION 5.6's
   // "brand orange" reading of this figure does not survive that rule).
   // Static: no rotation, no spin.
   inline-size: 64px;

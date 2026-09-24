@@ -10,19 +10,19 @@
 // cuts the WHOLE card, photograph and content together, never a photo panel
 // beside a separate flat card. The lean ladder reuses
 // `.ox-branch-gallery__item--cut`'s own proven numbers: 40px below 768 (run
-// 27.0), 48px from 768 (run 32.4), 64px from 1024 (run 43.2) — X-IDENTITY
+// 27.0), 48px from 768 (run 32.4), 64px from 1024 (run 43.2), X-IDENTITY
 // §2.3's 24% run/inline-size budget; the rendered percentages against the
 // real widths are recorded in docs/build/progress/S9c.md.
 //
 // FOCUS IS NEVER CLIPPED, provably rather than patched. `ox-run()` removes at
 // most $run px from ONE inline edge at each of the two block ends (the cut
-// tapers to 0 toward the opposite edge — the same geometry `_plates.scss`'s
+// tapers to 0 toward the opposite edge, the same geometry `_plates.scss`'s
 // own `ox-plate()` documents for its dampened lean), so `.ox-cover__body`'s
 // `padding-inline` of `run + var(--ox-4)` at every tier clears the diagonal
 // at ANY block position: the top row's clearance and the bottom row's
 // clearance come from the one rule, because the two cuts sit on opposite
 // inline sides. No descendant control is ever laid out inside the cut wedge,
-// so no focus ring needs to escape a clip at render time — the same
+// so no focus ring needs to escape a clip at render time, the same
 // "unclipped box carries the interactive state" idiom `_b4-listing.scss`
 // uses for `.ox-brand-tile`/`.ox-featured__arrow` (X-IDENTITY §7.1
 // `focus-clipped`), applied here to a whole card's own `:focus-visible`
@@ -33,7 +33,7 @@
 //
 // The photo, the scrim and the glow sit absolutely inset under the in-flow
 // `.ox-cover__body`, so the card's own height is always the CONTENT's height
-// — never a fixed aspect-ratio a data-heavy surface (`OxBranch`'s title,
+// - never a fixed aspect-ratio a data-heavy surface (`OxBranch`'s title,
 // rating, offer, address, hours table, actions and pickup note) would
 // overflow. `min-block-size` only approximates the 16:10 the direction names
 // at each tier's own container width, a floor rather than a ceiling. The
@@ -41,8 +41,8 @@
 // hold the literal ratio (`.ox-cover--tile`).
 //
 // `.ox-band-dark` (tokens.css) on `.ox-cover` itself re-declares the role
-// tokens for the whole subtree: every existing component inside — `Button`,
-// `HoursTable`'s `.ox-table`, `StoreRating`'s `.ox-gr` — repaints itself for
+// tokens for the whole subtree: every existing component inside, `Button`,
+// `HoursTable`'s `.ox-table`, `StoreRating`'s `.ox-gr`, repaints itself for
 // the photograph ground with no cover-specific override, and `--ox-focus`
 // becomes `--ox-paper` so the card's own focus ring reads against the photo.
 
@@ -59,7 +59,7 @@
   @include ox-angled(40px);
 
   // The block's own floor: the container width * 10 / 16 at each tier
-  // (358, 720, 960, 1296 — S9c log), so the photograph always has a real
+  // (358, 720, 960, 1296, S9c log), so the photograph always has a real
   // presence even when the content above it is short.
   min-block-size: 224px;
 
@@ -172,7 +172,7 @@
 
 // Placement: bottom-inline-end, the one uncut corner of the parallelogram
 // (`ox-angled()`'s own lean runs top-inline-end to bottom-inline-start, so
-// the surviving full corners are top-inline-start and bottom-inline-end —
+// the surviving full corners are top-inline-start and bottom-inline-end -
 // `_primitives.scss`'s own `ox-angled` doc comment). `padding-inline` below
 // is `run + var(--ox-4)` at each tier, which is what actually keeps every
 // row clear of the cut regardless of which corner a reader expects.
@@ -299,7 +299,7 @@
 // size` floor is always exactly 16:10 of the container width, so a
 // top-aligned crop always shows the image's own top 0.625 * 1448 / 1086 =
 // 83.3% (a constant, independent of tier, since both the floor and the
-// image keep a fixed ratio to each other) — comfortably past the sign with
+// image keep a fixed ratio to each other), comfortably past the sign with
 // margin before the crop line, at every width, and a TALLER box (the
 // content-driven case, S9c deviation 3) only reveals more of the image
 // above that, never less.
@@ -307,7 +307,7 @@
 // Contrast (measured live, S9h build log): this block carries far more text
 // than any other cover (title, rating, offer/eyebrow, address, hours,
 // three-to-five actions, pickup note), stacked over the same photograph
-// that also shows the sunlit interior shelving through the glass — the
+// that also shows the sunlit interior shelving through the glass, the
 // exact "busy photograph, too-light gradient" defect the owner's screenshot
 // named. `--ox-cover-b0`/`-s0` reach ~0.9 of the ink, and `--ox-cover-b1`/
 // `-s1` stay high rather than fading early (unlike the other four covers,

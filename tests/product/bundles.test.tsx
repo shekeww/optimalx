@@ -35,14 +35,17 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     <a href={String(to ?? '')} className={className as string | undefined}>
       {children as React.ReactNode}
     </a>
+
   ),
   Image: ({ src, alt }: Record<string, unknown>) => (
     <img src={String(src ?? '')} alt={String(alt ?? '')} />
+
   ),
 }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
   useMoney: () => ({
     format: (amount: unknown) => <span data-testid="money">{String(amount)}</span>,
+
     parse: Number,
     isValid: () => true,
   }),
@@ -71,7 +74,9 @@ vi.mock('@salla.sa/twilight-components-react/add-product-button', () => {
       >
         {children as React.ReactNode}
       </button>
+
     </salla-add-product-button>
+
   );
   return { SallaAddProductButton: Stub, SallaAddProductButtonCore: Stub };
 });
@@ -136,8 +141,11 @@ function BuyZoneStub() {
         <button type="button" onClick={() => adds.push(WHEY.id as number)}>
           buy
         </button>
+
       </salla-add-product-button>
+
     </div>
+
   );
 }
 
@@ -220,6 +228,7 @@ describe('the starter bundle, real, and the sample companion sets behind the gat
 describe('FrequentlyBought with the gate shut', () => {
   it('renders nothing and asks the API for nothing', async () => {
     renderWithProviders(<FrequentlyBought product={WHEY as never} />);
+
     await waitFor(() => expect(screen.queryByTestId('ox-fbt')).toBeNull());
     expect(listCalls).toEqual([]);
   });
@@ -232,6 +241,7 @@ describe('FrequentlyBought with the sample set', () => {
         <BuyZoneStub />
         <FrequentlyBought product={WHEY as never} sample />
       </>
+
     );
     await screen.findByTestId('ox-fbt');
     expect(screen.getByText('OX-001 whey')).toBeTruthy();
@@ -267,6 +277,7 @@ describe('FrequentlyBought with the sample set', () => {
         <BuyZoneStub />
         <FrequentlyBought product={WHEY as never} sample />
       </>
+
     );
     await screen.findByTestId('ox-fbt');
 
@@ -290,6 +301,7 @@ describe('FrequentlyBought with the sample set', () => {
         <BuyZoneStub />
         <FrequentlyBought product={WHEY as never} sample />
       </>
+
     );
     await screen.findByTestId('ox-fbt');
     for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
@@ -301,12 +313,14 @@ describe('FrequentlyBought with the sample set', () => {
 describe('Bundle', () => {
   it('renders nothing for a product that is not part of the real bundle', async () => {
     renderWithProviders(<Bundle product={SHAKER as never} />);
+
     await waitFor(() => expect(screen.queryByTestId('ox-bundle-offer')).toBeNull());
     expect(listCalls).toEqual([]);
   });
 
-  it('shows the Salla bundle product, its members and no saving line — real, no sample flag needed (the member PDP renders the bundle card)', async () => {
+  it('shows the Salla bundle product, its members and no saving line \u2014 real, no sample flag needed (the member PDP renders the bundle card)', async () => {
     const { container } = renderWithProviders(<Bundle product={WHEY as never} />);
+
     await screen.findByTestId('ox-bundle-offer');
     expect(screen.getByText('OX-041 starter')).toBeTruthy();
     expect(screen.getByText('OX-001 whey')).toBeTruthy();
@@ -317,6 +331,7 @@ describe('Bundle', () => {
 
   it('adds the bundle through the bundle product’s own Salla button, once', async () => {
     renderWithProviders(<Bundle product={WHEY as never} />);
+
     await screen.findByTestId('ox-bundle-offer');
     const [button] = screen.getAllByRole('button');
     fireEvent.click(button as HTMLElement);

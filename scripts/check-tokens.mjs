@@ -1,13 +1,13 @@
 // Token gate: every `var(--ox-*)` the theme reads has to resolve to something,
 // either a real definition or a fallback written into the same `var()` call.
 // This is the class of bug that clipped the hero CTA through a non-existent
-// `--ox-5` (S2a brief, 2026-09-22) — a typo a build never catches, because an
+// `--ox-5` (S2a brief, 2026-09-22), a typo a build never catches, because an
 // undefined custom property is not a CSS error, it is a silent computed value
 // of `initial` (or the property's own inherited value, in practice usually
 // nothing at all).
 //
 // Definitions come ONLY from app/styles/tokens.css and any generated partial
-// (a file matching app/styles/**/_generated-*.scss) — the theme's actual
+// (a file matching app/styles/**/_generated-*.scss), the theme's actual
 // component stylesheets and TSX also declare plenty of their own scoped
 // custom properties (`--ox-rating-fill` set inline, `--ox-need-arrow` local
 // to a card), and this gate does not know those are legitimate; the existing

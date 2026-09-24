@@ -1,8 +1,8 @@
-# S9a-V4 — the product card made compact, owner review 2026-09-24
+# S9a-V4, the product card made compact, owner review 2026-09-24
 
 Builder S9a-V4. Direction: `docs/build/CARD-2026-09-23.md` (the card spec),
 this batch's own addendum below. Concurrent with V1 (`_b7-advisory.scss`) and
-V3 (`_b2-home.scss`, header files) — not touched here. Files owned this
+V3 (`_b2-home.scss`, header files), not touched here. Files owned this
 batch: `OxProductCard.tsx`, `lib/cardSpec.ts`, `VariantChips.tsx`,
 `_b3-product.scss` (card + gallery-plate regions only), `_b4-listing.scss`
 §12, a new shared plate-ground mixin in `_primitives.scss`,
@@ -10,11 +10,11 @@ batch: `OxProductCard.tsx`, `lib/cardSpec.ts`, `VariantChips.tsx`,
 
 Owner's words (2026-09-24, screenshot of the "منتجات قد تناسبك" rail at
 1905px): vertical size minimal with breathing space; the variant row makes
-the card taller — put the chooser on the image instead; remove the free
+the card taller, put the chooser on the image instead; remove the free
 consultation link, unnecessary and taking space; reproduce the PDP gallery's
 grey-plate-plus-orange-shapes ground behind the card's own image; and, from
 the header audit the same day, "if anything can't be integrated in Shopify,
-delete it" — the wishlist heart.
+delete it", the wishlist heart.
 
 Progress logged after every step.
 
@@ -30,11 +30,11 @@ Progress logged after every step.
    attribute so the radios still reach the card's own `<form>` although they
    no longer nest inside it; a defensive `valueImageUrl` swap for the plate
    photograph when a chosen value carries one of its own (not observably
-   live on this catalogue today — no processed fixture carries a per-value
+   live on this catalogue today, no processed fixture carries a per-value
    image, same category of dormant-but-coded branch the bundle `can_add`
    path already documents).
 4. Remove the excerpt line entirely (repeated the title; the facts line
-   carries the type) — retires `descriptionExcerpt` from `cardSpec.ts` since
+   carries the type), retires `descriptionExcerpt` from `cardSpec.ts` since
    nothing else reads it.
 5. Shared plate-ground mixins (`ox-plate-band`, `ox-plate-mark`) in
    `_primitives.scss`, extracted from the gallery's own band/mark rules and
@@ -56,7 +56,7 @@ Progress logged after every step.
    `tokens.css` (`--ox-bg`/`--ox-surface`/`--ox-plate`/`--ox-plate-2`/
    `--ox-accent`: `--ox-bg` and `--ox-surface` are BOTH `#FFFFFF` in light
    mode, which is what makes "the plate ground becomes `--ox-bg`" a
-   no-visible-difference declaration against the card's own white surface —
+   no-visible-difference declaration against the card's own white surface -
    the CARD spec's section 3.1 "no grey plate" departure still holds).
 
 2. **Item 1, the consult link.** Removed the `<Link>` and its
@@ -78,7 +78,7 @@ Progress logged after every step.
    Retired `descriptionExcerpt()` from `cardSpec.ts` along with its two
    private-only helpers (`paragraphTexts`, `firstSentence`) and the
    `sanitizeHtml`/`parseSpecLineText` imports nothing else in that file used
-   — confirmed nothing else in the repo imports `descriptionExcerpt`
+   - confirmed nothing else in the repo imports `descriptionExcerpt`
    (`grep -rn`, one match left, the module's own doc comment, since edited).
 
 5. **Item 3, the variant chooser onto the plate.** The larger change:
@@ -86,12 +86,12 @@ Progress logged after every step.
      …`) computed ONCE in `OxProductCard.tsx` now, replacing the old
      duplicate computation (once at the top level as `chipOption` for the
      passive-dot suppression, once again inside `BuyControls` for the
-     stepper/chips) — one source, threaded down as a prop.
+     stepper/chips), one source, threaded down as a prop.
    - `valueId` state lifted from `BuyControls` to `OxProductCard`, since the
      plate's own `<VariantChips>` and the body's own `<BuyControls>`/`<form>`
      both need it now, as siblings rather than parent/child.
    - `<VariantChips>` renders inside `.ox-card-product__plate` (last child,
-     after the passive dot preview), gated `!outOfStock && !isBundle` — a
+     after the passive dot preview), gated `!outOfStock && !isBundle`, a
      bundle's own add path is link-only (`BuyControls`'s existing early
      return), so the plate never offers a chooser that path cannot honour.
    - **The form association problem.** The radios used to be inside the
@@ -100,7 +100,7 @@ Progress logged after every step.
      a descendant of that form in the DOM. Fixed with the standard HTML
      `form="…"` attribute on each radio (`VariantChips.tsx`'s new `formId`
      prop) pointing at the `<form id={formId}>` `BuyControls` still renders
-     — the same mechanism a `<button form="…">` uses outside its own form.
+     - the same mechanism a `<button form="…">` uses outside its own form.
      Verified live (CDP, below): `input.getAttribute('form')` equals the
      form's own `id` on the shaker card. No hidden mirror field needed;
      native `checked` radios associated this way are read directly out of
@@ -109,7 +109,7 @@ Progress logged after every step.
      own `image`/`image_url` swaps the plate's main photograph; a colour
      alone never does (never guesses a packshot from a hex). Not observably
      live on this catalogue today (no processed fixture carries a per-value
-     image — confirmed by `swatchFill`'s own comment and a repo-wide grep for
+     image, confirmed by `swatchFill`'s own comment and a repo-wide grep for
      `image_url` inside `fixtures/store/*.json`, present only in the untouched
      `raw/` snapshot), the same "dormant, coded, tested, honest" category
      `OxProductCard.tsx`'s own bundle `can_add` path already documents.
@@ -124,10 +124,10 @@ Progress logged after every step.
    `--ox-plate-2`/`--ox-accent`), so both are `@include`s of one definition
    now. The gallery's own two rules are now one line each; **the gallery's
    own computed styles are unchanged** (same declarations, just sourced from
-   the mixin — confirmed nothing in the gallery's CSS changed by diffing the
+   the mixin, confirmed nothing in the gallery's CSS changed by diffing the
    rule bodies before/after). The card's plate gets `background: var(--ox-bg)`
    (a no-visible-difference declaration against `--ox-surface`, both
-   `#FFFFFF` — see step 1) plus two new `<span aria-hidden>` elements
+   `#FFFFFF`, see step 1) plus two new `<span aria-hidden>` elements
    (`.ox-card-product__band`/`.ox-card-product__mark`), rendered before the
    `<Image>` so DOM paint order alone keeps them behind the packshot; the
    image's own positioned wrapper gets an explicit `z-index: 1` so it is
@@ -139,7 +139,7 @@ Progress logged after every step.
    data-gated, still reserves nothing) → price → stock line (optional) →
    action. The body's own `gap` was already `var(--ox-2)` (8px) between every
    row, and the card's own top-level `gap` (plate to body) was already
-   `var(--ox-3)` (12px) — both already matched the brief's own "one `--ox-2`
+   `var(--ox-3)` (12px), both already matched the brief's own "one `--ox-2`
    between rows, `--ox-3` above the action rows" ask before this batch, so no
    gap tokens needed changing; the compaction is entirely from removing whole
    rows, not from tightening the survivors.
@@ -164,7 +164,7 @@ Progress logged after every step.
    Vite CLIENT hmr log (`.offline-preview.log`) showed those exact files
    updating correctly. Root-caused: `(ssr) hmr update` lines in that log
    only ever named `app.css` (and, alongside it, `virtual:cloudflare/worker-entry`)
-   — never an individual component file — so a pure TSX-only edit's SSR-side
+   - never an individual component file, so a pure TSX-only edit's SSR-side
    invalidation was not visibly cascading to the worker entry the way a CSS
    edit's was. Working, non-destructive fix used here: touching a CSS file
    already owned by this batch (`_b3-product.scss`) forced the
@@ -215,14 +215,14 @@ Progress logged after every step.
     `docs/build/progress/card-measurements.json`. (Named with the batch's own
     prefix, not the plain `card-390-after.png`/`card-1440-after.png` the
     script first wrote: those two filenames already existed, committed, as
-    S9a-V3's own screenshots — `git status` caught the collision as a
+    S9a-V3's own screenshots, `git status` caught the collision as a
     modification of tracked files rather than two new ones. Restored V3's
-    originals from `HEAD` via `git show` + a plain file copy — no
-    `checkout`/`reset` used — confirmed byte-identical to `HEAD` afterward,
+    originals from `HEAD` via `git show` + a plain file copy, no
+    `checkout`/`reset` used, confirmed byte-identical to `HEAD` afterward,
     and moved this batch's own captures to the names above.)
 
     `/ar/accessories/c9010` (the one product in the catalogue with a real
-    chippable option, the shaker — `/ar/protein/c9001`'s own 14 carry none):
+    chippable option, the shaker, `/ar/protein/c9001`'s own 14 carry none):
     the plate's own `.ox-card-product__variants` measured **124 × 32**,
     **8px** above the plate's own bottom edge (`inset-block-end: var(--ox-2)`
     confirmed exactly), its vertical centre **112px** below the plate's own
@@ -236,7 +236,7 @@ Progress logged after every step.
     used to sit.
 
     The plate ground (band + mark) is visible on every card at both widths
-    in the screenshots above — a light grey diagonal lift behind the
+    in the screenshots above, a light grey diagonal lift behind the
     packshot and a small orange sliver near its inline-end edge, low enough
     in contrast that every product photograph (including the darkest,
     Serious Mass's black-and-green bag) still reads clearly, matching the
@@ -249,7 +249,7 @@ Progress logged after every step.
     present and correctly sized; `SallaAddProductButtonCore` had not
     upgraded to a real element at the moment of that screenshot) while the
     very same control rendered normally moments later on
-    `/ar/accessories/c9010` at 1440 — the documented, pre-existing "may not
+    `/ar/accessories/c9010` at 1440, the documented, pre-existing "may not
     upgrade" preview limitation, unrelated to this batch's own markup and
     not touched here.
 
@@ -270,7 +270,7 @@ Progress logged after every step.
 | `docs/build/progress/card-measurements.json` | raw CDP measurement JSON |
 | `docs/build/progress/visit/card-s9a-v4-390-after.png`, `card-s9a-v4-1440-after.png`, `card-variants-plate-1440.png` | live screenshots |
 
-Not touched: `app/components/product/BuyZone/PdpGallery.tsx` (read only — the
+Not touched: `app/components/product/BuyZone/PdpGallery.tsx` (read only, the
 gallery's own wishlist stays), `blocks/`, `pages/`, `layout/` (all out of
 scope per the brief).
 
@@ -290,9 +290,9 @@ Three unrelated test files (`tests/common/iconbtnAngled.test.ts`,
 `tests/common/scrollers.test.ts`, `tests/home/posterRow.test.ts`) timed out
 intermittently on the first of the three combined runs of the full command
 above (`Error: Test timed out in 5000ms`, always on the FIRST test in the
-file, always the one calling `rulesFor()` — `tests/helpers/compiledCss.ts`,
+file, always the one calling `rulesFor()`, `tests/helpers/compiledCss.ts`,
 a synchronous full-theme `sass.compile()` on first call per test-file
-worker) — different files failing on different runs, none of them touching
+worker), different files failing on different runs, none of them touching
 `OxProductCard`/`VariantChips`/the card or gallery SCSS regions, and every
 one of them passing in well under a second when re-run alone or as part of a
 clean full run (shown above: 43 passed, 585 passed, zero failures). Cold

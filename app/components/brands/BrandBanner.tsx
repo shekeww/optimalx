@@ -8,7 +8,7 @@ import { logoBoxClass, splitMark, type BrandWithCount } from './BrandTile';
  * plate carrying the brand's name mark, its artwork when the API has one, and
  * the live product count.
  *
- * It is the page's one PANEL-scale angled gesture — the mark's arm-foot corner
+ * It is the page's one PANEL-scale angled gesture, the mark's arm-foot corner
  * cut at §3.3's tier ladder (lean 40 / 48 / 64), legal here because the plate
  * is 200 to 240 tall, well over §3.2's 158px floor, and the run is 7.5% of the
  * container at 390 and 3.3% at 1440, far inside §2.3's 24% budget.
@@ -37,6 +37,7 @@ export function BrandBanner({ brand, titleId, intro }: BrandBannerProps) {
   return (
     <div className="ox-brandhero">
       <p className="ox-brandhero__eyebrow ox-small">{t('ox.nav.brands')}</p>
+
       {brand.logo ? (
         // The same logo field the tile draws, at banner size and on the same
         // asset-declared ground: a white-only mark sits on ink here too,
@@ -52,20 +53,27 @@ export function BrandBanner({ brand, titleId, intro }: BrandBannerProps) {
             noWrapper
           />
         </span>
+
       ) : null}
       <h1 className="ox-brandhero__mark ox-h1" id={titleId}>
         <Bdi lang={null}>
           <span className="ox-brandhero__mark-first">{first}</span>
+
           {rest}
         </Bdi>
+
       </h1>
+
       {count !== null ? (
         <p className="ox-brandhero__count ox-small">
           {t('ox.brands.products_count', { count })}
         </p>
+
       ) : null}
       {intro ? <p className="ox-brandhero__intro ox-body">{intro}</p> : null}
+
     </div>
+
   );
 }
 

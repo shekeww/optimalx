@@ -11,15 +11,15 @@
 //   angle-value    a rotate()/skew()/--ox-angle* degree value, mod 180, that
 //                  is not 0, 34, 56 or 90
 //   angle-tan      a numeric literal used as an angle tangent that is not
-//                  0.6745 (or the unrounded 0.6745085) — catches a stale
+//                  0.6745 (or the unrounded 0.6745085), catches a stale
 //                  0.404/0.4040
 //   polygon-slope  a `polygon()` call whose points are percentages, with no
 //                  `/* identity: NNdeg, run N of M */` pragma above it (a
-//                  percentage pair's angle depends on the box aspect — §2.5 —
+//                  percentage pair's angle depends on the box aspect, §2.5 -
 //                  so it cannot be verified statically without one)
 //   one-angled-per-block   a single selector's own declarations mixing more
 //                  than one kind of angled construction (a corner cut and a
-//                  step edge, say) — §3.3 "one angled gesture per component".
+//                  step edge, say), §3.3 "one angled gesture per component".
 //                  `ox-angled()` itself is one kind; two `ox-angled()` calls
 //                  in sibling *modifier* selectors (`.ox-btn--s40` next to
 //                  `.ox-btn--s44`) are mutually exclusive by construction and
@@ -28,12 +28,12 @@
 //                  BEM family
 //   small-angle    an angled primitive on a selector whose own declarations
 //                  also carry block-size/min-block-size/height below 158px
-//                  (the 3.2 law). `ox-angled()` is exempted by name — §3.2's
+//                  (the 3.2 law). `ox-angled()` is exempted by name, §3.2's
 //                  own text: it is a control-scale mark, "never inside the
 //                  158px case to begin with". A notch (`ox-x-notch`/
 //                  `ox-notch`) is axis-aligned and never a finding.
 //   section-identity   a home section file with no accent, no angled
-//                  primitive and no watermark anywhere in its own text —
+//                  primitive and no watermark anywhere in its own text -
 //                  self-contained (does not cross into the paired stylesheet)
 //   unmirrored     a `skew`/`skewX`/`skewY` not wrapped in
 //                  `calc(var(--direction-factor) * …)`, or a file with a
@@ -43,7 +43,7 @@
 //   watermark-contrast   a watermark-named rule (`.ox-*watermark*`) whose own
 //                  opacity exceeds 0.06 (every §4.1 row ships at 0.06, the
 //                  conservative floor across every ground), or that reads
-//                  `--ox-accent` (BUILD 3.1 — no watermark may carry it)
+//                  `--ox-accent` (BUILD 3.1, no watermark may carry it)
 //   focus-clipped  a selector's own declarations combining an angled
 //                  primitive with `@include ox-focus` or a bare, non-`none`
 //                  `outline:`, and no `::before`/`::after` opened in the same
@@ -128,7 +128,7 @@ function carriesSmallAngleTarget(bodyText) {
 /**
  * Walks a stylesheet brace by brace (the same technique check-motion's
  * `checkWedgeMotion` uses for its selector stack), but also buffers each
- * frame's own directly-owned lines — not its nested children's — so a rule
+ * frame's own directly-owned lines, not its nested children's, so a rule
  * can be inspected in isolation from whatever it nests.
  * @param {string} stripped  comment-stripped source
  * @param {string} raw       original source, same line count
@@ -256,7 +256,7 @@ function checkPolygonSlope(file, stripped, rawLines) {
       call += ` ${lines[cursor]}`;
     }
     // A polygon built from px/calc()/Sass-interpolated runs (ox-run() and
-    // friends) is fully resolvable — `0%`/`100%` box edges paired with a
+    // friends) is fully resolvable, `0%`/`100%` box edges paired with a
     // computed px offset carry no aspect ambiguity. Only a *literal*
     // percentage away from the box's own 0/100 edges is the case §2.5/§7.1
     // mean: its angle depends on the box aspect and cannot be checked
@@ -274,7 +274,7 @@ function checkPolygonSlope(file, stripped, rawLines) {
 
 // `blockFamily` strips everything from the first `--`/`__` on, so
 // `.ox-footer__wedge` resolves to the family `ox-footer`, not
-// `ox-footer__wedge` — named here as what the function actually produces.
+// `ox-footer__wedge`, named here as what the function actually produces.
 const EXEMPT_SMALL_ANGLE_FAMILIES = new Set(['ox-footer', 'ox-x-divider']);
 
 /** §3.2/§3.3 rules that need a selector's own (non-nested) declaration text. */
@@ -372,7 +372,7 @@ function checkUnmirrored(file, stripped, rawLines) {
   lines.forEach((line, index) => {
     // `var(--ox-skew)` is itself `calc(var(--direction-factor) * var(--ox-angle))`
     // (tokens.css), so a call site that reads the token is already mirrored
-    // one level up — only a skew built from something else, with no
+    // one level up, only a skew built from something else, with no
     // direction-factor anywhere in the call, is a real finding.
     const mirrored = line.includes('direction-factor') || line.includes('--ox-skew');
     if (SKEW_RE.test(line) && !mirrored && !hasPragma(rawLines[index], 'unmirrored')) {
@@ -397,14 +397,14 @@ function checkUnmirrored(file, stripped, rawLines) {
  * §6's surface matrix names the home sections that carry a primitive "by
  * decision"; product rails, posters, guides, brands and the newsletter are
  * named "by decision" the *other* way (no primitive at all) and are not
- * checked. A home section's markup only ever carries a semantic class name —
- * every declaration lives in the paired `06-ox` stylesheet — so pairing a
+ * checked. A home section's markup only ever carries a semantic class name -
+ * every declaration lives in the paired `06-ox` stylesheet, so pairing a
  * `.tsx` file to "no accent/angle/watermark anywhere in it" is not a
  * meaningful check for this codebase (every home `.tsx` file would fail it
  * identically, styled or not) and would need real cross-file resolution to
  * mean anything. This checks the thing that is actually verifiable: each
  * named block *family* in the compiled stylesheet corpus carries at least
- * one of the three signals somewhere among its own selectors — a regression
+ * one of the three signals somewhere among its own selectors, a regression
  * guard, not a fresh audit of every section, and the block-family mapping is
  * literal (verified against the working tree on 2026-09-22), not inferred.
  */
@@ -459,7 +459,7 @@ function checkMarkDrift() {
 }
 
 /**
- * Per-file findings only — angle-value/angle-tan (any file) and, for a
+ * Per-file findings only, angle-value/angle-tan (any file) and, for a
  * stylesheet, polygon-slope/unmirrored/the block-scoped rules. The corpus-
  * level `section-identity` rule is run once from `main`, not per file.
  * @param {string} file

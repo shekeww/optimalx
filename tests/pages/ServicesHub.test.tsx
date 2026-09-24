@@ -21,6 +21,7 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...rest }: Record<string, unknown>) =>
     React.createElement('a', { href: String(to), ...rest }, children as React.ReactNode),
   Image: ({ alt, src }: { alt: string; src?: string }) => <img alt={alt} src={src} />,
+
 }));
 vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
   product: {
@@ -62,8 +63,8 @@ describe('ServicesHub', () => {
     // Two, not four. It used to repeat under each of the three channel cards,
     // which was three copies of the same sentence inside one screenful. The
     // bare channel list is now the shared advisory section (`OxServices`), and
-    // the line is said ONCE directly under it — covering the three channels
-    // and the three programmes together — and once more under the scope panel.
+    // the line is said ONCE directly under it, covering the three channels
+    // and the three programmes together, and once more under the scope panel.
     // What the claims source requires is that it appears verbatim on the
     // surface, not that it appears a given number of times.
     expect(lines).toHaveLength(2);

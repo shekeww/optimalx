@@ -87,7 +87,7 @@ describe('appliedFilterCount', () => {
  * The brand facet (S2f item 6). A fixture payload stands in for the live
  * store, which has no brands recorded yet (`fixtures/store/brands.json` is
  * `[]`) and no `fixtures/store/overlay/brands.json` for the offline preview
- * either — the same reason this suite, not a browser check, is the
+ * either, the same reason this suite, not a browser check, is the
  * verification for the brand group today.
  */
 describe('brandFilter', () => {
@@ -105,7 +105,7 @@ describe('brandFilter', () => {
     expect(brandFilter(filters)?.key).toBe('brands');
   });
 
-  it('is null when the payload carries no brand-like key — the data gate', () => {
+  it('is null when the payload carries no brand-like key \u2014 the data gate', () => {
     const filters: Filter[] = [{ key: 'price', label: 'السعر', type: 'range' }];
     expect(brandFilter(filters)).toBeNull();
     expect(brandFilter([])).toBeNull();

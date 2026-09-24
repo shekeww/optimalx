@@ -66,6 +66,7 @@ export function PdpGallery({ product }: ProductGalleryProps) {
             setZoomed(false);
           }}
         />
+
       ) : null}
 
       <div className="ox-gallery__plate">
@@ -75,7 +76,7 @@ export function PdpGallery({ product }: ProductGalleryProps) {
         {/* THE IMAGE ITSELF IS THE ZOOM CONTROL (S2f item 5, owner review
             2026-09-22): a real `<button>` wrapping the plate's photograph, so
             a tap or a click enlarges it directly, and Enter/Space do too for
-            free — a native button needs no keydown handler of its own for
+            free, a native button needs no keydown handler of its own for
             either. The accessible name is the same `ox.pdp.zoom_label` the
             old dedicated button carried, so nothing here invents new copy;
             `ox.pdp.zoom` (that button's visible label) keeps its key even
@@ -99,11 +100,16 @@ export function PdpGallery({ product }: ProductGalleryProps) {
             sizes={GALLERY_SIZES}
             className={'ox-gallery__img' + (zoomed ? ' is-zoomed' : '')}
           />
+
         </button>
 
+
         {badge ? <p className="ox-gallery__badge">{badge}</p> : null}
+
       </div>
+
     </div>
+
   );
 }
 

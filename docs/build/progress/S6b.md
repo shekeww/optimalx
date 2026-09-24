@@ -1,4 +1,4 @@
-# S6b — retiring `sicon-*` for the OptimalX sprite
+# S6b, retiring `sicon-*` for the OptimalX sprite
 
 Builder S6b, 2026-09-23. Executes the hand-off in `docs/build/progress/S6a.md`
 §5: every `sicon-*` glyph in `app/**` swapped for `<Icon name="…" size={n} />`
@@ -12,12 +12,12 @@ Per the brief: **20** in the header main bar and utility strip and the bottom
 tab bar; **16** in chips, accordions, section-header arrows and inline text
 arrows; **24** elsewhere unless the surrounding CSS rule sizes the glyph, in
 which case that literal value is used instead of the 24 default. The three
-named buckets (20/20/16) are unconditional — they do not defer to a legacy
+named buckets (20/20/16) are unconditional, they do not defer to a legacy
 `font-size` the icon-font glyph happened to carry.
 
 One mechanical rule cut across almost every row: **the swap target is
 decided by the original glyph's own name**, not by what "should" visually
-read as forward or backward in a given context — `sicon-keyboard_arrow_left`
+read as forward or backward in a given context, `sicon-keyboard_arrow_left`
 is always `chevron-start`, `sicon-keyboard_arrow_right` is always
 `chevron-end`, exactly as §5 states. A few call sites (`RelatedRail`,
 `FeaturedRail` rail-nav pairs, `DeliveryPromise`) share **one** glyph between
@@ -48,19 +48,19 @@ and the icon itself takes the wrapper's own value.
 | `sicon-*` | swapped to | size | file:site |
 |---|---|---|---|
 | `keyboard_arrow_down` | `chevron-down` | 16 | `common/Accordion.tsx` (accordion chevron) |
-| `keyboard_arrow_down` | `chevron-down` | 16 | `layout/Header/MobileDrawer.tsx` (drawer group disclosure — expand/collapse rotation kept, it is not RTL-related) |
+| `keyboard_arrow_down` | `chevron-down` | 16 | `layout/Header/MobileDrawer.tsx` (drawer group disclosure, expand/collapse rotation kept, it is not RTL-related) |
 | `keyboard_arrow_up` | `chevron-up` | 16 | `product/BuyZone/PdpThumbRail.tsx` (matches the sibling `chevron-down` already wired there) |
 | `keyboard_arrow_right` | `chevron-end` | 16 | `common/SectionHeader.tsx` (section-header arrow) |
 | `keyboard_arrow_right` | `chevron-end` | 16 | `layout/Header/MegaPromo.tsx`, `home/OxBanner.tsx`, `home/PosterCard.tsx`, `home/Poster.tsx` (inline text arrows, `.ox-*-chevron`/no size class) |
 | `keyboard_arrow_right` | `chevron-end` | 24 | `home/GoalCard.tsx`, `home/CategoryTile.tsx`, `listing/CategoriesIndex.tsx` (foot arrow, `ox-iconbtn--angled` direct on the icon) |
 | `keyboard_arrow_right` | `chevron-end` | 24 | `home/OxHero.tsx` (Button `iconEnd`, no sizing rule) |
-| `keyboard_arrow_right` (paired w/ `_left` on the same next button) | `chevron-end` | 16 | `home/OxBrands.tsx`, `home/OxPosters.tsx`, `home/OxCategoryRail.tsx` "next" rail arrow (`.ox-*-arrow-face { font-size:16px }`, `ox-mirror` dropped — Icon.tsx now mirrors on its own) |
+| `keyboard_arrow_right` (paired w/ `_left` on the same next button) | `chevron-end` | 16 | `home/OxBrands.tsx`, `home/OxPosters.tsx`, `home/OxCategoryRail.tsx` "next" rail arrow (`.ox-*-arrow-face { font-size:16px }`, `ox-mirror` dropped, Icon.tsx now mirrors on its own) |
 | `keyboard_arrow_left` | `chevron-start` | 16 | `brands/BrandExplore.tsx`, `listing/RelatedGuides.tsx`, `listing/ExploreLinks.tsx` (×2), `listing/GoalLanding/SubNeeds.tsx` (inline text arrows) |
 | `keyboard_arrow_left` (paired "prev") | `chevron-start` | 16 | `home/OxBrands.tsx`, `home/OxPosters.tsx`, `home/OxCategoryRail.tsx` |
-| `keyboard_arrow_left` (one glyph, rotated to serve BOTH prev and next) | `chevron-start` (prev) / `chevron-end` (next) | 16 | `product/BelowFold/RelatedRail.tsx`, `listing/FeaturedRail.tsx` rail-nav pair — `.ox-related__arrow-icon`/`.ox-featured__arrow-icon` rotate rules deleted from `_b3-product.scss`/`_b4-listing.scss` |
+| `keyboard_arrow_left` (one glyph, rotated to serve BOTH prev and next) | `chevron-start` (prev) / `chevron-end` (next) | 16 | `product/BelowFold/RelatedRail.tsx`, `listing/FeaturedRail.tsx` rail-nav pair, `.ox-related__arrow-icon`/`.ox-featured__arrow-icon` rotate rules deleted from `_b3-product.scss`/`_b4-listing.scss` |
 | `keyboard_arrow_left` (`ox-iconbtn--angled` direct, inline cta) | `chevron-start` | 24 | `listing/FeaturedRail.tsx` (`ox-featured__cta`) |
-| `keyboard_arrow_left` (hand-rotated to point forward) | `chevron-end` | 16 | `product/BuyZone/DeliveryPromise.tsx` — the `transform: rotate(...)` line removed from `.ox-delivery__chev`, its layout/colour declarations kept |
-| `keyboard_arrow_right` (never mirrors — LTR-pinned tagline) | `chevron-end` | 14 | `layout/Footer/FooterBottom.tsx` — see deviation 1 below |
+| `keyboard_arrow_left` (hand-rotated to point forward) | `chevron-end` | 16 | `product/BuyZone/DeliveryPromise.tsx`, the `transform: rotate(...)` line removed from `.ox-delivery__chev`, its layout/colour declarations kept |
+| `keyboard_arrow_right` (never mirrors, LTR-pinned tagline) | `chevron-end` | 14 | `layout/Footer/FooterBottom.tsx`, see deviation 1 below |
 | `heart` | `heart` | 20 | `layout/Header/MainBar.tsx`, `product/BuyZone/PdpGallery.tsx` (`.ox-gallery__wish{font-size:20px}`), `product/OxProductCard.tsx` (`.ox-card-product__wish{font-size:20px}`, edited last) |
 | `heart` | `heart` | 20 | `product/BuyZone/WishlistShare.tsx` (matches the sibling `referral` icon two lines below in the same file) |
 | `heart` | `heart` | 24 | `layout/Header/MobileDrawer.tsx` account row (matches the sibling goal-row `Icon` two rows up) |
@@ -80,10 +80,10 @@ and the icon itself takes the wrapper's own value.
 | `play` / `pause` | `play` / `pause` | 24 | `home/OxHero.tsx` (no sizing rule) |
 | `rotate` / `page` / `file-archive` / `calendar` | `rotate` / `document` / `archive` / `calendar` | 24 | `product/DigitalFilesSettings.tsx` (no sizing rule) |
 | `check-circle` | `check-circle` | 18 | `product/DigitalFilesSettings.tsx` (its own `text-lg` Tailwind utility, ≈18px, dropped as dead once the SVG's own `size` carries it) |
-| `sar` | *(kept)* | — | `common/Price.tsx`, `_b3-product.scss`, `_b4-listing.scss`, `_primitives.scss`, `header.scss` — S6a §5 last row, untouched |
+| `sar` | *(kept)* |, | `common/Price.tsx`, `_b3-product.scss`, `_b4-listing.scss`, `_primitives.scss`, `header.scss`, S6a §5 last row, untouched |
 
 **`OxProductCard.tsx` was edited last**, re-read immediately beforehand
-(S5b's own concurrent work had already landed and settled by then — see §4):
+(S5b's own concurrent work had already landed and settled by then, see §4):
 one line, `<i className="sicon-heart" ...>` → `<Icon name="heart" size={20} />`.
 
 ---
@@ -92,7 +92,7 @@ one line, `<i className="sicon-heart" ...>` → `<Icon name="heart" size={20} />
 
 **Deviation 6** (move the 16px stroke bump from the sprite's inline
 `<style>` into `_primitives.scss`'s `.ox-icon--16` rule): done on the
-`_primitives.scss` side —
+`_primitives.scss` side -
 
 ```scss
 &--16 { inline-size: 16px; block-size: 16px; --ox-icon-stroke: 2.25px; }
@@ -100,14 +100,14 @@ one line, `<i className="sicon-heart" ...>` → `<Icon name="heart" size={20} />
 
 `app/assets/ox-sprite.svg` was under **active, concurrent revision by another
 batch** for the entire session (the owner's 2026-09-24 "restore the ten
-product-category icons verbatim" pass — a different, later change than S6a's
+product-category icons verbatim" pass, a different, later change than S6a's
 own redraw). Two attempts to remove the now-duplicate
 `.ox-icon--16{--ox-icon-stroke:2.25px}` from the sprite's own `<style>` were
 both silently overwritten by that batch's own saves before I could verify
 they had landed. Per the standing instruction not to fight a concurrently
 edited file, the sprite keeps its own copy of the rule; `_primitives.scss`
 now **also** carries it. Both declarations set the same custom property to
-the same value, so nothing is visually wrong — it just is not a full "move,"
+the same value, so nothing is visually wrong, it just is not a full "move,"
 only a "copy," until whoever finishes that sprite batch removes the sprite's
 now-redundant copy. `tests/common/sprite.test.ts` was extended (not
 replaced) with an additive assertion against `_primitives.scss` for this,
@@ -126,7 +126,7 @@ explained).
 ## 4. CSS cleanup
 
 Confirmed (`grep -rn "\.sicon-" app/styles/06-ox`) that **no** `.sicon-*`
-selector in `app/styles/06-ox` ever styled a swapped glyph — the only
+selector in `app/styles/06-ox` ever styled a swapped glyph, the only
 `.sicon-*` rules anywhere in that directory are the `sicon-sar` currency-mark
 rules S6a's own table says to leave. `03-elements/buttons.scss`,
 `04-components/header.scss` and `02-generic/ltr.scss` (all outside
@@ -139,7 +139,7 @@ call sites moved to a semantically-correct, self-mirroring icon name:
 `.ox-featured__arrow--next .ox-featured__arrow-icon` (`_b4-listing.scss`),
 and the `transform: rotate(...)` declaration inside `.ox-delivery__chev`
 (`_b3-product.scss`, its `flex`/`margin-inline-start`/`color` declarations
-kept — they are layout, not direction).
+kept, they are layout, not direction).
 
 ---
 
@@ -169,7 +169,7 @@ kept — they are layout, not direction).
    left to swap, no `sicon-*` residue, no action needed.
 3. **`tests/layout/MainBar.test.tsx`** asserted the literal presence of
    `.sicon-heart` (`it('renders the wishlist link with its own sallaicons
-   glyph')`) — exactly the behaviour this batch retires. Updated to assert
+   glyph')`), exactly the behaviour this batch retires. Updated to assert
    the drawn `#ox-heart` `<use>` and the absence of `.sicon-heart`, matching
    the pattern the file's own next-door cart-icon test already used.
 4. Two other test failures surfaced mid-session and resolved themselves
@@ -198,7 +198,7 @@ app/styles/04-components/header.scss:208         (Salla's, explicitly left)
 ```
 $ pnpm typecheck
 $ tsc --noEmit
-(no output — 0 errors)
+(no output, 0 errors)
 ```
 
 ```
@@ -221,7 +221,7 @@ $ curl -s http://localhost:3210/ar            → http=200, sicon- occurrences: 
 $ curl -s http://localhost:3210/ar/protein/c9001 → http=200, sicon- occurrences: sicon-sar ×23 only
 $ curl -s http://localhost:3210/ar/x/p1673105563 → http=200, sicon- occurrences: sicon-sar ×7,
                                                     sicon-luggage-cart ×1 (Salla's own add-to-cart
-                                                    web component — not in app/**, out of scope)
+                                                    web component, not in app/**, out of scope)
 ```
 
 Header, tab bar and chip icons confirmed drawn in the fetched HTML, e.g.:
@@ -271,7 +271,7 @@ $ pnpm vitest run tests/common
 `06-ox/_b3-product.scss` (rotation cleanup ×2),
 `06-ox/_b4-listing.scss` (rotation cleanup ×1).
 
-**Sprite:** `app/assets/ox-sprite.svg` — edit attempted, superseded by a
+**Sprite:** `app/assets/ox-sprite.svg`, edit attempted, superseded by a
 concurrent batch; not re-fought (§3).
 
 **Tests:** `tests/common/sprite.test.ts` (additive assertion for deviation

@@ -1,9 +1,9 @@
-# S9a-V2 — the branch visit, part 2: `/branch`, the footer chip, structured data
+# S9a-V2, the branch visit, part 2: `/branch`, the footer chip, structured data
 
 Builder S9a-V2, 2026-09-24. Direction: `docs/build/VISIT-2026-09-24.md` §3,
 §4.4-§4.6. Concurrent with S9a-V1 (`OxBranch.tsx`, `OxBranchBlock.tsx`,
 `defaults.ts`, `OxServices.tsx`, `AdvisoryCta.tsx`, `posters.ts`, `_blocks.scss`,
-`_b2-home.scss`, `_b7-advisory.scss` — not touched here).
+`_b2-home.scss`, `_b7-advisory.scss`, not touched here).
 
 Mid-batch addition from the conductor (owner photograph of the lit orange X
 mark on the ribbed wall, slug `mark-wall`, not yet on disk): a masthead band
@@ -33,7 +33,7 @@ Progress logged after every step.
 Tested with `chrome-headless-shell` over raw CDP (S8f's method): a local HTML
 page with
 `<iframe sandbox="allow-scripts allow-same-origin allow-popups" src="https://maps.google.com/maps?q=...&output=embed">`
-renders the full interactive map (tiles, Arabic POI labels) — screenshot at
+renders the full interactive map (tiles, Arabic POI labels), screenshot at
 `docs/build/progress/visit/branch-map-sandbox-check.png`. The embed's final
 document (after its own 301 to `google.com/maps/embed`) carries no
 `X-Frame-Options` and no `frame-ancestors` CSP directive, so nothing blocks
@@ -51,14 +51,14 @@ framing. **Answer: the sandbox works as specified; kept as-is.**
 2. Ran the sandbox test (see above) before writing `BranchMap`, so the
    component ships the answer rather than a guess.
 3. `BranchGallery.tsx` (new): the four photos, two-up grid from 640px, a
-   plain scroll-snap rail below it (`.ox-rail` declined — its chevron cue
+   plain scroll-snap rail below it (`.ox-rail` declined, its chevron cue
    and progress strap are carousel machinery four static tiles do not need,
    and the brief names the plain fallback explicitly), `<figure>`/
    `<figcaption>` per tile (empty `alt`, the caption is the accessible
    label), the first tile's `<figure>` carries `ox-x-corner` at the usual
    40/48/64px ladder.
 4. `BranchMap.tsx`: rewritten to the click-to-load facade (VISIT §4.4 item
-   3) — the storefront photo, the address, the landmark and "عرض الخريطة"
+   3), the storefront photo, the address, the landmark and "عرض الخريطة"
    in the no-key state; a tap swaps it for the sandboxed embed iframe; two
    links always render underneath (`BRANCH_LISTING.directionsUrl`, and
    `google_place_url` -> `branch_map_url` -> `BRANCH_LISTING.listingUrl`).
@@ -71,7 +71,7 @@ framing. **Answer: the sandbox works as specified; kept as-is.**
    different builder's file, `OxServices.tsx`'s `OfferStrip`, on
    `/services`; querying by the existing `data-testid` avoids new wrapper
    divs that would have broken `.ox-page--bleed`'s direct-child selectors
-   on the services page — see Deviation 2). Gated on
+   on the services page, see Deviation 2). Gated on
    `pathForSku(visit.sku)` resolving a real product, not the channel's own
    `'/services'` fallback (a sticky "book a visit" bar has nothing to do if
    that product does not exist).
@@ -79,11 +79,11 @@ framing. **Answer: the sandbox works as specified; kept as-is.**
    `BranchGallery` mounted between `OxBranch` and `BranchMap`; `VisitStickyBar`
    mounted at the end, anchored on `OxBranch`'s own `data-testid="ox-branch"`
    root (its actions row is the page's first visit-booking control). Did
-   NOT add a second `<StoreRating>` under the lead — see Deviation 1.
+   NOT add a second `<StoreRating>` under the lead, see Deviation 1.
 7. Conductor addendum: the masthead. `BranchPage.tsx` now reads
    `(STORE_PHOTOS as Partial<Record<string, StorePhoto>>)['mark-wall']` and
    renders the S7b-style `Band` (photo + scrim + the page's own h1/lead)
-   only when it resolves, else the plain header exactly as before — one h1
+   only when it resolves, else the plain header exactly as before, one h1
    either way, verified both ways by test (a mocked, mutable copy of the
    manifest, "stubbing the manifest" per the brief). `Band.tsx` gained the
    additive `alt` prop (Deviation 3) and `_b5-pages.scss` §2 gained
@@ -125,7 +125,7 @@ framing. **Answer: the sandbox works as specified; kept as-is.**
 14. `tests/common/scrollers.test.ts` (project-wide, not batch-scoped) flagged
     `.ox-branch-gallery__list` (`overflow-x: auto` with no positioned
     containing block, G2/DIRECTION 10.1). Fixed with `position: relative` on
-    the rule itself rather than allow-listing the selector — its own
+    the rule itself rather than allow-listing the selector, its own
     preferred remedy for a new scroller.
 
 ## Verification (final run)
@@ -145,7 +145,7 @@ $ pnpm vitest run   (whole suite, one pass)
 * first full-suite run showed 3 failures (2 timeouts, 1 real: the scrollers
   gate above); the two timeouts (tests/common/scrollers.test.ts's "sanity
   floor" test and tests/home/posterRow.test.ts) reproduced as passes in
-  isolation immediately after (2.03s and 1.95s respectively) — parallel-run
+  isolation immediately after (2.03s and 1.95s respectively), parallel-run
   load, not a regression. Re-run in isolation confirmed clean; the scrollers
   fix (step 14) was applied and re-verified before this final combined run.
 
@@ -174,11 +174,11 @@ locales\en.json: 1447 partial key(s), 0 added, 0 updated
 
 $ curl -s -o /dev/null -w "http=%{http_code}\n" http://localhost:3210/ar/branch
 http=200
-(HTML carries "ox-store-rating": 0 — correct, the connected store has none of
+(HTML carries "ox-store-rating": 0, correct, the connected store has none of
  the four google_* settings filled yet, and the gate refuses to render
  without all four; "ox-branch-gallery": 1; "ox-branch-map": 1;
  "ox-visit-sticky": 1; all four gallery captions and both map-button labels
- present in the served text; data-testid="ox-band" absent — correct, no
+ present in the served text; data-testid="ox-band" absent, correct, no
  mark-wall entry on disk yet)
 
 $ curl -s -o /dev/null -w "http=%{http_code}\n" http://localhost:3210/ar/services
@@ -200,7 +200,7 @@ shell processes killed after each capture.
 1. **No second `<StoreRating>` under the `/branch` lead**, though the brief's
    item 1 names it. V1's `OxBranch.tsx` landed mid-batch already carrying
    `<StoreRating variant="rail" />` unconditionally under its own title
-   (VISIT §4.1, shared by home and `/branch`) — rendered immediately below
+   (VISIT §4.1, shared by home and `/branch`), rendered immediately below
    the lead/band either way. Adding a second one would have put the
    identical figure on screen twice within one scroll on `/branch` alone.
    Documented in `BranchPage.tsx`'s own doc comment; flagged for the

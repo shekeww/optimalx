@@ -1,4 +1,4 @@
-# S9h — the branch cover becomes the storefront photo, and brands moves to the hero
+# S9h, the branch cover becomes the storefront photo, and brands moves to the hero
 
 Builder S9h, 2026-09-24. Two owner items from screenshots of 2026-09-24
 (conductor brief, batch S9h).
@@ -35,7 +35,7 @@ constant switches from `STORE_PHOTOS['store-wide']` to
 unused `.ox-cover--store-wide`): since the cover's `min-block-size` floor is
 always exactly 16:10 of its own container width and the photo is a fixed
 1448x1086 (4:3), a top-aligned crop shows a CONSTANT top fraction of the
-image regardless of tier — `0.625 * 1448 / 1086 = 83.3%` — well past the
+image regardless of tier, `0.625 * 1448 / 1086 = 83.3%`, well past the
 sign (measured by eye at roughly 30%-40% down the frame) with margin before
 the crop line, and a taller box (content-driven, S9c deviation 3) only
 reveals more of the image above that floor, never less. Verified live
@@ -54,13 +54,13 @@ at the exact point behind each text element (replicating the browser's own
 `.ox-cover__scrim`'s live resolved `background-image` (so `color-mix()` is
 whatever the engine actually computed, not a hand copy), parses its two
 gradient layers' stops, composites photo-under-scrim with a proper
-Porter-Duff "over" (alpha tracked through the stack, correct paint order —
+Porter-Duff "over" (alpha tracked through the stack, correct paint order -
 the FIRST-listed gradient, the bottom/`b0`-`b1` one, paints topmost, over
 the second-listed reading-start/`s0`-`s1` one, over the photo), and computes
 the WCAG contrast ratio against the text's own `getComputedStyle().color`.
 Two bugs found and fixed while building it: (1) Chrome 149 serialises a
 resolved `color-mix()` stop as the CSS Color 4 `color(srgb r g b / a)`
-function, not `rgba()` — the parser matched nothing and silently treated
+function, not `rgba()`, the parser matched nothing and silently treated
 every stop as transparent black, so the first two tuning passes measured
 nothing real; (2) the first alpha-compositing pass always forced the
 result's own alpha to 1 after one layer, which produced a always-fully-opaque
@@ -75,13 +75,13 @@ in this environment; the canvas route reads the identical pixels a
 screenshot would, from the same live render).
 
 First pass (`b0: 90%, b1: 62%, s0: 88%, s1: 18%`) measured the REAL defect:
-the address line at 390 sat between 1.47:1 and 1.73:1 across its own row —
+the address line at 390 sat between 1.47:1 and 1.73:1 across its own row -
 worse than the owner's screenshot even suggested, because this cover's
 content is longer than any other (title, rating, offer/eyebrow, address,
 hours, three-to-five actions, pickup note) and sits well past the base
 gradient's 45% stop, which every OTHER cover (one short statement + one
 line) never reaches. Raised `b1`/`s1` substantially so the mid-to-lower
-two-thirds of the frame — where this block's own text actually lives —
+two-thirds of the frame, where this block's own text actually lives -
 stays consistently dark, rather than fading early the way a one-line cover
 can afford to. Final values:
 
@@ -96,8 +96,8 @@ can afford to. Final values:
 }
 ```
 
-**Contrast, measured live** (worst of three horizontal samples per element —
-reading-start edge, centre, reading-end edge — against the target 4.5:1):
+**Contrast, measured live** (worst of three horizontal samples per element -
+reading-start edge, centre, reading-end edge, against the target 4.5:1):
 
 | Surface | Width | Title | Address |
 |---|---|---|---|
@@ -111,7 +111,7 @@ vertical brightness profile at the cover's own horizontal centre (390,
 `/ar/branch`) confirms the gradient is genuinely a gradient, not a flat
 scrim: at 2% from the top (over the sky above the awning) the composited
 colour is `[16,22,30]`, essentially unchanged from the raw photo `[15,22,31]`
-— transparent, as the direction asks; by 20% down it is already fully
+- transparent, as the direction asks; by 20% down it is already fully
 dark (`[17,19,21]`), and stays dark through the text zone. The screenshots
 (§ below) show the lit sign and its red/green accent lighting clearly at
 1440, and a legible ghost of it behind the rating row at 390.
@@ -125,14 +125,14 @@ does not sit under a storefront cover; `BranchPage` passes `false`), leaving
 three tiles (advisory-room, waiting-area, shelves) in the scroll rail below
 640px and a new three-up grid (`.ox-branch-gallery__list--3`,
 `_b5-pages.scss` §7) from 640px up, instead of two-up-plus-orphan. The
-gallery's own `.ox-cover--storefront` modifier is untouched — it is a
+gallery's own `.ox-cover--storefront` modifier is untouched, it is a
 different selector tuned for a 16:10 TILE, not the content-heavy block, and
 stays available for whichever future surface renders all four.
 
 **The alt text.** `ox.blocks.branch.photo_wide_alt` described "the shelves
-inside the branch" — no longer true once the photo is the storefront.
+inside the branch", no longer true once the photo is the storefront.
 Updated the VALUE in place in `locales/partials/s9a-v1.{ar,en}.json` (the
-partial that first defined it — editing only the base locale would be
+partial that first defined it, editing only the base locale would be
 reverted by the next `i18n-merge` run, same reasoning `S8d.md` §4 item 1
 already recorded) to describe the lit facade instead. A factual correction
 to an existing accessibility string, not new marketing copy; ran
@@ -142,19 +142,19 @@ to an existing accessibility string, not new marketing copy; ran
 `ox-branch` entry to `fixtures/store/home-components.json` (ten generic,
 non-`ox-*` Salla blocks) so the home block renders in the offline preview
 without a live-server workaround. Investigated and NOT done: `hasOxBlock()`
-(`defaults.ts`) is a single boolean gate over the WHOLE list — adding even
+(`defaults.ts`) is a single boolean gate over the WHOLE list, adding even
 one `home.ox-branch` entry would flip `configured` to `true` in
 `app/routes/index.tsx` and swap the ENTIRE home page from
 `DEFAULT_HOME_COMPONENTS` (the theme's real sixteen blocks, which is what
 every other concurrent batch and the live store actually renders) to just
-these ten generic stub blocks plus the one added entry — hiding the hero,
+these ten generic stub blocks plus the one added entry, hiding the hero,
 goals, products, brands, categories and every other block from local preview
 for every builder who loads `/ar` afterward. That is a bigger, riskier,
 cross-cutting regression than the gap itself, on a file explicitly flagged
 as shared infrastructure (`S8d.md` §4 item 5 already declined to touch it
 for the same reason). Verified the real component instead: the actual
 running dev server already renders `DEFAULT_HOME_COMPONENTS` (confirmed by
-curl — `hasOxBlock` is `false` against the fixture's ten generic paths, so
+curl, `hasOxBlock` is `false` against the fixture's ten generic paths, so
 the fallback fires), and a real headless browser DOES mount the lazy
 `OxBranchBlock` once scrolled into view (screenshots and the contrast table
 above are both taken this way, live, on port 3210, never restarted).
@@ -166,7 +166,7 @@ never touched): `docs/build/progress/visit/s9h-branch-390.png`,
 `s9h-home-1440.png` (the home block, scrolled into view), `s9h-gallery-390.png`,
 `s9h-gallery-1440.png` (the three-tile gallery grid below the cover, storefront
 tile absent, `BranchMap`'s own separate facade still shows the storefront
-photograph a third time further down the page — a different component,
+photograph a third time further down the page, a different component,
 outside this batch's scope, not a duplicate this item is about).
 
 ## Item 2: shop by brand moves to directly after the hero
@@ -179,7 +179,7 @@ item 1(d) move used (move the one JSON object, edit nothing inside it).
 **Done first, verified green**: `pnpm vitest run tests/home/defaults.test.ts`
 → 12/12 passing (manifest order test, parity test, default-composition
 test). `OxBrands.tsx`'s HIERARCHY docblock paragraph updated; `defaults.ts`'s
-`ox-brands` height-entry comment updated (value unchanged, still 0/0 — the
+`ox-brands` height-entry comment updated (value unchanged, still 0/0, the
 live store still ships zero brands).
 
 Files: `app/components/home/defaults.ts`, `twilight.json`,
@@ -189,45 +189,45 @@ Files: `app/components/home/defaults.ts`, `twilight.json`,
 
 ## Files changed (both items)
 
-- `app/components/blocks/OxBranch.tsx` — `BRANCH_PHOTO` reads
+- `app/components/blocks/OxBranch.tsx`, `BRANCH_PHOTO` reads
   `STORE_PHOTOS.storefront`; the cover carries `ox-cover--storefront-block`;
   docblocks updated.
-- `app/components/home/OxBranchBlock.tsx` — passes
+- `app/components/home/OxBranchBlock.tsx`, passes
   `STORE_PHOTOS.storefront.photo`; docblock updated.
-- `app/components/pages/BranchPage.tsx` — passes
+- `app/components/pages/BranchPage.tsx`, passes
   `STORE_PHOTOS.storefront.photo` to `OxBranch`; passes
   `showStorefront={false}` to `BranchGallery`; docblock note added.
-- `app/components/pages/BranchGallery.tsx` — new `showStorefront?: boolean`
+- `app/components/pages/BranchGallery.tsx`, new `showStorefront?: boolean`
   prop (default `true`), filters the storefront cover out when `false`, adds
   the `ox-branch-gallery__list--3` grid modifier class at three tiles;
   docblock updated.
-- `app/content/branch.ts` — one docblock comment corrected (`store-wide` →
+- `app/content/branch.ts`, one docblock comment corrected (`store-wide` →
   `storefront`, notes the `showStorefront` drop).
-- `app/components/home/defaults.ts` — `HOME_BLOCK_PATHS`: `ox-brands` moved
+- `app/components/home/defaults.ts`, `HOME_BLOCK_PATHS`: `ox-brands` moved
   to directly after `ox-hero`; two comments updated (the move, and the
   `ox-branch` height entry's photo-swap note, numbers unchanged).
-- `app/components/home/OxBrands.tsx` — HIERARCHY docblock paragraph updated
+- `app/components/home/OxBrands.tsx`, HIERARCHY docblock paragraph updated
   for the new position.
-- `app/styles/06-ox/_covers.scss` — `.ox-cover--store-wide` replaced by
+- `app/styles/06-ox/_covers.scss`, `.ox-cover--store-wide` replaced by
   `.ox-cover--storefront-block` (new tuning, see above); section doc comment
   updated.
-- `app/styles/06-ox/_b5-pages.scss` §7 — `.ox-branch-gallery__list--3`
+- `app/styles/06-ox/_b5-pages.scss` §7, `.ox-branch-gallery__list--3`
   (three-up from 640px).
-- `app/styles/06-ox/_blocks.scss` — one section-1 doc comment updated.
-- `twilight.json` — `home.ox-brands` component object moved to directly
+- `app/styles/06-ox/_blocks.scss`, one section-1 doc comment updated.
+- `twilight.json`, `home.ox-brands` component object moved to directly
   after `home.ox-hero` (no field edited, only moved).
-- `locales/partials/s9a-v1.{ar,en}.json` + merged `locales/{ar,en}.json` —
+- `locales/partials/s9a-v1.{ar,en}.json` + merged `locales/{ar,en}.json` -
   `ox.blocks.branch.photo_wide_alt` value corrected for the new photo.
-- `tests/blocks/OxBranch.test.tsx` — storefront photo/modifier assertions.
-- `tests/home/OxBranchBlock.test.tsx` — storefront photo assertion; docblock.
-- `tests/pages/BranchGallery.test.tsx` — two new tests (`showStorefront`
+- `tests/blocks/OxBranch.test.tsx`, storefront photo/modifier assertions.
+- `tests/home/OxBranchBlock.test.tsx`, storefront photo assertion; docblock.
+- `tests/pages/BranchGallery.test.tsx`, two new tests (`showStorefront`
   false drops the tile and grids three-up; default keeps four, no modifier).
-- `tests/pages/BranchPage.test.tsx` — storefront photo assertion; gallery
+- `tests/pages/BranchPage.test.tsx`, storefront photo assertion; gallery
   test rewritten for three tiles, storefront absent.
-- `docs/build/progress/S9h.md` — this file.
+- `docs/build/progress/S9h.md`, this file.
 - `docs/build/progress/visit/s9h-branch-390.png`, `s9h-branch-1440.png`,
   `s9h-home-390.png`, `s9h-home-1440.png`, `s9h-gallery-390.png`,
-  `s9h-gallery-1440.png` — new screenshots.
+  `s9h-gallery-1440.png`, new screenshots.
 
 Not touched: `fixtures/store/home-components.json` (considered, declined,
 reasoning above); any file named as another builder's own
@@ -248,7 +248,7 @@ $ pnpm vitest run tests/blocks tests/pages tests/home tests/content \
       Tests  1 failed | 504 passed (505)
 ```
 The one failure, `tests/home/posterRow.test.ts` (CSS-rule parsing against
-the compiled stylesheet, unrelated to this batch — it never touches
+the compiled stylesheet, unrelated to this batch, it never touches
 `OxBranch`/`BranchGallery`/`OxBrands`/`defaults.ts`), is a timeout under
 this batch's own full-suite parallel load, not a real failure: run alone it
 passes in ~1s, twice, both before and after every change in this batch.
@@ -278,7 +278,7 @@ Live curl (`/ar`, fresh, dev server on 3210 never restarted): SSR block
 order is `ox-hero, ox-brands, ox-goals, ox-products, ox-poster, ox-posters,
 ox-products-secondary, ox-categories, ox-category-rail ×8, ox-services,
 ox-branch, ox-guides, ox-certifications, ox-faq, ox-newsletter, ox-banner`
-— `ox-brands` directly after `ox-hero`, exactly as specified (item 2).
+- `ox-brands` directly after `ox-hero`, exactly as specified (item 2).
 
 Screenshots (contrast table and method above): `docs/build/progress/visit/
 s9h-branch-390.png`, `s9h-branch-1440.png`, `s9h-home-390.png`,
@@ -286,12 +286,12 @@ s9h-branch-390.png`, `s9h-branch-1440.png`, `s9h-home-390.png`,
 
 ## Deviations
 
-1. **`fixtures/store/home-components.json` not touched** — investigated,
+1. **`fixtures/store/home-components.json` not touched**, investigated,
    would flip the whole home page off `DEFAULT_HOME_COMPONENTS` for every
    concurrent builder's local preview (reasoning above). Verified the real
    component behaviour live instead (dev server + headless browser).
 2. **`ox.blocks.branch.photo_wide_alt`'s value edited**, a locale-key VALUE
-   change rather than a new key — required because the photo it describes
+   change rather than a new key, required because the photo it describes
    changed; a factual accessibility correction, not new marketing copy (ran
    `check-copy`/`check-claims` clean). Edited in place in
    `locales/partials/s9a-v1.{ar,en}.json`, the partial that first defined

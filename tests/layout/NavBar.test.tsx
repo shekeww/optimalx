@@ -260,6 +260,18 @@ describe('NavBar', () => {
     fireEvent.keyDown(panel, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByTestId('ox-mega-panel')).toBeNull());
     expect(document.activeElement).toBe(link);
+
+    // The returned focus must not reopen the panel: تسوق opens on focus,
+    // and before the gate the panel was back 120ms (OPEN_DELAY) after
+    // Escape had closed it, so Escape did nothing visible from the keyboard.
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    expect(screen.queryByTestId('ox-mega-panel')).toBeNull();
+    expect(link.getAttribute('aria-expanded')).toBe('false');
+
+    // A later, genuine focus still opens it.
+    fireEvent.blur(link);
+    fireEvent.focus(link);
+    await screen.findByTestId('ox-mega-panel');
   });
 
   it('Tab from تسوق into its panel keeps the panel open, so حسب العلامة is reachable from the keyboard', async () => {

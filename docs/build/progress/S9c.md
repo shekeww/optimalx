@@ -57,7 +57,7 @@ The offer strip's advisory-room panel and the product-page plate stay as V1 buil
 
 ### What shipped
 
-- `app/styles/06-ox/_covers.scss` (new): the shared cover primitive —
+- `app/styles/06-ox/_covers.scss` (new): the shared cover primitive -
   `.ox-cover` (the whole card, `ox-angled()`-clipped, 40/48/64 lean ladder,
   its own `:focus-visible` inset box-shadow), `.ox-cover__photo`,
   `.ox-cover__scrim` (two stacked gradients, bottom + reading-start, tunable
@@ -83,7 +83,7 @@ The offer strip's advisory-room panel and the product-page plate stay as V1 buil
 - `app/components/blocks/OxBranch.tsx`: the store-wide photograph is now the
   block's own `.ox-cover` (`.ox-cover--store-wide` when it is the real
   manifest entry), carrying `.ox-band-dark` so every existing component
-  inside — `Button`, `HoursTable`'s `.ox-table`, `StoreRating`'s `.ox-gr` —
+  inside, `Button`, `HoursTable`'s `.ox-table`, `StoreRating`'s `.ox-gr` -
   repaints itself for the photograph ground with zero cover-specific
   overrides, and `--ox-focus` becomes `--ox-paper`. No `photo` still falls
   back to the same content stack on a plain card (`.ox-branch__content--flat`),
@@ -92,7 +92,7 @@ The offer strip's advisory-room panel and the product-page plate stay as V1 buil
   `<figure>+<img>+<figcaption>` tiles to four `.ox-cover` links (three
   `Link`, one plain `<a target="_blank">` for the storefront/directions
   tile). Each carries a statement, a line and the `chevron-end` arrow chip
-  as real DOM text — the accessible name of the link — never a caption.
+  as real DOM text, the accessible name of the link, never a caption.
   `waiting-area`'s copy switches on `inbodyIncluded(settings)`.
 - `app/content/branch.ts`: `BRANCH.covers` registers the ten new
   `ox.content.branch.cover_*` keys (required by
@@ -116,7 +116,7 @@ The offer strip's advisory-room panel and the product-page plate stay as V1 buil
    bottom-inline-end.** Working the `ox-angled()` polygon by hand (RTL:
    `polygon(run 0, 100% 0, 100%-run 100%, 0 100%)`) puts the two FULL
    corners at top-inline-start and bottom-inline-end; the two CUT corners
-   are top-inline-end and bottom-inline-start — the same pairing
+   are top-inline-end and bottom-inline-start, the same pairing
    `_primitives.scss`'s own doc comment states ("leaning top-inline-end to
    bottom-inline-start"). The overlay text is placed at bottom-inline-end
    (verified against the direction's own stated lean, not against its
@@ -138,7 +138,7 @@ The offer strip's advisory-room panel and the product-page plate stay as V1 buil
    focus target.
 3. **The block cover is not a fixed 16:10 box.** `OxBranch` carries a title,
    `StoreRating`, an offer line, the address, the hours table, three or four
-   actions and a pickup note — more content than a strict 16:10 photograph
+   actions and a pickup note, more content than a strict 16:10 photograph
    can hold at 390 (243px tall). `.ox-cover`'s `min-block-size` approximates
    16:10 at each tier's own container width (224/450/600/810px) as a FLOOR;
    the photograph and its gradient (`position: absolute; inset: 0`) always
@@ -151,7 +151,7 @@ The offer strip's advisory-room panel and the product-page plate stay as V1 buil
    offline preview's own `fixtures/store/home-components.json` (ten generic
    Salla dashboard blocks) does not include an `ox-branch` entry, so the
    block never mounts on `/ar` in this preview even though `'ox-branch'` is
-   in the theme's own default block catalogue (`defaults.ts`) — a store-data
+   in the theme's own default block catalogue (`defaults.ts`), a store-data
    fixture gap, not a code path this batch owns. Verified instead by
    `tests/home/OxBranchBlock.test.tsx` (passing) and by the fact that
    `OxBranchBlock` renders the identical `OxBranch` component the branch-page
@@ -212,7 +212,7 @@ All eight measurements land well inside the 24% budget.
   angled cut, and (gallery) the arrow chip. First-attempt captures of
   content below the fold were occasionally flaky (a lazy-loaded image not
   yet decoded when `captureBeyondViewport` fires); the script was changed to
-  scroll the real viewport there first, which fixed it — a screenshot-tooling
+  scroll the real viewport there first, which fixed it, a screenshot-tooling
   detail, not a product defect (a real scroll always decodes the image).
 
 ### Strings shipped (`locales/partials/s9c.ar.json` / `.en.json`)

@@ -1,5 +1,5 @@
 // Unit tests for scripts/gen-icon-mask.mjs: the pure transform functions, and
-// the one thing that actually matters day to day — that the committed
+// the one thing that actually matters day to day, that the committed
 // --ox-cart-glyph in app/styles/tokens.css is exactly what the generator
 // would write from the sprite that ships beside it. A drift here is a stale
 // mask: the sticky bar and the card's native add button would draw last

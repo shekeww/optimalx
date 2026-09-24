@@ -8,7 +8,7 @@ const { VariantChips, NAMED_COLORS, namedColor, valueImageUrl } = await import(
   '../../app/components/product/VariantChips'
 );
 
-/** Every Arabic key the table holds — a run/script check, not a fixed list. */
+/** Every Arabic key the table holds, a run/script check, not a fixed list. */
 const ARABIC_COLOR_NAMES = Object.keys(NAMED_COLORS).filter((key) => /[؀-ۿ]/.test(key));
 
 function makeOption(overrides: Partial<ProductOption> = {}): ProductOption {
@@ -32,6 +32,7 @@ describe('VariantChips', () => {
   it('reserves the row height with an empty box when the card has no option', () => {
     const { container } = renderWithProviders(
       <VariantChips option={null} uid="oxcard-1" value={null} onChange={vi.fn()} />
+
     );
     const row = container.querySelector('.ox-card-product__variants');
     expect(row).not.toBeNull();
@@ -42,6 +43,7 @@ describe('VariantChips', () => {
   it('draws a swatch circle per value, radio semantics kept', () => {
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+
     );
     const inputs = container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
     // At most four values show as real swatches; the rest fold into +N.
@@ -57,6 +59,7 @@ describe('VariantChips', () => {
   it('fills a swatch from the value colour when the engine carries one', () => {
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+
     );
     const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
     expect(faces[0].style.getPropertyValue('--ox-swatch')).toBe('#111111');
@@ -66,6 +69,7 @@ describe('VariantChips', () => {
   it('resolves a known colour NAME to its own swatch colour, never a letter', () => {
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+
     );
     const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
     // Value 2 ("أبيض") carries no explicit colour or image, but its own name
@@ -85,6 +89,7 @@ describe('VariantChips', () => {
     });
     const { container } = renderWithProviders(
       <VariantChips option={shaker} uid="oxcard-1" value={21} onChange={vi.fn()} />
+
     );
     const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
     expect(faces).toHaveLength(4);
@@ -106,6 +111,7 @@ describe('VariantChips', () => {
     });
     const { container } = renderWithProviders(
       <VariantChips option={flavours} uid="oxcard-1" value={31} onChange={vi.fn()} />
+
     );
     const faces = container.querySelectorAll<HTMLElement>('.ox-swatch__face');
     expect(faces).toHaveLength(2);
@@ -125,6 +131,7 @@ describe('VariantChips', () => {
     });
     const { container } = renderWithProviders(
       <VariantChips option={mixed} uid="oxcard-1" value={41} onChange={vi.fn()} />
+
     );
     const labels = container.querySelectorAll<HTMLElement>('.ox-swatch');
     expect(labels[0].classList.contains('ox-swatch--text')).toBe(false);
@@ -137,6 +144,7 @@ describe('VariantChips', () => {
   it('gives every swatch the value name as a title, for the mouse tooltip', () => {
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+
     );
     const labels = container.querySelectorAll<HTMLLabelElement>('.ox-swatch');
     expect(labels[0].title).toBe('أسود');
@@ -146,6 +154,7 @@ describe('VariantChips', () => {
   it('folds values past the fourth into a hidden count', () => {
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+
     );
     const more = container.querySelector('.ox-card-product__variant-more');
     expect(more).not.toBeNull();
@@ -156,6 +165,7 @@ describe('VariantChips', () => {
     const short = makeOption({ values: [{ id: 1, name: 'أسود' } as never, { id: 2, name: 'أبيض' } as never] });
     const { container } = renderWithProviders(
       <VariantChips option={short} uid="oxcard-1" value={1} onChange={vi.fn()} />
+
     );
     expect(container.querySelector('.ox-card-product__variant-more')).toBeNull();
   });
@@ -164,6 +174,7 @@ describe('VariantChips', () => {
     const onChange = vi.fn();
     const { container } = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={onChange} />
+
     );
     const inputs = container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
     fireEvent.click(inputs[1]);
@@ -173,6 +184,7 @@ describe('VariantChips', () => {
   it('carries no form attribute by default, and the given one on every radio when a formId is passed (owner review, 2026-09-24: the chooser renders on the plate now, outside the card\'s own form)', () => {
     const bare = renderWithProviders(
       <VariantChips option={makeOption()} uid="oxcard-1" value={11} onChange={vi.fn()} />
+
     );
     const bareInputs = bare.container.querySelectorAll<HTMLInputElement>('.ox-swatch__input');
     bareInputs.forEach((input) => expect(input.hasAttribute('form')).toBe(false));

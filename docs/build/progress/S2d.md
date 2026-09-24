@@ -1,4 +1,4 @@
-# S2d — category pages (owner amendment 2026-09-22)
+# S2d, category pages (owner amendment 2026-09-22)
 
 Batch: "New: S2d, category pages" from `docs/build/brief-S2-2026-09-22.md`
 (owner amendments section). Built the featured-products rail and the
@@ -6,36 +6,36 @@ internal-linking "explore" block on every type and goal category listing.
 
 ## Files
 
-- `app/components/listing/FeaturedRail.tsx` (new) — the first row of a
+- `app/components/listing/FeaturedRail.tsx` (new), the first row of a
   category/goal listing: a horizontal snap scroller of featured products,
   each a cover tile with name, `Price` and one link to the PDP. Exports the
   pure `featuredProducts()` (flagged-or-fallback selection) and
   `featuredCoverImage()` for testing and for the day a real cover source
   exists.
-- `app/components/listing/ExploreLinks.tsx` (new) — the compact "explore"
+- `app/components/listing/ExploreLinks.tsx` (new), the compact "explore"
   block after the grid: sibling categories, the goal(s) that include this
   type or the types inside this goal, one guide link when the content map
   has one, and the advisory CTA to `/services`. Exports `siblingSlugsOf()`,
   `goalsIncluding()`, `typesOf()` and `exploreGuide()` as pure, tested
   helpers.
-- `app/components/listing/ListingPage.tsx` — wired both in: `FeaturedRail`
+- `app/components/listing/ListingPage.tsx`, wired both in: `FeaturedRail`
   as the first child of `.ox-listing__body` (gated on
   `variant === 'category' || variant === 'goal'`), `ExploreLinks` right
   after `.ox-listing__catalogue` and before `CategoryFaq`/`RelatedGuides`,
   fed the already-resolved `node`. No other line in this file changed.
-- `app/styles/06-ox/_b4-listing.scss` — appended section 15 (`.ox-featured*`,
+- `app/styles/06-ox/_b4-listing.scss`, appended section 15 (`.ox-featured*`,
   `.ox-explore*`) at the end of the file. Reuses `.ox-chip`/`.ox-chip--filter`
   and `.ox-listing__guide-row` verbatim for the explore block's chips and
   foot row rather than redeclaring them.
-- `locales/partials/s2.ar.json` / `s2.en.json` — six new flat `ox.listing.*`
+- `locales/partials/s2.ar.json` / `s2.en.json`, six new flat `ox.listing.*`
   keys (both already existed from S2a; only appended to them).
-- `locales/ar.json` / `locales/en.json` — the same six keys mirrored in,
+- `locales/ar.json` / `locales/en.json`, the same six keys mirrored in,
   next to the existing `ox.listing.*` cluster. No existing value touched;
   `node scripts/i18n-merge.mjs --check` reports 0 pending changes, so the
   partials and the base files agree exactly.
 - `tests/listing/FeaturedRail.test.tsx` (new), `tests/listing/ExploreLinks.test.tsx`
   (new).
-- `tests/listing/ListingPage.test.tsx` — added a `useMoney` mock (`Price`,
+- `tests/listing/ListingPage.test.tsx`, added a `useMoney` mock (`Price`,
   used by the new `FeaturedRail`, reads it; the file had none). No assertion
   in the file changed; all 29 pre-existing cases still pass unmodified.
 
@@ -81,7 +81,7 @@ internal-linking "explore" block on every type and goal category listing.
 - **SSR/client consistency.** `ExploreLinks` does not read `useTaxonomyLinks`'
   query directly; it renders `bySlug()`'s result, whose pending state already
   falls back to the node's own static `nameKey` label plus a `/search?q=`
-  URL — the same fallback `ChildChips` has shipped and been tested against
+  URL, the same fallback `ChildChips` has shipped and been tested against
   (`tests/listing/ListingPage.test.tsx`, "links a child chip to its live
   category…"). No new client-only branch was added.
 
@@ -190,7 +190,7 @@ selectors present in the output).
   or a `featured_cover_<sku>` field should also update
   `featuredCoverImage()`/`isMerchantFeatured()` in `FeaturedRail.tsx`.
 - `exploreGuide()` will start rendering real guide links the day
-  `ox.content.guides.*.title` keys exist (FINAL-content 7.1) — same
+  `ox.content.guides.*.title` keys exist (FINAL-content 7.1), same
   dependency `RelatedGuides` already carries; no action needed here, just
   noting it renders empty today by design, not by omission.
 
@@ -201,7 +201,7 @@ selectors present in the output).
   alone, so an owner-made category outside the 25-node taxonomy still gets
   the data-only `FeaturedRail` (it needs nothing but `products`) but not
   `ExploreLinks` (which needs a resolved taxonomy node for its sibling/
-  membership logic) — the same graceful-absence contract
+  membership logic), the same graceful-absence contract
   `CategoryIntro`/`ChildChips`/`CategoryFaq` already use for that case.
 - The shared preview server threw a transient 500 ("Failed to load store
   settings. Make sure VITE_STORE_DOMAIN is set.", from the `[offline-api]`
@@ -209,7 +209,7 @@ selectors present in the output).
   once on `/`; every time, an immediate retry against the same already-running
   server succeeded and rendered correctly (the final required gate curl,
   run last, returned `1`). Not reproducible on demand and not related to any
-  file this batch touched — no route, loader, or env config here — most
+  file this batch touched, no route, loader, or env config here, most
   likely the store-settings fetch racing with the other builders' concurrent
   activity on the same shared server. Recorded for visibility, not treated
   as a defect of this batch.

@@ -7,10 +7,44 @@ import { Price } from '../common/Price';
 import { BandPhoto } from './BandPhoto';
 import { effectivePrice } from '../product/lib/claims';
 import { idForSku } from '../../content/salla-ids';
-import type { HomePlan } from '../../content/services';
+import { SERVICE_PHOTOS, type HomePlan } from '../../content/services';
 
 export interface PlanCardProps {
   plan: HomePlan;
+}
+
+/**
+ * The renditions a plan photograph has on disk, keyed by the full-size path
+ * `HomePlan.photo` names (review 2026-09-24, improvement 6). The services
+ * band is 1580 wide and 99 KB and fills a card about 310 wide on the phone
+ * rail, so its 640 rendition (cut by sharp from the same file, the same
+ * bytes the Shopify port ships as img-services-band-640.jpg) is what a 2x
+ * phone actually needs, and the full file stays for 3x and the desktop
+ * column. The athlete (539 wide) and nutrition (784 wide) frames are already
+ * at or under the slot and carry no entry, so they render exactly as before.
+ * The full-size names are unchanged; `tests/content/imagePaths.test.ts`
+ * checks every path written here exists in `public/`.
+ */
+const PLAN_PHOTO_RENDITIONS: Readonly<Record<string, readonly { src: string; width: number }[]>> = {
+  [SERVICE_PHOTOS.services]: [
+    { src: '/assets/images/services-band-640.jpg', width: 640 },
+    { src: SERVICE_PHOTOS.services, width: 1580 },
+  ],
+};
+
+/**
+ * The slot the frame is chosen against, measured on both platforms
+ * (2026-09-24): one rail item 309 wide at 390 (80vw), one of three columns
+ * at 299 wide at 1024 (29vw) and 416 wide from 1440 up, where the container
+ * caps. The same `sizes` the Shopify port's blocks/plan-card.liquid writes,
+ * so both pick the same rendition: the 640 for a 1x desktop and a 2x phone,
+ * the full file for a 2x desktop.
+ */
+const PLAN_PHOTO_SIZES = '(min-width: 1440px) 416px, (min-width: 1024px) 29vw, 80vw';
+
+function planPhotoSrcSet(photo: string): string | undefined {
+  const renditions = PLAN_PHOTO_RENDITIONS[photo];
+  return renditions ? renditions.map((r) => `${r.src} ${r.width}w`).join(', ') : undefined;
 }
 
 /**
@@ -59,7 +93,14 @@ export function PlanCard({ plan }: PlanCardProps) {
 
   return (
     <div className="ox-plan" data-testid="ox-plan-card" data-plan={plan.id}>
-      {plan.photo ? <BandPhoto src={plan.photo} className="ox-plan__photo" /> : null}
+      {plan.photo ? (
+        <BandPhoto
+          src={plan.photo}
+          srcSet={planPhotoSrcSet(plan.photo)}
+          sizes={PLAN_PHOTO_SIZES}
+          className="ox-plan__photo"
+        />
+      ) : null}
       <span className="ox-plan__scrim" aria-hidden="true" />
       <div className="ox-plan__body">
         <p className="ox-plan__title ox-title">{t(plan.titleKey)}</p>

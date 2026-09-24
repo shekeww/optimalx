@@ -1,4 +1,4 @@
-// salla-lib.mjs — shared plumbing for the Salla Merchant API scripts
+// salla-lib.mjs, shared plumbing for the Salla Merchant API scripts
 // (salla-auth.mjs, salla-categories.mjs): credential loading, a
 // rate-limited fetch client with 429/5xx backoff and Cloudflare-challenge
 // detection, token-redacting logging, and the docs/build/store-write-log.md
@@ -146,7 +146,7 @@ function safeJsonPreview(body) {
  * Builds a `request(pathname, init)` function against the Salla Admin API
  * v2: one call in flight at a time, spaced 300 ms apart; retries `429`/`5xx`
  * with exponential backoff (honouring `Retry-After` when present); stops
- * immediately with `SallaChallengeError` — no retry — the moment a response
+ * immediately with `SallaChallengeError`, no retry, the moment a response
  * carries the exact Cloudflare-challenge signature this machine's IP gets
  * from `api.salla.dev`. Every other `429` is a normal rate limit and is
  * retried. `fetchImpl` is injectable so tests never touch the network.
@@ -179,7 +179,7 @@ export function createSallaClient({ token, baseUrl = API_BASE, fetchImpl = fetch
         throw new SallaChallengeError(
           `api.salla.dev answered ${pathname} with a Cloudflare challenge (HTTP 429, ` +
             'Cf-Mitigated: challenge). This machine cannot solve it and the script does not retry. ' +
-            'Run it from the Vercel sandbox instead — see docs/build/store-data-runbook.md, ' +
+            'Run it from the Vercel sandbox instead \u2014 see docs/build/store-data-runbook.md, ' +
             '"Vercel-sandbox run".'
         );
       }
@@ -234,7 +234,7 @@ export function appendRunLog({ runId, mode, startedAt, finishedAt, actions, note
     .map((a) => `| ${a.when} | ${a.type} | ${a.target} | ${a.result} | ${a.readback} |`)
     .join('\n');
   const section =
-    `\n## Run ${runId} — ${startedAt} (${mode})\n` +
+    `\n## Run ${runId} \u2014 ${startedAt} (${mode})\n` +
     `${notes ? `${notes}\n` : ''}` +
     `${runMarker(runId)}\n${JSON.stringify(payload, null, 2)}\n-->\n\n` +
     `| When (UTC) | Action | Target | Result | Read-back |\n|---|---|---|---|---|\n${rows}\n`;

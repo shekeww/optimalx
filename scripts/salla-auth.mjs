@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// salla-auth.mjs — Custom-Mode OAuth2 against the Salla Merchant API.
+// salla-auth.mjs, Custom-Mode OAuth2 against the Salla Merchant API.
 //
 // Usage:
 //   node scripts/salla-auth.mjs             start the browser flow, write .salla-token.json
@@ -7,7 +7,7 @@
 //
 // Reads SALLA_CLIENT_ID / SALLA_CLIENT_SECRET / SALLA_REDIRECT_URI from the
 // environment or from .env.salla (hand-parsed, see scripts/salla-lib.mjs).
-// The callback server binds to 127.0.0.1 ONLY — never 0.0.0.0 — so the
+// The callback server binds to 127.0.0.1 ONLY, never 0.0.0.0, so the
 // authorization code cannot be picked up by another host on the network.
 // It verifies a random `state` round-trips unchanged before it will
 // exchange anything; a mismatch is rejected without ever calling the token
@@ -15,7 +15,7 @@
 // "received" / "written".
 //
 // SALLA_ACCESS_TOKEN in the environment overrides .salla-token.json
-// everywhere scripts/salla-lib.mjs's resolveAccessToken() is used — the
+// everywhere scripts/salla-lib.mjs's resolveAccessToken() is used, the
 // Vercel-sandbox path, where this script's browser callback cannot run.
 
 import fs from 'node:fs';

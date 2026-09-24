@@ -53,7 +53,7 @@ export interface BranchPageProps {
  * `STORE_PHOTOS['mark-wall']` exists, the page opens instead on a contained
  * S7b-style `Band` (`docs/build/progress/S7b.md`) carrying that photograph, a
  * scrim, and the SAME h1/lead this page always printed, now inside the band
- * rather than a plain header — one h1 either way. Absent the photo (every
+ * rather than a plain header, one h1 either way. Absent the photo (every
  * store today), the page falls back to the plain header exactly as before.
  *
  * `StoreRating` (VISIT-2026-09-24 §3, §4.4) is NOT declared a second time
@@ -102,6 +102,7 @@ export function BranchPage({ now }: BranchPageProps) {
     <>
       {t(BRANCH.introKey)} {t(hasHours ? 'ox.branch.intro_with_hours' : 'ox.branch.intro_no_hours')}
     </>
+
   );
   // Conductor addendum 2026-09-24: absent until the owner's photograph lands
   // (`scripts/store-photos-import.mjs`); the cast matches the type the
@@ -111,6 +112,7 @@ export function BranchPage({ now }: BranchPageProps) {
   return (
     <div className="ox-page ox-page--branch">
       <OxBreadcrumb page={page} />
+
 
       {markWallPhoto ? (
         <Band
@@ -122,11 +124,15 @@ export function BranchPage({ now }: BranchPageProps) {
           line1={t(BRANCH.h1Key)}
           subline={lead}
         />
+
       ) : (
         <header className="ox-page-head">
           <h1 className="ox-page-head__title ox-h1">{t(BRANCH.h1Key)}</h1>
+
           <p className="ox-page-head__lead ox-lead">{lead}</p>
+
         </header>
+
       )}
 
       <OxBranch
@@ -137,7 +143,9 @@ export function BranchPage({ now }: BranchPageProps) {
         photo={STORE_PHOTOS.storefront.photo}
       />
 
+
       <BranchGallery className="ox-page--branch__gallery" showStorefront={false} />
+
 
       <BranchMap className="ox-page--branch__map" />
 
@@ -145,6 +153,7 @@ export function BranchPage({ now }: BranchPageProps) {
         <h2 id="ox-branch-do-title" className="ox-h2">
           {t(BRANCH.doTitleKey)}
         </h2>
+
         <div className="ox-branch-do__grid">
           {BRANCH.doList.map((item, index) => {
             // The last row is "book a time for your visit", and it described
@@ -156,18 +165,25 @@ export function BranchPage({ now }: BranchPageProps) {
                 <h3 className="ox-branch-do__item-title">
                   <Icon name="tick" size={20} className="ox-branch-do__tick" />
                   <span>{t(item.titleKey)}</span>
+
                 </h3>
+
                 <p className="ox-branch-do__line ox-small">{t(item.lineKey)}</p>
+
                 {href ? (
                   <Button to={href} variant="secondary" size={44} className="ox-branch-do__cta">
                     {t('ox.pdp.book_now')}
                   </Button>
+
                 ) : null}
               </Panel>
+
             );
           })}
         </div>
+
       </section>
+
 
       <PickupSteps className="ox-page--branch__pickup" />
 
@@ -176,19 +192,25 @@ export function BranchPage({ now }: BranchPageProps) {
           <h2 id="ox-branch-faq-title" className="ox-h2">
             {t('ox.branch.faq_title')}
           </h2>
+
           <Accordion
             items={faqRows.map((row) => ({
               id: row.id,
               title: row.question,
               children: <p className="ox-body">{row.answer}</p>,
+
             }))}
           />
+
         </section>
+
       ) : null}
 
       <ContactRow className="ox-page--branch__contact" />
 
       <VisitStickyBar anchorSelector={VISIT_STICKY_ANCHOR} now={now} />
+
     </div>
+
   );
 }

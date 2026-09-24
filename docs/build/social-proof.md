@@ -47,8 +47,8 @@ with no reviews and the render the theme shipped with.
 | Setting | Value to enter |
 |---|---|
 | `google_place_url` | the listing URL (must be a Google host, must be `https`) |
-| `google_rating` | `5.0` — copy it exactly, never round up |
-| `google_review_count` | `68` — whole number |
+| `google_rating` | `5.0`, copy it exactly, never round up |
+| `google_review_count` | `68`, whole number |
 | `google_verified_at` | `2026-09-20`, and re-check monthly |
 
 The date is shown next to the figure. It costs nothing and it is the difference
@@ -94,7 +94,7 @@ source binds it exactly as it binds copy we write ourselves.
 
 So `isQuotable()` excludes any review mentioning:
 
-- **professional or medical titles** — the listing has reviews praising an
+- **professional or medical titles**, the listing has reviews praising an
   "instructor" and carrying "doctor" and "Professor" tags. Reprinting those
   asserts a credential the store has not documented, which the claims source
   forbids outright.
@@ -133,10 +133,10 @@ Unrelated to reviews, found while verifying the profile:
 
 ## Files
 
-- `app/content/social-proof.ts` — settings, the gate, the curation filter
-- `app/components/common/StoreRating.tsx` — `rail` and `inline` variants
+- `app/content/social-proof.ts`, settings, the gate, the curation filter
+- `app/components/common/StoreRating.tsx`, `rail` and `inline` variants
 - `app/styles/06-ox/_primitives.scss` §16
-- `locales/{ar,en}.json` — `ox.proof.*`
-- `twilight.json` — the four settings
-- `tests/content/social-proof.test.tsx` — 32 tests, including the
+- `locales/{ar,en}.json`, `ox.proof.*`
+- `twilight.json`, the four settings
+- `tests/content/social-proof.test.tsx`, 32 tests, including the
   structured-data guard

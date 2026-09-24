@@ -1,5 +1,5 @@
 // Unit tests for scripts/import-owner-icons.mjs: the pure transform
-// functions, and the two things that actually matter day to day — that the
+// functions, and the two things that actually matter day to day, that the
 // generator is idempotent (a second run must not drift from the first, since
 // its "remaining symbols" carry-forward reads whatever the previous run
 // wrote), and that every id Icon.tsx names actually exists in the sprite it
@@ -179,7 +179,7 @@ describe('import-owner-icons: assembly and idempotency', () => {
 
   // The generator's carry-forward step reads whatever sprite is already on
   // disk for the symbols the owner's set does not cover, so two consecutive
-  // runs — the second reading the first's output — must produce identical
+  // runs, the second reading the first's output, must produce identical
   // bytes. A generator that drifts on a second run would slowly rot the
   // committed sprite every time this script is re-run.
   it('is idempotent: generating twice from the committed sprite yields the same bytes', () => {

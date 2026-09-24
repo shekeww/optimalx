@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// gen-taxonomy-fixture.mjs — writes the offline preview's taxonomy overlay
+// gen-taxonomy-fixture.mjs, writes the offline preview's taxonomy overlay
 // (PLAN-ship Batch S1 step 7):
 //
 //   fixtures/store/overlay/categories.json   the 25 nodes as storefront

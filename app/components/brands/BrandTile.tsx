@@ -10,7 +10,7 @@ import { toInternalPath } from '../layout/navLinks';
  * Anatomy (owner brief 2026-09-23 late, item 1): a plate carrying the mark's
  * own arm-foot corner cut (X-IDENTITY §3.3, `ox-x-corner`, drawn in
  * `_b2-home.scss`/`_b4-listing.scss` on `.ox-brand-tile__plate` so the clip
- * never sits on the focusable element and clips its focus ring — §7.1's
+ * never sits on the focusable element and clips its focus ring, §7.1's
  * `focus-clipped` rule), the brand's own artwork when the API carries one,
  * else the NAME MARK (first grapheme in `--ox-accent`, Cairo 700). The logo
  * field is a fixed-height box with no ground of its own (coordinator
@@ -105,18 +105,24 @@ export function BrandTile({ brand, className, sizes = '208px' }: BrandTileProps)
               noWrapper
             />
           </span>
+
         ) : (
           <span className="ox-brand-tile__mark">
             {/* lang is omitted rather than forced to `en`: a brand name comes
                 from the merchant's own catalogue and may be in either script. */}
             <Bdi lang={null}>
               <span className="ox-brand-tile__mark-first">{first}</span>
+
               {rest}
             </Bdi>
+
           </span>
+
         )}
       </span>
+
     </Link>
+
   );
 }
 

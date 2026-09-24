@@ -13,14 +13,14 @@ import { fieldText, type OxBlockProps } from './defaults';
  * `/services`, and the newsletter form folded in.
  *
  * IT SHARES THE `ox-newsletter` REGISTRY SLOT, not a new one, so the whole
- * band — headline, line, CTA and the form — stays behind the one gate that
+ * band, headline, line, CTA and the form, stays behind the one gate that
  * slot has: `show_newsletter` on AND `newsletter_action_url` a valid
- * `https://` URL (owner brief S8h item 3 — `twilight.json`; a dead form
+ * `https://` URL (owner brief S8h item 3, `twilight.json`; a dead form
  * must never ship, so an unset or malformed URL hides the whole band, not
  * only the input). `OxNewsletter` reads that gate itself; this component
  * mirrors it with the same exported `isValidActionUrl` check so the headline
  * and the form never disagree about whether they are on the page. This band
- * never passes `subscribe`, so it never gets that prop's precedence — the
+ * never passes `subscribe`, so it never gets that prop's precedence, the
  * URL is the only transport it can offer the form.
  * `HOME_BLOCK_HEIGHTS['ox-newsletter']` and `BLOCK_SKELETONS['ox-newsletter']`
  * (`HomeSkeleton.tsx`) now reserve the band's real height, re-measured for the
@@ -29,14 +29,14 @@ import { fieldText, type OxBlockProps } from './defaults';
  * THE NEWSLETTER'S OWN IDENTITY PLATE (item 2: "a conversion block on the
  * identity plate, corner cut per §3.3"): `.ox-cta-band__newsletter` carries
  * its own raised ground and corner cut (`_b2-home.scss`), the same
- * construction `.ox-services__offer` already draws on its own dark band — a
+ * construction `.ox-services__offer` already draws on its own dark band, a
  * plate is its own component under X-IDENTITY's "one angled gesture per
  * component" rule, distinct from this band's own `.ox-cta-band__motif`.
  *
  * The privacy line's link (item 2) is resolved here, never invented: the
- * merchant's own footer menu (`menu.footer()`, `findMenuLink` — the exact
+ * merchant's own footer menu (`menu.footer()`, `findMenuLink`, the exact
  * mechanism `UtilityTrust.tsx`/`FooterColumns.tsx` already use for the same
- * kind of policy-page link), passed down as `privacyUrl`. No match, no link —
+ * kind of policy-page link), passed down as `privacyUrl`. No match, no link -
  * `OxNewsletter` falls back to the plain sentence it always had.
  */
 export function OxCtaBand({ data }: OxBlockProps) {
@@ -47,7 +47,7 @@ export function OxCtaBand({ data }: OxBlockProps) {
   const actionUrl = typeof settingsRecord?.newsletter_action_url === 'string' ? settingsRecord.newsletter_action_url : '';
   const visible = settingOn && isValidActionUrl(actionUrl);
   // `enabled: visible`: the query never fires while the band is hidden, and
-  // the hook still runs on every render either way (Rules of Hooks — this
+  // the hook still runs on every render either way (Rules of Hooks, this
   // call has to sit above the early return below).
   const { data: footerMenu } = useQuery({
     queryKey: ['menu', 'footer'],
@@ -81,13 +81,20 @@ export function OxCtaBand({ data }: OxBlockProps) {
           <h2 id="ox-cta-band-title" className="ox-cta-band__title ox-h2">
             {headline}
           </h2>
+
           <p className="ox-cta-band__line">{line}</p>
+
           <Button to="/services" size={44} variant="primary" className="ox-cta-band__cta">
             {t('ox.common.view_all')}
           </Button>
+
         </div>
+
         <OxNewsletter className="ox-cta-band__newsletter" enabled={visible} privacyUrl={privacyUrl} />
+
       </div>
+
     </section>
+
   );
 }

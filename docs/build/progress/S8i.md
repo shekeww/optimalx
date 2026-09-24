@@ -1,4 +1,4 @@
-# S8i — the poster rail: no strap, one cut for every card
+# S8i, the poster rail: no strap, one cut for every card
 
 Conductor, 2026-09-24. Owner ruling on the "اكتشف أكثر" rail: "remove the
 orange strap on the cards and all cards to share the same cuts, offers cards

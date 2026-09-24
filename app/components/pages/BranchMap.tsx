@@ -34,7 +34,7 @@ export interface BranchMapProps {
  *     theme-engine types/index.d.ts:140-144): the native `SallaMap` at the
  *     public coordinates, read-only, with `name` as its accessible label
  *     (engine-surface 9.2 salla-map);
- *  2. no key: a click-to-load facade — the `storefront` photograph at its own
+ *  2. no key: a click-to-load facade, the `storefront` photograph at its own
  *     size (never upscaled past 415px), the address and the landmark, and one
  *     button that swaps the plate for the keyless embed iframe on tap, so
  *     nothing from Google loads before the shopper asks for it.
@@ -42,7 +42,7 @@ export interface BranchMapProps {
  * Under either state, two links always render: "الاتجاهات"
  * (`BRANCH_LISTING.directionsUrl`, turn-by-turn navigation) and the listing
  * itself, preferring the merchant's own `google_place_url`/`branch_map_url`
- * settings when set and falling back to the audited listing URL — the exact
+ * settings when set and falling back to the audited listing URL, the exact
  * fallback chain `registerHeadHooks.tsx#branchFromSettings` already uses for
  * the structured-data `hasMap`. `branch_landmark` is the one fact here still
  * gated on a setting: it is the merchant's own words, which nothing stands in
@@ -85,8 +85,11 @@ export function BranchMap({ apiKey, className }: BranchMapProps) {
               readonly
               name={t('ox.branch.address')}
             />
+
           </Suspense>
+
         </div>
+
       ) : embedOpen ? (
         <div className="ox-branch-map__frame">
           {/* Tested inside sandbox="allow-scripts allow-same-origin
@@ -104,6 +107,7 @@ export function BranchMap({ apiKey, className }: BranchMapProps) {
             data-testid="ox-branch-map-frame"
           />
         </div>
+
       ) : (
         <div className="ox-branch-map__plate">
           <img
@@ -120,7 +124,9 @@ export function BranchMap({ apiKey, className }: BranchMapProps) {
           <div className="ox-branch-map__info">
             <Icon name="branch-visit" size={32} className="ox-branch-map__icon" />
             <p className="ox-branch-map__address ox-body">{t('ox.branch.address')}</p>
+
             {landmark ? <p className="ox-branch-map__landmark ox-small">{landmark}</p> : null}
+
             <Button
               type="button"
               size={44}
@@ -131,8 +137,11 @@ export function BranchMap({ apiKey, className }: BranchMapProps) {
             >
               {t(BRANCH.map.viewKey)}
             </Button>
+
           </div>
+
         </div>
+
       )}
       <div className="ox-branch-map__actions">
         <Button
@@ -142,10 +151,12 @@ export function BranchMap({ apiKey, className }: BranchMapProps) {
           target="_blank"
           rel="noopener noreferrer"
           iconStart={<Icon name="map-pin" size={20} />}
+
           className="ox-branch-map__link"
         >
           {t(BRANCH.map.directionsKey)}
         </Button>
+
         <Button
           href={openUrl}
           size={44}
@@ -156,7 +167,10 @@ export function BranchMap({ apiKey, className }: BranchMapProps) {
         >
           {t(BRANCH.map.openGoogleKey)}
         </Button>
+
       </div>
+
     </section>
+
   );
 }

@@ -1,9 +1,9 @@
-# S9a-V1 — the branch visit, part 1: home branch block, advisory band, PDP plate, branch poster
+# S9a-V1, the branch visit, part 1: home branch block, advisory band, PDP plate, branch poster
 
 Builder S9a-V1, 2026-09-24. Direction: `docs/build/VISIT-2026-09-24.md` §3,
 §4.1-§4.3. Concurrent with S9a-V2 (`app/components/pages/BranchPage.tsx`,
 `BranchMap.tsx`, a new `BranchGallery`, the footer, `registerHeadHooks.tsx`,
-`_b5-pages.scss`, `_b1-layout.scss` — not touched here). `OxBranch.tsx` is
+`_b5-pages.scss`, `_b1-layout.scss`, not touched here). `OxBranch.tsx` is
 shared: V2 only passes props to it.
 
 Progress logged after every step.
@@ -31,7 +31,7 @@ Progress logged after every step.
 
 ## Steps
 
-### Step 1 — read the brief's cited files
+### Step 1, read the brief's cited files
 
 Read `VISIT-2026-09-24.md`, `store-photos.ts`, `branch.ts`, `social-proof.ts`,
 `StoreRating.tsx`, `OxBranch.tsx`, `OxBranchBlock.tsx`, `defaults.ts`,
@@ -44,7 +44,7 @@ Two load-bearing findings before writing code:
 
 - The engine `Image` component's `srcSetWidths` prop only builds a `srcset`
   for a Salla CDN host (`getCdnImageSrcSet` returns `undefined` for anything
-  else — `chunk-SKLEJJ6M.js`), so it cannot serve the local `/assets/store/*`
+  else, `chunk-SKLEJJ6M.js`), so it cannot serve the local `/assets/store/*`
   renditions. `storePhotoSrcSet()` from the manifest is passed as the native
   `srcSet` prop instead (`Image` prefers a supplied `srcSet` over building one).
 - `StoreRating` calls `useTheme()` unconditionally even when its `value` prop
@@ -53,7 +53,7 @@ Two load-bearing findings before writing code:
   `useTheme` (the component itself reads `settings` as a prop, not the hook),
   so mounting `StoreRating` there needed the mock added.
 
-### Step 2 — `OxBranch.tsx` and `OxBranchBlock.tsx`
+### Step 2, `OxBranch.tsx` and `OxBranchBlock.tsx`
 
 - `OxBranch`: added `showOfferLine` prop; photo panel now reads the manifest
   entry matching the `photo` prop (`STORE_PHOTOS['store-wide']`) for its
@@ -68,13 +68,13 @@ Two load-bearing findings before writing code:
 - `OxBranchBlock`: passes `photo={STORE_PHOTOS['store-wide'].photo}` and
   `showOfferLine`.
 
-### Step 3 — `defaults.ts` and `twilight.json`
+### Step 3, `defaults.ts` and `twilight.json`
 
 Moved `'ox-branch'` in `HOME_BLOCK_PATHS` to directly after `'ox-services'`.
 `twilight.json`'s component array reordered to match (same two objects,
-swapped order, no field/key/title change) — see Deviations.
+swapped order, no field/key/title change), see Deviations.
 
-### Step 4 — `OxServices.tsx`
+### Step 4, `OxServices.tsx`
 
 - `OfferStrip`: facts list and a new `<img className="ox-offer__photo">`
   (the advisory-room manifest entry, `storePhotoSrcSet`, `loading="lazy"`)
@@ -82,46 +82,46 @@ swapped order, no field/key/title change) — see Deviations.
 - `TrustRow`: `readStoreRating(settings)` computed once; a gated first `<li>`
   carrying `<StoreRating variant="inline" value={rating} />`.
 
-### Step 5 — `AdvisoryCta.tsx`
+### Step 5, `AdvisoryCta.tsx`
 
 Added `readStoreRating(settings)`; a third `.ox-advisory__action` quiet link
 ("الاتجاهات إلى الفرع", `map-pin`, `BRANCH_LISTING.directionsUrl`, new tab)
 after the existing two; the closing note moved into a new `.ox-advisory__foot`
 row that also carries the gated `StoreRating` chip.
 
-### Step 6 — `posters.ts`
+### Step 6, `posters.ts`
 
 The `branch` content card's `photo`/`width`/`height` now read from
 `STORE_PHOTOS.storefront` instead of the retired `about-store.webp`; `to` and
 the locale keys untouched.
 
-### Step 7 — SCSS
+### Step 7, SCSS
 
 - `_blocks.scss`: `.ox-branch__offer` (same treatment as `.ox-branch__address`).
 - `_b2-home.scss` §8: `.ox-offer__top`/`.ox-offer__photo` (a plain rounded
-  rectangle — no new clip-path, the strip keeps its one existing
+  rectangle, no new clip-path, the strip keeps its one existing
   `ox-x-corner` cut), plus the 768 row layout.
 - `_b7-advisory.scss`: `.ox-advisory__foot` (flex-wrap row).
 
-### Step 8 — locale partials
+### Step 8, locale partials
 
 `locales/partials/s9a-v1.{ar,en}.json`: `ox.blocks.branch.directions`,
 `ox.blocks.branch.photo_wide_alt` (the store-wide photo is a shelf wall, not
-the storefront facade `photo_alt` already describes — a new key rather than
+the storefront facade `photo_alt` already describes, a new key rather than
 editing another batch's `p1b` partial), `ox.pdp.advisory_directions`,
 `ox.home.offer_photo_alt`. Merged with `node scripts/i18n-merge.mjs`: 4 added,
 0 updated, 0 conflicts.
 
-### Step 9 — tests
+### Step 9, tests
 
 - `tests/blocks/OxBranch.test.tsx`: the `Image` mock now forwards
   `width`/`height`/`srcSet`/`sizes` (previously dropped); updated the
   no-photo test's `data-meta` expectation to `'full'`; new tests for the
   manifest-driven srcset, the unconditional actions + quiet WhatsApp, the
   store rating gate, the offer-line gate; removed the `branch_map_url`
-  hostile-URL test (retired feature) — `safeExternalUrl`'s own pure-function
+  hostile-URL test (retired feature), `safeExternalUrl`'s own pure-function
   test (used by `BranchMap.tsx`) is untouched.
-- `tests/home/OxBranchBlock.test.tsx` (new): the wiring smoke test — the
+- `tests/home/OxBranchBlock.test.tsx` (new): the wiring smoke test, the
   store-wide photo, the offer line, the home-only actions.
 - `tests/home/OxServices.test.tsx`: new tests for the offer photo panel and
   the trust row's rating chip.
@@ -133,7 +133,7 @@ editing another batch's `p1b` partial), `ox.pdp.advisory_directions`,
 ```
 $ pnpm typecheck
 $ tsc --noEmit
-(no output — no errors)
+(no output, no errors)
 
 $ pnpm vitest run tests/blocks tests/home tests/product
  Test Files  42 passed (42)
@@ -153,7 +153,7 @@ batch never touched. `git diff HEAD -- app/components/product/OxProductCard.tsx`
 showed an unrelated, uncommitted, in-progress rebuild (a concurrent change
 outside this batch and outside V2's stated file list: "the wishlist heart …
 gone outright") that removed the wishlist toggle the failing tests asserted
-on — pre-existing and out of scope, not touched here. Final re-run, after
+on, pre-existing and out of scope, not touched here. Final re-run, after
 that concurrent work settled on its own:
 
 ```
@@ -163,25 +163,25 @@ $ pnpm vitest run tests/blocks tests/home tests/product
 
 $ pnpm typecheck
 $ tsc --noEmit
-(no output — no errors)
+(no output, no errors)
 ```
 
 The shared tree kept changing under concurrent builders through the rest of
 this batch (`git status` at the end shows uncommitted work in `MainBar.tsx`,
 `MobileDrawer.tsx`, `AboutPage.tsx`, `PdpGallery.tsx`, `OxProductCard.tsx`,
 `VariantChips.tsx`, `cardSpec.ts`, `_b1-layout.scss`, `_b3-product.scss`,
-`_b4-listing.scss`, `_primitives.scss` — none of them this batch's files, and
+`_b4-listing.scss`, `_primitives.scss`, none of them this batch's files, and
 new progress docs `S9a-V3.md`/`S9a-V4.md` appeared alongside V2's). A later
 full re-run caught `tests/home/posterRow.test.ts` failing on `.ox-pcard`'s
-`aspect-ratio` (a `_b2-home.scss` §17.2 rule this batch never touched) —
+`aspect-ratio` (a `_b2-home.scss` §17.2 rule this batch never touched) -
 re-ran alone immediately after and it passed; the file at rest carries the
 correct rule. Read as a transient hit against a concurrently-written
 `_b2-home.scss`, not a regression from this batch.
 
 ```
 $ node_modules/.bin/sass --quiet-deps app/styles/app.scss /tmp/out.css
-(exit 0 — only pre-existing @import deprecation warnings; the four new rules
- — .ox-branch__offer, .ox-offer__top/__photo, .ox-advisory__foot — all present
+(exit 0, only pre-existing @import deprecation warnings; the four new rules
+ - .ox-branch__offer, .ox-offer__top/__photo, .ox-advisory__foot, all present
  in the compiled output)
 ```
 
@@ -204,24 +204,24 @@ under concurrent load over the course of this batch):
 - `/ar/branch` and `/ar/services` both return 200 in under a second (curl).
   `/ar/services`'s HTML contains `ox-services-offer` and `ox-offer__photo`.
 - `/ar` itself is too slow for a plain `curl` to complete (SSR for all sixteen
-  home blocks plus eight category rails; confirmed independent of this batch —
+  home blocks plus eight category rails; confirmed independent of this batch -
   `/ar/branch` and `/ar/services`, which do not go through `defaults.ts`'s
   block loop, are fast). Driven with the browser instead: `.ox-branch-block`
   mounts once scrolled into view (the lazy shell, amendment A7) and measures
   763.6px tall at 390 and 505.4px at 1440 on the live store's real settings
   (`branch_hours`, `whatsapp_number` set; the four `google_*` rating settings
-  not yet set — the owner has not filled them, VISIT-2026-09-24 §5 — so
+  not yet set, the owner has not filled them, VISIT-2026-09-24 §5, so
   `StoreRating` correctly renders nothing, per its own gate).
 - `ox-store-rating` therefore is NOT in `/ar`'s current HTML on this store,
   by design. Verified the gate and the mount position instead: injected the
   exact markup `StoreRating` renders once its four settings exist into the
   same loaded page at the same position (under the title) and read the
-  before/after box — see `HOME_BLOCK_HEIGHTS['ox-branch']`'s own derivation
+  before/after box, see `HOME_BLOCK_HEIGHTS['ox-branch']`'s own derivation
   comment in `defaults.ts`. `tests/blocks/OxBranch.test.tsx`'s "shows the
   store rating once the four google_* settings are filled" test covers the
   same gate directly (passing).
 - Screenshot: `docs/build/progress/visit/s9a-v1-branch-390.png` (full
-  viewport, scrolled to the block) — the photo panel, the offer line, and the
+  viewport, scrolled to the block), the photo panel, the offer line, and the
   four actions in order ("احجز زيارتك", "الاتجاهات", "راسلنا على واتساب",
   "صفحة الفرع") are all visible and correctly labelled. A matching desktop
   (1440) shot and one for the offer strip's photo panel were attempted but not
@@ -240,7 +240,7 @@ under concurrent load over the course of this batch):
    own component order are identical ("these assertions are the contract that
    keeps the two the same file in two places") and the batch explicitly
    authorises reordering `defaults.ts`. Editing `defaults.ts` alone would leave
-   `tests/home` — required by this batch's own Verify step — failing. The edit
+   `tests/home`, required by this batch's own Verify step, failing. The edit
    is the mechanical minimum: the `home.ox-branch` object moved to sit
    immediately after `home.ox-services`, no key/title/field/value touched. Does
    not intersect V2's file list.
@@ -255,11 +255,11 @@ under concurrent load over the course of this batch):
    cross-batch partial edit.
 4. **An unexplained commit (`4632e62`, message "commit_editmsg") appeared at
    HEAD mid-batch, containing most of this batch's files plus one V2 screenshot
-   (`branch-map-sandbox-check.png`).** Not made by this session — no `git
+   (`branch-map-sandbox-check.png`).** Not made by this session, no `git
    add`/`commit` was ever run here. Flagged for the conductor, who owns git;
    nothing further done about it (no amend, no reset).
 5. **`docs/build/progress/visit/s9a-v1-*.png` desktop and band shots are
-   missing** (see Verify) — the mobile branch-block shot is the one screenshot
+   missing** (see Verify), the mobile branch-block shot is the one screenshot
    this batch obtained cleanly.
 6. **Killed every `chrome-headless-shell.exe` process during CDP cleanup**
    (`taskkill /F /IM chrome-headless-shell.exe`), which may have included a

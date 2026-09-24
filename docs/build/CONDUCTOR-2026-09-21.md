@@ -1,4 +1,4 @@
-# Conductor context — ship program, 2026-09-21
+# Conductor context, ship program, 2026-09-21
 
 Read this whole file before any work. It is the single source of state for every agent in this program. Your brief names your batch; everything else here is binding context.
 

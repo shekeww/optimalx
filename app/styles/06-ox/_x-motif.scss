@@ -1,6 +1,6 @@
 // The X identity motif (X-IDENTITY-2026-09-22.md §§2-4). Mixins and classes
-// that carry the mark's own construction — a 34° lean terminated by a
-// horizontal ledge, never a full-height diagonal (§2.3) — onto layout
+// that carry the mark's own construction, a 34° lean terminated by a
+// horizontal ledge, never a full-height diagonal (§2.3), onto layout
 // surfaces. Nothing here animates a `clip-path` (check-motion's
 // `wedge-motion` rule) and nothing here sets an angle other than
 // `--ox-angle`/`--ox-angle-tan` (check-identity's `angle-value`/`angle-tan`
@@ -10,16 +10,16 @@
 @use 'sass:math';
 
 // ---------------------------------------------------------------------------
-// 1. ox-x-corner — the mark's arm-foot corner cut (§3.3: need card, plan
+// 1. ox-x-corner, the mark's arm-foot corner cut (§3.3: need card, plan
 //    card, featured rail tile, branch photo panel).
 // ---------------------------------------------------------------------------
 // A 34° cut into one top corner of a layout box, `$lean` tall, run derived by
 // `ox-run()` so it always recomputes with `$ox-angle-tan`. Logical terms match
 // `_primitives.scss`'s `ox-wedge` exactly (this theme's Conventions line:
 // inline-start is the right edge in the RTL document default): `$side: end`
-// cuts the top inline-END corner — RTL: top-LEFT, LTR: top-right (the need
+// cuts the top inline-END corner, RTL: top-LEFT, LTR: top-right (the need
 // card's treatment, §3.3); `$side: start` mirrors it to the top inline-START
-// corner — RTL: top-right, LTR: top-left (the dark plan card, §4.6). This is
+// corner, RTL: top-right, LTR: top-left (the dark plan card, §4.6). This is
 // the simple two-edge corner cut (the same construction `ox-wedge-corner`
 // already draws elsewhere in this theme); the mark's own foot ledge (§1.3) is
 // a finer embellishment `ox-x-step` carries where a surface asks for it
@@ -40,11 +40,11 @@
 }
 
 // ---------------------------------------------------------------------------
-// 2. ox-x-step — a 34° edge stepped once: lean `$a`, a horizontal ledge `$t`
+// 2. ox-x-step, a 34° edge stepped once: lean `$a`, a horizontal ledge `$t`
 //    tall, then the remainder of `$h` vertical (§3.1, §3.4 `ox-step-edge`).
 // ---------------------------------------------------------------------------
 // `$h` is the full block-size the edge runs over; `$a` is how much of it
-// leans (never the whole height — §2.3, the full-height diagonal is
+// leans (never the whole height, §2.3, the full-height diagonal is
 // impossible at 34°); `$t` is the ledge height and `$j` (the jog) is derived
 // at the locked 3.49 ratio, never passed in (owner note 5: non-negotiable).
 @mixin ox-x-step($h, $a, $t) {
@@ -74,7 +74,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// 3. ox-x-notch — a horizontal notch in a straight edge. No angle, so it is
+// 3. ox-x-notch, a horizontal notch in a straight edge. No angle, so it is
 //    legal at any size (§3.2's 158px law only reaches an angled primitive).
 // ---------------------------------------------------------------------------
 @mixin ox-x-notch($t, $j, $corner: end-start) {
@@ -92,15 +92,15 @@
 }
 
 // ---------------------------------------------------------------------------
-// 4. ox-x-watermark — the mark as a picture, never a cut (§4.1).
+// 4. ox-x-watermark, the mark as a picture, never a cut (§4.1).
 // ---------------------------------------------------------------------------
 // Positioning and contrast only: the mark itself is drawn by the caller as
 // `<svg aria-hidden="true"><use href="#ox-mark"/></svg>` (the pattern
-// `app/components/home/PlanCard.tsx:46` already uses) — never a `url()`
+// `app/components/home/PlanCard.tsx:46` already uses), never a `url()`
 // image request, never an `<img>` (§4.1's render-path clause). `--ox-x-wm-w`/
 // `--ox-x-wm-h` are set per breakpoint by the caller (§4.1: 200×176.8 /
 // 240×212.1 / 420×371.2). Colour is `--ox-ink` on a light ground or
-// `--ox-ink-on-dark` on a dark one, opacity capped at 0.06 — never
+// `--ox-ink-on-dark` on a dark one, opacity capped at 0.06, never
 // `--ox-accent` (BUILD 3.1; the judge fix to §4.1 dropped every accent row).
 .ox-x-watermark {
   position: absolute;
@@ -126,7 +126,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// 5. ox-x-scrim — the 34° scrim for faded photographic cards (§4.5).
+// 5. ox-x-scrim, the 34° scrim for faded photographic cards (§4.5).
 // ---------------------------------------------------------------------------
 // The iso-lines run parallel to the mark's bars, so the gradient direction is
 // perpendicular to them. This is a literal degree, not `--ox-angle`/
@@ -157,7 +157,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// 6. .ox-x-divider — the full-width band-to-band divider, stepped once at
+// 6. .ox-x-divider, the full-width band-to-band divider, stepped once at
 //    62% of the container (§3.3).
 // ---------------------------------------------------------------------------
 // Simplified to an axis-aligned raised tab rather than the literal 34°-leaned
@@ -191,10 +191,10 @@
 }
 
 // ---------------------------------------------------------------------------
-// 7. .ox-x-bullet — the list-bullet device. Axis-aligned only: §4.4's chevron
+// 7. .ox-x-bullet, the list-bullet device. Axis-aligned only: §4.4's chevron
 //    sprite was dropped (BUILD 3.5 reserves chevrons for sallaicons, and
 //    `Icon.tsx`'s own standing note already closed that door), so this is a
-//    small notch, not a diagonal — legal at any size under §3.2 because it
+//    small notch, not a diagonal, legal at any size under §3.2 because it
 //    carries no angle at all.
 // ---------------------------------------------------------------------------
 .ox-x-bullet {
@@ -216,9 +216,9 @@
 }
 
 // ---------------------------------------------------------------------------
-// 8. .ox-x-loader — the route-level loading mark. Static only: §4.2's
+// 8. .ox-x-loader, the route-level loading mark. Static only: §4.2's
 //    earlier "sweep" amendment is removed (it was a second moving wedge
-//    DIRECTION 7.1/7.2 and BUILD.md 3.4 do not sanction — see
+//    DIRECTION 7.1/7.2 and BUILD.md 3.4 do not sanction, see
 //    X-IDENTITY-2026-09-22.md §9, judge fix 17). This is a static 4px
 //    accent ledge across the top of a full-page skeleton, present at first
 //    paint, never transitioned or animated.

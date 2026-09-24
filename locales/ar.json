@@ -102,6 +102,7 @@
   "ox.header.cart": "السلة",
   "ox.header.wishlist": "المفضلة",
   "ox.header.search_label": "البحث في المتجر",
+  "ox.header.search_placeholder": "ادخل كلمة البحث",
   "ox.header.localization": "اللغة والعملة",
   "ox.header.logo_alt": "اوبتيمال اكس",
   "ox.search.placeholder": "ابحث عن منتج أو نوع، مثل واي بروتين",

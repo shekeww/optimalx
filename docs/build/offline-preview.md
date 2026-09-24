@@ -1,4 +1,4 @@
-# Offline preview — running the theme without api.salla.dev
+# Offline preview, running the theme without api.salla.dev
 
 `pnpm preview:offline`
 
@@ -23,25 +23,25 @@ host. Found 2026-09-21 after an hour of chasing a routing regression that did
 not exist.
 
 **The dev server (`vite dev` on :3210) is one shared Node process and can go
-fully unresponsive — not just slow — under concurrent headless-browser load.**
+fully unresponsive, not just slow, under concurrent headless-browser load.**
 Confirmed 2026-09-24 while diagnosing an owner report of the product page's
 add-to-cart button and quantity control "disappearing": with several
 concurrent headless-Chrome sessions hitting the preview, `Page.navigate`
 (CDP) did not acknowledge for 90+ seconds, a plain `curl` to `/ar` or to a
 product page got zero bytes back after 40-60s, and the vite process's CPU
-time was flat (idle, not computing) the whole time it was stuck — a genuine
+time was flat (idle, not computing) the whole time it was stuck, a genuine
 stall, not a busy loop. Any route needing the SSR data-loader chain (which is
 almost every real page: home, PDP, listings) was affected; a route needing no
 loader (the bare-host username redirect above) kept answering in under 60ms
 the entire time, and the separate snapshot API on `:5178` (`serve-store.mjs`,
-plain `node:http`, its own process) kept answering in under 2ms throughout —
+plain `node:http`, its own process) kept answering in under 2ms throughout -
 so the bottleneck is specifically Vite's dev-mode SSR render pipeline, not
 the API mock and not the whole machine. The conductor restarting both
 processes cleared it immediately. **If a page won't load, or a control that
 should be there (add-to-cart, quantity, anything mounted client-side) seems
 to be missing or flickering, check whether the server is actually answering
 (`curl -w '%{http_code} %{time_total}'` to `/ar`) before concluding it's a
-code defect** — a live re-check against this exact catalogue/product, once
+code defect**, a live re-check against this exact catalogue/product, once
 the server answers in well under a second, is the only trustworthy evidence.
 There is no code fix for this in `serve-store.mjs` / `offline-api.ts` /
 `preview-offline.mjs`: it is Vite's own dev-server concurrency, and it has no
@@ -101,7 +101,7 @@ them locally, and point the theme at that.
 ### The one trap: `VITE_API_URL` alone does nothing
 
 The engine *reads* `VITE_API_URL` in `resolveRuntimeEnv()`, so it looks like
-the intended switch. It is not — that value is written into the runtime-env
+the intended switch. It is not, that value is written into the runtime-env
 object and never read again. The API client hardcodes its prefix:
 
 ```js
@@ -120,14 +120,14 @@ were considered:
 
 `app/dev/offline-api.ts` does the third. It wraps `globalThis.fetch` and
 `XMLHttpRequest.prototype.open`, redirects only `api.salla.dev` and
-`cdn.salla.network`, and is **inert unless `VITE_API_URL` is set** — a normal
+`cdn.salla.network`, and is **inert unless `VITE_API_URL` is set**, a normal
 `pnpm dev` and every production build behave exactly as before.
 
 ---
 
 ## What is real and what is not
 
-### Real — straight from the store, unmodified
+### Real, straight from the store, unmodified
 
 | area | detail |
 | --- | --- |
@@ -135,14 +135,14 @@ were considered:
 | Registration | commercial registration `7054552703`, **no tax number** (the store genuinely has none) |
 | Branch | one branch, Al-Khalidiyah, Medina, `+966553524524`, its real working hours |
 | Brand | `#EE4D22`, Cairo, the Instagram link (the only social account filled in) |
-| Catalogue | all **47** products — real names, Arabic descriptions, prices in SAR, SKUs, weights, stock, product types (36 product, 4 food, 4 service, 1 codes, 1 digital, 1 group) |
+| Catalogue | all **47** products, real names, Arabic descriptions, prices in SAR, SKUs, weights, stock, product types (36 product, 4 food, 4 service, 1 codes, 1 digital, 1 group) |
 | Images | the real `cdn.salla.sa` URLs. 41 products have images; **6 have none** (OX-042…047) and render the placeholder, as they do live |
 | Discounts | the **4** genuinely discounted products; `discount_percentage` is arithmetic over the store's own two numbers |
 | Variants | the one product with options (the shaker's 4 colours) keeps its real options and SKUs |
 | Language | Arabic only. English exists in the dashboard but is **disabled**, so `is_multilingual` is false and no hreflang cluster is emitted |
-| Emptiness | **zero** categories, **zero** brands, **zero** tags, **zero** reviews, **zero** orders, **zero** menu items — all real, none padded |
+| Emptiness | **zero** categories, **zero** brands, **zero** tags, **zero** reviews, **zero** orders, **zero** menu items, all real, none padded |
 
-### Honestly empty — the store has nothing to show here
+### Honestly empty, the store has nothing to show here
 
 These are not stubs. They are the truth of the store today, and seeing them
 empty is the point of the preview.
@@ -158,7 +158,7 @@ empty is the point of the preview.
   `{total:0,count:1,rate:0}` on every product; that is not a review count and
   is deliberately not carried through.
 
-### Stubbed — plausible structure, not store data
+### Stubbed, plausible structure, not store data
 
 | area | what is stubbed | why |
 | --- | --- | --- |
@@ -169,7 +169,7 @@ empty is the point of the preview.
 | `external_services`, `affiliate`, `headers` | empty | nothing reads them |
 | Salla CDN translations | `{}` | the theme ships the same keys in `locales/`, which reach i18next as the `theme` fallback namespace, so no string is lost |
 | `apps/snippets` | `[]` | no installed-app snippets are emulated |
-| Homepage blocks | the merchant's **real** 10 visible blocks are served, but they belong to the theme that is live in the dashboard, not this theme's `ox-*` blocks. `app/routes/index.tsx` does not recognise them and renders the **twelve default OptimalX blocks** instead — which is exactly what a visitor meets today |
+| Homepage blocks | the merchant's **real** 10 visible blocks are served, but they belong to the theme that is live in the dashboard, not this theme's `ox-*` blocks. `app/routes/index.tsx` does not recognise them and renders the **twelve default OptimalX blocks** instead, which is exactly what a visitor meets today |
 
 ### Does not work at all in this mode
 
@@ -216,14 +216,14 @@ network, so re-running it is free.
    | `branding.json` | `store_branding_get` |
    | `languages.json` | `languages_list` |
    | `categories.json` | `categories_list` |
-   | `menus.json` | `menu_list` — the index, then each menu id, merged as `{"menus":[{id,name,items}]}` |
+   | `menus.json` | `menu_list`, the index, then each menu id, merged as `{"menus":[{id,name,items}]}` |
    | `reviews.json` | `reviews_list` |
    | `theme-settings.json` | `theme_settings_list` |
    | `homepage-components.json` | `homepage_components_list` |
    | `products.page1.json` | `products_list` page 1, `per_page: 25` |
    | `products.page2.json` | `products_list` page 2, `per_page: 25` |
 
-   Use `products_list`, **not** `products_list_with_images` — the latter
+   Use `products_list`, **not** `products_list_with_images`, the latter
    returns rendered image blocks, not JSON. Add `products.page3.json` and
    register it in the `productPages` array if the catalogue grows past 50.
 
@@ -252,7 +252,7 @@ it holds, and which tool produced each raw file.
 
 Every request the snapshot API answers is logged with its path, its query and
 how it was answered, and a path it does not know is logged as
-`UNKNOWN PATH — empty envelope (200)`. An unknown path answers **200 with an
+`UNKNOWN PATH, empty envelope (200)`. An unknown path answers **200 with an
 empty envelope, never 404**, because a 404 inside a TanStack loader is what
 produces the 500 page. Watch that log for `UNKNOWN PATH` lines: each one is a
 gap worth filling.
@@ -283,7 +283,7 @@ None of them is introduced by the snapshot; all of them are visible live too.
 
 2. **A missing image can turn into a product-detail request.** The product
    route is `/{-$locale}/$slug/p{$id}`, and `/assets/images/plan-advisory.jpg`
-   matches it — `$slug` = `images`, `$id` = `lan-advisory.jpg`, because the
+   matches it, `$slug` = `images`, `$id` = `lan-advisory.jpg`, because the
    `p` of `plan` is the route's literal prefix. The loader then asks for
    `products/lan-advisory.jpg/details`. Harmless while the request 404s into
    a Not Found, but any theme asset under a path segment starting with `p`
@@ -296,7 +296,7 @@ None of them is introduced by the snapshot; all of them are visible live too.
 
 4. **One unit test was already failing before this work.**
    `tests/home/OxServices.test.tsx > prefers the merchant heading over the
-   locale copy` — the `.ox-sh__desc` node it asserts on no longer exists after
+   locale copy`, the `.ox-sh__desc` node it asserts on no longer exists after
    the section-header rework. 819 of 820 tests pass.
 
 ## Notes on reading the preview
@@ -304,7 +304,7 @@ None of them is introduced by the snapshot; all of them are visible live too.
 - The product rails are lazy: the `ox-products` and `ox-faq` rails mount when
   they scroll into view, so the home page fills in as you scroll rather than
   all at once.
-- `.offline-preview.log` is gitignored. `fixtures/store/` is not — the
+- `.offline-preview.log` is gitignored. `fixtures/store/` is not, the
   snapshot is meant to be committed so a teammate can run the preview without
   MCP access.
 
@@ -348,7 +348,7 @@ The live store also has zero brands, and the snapshot's `fixtures/store/brands.j
 says so by default (`[]`): `OxBrands` renders nothing (S2e, 2026-09-22:
 `MIN_BRANDS` is 1, so even a single real brand would be enough). To see the
 strip locally before the store carries one, the same `OFFLINE_TAXONOMY=1`
-switch also serves `fixtures/store/overlay/brands.json` — four sample rows
+switch also serves `fixtures/store/overlay/brands.json`, four sample rows
 (Optimum Nutrition, MuscleTech, EVLution Nutrition, Dymatize; Latin names,
 `logo: null`, from `docs/build/research/FINAL-catalogue.md` §B) instead of the
 snapshot's empty one.
@@ -412,15 +412,15 @@ OFFLINE_LANGS=ar,en pnpm preview:offline`.
 
 Owner report: "in english version, products names and data are appearing in
 arabic." `OFFLINE_LANGS=ar,en` above makes the theme render `/en` at all;
-until this batch, everything it rendered — product names, subtitles,
-descriptions, search results, category and menu names — still came from the
+until this batch, everything it rendered, product names, subtitles,
+descriptions, search results, category and menu names, still came from the
 Arabic snapshot, because `scripts/serve-store.mjs` served one static
 capture regardless of the request's language. That was a gap in the
 **mock only**: the live theme engine always sends `accept-language:
 <locale>` on every storefront API call
 (`node_modules/@salla.sa/twilight-theme-engine/dist/chunk-O6XXHXC4.js`,
 `sharedHeaders()`/`api.hooks.beforeRequest`), and the real Salla API
-answers a product's translation whenever the merchant has entered one —
+answers a product's translation whenever the merchant has entered one -
 the live store just has none entered yet (see
 `docs/build/owner-checklist.md` item 30).
 
@@ -434,34 +434,34 @@ reads every product's English name/subtitle/description from
 `docs/build/research/optimalx-catalogue.csv` (keyed by SKU), gates each one
 through `scripts/check-copy.mjs`'s rules and `scripts/check-claims.mjs`'s
 rules (plus a small literal list for the English claims
-`FINAL-claims-source.md` §3 names — cures, treats, guaranteed, fastest,
-burns fat, clinically proven — that check-claims.mjs's own English coverage
+`FINAL-claims-source.md` §3 names, cures, treats, guaranteed, fastest,
+burns fat, clinically proven, that check-claims.mjs's own English coverage
 does not include), and writes the clean twins to
 `fixtures/store/overlay/products.en.json`, keyed by the numeric product id.
 As of 2026-09-24: **43 of 47** products got a twin; **4** (OX-021, OX-023,
 OX-026, OX-035) were excluded because their description cites a
-third-party "best-selling" ranking, which trips the superlative rule —
+third-party "best-selling" ranking, which trips the superlative rule -
 those four keep showing their real Arabic name on `/en` until the CSV is
 reworded, exactly like an untranslated product on the live store would.
 Never invented, never edited for meaning: an excluded or twin-less product
 is reported by the script, not silently patched.
 
 `scripts/serve-store.mjs` reads the request's `accept-language` header (or
-a `?lang=` query param, for curling the mock by hand — `scripts/lang-
+a `?lang=` query param, for curling the mock by hand, `scripts/lang-
 overlay.mjs`'s `resolveLang()`) and, for `en`, overlays that file onto
 `products`, product `details` and `search` results
 (`fixtures/store/products.json` / `product-details.json` stay
 byte-identical; the overlay is computed once at boot, not per request).
 Category and menu names are translated the same way, from the taxonomy's
 own `ox.tax.<key>.name` strings in `locales/en.json` matched by slug
-(`app/content/taxonomy.json`) — visible only under `OFFLINE_TAXONOMY=1`,
+(`app/content/taxonomy.json`), visible only under `OFFLINE_TAXONOMY=1`,
 since the store has no real categories yet. **Brand names need no
 overlay**: `fixtures/store/overlay/brands.json` already carries Latin
 names only (`NOW Foods`, `Optimum Nutrition`, …) and the theme renders
 `brand.name` in both languages, so there is no Arabic brand name being
 shown that needs translating.
 
-Verify without disturbing the shared preview on `:5178`/`:3210` — run a
+Verify without disturbing the shared preview on `:5178`/`:3210`, run a
 second instance on a spare port:
 
 ```

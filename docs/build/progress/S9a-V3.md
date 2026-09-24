@@ -1,4 +1,4 @@
-# S9a-V3 — the English hero, the doubled account icon, the header feature audit
+# S9a-V3, the English hero, the doubled account icon, the header feature audit
 
 Builder S9a-V3, 2026-09-24. Owner review of the same date (screenshots of
 `/en` at 1905px and of the header). Scope: `OxHero.tsx`, `_b2-home.scss` §1
@@ -6,21 +6,21 @@ Builder S9a-V3, 2026-09-24. Owner review of the same date (screenshots of
 `BottomTabBar.tsx`, the BuyZone wishlist control, `_b1-layout.scss` header
 regions only (V2 owns the FOOTER rules in the same file). Mid-batch scope
 change from the coordinator: **`OxProductCard.tsx` and the card styles moved
-to a dedicated builder (V4)**, including the card's own wishlist heart — not
+to a dedicated builder (V4)**, including the card's own wishlist heart, not
 touched here.
 
 Working log below; updated after every step, per convention (S8e/S8i).
 
 ---
 
-## Item 1 — the English hero
+## Item 1, the English hero
 
 Investigated with headless Chrome over CDP (`chrome-headless-shell` binary,
 raw WebSocket client, the S8f method): navigated `/en` and `/ar` at 1440,
 read `getBoundingClientRect()` for the pane, the strap, the two wedges, the
 headline and the text column, and captured screenshots.
 
-### 1a — mirroring audit
+### 1a, mirroring audit
 
 Measured bounding boxes for `.ox-hero__edge` (the large strap) and
 `.ox-hero__wedge--wide`/`--thin` (the small straps) at 1440, RTL vs LTR,
@@ -38,26 +38,26 @@ second, independent method: skewX's own geometry (`x' = x + (y − cy)·tanθ`)
 combined with `--direction-factor` flipping `--ox-skew`'s sign under
 `[dir="rtl"]` and `inset-inline-end` flipping the anchor side is, worked
 through algebraically, exactly a reflection about the band's vertical
-centre for any element using this pattern — `--ox-skew` and the logical
+centre for any element using this pattern, `--ox-skew` and the logical
 insets already carry the mirror, with no `[dir='ltr']` override needed,
 which is what the file's own comment at `.ox-hero__edge` already asserts.
 Screenshots (`hero-en-1440-before.png`, `hero-ar-1440-before.png`, both
 under `docs/build/progress/visit/`) confirm the large strap leans "\" in
-English against "/" in Arabic — the correct mirror of a diagonal.
+English against "/" in Arabic, the correct mirror of a diagonal.
 
 **Conclusion: no mirroring defect found in the pane, the strap or the two
 wedges at 1440.** Nothing changed here. The wedges are mostly clipped off
 the viewport edge at both 1440 (RTL: x −49.8..57.8, mostly off the left;
 LTR: x 1367.2..1474.8, mostly off the right, since the band is only
-1425 wide there) — a sliver is all either direction shows at this width,
+1425 wide there), a sliver is all either direction shows at this width,
 which may be what read as "leaning the wrong way" in the owner's review.
 Not a code defect: `getBoundingClientRect` proves the shapes are identical
 mirrors regardless of how much of either is inside the viewport.
 
-### 1b — the H1 overflow (confirmed, fixed)
+### 1b, the H1 overflow (confirmed, fixed)
 
 Screenshot evidence: `hero-en-1440-before.png` shows "today?" (the H1's
-last word) printed across the photograph, past the pane's diagonal cut —
+last word) printed across the photograph, past the pane's diagonal cut -
 confirmed at 1024 and 1905 too (`hero-en-1024-after.png` shows the same
 defect would occur unfixed at that width, `hero-en-1905-after.png` is the
 owner's own review width).
@@ -76,13 +76,13 @@ from 48%). Derived from measurement, not a guess: at 1440,
 `getBoundingClientRect()` on the clip polygon gives the pane's inner
 boundary at the headline's own top as band-relative x=622.6; the text
 column starts at the container gutter (64.5 at 1440), leaving 558px before
-the cut. 40% of the 1296px container is 518.4px — inside that figure with
+the cut. 40% of the 1296px container is 518.4px, inside that figure with
 margin. The margin only widens at wider viewports (the container caps at
 1296 while the pane's own box keeps growing with the viewport), so the same
 40% figure covers 1024 through the owner's own 1905 review width without a
 separate rule.
 
-The Arabic column is untouched — no `[dir='ltr']` selector reaches it,
+The Arabic column is untouched, no `[dir='ltr']` selector reaches it,
 verified below.
 
 **Re-rendered after the fix** (`hero-en-1024-after.png`,
@@ -91,7 +91,7 @@ verified below.
 ("What is your goal" / "today?") and both lines sit fully inside the black
 pane at all three widths, no overlap with the strap or the photograph.
 
-### 1c — audit against the Arabic hero
+### 1c, audit against the Arabic hero
 
 Eyebrow (one line, both languages), lead paragraph (two lines, both
 languages), the CTA pair (primary white-on-orange angled wedge + secondary
@@ -102,11 +102,11 @@ H1 overflow already fixed in 1b.
 
 **The Arabic hero is unchanged.** Every rule this batch added is scoped
 under `[dir='ltr']`, so by construction no rule newly matches an
-RTL-rendered page — confirmed with a fresh capture,
+RTL-rendered page, confirmed with a fresh capture,
 `hero-ar-1440-after.png`, visually identical to the pre-existing
 `hero-ar-1440-before.png` (same copy, same geometry, same pixel positions
 by eye). The two files are not byte-identical (492105 vs 492031 bytes,
-a 0.015% difference) — attributed to PNG re-encoding / font-hinting jitter
+a 0.015% difference), attributed to PNG re-encoding / font-hinting jitter
 between two separate headless-Chrome launches rather than a real style
 change, since the diff cannot come from a `[dir='ltr']`-scoped rule on an
 `rtl` document; no other file this batch touched can reach the Arabic hero
@@ -115,11 +115,11 @@ nowhere near `.ox-hero`).
 
 ---
 
-## Item 2 — the header account button's doubled icon
+## Item 2, the header account button's doubled icon
 
 Investigated over CDP against the live DOM at `/ar`, 1440 (the S8f method).
 `document.querySelector('.ox-mainbar__actions salla-user-menu')`'s
-`outerHTML` (no shadow root — this component renders light DOM, Stencil
+`outerHTML` (no shadow root, this component renders light DOM, Stencil
 "scoped" mode, confirmed `hasShadow: false`):
 
 ```html
@@ -153,7 +153,7 @@ it directly:
 "fallbackSvgBox":{ "display": "block","hiddenAttr": false, "x": 137.5, "width": 22 }
 ```
 
-Two icons in a 44px-wide host, x137.5-159.5 and x160.5-180.5 — exactly the
+Two icons in a 44px-wide host, x137.5-159.5 and x160.5-180.5, exactly the
 "profile icon twice" the owner's screenshot shows.
 
 **Fix, `_b1-layout.scss`.** The component's own button
@@ -172,7 +172,7 @@ stylesheet (`grep -n "ox-iconbtn__icon\|s-user-menu-login-btn svg"`, two
 hits, both the new rules). A live re-render to count `svg`/`img` = 1 inside
 the button was attempted but the shared preview server
 (`http://localhost:3210`) stopped answering during this batch's own
-verification window — the same pre-existing platform limitation
+verification window, the same pre-existing platform limitation
 `docs/build/progress/S8e.md` §5 already recorded (multiple concurrent
 builders share the one instance per the brief's own constraint, and it does
 not always recover inside a session). Not restarted, per the brief. The
@@ -184,7 +184,7 @@ captured before the server became unreachable.
 
 ---
 
-## Item 3 — header feature audit
+## Item 3, header feature audit
 
 Owner instruction, quoted: "audit the options and features in it, if
 anything can't be integrated in Shopify, delete it. we are about to go
@@ -200,13 +200,13 @@ Full decision table and the reasoning for the one flagged-not-pruned item
 - the drawer's wishlist row (`MobileDrawer.tsx`)
 - the PDP gallery's wishlist heart (`app/components/product/BuyZone/PdpGallery.tsx`)
 - the product card's own heart is a separate builder's file (V4, mid-batch
-  scope change) — not touched here
+  scope change), not touched here
 - `app/components/product/BuyZone/WishlistShare.tsx` carries a third
   wishlist control but is imported nowhere in the app (`grep -rn
-  "WishlistShare" app` finds only its own file) — dead code, left as found,
+  "WishlistShare" app` finds only its own file), dead code, left as found,
   flagged rather than edited without a live reason to
 - the bottom tab bar already carried no wishlist tab before this batch (five
-  slots: home, shop, search, cart, account) — confirmed, not changed
+  slots: home, shop, search, cart, account), confirmed, not changed
 
 **Kept** (Shopify has these natively): search, cart, account (profile,
 orders, addresses, login, logout), the language/country selector, the
@@ -215,17 +215,17 @@ catalogue navigation, the bottom tab bar's five slots.
 
 **Flagged, not pruned:** `salla-user-menu`'s dropdown entries for
 notifications, wallet/loyalty points and ratings. The component's full prop
-surface (`avatarOnly, inline, relativeDropdown, showHeader, showTrigger` —
+surface (`avatarOnly, inline, relativeDropdown, showHeader, showTrigger` -
 `docs/build/engine-surface.md` §9.2) has no prop to hide an individual
 entry, and this offline preview carries no signed-in session
 (`SallaLoginModal` mounts globally and is `eventTriggered`, confirming the
 store always renders signed-out here), so there is no verified evidence of
-what the dropdown actually contains — the store's own settings may already
+what the dropdown actually contains, the store's own settings may already
 have these switched off. The brief's own fallback (replace the whole
 control with a hand-built account link plus login/register) was
 investigated and not actioned this batch: the login modal is
 `eventTriggered` (`docs/build/engine-surface.md` §15.3), reachable only from
-an SDK event this batch found no documented name for — not a plain `href` —
+an SDK event this batch found no documented name for, not a plain `href` -
 so a hand-built trigger could not be verified working, and replacing
 Salla's own session/login/logout path with an unverified one is the kind of
 risk the owner's own instruction asks this batch to avoid adding. The
@@ -237,7 +237,7 @@ spending the risk of a rebuild on entries that may not even be showing.
 
 ---
 
-## Item 4 — the about page masthead, gated on `mark-wall`
+## Item 4, the about page masthead, gated on `mark-wall`
 
 `app/components/pages/AboutPage.tsx`: reads
 `(STORE_PHOTOS as Partial<Record<string, StorePhoto>>)['mark-wall']` (the
@@ -245,7 +245,7 @@ slug is not in `StorePhotoSlug` yet, so the cast is what the brief asks
 for) and uses its `.photo` URL for the band when present, falling back to
 today's `SERVICE_PHOTOS.services` band photo otherwise. Nothing else on the
 page changed. Inert today (`STORE_PHOTOS` carries no `mark-wall` entry
-yet) — `pnpm typecheck` confirms the cast compiles either way.
+yet), `pnpm typecheck` confirms the cast compiles either way.
 
 ---
 
@@ -254,22 +254,22 @@ yet) — `pnpm typecheck` confirms the cast compiles either way.
 ```
 $ pnpm typecheck
 $ tsc --noEmit
-(no output — 0 errors)
+(no output, 0 errors)
 
 $ pnpm vitest run tests/home tests/layout tests/product
  Test Files  44 passed | 1 flaked (45)
-      Tests  625 passed (625) — see note
+      Tests  625 passed (625), see note
 ```
 
 `tests/home/posterRow.test.ts`'s first test timed out at the default 5000ms
 under the full 45-file parallel run (this machine was also running the CDP
 verification's own headless Chrome processes and other concurrent
-builders' work at the time) — re-run alone it passes in 4.4s
+builders' work at the time), re-run alone it passes in 4.4s
 (`pnpm vitest run tests/home/posterRow.test.ts --testTimeout=30000`, all 5
 tests green). Nothing in this batch touches that file, its selector
 (`.ox-pcard`) or anything it composes from; the failure is the first (real
 Sass-compile) call in the file exceeding its default timeout under
-contention, not an assertion failure — an environmental flake, not a
+contention, not an assertion failure, an environmental flake, not a
 regression from this batch.
 
 ```
@@ -286,7 +286,7 @@ $ node scripts/check-copy.mjs
 check-copy: 52 file(s), 0 problem(s)
 
 $ pnpm exec sass --no-source-map app/styles/app.scss <tmp>/ox_app_out.css
-(exit 0 — only pre-existing @import deprecation warnings)
+(exit 0, only pre-existing @import deprecation warnings)
 $ grep -n "ox-iconbtn__icon\|s-user-menu-login-btn svg" <tmp>/ox_app_out.css
 5594:.ox-iconbtn__icon {
 5613:.ox-iconbtn .s-user-menu-login-btn svg {
@@ -301,7 +301,7 @@ $ grep -n "\.ox-hero__text" <tmp>/ox_app_out.css
 
 No locale partials were needed: none of the four items add, remove or
 change any user-facing copy (`ox.a11y.wishlist_toggle` and
-`ox.header.wishlist` stay in `locales/` — other live callers still use
+`ox.header.wishlist` stay in `locales/`, other live callers still use
 them: `WishlistShare.tsx`, and until V4 lands, `OxProductCard.tsx`).
 
 Screenshots, all under `docs/build/progress/visit/`:
@@ -330,7 +330,7 @@ defect, and the frozen reference), `hero-en-1024-after.png`,
 | `tests/product/PdpGallery.test.tsx` | new file: no wishlist heart, zoom control still works |
 | `docs/build/progress/S9a-V3.md` | this file |
 
-Read, not edited: `OxHero.tsx` (no JSX change needed — item 1 was CSS-only),
+Read, not edited: `OxHero.tsx` (no JSX change needed, item 1 was CSS-only),
 `UtilityBar.tsx`, `NavBar.tsx`, `ShopSheet.tsx`, `BottomTabBar.tsx`,
 `CountryControl.tsx`, `ContactAffordance.tsx`, `Icon.tsx`,
 `app/content/nav.ts`, `app/styles/06-ox/_primitives.scss` (no hero
@@ -353,7 +353,7 @@ mixins are unused by the shipped hero, which draws its polygons directly).
 3. **`hero-ar-1440-before.png` vs `hero-ar-1440-after.png` are not
    byte-identical** (492105 vs 492031 bytes): attributed to PNG
    re-encoding/font-hinting jitter between two separate headless-Chrome
-   launches, not a real style change — explained in 1c, since no rule this
+   launches, not a real style change, explained in 1c, since no rule this
    batch added can match an RTL document.
 4. **No locale partials created**: none of the four items change
    user-facing copy, so `locales/partials/s9a-v3.*.json` and

@@ -9,11 +9,11 @@ export const HEADER_HEIGHT_VAR = '--ox-header-h';
  * Anchor targets offset themselves by it so a deep link does not land under
  * the fixed header: `_primitives.scss` (accordion rows), `_b2-home.scss`
  * (`#ox-goals`) and `.app-inner`'s own `padding-block-start` (`_b1-layout.scss`
- * — the space that keeps every page's content out from under the header now
+ * - the space that keeps every page's content out from under the header now
  * that `.ox-header` is `position: fixed` at every width) all read it.
  *
  * `tokens.css` now carries a real per-breakpoint default for `--ox-header-h`
- * (144px mobile, 172px desktop — the chrome's own measured rows, assuming the
+ * (144px mobile, 172px desktop, the chrome's own measured rows, assuming the
  * announcement bar is present), so the first, unhydrated paint is already
  * correctly spaced and nothing here is needed for that. What the
  * `ResizeObserver` is for is refining it to the box actually on screen: a

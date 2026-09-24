@@ -1,4 +1,4 @@
-# S4d — shop by brand: the carousel, the index and the brand page (2026-09-23)
+# S4d, shop by brand: the carousel, the index and the brand page (2026-09-23)
 
 Batch: the owner item "complete the design of shop by brand section, carousel
 and page, reflected by the premium energetic kinetic identity and ui/ux of
@@ -21,7 +21,7 @@ named.
 A brand is drawn by **one tile** everywhere (`app/components/brands/
 BrandTile.tsx`, styled once in `_b4-listing.scss` §11): a plate carrying the
 mark's own **arm-foot corner cut**, the brand's artwork when the API has one
-(in a fixed 3:2 field on the ground that asset asks for — §4's
+(in a fixed 3:2 field on the ground that asset asks for, §4's
 `logo_ground`), its **name mark** when it does not (first grapheme in
 `--ox-accent-deep`, Cairo 700), and one **live count**. The home carousel, the `/brands` grid and
 the brand banner therefore read as the same object at three sizes rather than
@@ -31,8 +31,8 @@ as three designs of the same idea.
 
 Three moving things ship, and only three:
 
-1. **The strap sweep.** The section eyebrow's accent rule — the one accent
-   element `SectionHeader` already draws, widened to 40px — opens from its
+1. **The strap sweep.** The section eyebrow's accent rule, the one accent
+   element `SectionHeader` already draws, widened to 40px, opens from its
    inline-start edge once, when the block reveals. `transform` only.
 2. **The rail cue pulse.** The accent chevron at the reading end of the rail
    pulses once on the same reveal (transform + opacity).
@@ -60,10 +60,10 @@ who asked for no motion gets the strap at full width and the cue static.
   later, explicit instruction wins; the tile and the banner carry the cut, and
   the override is written into `_b4-listing.scss` §11's own header so nobody
   reads the stylesheet and the matrix and assumes one of them is a mistake.
-- **X-IDENTITY §5.1**: "Posters, guides, **brands** — nothing" (no reveal).
+- **X-IDENTITY §5.1**: "Posters, guides, **brands**, nothing" (no reveal).
   The brief's item 1 asks for "the strap sweep on reveal … once". Same
   resolution: the owner's later instruction wins, and what ships is one strap
-  and one cue pulse, not a staggered content reveal — the cards themselves
+  and one cue pulse, not a staggered content reveal, the cards themselves
   never move, so BUILD 3.4's "one signature moment" (the goal grid) is still
   the only block that reveals its content.
 
@@ -73,10 +73,10 @@ who asked for no motion gets the strap at full width and the cue static.
 The brand page now differs from a category listing in its head region (a
 banner, not the masthead band), in carrying the featured rail (which
 `ListingPage` gates to type and goal listings), and in hiding one facet. So
-`app/components/brands/BrandPage.tsx` composes the same parts —
+`app/components/brands/BrandPage.tsx` composes the same parts -
 `FeaturedRail` **reused verbatim**, `ListingToolbar`, `FiltersRail`,
 `FiltersDrawer`, `ProductGrid`, `LoadMore`, `useNextPage`, `sortOptions`,
-`appliedFilters` — and adds nothing to them.
+`appliedFilters`, and adds nothing to them.
 
 **The brand facet is hidden on a brand's own page**: every product there is
 already that brand's, so the group would be a control with one option and no
@@ -90,7 +90,7 @@ never out of the URL contract: `salla-filters` still writes what it writes and
 No surface in this batch says "موزع رسمي", "وكيل", "حصري" or "أصلي". The
 tiles state a count and a name; the banner states a name and a count; the
 index intro states that these are the brands the store stocks. The brand
-page's meta no longer says "{{brand}} أصلي" — see §6.
+page's meta no longer says "{{brand}} أصلي", see §6.
 
 ---
 
@@ -111,7 +111,7 @@ Container: `min(1296px, 100% - 2 × gutter)`, gutter 16 / 24 / 32 below 640 /
 
 The 6-up tier starts at **1280, not 1024**: at 1024 six tiles are 146.7 wide
 and the 1440 corner tier (lean 64 / run 43.2) would be **29.5 %** of the
-tile — over X-IDENTITY §2.3's 24 % budget. At 1280 the container is 1216, the
+tile, over X-IDENTITY §2.3's 24 % budget. At 1280 the container is 1216, the
 tile is 189.3 and the same run is 22.8 %, inside it. The brief's three probes
 still land exactly: 2.4 at 390, 4 at 768, 6 at 1440.
 
@@ -140,7 +140,7 @@ Read back from the compiled CSS: `polygon(0 40px, 27px 0, …)`,
 `(0 48px, 32.4px 0, …)`, `(0 64px, 43.2px 0, …)`, each with its `[dir='ltr']`
 mirror.
 
-Plate block-size: **158px** base, **176px** from 1280 — never below 158, which
+Plate block-size: **158px** base, **176px** from 1280, never below 158, which
 is what makes a panel-scale angle legal on it at all (§3.2's 158px law; the
 gate's own test is `< 158`, and 158 is not below 158). The clip sits on
 `.ox-brand-tile__plate`, never on the `<a>`, because `clip-path` clips its
@@ -158,13 +158,13 @@ element's outline (§7.1 `focus-clipped`).
 
 240 × 212.1 at 390, 420 × 371.2 at 1440, `--ox-ink` at **0.06**, `aria-hidden`,
 `pointer-events: none`, never animated, drawn as `<svg><use href="#ox-mark"/>`
-from the already-inlined sprite — never a `url()` request, never an `<img>`.
+from the already-inlined sprite, never a `url()` request, never an `<img>`.
 The svg's viewBox is the mark's own bounding box (`0 1.393 24 21.214`), so the
 figure fills the reserved box at its true 1.1314 aspect. One per page, over the
 page head only. The band clips it (`overflow: hidden`), so the −8 % / −10 %
 offsets never reach the page edges.
 
-### 2.6 Reserved height for the home block — NOT changed, and why
+### 2.6 Reserved height for the home block, NOT changed, and why
 
 Measured, for whoever flips it: **mobile 284** (head 126 = eyebrow 20 + gap 8 +
 h2 ~30 + view-all row 44 + margin-end 24, plus a 158 tile row) and **desktop
@@ -175,7 +175,7 @@ anyway. `tests/home/optionalBlocks.test.ts` asserts that every data-gated block
 reserves nothing and draws no placeholder, with a written reason: the live
 store has **zero** brands (`fixtures/store/brands.json` is `[]`; the 21 are an
 offline overlay), so `OxBrands` renders null there and a reserved 284px box
-would be 284px of blank space above the footer on the real storefront — the
+would be 284px of blank space above the footer on the real storefront, the
 exact defect that test was written for. That test file is outside this batch's
 write scope. **Flagged as a deviation** (§7, item 1) with the numbers above, so
 the day the owner creates the brands in the dashboard it is a two-line change.
@@ -225,7 +225,7 @@ featured covers and the posters:
   with a query, after mount) keep it honest without giving the hook a
   dependency to be called with.
 - RTL: `Math.abs(scrollLeft)`; Safari 14's legacy reversed convention would
-  read the strap full at rest — a decoration, never a control (documented in
+  read the strap full at rest, a decoration, never a control (documented in
   the hook).
 
 ---
@@ -246,7 +246,7 @@ byte-for-byte as served. All 21 are pointed at from
 nominatively to identify products the store sells (the owner confirms).** No
 mark is recoloured, inverted, cropped, redrawn or composited anywhere in this
 theme; the tile and the banner contain it in a fixed 3:2 field and never fill
-it. Where a mark is drawn in white, the FIELD changes, not the mark — see
+it. Where a mark is drawn in white, the FIELD changes, not the mark, see
 `logo_ground` below.
 
 | brand | file | bytes | source |
@@ -268,7 +268,7 @@ it. Where a mark is drawn in white, the FIELD changes, not the mark — see
 
 Every one of the fourteen was **opened and looked at** after conversion, not
 just downloaded: three candidates were fetched, inspected and **rejected**
-rather than shipped — an iHerb storefront logo served in EVLution's place, a
+rather than shipped, an iHerb storefront logo served in EVLution's place, a
 120×14 privacy-popup sprite served in NeoCell's, and two unrelated Wikimedia
 files (a CPC International logo returned for "NOW Foods", a government press
 photo for "Optimum Nutrition").
@@ -290,7 +290,7 @@ themselves rather than taken on trust: `now-foods.svg` is the gradient NOW
 mark (`#FAE200` → `#F36C21`), `optimum-nutrition.svg` and `dymatize.svg` are
 **white-only** (`fill:#ffffff` ×23 and `fill="#fff"` ×12 respectively),
 `bsn.svg` is the `#BA0C2F` hexagon with white letters on it, and
-`neocell.svg` is `#1b1718` black — which is exactly the split the two
+`neocell.svg` is `#1b1718` black, which is exactly the split the two
 `logo_ground` rows encode.
 
 For the record, why this batch's own fetch could not get these seven:
@@ -309,8 +309,8 @@ brief's middle fallback was unavailable.
 Two of the seven publish **white-only** artwork, which is invisible on the
 light plate. Recolouring or inverting someone else's trademark is not an
 option, and dropping the asset would leave the store's two biggest brands as
-text. So the overlay row carries a fact about the ASSET —
-`"logo_ground": "dark"` — and the theme changes the FIELD under it:
+text. So the overlay row carries a fact about the ASSET -
+`"logo_ground": "dark"`, and the theme changes the FIELD under it:
 
 - `BrandTile`/`BrandBanner` read `logo_ground` through one helper,
   `logoBoxClass()`, so the same brand gets the same ground on the home
@@ -322,8 +322,8 @@ text. So the overlay row carries a fact about the ASSET —
   `products_count`, with the same note: it is not part of the engine's typed
   `Brand`, so it is read defensively and defaults to the light ground.
 
-The alternative — sampling a logo's pixels at render time to guess its
-ground — would be a paint-time cost on every tile and a guess that is wrong
+The alternative, sampling a logo's pixels at render time to guess its
+ground, would be a paint-time cost on every tile and a guess that is wrong
 for any mark with both light and dark parts. A fact recorded once beside the
 asset is cheaper and cannot be wrong.
 
@@ -339,12 +339,12 @@ Eyebrow (`ox.home.brands_label`) + h2 (`ox.home.brands_title`) + "عرض الك�
 "العلامة 2 من 21"; the prev/next pair in `SectionHeader`'s `actions` slot,
 which is `display: none` below 1024 and `flex` from there up, so the arrows
 exist at 1024+ with no media query of their own. Sorted by `products_count`
-DESC, capped at 24, shown from one brand up — all three unchanged from S4a.
+DESC, capped at 24, shown from one brand up, all three unchanged from S4a.
 
 The arrows are 44px buttons whose **unfilled angled face** is the shipped
 `.ox-iconbtn--angled` span inside them (transparent, 1px `color-mix`
 hairline), so the 44 hit area and the drawn 24 mark are separate boxes and the
-focus ring is never clipped. Stepping is 4 tiles — the number visible at 1024,
+focus ring is never clipped. Stepping is 4 tiles, the number visible at 1024,
 the width the arrows first appear at. `goTo()` scrolls with
 `scrollIntoView({ inline: 'start' })`, never a hand-computed `scrollLeft`
 delta, so RTL needs no sign flip (S4c's finding, reused).
@@ -403,7 +403,7 @@ and falls back to `ox.seo.brand.title_compact` when it would breach. Measured
 across all 21 brands: **AR 43–59, EN 42–60, nothing over the ceiling.**
 
 **The old title key is no longer read, and here is why it matters.**
-`ox.seo.brand.title_pattern` is `"{{brand}} أصلي | اوبتيمال اكس"` — a
+`ox.seo.brand.title_pattern` is `"{{brand}} أصلي | اوبتيمال اكس"`, a
 per-brand **authenticity claim**, which the brief's claims law forbids on a
 brand surface ("beyond the store-wide approved originality line already gated
 in claims.ts"), and 29 characters with a 9-character brand name, well under
@@ -417,7 +417,7 @@ JSON-LD: `/brands` publishes `CollectionPage` + `ItemList` of the 21 brand
 URLs + `BreadcrumbList` in one `@graph` (it published none at all before);
 `/brands/<id>` keeps `listingHeadExtend`'s `CollectionPage` + `ItemList` +
 `BreadcrumbList`. **No `Brand` or `Organization` node is emitted for a
-supplier brand anywhere** — publishing one would be a structured claim about a
+supplier brand anywhere**, publishing one would be a structured claim about a
 relationship the store does not have.
 
 ---
@@ -431,8 +431,8 @@ relationship the store does not have.
    re-creates the exact CLS defect `tests/home/optionalBlocks.test.ts` locks
    in, and that test is outside this batch's write scope.
 2. **The tile count reads "منتجات: 7", not "7 منتجات"** (`ox.brands.
-   products_count`). Arabic counted-noun agreement changes with the number —
-   1 منتج، 2 منتجان، 3–10 منتجات، 11+ منتجا — and the live counts include 1
+   products_count`). Arabic counted-noun agreement changes with the number -
+   1 منتج، 2 منتجان، 3–10 منتجات، 11+ منتجا, and the live counts include 1
    and 2, so the brief's literal form would print "1 منتجات" on nine of the
    21 tiles. The colon form is correct at every count and matches the house
    pattern `ox.cart.items_count` ("المنتجات في السلة: {{count}}"). i18next
@@ -440,7 +440,7 @@ relationship the store does not have.
    would break the ar/en key-parity test.
 3. **6-up starts at 1280 on the home carousel**, not 1024, for the corner-cut
    budget (§2.1). The brief's own three probes still land exactly.
-4. **`app/components/listing/BrandsGrid.tsx` is now unused** — no route
+4. **`app/components/listing/BrandsGrid.tsx` is now unused**, no route
    renders it, and the `.ox-brands__grid` rules it depended on are gone (the
    index grid is `.ox-brandhub__grid`). Its own test still passes, so nothing
    is red; it and `tests/listing/BrandsGrid.test.tsx` want deleting in a
@@ -454,7 +454,7 @@ relationship the store does not have.
    rows). Outside the brief's original file list; the coordinator's logo item
    requires it.
 7. **`node scripts/i18n-merge.mjs` merged every partial**, not only mine, into
-   `locales/{ar,en}.json` — including another batch's `s5.*.json`, which
+   `locales/{ar,en}.json`, including another batch's `s5.*.json`, which
    appeared mid-session. The merge is additive and idempotent (`--check`
    reports 0 pending afterwards), so the other builder's own run is a no-op,
    but they should know the keys are already in the base files.
@@ -464,16 +464,16 @@ relationship the store does not have.
    rather than quietly dropped. The seven this batch could not reach were
    supplied by the coordinator mid-batch and are in §4's second table, with
    the colours read back from the files themselves.
-9. **`ox.seo.brand.title_pattern` left in place but unread** — §6. Owner call.
+9. **`ox.seo.brand.title_pattern` left in place but unread**, §6. Owner call.
 10. **One transient preview flake, not a code defect**: the first curl of
     `/ar/brands` returned a canonical and `@id` of
-    `https://optimalx.com.sa/ar/protein/c9001` — a stale `ctx.location` from a
+    `https://optimalx.com.sa/ar/protein/c9001`, a stale `ctx.location` from a
     previous request under concurrent load. The identical request 40 seconds
     later returned `https://optimalx.com.sa/ar/brands` for both, and the other
     three pages were correct on every attempt. Recorded because it will look
     alarming in a log, and because it is the same class of dev-server
     unreliability `S3b.md` and `S4a.md` already documented.
-11. **RESOLVED — the logos are live.** `scripts/serve-store.mjs` reads the
+11. **RESOLVED, the logos are live.** `scripts/serve-store.mjs` reads the
     overlay once at boot, so for most of this batch the preview answered
     `logo: null` and every tile rendered the name mark; restarting the server
     is forbidden by the brief. The coordinator restarted it with the seven
@@ -486,61 +486,61 @@ relationship the store does not have.
 ## 8. Files changed
 
 **Components**
-- `app/components/brands/BrandTile.tsx` — new. The one brand tile: plate,
+- `app/components/brands/BrandTile.tsx`, new. The one brand tile: plate,
   corner cut, logo box or name mark, API-only count. Owns `logo_ground` and
   the `logoBoxClass()` helper both brand surfaces read.
-- `app/components/brands/BrandsIndex.tsx` — new. The `/brands` composition:
+- `app/components/brands/BrandsIndex.tsx`, new. The `/brands` composition:
   band, watermark, letter rail, API letter groups, grid, empty state.
-- `app/components/brands/BrandBanner.tsx` — new. The brand page's identity
+- `app/components/brands/BrandBanner.tsx`, new. The brand page's identity
   plate: eyebrow, artwork in the same logo field (same `logo_ground`), the
   name mark as the one h1, the live count.
-- `app/components/brands/BrandExplore.tsx` — new. Other-brand chips and root
+- `app/components/brands/BrandExplore.tsx`, new. Other-brand chips and root
   type chips, the latter through `useTaxonomyLinks`.
-- `app/components/brands/BrandPage.tsx` — new. The brand listing composition.
-- `app/components/home/OxBrands.tsx` — rebuilt as the carousel on the rail
+- `app/components/brands/BrandPage.tsx`, new. The brand listing composition.
+- `app/components/home/OxBrands.tsx`, rebuilt as the carousel on the rail
   primitive, with the eyebrow strap and the arrow pair.
-- `app/components/common/hooks/useRailProgress.ts` — new. The rail's scroll
+- `app/components/common/hooks/useRailProgress.ts`, new. The rail's scroll
   state, written to the DOM, never to React state.
 
 **Routes**
-- `app/routes/brands.tsx` — renders `BrandsIndex`; head is
+- `app/routes/brands.tsx`, renders `BrandsIndex`; head is
   `brandsIndexHeadExtend()`.
-- `app/routes/brands.$id.tsx` — renders `BrandPage`.
-- `app/routes/$slug.brand-$id.tsx` — **no change needed**: it is the
+- `app/routes/brands.$id.tsx`, renders `BrandPage`.
+- `app/routes/$slug.brand-$id.tsx`, **no change needed**: it is the
   auto-generated SEO redirect into `/brands/$id`, which is exactly where the
   new page lives. Read, left alone.
 
 **SEO**
-- `app/components/seo/routeHeads.ts` — `brandHeadExtend` rebuilt (two title
+- `app/components/seo/routeHeads.ts`, `brandHeadExtend` rebuilt (two title
   patterns + a description, no authenticity claim); `brandsIndexHeadExtend`
   added (title, description, CollectionPage + ItemList + BreadcrumbList).
-- `app/components/seo/jsonld.ts` — `urlItemList()` added, for an index whose
+- `app/components/seo/jsonld.ts`, `urlItemList()` added, for an index whose
   members are pages rather than products.
 
 **Styles**
-- `app/styles/06-ox/_rail.scss` — new. `.ox-rail`, `__track`, `__cue`,
+- `app/styles/06-ox/_rail.scss`, new. `.ox-rail`, `__track`, `__cue`,
   `__cue-arm`, `__progress`, the one pulse keyframe.
-- `app/styles/06-ox/_index.scss` — `@import 'rail';` after `x-motif`.
-- `app/styles/06-ox/_b2-home.scss` — section 7 only: the carousel layout, the
+- `app/styles/06-ox/_index.scss`, `@import 'rail';` after `x-motif`.
+- `app/styles/06-ox/_b2-home.scss`, section 7 only: the carousel layout, the
   tile-width tiers, the strap sweep, the arrow pair.
-- `app/styles/06-ox/_b4-listing.scss` — section 11 rewritten (the shared tile,
+- `app/styles/06-ox/_b4-listing.scss`, section 11 rewritten (the shared tile,
   its logo field and the `--dark` ground, `.ox-brandhub*`, `.ox-brandhero*`
   and its own logo field); section 13 lost its two now-dead `.ox-brand-tile`
   reduced-motion lines.
 
 **Data and copy**
-- `fixtures/store/overlay/brands.json` — `logo` set on all 21 rows (14 by
+- `fixtures/store/overlay/brands.json`, `logo` set on all 21 rows (14 by
   this batch, 7 by the coordinator), `logo_ground: "dark"` on two.
-- `public/assets/brands/*` — 21 logo files, 14 of them this batch's (§4).
-- `locales/partials/s4.{ar,en}.json` + `locales/{ar,en}.json` — 15 new keys,
+- `public/assets/brands/*`, 21 logo files, 14 of them this batch's (§4).
+- `locales/partials/s4.{ar,en}.json` + `locales/{ar,en}.json`, 15 new keys,
   mirrored identically, merged with `i18n-merge`.
 
 **Tests**
-- `tests/brands/BrandsIndex.test.tsx` — new, 10 cases (including the dark
+- `tests/brands/BrandsIndex.test.tsx`, new, 10 cases (including the dark
   ground and that the artwork itself is untouched).
-- `tests/brands/BrandPage.test.tsx` — new, 10 cases (including the banner's
+- `tests/brands/BrandPage.test.tsx`, new, 10 cases (including the banner's
   own ground, light and dark).
-- `tests/home/blocks.test.tsx` — the `OxBrands` block: two cases retargeted at
+- `tests/home/blocks.test.tsx`, the `OxBrands` block: two cases retargeted at
   the new classes, four added (count-from-API-only, carousel semantics, the
   rail cue, the arrow pair and its unfilled angled face).
 
@@ -565,7 +565,7 @@ ground on the tile and on the banner.)
 
 (An intermediate run had three failures: two were the `OxBrands` cases this
 batch retargeted, and one was `tests/home/OxServices.test.tsx > skips row one
-on /services`, a concurrent batch's in-flight edit of `OxServices.tsx` —
+on /services`, a concurrent batch's in-flight edit of `OxServices.tsx` -
 green by the final run, with no change from this batch.)
 
 ```
@@ -625,7 +625,7 @@ Live curl, `http://localhost:3210`:
 
 `/ar`'s brand section is an empty `s-block--ox-brands` shell in the SSR html
 and mounts on the client (pre-existing: the block renders from a query, which
-is also why it reserves no height — §2.6), so the carousel's markup is covered
+is also why it reserves no height, §2.6), so the carousel's markup is covered
 by unit tests rather than by curl.
 
 ### After the `logo_ground` follow-up (the coordinator's restarted server)

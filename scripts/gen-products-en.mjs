@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// gen-products-en.mjs — generates fixtures/store/overlay/products.en.json,
+// gen-products-en.mjs, generates fixtures/store/overlay/products.en.json,
 // the English twins (name, subtitle, description) of the mock catalogue,
 // read by SKU from docs/build/research/optimalx-catalogue.csv and keyed by
 // the numeric product id fixtures/store/product-details.json already
@@ -9,7 +9,7 @@
 // NEVER INVENTED: a SKU whose CSV row has no English twin, or whose twin
 // fails the same copy (scripts/check-copy.mjs) and claims
 // (scripts/check-claims.mjs) gates the locale files are held to, is left
-// out of the overlay entirely — that product keeps its real Arabic name on
+// out of the overlay entirely, that product keeps its real Arabic name on
 // /en until a clean twin exists. Every exclusion is reported, never
 // silently dropped.
 //
@@ -34,8 +34,8 @@ export const OUT_PATH = path.join(ROOT, 'fixtures', 'store', 'overlay', 'product
  * does not itself check for in English (its health-outcome/superlative
  * rules are Arabic-phrase and Arabic-token based; only `best`/`#1`/etc are
  * covered in English via SUPERLATIVE_EN). A dedicated, small, literal list
- * — never a rewrite of check-claims.mjs, which stays the locale files' own
- * gate — for the exact English equivalents this batch names: cures,
+ * - never a rewrite of check-claims.mjs, which stays the locale files' own
+ * gate, for the exact English equivalents this batch names: cures,
  * treats, guaranteed, best, #1, fastest, burns fat, clinically proven.
  */
 const BANNED_EN_CLAIM_WORDS = [

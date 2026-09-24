@@ -63,6 +63,7 @@ export function AboutPage() {
     ? ABOUT_FACTS.map((fact) => ({
         id: fact.id,
         ...(fact.valueKey ? { value: <Bdi>{t(fact.valueKey)}</Bdi> } : {}),
+
         ...(fact.glyph ? { glyph: fact.glyph } : {}),
         label: t(fact.labelKey),
         ...(fact.subKey ? { sub: t(fact.subKey) } : {}),
@@ -73,7 +74,7 @@ export function AboutPage() {
 
   // S9a-V3 item 4 (gated): the owner's 'mark-wall' photograph (the lit
   // orange X on the ribbed wall inside the store) is not in the manifest
-  // yet — the conductor adds it to `STORE_PHOTOS` once the owner's file
+  // yet, the conductor adds it to `STORE_PHOTOS` once the owner's file
   // lands. Read defensively so this line is inert until then and keeps
   // today's band photo otherwise.
   const markWall = (STORE_PHOTOS as Partial<Record<string, StorePhoto>>)['mark-wall'];
@@ -82,6 +83,7 @@ export function AboutPage() {
   return (
     <div className="ox-page ox-page--about">
       <OxBreadcrumb page={page} />
+
 
       <Band
         id="ox-about-band"
@@ -92,62 +94,80 @@ export function AboutPage() {
         subline={t('ox.pages.about.lead')}
       />
 
+
       <StatStrip cells={cells} className="ox-page--about__stats" />
 
       <section className="ox-about-story" aria-labelledby="ox-about-story-title">
         <h2 id="ox-about-story-title" className="ox-h2">
           {t('ox.pages.about.story_title')}
         </h2>
+
         {ABOUT_STORY.map((key) => (
           <p key={key} className="ox-about-story__p ox-body">
             {t(key)}
           </p>
+
         ))}
       </section>
+
 
       <section className="ox-about-story" aria-labelledby="ox-about-how-title">
         <h2 id="ox-about-how-title" className="ox-h2">
           {t('ox.pages.about.how_title')}
         </h2>
+
         {ABOUT_HOW.map((key) => (
           <p key={key} className="ox-about-story__p ox-body">
             {t(key)}
           </p>
+
         ))}
         {ABOUT_HOW_LINES.map((key) => (
           <p key={key} className="ox-about-story__p ox-small">
             {t(key)}
           </p>
+
         ))}
       </section>
 
+
       <div className="ox-about-own">
         <p className="ox-about-story__p ox-body">{t('ox.pages.about.own_title')}</p>
+
         <ul className="ox-about-own__list">
           {ABOUT_OWN.map((key) => (
             <li key={key} className="ox-body">
               {t(key)}
             </li>
+
           ))}
         </ul>
+
       </div>
+
 
       <p className="ox-about-closing ox-display" data-testid="ox-about-closing">
         {t('ox.pages.about.closing')}
       </p>
 
+
       <section className="ox-about-why" aria-labelledby="ox-about-why-title">
         <h2 id="ox-about-why-title" className="ox-h2">
           {t('ox.pages.about.why_title')}
         </h2>
+
         <div className="ox-about-why__grid">
           {ABOUT_WHY.map((item) => (
             <Panel key={item.id} title={t(item.titleKey)} className="ox-about-why__item">
               <p className="ox-about-why__body ox-body">{t(item.bodyKey)}</p>
+
             </Panel>
+
           ))}
         </div>
+
       </section>
+
 
       {showsRegistration ? (
         <Panel
@@ -165,24 +185,32 @@ export function AboutPage() {
                 <Bdi ltr lang={null}>
                   {row.value}
                 </Bdi>
+
               }
             />
+
           ))}
         </Panel>
+
       ) : null}
 
       <p className="ox-about-story__p ox-small" data-testid="ox-medical-line">
         {t('ox.services.medical_line')}
       </p>
 
+
       <div className="ox-about-out">
         <Button to="/services" size={48} variant="primary">
           {t('ox.services.title')}
         </Button>
+
         <Button to="/branch" size={48} variant="secondary">
           {t('ox.nav.branch')}
         </Button>
+
       </div>
+
     </div>
+
   );
 }

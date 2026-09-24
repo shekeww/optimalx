@@ -12,6 +12,13 @@ export interface BandPhotoProps {
    */
   width?: number;
   height?: number;
+  /**
+   * Smaller renditions of the same frame, as a `srcset`, where they exist on
+   * disk; `sizes` describes the slot they are chosen against and is written
+   * only alongside a `srcset`, since it means nothing without one.
+   */
+  srcSet?: string;
+  sizes?: string;
 }
 
 /**
@@ -37,7 +44,7 @@ export interface BandPhotoProps {
  * three plan frames fetched eagerly is most of the page's weight spent on
  * decoration.
  */
-export function BandPhoto({ src, className, width, height }: BandPhotoProps) {
+export function BandPhoto({ src, className, width, height, srcSet, sizes }: BandPhotoProps) {
   const [state, setState] = useState<'pending' | 'ready' | 'failed'>('pending');
   const ref = useRef<HTMLImageElement>(null);
 
@@ -73,6 +80,8 @@ export function BandPhoto({ src, className, width, height }: BandPhotoProps) {
       ref={ref}
       className={className}
       src={src}
+      {...(srcSet !== undefined ? { srcSet } : {})}
+      {...(srcSet !== undefined && sizes !== undefined ? { sizes } : {})}
       alt=""
       loading="lazy"
       decoding="async"

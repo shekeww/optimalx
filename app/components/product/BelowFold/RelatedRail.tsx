@@ -23,7 +23,7 @@ export interface RelatedRailProps {
  * Owner review 2026-09-23 late night, item 1 ("every carousel adopts the
  * rail primitive"): the underlying scroller here is Salla's own
  * `SallaProductsSlider` (BUILD.md's "Salla native components before building
- * anything custom"), not the theme's DIY `.ox-rail__track` scroller — it has
+ * anything custom"), not the theme's DIY `.ox-rail__track` scroller, it has
  * no `overflow-x`/native scrollbar to hide in the first place (Swiper draws
  * by transform inside an `overflow: hidden` box; confirmed no Scrollbar
  * module is wired in `@salla.sa/twilight-components-react`'s bundle), so
@@ -108,6 +108,7 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
         <h2 className="ox-related__title" id="ox-related-title">
           {t('ox.pdp.you_may_like')}
         </h2>
+
         <div className="ox-related__nav">
           <button
             type="button"
@@ -117,8 +118,11 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
           >
             <span className="ox-related__arrow-face ox-iconbtn--angled" aria-hidden="true">
               <Icon name="chevron-start" size={16} />
+
             </span>
+
           </button>
+
           <button
             type="button"
             className="ox-related__arrow ox-related__arrow--next"
@@ -127,14 +131,21 @@ export function RelatedRail({ productId, categoryId }: RelatedRailProps) {
           >
             <span className="ox-related__arrow-face ox-iconbtn--angled" aria-hidden="true">
               <Icon name="chevron-end" size={16} />
+
             </span>
+
           </button>
+
         </div>
+
       </div>
+
       <div className="ox-related__body" ref={hostRef}>
         <Alternatives productId={productId} categoryId={categoryId} title="" />
       </div>
+
     </section>
+
   );
 }
 
