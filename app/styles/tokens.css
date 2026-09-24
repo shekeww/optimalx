@@ -55,9 +55,9 @@
   /* THE FLOOR IS 500, raised twice on 2026-09-20: 350 -> 400, then 400 -> 500.
      Arabic needs more stroke than Latin at the same optical size, and Cairo is
      a low-contrast face, so a weight that looks open in Latin reads as thin in
-     Arabic at body size. 400 was still thin on the owner's screens — the
+     Arabic at body size. 400 was still thin on the owner's screens (the
      paragraph copy on the services comparison table was the case that settled
-     it — and thin is the opposite of what this brand is.
+     it), and thin is the opposite of what this brand is.
 
      BODY COPY IS NOW 500 AND READING COPY 550, which is the smallest pair that
      carries the identity at lead size without tipping into the weight the UI
@@ -188,10 +188,10 @@
      store whose dashboard has not been updated yet. Do not "fix" these back
      into aliases; update both sides together instead.
 
-     Contrast (owner review, 2026-09-23, item 2 — DIRECTION 2.2 mandates ink
+     Contrast (owner review, 2026-09-23, item 2; DIRECTION 2.2 mandates ink
      on accent, superseding the "white label, size floor" reading below):
      white on #F54915 measures 3.59:1, which clears AA only as large text
-     (>=18.67px bold) — the shipped global primary label (0.9 x 19px =
+     (>=18.67px bold), and the shipped global primary label (0.9 x 19px =
      17.1px, --ox-btn-primary-size) sits under that floor, so a white label on
      this fill fails AA at the size the site actually ships. --ox-on-accent is
      --ox-ink (#12171E) instead: ink on #F54915 measures 5.01:1, which clears
@@ -201,12 +201,12 @@
      --ox-accent-dark, which is 4.59:1 on paper and so clears AA for body
      copy, with less headroom than it had on the cream. */
   /* ONE ORANGE. #F54915 is the logo's, and it is the only fill any solid call
-     to action on this site draws — the hero's, the card's, the cart's. A
+     to action on this site draws: the hero's, the card's, the cart's. A
      button that could not carry a label at this fill was briefly darkened
      instead; that is no longer allowed, because a second orange on a repeated
      button reads as a second brand. INK ON ACCENT (owner review, 2026-09-23,
-     item 2) is what actually keeps the label legal now — see --ox-on-accent
-     below — not a size floor on the fill. */
+     item 2) is what actually keeps the label legal now (see --ox-on-accent
+     below), not a size floor on the fill. */
   --ox-accent: #F54915;
   /* The darker steps are for TEXT and for HOVER, never for a resting fill.
      --ox-accent-dark is 4.59:1 on paper, so it is what small accent text uses
@@ -396,7 +396,7 @@
      with, because the mark measures 34° across all ten of its straight edges
      (§1.2) and 22° matched nothing in it. */
   --ox-angle: 34deg;          /* was 22deg */
-  --ox-angle-tan: 0.6745;     /* was 0.4040 — tan 34° = 0.6745085 */
+  --ox-angle-tan: 0.6745;     /* was 0.4040; tan 34° = 0.6745085 */
   --ox-angle-cos: 0.8290;     /* perpendicular thickness = horizontal width × this */
   --ox-angle-h: 56deg;        /* the same angle read from the horizontal */
   /* The lean of the wedge, defined once because five stylesheets draw it and
@@ -418,7 +418,7 @@
      rendered height t = clamp(0.055·H, 4, 24), set per surface. --ox-step-j
      (the jog) is driven off --ox-step-H, the *unclamped* block-size, rather
      than off --ox-step-h, so the 3.49 ratio (owner note 5, non-negotiable)
-     never breaks where the clamp bites — 0.1924 = 0.055 × 3.49. */
+     never breaks where the clamp bites: 0.1924 = 0.055 × 3.49. */
   --ox-step-h: 0px;
   --ox-step-H: 0px;
   --ox-step-j: calc(var(--ox-step-H) * 0.1924);

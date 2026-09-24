@@ -57,7 +57,10 @@ export const HOME_BLOCK_PATHS = [
   // 246px category block above the products would push it past two screens
   // and undo the fix. Order serves the price, not the numbering.
   'ox-poster',
-  'ox-posters',
+  // MOVED (owner review 2026-09-25): the six offer posters left the mixed
+  // "اكتشف أكثر" carousel for a carousel of their own at the top of this
+  // block ("العروض", `OxProductsSecondary`), so the offers section now
+  // follows the campaign poster slot directly.
   'ox-products-secondary',
   'ox-categories',
   // MOVED (S2c, 2026-09-22): directly after the type grid, ahead of the
@@ -66,6 +69,10 @@ export const HOME_BLOCK_PATHS = [
   // the type grid it answers, one registered path drawn up to eight times in
   // `DEFAULT_HOME_COMPONENTS` below.
   'ox-category-rail',
+  // MOVED (owner review 2026-09-25): "اكتشف أكثر", now the five content
+  // cards alone, closes the shopping part of the page: after the category
+  // tiles and the eight rails, and the last block before the advisory band.
+  'ox-posters',
   'ox-services',
   // MOVED (VISIT-2026-09-24 §4.1): directly after the advisory band it
   // fulfils - the band pitches the free advisory and the free InBody
@@ -105,7 +112,7 @@ export type HomeBlockPath = (typeof HOME_BLOCK_PATHS)[number];
  * - `ox-goals` grew: the cards are dark photographic cards with a title, a
  *   line and an action, not 128px icon tiles.
  * - `ox-services` (re-measured again, S2c 2026-09-22): back on a dark band,
- *   but a single tier now — an eyebrow, a title, a subline, the three
+ *   but a single tier now: an eyebrow, a title, a subline, the three
  *   photographic doors and one CTA under the row, not the two-tier band that
  *   also carried the three channel cards (those moved to `/services`).
  * - `ox-faq` grew: the block carries the secondary rail beside the accordion,
@@ -141,34 +148,48 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // The rail became an eight-card grid and the reservation never followed, so
   // this block UNDER-reserved by 410px and jumped down on mount.
   'ox-products': { mobile: 1759, desktop: 1040 },
-  // RESTORED AND RESTYLED (owner reverts the "shop by need" merge, 2026-09-22):
-  // `OxCategories`' own eight-tile grid again, restyled to the owner's
-  // reference (icon above the image, every tile tinted) - token arithmetic
-  // against `_b2-home.scss`'s "4. OxCategories and CategoryTile" section, not
-  // a live browser measurement.
+  // `OxCategories`' own eight-tile grid (owner reverts the "shop by need"
+  // merge, 2026-09-22). READ OFF THE RUNNING PAGE (review 2026-09-25, the
+  // home reorder): the old 752/560 was token arithmetic from before the tiles
+  // grew, and under-reserved by 430 and 454, so everything below it jumped
+  // down when it mounted ("اكتشف أكثر" too, after the reorder). `/ar` at
+  // 390x844 and 1440x900 in headless Chrome, walked down so every lazy shell
+  // mounts, `.s-block--ox-categories` and its children measured with
+  // `getBoundingClientRect()`.
   //
-  // Mobile (358 container, 2-up grid): SectionHeader stack 84 (h2 ~30 + row-gap
-  // 8 + the view-all link row ~22 + margin-end 24) + grid 668 (4 rows of a
-  // 158 tile + three 12 gaps). Total 752.
+  // Mobile (358 container, 2-up grid): header 82 + margin-end 24 + grid 1076
+  // (4 rows of a 260 tile + three 12 gaps) = 1182.
   //
-  // Desktop (1440 viewport, 4-up grid from 1280, tile min-block-size 220):
-  // header stack 96 (h2 ~40 + row-gap 8 + view-all ~24 + margin-end 24) + grid
-  // 464 (2 rows of a 220 tile + one 24 gap). Total 560.
-  'ox-categories': { mobile: 752, desktop: 560 },
+  // Desktop (1440, 4-up grid): header 39.9 + margin-end 32 + grid 942 (2 rows
+  // of a 459 tile + one 24 gap) = 1013.9 -> 1014.
+  'ox-categories': { mobile: 1182, desktop: 1014 },
   // The campaign poster is gated on a real campaign and renders null until
   // the merchant writes a headline, so it reserves nothing by default. A store
   // running one takes the shift on that block instead, which is the smaller
   // cost and affects nobody today.
   'ox-poster': { mobile: 0, desktop: 0 },
-  // Re-measured by delta AGAIN (owner brief 2026-09-24: the posters become
-  // image-only 4:5 cards, docs/build/progress/S7a.md): `.ox-pcard` traded its
-  // flat `block-size: 300px` for `aspect-ratio: 4 / 5` on the SAME slide
-  // widths S5a's own table already computed (309.2px at the 390 tier, 312.0px
-  // at the 1440 tier) — nothing else in the block moved, so only the card
-  // term of the previous total changes: mobile 369 - 300 + (309.2 * 1.25) =
-  // 455.5 -> 456; desktop 387 - 300 + (312.0 * 1.25) = 477.0 -> 477.
-  'ox-posters': { mobile: 456, desktop: 477 },
-  'ox-products-secondary': { mobile: 924, desktop: 1040 },
+  // READ OFF THE RUNNING PAGE (owner review 2026-09-25, the home reorder):
+  // `/ar` at 390x844 and 1440x900 in headless Chrome, walked down so every
+  // lazy shell mounts, each `.s-block` measured with
+  // `getBoundingClientRect()`.
+  //
+  // `ox-posters` ("اكتشف أكثر", the five content cards alone now): 505.5 at
+  // 390 and 505.8 at 1440 -> 506 both. The composition that sets the height
+  // did not change (the header with its two-line subline at 390, one 4:5
+  // card row at 309.2 or 312.0 wide), but the old 456/477 was derived by
+  // delta, not read, and under-reserved by 50 and 29.
+  //
+  // `ox-products-secondary` ("العروض"): one heading, then the six offer
+  // posters on the rail (the same 4:5 card: 386.5 tall at 390, 390.0 at
+  // 1440), 32 (48 from 1024) of space, then the product grid with no heading
+  // of its own. 1314.5 at 390 -> 1315, 1037.9 at 1440 -> 1038. The grid half
+  // was measured with the four sale products the store carries today (two
+  // rows at 390, one row at 1440); the grid shows up to eight. More sale
+  // products, or the latest-products fallback on a day with no sale (eight
+  // cards), add two rows at 390 and one at 1440 and push every block below
+  // this one down.
+  'ox-posters': { mobile: 506, desktop: 506 },
+  'ox-products-secondary': { mobile: 1315, desktop: 1038 },
   // A product rail has no honest placeholder for a category that has not
   // resolved to a real Salla id yet (`OxCategoryRail.tsx`), so it renders
   // null, and the live store has zero categories today
@@ -231,7 +252,7 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // mounts, `.ox-branch-block` measured with `getBoundingClientRect()`. The
   // live store's settings carry `branch_hours`/`whatsapp_number` (both
   // counted) but not yet the four `google_*` fields (the owner has not filled
-  // them on the dashboard, VISIT-2026-09-24 §5) — `StoreRating`'s own box was
+  // them on the dashboard, VISIT-2026-09-24 §5); `StoreRating`'s own box was
   // measured separately: the exact markup the component renders was injected
   // into the SAME loaded page at the SAME position (right under the title)
   // and the resulting delta read the same way, then removed, restoring the
@@ -240,7 +261,7 @@ export const HOME_BLOCK_HEIGHTS: Record<HomeBlockPath, { mobile: number; desktop
   // Mobile (390): 763.6 without the rating row, 884.4 with it inserted
   // (delta 120.8 = the chip's own 104.8, wrapped to two lines below the
   // `.ox-gr--rail` 560px breakpoint, plus the head's `--ox-4` gap) -> 885.
-  // Desktop (1440): 505.4 either way — the row's height is set by the photo
+  // Desktop (1440): 505.4 either way: the row's height is set by the photo
   // panel's own intrinsic contribution, not the card's content, so the extra
   // line is absorbed into `.ox-branch__actions`' own `margin-block-start:
   // auto` slack rather than growing the block -> 506.
@@ -351,13 +372,18 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
   'ox-products': { title: null, products: [] },
   // The campaign poster's whole gate: no headline, no band.
   'ox-poster': { headline: null, eyebrow: null, line: null, image: null, cta_label: null, cta_url: null },
-  // Six image + link + alt fields, one per poster (owner brief 2026-09-24),
-  // plus a `label`/`label_en` pair overriding the section's own title — every
-  // one defaults to null so the content map (`app/content/posters.ts`) and
-  // its own locale keys stay the single source until the owner fills a field
-  // from the dashboard (`OxPosters` reads the merchant field first, the
-  // content map second).
-  'ox-posters': {
+  // A `label`/`label_en` pair overriding "اكتشف أكثر"; null so the locale
+  // keys stay the single source until the owner types one.
+  'ox-posters': { label: null, label_en: null },
+  // The title, then six image + link + alt fields, one per offer poster
+  // (owner brief 2026-09-24; moved here from `ox-posters` with the posters
+  // themselves, owner review 2026-09-25). Every one defaults to null so the
+  // content map (`app/content/posters.ts`) and its own locale keys stay the
+  // single source until the owner fills a field from the dashboard
+  // (`OxProductsSecondary` reads the merchant field first, the content map
+  // second).
+  'ox-products-secondary': {
+    title: null,
     image_1: null,
     image_2: null,
     image_3: null,
@@ -376,10 +402,7 @@ export const HOME_BLOCK_FIELDS: Record<HomeBlockPath, BlockFields> = {
     alt_4: null,
     alt_5: null,
     alt_6: null,
-    label: null,
-    label_en: null,
   },
-  'ox-products-secondary': { title: null },
   // Each row is a badge id and the certificate reference that proves it. A row
   // with no reference is not evidence and the resolver drops it, so an empty
   // reference cannot turn a badge on.

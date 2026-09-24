@@ -20,8 +20,8 @@ export interface PlanCardProps {
  * THE PLATE. The photograph stays, but the text no longer floats on it. The
  * card's whole content block sits at the FOOT of the card on a solid ink
  * plate (`--ox-ink` at 0.92, `_b2-home.scss` section 8), which is both the
- * audit's fix — the title, the line and the action used to occupy the top
- * 110px of a 300px card and the rest was an empty photograph — and what lets
+ * audit's fix (the title, the line and the action used to occupy the top
+ * 110px of a 300px card and the rest was an empty photograph) and what lets
  * the card carry a list of what is included without a contrast argument for
  * every line: over a 0.92 ink plate the measure is the plate, not the
  * worst-case white pixel of the frame underneath it (X-IDENTITY §4.5's floor
@@ -31,7 +31,7 @@ export interface PlanCardProps {
  * is for, never what it will do to anybody; two things that are included,
  * each one an already-approved scope line of the service the card opens
  * (`HomePlan.itemKeys`); the live "from" price, and only when a real product
- * backs the card (`HomePlan.sku` — the nutrition page has none, so it shows
+ * backs the card (`HomePlan.sku`; the nutrition page has none, so it shows
  * none rather than inventing a figure); then a real full-width outline button
  * carrying the card's own verb, 48 tall, pinned to the plate's foot so three
  * cards of unequal copy still end on one line.

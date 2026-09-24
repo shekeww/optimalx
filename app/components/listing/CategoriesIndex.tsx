@@ -7,7 +7,9 @@ import { nodeBySlug } from '../../content/taxonomy';
 import { Icon } from '../common/Icon';
 import { OxBreadcrumb } from '../common/OxBreadcrumb';
 import { SectionHeader } from '../common/SectionHeader';
+import { CategoryTile, type CategoryTileTone } from '../home/CategoryTile';
 import { GoalCard } from '../home/GoalCard';
+import { useSectionReveal } from '../home/useSectionReveal';
 import { useTaxonomyLinks, type TaxonomyLink } from './useTaxonomyLinks';
 import type { TFunction } from './types';
 
@@ -25,12 +27,10 @@ export const CATEGORIES_INDEX_KEYS = {
 } as const;
 
 /**
- * `CategoryContent.backgroundImage`/`cardLineKey`, by slug (S2h, 2026-09-23):
- * the SAME two maps `OxCategories.tsx` builds for the home grid, rebuilt here
- * rather than threaded through `useTaxonomyLinks`/`TaxonomyLink`, because
- * that hook is shared by the header and the listing page and this batch does
- * not extend its shape - `HOME_TILE_TONES` right above is read the same way,
- * by `link.slug`, for exactly this reason.
+ * `CategoryContent.backgroundImage` and `cardLineKey`, by slug: the SAME two
+ * maps `OxCategories.tsx` builds for the home grid, read here by
+ * `link.slug` so a type tile on this page receives exactly the props the
+ * home tile for the same slug receives.
  */
 const ART_BY_SLUG: Record<string, string> = Object.fromEntries(
   CATEGORIES.filter((entry) => entry.backgroundImage).map((entry) => [entry.slug, entry.backgroundImage as string])
@@ -38,39 +38,39 @@ const ART_BY_SLUG: Record<string, string> = Object.fromEntries(
 const LINE_BY_SLUG: Record<string, string> = Object.fromEntries(
   CATEGORIES.filter((entry) => entry.cardLineKey).map((entry) => [entry.slug, entry.cardLineKey as string])
 );
+const TYPE_TONE = HOME_TILE_TONES as Record<string, CategoryTileTone>;
 
 /**
  * `/categories`: the index of the 25-node taxonomy (PLAN-ship Batch S1 step
- * 6). Ten type cards (protein carrying its five children as chips), six goal
- * cards, and a row of the four utility categories.
+ * 6). The ten type roots, the six goals and a row of the four utility
+ * categories.
  *
- * THE DEFECT THIS CLOSES. The home page's category row has linked "عرض الكل"
- * to `/categories` since B2, and the route never existed (PLAN-ship §1 item
- * 6): the most prominent "see everything" link on the storefront was a 404
- * in production.
+ * THE TYPE GRID IS THE HOME GRID (owner review 2026-09-25: "it should have
+ * the same exact design of categories section in homepage"). Each type is the
+ * home page's own `CategoryTile` in the home page's own `.ox-cats__grid`: the
+ * same art, tint, icon, short name, product-type line and angled arrow, the
+ * same 2-up phone grid and 4-up desktop grid, the same reveal. The long meta
+ * description and protein's child chips the old type card carried are gone
+ * from the tile, as the home tile has neither; the children stay one tap
+ * away as the chip row on the protein listing itself (`ListingToolbar`).
+ * `.ox-cat-index` takes the home container's measure (`_b4-listing.scss`
+ * section 14), so a tile here is the same size as the home tile, not 5%
+ * narrower inside the page gutter.
  *
- * Every link comes from `useTaxonomyLinks` (Contract C), so a card points at
+ * Every link comes from `useTaxonomyLinks` (Contract C), so a tile points at
  * the live category when the store has one and at a search for the node's
  * own name until then, the same answer the header and the drawer give for
- * the same slug. A card also shows the live category's image once one
- * exists (the overlay, then batch S5's store write), and the sprite glyph
- * until then, so the grid is finished in both states rather than a row of
- * broken-image corners.
+ * the same slug.
  *
- * It is a page with words, not a grid (SEO-ENG-009): an h1, an intro that
- * says what the page holds and how to choose an entry point, and each type
- * card's meta description under its name. The description sits OUTSIDE the
- * card's link on purpose. The whole card is clickable through a stretched
- * pseudo-element, but the accessible name of the link is the category name
- * alone, not a 150-character paragraph read out on every tab stop.
- *
- * The goal cards are the home page's `GoalCard`, unchanged, with the same
- * photograph and the same product-type line: one goal, one card, wherever it
- * appears.
+ * The goal cards are the home page's `GoalCard` in the home page's
+ * `.ox-goals__grid`, unchanged, with the same photograph and product-type
+ * line: one goal, one card, wherever it appears.
  */
 export function CategoriesIndex() {
   const { t } = useTranslation();
   const { types, goals, utility } = useTaxonomyLinks();
+  const typesRef = useSectionReveal<HTMLUListElement>();
+  const goalsRef = useSectionReveal<HTMLUListElement>();
 
   const page: Page = { title: t(CATEGORIES_INDEX_KEYS.h1), slug: 'categories' };
 
@@ -87,10 +87,10 @@ export function CategoriesIndex() {
 
       <section className="ox-cat-index__section" aria-labelledby="categories-types-title">
         <SectionHeader as="h2" title={t('ox.home.categories_title')} titleId="categories-types-title" />
-        <ul className="ox-cat-index__grid">
-          {types.map((link) => (
-            <li key={link.slug} className="ox-cat-index__item">
-              <TypeCard link={link} t={t} />
+        <ul className="ox-cats__grid ox-reveal" ref={typesRef} role="list">
+          {types.map((link, index) => (
+            <li key={link.slug} className="ox-cat-index__item" style={{ ['--i' as string]: String(index) }}>
+              <TypeTile link={link} index={index} t={t} />
             </li>
           ))}
         </ul>
@@ -98,11 +98,11 @@ export function CategoriesIndex() {
 
       <section className="ox-cat-index__section" aria-labelledby="categories-goals-title">
         <SectionHeader as="h2" title={t('ox.home.goals_title')} titleId="categories-goals-title" />
-        <ul className="ox-goals__grid">
+        <ul className="ox-goals__grid ox-reveal" ref={goalsRef}>
           {goals.map((goal, index) => {
             const lineKey = GOAL_CARD_LINES[goal.slug];
             return (
-              <li key={goal.slug} className="ox-cat-index__item">
+              <li key={goal.slug} className="ox-cat-index__item" style={{ ['--i' as string]: String(index) }}>
                 <GoalCard
                   slug={goal.slug}
                   label={goal.label}
@@ -150,85 +150,30 @@ interface CardProps {
 }
 
 /**
- * The type card (owner restyle 2026-09-22, same treatment as the home grid's
- * `CategoryTile`): the icon above the image slot, a tinted ground
- * (`HOME_TILE_TONES`, shared with `OxCategories`). The products count is
- * dropped from the card entirely (coordinator addendum, owner review
- * 2026-09-23 — the same removal `CategoryTile`'s own docblock records). The
- * image slot is a `background-image`, never an `<img>`: a merchant's
- * `Category.image` is an external URL that can 404, and a failed background
- * paint just leaves the tint showing.
- *
- * ART VARIANT (`ART_BY_SLUG`, S2h 2026-09-23): the same six slugs the home
- * grid's `CategoryTile` gives an art tile skip the tinted ground here too -
- * the `<img>` IS the whole card (`.ox-cat-card--art`, `_b4-listing.scss`,
- * a plain rectangle, no clip-path — same addendum), icon/name/line/arrow
- * stacking in a content column (`.ox-cat-card__body`) overlaid on the card's
- * PHYSICAL LEFT in both languages. The meta-description paragraph below
- * stays outside the card either way, unchanged - it is never painted over
- * the photograph.
+ * One type root as the home tile. The label is the node's short name
+ * (`ox.tax.<key>.name`), the one `OxCategories` passes, never the live
+ * category's own longer name; the tone, art and line come off the same
+ * `HOME_TILE_TONES`, `backgroundImage` and `cardLineKey` the home grid reads.
+ * The two roots with no home tile (`snacks-bars`, `accessories`) carry no
+ * art and no line, so they render the home tile's own tinted variant on the
+ * neutral `ash` ground, with the live category image in its image slot.
  */
-function TypeCard({ link, t }: CardProps) {
-  const description = descriptionOf(link, t);
-  const tone = HOME_TILE_TONES[link.slug] ?? 'ash';
-  const art = ART_BY_SLUG[link.slug];
-  const backgroundImage = link.image
-    ? `url("${link.image}")`
-    : `var(--ox-need-image-${link.slug}, none)`;
+function TypeTile({ link, index, t }: CardProps & { index: number }) {
+  const node = nodeBySlug(link.slug);
+  const lineKey = LINE_BY_SLUG[link.slug];
   return (
-    <div
-      className={['ox-cat-card', `ox-cat-card--${tone}`, art ? 'ox-cat-card--art' : null]
-        .filter(Boolean)
-        .join(' ')}
-      data-testid="ox-type-card"
-      data-resolved={link.resolved ? 'true' : 'false'}
-      data-tone={tone}
-      data-category={link.slug}
-    >
-      <Link to={link.to} className="ox-cat-card__link">
-        {art ? (
-          <>
-            <img
-              className="ox-cat-card__art"
-              src={art}
-              loading="lazy"
-              decoding="async"
-              width={1024}
-              height={1536}
-              alt=""
-            />
-            <span className="ox-cat-card__body">
-              <Icon name={link.icon} size={36} className="ox-cat-card__icon" />
-              <span className="ox-cat-card__name">{link.label}</span>
-              {LINE_BY_SLUG[link.slug] ? (
-                <span className="ox-cat-card__line">{t(LINE_BY_SLUG[link.slug])}</span>
-              ) : null}
-              <span className="ox-cat-card__foot">
-                <Icon name="chevron-end" size={24} className="ox-cat-card__arrow ox-iconbtn--angled" />
-              </span>
-            </span>
-          </>
-        ) : (
-          <>
-            <Icon name={link.icon} size={32} className="ox-cat-card__icon" />
-            <span className="ox-cat-card__media" aria-hidden="true" style={{ backgroundImage }} />
-            <span className="ox-cat-card__name">{link.label}</span>
-          </>
-        )}
-      </Link>
-      {description ? <p className="ox-cat-card__desc ox-small">{description}</p> : null}
-      {link.children.length > 0 ? (
-        <ul className="ox-cat-card__children" aria-label={t('ox.listing.children_label')}>
-          {link.children.map((child) => (
-            <li key={child.slug}>
-              <Link to={child.to} className="ox-chip ox-chip--filter ox-chip--link ox-cat-card__chip">
-                <span className="ox-chip__label">{child.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
+    <CategoryTile
+      slug={link.slug}
+      tone={TYPE_TONE[link.slug] ?? 'ash'}
+      icon={link.icon}
+      label={node ? t(node.nameKey) : link.label}
+      line={lineKey ? t(lineKey) : ''}
+      to={link.to}
+      count={link.count}
+      image={link.image}
+      art={ART_BY_SLUG[link.slug]}
+      index={index}
+    />
   );
 }
 

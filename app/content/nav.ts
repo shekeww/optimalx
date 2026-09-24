@@ -39,7 +39,7 @@ export interface NavEntry {
    * Never folded into the automatic overflow as the row narrows
    * (NAV-2026-09-23 §1.4): `shop` and `services` are the store's two
    * shopping pillars, and letting either disappear first is the defect this
-   * spec removes. `fitCount`/`computeFold` skip a pinned item entirely.
+   * spec removes. `computeFold` skips a pinned item entirely.
    */
   pin?: true;
 }
@@ -51,44 +51,51 @@ export interface FooterColumn {
 }
 
 /**
- * The header row, in order from the RTL start: shop, offers, brands, the
- * advisory, guides, more (NAV-2026-09-23 §1). Six items, one axis of entry
- * per slot, replacing the five-item row that put three doors
- * (المنتجات/المكملات/البروتين) into the one catalogue and carried no offers,
- * no brands and no goals.
+ * The header row, in order from the RTL start: shop, offers, the advisory,
+ * about, contact, more (NAV-2026-09-23 §1 as revised by the owner's navigation
+ * review: brands move inside تسوق as its third axis, guides move
+ * inside المزيد, and about and contact come out of المزيد onto the bar).
  *
- * `تسوق` is the one mega panel trigger (types column + goals column + the
- * promoted tile) and keeps a real `to` (`/categories`) so a keyboard or no-JS
- * visitor still reaches the index. `العروض` is gated on
- * `settings.show_offers_nav !== false` by `NavBar` itself (a header item that
- * appears after hydration shifts the row, so the gate has to run before this
- * array is read, not inside it). `العلامات التجارية` and `الأدلة` are never
- * gated. `تسوق` and `اسأل قبل أن تشتري` are `pin`ned: the row's own
- * arithmetic (NavBar.tsx) folds `الأدلة` first, then `العلامات التجارية`,
- * then `العروض`, into `المزيد` as the viewport narrows, but the two shopping
- * pillars never fold.
+ * `تسوق` is the one mega panel trigger (types column, goals column with the
+ * brand axis under it, the promoted tile) and keeps a real `to`
+ * (`/categories`) so a keyboard or no-JS visitor still reaches the index.
+ * `العروض` is gated on `settings.show_offers_nav !== false` by `NavBar`
+ * itself (a header item that appears after hydration shifts the row, so the
+ * gate has to run before this array is read, not inside it). `من نحن` and
+ * `تواصل معنا` are never gated. `تسوق` and `اسأل قبل أن تشتري` are `pin`ned:
+ * the row's own arithmetic (NavBar.tsx) folds `تواصل معنا` first, then
+ * `من نحن`, then `العروض`, into `المزيد` as the viewport narrows, but the
+ * two shopping pillars never fold.
  */
 export const HEADER_NAV: NavEntry[] = [
   { key: 'shop', labelKey: 'ox.nav.shop', to: '/categories', dropdown: 'mega', pin: true },
   { key: 'offers', labelKey: 'ox.nav.offers', to: '/offers' },
-  { key: 'brands', labelKey: 'ox.nav.brands', to: '/brands' },
   { key: 'services', labelKey: 'ox.nav.services', to: '/services', pin: true },
-  { key: 'guides', labelKey: 'ox.nav.guides', to: '/blog' },
+  { key: 'about', labelKey: 'ox.nav.about', to: '/about' },
+  { key: 'contact', labelKey: 'ox.nav.contact', to: '/contact' },
   { key: 'more', labelKey: 'ox.nav.more', dropdown: 'more' },
 ];
 
 /**
- * The three standing pages the desktop `more` dropdown and the mobile
- * drawer's own `المزيد` accordion both list (NAV-2026-09-23 §6.1). The
- * branch also gets its own link in the utility strip (`UtilityBar`), which
- * is three taps closer on desktop; it stays here too because the drawer has
- * no utility strip of its own.
+ * The standing pages the desktop `more` dropdown and the mobile drawer's own
+ * `المزيد` accordion both list (NAV-2026-09-23 §6.1, the owner's navigation
+ * review): the guides and the branch. About and contact left this list
+ * for the bar itself. The branch also gets its own link in the utility strip
+ * (`UtilityBar`), which is three taps closer on desktop; it stays here too
+ * because the drawer has no utility strip of its own.
  */
 export const MORE_NAV: NavEntry[] = [
-  { key: 'about-brand', labelKey: 'ox.nav.about_brand', to: '/about' },
+  { key: 'guides', labelKey: 'ox.nav.guides', to: '/blog' },
   { key: 'branch', labelKey: 'ox.nav.branch', to: '/branch' },
-  { key: 'contact', labelKey: 'ox.nav.contact', to: '/contact' },
 ];
+
+/**
+ * The catalogue's third axis beside حسب النوع and حسب الهدف (the owner's
+ * navigation review: "العلامات التجارية to be part of التسوق ... as حسب العلامة").
+ * One entry, the brands index, rendered by the mega panel, the shop sheet
+ * and the drawer's shop groups so the three surfaces cannot drift apart.
+ */
+export const SHOP_BRAND_AXIS: NavEntry = { key: 'by-brand', labelKey: 'ox.nav.by_brand', to: '/brands' };
 
 export const FOOTER_COLUMNS: FooterColumn[] = [
   {

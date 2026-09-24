@@ -1,9 +1,11 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { Button } from '../common/Button';
+import { useRailProgress } from '../common/hooks/useRailProgress';
+import { useReducedMotion } from '../common/hooks/useReducedMotion';
 import { Icon } from '../common/Icon';
 import { Price } from '../common/Price';
 import { StoreRating } from '../common/StoreRating';
@@ -40,16 +42,16 @@ const ADVISORY_PHOTO = STORE_PHOTOS['advisory-room'];
  * record is `docs/build/progress/S7c.md`).
  *
  * WHAT CHANGED AND WHY. The band shipped by S5c said the two things the owner
- * most wants seen — that the advice is free and that the branch measures body
- * composition with InBody for nothing — in two grey notes, one under a row
+ * most wants seen (that the advice is free and that the branch measures body
+ * composition with InBody for nothing) in two grey notes, one under a row
  * title and one inside the third card, at the smallest type on the section.
  * Everything that could be clicked was an accent text link beside a 24px
  * chevron box, and every card's lower half was empty. So the offer is now the
  * first thing under the heading and it is a plate with real buttons on it:
  *
  *  - the HEAD (eyebrow, heading, subline), unchanged in copy;
- *  - the OFFER STRIP: two facts one type step over the row titles — free advice, and the free
- *    branch InBody measurement while `inbody_included` is on — then the
+ *  - the OFFER STRIP: two facts one type step over the row titles (free advice, and the free
+ *    branch InBody measurement while `inbody_included` is on), then the
  *    band's own primary ("احجز زيارتك", the branch visit product) and its
  *    secondary ("اسأل الآن", the free written question), then the reply-time
  *    cue when the owner has filled `reply_sla_hours`. It carries the
@@ -61,9 +63,9 @@ const ADVISORY_PHOTO = STORE_PHOTOS['advisory-room'];
  *  - ROW TWO, the three programmes, on `PlanCard`;
  *  - the TRUST ROW: the branch address, the consultation credit when the
  *    owner has written one, and then the limit-of-our-work line. Real facts
- *    or nothing — no counts, no ratings, nobody called an expert;
+ *    or nothing: no counts, no ratings, nobody called an expert;
  *  - on the home page only, a quiet text link to `/services` ("كل الخدمات",
- *    named rather than a twelfth "عرض الكل" — UX audit 2026-09-24, P1-7).
+ *    named rather than a twelfth "عرض الكل", UX audit 2026-09-24, P1-7).
  *
  * BOTH SURFACES GET THE SAME COMPOSITION, `/services` included, so the offer
  * strip exists once per page; `routeOut` decides the heading and whether the
@@ -103,7 +105,7 @@ interface ChannelDoorProps {
  * It is NOT a link any more, and that is the point of this rebuild: the card
  * used to be one big anchor whose only visible affordance was an accent word
  * and a detached chevron box, so nothing on it looked pressable. The door is
- * a plain container now and the CTA is a real button — the outline
+ * a plain container now and the CTA is a real button: the outline
  * parallelogram, full width, 48 tall, pinned to the card's foot by the
  * stylesheet's `margin-block-start: auto`, so three doors of unequal copy
  * still end on one line. A `<button>`/`<a>` inside an `<a>` is invalid, which
@@ -289,9 +291,38 @@ interface BandRowProps {
  * The gated cues that used to hang off a row head are gone too: the InBody
  * line is the offer strip's second fact and the reply time is the line under
  * the strip's buttons, each said once on the band.
+ *
+ * A CAROUSEL BELOW 1024, A GRID FROM THERE (owner, 2026-09-25: "on mobile
+ * make it a carousel, both the 3 cards at the top and the 3 cards below
+ * them"). Each row sits on the shared rail primitive (`_rail.scss`): the
+ * track snaps, hides the native scrollbar and scrolls sideways only, the
+ * next card peeks past the reading end, and the accent chevron cue appears
+ * once `useRailProgress` has measured a rail that can still scroll. From
+ * 1024 the same track is the three-column grid (`_b2-home.scss` section 8),
+ * nothing overflows, `data-rail` stays absent and the cue never draws. The
+ * DOM order is the reading order on both, so the recommended door (first in
+ * `SERVICE_CHANNELS`) is the card a phone sees first.
+ *
+ * The cue moves the track by one card and its gap (`scrollBy`, never
+ * `scrollIntoView`, which can also scroll the page). `scrollLeft` runs
+ * negative in RTL, so the step carries the track's own direction.
  */
 function BandRow({ titleKey, noteKey, children, id }: BandRowProps) {
   const { t } = useTranslation();
+  const reducedMotion = useReducedMotion();
+  const trackRef = useRef<HTMLUListElement>(null);
+  const railRef = useRailProgress(trackRef);
+
+  const next = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const first = track.firstElementChild as HTMLElement | null;
+    const style = getComputedStyle(track);
+    const gap = parseFloat(style.columnGap) || 0;
+    const step = (first?.getBoundingClientRect().width ?? track.clientWidth * 0.8) + gap;
+    const factor = style.direction === 'rtl' ? -1 : 1;
+    track.scrollBy({ left: factor * step, behavior: reducedMotion ? 'auto' : 'smooth' });
+  };
 
   return (
     <div className="ox-services__row" id={id}>
@@ -299,9 +330,21 @@ function BandRow({ titleKey, noteKey, children, id }: BandRowProps) {
         <h3 className="ox-services__row-title ox-title">{t(titleKey)}</h3>
         <p className="ox-services__row-note ox-small">{t(noteKey)}</p>
       </div>
-      <ul className="ox-plans" role="list">
-        {children}
-      </ul>
+      <div className="ox-rail ox-services__rail" ref={railRef}>
+        <ul className="ox-rail__track ox-plans" ref={trackRef} role="list">
+          {children}
+        </ul>
+        <button
+          type="button"
+          className="ox-rail__cue"
+          onClick={next}
+          aria-label={t('ox.home.band_row_next')}
+        >
+          <span className="ox-rail__cue-arm" aria-hidden="true" />
+          <span className="ox-rail__cue-arm ox-rail__cue-arm--down" aria-hidden="true" />
+        </button>
+        <div className="ox-rail__progress" />
+      </div>
     </div>
   );
 }

@@ -2,28 +2,32 @@ import { pathForSku } from './salla-ids';
 import { STORE_PHOTOS } from './store-photos';
 
 /**
- * The home carousel "اكتشف أكثر" and the offers page's poster grid.
+ * The offer posters and the home's content cards.
  *
- * Two kinds of card (owner items 2026-09-24, S7a then S8a): the six offer
- * posters below, which are ALSO the poster grid at the top of `/offers`
- * (docs/build/progress/S7a.md), and the five content cards further down,
- * restored from 4657b89 (docs/build/progress/S8a.md). The home carousel
- * carries both in one rail, alternating (`HOME_CAROUSEL`).
+ * Two kinds of card (owner items 2026-09-24, S7a then S8a), and since the
+ * owner's review of 2026-09-25 they no longer share a rail:
+ *  - the six offer posters below have the home's "العروض" section to
+ *    themselves (a carousel above the sale products, `OxProductsSecondary`)
+ *    and are ALSO the poster grid at the top of `/offers`
+ *    (docs/build/progress/S7a.md);
+ *  - the five content cards further down, restored from 4657b89
+ *    (docs/build/progress/S8a.md), are the whole of the "اكتشف أكثر"
+ *    carousel (`OxPosters`), which now closes the shopping part of the home
+ *    after the category rails.
  *
  * Every offer poster is an IMAGE the owner supplies, not a card this theme
  * composes from copy: the artwork carries its own headline, offer and CTA
- * baked in, so this map holds structure only — where the file lives, what
+ * baked in, so this map holds structure only: where the file lives, what
  * widths exist, where the card links, and the accessible name a screen reader
  * needs since the baked text is pixels, not a DOM node (`altKey`,
  * claims-clean, MSA, never a literal in `app/`).
  *
- * `available` starts `false` on every entry: the six files are not on disk
- * yet (the owner drops them into `public/assets/posters/` later).
- * `scripts/posters-import.mjs` is the one writer of this field — it flips a
+ * `scripts/posters-import.mjs` is the one writer of `available`: it flips a
  * slug's `false` to `true` once it has processed that slug's source image,
- * by a plain string replace against this exact file, so PosterCard renders
- * the tinted plate with the alt as a caption instead of a broken image until
- * then. Do not hand-edit an `available` value; run the import script.
+ * by a plain string replace against this exact file. The `/offers` grid
+ * renders an unavailable poster as the tinted plate with the alt as a
+ * caption; the home carousel leaves it out (`OxProductsSecondary`). Do not
+ * hand-edit an `available` value; run the import script.
  */
 
 export type PosterKind = 'offer' | 'bundle' | 'subscription';
@@ -136,7 +140,7 @@ export interface PosterCategoryLink {
  * function second).
  *
  * Two cards need more than their own `to`:
- *  - `weekly-picks` points at `/offers` from the home carousel, but at its
+ *  - `weekly-picks` points at `/offers` from the home offers carousel, but at its
  *    own product grid anchor when the card sits ON `/offers` already (a
  *    poster cannot usefully link to the page it is already on). The anchor
  *    is the FULL path, `/offers#offers-grid`, not a bare `#offers-grid`:
@@ -144,7 +148,7 @@ export interface PosterCategoryLink {
  *    (`app/components/layout/navLinks.ts`), which prefixes a bare fragment
  *    with `/` (`#offers-grid` -> `/#offers-grid`) and would have pointed the
  *    card at the HOME route's own hash instead of scrolling the current page
- *    — caught live in `tests/listing/ListingPage.test.tsx`;
+ *    (caught live in `tests/listing/ListingPage.test.tsx`);
  *  - `bigramy-creatine` tries the live `creatine` category first (through
  *    `lookupCategory`, `useTaxonomyLinks`'s own resolver) and only falls back
  *    to its static `to` when that category has not resolved to a real Salla
@@ -255,29 +259,3 @@ export function contentHref(
   const link = card.taxonomySlug ? lookup(card.taxonomySlug) : undefined;
   return link?.to ?? '/';
 }
-
-export type CarouselEntry =
-  | { kind: 'offer'; card: PosterCardContent; /** 1-based, the merchant field suffix. */ offerNumber: number }
-  | { kind: 'content'; card: ContentCardContent };
-
-/**
- * Offer, content, offer, content, starting with the first offer (the InBody
- * consultation), until one list runs out; whatever is left of the other
- * follows in its own order. Six offers and five content cards give eleven
- * slides, offers at both ends.
- */
-export function interleave(
-  offers: readonly PosterCardContent[],
-  contents: readonly ContentCardContent[]
-): CarouselEntry[] {
-  const out: CarouselEntry[] = [];
-  const longest = Math.max(offers.length, contents.length);
-  for (let i = 0; i < longest; i += 1) {
-    if (i < offers.length) out.push({ kind: 'offer', card: offers[i], offerNumber: i + 1 });
-    if (i < contents.length) out.push({ kind: 'content', card: contents[i] });
-  }
-  return out;
-}
-
-/** The home carousel's eleven slides, in order. */
-export const HOME_CAROUSEL: CarouselEntry[] = interleave(POSTER_CARDS, CONTENT_CARDS);

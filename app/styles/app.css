@@ -45,6 +45,18 @@ body.modal-is-open {
    tab bar uses `width: 100vw`, which overhangs the content box by the reserved
    scrollbar gutter). `clip` doesn't create a scroll container, so it won't
    affect the fixed header or vertical dropdowns. */
+/* `hidden` first for browsers without `clip` (Safari before iOS 16 and the
+   in-app browsers built on it): without a fallback the declaration is dropped
+   and every full-bleed motif and hero frame widens the page sideways
+   (measured 2026-09-24: a listing grew to 1715px on a 390px phone). There,
+   `hidden` costs `position: sticky` inside the wrapper; everywhere else
+   `clip` wins and nothing changes. */
 .app-inner {
-  overflow-x: clip;
+  overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  .app-inner {
+    overflow-x: clip;
+  }
 }

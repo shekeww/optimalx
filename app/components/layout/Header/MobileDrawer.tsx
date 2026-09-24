@@ -5,7 +5,7 @@ import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
 import { digitsOnly } from '../../blocks/href';
-import { HEADER_NAV, MORE_NAV } from '../../../content/nav';
+import { HEADER_NAV, MORE_NAV, SHOP_BRAND_AXIS } from '../../../content/nav';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { useDialogFocus } from '../../common/useDialogFocus';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
@@ -61,10 +61,11 @@ function DrawerGroup({ label, open, onToggle, children }: GroupProps) {
  * they can never become two different site maps again.
  *
  * Top to bottom: حسب النوع (the ten type roots, protein nested, then the
- * three non-services utility categories - one group), حسب الهدف (the six
- * goals), then العروض (gated the same as the bar), العلامات التجارية,
- * اسأل قبل أن تشتري and الأدلة as plain rows, then المزيد (the three
- * standing pages), then the account rule. One group open at a time.
+ * three non-services utility categories, one group), حسب الهدف (the six
+ * goals), حسب العلامة (the brands index, a plain row set like the two
+ * groups), then العروض (gated the same as the bar), اسأل قبل أن تشتري,
+ * من نحن and تواصل معنا as plain rows, then المزيد (the guides and the
+ * branch), then the account rule. One group open at a time.
  *
  * Not rendered at all while closed, so nothing is parked off-screen and the
  * panel layer is released on close (render budget 10.1 rule 6, 10.2). Focus
@@ -122,10 +123,10 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
       )
     : null;
 
-  // The four plain rows between the two catalogue accordions and المزيد:
-  // العروض (gated, same as the bar), العلامات التجارية, اسأل قبل أن تشتري,
-  // الأدلة. `شop` and `more` are never in this list: their content is the two
-  // accordions above and المزيد below.
+  // The four plain rows between the catalogue axes and المزيد: العروض
+  // (gated, same as the bar), اسأل قبل أن تشتري, من نحن, تواصل معنا.
+  // `shop` and `more` are never in this list: their content is the
+  // catalogue axes above and المزيد below.
   const primary: Array<{ key: string; label: string; to: string }> = [];
   for (const entry of HEADER_NAV) {
     if (entry.dropdown) continue;
@@ -135,7 +136,7 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
     if (to) primary.push({ key: entry.key, label, to });
   }
 
-  // المزيد's own three standing pages.
+  // المزيد's own standing pages: the guides and the branch.
   const morePages = MORE_NAV.map((entry) => {
     const label = t(entry.labelKey);
     return { key: entry.key, label, to: resolveNavHref(entry, label, undefined) ?? '/' };
@@ -200,6 +201,21 @@ export function MobileDrawer({ id, open, onClose, initialGroup = 'goals' }: Mobi
                 </li>
               ))}
             </DrawerGroup>
+
+            {/* The shop's third axis, a sibling of the two groups above and
+                set like them, but a link (it has no list of its own), so its
+                chevron points onward rather than down. */}
+            <li data-drawer-axis="">
+              <Link
+                to={SHOP_BRAND_AXIS.to ?? '/brands'}
+                className="ox-drawer__row"
+                onClick={onClose}
+                data-testid="ox-drawer-brand-axis"
+              >
+                <span>{t(SHOP_BRAND_AXIS.labelKey)}</span>
+                <Icon name="chevron-end" size={16} className="ox-drawer__axis-chevron" />
+              </Link>
+            </li>
 
             {primary.map((item) => (
               <li key={item.key} data-drawer-primary="">

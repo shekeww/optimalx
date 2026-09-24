@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { SHOP_BRAND_AXIS } from '../../../content/nav';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { Button } from '../../common/Button';
 import { Icon, type OxIconName } from '../../common/Icon';
@@ -22,8 +23,10 @@ const BODY_OPEN_CLASS = 'modal-is-open';
  *
  * `تسوق` used to open the side drawer scrolled to a group, which made one
  * control do two jobs: the site map and the catalogue. This sheet holds the
- * catalogue and nothing else - no language switch, no phone number, no
- * account rows - and the drawer keeps the site map on the menu button.
+ * catalogue and nothing else (no language switch, no phone number, no
+ * account rows), and the drawer keeps the site map on the menu button.
+ * Three axes, in order: حسب الهدف, حسب النوع, حسب العلامة (the brands
+ * index, one row), then أقسام أخرى.
  *
  * It is modal (unlike the mega panel): focus trapped, `role="dialog"
  * aria-modal="true"`, closes on Escape and unmounts rather than hiding, so
@@ -109,6 +112,21 @@ export function ShopSheet({ id, open, onClose }: ShopSheetProps) {
           <p className="ox-sheet__heading">{t('ox.nav.by_type')}</p>
           <ShopTree mode="grid" includeUtility={false} onNavigate={onClose} />
         </section>
+
+        <hr className="ox-sheet__rule" />
+
+        {/* The third axis (the owner's navigation review): حسب العلامة,
+            set like the two headings above but a link itself, since it has
+            no tiles of its own; the whole row is the tap target. */}
+        <Link
+          to={SHOP_BRAND_AXIS.to ?? '/brands'}
+          className="ox-sheet__axis"
+          onClick={onClose}
+          data-testid="ox-sheet-brand-axis"
+        >
+          <span className="ox-sheet__heading">{t(SHOP_BRAND_AXIS.labelKey)}</span>
+          <Icon name="chevron-end" size={16} className="ox-sheet__axis-chevron" />
+        </Link>
 
         <hr className="ox-sheet__rule" />
 

@@ -55,11 +55,11 @@ export interface FoldableItem {
  * Pure so the arithmetic is testable without a layout engine. `المزيد` is
  * always the last item and never folds: its own cost is part of the fixed
  * budget, not something the row can shed. Pinned items (`تسوق`,
- * `اسأل قبل أن تشتري`) never fold either — the advisory or the mega trigger
+ * `اسأل قبل أن تشتري`) never fold either: the advisory or the mega trigger
  * disappearing first is exactly the defect this spec removes. Every other
  * item folds from the END of the foldable list backward as the row narrows
- * (`الأدلة` first, then `العلامات التجارية`, then `العروض`), which is what
- * §1.4's three measured rows (1440, 1280, 1024) show.
+ * (`تواصل معنا` first, then `من نحن`, then `العروض`). At 1280 and wider the
+ * whole row fits in both languages; at 1024 all three fold.
  */
 export function computeFold(items: FoldableItem[], containerWidth: number, gap = 0): Set<string> {
   const folded = new Set<string>();
@@ -90,13 +90,15 @@ function columnGapOf(node: HTMLElement): number {
  * The desktop navigation, inside the main bar rather than in a row of its own
  * (NAV-2026-09-23 §1, §4).
  *
- * Six items, one axis of entry per slot: تسوق (the one mega panel, types
- * column + goals column + the promoted tile), العروض (gated on
- * `settings.show_offers_nav !== false`), العلامات التجارية,
- * اسأل قبل أن تشتري, الأدلة, المزيد (the shelf: whatever folded off the row
- * plus the three standing pages in `MORE_NAV`). تسوق and اسأل قبل أن تشتري
- * are pinned and never fold; المزيد never folds either because it is the
- * fold target itself.
+ * Six items: تسوق (the one mega panel: types column, goals column with the
+ * brand axis حسب العلامة under it, the promoted tile), العروض (gated on
+ * `settings.show_offers_nav !== false`), اسأل قبل أن تشتري, من نحن,
+ * تواصل معنا, المزيد (the shelf: whatever folded off the row plus the
+ * standing pages in `MORE_NAV`, the guides and the branch). تسوق and
+ * اسأل قبل أن تشتري are pinned and never fold; المزيد never folds either
+ * because it is the fold target itself. المزيد carries `is-active` while
+ * the current page is one of its own entries, so the bar still shows where
+ * the visitor is once the guides live inside it.
  *
  * تسوق keeps a real `href` (a raw `<a>`, locale-prefixed by hand per
  * NAV-2026-09-23 §8 item 2, since the engine `Link` is what does that for
@@ -123,6 +125,7 @@ export function NavBar() {
   const widths = useRef<Record<string, number>>({});
   const listRef = useRef<HTMLUListElement>(null);
   const shopTriggerRef = useRef<HTMLAnchorElement>(null);
+  const moreTriggerRef = useRef<HTMLButtonElement>(null);
   // `measure` needs the current links on every call but must keep a stable
   // identity across renders (a new function each render would re-fire the
   // effects below on every render, which set state, which renders again -
@@ -197,6 +200,27 @@ export function NavBar() {
     };
   }, []);
 
+  // Escape closes المزيد, as it closes the mega panel. Focus goes back to
+  // the المزيد button only when it was inside the item (the button or one of
+  // its entries): a list opened by hover while the visitor types in the
+  // search field closes without taking focus away from the field.
+  const moreOpen = openKey === 'more';
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      const trigger = moreTriggerRef.current;
+      const focusInside = Boolean(
+        trigger?.parentElement && document.activeElement && trigger.parentElement.contains(document.activeElement)
+      );
+      if (timer.current) clearTimeout(timer.current);
+      setOpenKey((current) => (current === 'more' ? null : current));
+      if (focusInside) trigger?.focus();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [moreOpen]);
+
   const schedule = (next: string | null) => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setOpenKey(next), next ? OPEN_DELAY : CLOSE_DELAY);
@@ -229,11 +253,29 @@ export function NavBar() {
 
           if (link.key === 'more') {
             const moreItems = [...overflow, ...morePages];
+            const moreActive = moreItems.some(isActive);
             return (
-              <li className="ox-nav__item" key={link.key} data-nav-item={link.key}>
+              <li
+                className="ox-nav__item"
+                key={link.key}
+                data-nav-item={link.key}
+                onBlur={(event) => {
+                  // Focus moving to anything outside this `<li>` (Tab past
+                  // the last entry, Shift+Tab off the button) closes the
+                  // list, as MegaPanel's focusout does. A blur with no
+                  // relatedTarget is left alone: Safari and Firefox on macOS
+                  // do not focus a link on click, so a mouse click on an
+                  // entry blurs with no target, and closing there would
+                  // unmount the entry before the click lands. Leaving with
+                  // the pointer already closes it (onPointerLeave).
+                  const next = event.relatedTarget as Node | null;
+                  if (next && !event.currentTarget.contains(next)) close(link.key);
+                }}
+              >
                 <button
+                  ref={moreTriggerRef}
                   type="button"
-                  className={`ox-nav__link${open ? ' is-open' : ''}`}
+                  className={`ox-nav__link${open ? ' is-open' : ''}${moreActive ? ' is-active' : ''}`}
                   aria-expanded={open}
                   aria-controls={`${panelId}-more`}
                   data-testid="ox-nav-more"
@@ -262,6 +304,7 @@ export function NavBar() {
                           className="ox-nav__droplink"
                           activeOptions={EXACT_ACTIVE}
                           onClick={() => close(link.key)}
+                          {...(isActive(item) ? { 'aria-current': 'page' } : {})}
                         >
                           {item.label}
                         </NavLink>
@@ -295,7 +338,18 @@ export function NavBar() {
                   onPointerEnter={() => schedule(link.key)}
                   onPointerLeave={() => schedule(null)}
                   onFocus={() => schedule(link.key)}
-                  onBlur={() => schedule(null)}
+                  onBlur={(event) => {
+                    // Tab from تسوق lands on the panel's first link, inside
+                    // this same `<li>`: that is the visitor walking into the
+                    // panel, not leaving it, so no close is scheduled (it
+                    // used to be, and the panel shut 200ms later, which left
+                    // حسب العلامة with no keyboard route). MegaPanel's own
+                    // focusout on the `<li>` closes it once focus leaves the
+                    // item altogether.
+                    const next = event.relatedTarget as Node | null;
+                    if (next && event.currentTarget.parentElement?.contains(next)) return;
+                    schedule(null);
+                  }}
                   {...(active ? { 'aria-current': 'page' as const } : {})}
                 >
                   {link.label}

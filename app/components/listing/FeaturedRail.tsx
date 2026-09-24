@@ -20,8 +20,8 @@ export interface FeaturedRailProps {
 /** Real rendered widths (owner item 2026-09-23: "cover images that are
  *  larger"): below 768 a cover is ~88% of the container, 768 up it is
  *  `(container - gap) / 2` up to the 1296 container cap, i.e. roughly 253 to
- *  642 CSS px across every probe width — see docs/build/progress/S4c.md for
- *  the measured heights this drives. */
+ *  642 CSS px across every probe width (see docs/build/progress/S4c.md for
+ *  the measured heights this drives). */
 const RAIL_IMAGE_WIDTHS = [320, 640, 980] as const;
 const RAIL_IMAGE_SIZES = '(min-width: 768px) 46vw, 88vw';
 /** The fallback picks the first 4 to 6 of the listing's own default sort. */
@@ -61,7 +61,7 @@ export function featuredProducts(products: Product[]): Product[] {
  *
  * The brief asks for an owner-generated cover per featured product through a
  * `featured_cover_<sku>` field or an equivalent merchant field, "when the
- * engine exposes one" — checked 2026-09-22 against the engine's `Product`
+ * engine exposes one": checked 2026-09-22 against the engine's `Product`
  * type and the listing payload: neither carries a per-SKU cover image or a
  * matching theme setting today, so there is nothing yet to read. This
  * resolves the product's OWN first image, which is what the brief names as
@@ -80,6 +80,14 @@ export function featuredCoverImage(product: Product): { url: string | undefined;
  * category"): a scroll-snap carousel of the category's featured products,
  * each a large cover with its name, its price through `Price` and one link
  * to the product page.
+ *
+ * The cover stands on the product card's own plate ground (owner review
+ * 2026-09-25): the page ground with the grey angled band and the orange mark
+ * behind the packshot (`.ox-featured__band`/`__mark`, off the same
+ * `ox-plate-band`/`ox-plate-mark` mixins `.ox-card-product__band`/`__mark`
+ * read), where it used to be a flat grey panel. The whole cover is one link:
+ * the plate, the photograph, the name, the price and the CTA all sit inside
+ * it, and the ground is paint only.
  *
  * Reserved height, CLS 0: `products` arrives with the page (the loader's own
  * first page, present at first paint on both server and client), so nothing
@@ -107,7 +115,7 @@ export function featuredCoverImage(product: Product): { url: string | undefined;
  * Owner review 2026-09-23 late night, item 1: the track now sits on the
  * shared rail primitive (`.ox-rail`/`.ox-rail__track`, `_rail.scss`), which
  * hides the native scrollbar, draws the accent chevron cue at the reading
- * end and tracks scroll position on the progress strap under the row — the
+ * end and tracks scroll position on the progress strap under the row, the
  * same primitive `OxBrands` and `OxCategoryRail` carry. The nav pair's own
  * face is the unfilled angled `.ox-iconbtn--angled` span (`_primitives.scss`)
  * rather than the plain bordered square it shipped with, superseding S4c's
@@ -207,6 +215,12 @@ export function FeaturedRail({ products, className }: FeaturedRailProps) {
                 {/* toInternalPath: the API publishes this URL absolute (P0-14). */}
                 <Link to={toInternalPath(product.url)} className="ox-featured__card">
                   <span className="ox-featured__plate">
+                    {/* The product card's own plate ground (owner review
+                        2026-09-25): the grey angled band and the orange mark
+                        behind the packshot, painted before the image so DOM
+                        order alone keeps them under it. */}
+                    <span className="ox-featured__band" aria-hidden="true" />
+                    <span className="ox-featured__mark" aria-hidden="true" />
                     <Image
                       src={cover.url}
                       alt={cover.alt}

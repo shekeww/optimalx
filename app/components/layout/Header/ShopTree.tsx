@@ -23,7 +23,7 @@ export interface ShopTreeProps {
  *
  * Ten type roots, protein's five children nested under it. Grid mode never
  * shows the children (a tile grid has no room for a third tap and the goal
- * this component serves — every root two taps away — does not need them,
+ * this component serves (every root two taps away) does not need them,
  * §7.1.1: they stay three taps away, by design, on the drawer's own
  * accordion and the protein listing's chip row).
  */

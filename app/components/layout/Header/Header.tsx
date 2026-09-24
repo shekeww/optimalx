@@ -166,7 +166,7 @@ export function Header() {
   // FIXED at every width, regardless of this setting (owner call,
   // 2026-09-22, superseding the same-day "not sticky unless the merchant
   // switches it on" call this used to gate on it): the header never scrolls
-  // with the page, on desktop or mobile — `_b1-layout.scss`'s `.ox-header`
+  // with the page, on desktop or mobile: `_b1-layout.scss`'s `.ox-header`
   // sets `position: fixed` unconditionally now. The setting is still read
   // and carried onto the element as `data-header-sticky-setting`, so a
   // merchant's own dashboard toggle keeps being visible in the markup even

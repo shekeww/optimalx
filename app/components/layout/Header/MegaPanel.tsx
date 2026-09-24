@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { SHOP_BRAND_AXIS } from '../../../content/nav';
 import { useTaxonomyLinks } from '../../listing/useTaxonomyLinks';
 import { Icon, type OxIconName } from '../../common/Icon';
 import { toSafeLinks } from '../navLinks';
@@ -21,9 +22,10 @@ export interface MegaPanelProps {
 
 /**
  * The one mega panel in the header (NAV-2026-09-23 §5): three columns under
- * تسوق — حسب النوع (the ten type roots, protein's five children nested),
- * حسب الهدف (the six goals) and the promoted tile — closed by a foot row of
- * two "see everything" links.
+ * تسوق: حسب النوع (the ten type roots, protein's five children nested),
+ * حسب الهدف (the six goals) with حسب العلامة (the brands index, the owner's
+ * navigation review) under it, and the promoted tile; closed by a foot row
+ * with the "كل الأنواع" link.
  *
  * It is a **disclosure**, not a menu and not a dialog (§5.5): no
  * `useDialogFocus`, no `role="group"`, no `tabIndex`. A hover-opened,
@@ -140,28 +142,43 @@ export function MegaPanel({
         </div>
       </section>
 
-      <section className="ox-mega__col ox-mega__col-b" aria-label={t('ox.nav.by_goal')}>
-        <h3 className="ox-mega__heading">{t('ox.nav.by_goal')}</h3>
-        <ul className="ox-mega__goalgrid">
-          {goals.map((goal) => (
-            <li key={goal.slug}>
-              <Link to={goal.to} className="ox-mega__goal" onClick={onClose}>
-                <Icon name={goal.icon as OxIconName} size={24} />
-                <span className="ox-mega__goal-label">{goal.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <div className="ox-mega__col ox-mega__col-b">
+        <section className="ox-mega__group" aria-label={t('ox.nav.by_goal')}>
+          <h3 className="ox-mega__heading">{t('ox.nav.by_goal')}</h3>
+          <ul className="ox-mega__goalgrid">
+            {goals.map((goal) => (
+              <li key={goal.slug}>
+                <Link to={goal.to} className="ox-mega__goal" onClick={onClose}>
+                  <Icon name={goal.icon as OxIconName} size={24} />
+                  <span className="ox-mega__goal-label">{goal.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* The third axis (the owner's navigation review): brands leave the
+            bar and live here as حسب العلامة, set as a heading like its two
+            siblings. It has no list of its own, so the heading is the link
+            itself, to the brands index, with the chevron saying so. */}
+        <h3 className="ox-mega__heading ox-mega__axis-heading">
+          <Link
+            to={SHOP_BRAND_AXIS.to ?? '/brands'}
+            className="ox-mega__axis"
+            onClick={onClose}
+            data-testid="ox-mega-brand-axis"
+          >
+            <span>{t(SHOP_BRAND_AXIS.labelKey)}</span>
+            <Icon name="chevron-end" size={16} className="ox-mega__axis-chevron" />
+          </Link>
+        </h3>
+      </div>
 
       <MegaPromo onNavigate={onClose} />
 
       <div className="ox-mega__foot">
         <Link to="/categories" className="ox-mega__foot-link" onClick={onClose}>
           {t('ox.nav.all_types')}
-        </Link>
-        <Link to="/brands" className="ox-mega__foot-link" onClick={onClose}>
-          {t('ox.nav.all_brands')}
         </Link>
       </div>
     </div>

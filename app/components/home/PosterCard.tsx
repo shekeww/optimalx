@@ -45,11 +45,13 @@ const SIZES = '(min-width: 1280px) 312px, (min-width: 1024px) 309px, (min-width:
 /**
  * One marketing poster (owner brief 2026-09-24): a portrait 4:5 image with
  * its own baked-in headline, offer and CTA, so the whole card is a `<Link>`
- * wrapping an `<img>` — no title, no line, no icon, nothing this theme draws
+ * wrapping an `<img>`: no title, no line, no icon, nothing this theme draws
  * on top of the artwork. The five content cards the old text-and-photo
  * treatment existed for (a type, two goals, the advisory, the branch) are
- * back beside these in the home rail as `ContentPosterCard` below (owner
- * item 2026-09-24, docs/build/progress/S8a.md); this card is unchanged.
+ * `ContentPosterCard` below (owner item 2026-09-24,
+ * docs/build/progress/S8a.md), in "اكتشف أكثر" alone since the owner moved
+ * these posters into their own carousel in "العروض" (owner review
+ * 2026-09-25); this card is unchanged.
  *
  * Owner ruling 2026-09-24 (docs/build/progress/S8i.md): no orange strap on
  * any card in this rail, and every card, offer poster or content card, shares
