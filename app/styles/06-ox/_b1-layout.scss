@@ -448,7 +448,7 @@ a.ox-util__trust-link {
 // TWO ICONS FIXED TO ONE (owner review 2026-09-24, item 2). Verified over
 // CDP against the live DOM (`docs/build/progress/S9a-V3.md`): `salla-user-
 // menu` marks this span `hidden` in its signed-out render and shows its own
-// `.s-user-menu-login-btn` icomoon glyph instead — but `hidden` is a
+// `.s-user-menu-login-btn` icomoon glyph instead; but `hidden` is a
 // presentational HTML attribute, and this rule's own `display: inline-flex`
 // is AUTHOR-origin CSS, which wins over the UA stylesheet's `[hidden] {
 // display: none }` regardless of specificity. So both glyphs painted at
@@ -457,8 +457,8 @@ a.ox-util__trust-link {
 // is the real, focusable, accessible control (`aria-label="user-icon"`);
 // this span is decorative (`Icon` with no `label` prop, `aria-hidden`). So
 // rather than let the component's own default win, this span is
-// positioned over the whole 44px button instead — `.ox-iconbtn` is already
-// `position: relative` — with `pointer-events: none` so the click still
+// positioned over the whole 44px button instead (`.ox-iconbtn` is already
+// `position: relative`), with `pointer-events: none` so the click still
 // reaches the real control beneath it; the button's own glyph is hidden
 // below so only the owner's icon paints.
 .ox-iconbtn__icon {
@@ -629,12 +629,12 @@ a.ox-util__trust-link {
     block-size: 40px;
     // The icon side (below: inset-inline-start 25px) needs the offset plus
     // its own 16px (Salla's fixed `.s-search-icon svg`) plus one gap
-    // (--ox-2) clear before the placeholder can start — 25 + 16 + 8 = 49px.
+    // (--ox-2) clear before the placeholder can start: 25 + 16 + 8 = 49px.
     // The old 20px/52px pair had the icon's own side backwards: Salla's
     // `.s-search-icon-wrap` sits at the reading start in Arabic (its own
     // `:where([dir=rtl])` default), so the 20px start padding this rule used
     // to carry left "بحث" starting under the glyph instead of beside it
-    // (owner review, 2026-09-23, item 4) — the far side never held anything.
+    // (owner review, 2026-09-23, item 4); the far side never held anything.
     padding-inline: calc(25px + 16px + var(--ox-2)) 20px;
     background: var(--ox-search);
     border: 0;
@@ -657,7 +657,7 @@ a.ox-util__trust-link {
   }
 
   // At the reading start, matching Salla's own default side for this glyph
-  // (`:where([dir=rtl]) { right: 1rem }` in the component's own stylesheet) —
+  // (`:where([dir=rtl]) { right: 1rem }` in the component's own stylesheet):
   // `inset-inline-end` here previously fought that default's physical `right`
   // rather than replacing it, which is what let the glyph and "بحث" land on
   // the same edge (owner review, 2026-09-23, item 4).
@@ -959,6 +959,39 @@ a.ox-util__trust-link {
   white-space: nowrap;
 }
 
+// The brand axis under حسب الهدف (the owner's navigation review): حسب العلامة
+// keeps the heading's own size and weight, like its two siblings, and is the
+// link itself because it has no list of its own. It steps up from the
+// headings' quiet grey to ink because it is the one heading a visitor can
+// press, and the accent chevron beside it says it leads somewhere.
+.ox-mega__axis-heading {
+  margin-block: var(--ox-6) 0;
+}
+
+.ox-mega__axis {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 32px;
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-mega__axis-chevron,
+.ox-sheet__axis-chevron {
+  flex: none;
+  color: var(--ox-accent);
+}
+
 // Column C: the promoted tile (`MegaPromo.tsx`). Hidden below 1280
 // regardless of configuration (§5.2); the breakpoint block below shows it
 // again and promotes the panel to three columns once it exists.
@@ -1008,7 +1041,8 @@ a.ox-util__trust-link {
   font-size: 16px;
 }
 
-// The foot row: two "see everything" links, full panel width.
+// The foot row: the "كل الأنواع" link, full panel width (the brands link
+// that sat beside it is now the brand axis in column B).
 .ox-mega__foot {
   display: flex;
   grid-column: 1 / -1;
@@ -1324,6 +1358,35 @@ a.ox-util__trust-link {
   border-block-start: 1px solid var(--ox-bd);
 }
 
+// The sheet's brand axis (the owner's navigation review): حسب العلامة in the
+// section heading's own size and weight, stepped up to ink like the mega
+// panel's (it is the one heading a visitor can press), one 48px row between
+// two rules, the whole row the tap target.
+.ox-sheet__axis {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-2);
+  min-block-size: 48px;
+  margin-block: calc(var(--ox-2) * -1);
+  color: var(--ox-fg);
+  text-decoration: none;
+
+  .ox-sheet__heading {
+    margin: 0;
+    color: inherit;
+  }
+
+  &:active {
+    color: var(--ox-accent-dark);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
 .ox-sheet__grid {
   display: grid;
   gap: var(--ox-2);
@@ -1448,7 +1511,7 @@ a.ox-util__trust-link {
     color: var(--ox-accent);
 
     // X-IDENTITY-2026-09-22.md §3.3/§6: the active tab's own 4px accent bar,
-    // notch only (no lean — the bar is 56 tall, under the 158 law, and §3.2's
+    // notch only (no lean: the bar is 56 tall, under the 158 law, and §3.2's
     // named exception list does not reach the tab bar). A pseudo rather than
     // new markup: this batch's footer/tabbar scope is _b1-layout.scss rules
     // only.
@@ -1484,9 +1547,26 @@ a.ox-util__trust-link {
   color: var(--ox-ink-3);
 }
 
-// Only while the bar is mounted: the setting can switch it off.
-body.ox-has-tabbar {
-  padding-block-end: var(--ox-h-tabbar);
+// Only while the bar is mounted: the setting can switch it off. The page
+// reserves the bar's whole height (56, its 1px top rule and the safe area) at
+// the end of `.app-inner`, the wrapper that actually scrolls: the scaffold
+// holds html and body at the viewport's height, so padding on body never
+// reached the end of the page and the footer's last 57px sat under the bar.
+body.ox-has-tabbar .app-inner {
+  padding-block-end: calc(var(--ox-h-tabbar) + 1px);
+}
+
+// A fixed bottom bar that stands in for the tab bar sets `body.ox-sticky-bar`
+// (the product page's sticky buy bar, the cart's checkout bar, the branch and
+// services visit bar: each 64 tall plus a 1px top rule plus the safe area),
+// and the page reserves that bar's height instead. The Shopify port keeps
+// `ox-has-tabbar` on the body while such a bar is up, hence the pair. Before
+// this, the product page ended with its last 65px under the sticky bar.
+@media (max-width: 1023px) {
+  body.ox-sticky-bar .app-inner,
+  body.ox-has-tabbar.ox-sticky-bar .app-inner {
+    padding-block-end: calc(var(--ox-h-sticky) + 1px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1799,7 +1879,7 @@ body.ox-has-tabbar {
     display: none;
   }
 
-  body.ox-has-tabbar {
+  body.ox-has-tabbar .app-inner {
     padding-block-end: 0;
   }
 

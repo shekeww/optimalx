@@ -1528,8 +1528,11 @@ input.ox-supply__value {
 // bar and anything else that needs it read one file that changes with the
 // sprite instead of a hand-copied second one that silently drifts from it.
 
-// The scaffold also pads the page for its fixed bar; ours is not fixed, and
-// the page's own bottom padding already clears B1's tab bar.
+// The scaffold also pads the body for its own fixed bar (pb-28 under 640,
+// 04-components/product.scss); that bar is not ours, so its padding goes. The
+// reserve for our own fixed bars (the tab bar, the sticky buy bar) sits on
+// `.app-inner` instead (_b1-layout.scss section 9): the body is held at the
+// viewport's height, so its padding never reaches the end of the page.
 body.is-sticky-product-bar.product-single {
   padding-block-end: 0;
 }

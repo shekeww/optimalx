@@ -120,6 +120,26 @@ describe('FeaturedRail', () => {
     expect(heading?.textContent).toBe(t('ox.listing.featured_title'));
   });
 
+  it("stands each cover on the product card's plate ground, inside the card's one link (owner review 2026-09-25)", () => {
+    const products = Array.from({ length: 2 }, (unused, i) => product(i + 1));
+    const { container } = renderWithProviders(<FeaturedRail products={products} />);
+    for (const card of container.querySelectorAll('a.ox-featured__card')) {
+      const plate = card.querySelector('.ox-featured__plate') as HTMLElement;
+      // The grey band and the orange mark, before the packshot so paint order
+      // keeps them under it, both hidden from assistive tech.
+      const children = Array.from(plate.children);
+      expect(children.map((child) => child.className)).toEqual([
+        'ox-featured__band',
+        'ox-featured__mark',
+        'ox-featured__img',
+      ]);
+      expect(plate.querySelector('.ox-featured__band')?.getAttribute('aria-hidden')).toBe('true');
+      expect(plate.querySelector('.ox-featured__mark')?.getAttribute('aria-hidden')).toBe('true');
+      // The photograph is inside the card's link: a tap on it opens the product.
+      expect(card.contains(plate.querySelector('img'))).toBe(true);
+    }
+  });
+
   it('marks the first two cover images eager and the rest lazy', () => {
     const products = Array.from({ length: 4 }, (unused, i) => product(i + 1));
     const { container } = renderWithProviders(<FeaturedRail products={products} />);

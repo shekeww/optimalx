@@ -56,9 +56,10 @@
 }
 
 @media (min-width: 1024px) {
-  // TIER 2, 64. The shopping flow: the goal row, the two grids and the
-  // carousel between them. These belong to one another and read as a
-  // sequence, so they sit closer than a chapter break.
+  // TIER 2, 64. The shopping flow: the goal row, the two grids (the second
+  // one opens on the offer posters) and "اكتشف أكثر", which closes the
+  // category rails (64 apart as well). These belong to one another and read
+  // as a sequence, so they sit closer than a chapter break.
   .s-block--ox-goals,
   .s-block--ox-products,
   .s-block--ox-posters,
@@ -126,7 +127,7 @@
 // translate is not fighting a transform for the same slot.
 //
 // The run is the height times tan(34deg). §2.4's CTA row: 44px gives 29.7px,
-// 48px gives 32.4px — both padding-inline 16px + run (45.7 / 48.4), the
+// 48px gives 32.4px, both padding-inline 16px + run (45.7 / 48.4), the
 // clearance the identity spec requires so a label never touches the cut.
 .ox-cta-wedge {
   // 29.7px at the 44px height a phone gets, 32.4px at the 48px a desktop
@@ -159,7 +160,7 @@
 
 @media (min-width: 640px) {
   .ox-cta-wedge {
-    // X-IDENTITY §2.4: 48 / 32.4 / 48.4 — the base rule's 16px + run formula
+    // X-IDENTITY §2.4: 48 / 32.4 / 48.4: the base rule's 16px + run formula
     // already lands on 48.4 at 32.4px of run, so the padding override is
     // dropped rather than kept in step with a second base by hand.
     --ox-cta-run: 32.4px;
@@ -246,16 +247,16 @@
   // over the FULL band height, so the cut reads as one line with the strap
   // instead of showing a black wedge above it where the old vertical run met
   // the strap's own lean. `.ox-hero`'s block-size is 520px from 640 to 1023
-  // (min-block-size, §2g's own assumption that content never grows past it)
-  // — H below is that 520.
+  // (min-block-size, §2g's own assumption that content never grows past it).
+  // H below is that 520.
   //
   // The strap's own near (inline-end/physical-left) edge is `inset-inline-end:
-  // 53%` on `.ox-hero__edge` — a POSITION, not a centre: `inset-inline-end`
+  // 53%` on `.ox-hero__edge`: a POSITION, not a centre: `inset-inline-end`
   // pins that element's OWN inline-end edge (its physical-left edge in this
   // RTL-default file) at 53% of the band, and the strap's `inline-size: 20px`
   // extends from there toward inline-start (physically right). So the near
   // edge sits at exactly 53% of the band, flush with the pane's own edge
-  // below — matching this file's own §2 note that the strap "sits exactly on
+  // below, matching this file's own §2 note that the strap "sits exactly on
   // the pane's own vertical edge." The photo's cut must sit 16px inside
   // (physically left of) that same 53% line, at every height, so pane
   // inline-size = 53% − 16px + half the run (the box's own right edge is
@@ -264,7 +265,7 @@
   // 520 * 0.33725 = 175.37, so inline-size = calc(53% - 16px + 175.37px).
   // (A 26px offset was floated for this figure treating the 53% mark as the
   // strap's CENTRE; per the CSS above it is the strap's own near EDGE, so 26
-  // double-counts the strap's own 10px half-width — 16px is what actually
+  // double-counts the strap's own 10px half-width; 16px is what actually
   // lands the cut 16px off the strap, verified in docs/build/progress/S3b.md.)
   .ox-hero__photo {
     inset-inline-end: 0;
@@ -338,7 +339,7 @@
 //
 // 51 is not a taste call, it is where the seam is. The photograph is 60% of the
 // band and its clip runs from 96.7% to 73.3% of its own box, so at a 1427 band
-// the cut falls between 828 at the top and 627 at the bottom — a centre of
+// the cut falls between 828 at the top and 627 at the bottom, a centre of
 // about 727, which is 51% of the band. At 42% the bar was sitting 120px inside
 // the photograph, drawing a bright line across the athlete instead of along the
 // edge it exists to mark.
@@ -348,7 +349,7 @@
 // at the pane's own inline-size, so once that shrank to 53% (above) the strap
 // is placed at that same 53% to sit directly on it. `inset-inline-end` is
 // measured from the reading END (the left edge in RTL), so a LARGER number
-// moves this bar toward the right — the 51 the file previously carried was
+// moves this bar toward the right. The 51 the file previously carried was
 // itself stale, computed off the pre-X-IDENTITY 22deg polygon and never
 // re-derived when the 34deg cut shipped.
 .ox-hero__edge {
@@ -490,7 +491,7 @@
     inline-size: calc(53% - 16px + 175.37px);
     // Same fix as the photo above, same reason (owner review 2026-09-23,
     // item 1): the scrim shares the photo's box exactly, so it shares its
-    // full-height 34deg polygon exactly. H 520, run 350.7 — see the photo
+    // full-height 34deg polygon exactly. H 520, run 350.7; see the photo
     // rule above for the full derivation.
     /* identity: 34deg, run 350.7 of 520 */
     clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
@@ -534,11 +535,11 @@
   .ox-hero__scrim {
     inset: 0;
     inline-size: 100%;
-    // X-IDENTITY-2026-09-22.md §2.4: a corner cut (lean 96, run 64.8 — the
+    // X-IDENTITY-2026-09-22.md §2.4: a corner cut (lean 96, run 64.8, the
     // 320 row, used for the whole sub-640 bucket: the run is px-derived via
     // ox-run(), so the edge stays exactly 34deg from vertical at every width
     // in it, unlike the retired `100% 88%` construction, which was never
-    // angle-derived — a diagonal spanning the panel's full (fluid) width
+    // angle-derived: a diagonal spanning the panel's full (fluid) width
     // over 12% of a 300px panel is nowhere near 34deg). Same corner as the
     // desktop pane (§2.5): the inline-end edge is cut, vertical for most of
     // the panel, leaning only the foot.
@@ -774,13 +775,13 @@
 
   // ENGLISH ONLY (owner review 2026-09-24, item 1b): the pane's inner edge is
   // a 34deg diagonal, narrower at the top than the bottom (§2's derivation
-  // above), so a flat percentage of the CONTAINER lets Latin copy — wider
-  // than Arabic at the same font-size — run past the cut into the
+  // above), so a flat percentage of the CONTAINER lets Latin copy (wider
+  // than Arabic at the same font-size) run past the cut into the
   // photograph ("today?" printed over the athlete at 1440 and 1905,
   // docs/build/progress/S9a-V3.md). 44%, down from 52%: measured against the
   // pane's own boundary at the headline's own top for this tier (H=520,
-  // run=ox-run(520px)=350.7) with a safety margin, so the whole column —
-  // eyebrow, headline, lead, actions — stays inside the cut at every width.
+  // run=ox-run(520px)=350.7) with a safety margin, so the whole column
+  // (eyebrow, headline, lead, actions) stays inside the cut at every width.
   // The Arabic column is untouched: no `[dir='ltr']` selector reaches it.
   [dir='ltr'] .ox-hero__text {
     max-inline-size: 44%;
@@ -811,7 +812,7 @@
   // H changes to 560 here (was 520 below 1024, §2 above), so the photo/scrim
   // pane and its full-height 34deg cut must be recomputed against the new H:
   // half-run = 560 * 0.33725 = 188.86, run = ox-run(560px) = 377.7. Verified
-  // at 1024/1280/1440/1920 in docs/build/progress/S3b.md — both figures are
+  // at 1024/1280/1440/1920 in docs/build/progress/S3b.md; both figures are
   // pure px, so neither varies with the viewport once >= 1024.
   .ox-hero__photo,
   .ox-hero__scrim {
@@ -845,7 +846,7 @@
   // text column starts at the container gutter (64.5 at 1440), leaving
   // 558px before the cut. 40% of the 1296px container is 518.4px, inside
   // that figure with margin from 1024 up through 1905 (the owner's own
-  // review width) — the container caps at 1296 while the pane's own box
+  // review width): the container caps at 1296 while the pane's own box
   // keeps growing with the viewport past it, so the margin only widens.
   [dir='ltr'] .ox-hero__text {
     max-inline-size: 40%;
@@ -1126,23 +1127,23 @@ body {
 // longer name or a two-line subline without clipping.
 // COORDINATOR ADDENDUM, owner review 2026-09-23: the notch this card's
 // `::before` (and the art tile's `.ox-tile__art`, below) used to carry is
-// REMOVED — no `clip-path` on either at any tier, a plain rectangle with the
+// REMOVED: no `clip-path` on either at any tier, a plain rectangle with the
 // card's own square corners. `--ox-tile-notch-t/-j` and, at the 1280 tier,
 // `--ox-tile-lean/-run` are removed with it: both were declared only to feed
 // the clip-path this owns.
 // OWNER REVIEW 2026-09-23 (later): the "plain rectangle" above read as
 // square-black-corners on the dark art tiles (`vitamins-minerals`, the
-// black-tone art card) next to the tinted tiles' own corners — except the
+// black-tone art card) next to the tinted tiles' own corners, except the
 // tinted tiles were ALSO square (no radius was ever set here), so the fix
 // gives every tile, tinted or art, the SAME rounded corner:
 // `--ox-r-2` (8px), the identical token `_b4-listing.scss`'s `.ox-cat-card`
 // already carries for this exact family of card on the categories index, so
 // the two surfaces read as one system. `overflow: hidden` on the card
-// itself — not a separate inner wrapper — clips every child to that rounded
+// itself (not a separate inner wrapper) clips every child to that rounded
 // shape in one declaration: the tinted `::before` background/border below,
 // and the art `<img>` (`.ox-tile__art`). The focus ring is unaffected:
 // `ox-focus()` draws an `outline`, which `overflow` never clips (unlike
-// `clip-path`, which does — the reason `.ox-goal`/`.ox-pcard` moved their
+// `clip-path`, which does: the reason `.ox-goal`/`.ox-pcard` moved their
 // own focus ring to an inset box-shadow; this card needs no such move).
 .ox-tile {
   position: relative;
@@ -1216,7 +1217,7 @@ body {
 // Weight floor (owner review, 2026-09-23, item 1): `--ox-t-micro` is
 // 11.5-12px, under the 16px line the floor applies below, and this rule
 // carried no font-weight (no `.ox-*` role class in `CategoryTile.tsx`
-// either), so it rendered at 400 — on the tinted cards and, worse, on
+// either), so it rendered at 400, on the tinted cards and, worse, on
 // `.ox-tile--black`'s and the `vitamins-minerals` art card's near-black
 // ground. `--ox-w-read` clears both the <16px floor (500) and the
 // dark-ground floor (450) at its 550 root value.
@@ -1451,7 +1452,7 @@ body {
 // From 1280: four across. The card's one angled gesture used to upgrade from
 // the notch to the mark's own corner cut here; coordinator addendum, owner
 // review 2026-09-23, removes it at this tier too (see `.ox-tile`'s own
-// comment above) — no clip-path, no `--ox-tile-lean`/`-run`, at this
+// comment above): no clip-path, no `--ox-tile-lean`/`-run`, at this
 // breakpoint or any other.
 @media (min-width: 1280px) {
   .ox-cats__grid {
@@ -1544,17 +1545,17 @@ body {
 }
 
 // Owner review 2026-09-23, item 2, revised by the coordinator's addendum
-// (same day): the two corner cuts move to the DIAGONAL corners — physical
+// (same day): the two corner cuts move to the DIAGONAL corners: physical
 // top-right and bottom-left, never mirrored under [dir='ltr'] (still
-// physical, the reference composition, like the art tiles, S2h) — and the
+// physical, the reference composition, like the art tiles, S2h), and the
 // card's corners are sharp everywhere else (`border-radius: 0`, no rounding
 // on this card at all). lean 40 / run 27.0 at the 390 probe: 15.6% of the
-// 173px card (2-col grid, container 358, gap 12 — X-IDENTITY-2026-09-22.md
+// 173px card (2-col grid, container 358, gap 12; X-IDENTITY-2026-09-22.md
 // §2.4's own figure for this exact card width), well inside the 24% budget.
 // Scales at the ≥640 and ≥1280 breakpoints below, same tiers as before.
 //
 // The focus ring moves from `ox-focus`'s outline (clipped along with
-// everything else once `clip-path` lands — §3.4/§7.1 `focus-clipped`) to an
+// everything else once `clip-path` lands, §3.4/§7.1 `focus-clipped`) to an
 // inset box-shadow, the second of §7.1's two legal mechanisms and the same
 // one `_primitives.scss`'s `.ox-btn--s40/s44/s48` already ships for the same
 // reason.
@@ -1621,8 +1622,8 @@ body {
   );
 }
 
-// Owner item 2026-09-24 (S8a): the goal card's own strap is GONE — rule and
-// markup — and the card keeps its diagonal cuts and sharp corners alone.
+// Owner item 2026-09-24 (S8a): the goal card's own strap is GONE (rule and
+// markup), and the card keeps its diagonal cuts and sharp corners alone.
 // Owner ruling later the same day (S8i): the poster carousel's strap went the
 // same way, so the strap-geometry functions (`ox-strap-inset()`,
 // `ox-strap-width()`, S4a) that only it still called are retired with it;
@@ -1630,19 +1631,19 @@ body {
 // built the way it was, and git history (S4a, S7a) holds the code.
 //
 // Owner review 2026-09-23, item 2: "the orange straps on cards should always
-// be angled" — a 34deg parallelogram again (it carried `skewX(var(--ox-skew))`
+// be angled": a 34deg parallelogram again (it carried `skewX(var(--ox-skew))`
 // before the 2026-09-23 `small-angle` fix dropped it). Coordinator addendum,
 // same day: the corner cuts moved to the diagonal (top-right/bottom-left)
 // corners above, so the strap at the physical top-left no longer sits inside
-// a cut — it is its own independent 34deg band, not derived from one.
+// a cut; it is its own independent 34deg band, not derived from one.
 //
 // Owner review 2026-09-23 (later): a skewed box positioned by a hand-picked
 // negative inset put most of the strap OUTSIDE the card's own clip-path once
 // it moved to the top-right (a cut corner, unlike the sharp top-left the
-// first mirror pass left it at) — it painted as a hairline along the cut,
+// first mirror pass left it at): it painted as a hairline along the cut,
 // most of its area silently clipped away. First fix: a physical parallelogram
 // clipped from the cut's own two endpoints, 6px inside it. That parallelogram
-// cannot simply be lengthened, though — continuing in the cut's own direction
+// cannot simply be lengthened, though: continuing in the cut's own direction
 // past its foot (`B`) pushes it OUTSIDE the card (the diagonal line, extended,
 // runs past x=100%); the cut is a short segment for exactly that reason.
 //
@@ -1652,13 +1653,13 @@ body {
 // leaning the OPPOSITE horizontal way from the cut (the same mirrored slant
 // `calc(-1 * var(--ox-skew))` already draws) starts at the same validated
 // "6px inside the cut" point and moves AWAY from the right edge as it runs
-// down — the one direction that stays inside the card for any length, proven
+// down, the one direction that stays inside the card for any length, proven
 // below and in docs/build/progress/S4a.md. `ox-strap-inset()` returns that
 // starting point's distance from the card's own right edge (`run + gap *
 // cos34`, the same quantity the retired `ox-strap-polygon()` called `dist-a`);
 // `ox-strap-width()` converts the wanted PERPENDICULAR thickness to the
 // pre-skew `inline-size` a skewed box needs to paint at that thickness
-// (`thickness / cos34` — two lines both leaning at 34deg from vertical, a
+// (`thickness / cos34`: two lines both leaning at 34deg from vertical, a
 // horizontal distance `w` apart, sit `w * cos34` apart perpendicularly).
 // `transform-origin: 0 0` (always the box's own PHYSICAL top-left corner,
 // in both `dir`s) anchors the skew at that same starting point rather than
@@ -1719,7 +1720,7 @@ body {
   color: var(--ox-accent);
 }
 
-// Owner review 2026-09-23 (late), item 2: no fill on hover either — the
+// Owner review 2026-09-23 (late), item 2: no fill on hover either: the
 // shared class's own background is transparent now, so brightening it back
 // to a translucent orange square on hover would reintroduce exactly the
 // filled face the owner asked removed. The border strengthens to full
@@ -1755,8 +1756,8 @@ body {
   .ox-goal {
     min-block-size: 400px;
     // lean 64 / run 43.2 at the 1440 probe: 6-col grid, container 1296
-    // (capped), gap 24 -> card (1296 - 120) / 6 = 196px; 43.2 / 196 = 22.0%
-    // — inside the 24% budget (X-IDENTITY §2.3) but nearer the ceiling than
+    // (capped), gap 24 -> card (1296 - 120) / 6 = 196px; 43.2 / 196 = 22.0%,
+    // inside the 24% budget (X-IDENTITY §2.3) but nearer the ceiling than
     // the other two tiers, because the 6-up track narrows the card at this
     // width more than a "1440" tier elsewhere in the theme assumes. Flagged
     // in docs/build/progress/S3b.md rather than silently sized down.
@@ -1865,7 +1866,7 @@ body {
 //
 // NO EYEBROW (2026-09-24, item 1(a)): `OxBrands.tsx` no longer passes one, so
 // the section header is title + view-all only, the same shape `OxCategories`'
-// own header draws — which is what gives the two sections the identical
+// own header draws, which is what gives the two sections the identical
 // heading size and spacing the hierarchy item asks for (no scoped override
 // exists on either; `SectionHeader` renders the same `.ox-h2` either way).
 // The strap-sweep rule that used to animate the eyebrow's own accent line is
@@ -1873,7 +1874,7 @@ body {
 //
 // Why the tier jumps at 1280 and not at 1024: six tiles in a 1024 viewport
 // (container 960) is a 146.7px tile, and the corner cut's 1440 tier (lean 64,
-// run 43.2) is 29.5% of that — over X-IDENTITY §2.3's 24% budget. At 1280 the
+// run 43.2) is 29.5% of that, over X-IDENTITY §2.3's 24% budget. At 1280 the
 // container is 1216, the tile is 189.3 and the same run is 22.8%, inside it.
 // The brief's three probes are met exactly: 2.4 at 390, 4 at 768, 6 at 1440.
 //
@@ -1967,17 +1968,17 @@ body {
 
 // ---------------------------------------------------------------------------
 // 8. OxServices: the advisory band, TWO ROWS of three (owner review
-//    2026-09-23 (late), item 3 — see docs/build/progress/S4a.md for the full
+//    2026-09-23 (late), item 3; see docs/build/progress/S4a.md for the full
 //    audit). The 2026-09-20 batch first built this as one six-card band
 //    (three channels, three plans); S2c split it on 2026-09-22, moving the
 //    channels to `/services` on the "six cards read as six equivalent
 //    things" reading. The owner's explicit instruction rejoins them, but as
 //    two visually distinct rows rather than one mixed row of six: row one
-//    is the three "ask before you buy" channels (an upright card — icon,
+//    is the three "ask before you buy" channels (an upright card: icon,
 //    name, one-line summary, a live price, a CTA to that channel's own
 //    product), row two is the three photographic plan doors, unchanged.
 // ---------------------------------------------------------------------------
-// Flat `--ox-graphite` plus ONE skewed ground motif — never per-card slashes,
+// Flat `--ox-graphite` plus ONE skewed ground motif, never per-card slashes,
 // which is the identity rule (one angled band edge per section) the two-tier
 // build broke by drawing five skewed elements in one section. The band's one
 // filled CTA sits under both rows.
@@ -2044,7 +2045,7 @@ body {
 }
 
 // The ground motif: a skewed accent wash plus a hairline, bleeding off the
-// reading end, behind everything. The section's one angled band edge — the
+// reading end, behind everything. The section's one angled band edge: the
 // only diagonal this band draws outside the CTA's own shape.
 .ox-services__motif {
   position: absolute;
@@ -2089,7 +2090,7 @@ body {
 }
 
 // Ink-on-dark, not orange type (§3.1: accent is reserved for things people
-// can click). The 24x2 accent bar carries the orange instead — a rule, not a
+// can click). The 24x2 accent bar carries the orange instead: a rule, not a
 // label.
 .ox-services__eyebrow {
   display: inline-flex;
@@ -2118,7 +2119,7 @@ body {
 //
 // Weight floor (owner review, 2026-09-23, item 1): this line carried no
 // `.ox-*` role class and no font-weight of its own, so it rendered at the
-// browser default (400) on `--ox-graphite` — the "dark band text reads thin"
+// browser default (400) on `--ox-graphite`, the "dark band text reads thin"
 // defect. `--ox-w-read` is 600 here (`.ox-band-dark` on the section
 // redeclares it), clearing the 450 dark-ground floor.
 .ox-services__subline {
@@ -2163,9 +2164,9 @@ body {
 
 // THE PHOTO PANEL (S9e item 1, owner brief 2026-09-24: "extend the advisory
 // image to have chemistry with the section"). Below 768 it is a full-width
-// top band of the plate, 16:7, sharp corners — the plate's own `ox-x-corner`
+// top band of the plate, 16:7, sharp corners; the plate's own `ox-x-corner`
 // above is the block's one angled gesture at this tier, so the frame draws
-// no clip of its own — bled to the plate's own padded edges by the negative
+// no clip of its own, bled to the plate's own padded edges by the negative
 // margin below (the plate's `padding: var(--ox-6)` at this tier, so the
 // margin matches it exactly rather than a literal px guess).
 .ox-offer__photo-frame {
@@ -2193,10 +2194,10 @@ body {
 // the plate's OWN ground, so the facts underneath read against the colour
 // the photograph settles into rather than a hard seam. SHORT AND LIGHT
 // (owner feedback 2026-09-24, a 390 screenshot: "reduce the gradient
-// overlay" — the earlier 45%-to-opaque ramp took the whole lower half of the
+// overlay"; the earlier 45%-to-opaque ramp took the whole lower half of the
 // photo to solid graphite before the facts even started). Transparent
-// through 60% of the band, then a ramp to 85% graphite — never fully opaque
-// — over the last 40%, so the door and the advisor stay visible and only the
+// through 60% of the band, then a ramp to 85% graphite (never fully opaque)
+// over the last 40%, so the door and the advisor stay visible and only the
 // seam itself darkens toward the flat ground the facts sit on.
 .ox-offer__photo-scrim {
   position: absolute;
@@ -2284,7 +2285,7 @@ body {
   }
 }
 
-// FROM 768: the frame becomes the plate's inline-end panel — absolute,
+// FROM 768: the frame becomes the plate's inline-end panel: absolute,
 // spanning the plate's full block-size (its containing block is
 // `.ox-services__offer`'s own PADDING box, since the plate is the nearest
 // `position: relative` ancestor and the frame itself carries none, so
@@ -2292,7 +2293,7 @@ body {
 // plate's own padding on its other children), a narrower share than 1024.
 // `padding-inline-end` on the plate reserves exactly that share (the same
 // percentage, because the plate has no inline margin of its own and so
-// renders at its parent's own width — the number the panel's `inline-size`
+// renders at its parent's own width, the number the panel's `inline-size`
 // resolves against and the number the padding percentage resolves against
 // are the same pixel figure) plus breathing room, so the facts and the
 // actions below never sit under the photograph.
@@ -2309,7 +2310,7 @@ body {
     inline-size: 30%;
     aspect-ratio: auto;
     margin: 0;
-    // The panel's OWN inner edge at the identity lean — a second, different
+    // The panel's OWN inner edge at the identity lean: a second, different
     // kind of angled construction than the plate's `ox-x-corner` above, on
     // this different selector (`check-identity.mjs`'s `one-angled-per-block`
     // counts kinds within one selector's own body, never across a family).
@@ -2327,7 +2328,7 @@ body {
   }
 
   // The faint accent glow along the cut: an ellipse centred on the panel's
-  // own inner edge, feathered outward — the same 0.12-0.18 `--ox-accent-rgb`
+  // own inner edge, feathered outward, the same 0.12-0.18 `--ox-accent-rgb`
   // range the branch cover system's own `.ox-cover__glow` uses
   // (`_covers.scss`), never `filter: blur()` (S9c §2's render-budget rule).
   .ox-offer__photo-glow {
@@ -2402,30 +2403,67 @@ body {
   font-weight: var(--ox-w-read);
 }
 
-// ONE COLUMN at 390 (owner review 2026-09-23 (late), item 3): six cards read
-// as two answered questions in DOM order — three channels, then three plans
-// — not a strip to swipe through, so this is no longer the horizontal
-// snap-scroller the three-card band used. Two columns from 768, three (two
-// rows of three) from 1024, in the media queries below.
-.ox-plans {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ox-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+// A CAROUSEL PER ROW BELOW 1024, THE GRID FROM THERE (owner, 2026-09-25: "on
+// mobile make it a carousel, both the 3 cards at the top and the 3 cards
+// below them"). This replaces the one-column stack of 2026-09-23. The track
+// is `.ox-rail__track` (`_rail.scss`): flex, scroll-snap, no native
+// scrollbar, sideways only, and its 4px block padding keeps a focus ring
+// inside the scrollport. What this block adds:
+//
+//  - THE BLEED. The track runs to the band's edges (the band already clips
+//    with `overflow: hidden`) and pads itself back by the same gutter, with
+//    a matching `scroll-padding`, so a card at rest starts on the container
+//    edge like the row head above it and the next card's peek runs off the
+//    screen edge instead of stopping short of it. Percentages on the slides
+//    resolve against the padded content box, which is the container width.
+//  - THE CARD WIDTH: 1.15 visible below 768 (309.2px at 390, the same
+//    card as the poster rail, section 17.2), 2.15 from 768 (319px at 768).
+//    The posters show exactly 2 at 768; these cards carry copy, and with
+//    nothing peeking the cue would sit on the second card's text, so the
+//    third card peeks here too and the cue lands on it. Every slide
+//    stretches to the tallest one in its row, so three cards of unequal
+//    copy still end level on the rail.
+//  - THE GRID from 1024: three equal columns, no scroller, no bleed, no
+//    snap, and so no `data-rail` and no cue.
+//
+// Scoped under `.ox-services__rail` so it outranks the primitive whatever
+// the import order, and so nothing else that says `.ox-rail__track` moves.
+.ox-services__rail > .ox-plans {
+  margin-inline: calc(-1 * var(--ox-gutter));
+  padding-inline: var(--ox-gutter);
+  scroll-padding-inline: var(--ox-gutter);
 }
 
-// The slide is a flex box so its one child fills the stretched grid cell:
-// that is what makes three doors of unequal copy end on one line with their
-// buttons on the same baseline (owner brief 2026-09-24, item 2).
+// The slide is a flex box so its one child fills the stretched cell (a rail
+// slide or a grid cell alike): that is what makes three doors of unequal
+// copy end on one line with their buttons on the same baseline (owner brief
+// 2026-09-24, item 2).
 .ox-plans__slide {
   display: flex;
+  flex: 0 0 calc((100% - 0.15 * var(--ox-4)) / 1.15);
   min-inline-size: 0;
 }
 
+@media (min-width: 768px) {
+  .ox-plans__slide {
+    flex-basis: calc((100% - 1.15 * var(--ox-4)) / 2.15);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-services__rail > .ox-plans {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ox-6);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
 // One channel door: an upright card (an optional flag, a 24px accent glyph,
-// the name, one line, a price chip and a real button), never a photograph —
+// the name, one line, a price chip and a real button), never a photograph:
 // the plain ground is what tells row one from row two at a glance even once
 // the grid below joins them into one three-up track.
 //
@@ -2609,7 +2647,7 @@ body {
 }
 
 // The scrim: perpendicular to the mark's own 34° bars, never a flat
-// top-to-bottom fade or a `rotate` (§4.5's own literal gradient angles — a
+// top-to-bottom fade or a `rotate` (§4.5's own literal gradient angles: a
 // `linear-gradient()` direction is outside `--ox-angle`/`--ox-skew`'s reach,
 // so 236/124 are correct here, declared as two rules).
 //
@@ -2783,11 +2821,6 @@ body {
 }
 
 @media (min-width: 768px) {
-  .ox-plans {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--ox-6);
-  }
-
   .ox-plan {
     min-block-size: 380px;
   }
@@ -2800,13 +2833,9 @@ body {
   }
 }
 
-// Three columns from 1024 — two rows of three for the six cards (owner
-// review 2026-09-23 (late), item 3).
+// The band's ground motif widens from 1024 (the rows' own three-column grid
+// from this width is set with the rail rules above).
 @media (min-width: 1024px) {
-  .ox-plans {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .ox-services__motif {
     inset-inline-end: -56px;
     inline-size: 220px;
@@ -3498,25 +3527,34 @@ body {
   }
 }
 
-// 17.2 The poster carousel (homepage-scale-spec section 7; owner review
+// 17.2 The two poster carousels (homepage-scale-spec section 7; owner review
 //    2026-09-23 late night, item 2: onto the shared rail primitive, four
-//    named visible-card tiers)
+//    named visible-card tiers; owner review 2026-09-25: one rail per kind)
 //
-// The track's own display/gap/scroll-snap/no-scrollbar rules now come from
-// `.ox-rail__track` (`_rail.scss`); this class carries nothing of its own.
-// Card width is `.ox-posters__slide`'s (below), computed from the same
-// "container and gap" formula every other rail on the primitive uses —
-// `min(var(--ox-container), 100% - 2 * var(--ox-gutter))` is the exact
-// expression `.ox-services__photo` already reads the container's width with,
-// reused here because the track BLEEDS past `.ox-container` (its own `100%`
-// is the full, unclamped row) and the brief's four tiers are measured
-// against the container, not the bleed.
+// Two rails of the same 4:5 card: "اكتشف أكثر" (`.ox-posters`, the five
+// content cards) and the offer posters at the top of "العروض"
+// (`.ox-offers-rail`, inside `.ox-products--secondary`). They share every
+// rule below, so the two rows keep one card size and one set of tiers.
+//
+// The track's own display/gap/scroll-snap/no-scrollbar rules come from
+// `.ox-rail__track` (`_rail.scss`).
+//
+// THE BLEED (owner review 2026-09-25, when the offer posters moved directly
+// above the sale products): the track spans the whole row, so the next
+// card's peek runs off the screen edge, and pads itself back to the
+// container edge, `max(gutter, (row - container) / 2)`, with a matching
+// `scroll-padding`, so a card at rest starts on the same line as the
+// heading and the product grid instead of on the screen edge (it sat on the
+// screen edge before, 16px outside the grid on a phone and 64px outside it
+// at 1440). Percentages in `padding` resolve against the row, and a slide's
+// `100%` resolves against the padded content box, which is the container
+// width at every tier.
 //
 // visible | probe | container | formula                          | card
-// 1.15    | 390   | 358       | (358 − 0.15 × 16) / 1.15          | 309.2px
-// 2       | 768   | 720       | (720 − 1 × 16) / 2                | 352.0px
-// 3       | 1024  | 960       | (960 − 2 × 16) / 3                | 309.3px
-// 4       | 1440  | 1296      | (1296 − 3 × 16) / 4               | 312.0px
+// 1.15    | 390   | 358       | (358 - 0.15 x 16) / 1.15          | 309.2px
+// 2       | 768   | 720       | (720 - 1 x 16) / 2                | 352.0px
+// 3       | 1024  | 960       | (960 - 2 x 16) / 3                | 309.3px
+// 4       | 1440  | 1296      | (1296 - 3 x 16) / 4               | 312.0px
 //
 // These breakpoints (768/1024/1280) are the carousel's own and deliberately
 // separate from the corner-cut/strap tiers below (640/1280, `GoalCard`'s own
@@ -3524,45 +3562,64 @@ body {
 // query only because the OLD "1.4 visible" tier also broke at 640. The cards
 // themselves are untouched (owner instruction: "poster cards keep their
 // S4a/S3b design").
-.ox-posters__slide {
+.ox-posters__rail > .ox-posters__track,
+.ox-offers-rail > .ox-offers-rail__track {
+  padding-inline: max(var(--ox-gutter), (100% - var(--ox-container)) / 2);
+  scroll-padding-inline: max(var(--ox-gutter), (100% - var(--ox-container)) / 2);
+}
+
+.ox-posters__slide,
+.ox-offers-rail__slide {
   scroll-snap-align: start;
   min-inline-size: 0;
-  flex: 0 0 calc(
-    (min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - 0.15 * var(--ox-4)) / 1.15
-  );
+  flex: 0 0 calc((100% - 0.15 * var(--ox-4)) / 1.15);
 }
 
 @media (min-width: 768px) {
-  .ox-posters__slide {
-    flex-basis: calc((min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - var(--ox-4)) / 2);
+  .ox-posters__slide,
+  .ox-offers-rail__slide {
+    flex-basis: calc((100% - var(--ox-4)) / 2);
   }
 }
 
 @media (min-width: 1024px) {
-  .ox-posters__slide {
-    flex-basis: calc(
-      (min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - 2 * var(--ox-4)) / 3
-    );
+  .ox-posters__slide,
+  .ox-offers-rail__slide {
+    flex-basis: calc((100% - 2 * var(--ox-4)) / 3);
   }
 }
 
 @media (min-width: 1280px) {
-  .ox-posters__slide {
-    flex-basis: calc(
-      (min(var(--ox-container), 100% - 2 * var(--ox-gutter)) - 3 * var(--ox-4)) / 4
-    );
+  .ox-posters__slide,
+  .ox-offers-rail__slide {
+    flex-basis: calc((100% - 3 * var(--ox-4)) / 4);
+  }
+}
+
+// The offer posters sit between the section heading and the sale products,
+// under the one heading "العروض": the space below the row is what tells the
+// posters from the grid without a second heading.
+.ox-offers-rail {
+  margin-block-end: var(--ox-8);
+}
+
+@media (min-width: 1024px) {
+  .ox-offers-rail {
+    margin-block-end: var(--ox-12);
   }
 }
 
 // The prev/next pair, `SectionHeader`'s own `actions` slot (display: none
 // below 1024, flex from there), same construction as `.ox-brands__nav`.
-.ox-posters__nav {
+.ox-posters__nav,
+.ox-offers-rail__nav {
   display: flex;
   align-items: center;
   gap: var(--ox-2);
 }
 
-.ox-posters__arrow {
+.ox-posters__arrow,
+.ox-offers-rail__arrow {
   @include ox-focus(2px);
   display: inline-flex;
   align-items: center;
@@ -3581,7 +3638,8 @@ body {
   }
 }
 
-.ox-posters__arrow-face {
+.ox-posters__arrow-face,
+.ox-offers-rail__arrow-face {
   font-size: 16px;
 }
 
@@ -3600,7 +3658,7 @@ body {
 // card's width only moves within 309 to 352px across the rail's four tiers.
 // The residual risk moves to the poster files: their corners must stay clear
 // of the two cuts (docs/build/owner-checklist.md). Sharp corners
-// (`border-radius: 0`) stay — S3b's own sharp-corner reset was never only
+// (`border-radius: 0`) stay: S3b's own sharp-corner reset was never only
 // about the cut.
 .ox-pcard {
   position: relative;
@@ -3629,7 +3687,7 @@ body {
 // The unavailable state (owner brief 2026-09-24, item g): until the owner's
 // file lands in `public/assets/posters/`, `PosterCard` renders this tinted
 // plate with the alt text as a caption instead of asking the browser for a
-// file that is not there yet — the same "no broken image" outcome `BandPhoto`
+// file that is not there yet, the same "no broken image" outcome `BandPhoto`
 // keeps for the theme's other photo-optional cards, decided at build time
 // from the content map's own `available` flag rather than guessed at render
 // time from a failed request.
@@ -3845,8 +3903,8 @@ body {
 // 19. OxCtaBand: the closing CTA band (S2c, 2026-09-22)
 // ---------------------------------------------------------------------------
 // Shares the `ox-newsletter` registry slot and its `show_newsletter` gate
-// (OxCtaBand's own docblock has the reason). One angled band edge — the
-// motif below — and the accent lives on the one filled CTA.
+// (OxCtaBand's own docblock has the reason). One angled band edge (the
+// motif below), and the accent lives on the one filled CTA.
 .ox-cta-band {
   position: relative;
   isolation: isolate;
@@ -3921,7 +3979,7 @@ body {
 // The newsletter's own IDENTITY PLATE (owner brief 2026-09-24, item 2: "a
 // conversion block on the identity plate, corner cut per §3.3"): a raised
 // graphite ground on the band's dark ground with the mark's own corner cut
-// (X-IDENTITY §3.3/3.4, `ox-x-corner`) — the same construction
+// (X-IDENTITY §3.3/3.4, `ox-x-corner`), the same construction
 // `.ox-services__offer` already carries on its OWN dark band (`--ox-graphite-3`
 // is that band's established "raised" tone too: `.ox-band-dark .ox-input`
 // already reads on it, two rules above in `_primitives.scss`, so the plate and
@@ -3940,7 +3998,7 @@ body {
 }
 
 // The privacy line's own link (item 2), resolved by `OxCtaBand` against the
-// merchant's own footer menu and rendered only here — `blocks/ArticleExtras`
+// merchant's own footer menu and rendered only here; `blocks/ArticleExtras`
 // passes no `privacyUrl`, so the blog placement keeps its plain sentence.
 .ox-cta-band__newsletter .ox-newsletter__privacy-link {
   color: inherit;

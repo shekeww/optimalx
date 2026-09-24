@@ -211,6 +211,31 @@ if (OVERLAY && snapshot.settings?.data?.theme?.settings) {
 }
 
 /**
+ * PRODUCT IMAGE OVERLAY (owner, 2026-09-24: "use this as bundle image for the
+ * protein, creatine and multivitamin starter pack bundle"). The snapshot is a
+ * capture of the live store; until the owner uploads the new image in the
+ * Salla dashboard, `fixtures/store/overlay/product-images.json` (product id to
+ * `{ url, alt }`) swaps the main image here so the preview shows what the
+ * store will. Applied to the listing entry and to the product details, before
+ * the English overlay copies them. Arabic and English both see it.
+ */
+const productImageOverlay = OVERLAY ? load('overlay/product-images.json', {}) : {};
+function applyImage(product) {
+  const hit = product && productImageOverlay[String(product.id)];
+  if (!hit) return;
+  const image = { ...(product.image || {}), url: hit.url, alt: hit.alt ?? product.image?.alt ?? null };
+  product.image = image;
+  if (Array.isArray(product.images) && product.images.length) product.images = [{ ...product.images[0], ...image }, ...product.images.slice(1)];
+  if (product.thumbnail) product.thumbnail = hit.url;
+}
+if (Object.keys(productImageOverlay).length) {
+  const list = Array.isArray(snapshot.products) ? snapshot.products : snapshot.products?.data;
+  for (const p of list ?? []) applyImage(p);
+  for (const d of Object.values(snapshot.details ?? {})) applyImage(d?.data ?? d);
+  console.log(`[store-api] OFFLINE_TAXONOMY=1: product image overlay for ${Object.keys(productImageOverlay).length} product(s)`);
+}
+
+/**
  * THE LANGUAGE OVERLAY (S9f, 2026-09-24). Owner report: "in english
  * version, products names and data are appearing in arabic". The live
  * Salla API answers a product's translation when the merchant has one and

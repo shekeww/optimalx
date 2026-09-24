@@ -2430,9 +2430,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // `clip`, never `hidden`: a hidden axis turns the other axis into a scroll
   // container, and the 44px hit areas on 24px swatches overflowed it into a
   // vertical scrollbar on the plate (owner, 2026-09-24). `clip` clips without
-  // scrolling and leaves the vertical axis alone.
-  overflow-x: clip;
+  // scrolling and leaves the vertical axis alone. Browsers without `clip`
+  // (Safari before iOS 16) drop that line and the nowrap row widened the
+  // whole grid sideways: they get `hidden` on both axes instead, which
+  // clips the hit areas but never scrolls (a hidden pair has nothing to
+  // scroll to by touch).
+  overflow: hidden;
   flex-wrap: nowrap;
+
+  @supports (overflow: clip) {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
   // Empty (no option): paints nothing, and lets a tap fall through to
   // whatever sits under it on the plate.
   pointer-events: none;
@@ -2552,377 +2561,51 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // ---------------------------------------------------------------------------
 // 14. The categories index, /categories (PLAN-ship Batch S1 step 6)
 //
-// Three sections under one page head: ten type cards, the six goal cards
-// (the home page's `.ox-goal` and `.ox-goals__grid`, consumed unchanged from
-// _b2-home.scss), and a row of the four utility categories.
+// Three sections under one page head: the ten type roots, the six goals and a
+// row of the four utility categories.
 //
-// The type card is a plate, a name and a paragraph. The plate holds the live
-// category's product photograph once the store has one, contained with 12 of
-// air so the packaging never touches the edge (DIRECTION 5.2 CategoryTile),
-// and the sprite glyph until then; both states are finished, neither is a
-// placeholder. The whole card is one target through the link's stretched
-// pseudo-element, while the link's own text stays the category name, so the
-// accessible name is a name and not the paragraph. Protein's five children
-// sit above that stretched layer as chips of their own, at 44 tall.
+// The type grid and the goal grid are the HOME grids (owner review
+// 2026-09-25: "it should have the same exact design of categories section in
+// homepage"): `CategoriesIndex.tsx` renders the home page's own
+// `CategoryTile` in `.ox-cats__grid` and its own `GoalCard` in
+// `.ox-goals__grid`, so every tile rule lives once, in `_b2-home.scss`
+// sections 4, 4b and 5. Nothing here restyles a tile. The old type card
+// (`.ox-cat-card`, with a meta description and child chips under it) is
+// retired with its rules.
 //
-// Two columns at 390, three at 640, five from 1024: ten cards fill two rows
-// exactly at every step, so the grid never ends on a half row.
+// THE MEASURE. `.ox-page` is a centred box whose max width INCLUDES its
+// gutter (`_b5-pages.scss` section 1), so its content measured 1232 at 1440
+// where the home `.ox-container` and every listing page measure 1296: the
+// same tile came out 5% narrower here. This page takes the container's
+// measure instead (the gutter added outside `--ox-container`, not inside
+// it), so a tile is the home tile's size at every width: 358 of content at
+// 390 on both, 1296 at 1440 on both. Two classes, because `_b5-pages.scss`
+// loads after this file and its single-class `.ox-page` would win a tie.
+//
+// THE LAST ROW. The home grid holds eight tiles, two full rows at 4-up; this
+// page holds all ten type roots, so from 1280 the last row carries two tiles
+// (`snacks-bars`, `accessories`, the two roots with no home tile). They are
+// placed in the middle two columns rather than left at the reading start of
+// an otherwise empty row. Below 1280 the grid is 2-up and ten fills five
+// rows exactly. The rule matches any trailing pair, so a store that adds or
+// drops a root never ends on an off-centre half row.
 // ---------------------------------------------------------------------------
+.ox-page.ox-cat-index {
+  max-inline-size: calc(var(--ox-container) + 2 * var(--ox-gutter));
+}
+
+@media (min-width: 1280px) {
+  .ox-cat-index .ox-cats__grid > :nth-child(4n + 1):nth-last-child(2) {
+    grid-column-start: 2;
+  }
+}
+
 .ox-cat-index__section {
   min-inline-size: 0;
 }
 
-.ox-cat-index__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ox-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  align-items: stretch;
-}
-
 .ox-cat-index__item {
   min-inline-size: 0;
-}
-
-// Tinted, icon-above-the-image (owner restyle 2026-09-22): the same
-// treatment the home grid's `CategoryTile` carries, off the same
-// `HOME_TILE_TONES` map, so a type never reads as one colour on the home
-// page and another here.
-// OWNER REVIEW 2026-09-23 (later, coordinator-authorized scope on this
-// otherwise off-limits file for this one fix): `overflow: hidden` added so
-// the art variant's `<img>` (`.ox-cat-card__art`, below) is clipped to this
-// same `--ox-r-2` corner — see that selector's own comment for why the art
-// card used to go square instead. `ox-focus()` (`.ox-cat-card__link`, below)
-// draws an `outline`, never clipped by `overflow` (only `clip-path` clips
-// an outline), so the focus ring is unaffected.
-.ox-cat-card {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  block-size: 100%;
-  padding: var(--ox-3);
-  background: var(--ox-fill);
-  border: 1px solid var(--ox-line-3);
-  border-radius: var(--ox-r-2);
-  overflow: hidden;
-  transition: border-color var(--dur-base) var(--ease-out);
-
-  // Border colour only (BUILD.md §3.4: no lift on hover, identity rule 1).
-  &:hover {
-    border-color: var(--ox-fg-3);
-  }
-}
-
-// Fallbacks match the `body` declaration in `_b2-home.scss`'s "4.
-// OxCategories and CategoryTile" section verbatim (check-tokens's own
-// documented convention for a cross-file read of a scoped token): that rule
-// stays the one place the ratios are measured and commented, this is a
-// safety net, never a second source of truth.
-.ox-cat-card--peach { background: var(--ox-need-tint-peach, #FDEEE8); }
-.ox-cat-card--ash { background: var(--ox-need-tint-ash, #F1F1F0); }
-.ox-cat-card--mint { background: var(--ox-need-tint-mint, #EAF2EF); }
-.ox-cat-card--sand { background: var(--ox-need-tint-sand, #F3EFE6); }
-.ox-cat-card--sky { background: var(--ox-need-tint-sky, #ECEFF5); }
-.ox-cat-card--rose { background: var(--ox-need-tint-rose, #F6EDF2); }
-.ox-cat-card--violet { background: var(--ox-need-tint-violet, #EFEAF5); }
-
-.ox-cat-card--black {
-  background: var(--ox-graphite-2);
-  border-color: var(--ox-graphite);
-  color: var(--ox-ink-on-dark);
-
-  &:hover {
-    border-color: var(--ox-line-2);
-  }
-
-  .ox-cat-card__name,
-  .ox-cat-card__icon {
-    color: var(--ox-ink-on-dark);
-  }
-
-  .ox-cat-card__desc {
-    color: var(--ox-ink-2-on-dark);
-  }
-}
-
-.ox-cat-card__link {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ox-2);
-  color: var(--ox-fg);
-  text-decoration: none;
-  @include ox-focus(2px);
-
-  // The stretched layer: the card is the target, the name is the link text.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-  }
-}
-
-// The image slot: a `background-image`, never an `<img>`, so a 404 on a
-// merchant's `Category.image` leaves the tint showing instead of a broken-
-// image glyph, and the theme fallback (`--ox-need-image-<slug>`) or `none`
-// costs nothing to declare when it is absent. Sits BELOW the icon in source
-// order (the owner: "the icons to be above the images").
-.ox-cat-card__media {
-  inline-size: 100%;
-  block-size: 96px;
-  background-size: cover;
-  background-position: center;
-  border-radius: var(--ox-r-1);
-}
-
-.ox-cat-card__icon {
-  flex: none;
-  inline-size: 32px;
-  block-size: 32px;
-  stroke-width: 1.25;
-  color: var(--ox-fg);
-}
-
-.ox-cat-card__name {
-  font-size: var(--ox-t-title);
-  font-weight: var(--ox-w-title);
-  line-height: var(--ox-lh-head);
-}
-
-.ox-cat-card__desc {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  margin: 0;
-  color: var(--ox-fg-2);
-}
-
-// Above the stretched link, so each chip is its own target. `margin-block-
-// start: auto` (S2i, 2026-09-23) is the "chips region takes the slack"
-// rule: once every card shares its row's height (`.ox-cat-index__grid`'s
-// `align-items: stretch`, restored below for the art variant), a card
-// shorter than its row-mate needs somewhere to put the difference - the
-// chips block, the last thing in the column, absorbs it rather than
-// leaving a gap between `__desc` and the card's own bottom edge.
-.ox-cat-card__children {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ox-2);
-  margin: 0;
-  margin-block-start: auto;
-  padding: 0;
-  list-style: none;
-}
-
-.ox-cat-card__chip {
-  min-block-size: 44px;
-  padding-inline: var(--ox-3);
-}
-
-// ---------------------------------------------------------------------------
-// 14b. The art type card (S2h 2026-09-23, corrected S2i 2026-09-23): the
-//    same full-bleed packshot photograph treatment `_b2-home.scss`'s
-//    `.ox-tile--art` carries on the home grid, mirrored here for the six
-//    root slugs `content/categories.ts` gives a `backgroundImage` for
-//    (`ART_BY_SLUG`, `CategoriesIndex.tsx`).
-//
-//    S2h's version opted this card OUT of the row stretch
-//    (`align-self: start`, `block-size: auto`) and dropped its own frame
-//    (`border: 0`) - a row could mix a 509px tinted card (protein, tall from
-//    its own children chips) against 426px art cards top-aligned beside it,
-//    ragged gaps between them. It also left `.ox-cat-card__body`'s
-//    `position: absolute` (below) resolving against the WHOLE card
-//    (`.ox-cat-card`, the nearest positioned ancestor - `.ox-cat-card__link`
-//    itself carried no `position` of its own), so its foot (the count and
-//    the arrow) landed near the card's true bottom, past `__desc`, instead
-//    of near the bottom of the artwork alone - the description and the foot
-//    collided. Fixed here: the card keeps the base rule's `block-size: 100%`
-//    (so `.ox-cat-index__grid`'s own `align-items: stretch` applies to every
-//    card alike, art or tinted, and `__children` above absorbs any leftover
-//    row height) and its 1px `--ox-line-3` frame (the tinted card's own
-//    border/background, untouched below - only `padding` goes to 0 so the
-//    artwork runs edge to edge; `border-radius` no longer goes to 0 here
-//    (owner review 2026-09-23, later: the square corners this produced next
-//    to the tinted cards' own `--ox-r-2` read as a defect, not a deliberate
-//    two-shape system) - the base rule's `--ox-r-2` and its new
-//    `overflow: hidden` (above) now clip the artwork to the SAME curve the
-//    frame carries, so the two agree instead of one hiding the other's
-//    corner; `.ox-cat-card--art
-//    .ox-cat-card__link`, below, gets `position: relative` so `__body`
-//    scopes to the artwork alone.
-// ---------------------------------------------------------------------------
-.ox-cat-card--art {
-  padding: 0;
-  color: var(--ox-fg); // resets `--black`'s light ink for collagen-beauty -
-                        // see "the collagen-beauty conflict" note, below.
-}
-
-// Scopes `.ox-cat-card__body`'s `position: absolute` (below) to the artwork
-// alone - see the S2i note above for the defect this closes.
-.ox-cat-card--art .ox-cat-card__link {
-  position: relative;
-}
-
-// `aspect-ratio`, never a fixed `block-size`, `min-block-size` only as the
-// floor - the same reasoning as `.ox-tile__art` (`_b2-home.scss` section 4b),
-// which this mirrors; this grid's own 2/3/5-column rhythm (below) does not
-// match the home grid's 2/4, so only the one shared floor is carried here
-// rather than a second, page-specific measured checkpoint. Coordinator
-// addendum, owner review 2026-09-23: no `clip-path` at any tier - a plain
-// rectangle, no radius of its own; `.ox-cat-card`'s own `border-radius:
-// var(--ox-r-2)` plus `overflow: hidden` (owner review 2026-09-23, later)
-// clips this image to that same curve instead.
-.ox-cat-card__art {
-  position: relative;
-  z-index: 0;
-  display: block;
-  inline-size: 100%;
-  aspect-ratio: 2 / 3;
-  min-block-size: 260px;
-  object-fit: cover;
-  object-position: center;
-}
-
-.ox-cat-card--art .ox-cat-card__icon {
-  inline-size: 36px;
-  block-size: 36px;
-}
-
-// The content column: pinned to the card's PHYSICAL LEFT in BOTH languages,
-// matching `.ox-tile__body`'s own reasoning exactly (`_b2-home.scss` 4b).
-.ox-cat-card__body {
-  position: absolute;
-  z-index: 1;
-  inset-block: var(--ox-3);
-  inline-size: 62%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  // Owner call 2026-09-23: bottom-left text block, matching the home tile.
-  justify-content: flex-end;
-  gap: var(--ox-1);
-  color: var(--ox-fg);
-
-  // Insurance scrim, same measured basis as `.ox-tile__body`'s own
-  // (docs/build/progress/S2h.md): already-passing margins on five of the six
-  // grounds, turned off instead of relied on for `vitamins-minerals` below.
-  &::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: calc(var(--ox-3) * -1);
-    background: radial-gradient(
-      ellipse at bottom left,
-      rgba(255, 255, 255, 0.35) 0%,
-      rgba(255, 255, 255, 0) 70%
-    );
-  }
-}
-
-.ox-cat-card--art .ox-cat-card__foot {
-  margin-block-start: var(--ox-2);
-}
-
-[dir='rtl'] .ox-cat-card__body {
-  inset-inline-end: var(--ox-3);
-  align-items: flex-end; // physical left, as the home tile
-  text-align: end;
-}
-
-[dir='ltr'] .ox-cat-card__body {
-  inset-inline-start: var(--ox-3);
-  align-items: flex-start;
-  text-align: start;
-}
-
-// Weight floor (owner review, 2026-09-23, item 1): mirrors `.ox-tile__line`'s
-// own fix (`_b2-home.scss`) — `--ox-t-micro` is under 16px and this rule
-// carried no font-weight and no `.ox-*` role class in `CategoriesIndex.tsx`,
-// so it rendered at 400, including on the `vitamins-minerals` art card's
-// near-black ground. `--ox-w-read` clears both the <16px floor (500) and the
-// dark-ground floor (450) at its 550 root value.
-.ox-cat-card__line {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: var(--ox-t-micro);
-  font-weight: var(--ox-w-read);
-  line-height: 1.35;
-  color: var(--ox-fg-2);
-}
-
-.ox-cat-card__foot {
-  display: flex;
-  align-items: center;
-  gap: var(--ox-1);
-  inline-size: 100%;
-  margin-block-start: auto;
-  padding-block-start: var(--ox-1);
-}
-
-// No size of its own (owner item 2026-09-24, S8a): the 18px `font-size`
-// sized the retired font glyph; the svg's box and glyph are the shared
-// `.ox-iconbtn--angled` rule's alone.
-.ox-cat-card__arrow {
-  margin-inline-start: auto;
-  color: var(--ox-accent-dark);
-}
-
-// Reset, not an addition: `.ox-cat-card--black`'s own descendant rules above
-// match `.ox-cat-card__icon`/`__name`/`__desc` at any nesting
-// depth, which now includes `collagen-beauty` - the one slug that carries
-// BOTH `--black` (its shaker-era tone) and `--art` (its own photograph,
-// measured pastel, not the black card's graphite). `--art` is declared after
-// `--black` above, so at equal specificity this wins for every art card;
-// `vitamins-minerals`'s own dark-ground override, below, is more specific
-// again and wins over this in turn for that one slug only. `__desc` sits
-// outside the card's own photograph either way (it is never painted over
-// it), so it always gets the normal-ink reset regardless of which slug.
-.ox-cat-card--art .ox-cat-card__icon,
-.ox-cat-card--art .ox-cat-card__name {
-  color: var(--ox-fg);
-}
-
-.ox-cat-card--art .ox-cat-card__desc {
-  color: var(--ox-fg-2);
-}
-
-// `vitamins-minerals`'s own photograph (multivitamins.webp) measures near-
-// black at the top-left, not the flat pastel every other ground here
-// measures (docs/build/progress/S2h.md): `--ox-fg` ink is 1.07:1 raw against
-// it and only 3.00:1 with the white scrim above, short of the 4.5:1 text
-// floor. Light ink instead - the same swap `.ox-cat-card--black` already
-// makes above (17.46:1 measured) - so the scrim is switched off rather than
-// stacked uselessly behind text it can no longer help.
-.ox-cat-card--art[data-category='vitamins-minerals'] {
-  .ox-cat-card__arrow {
-    color: var(--ox-accent);
-  }
-
-  .ox-cat-card__body {
-    color: var(--ox-ink-on-dark);
-
-    &::before {
-      background: none;
-    }
-  }
-
-  .ox-cat-card__icon,
-  .ox-cat-card__name {
-    color: var(--ox-ink-on-dark);
-  }
-
-  .ox-cat-card__line {
-    color: var(--ox-ink-2-on-dark);
-  }
 }
 
 .ox-cat-index__utility {
@@ -2986,11 +2669,6 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 @media (min-width: 640px) {
-  .ox-cat-index__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--ox-4);
-  }
-
   .ox-cat-index__utility {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--ox-4);
@@ -2998,23 +2676,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 @media (min-width: 1024px) {
-  .ox-cat-index__grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
   .ox-cat-index__utility {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
-  // The art head's one angled gesture used to upgrade from the notch to the
-  // mark's own corner cut at this tier; coordinator addendum, owner review
-  // 2026-09-23, removes it here too (see `.ox-cat-card__art`'s own comment
-  // above) — no clip-path, no `--ox-cat-lean`/`-run`, at this breakpoint or
-  // any other.
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ox-cat-card,
   .ox-cat-index__util {
     transition: none;
 
@@ -3064,8 +2731,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 // One cover, 88% of the container, below 768: the remaining 12% (less the
 // gap) is the next cover's peek, the scroller's own hint that there is more
-// to see. Two covers exactly fill the container from 768 up — the same
-// `(container - gap) / 2` any scroll-snap pair in this file solves with —
+// to see. Two covers exactly fill the container from 768 up (the same
+// `(container - gap) / 2` any scroll-snap pair in this file solves with),
 // and that never changes again above 768: there is no further 3-or-4-up step
 // the way the small-card rail this replaces had, because these are large
 // covers, not grid-sized cards.
@@ -3092,33 +2759,57 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // No lift, no colour transition on hover (BUILD.md 3.4): the border swaps
-// state, it never animates into it.
+// state, it never animates into it. The same two borders the product card
+// carries (`.ox-card-product`, `_b3-product.scss`), since the cover now
+// stands on the card's own ground.
 .ox-featured__card:hover .ox-featured__plate {
-  border-color: var(--ox-line-3);
+  border-color: var(--ox-bd-2);
 }
 
 // `aspect-ratio` reserves the plate's box at first paint; the rail never
 // swaps a skeleton for a loaded card (the products arrive with the page), so
-// this is the whole of its CLS budget. 3:2 rather than the small rail's 1:1
-// (owner item 2026-09-23, "cover images that are larger"): a wider plate is
-// what makes the cover read as a cover, not a bigger version of the grid's
-// square product tile.
+// this is the whole of its CLS budget. 3:2 rather than the grid's 1:1 (owner
+// item 2026-09-23, "cover images that are larger"): a wider plate is what
+// makes the cover read as a cover, not a bigger version of the grid's square
+// product tile.
 //
-// The corner cut (X-IDENTITY §3.3/§6, one angled primitive per cover): the
-// mark's arm-foot on the cover's top reading-end corner. This rebuild's own
-// `.ox-featured__item` breakpoint at 768 (above) gives §3.3's middle tier a
-// real place to land, so all three of its tiers ship here — lean 40 (run
-// 27.0) below 768, lean 48 (run 32.4) 768 to 1023, lean 64 (run 43.2) from
-// 1024 up — where the small-card rail this replaces had skipped the middle
-// tier for lack of a breakpoint to hang it on (S2g, 2026-09-23).
+// THE PLATE GROUND (owner review 2026-09-25: "in featured products, the gray
+// solid background to be replaced with the same background of the gray shape
+// and orange behind product image in product card"). The flat `--ox-plate`
+// grey is gone: the cover stands on the page ground with the product card's
+// own grey angled band and orange mark behind the packshot, off the shared
+// `ox-plate-band`/`ox-plate-mark` mixins (`_primitives.scss`), the one
+// definition `.ox-card-product__band`/`__mark` and the PDP gallery's
+// `.ox-gallery__band`/`__mark` also read. Every value in those mixins is a
+// percentage of its plate, so the same shapes land on this 3:2 cover in the
+// same proportion: the band runs behind the packshot, and the mark sits in
+// the free margin at the reading end, clear of a square packshot contained in
+// the middle two thirds. The 1px frame is the product card's own `--ox-bd`,
+// which keeps the white cover a surface on the white page.
+//
+// The corner cut (X-IDENTITY 3.3 and 6, one angled primitive per cover): the
+// mark's arm-foot on the cover's top reading-end corner, three tiers, lean 40
+// (run 27.0) below 768, lean 48 (run 32.4) 768 to 1023, lean 64 (run 43.2)
+// from 1024 up.
 .ox-featured__plate {
+  position: relative;
   display: block;
   aspect-ratio: 3 / 2;
   overflow: hidden;
-  background: var(--ox-plate);
-  border: 1px solid var(--ox-plate-2);
+  background: var(--ox-bg);
+  border: 1px solid var(--ox-bd);
   border-radius: var(--ox-r-4);
   @include ox-x-corner(40px);
+
+  // The engine's `<Image>` wraps the `<img>` in its own `position: relative`
+  // box carrying no class of its own; pinned flush to the plate and raised
+  // above the ground, the same treatment `.ox-card-product__plate` gives its
+  // own wrapper, so the packshot always paints over the band and the mark.
+  > :has(> .ox-featured__img) {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
 }
 
 @media (min-width: 768px) {
@@ -3133,7 +2824,34 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
+// Rendered before the image in `FeaturedRail.tsx` (and
+// `snippets/featured-rail.liquid` on the port), so DOM paint order alone
+// keeps them behind the packshot. Paint only: a tap anywhere on the cover
+// lands on the card's own link.
+//
+// ONE SHAPE ON A WIDER PLATE. The mixins size a thickness off the plate's
+// WIDTH, which on the square card and gallery plates is also its height. On
+// this 3:2 cover the same percentage draws a band and a mark one and a half
+// times as thick for their length, a heavier slash than the card carries.
+// Each thickness is scaled by the plate's 2:3 height-to-width ratio, so the
+// band and the mark keep the card's own proportions; the band keeps the
+// mixin's centre line (22% + 46% / 2 = 45% from the reading start) and the
+// mark keeps its place in the free margin at the reading end, clear of a
+// square packshot.
+.ox-featured__band {
+  @include ox-plate-band;
+  inset-inline-start: calc(45% - 46% / 3);
+  inline-size: calc(46% * 2 / 3);
+}
+
+.ox-featured__mark {
+  @include ox-plate-mark;
+  inline-size: calc(4.5% * 2 / 3);
+}
+
 .ox-featured__img {
+  position: relative;
+  z-index: 1;
   inline-size: 100%;
   block-size: 100%;
   object-fit: contain;
@@ -3172,9 +2890,9 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // The prev/next pair (FeaturedRail.tsx) sits in `SectionHeader`'s own
-// `actions` slot — `_primitives.scss`'s `.ox-sh__actions`, already
+// `actions` slot (`_primitives.scss`'s `.ox-sh__actions`, already
 // `display: none` below 1024 and `flex` from there up by its own doc comment
-// ("Desktop-only slot at the end of the title row (slider arrows)") — so the
+// ("Desktop-only slot at the end of the title row (slider arrows)"), so the
 // carousel's "prev/next buttons at 1024 and up" needs no breakpoint here.
 // The component itself renders the pair only when `items.length` exceeds the
 // two covers the container already shows, which is the "hidden when
@@ -3190,7 +2908,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // focus ring sits on an unclipped box (X-IDENTITY §7.1 `focus-clipped`) and
 // the 44px hit area stays separate from the 24px drawn face. This and the
 // plate's own corner cut above are two different components' one angled
-// gesture each (the card, and the section's control row) — the same split
+// gesture each (the card, and the section's control row), the same split
 // `OxBrands` already ships with its own corner-cut tile and angled arrows.
 .ox-featured__arrow {
   @include ox-focus(2px);

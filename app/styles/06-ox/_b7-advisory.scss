@@ -5,7 +5,7 @@
 // the rules below are its own rather than a reuse of `.ox-offer__*`: this
 // block's heading and closing line live INSIDE the plate (the offer strip's
 // heading is the band's own h2, outside it) and its buttons switch to a row
-// at 768 where the offer strip's switch at 640 — the same class at two
+// at 768 where the offer strip's switch at 640; the same class at two
 // widths would have meant two different layouts on one selector.
 // `_b2-home.scss` is owned by other builders and stays untouched; this is the
 // one new partial the plan reserves for this batch.
