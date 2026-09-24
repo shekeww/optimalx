@@ -2,7 +2,9 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
+import { loadDictionary } from '../helpers/i18n';
 
+const ar = loadDictionary('ar');
 const menuItems: Array<{ id: number; title: string; url: string }> = [];
 const categories: unknown[] = [];
 
@@ -94,6 +96,26 @@ describe('ShopSheet', () => {
     expect(sheet.querySelectorAll('.ox-sheet__grid--utility > li')).toHaveLength(3);
     // Protein's children are three taps away by design (§7.1.1), not in the grid.
     expect(sheet.querySelectorAll('.ox-drawer__sublist')).toHaveLength(0);
+  });
+
+  it('carries حسب العلامة, one row to the brands index, between حسب النوع and أقسام أخرى', async () => {
+    renderWithProviders(<Harness initialOpen />);
+    const sheet = await screen.findByTestId('ox-shop-sheet');
+    const axis = screen.getByTestId('ox-sheet-brand-axis');
+    expect(axis.tagName).toBe('A');
+    expect(axis.getAttribute('href')).toBe('/brands');
+    expect(axis.textContent).toBe(ar['ox.nav.by_brand']);
+    const order = Array.from(sheet.querySelectorAll('.ox-sheet__section, .ox-sheet__axis')).map(
+      (node) => node.querySelector('.ox-sheet__heading')?.textContent
+    );
+    expect(order).toEqual([
+      ar['ox.nav.by_goal'],
+      ar['ox.nav.by_type'],
+      ar['ox.nav.by_brand'],
+      ar['ox.nav.other_categories'],
+    ]);
+    fireEvent.click(axis);
+    await waitFor(() => expect(screen.queryByTestId('ox-shop-sheet')).toBeNull());
   });
 
   it('closes on a tile click and on the "كل الأنواع" button', async () => {

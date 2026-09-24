@@ -2,8 +2,9 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
-import { MENU, TAXONOMY, childrenOf } from '../../app/content/taxonomy';
-import { ART_CATEGORY_SLUGS, HOME_TILE_TONES } from '../../app/content/categories';
+import { MENU, TAXONOMY } from '../../app/content/taxonomy';
+import { ART_CATEGORY_SLUGS, HOME_TILE_TONES, HOME_TYPE_SLUGS } from '../../app/content/categories';
+import { HOME_BLOCK_FIELDS, type OxBlockData } from '../../app/components/home/defaults';
 
 /**
  * `/categories` (PLAN-ship Batch S1 step 6, Accept: "200 with 16 cards").
@@ -12,6 +13,11 @@ import { ART_CATEGORY_SLUGS, HOME_TILE_TONES } from '../../app/content/categorie
  * categories are a row of their own. Every link comes from
  * `useTaxonomyLinks`, so the page agrees with the header on where a slug
  * goes: the live category when the store has one, a search until then.
+ *
+ * Owner review 2026-09-25: the type grid is the HOME grid ("it should have
+ * the same exact design of categories section in homepage"). Each type is
+ * the home page's own `CategoryTile` in `.ox-cats__grid`, with no meta
+ * description and no child chips on the tile.
  */
 
 const liveCategories: unknown[] = [];
@@ -37,8 +43,15 @@ vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
 }));
 
 const { CategoriesIndex } = await import('../../app/components/listing/CategoriesIndex');
+const { OxCategories } = await import('../../app/components/home/OxCategories');
 const { createT } = await import('../helpers/i18n');
 const t = createT('ar');
+
+const TILE = '[data-testid="ox-category-tile"]';
+
+function typeSection(container: HTMLElement): HTMLElement {
+  return container.querySelector('section[aria-labelledby="categories-types-title"]') as HTMLElement;
+}
 
 beforeEach(() => {
   liveCategories.length = 0;
@@ -48,9 +61,12 @@ describe('CategoriesIndex', () => {
   it('renders sixteen cards: the ten type roots then the six goals, in taxonomy order', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
     expect(container.querySelectorAll('.ox-cat-index__item')).toHaveLength(16);
-    const typeCards = container.querySelectorAll('[data-testid="ox-type-card"]');
-    expect(typeCards).toHaveLength(10);
-    expect(Array.from(typeCards).map((card) => card.querySelector('.ox-cat-card__name')?.textContent)).toEqual(
+    const tiles = container.querySelectorAll(TILE);
+    expect(tiles).toHaveLength(10);
+    expect(Array.from(tiles).map((tile) => tile.getAttribute('data-category'))).toEqual(
+      MENU.types.map((node) => node.slug)
+    );
+    expect(Array.from(tiles).map((tile) => tile.querySelector('.ox-tile__name')?.textContent)).toEqual(
       MENU.types.map((node) => t(node.nameKey))
     );
     const goalCards = container.querySelectorAll('[data-testid="ox-goal-card"]');
@@ -60,7 +76,7 @@ describe('CategoriesIndex', () => {
     );
   });
 
-  it('is a page with words: one h1, the breadcrumb, an intro, and a description per type card', () => {
+  it('is a page with words: one h1, the breadcrumb, an intro and three labelled sections', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
     const headings = container.querySelectorAll('h1');
     expect(headings).toHaveLength(1);
@@ -69,28 +85,45 @@ describe('CategoriesIndex', () => {
       t('ox.tax.index.h1')
     );
     expect(container.querySelector('.ox-page-head__lead')?.textContent).toBe(t('ox.tax.index.intro'));
-    const descriptions = container.querySelectorAll('[data-testid="ox-type-card"] .ox-cat-card__desc');
-    expect(descriptions).toHaveLength(10);
-    // The paragraph is outside the link: the accessible name is the name.
-    expect(container.querySelector('.ox-cat-card__link .ox-cat-card__desc')).toBeNull();
-    // Three h2 sections, each labelled.
     expect(container.querySelectorAll('section[aria-labelledby] h2')).toHaveLength(3);
-    // Every string resolved: no text on the page is still a lookup key. This
-    // is the "no raw ox.* keys in the html" half of the Accept curl, pinned
-    // here against the real dictionaries so it does not wait for a restart.
+    // Every string resolved: no text on the page is still a lookup key.
     expect(container.textContent).not.toMatch(/\box\.[a-z_]+\.[a-z_.]+/);
   });
 
-  it('nests the five protein children as chips on the protein card, and no chips elsewhere', () => {
+  it('draws the type grid as the home grid: the home tile, no description, no child chips', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
-    const cards = Array.from(container.querySelectorAll('[data-testid="ox-type-card"]'));
-    const protein = cards[0];
-    const chips = protein.querySelectorAll('.ox-cat-card__children a');
-    expect(chips).toHaveLength(5);
-    expect(Array.from(chips).map((chip) => chip.textContent)).toEqual(
-      childrenOf('protein').map((node) => t(node.nameKey))
+    const section = typeSection(container);
+    const grid = section.querySelector('ul.ox-cats__grid') as HTMLElement;
+    expect(grid).not.toBeNull();
+    expect(grid.getAttribute('role')).toBe('list');
+    expect(grid.className).toMatch(/\box-reveal\b/);
+    expect(grid.querySelectorAll(`:scope > li > ${TILE}`)).toHaveLength(10);
+    // The retired type card and everything it carried under the tile.
+    expect(container.querySelector('.ox-cat-card')).toBeNull();
+    expect(section.querySelector('.ox-small')).toBeNull();
+    expect(section.querySelector('.ox-chip')).toBeNull();
+    expect(section.querySelectorAll('a')).toHaveLength(10);
+    // The goals sit in the home goals grid.
+    expect(container.querySelector('ul.ox-goals__grid.ox-reveal')).not.toBeNull();
+  });
+
+  it('renders each home slug exactly as the home grid renders it', async () => {
+    const home = renderWithProviders(
+      <OxCategories
+        data={{ path: 'ox-categories', key: 'cats', ...HOME_BLOCK_FIELDS['ox-categories'] } as OxBlockData}
+      />
     );
-    expect(container.querySelectorAll('.ox-cat-card__children')).toHaveLength(1);
+    await waitFor(() => expect(home.container.querySelectorAll(TILE)).toHaveLength(8));
+    const homeTiles = new Map(
+      Array.from(home.container.querySelectorAll(TILE)).map((tile) => [tile.getAttribute('data-category'), tile.outerHTML])
+    );
+    home.unmount();
+
+    const { container } = renderWithProviders(<CategoriesIndex />);
+    for (const slug of HOME_TYPE_SLUGS) {
+      const tile = container.querySelector(`${TILE}[data-category="${slug}"]`);
+      expect(tile?.outerHTML, slug).toBe(homeTiles.get(slug));
+    }
   });
 
   it('lists the four utility categories as a row of their own, with 44px rows', () => {
@@ -105,80 +138,49 @@ describe('CategoriesIndex', () => {
 
   it('links every card to a search for its name until the store has the category', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
-    const links = Array.from(container.querySelectorAll('.ox-cat-card__link, [data-testid="ox-goal-card"], [data-testid="ox-utility-row"]'));
+    const links = Array.from(container.querySelectorAll(`${TILE}, [data-testid="ox-goal-card"], [data-testid="ox-utility-row"]`));
     expect(links).toHaveLength(20);
     for (const link of links) expect(link.getAttribute('href')).toMatch(/^\/search\?q=/);
-    for (const card of container.querySelectorAll('[data-testid="ox-type-card"]')) {
-      expect(card.getAttribute('data-resolved')).toBe('false');
-      expect(card.querySelector('.ox-cat-card__icon')).not.toBeNull();
-      // Six of the ten type roots carry the owner's own curated art
-      // (`ART_CATEGORY_SLUGS`, S2h 2026-09-23) and render an `<img>` for it;
-      // the other four still fall back to the tinted background, no `<img>`.
-      const slug = card.getAttribute('data-category');
+    for (const tile of container.querySelectorAll(TILE)) {
+      expect(tile.querySelector('.ox-tile__icon')).not.toBeNull();
+      expect(tile.querySelector('.ox-tile__arrow')).not.toBeNull();
+      // Eight of the ten type roots carry the owner's curated art
+      // (`ART_CATEGORY_SLUGS`) and render it as the whole tile; the other two
+      // render the home tile's tinted variant, whose image slot is a
+      // background, never an `<img>`.
+      const slug = tile.getAttribute('data-category');
       if (slug && ART_CATEGORY_SLUGS.includes(slug)) {
-        expect(card.querySelector('img')).not.toBeNull();
+        expect(tile.querySelector('img.ox-tile__art')).not.toBeNull();
       } else {
-        expect(card.querySelector('img')).toBeNull();
+        expect(tile.querySelector('img')).toBeNull();
+        expect(tile.querySelector('.ox-tile__image')).not.toBeNull();
       }
     }
   });
 
-  it('renders the curated art tile for creatine, and the tinted card for snacks-bars (no curated art)', () => {
+  it('renders the curated art tile for creatine, and the tinted tile for snacks-bars (no curated art)', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
-    const creatine = container.querySelector('[data-testid="ox-type-card"][data-category="creatine"]') as HTMLElement;
-    const snacks = container.querySelector('[data-testid="ox-type-card"][data-category="snacks-bars"]') as HTMLElement;
+    const creatine = container.querySelector(`${TILE}[data-category="creatine"]`) as HTMLElement;
+    const snacks = container.querySelector(`${TILE}[data-category="snacks-bars"]`) as HTMLElement;
     expect(ART_CATEGORY_SLUGS).toContain('creatine');
-    expect(ART_CATEGORY_SLUGS).toContain('protein');
     expect(ART_CATEGORY_SLUGS).not.toContain('snacks-bars');
 
-    const art = creatine.querySelector('.ox-cat-card__art') as HTMLImageElement;
-    expect(art).not.toBeNull();
+    const art = creatine.querySelector('.ox-tile__art') as HTMLImageElement;
     expect(art.getAttribute('src')).toBe('/categories/creatine.webp');
-    expect(art.getAttribute('loading')).toBe('lazy');
-    expect(art.getAttribute('decoding')).toBe('async');
-    expect(art.getAttribute('width')).toBe('1024');
-    expect(art.getAttribute('height')).toBe('1536');
     expect(art.getAttribute('alt')).toBe('');
-    expect(creatine.className).toMatch(/ox-cat-card--art/);
+    expect(creatine.className).toMatch(/ox-tile--art/);
+    expect(creatine.querySelector('.ox-tile__body .ox-tile__foot')).not.toBeNull();
 
-    expect(snacks.querySelector('.ox-cat-card__art')).toBeNull();
-    expect(snacks.querySelector('.ox-cat-card__media')).not.toBeNull();
-    expect(snacks.className).not.toMatch(/ox-cat-card--art/);
+    expect(snacks.querySelector('.ox-tile__art')).toBeNull();
+    expect(snacks.className).not.toMatch(/ox-tile--art/);
+    expect(snacks.getAttribute('data-tone')).toBe('ash');
   });
 
-  it('scopes the art card body to its own link, with the frame classes and desc/children as siblings outside it (S2i)', () => {
-    const { container } = renderWithProviders(<CategoriesIndex />);
-    const creatine = container.querySelector(
-      '[data-testid="ox-type-card"][data-category="creatine"]'
-    ) as HTMLElement;
-    const link = creatine.querySelector('.ox-cat-card__link') as HTMLElement;
-    const art = creatine.querySelector('.ox-cat-card__art') as HTMLElement;
-    const body = creatine.querySelector('.ox-cat-card__body') as HTMLElement;
-    const desc = creatine.querySelector('.ox-cat-card__desc') as HTMLElement;
-
-    // `.ox-cat-card__body` (and its foot, the arrow) must sit inside
-    // the SAME element the artwork does, `.ox-cat-card__link` - the
-    // positioning scope the S2i fix relies on so the foot lands at the
-    // bottom of the artwork, not past the description below it.
-    expect(link.contains(art)).toBe(true);
-    expect(link.contains(body)).toBe(true);
-    expect(body.querySelector('.ox-cat-card__foot')).not.toBeNull();
-    // The description stays a sibling OUTSIDE the link, same place as the
-    // tinted card's own - never nested inside the artwork's positioning
-    // scope, and never inside the stretched click target either.
-    expect(desc).not.toBeNull();
-    expect(link.contains(desc)).toBe(false);
-    // The outer card keeps the tinted card's own 1px frame class hook: the
-    // same `ox-cat-card` root, carrying `--art` as a modifier, not a
-    // replacement.
-    expect(creatine.className).toMatch(/\box-cat-card\b/);
-  });
-
-  it('resolves a card to the live category, with its image, once one exists', async () => {
+  it('resolves a tile to the live category once one exists, keeping the short name and the art', async () => {
     liveCategories.push({
       id: 9001,
       id_: 9001,
-      name: 'بروتين',
+      name: 'بروتين باودر',
       url: 'https://optimalx.com.sa/protein/c9001',
       image: 'https://cdn.salla.sa/x/protein.jpg',
       products_count: 14,
@@ -188,51 +190,38 @@ describe('CategoriesIndex', () => {
     });
     const { container } = renderWithProviders(<CategoriesIndex />);
     await waitFor(() =>
-      expect(container.querySelector('[data-testid="ox-type-card"][data-resolved="true"]')).not.toBeNull()
+      expect(container.querySelector(`${TILE}[data-category="protein"]`)?.getAttribute('href')).toBe(
+        '/protein/c9001'
+      )
     );
-    const protein = container.querySelector('[data-testid="ox-type-card"][data-resolved="true"]') as HTMLElement;
-    // Origin dropped by the one link resolution rule (P0-14): an absolute
-    // href leaves the build on a click and drops the locale.
-    expect(protein.querySelector('.ox-cat-card__link')?.getAttribute('href')).toBe(
-      '/protein/c9001'
-    );
-    // Protein carries curated artwork (2026-09-23), which wins over the live
-    // image: the card is an art card with no live-image slot.
-    expect(protein.querySelector('img.ox-cat-card__art')?.getAttribute('src')).toBe('/categories/protein.webp');
-    expect(protein.querySelector('.ox-cat-card__media')).toBeNull();
-    // The nested child resolved through the flattened list; its siblings did not.
-    const chips = Array.from(protein.querySelectorAll('.ox-cat-card__children a'));
-    expect(chips[0].getAttribute('href')).toBe('/whey-protein/c9011');
-    expect(chips[1].getAttribute('href')).toMatch(/^\/search\?q=/);
+    const protein = container.querySelector(`${TILE}[data-category="protein"]`) as HTMLElement;
+    // The home tile's own label: the node's short name, never the live
+    // category's longer one.
+    expect(protein.querySelector('.ox-tile__name')?.textContent).toBe(t('ox.tax.protein.name'));
+    // Curated artwork wins over the live image.
+    expect(protein.querySelector('img.ox-tile__art')?.getAttribute('src')).toBe('/categories/protein.webp');
+    expect(protein.querySelector('.ox-tile__image')).toBeNull();
+    // The children are not on the tile; the protein listing carries them.
+    expect(protein.querySelector('.ox-chip')).toBeNull();
     // The other nine roots still fall back.
-    expect(container.querySelectorAll('[data-testid="ox-type-card"][data-resolved="false"]')).toHaveLength(9);
+    const fallbacks = Array.from(container.querySelectorAll(TILE)).filter((tile) =>
+      tile.getAttribute('href')?.startsWith('/search?q=')
+    );
+    expect(fallbacks).toHaveLength(9);
     expect(TAXONOMY).toHaveLength(25);
-    // No count ever prints, even on this live, positive products_count
-    // (coordinator addendum, owner review 2026-09-23: the foot keeps the
-    // angled arrow only).
-    expect(protein.querySelector('.ox-cat-card__count')).toBeNull();
+    // No count ever prints, even on a live, positive products_count.
+    expect(protein.textContent).not.toMatch(/14/);
   });
 
-  it('tints every type card, off the same HOME_TILE_TONES map the home grid uses', () => {
+  it('tints every type tile off the same HOME_TILE_TONES map the home grid uses', () => {
     const { container } = renderWithProviders(<CategoriesIndex />);
-    const cards = Array.from(container.querySelectorAll('[data-testid="ox-type-card"]'));
-    expect(cards).toHaveLength(10);
-    for (const card of cards) {
-      const slug = card.getAttribute('data-tone');
-      expect(slug).not.toBeNull();
-      expect(card.className).toMatch(/ox-cat-card--/);
-    }
-    const protein = cards.find((card) => card.querySelector('.ox-cat-card__name')?.textContent === t('ox.tax.protein.name'));
-    expect(protein?.getAttribute('data-tone')).toBe(HOME_TILE_TONES.protein);
-  });
-
-  it('never prints a count, resolved or not (coordinator addendum, owner review 2026-09-23)', () => {
-    const { container } = renderWithProviders(<CategoriesIndex />);
-    expect(container.querySelectorAll('[data-testid="ox-type-card"] .ox-cat-card__count')).toHaveLength(0);
-    const cards = container.querySelectorAll('[data-testid="ox-type-card"]');
-    expect(cards.length).toBeGreaterThan(0);
-    for (const card of Array.from(cards)) {
-      expect(card.querySelector('.ox-cat-card__count')).toBeNull();
+    const tiles = Array.from(container.querySelectorAll(TILE));
+    expect(tiles).toHaveLength(10);
+    for (const tile of tiles) {
+      const slug = tile.getAttribute('data-category') as string;
+      const tone = (HOME_TILE_TONES as Record<string, string>)[slug] ?? 'ash';
+      expect(tile.getAttribute('data-tone')).toBe(tone);
+      expect(tile.className).toMatch(new RegExp(`\\box-tile--${tone}\\b`));
     }
   });
 });

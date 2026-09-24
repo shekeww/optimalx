@@ -68,7 +68,7 @@ describe('the angled card arrow, one size everywhere', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps its consumers: eleven sites, both constructions (the branch gallery cover joins in S9c)', () => {
+  it('keeps its consumers: ten sites, both constructions (the branch gallery cover joins in S9c; /categories draws the home CategoryTile since 2026-09-25)', () => {
     const direct: string[] = [];
     const wrapped: string[] = [];
     for (const file of tsxFiles(COMPONENTS)) {
@@ -76,13 +76,14 @@ describe('the angled card arrow, one size everywhere', () => {
       if (/<Icon [^>]*className="[^"]*ox-iconbtn--angled/.test(source)) direct.push(path.basename(file));
       if (/<span className="[^"]*ox-iconbtn--angled/.test(source)) wrapped.push(path.basename(file));
     }
-    expect(direct.sort()).toEqual(['CategoriesIndex.tsx', 'CategoryTile.tsx', 'FeaturedRail.tsx', 'GoalCard.tsx']);
+    expect(direct.sort()).toEqual(['CategoryTile.tsx', 'FeaturedRail.tsx', 'GoalCard.tsx']);
     expect(wrapped.sort()).toEqual([
       'BranchGallery.tsx',
       'FeaturedRail.tsx',
       'OxBrands.tsx',
       'OxCategoryRail.tsx',
       'OxPosters.tsx',
+      'OxProductsSecondary.tsx',
       'PosterCard.tsx',
       'RelatedRail.tsx',
     ]);

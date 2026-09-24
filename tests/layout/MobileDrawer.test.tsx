@@ -147,6 +147,36 @@ describe('MobileDrawer', () => {
     // not as a flat top-level row.
     expect(labels).toContain('فرع المدينة المنورة');
     expect(labels).toContain(ar['ox.nav.contact']);
+    expect(labels).toContain(ar['ox.nav.about']);
+    // Brands appear once, as the shop's حسب العلامة axis, never under their
+    // old bar label.
+    expect(labels.filter((label) => label === ar['ox.nav.by_brand'])).toHaveLength(1);
+    expect(labels).not.toContain(ar['ox.nav.brands']);
+    unmount();
+  });
+
+  it("follows the owner's model: حسب العلامة after the two shop groups, about and contact at the top level", async () => {
+    const { unmount } = renderWithProviders(<Harness initialOpen />);
+    const drawer = await screen.findByTestId('ox-mobile-drawer');
+    const list = drawer.querySelector('[data-testid="ox-drawer-list"]') as HTMLElement;
+    const topLevel = Array.from(list.children).map((li) => {
+      const row = li.querySelector(':scope > .ox-drawer__row');
+      return row?.textContent ?? '';
+    });
+    expect(topLevel).toEqual([
+      ar['ox.nav.by_type'],
+      ar['ox.nav.by_goal'],
+      ar['ox.nav.by_brand'],
+      ar['ox.nav.offers'],
+      ar['ox.nav.services'],
+      ar['ox.nav.about'],
+      ar['ox.nav.contact'],
+      ar['ox.nav.more'],
+      ar['ox.nav.account'],
+    ]);
+    const axis = screen.getByTestId('ox-drawer-brand-axis');
+    expect(axis.tagName).toBe('A');
+    expect(axis.getAttribute('href')).toBe('/brands');
     unmount();
   });
 
@@ -177,11 +207,7 @@ describe('MobileDrawer', () => {
 
     const moreGroup = drawer.querySelectorAll('.ox-drawer__group')[2];
     const moreLabels = Array.from(moreGroup.querySelectorAll('a')).map((a) => a.textContent);
-    expect(moreLabels).toEqual([
-      ar['ox.nav.about_brand'],
-      ar['ox.nav.branch'],
-      ar['ox.nav.contact'],
-    ]);
+    expect(moreLabels).toEqual([ar['ox.nav.guides'], ar['ox.nav.branch']]);
     unmount();
   });
 

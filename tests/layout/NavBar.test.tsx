@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../helpers/render';
 import { loadDictionary } from '../helpers/i18n';
 import { MORE_NAV } from '../../app/content/nav';
@@ -99,25 +99,32 @@ afterEach(() => {
 });
 
 describe('computeFold', () => {
+  // The Arabic row's measured widths (the owner's navigation review: about
+  // and contact on the bar, brands and guides off it). The nav box is the
+  // viewport less 715px between 1024 and the container's cap.
   const items = [
     { key: 'shop', width: 57.7, pin: true },
     { key: 'offers', width: 49.3 },
-    { key: 'brands', width: 103.9 },
     { key: 'services', width: 121.1, pin: true },
-    { key: 'guides', width: 34.5 },
+    { key: 'about', width: 47.6 },
+    { key: 'contact', width: 71.8 },
     { key: 'more', width: 55.1 },
   ];
 
-  it('folds nothing when the row fits (1440, nav box 588)', () => {
-    expect(computeFold(items, 588, 24)).toEqual(new Set());
+  it('folds nothing when the row fits (1280, nav box 565)', () => {
+    expect(computeFold(items, 565, 24)).toEqual(new Set());
   });
 
-  it('folds only الأدلة at 1280 (nav box 508), keeping تسوق and اسأل قبل أن تشتري', () => {
-    expect(computeFold(items, 508, 24)).toEqual(new Set(['guides']));
+  it('folds only تواصل معنا at 1200 (nav box 485), keeping تسوق and اسأل قبل أن تشتري', () => {
+    expect(computeFold(items, 485, 24)).toEqual(new Set(['contact']));
   });
 
-  it('folds العروض and العلامات التجارية too at 1024 (nav box 292)', () => {
-    expect(computeFold(items, 292, 24)).toEqual(new Set(['guides', 'brands', 'offers']));
+  it('folds من نحن next at 1120 (nav box 405)', () => {
+    expect(computeFold(items, 405, 24)).toEqual(new Set(['contact', 'about']));
+  });
+
+  it('folds العروض too at 1024 (nav box 309)', () => {
+    expect(computeFold(items, 309, 24)).toEqual(new Set(['contact', 'about', 'offers']));
   });
 
   it('never folds a pinned item even on an impossibly narrow row', () => {
@@ -182,14 +189,23 @@ describe('withLocale', () => {
 });
 
 describe('NavBar', () => {
-  it("carries the design's six items, in order, تسوق and اسأل قبل أن تشتري pinned", async () => {
+  it("carries the owner's six items, in order: brands and guides off the bar, about and contact on it", async () => {
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
     await waitFor(() => expect(screen.getByTestId('ox-nav-shop')).toBeTruthy());
     const labels = Array.from(document.querySelectorAll('[data-nav-item] a, [data-nav-item] button')).map(
       (node) => node.textContent
     );
-    expect(labels).toEqual(['تسوق', 'العروض', 'العلامات التجارية', 'اسأل قبل أن تشتري', 'الأدلة', 'المزيد']);
+    expect(labels).toEqual([
+      'تسوق',
+      'العروض',
+      'اسأل قبل أن تشتري',
+      ar['ox.nav.about'],
+      ar['ox.nav.contact'],
+      'المزيد',
+    ]);
+    expect(screen.queryByTestId('ox-nav-brands')).toBeNull();
+    expect(screen.queryByTestId('ox-nav-guides')).toBeNull();
   });
 
   it('hides العروض when show_offers_nav is false, keeping the other five', async () => {
@@ -201,7 +217,7 @@ describe('NavBar', () => {
     const labels = Array.from(document.querySelectorAll('[data-nav-item] a, [data-nav-item] button')).map(
       (node) => node.textContent
     );
-    expect(labels).toEqual(['تسوق', 'العلامات التجارية', 'اسأل قبل أن تشتري', 'الأدلة', 'المزيد']);
+    expect(labels).toEqual(['تسوق', 'اسأل قبل أن تشتري', ar['ox.nav.about'], ar['ox.nav.contact'], 'المزيد']);
   });
 
   it('تسوق is a raw, locale-prefixed anchor that opens the mega panel on focus', async () => {
@@ -218,6 +234,22 @@ describe('NavBar', () => {
     expect(panel.querySelectorAll('h3.ox-mega__heading').length).toBeGreaterThanOrEqual(2);
   });
 
+  it('the mega panel carries حسب العلامة as its brand axis, in place of the old all-brands foot link', async () => {
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    fireEvent.focus(await screen.findByTestId('ox-nav-shop'));
+    const panel = await screen.findByTestId('ox-mega-panel');
+    const headings = Array.from(panel.querySelectorAll('h3.ox-mega__heading')).map((h) => h.textContent);
+    expect(headings).toEqual([ar['ox.nav.by_type'], ar['ox.nav.by_goal'], ar['ox.nav.by_brand']]);
+    const axis = screen.getByTestId('ox-mega-brand-axis');
+    expect(axis.tagName).toBe('A');
+    expect(axis.getAttribute('href')).toBe('/brands');
+    expect(axis.textContent).toBe(ar['ox.nav.by_brand']);
+    const footLabels = Array.from(panel.querySelectorAll('.ox-mega__foot a')).map((a) => a.textContent);
+    expect(footLabels).toEqual([ar['ox.nav.all_types']]);
+    expect(panel.textContent).not.toContain(ar['ox.nav.all_brands']);
+  });
+
   it('Escape inside the mega panel closes it and returns focus to تسوق', async () => {
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
@@ -230,7 +262,89 @@ describe('NavBar', () => {
     expect(document.activeElement).toBe(link);
   });
 
-  it('المزيد lists whatever folded off the row plus the three standing pages', async () => {
+  it('Tab from تسوق into its panel keeps the panel open, so حسب العلامة is reachable from the keyboard', async () => {
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const link = await screen.findByTestId('ox-nav-shop');
+    fireEvent.focus(link);
+    const panel = await screen.findByTestId('ox-mega-panel');
+    const firstPanelLink = panel.querySelector('a') as HTMLElement;
+    expect(firstPanelLink).toBeTruthy();
+
+    // The Tab: تسوق blurs toward the panel's first link, inside the same item.
+    fireEvent.blur(link, { relatedTarget: firstPanelLink });
+    fireEvent.focus(firstPanelLink);
+    // Past the 200ms close delay the blur used to schedule.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 320));
+    });
+    expect(screen.getByTestId('ox-mega-panel')).toBeTruthy();
+    expect(screen.getByTestId('ox-mega-brand-axis')).toBeTruthy();
+
+    // Leaving the item altogether still closes it.
+    const outside = document.createElement('button');
+    document.body.appendChild(outside);
+    fireEvent.blur(firstPanelLink, { relatedTarget: outside });
+    await waitFor(() => expect(screen.queryByTestId('ox-mega-panel')).toBeNull());
+    outside.remove();
+  });
+
+  it('Escape inside المزيد closes it and returns focus to the المزيد button', async () => {
+    routerLocation.pathname = '/ar/blog';
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const button = await screen.findByTestId('ox-nav-more');
+    fireEvent.click(button);
+    const panel = await screen.findByTestId('ox-nav-more-panel');
+    const entry = panel.querySelector('a') as HTMLElement;
+    entry.focus();
+    expect(document.activeElement).toBe(entry);
+
+    fireEvent.keyDown(entry, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByTestId('ox-nav-more-panel')).toBeNull());
+    expect(document.activeElement).toBe(button);
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('Escape closes a hover-opened المزيد without pulling focus out of the search field', async () => {
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const button = await screen.findByTestId('ox-nav-more');
+    fireEvent.click(button);
+    await screen.findByTestId('ox-nav-more-panel');
+    const search = document.createElement('input');
+    document.body.appendChild(search);
+    search.focus();
+
+    fireEvent.keyDown(search, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByTestId('ox-nav-more-panel')).toBeNull());
+    expect(document.activeElement).toBe(search);
+    search.remove();
+  });
+
+  it('المزيد closes when focus Tabs out of it, and stays open while focus moves between its entries', async () => {
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const button = await screen.findByTestId('ox-nav-more');
+    fireEvent.click(button);
+    const panel = await screen.findByTestId('ox-nav-more-panel');
+    const [first, second] = Array.from(panel.querySelectorAll('a')) as HTMLElement[];
+
+    fireEvent.blur(button, { relatedTarget: first });
+    fireEvent.blur(first, { relatedTarget: second });
+    // A blur with no target (a mouse click on an entry in Safari) keeps it open.
+    fireEvent.blur(second, { relatedTarget: null });
+    expect(screen.getByTestId('ox-nav-more-panel')).toBeTruthy();
+
+    const search = document.createElement('input');
+    document.body.appendChild(search);
+    fireEvent.blur(second, { relatedTarget: search });
+    await waitFor(() => expect(screen.queryByTestId('ox-nav-more-panel')).toBeNull());
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    search.remove();
+  });
+
+  it('المزيد lists whatever folded off the row plus its standing pages, the guides and the branch', async () => {
     stubWidths({ row: 292, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
     const button = await screen.findByTestId('ox-nav-more');
@@ -239,19 +353,19 @@ describe('NavBar', () => {
     const panel = await screen.findByTestId('ox-nav-more-panel');
     const links = Array.from(panel.querySelectorAll('a')).map((a) => a.textContent);
     // The row is too narrow (292) for anything but the two pinned items and
-    // المزيد itself, so العروض، العلامات التجارية and الأدلة all folded in.
-    expect(links).toEqual(
-      expect.arrayContaining([
-        'الأدلة',
-        'العلامات التجارية',
-        'العروض',
-        ...MORE_NAV.map((entry) => ar[entry.labelKey]),
-      ])
-    );
+    // المزيد itself, so العروض, من نحن and تواصل معنا all folded in, ahead
+    // of the guides and the branch.
+    expect(links).toEqual([
+      'العروض',
+      ar['ox.nav.about'],
+      ar['ox.nav.contact'],
+      ...MORE_NAV.map((entry) => ar[entry.labelKey]),
+    ]);
+    expect(MORE_NAV.map((entry) => entry.key)).toEqual(['guides', 'branch']);
     expect(document.querySelectorAll('[data-nav-item]')).toHaveLength(3);
   });
 
-  it('marks تسوق active on a catalogue route and العلامات التجارية active on its own route', async () => {
+  it('marks تسوق active on a catalogue route and العروض active on its own route', async () => {
     routerLocation.pathname = '/ar/offers';
     stubWidths({ row: 2000, item: 100, more: 96 });
     renderWithProviders(<NavBar />);
@@ -259,8 +373,41 @@ describe('NavBar', () => {
     expect(shop.getAttribute('aria-current')).toBe('page');
     const offers = await screen.findByTestId('ox-nav-offers');
     expect(offers.getAttribute('aria-current')).toBe('page');
-    const brands = await screen.findByTestId('ox-nav-brands');
-    expect(brands.hasAttribute('aria-current')).toBe(false);
+    const about = await screen.findByTestId('ox-nav-about');
+    expect(about.hasAttribute('aria-current')).toBe(false);
+  });
+
+  it('marks تسوق active on the brands index, which lives inside it now', async () => {
+    routerLocation.pathname = '/ar/brands';
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const shop = await screen.findByTestId('ox-nav-shop');
+    expect(shop.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('marks من نحن and تواصل معنا active on their own routes', async () => {
+    routerLocation.pathname = '/ar/contact';
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    const first = renderWithProviders(<NavBar />);
+    expect((await screen.findByTestId('ox-nav-contact')).getAttribute('aria-current')).toBe('page');
+    expect(screen.getByTestId('ox-nav-about').hasAttribute('aria-current')).toBe(false);
+    first.unmount();
+
+    routerLocation.pathname = '/ar/about';
+    renderWithProviders(<NavBar />);
+    expect((await screen.findByTestId('ox-nav-about')).getAttribute('aria-current')).toBe('page');
+  });
+
+  it('marks المزيد on a guides page and the guides link inside it as the current page', async () => {
+    routerLocation.pathname = '/ar/blog/some-guide';
+    stubWidths({ row: 2000, item: 100, more: 96 });
+    renderWithProviders(<NavBar />);
+    const more = await screen.findByTestId('ox-nav-more');
+    expect(more.className).toContain('is-active');
+    fireEvent.click(more);
+    const panel = await screen.findByTestId('ox-nav-more-panel');
+    const current = Array.from(panel.querySelectorAll('a[aria-current="page"]')).map((a) => a.textContent);
+    expect(current).toEqual([ar['ox.nav.guides']]);
   });
 
   it('marks nothing active on the home route (the coordinator hydration-mismatch report, 2026-09-23)', async () => {

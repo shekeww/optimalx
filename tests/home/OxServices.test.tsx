@@ -11,8 +11,8 @@ import { STORE_PHOTOS, storePhotoSrcSet } from '../../app/content/store-photos';
 /**
  * The advisory band: THE OFFER FIRST (owner brief 2026-09-24).
  *
- * The band opens on the offer strip — free advice, the free branch InBody
- * measurement, and the two buttons that take them — then the three ways to
+ * The band opens on the offer strip (free advice, the free branch InBody
+ * measurement, and the two buttons that take them), then the three ways to
  * ask, then the three programmes, then a trust row of gated facts and the
  * limit-of-our-work line. Both rows and the strip render on both surfaces;
  * `routeOut` decides the heading and the way out, nothing else.
@@ -204,6 +204,60 @@ describe('OxServices', () => {
       HOME_PLANS.length
     );
     expect(rows[1].querySelectorAll('[data-testid="ox-channel-door"]')).toHaveLength(0);
+  });
+
+  it('puts each row on the shared rail, the recommended door first, one cue per row', () => {
+    setSettings({});
+    clearPrices();
+    for (const routeOut of [true, false]) {
+      const view = renderWithProviders(<OxServices data={data()} routeOut={routeOut} />);
+      const rows = view.container.querySelectorAll('.ox-services__row');
+      expect(rows).toHaveLength(2);
+      for (const row of rows) {
+        // The rail primitive's markup contract (`_rail.scss`): one wrapper,
+        // one track, one cue, one (hidden) progress strap, per row.
+        const rails = row.querySelectorAll('.ox-rail.ox-services__rail');
+        expect(rails).toHaveLength(1);
+        const track = rails[0].querySelector(':scope > ul.ox-rail__track.ox-plans');
+        expect(track).not.toBeNull();
+        expect(track?.getAttribute('role')).toBe('list');
+        expect(track?.querySelectorAll(':scope > li.ox-plans__slide')).toHaveLength(3);
+        const cues = rails[0].querySelectorAll(':scope > button.ox-rail__cue');
+        expect(cues).toHaveLength(1);
+        expect(cues[0].getAttribute('type')).toBe('button');
+        expect(cues[0].getAttribute('aria-label')).toBe(t('ox.home.band_row_next'));
+        expect(cues[0].querySelectorAll('.ox-rail__cue-arm')).toHaveLength(2);
+        expect(rails[0].querySelectorAll(':scope > .ox-rail__progress')).toHaveLength(1);
+        // Nothing measured in jsdom, so the rail promises no affordance.
+        expect(rails[0].hasAttribute('data-rail')).toBe(false);
+      }
+      // Reading order is swipe order: the recommended door is the first
+      // card a phone sees.
+      const firstDoor = rows[0].querySelector('.ox-plans__slide [data-testid="ox-channel-door"]');
+      expect(firstDoor?.getAttribute('data-channel')).toBe('written');
+      expect(firstDoor?.classList.contains('ox-channel-door--primary')).toBe(true);
+      view.unmount();
+    }
+  });
+
+  it('moves a row by one card and its gap when the cue is pressed, in the reading direction', () => {
+    setSettings({});
+    clearPrices();
+    const { container } = renderWithProviders(<OxServices data={data()} />);
+    const track = container.querySelector('.ox-services__row .ox-plans') as HTMLUListElement;
+    const first = track.firstElementChild as HTMLElement;
+    const calls: Array<ScrollToOptions | undefined> = [];
+    track.scrollBy = ((options?: ScrollToOptions) => {
+      calls.push(options);
+    }) as typeof track.scrollBy;
+    first.getBoundingClientRect = () => ({ width: 309 }) as DOMRect;
+    track.style.columnGap = '16px';
+    track.style.direction = 'rtl';
+
+    (container.querySelector('.ox-services__row .ox-rail__cue') as HTMLButtonElement).click();
+    expect(calls).toHaveLength(1);
+    // RTL scrolls toward negative scrollLeft: one card (309) plus the gap.
+    expect(calls[0]?.left).toBe(-325);
   });
 
   it('renders the strip and both rows on /services too', () => {
@@ -531,7 +585,7 @@ describe('OxServices', () => {
     expect(text).not.toContain('ox.home.plan_cta');
     expect(text).not.toContain('{{');
     // The heavier, full `/services` channel card (badge, description, its
-    // own primary button) never renders here — only the compact
+    // own primary button) never renders here, only the compact
     // `ChannelDoor`.
     expect(container.querySelector('[data-testid="ox-channel-card"]')).toBeNull();
   });
