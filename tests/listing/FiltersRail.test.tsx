@@ -58,7 +58,7 @@ describe('FiltersRail', () => {
     expect(container.querySelector('.ox-filters')).toBeNull();
   });
 
-  it('passes every non-brand filter through untouched \u2014 no group invented', () => {
+  it('passes every non-brand filter through untouched, no group invented', () => {
     renderWithProviders(<FiltersRail filters={[PRICE_FILTER]} />);
 
     expect(sallaFiltersProps).toHaveBeenCalledWith(

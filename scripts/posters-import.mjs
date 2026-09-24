@@ -223,7 +223,7 @@ function main() {
     console.log(
       `Drop the six poster files into ${path.relative(REPO_ROOT, POSTERS_DIR)}${path.sep}, named ` +
         'exactly one slug each (inbody-consult.png, weekly-picks.jpg, bundle-her.png, ' +
-        'bundle-him.png, weight-subscription.png, bigramy-creatine.png \u2014 any of .png/.jpg/' +
+        'bundle-him.png, weight-subscription.png, bigramy-creatine.png, any of .png/.jpg/' +
         '.jpeg/.webp), or keep your own filenames and add a map.json ' +
         '({"<file>": "<slug>"}). Then run `node scripts/posters-import.mjs` again.'
     );

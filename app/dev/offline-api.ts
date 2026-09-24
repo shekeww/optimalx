@@ -136,7 +136,7 @@ function isBlocked(href: string, block: boolean): boolean {
 
 function blockError(href: string): Error {
   return new Error(
-    `[offline-api] BLOCKED ${href} \u2014 this machine is under Cloudflare bot mitigation on api.salla.dev ` +
+    `[offline-api] BLOCKED ${href}, this machine is under Cloudflare bot mitigation on api.salla.dev ` +
       `and every request re-arms it. The redirect to the local snapshot did not catch this call; ` +
       `see docs/build/offline-preview.md.`
   );

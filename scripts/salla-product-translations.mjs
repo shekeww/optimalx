@@ -99,7 +99,7 @@ export function buildCategoryTranslationPlan({
   if (!fs.existsSync(taxonomyIdsPath)) {
     return {
       skipped: true,
-      reason: `${taxonomyIdsPath} not found \u2014 the store has not created its categories yet (no category_create entry in docs/build/store-write-log.md); run scripts/salla-categories.mjs --apply first`,
+      reason: `${taxonomyIdsPath} not found, the store has not created its categories yet (no category_create entry in docs/build/store-write-log.md); run scripts/salla-categories.mjs --apply first`,
     };
   }
   const ids = JSON.parse(fs.readFileSync(taxonomyIdsPath, 'utf8'));
@@ -132,7 +132,7 @@ function summarizeProductRows(rows) {
  */
 export function formatPlanTable(productRows, categoryPlan) {
   const lines = [];
-  lines.push('Product translations (dry run \u2014 no network call):');
+  lines.push('Product translations (dry run, no network call):');
   lines.push('SKU     | Salla id    | status  | name (en)');
   for (const row of productRows) {
     const name = row.payload?.translations.en.name ?? '';
@@ -147,7 +147,7 @@ export function formatPlanTable(productRows, categoryPlan) {
   }
 
   if (categoryPlan.skipped) {
-    lines.push(`Category translations: skipped \u2014 ${categoryPlan.reason}`);
+    lines.push(`Category translations: skipped, ${categoryPlan.reason}`);
   } else {
     lines.push(`Category translations (${categoryPlan.rows.length} node(s)):`);
     for (const row of categoryPlan.rows) lines.push(`  ${row.slug} -> id ${row.id ?? '-'} [${row.status}]`);

@@ -44,7 +44,7 @@ function parseSubpaths(d: string): Point[][] {
       current = [];
       i += 1;
     } else {
-      throw new Error(`unexpected command "${command}" \u2014 only M, L, Z are legal`);
+      throw new Error(`unexpected command "${command}", only M, L, Z are legal`);
     }
   }
   if (current.length) subpaths.push(current);

@@ -24,7 +24,7 @@ function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status });
 }
 
-describe('buildProductTranslationPlan \u2014 the real catalogue', () => {
+describe('buildProductTranslationPlan, the real catalogue', () => {
   const sallaIds = JSON.parse(fs.readFileSync(SALLA_IDS_PATH, 'utf8'));
   const twins = loadTwinsFromCsv({ csvPath: CSV_PATH });
   const rows = buildProductTranslationPlan({ sallaIds, twins });
@@ -94,7 +94,7 @@ describe('buildCategoryTranslationPlan', () => {
 });
 
 describe('formatPlanTable', () => {
-  it('never imports or calls fetch \u2014 pure formatting of plan data', () => {
+  it('never imports or calls fetch, pure formatting of plan data', () => {
     const productRows = [{ sku: 'OX-001', id: 1, status: 'ready' as const, payload: { translations: { en: { name: 'Whey', description: 'd', subtitle: 's' } } } }];
     const categoryPlan = { skipped: true as const, reason: 'no categories yet' };
     const out1 = formatPlanTable(productRows, categoryPlan);
@@ -105,7 +105,7 @@ describe('formatPlanTable', () => {
   });
 });
 
-describe('applyProductTranslation \u2014 injected fetch', () => {
+describe('applyProductTranslation, injected fetch', () => {
   it('PUTs translations.en, reads back with accept-language: en, and reports a clean match', async () => {
     const fetchImpl = vi.fn(async (url: string, init: RequestInit) => {
       if (init.method === 'PUT') return jsonResponse({ data: { id: 1 } });
@@ -134,7 +134,7 @@ describe('applyProductTranslation \u2014 injected fetch', () => {
   });
 });
 
-describe('applyCategoryTranslation \u2014 injected fetch', () => {
+describe('applyCategoryTranslation, injected fetch', () => {
   it('PUTs translations.en.name and diffs the read-back', async () => {
     const fetchImpl = vi.fn(async (url: string, init: RequestInit) => {
       if (init.method === 'PUT') return jsonResponse({ data: { id: 9001 } });
@@ -148,7 +148,7 @@ describe('applyCategoryTranslation \u2014 injected fetch', () => {
   });
 });
 
-describe('runApply \u2014 orchestration + write-log', () => {
+describe('runApply, orchestration + write-log', () => {
   let logFile: string;
   beforeEach(() => {
     logFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'write-log-')), 'store-write-log.md');

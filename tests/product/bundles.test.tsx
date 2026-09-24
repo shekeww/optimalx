@@ -318,7 +318,7 @@ describe('Bundle', () => {
     expect(listCalls).toEqual([]);
   });
 
-  it('shows the Salla bundle product, its members and no saving line \u2014 real, no sample flag needed (the member PDP renders the bundle card)', async () => {
+  it('shows the Salla bundle product, its members and no saving line, real, no sample flag needed (the member PDP renders the bundle card)', async () => {
     const { container } = renderWithProviders(<Bundle product={WHEY as never} />);
 
     await screen.findByTestId('ox-bundle-offer');

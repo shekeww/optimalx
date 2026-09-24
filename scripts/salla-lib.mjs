@@ -179,7 +179,7 @@ export function createSallaClient({ token, baseUrl = API_BASE, fetchImpl = fetch
         throw new SallaChallengeError(
           `api.salla.dev answered ${pathname} with a Cloudflare challenge (HTTP 429, ` +
             'Cf-Mitigated: challenge). This machine cannot solve it and the script does not retry. ' +
-            'Run it from the Vercel sandbox instead \u2014 see docs/build/store-data-runbook.md, ' +
+            'Run it from the Vercel sandbox instead, see docs/build/store-data-runbook.md, ' +
             '"Vercel-sandbox run".'
         );
       }
@@ -234,7 +234,7 @@ export function appendRunLog({ runId, mode, startedAt, finishedAt, actions, note
     .map((a) => `| ${a.when} | ${a.type} | ${a.target} | ${a.result} | ${a.readback} |`)
     .join('\n');
   const section =
-    `\n## Run ${runId} \u2014 ${startedAt} (${mode})\n` +
+    `\n## Run ${runId}, ${startedAt} (${mode})\n` +
     `${notes ? `${notes}\n` : ''}` +
     `${runMarker(runId)}\n${JSON.stringify(payload, null, 2)}\n-->\n\n` +
     `| When (UTC) | Action | Target | Result | Read-back |\n|---|---|---|---|---|\n${rows}\n`;

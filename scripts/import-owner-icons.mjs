@@ -315,19 +315,19 @@ function baseName(id) {
 
 const HEADER = `<!--
   OptimalX icon sprite. Built by scripts/import-owner-icons.mjs (S8b,
-  2026-09-24) from the owner's delivered icon system, optimal-x-icons/ \u2014 the
+  2026-09-24) from the owner's delivered icon system, optimal-x-icons/, the
   sprite of record from this date. See docs/build/progress/S8b.md and
   docs/build/ICONS-2026-09-24.md for the mapping table and the rules the
   remaining, non-owner symbols still follow.
 
   * The owner's 47 drawings ship as delivered: metadata stripped, inline
     accent styles converted to class="ox-icon__accent"(--stroke) so the theme
-    token (--ox-accent) paints them, everything else \u2014 geometry, <circle>,
-    <rect>, <g transform> \u2014 untouched.
+    token (--ox-accent) paints them, everything else, geometry, <circle>,
+    <rect>, <g transform>, untouched.
   * Four ids are aliases, a byte-for-byte copy of an owner drawing under a
     name our components already call: ox-heart = wishlist, ox-headset = help,
     ox-truck = shipping, ox-shield-check = authentic. A fifth, ox-star-fill
-    (S9j, 2026-09-25), copies ox-star instead \u2014 not an owner drawing \u2014 and
+    (S9j, 2026-09-25), copies ox-star instead, not an owner drawing, and
     repaints it fill="currentColor" for the Google-rating fill row.
   * data-mirror="1" follows icons.json's rtlFlip for the owner's symbols and
     aliases (cart, shipping, written-question, and truck by inheriting

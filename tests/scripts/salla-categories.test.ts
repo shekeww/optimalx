@@ -87,14 +87,14 @@ describe('parseCsvTable / loadProductRows', () => {
   });
 });
 
-describe('TAXONOMY_FALLBACK \u2014 conductor §4 slugs', () => {
+describe('TAXONOMY_FALLBACK, conductor §4 slugs', () => {
   it('has exactly the 25 nodes and slugs the conductor names, verbatim', () => {
     expect(TAXONOMY_FALLBACK).toHaveLength(25);
     expect(TAXONOMY_FALLBACK.map((n) => n.slug).sort()).toEqual([...CONDUCTOR_SLUGS].sort());
   });
 });
 
-describe('buildTaxonomyFromFallback \u2014 membership + parent expansion', () => {
+describe('buildTaxonomyFromFallback, membership + parent expansion', () => {
   const rows = loadProductRows({ csvPath: CSV_PATH });
   const nodes = buildTaxonomyFromFallback(rows);
   const bySlug = new Map(nodes.map((n) => [n.slug, n]));
@@ -222,7 +222,7 @@ describe('buildCategoryBody', () => {
   });
 });
 
-describe('loadProductAssignments \u2014 SKU coverage + parent expansion', () => {
+describe('loadProductAssignments, SKU coverage + parent expansion', () => {
   const rows = loadProductRows({ csvPath: CSV_PATH });
   const nodes = buildTaxonomyFromFallback(rows);
   const sallaIds = JSON.parse(fs.readFileSync(SALLA_IDS_PATH, 'utf8'));
@@ -244,7 +244,7 @@ describe('loadProductAssignments \u2014 SKU coverage + parent expansion', () => 
   });
 });
 
-describe('runPlan \u2014 offline, no network reachable', () => {
+describe('runPlan, offline, no network reachable', () => {
   it('lists 25 categories, the brands, and 47 assignments with counts in the header lines', () => {
     const rows = loadProductRows({ csvPath: CSV_PATH });
     const nodes = buildTaxonomyFromFallback(rows);
@@ -258,7 +258,7 @@ describe('runPlan \u2014 offline, no network reachable', () => {
     expect(output).toContain('Product assignments (47):');
   });
 
-  it('never imports or calls fetch \u2014 this module has no fetch reference reachable from runPlan', () => {
+  it('never imports or calls fetch, this module has no fetch reference reachable from runPlan', () => {
     // runPlan's signature takes no client/fetch argument at all; calling it
     // with plain data objects and no global fetch stub proves the path is
     // pure. If it ever grew a fetch call this would throw ReferenceError-ish
@@ -272,7 +272,7 @@ describe('runPlan \u2014 offline, no network reachable', () => {
   });
 });
 
-describe('findExistingCategory / findExistingBrand \u2014 idempotency keys', () => {
+describe('findExistingCategory / findExistingBrand, idempotency keys', () => {
   const node = { key: 'protein', slug: 'protein', scope: 'type' as const, parent: null, order: 1, skus: [] };
 
   it('matches by metadata_url first', () => {
@@ -296,7 +296,7 @@ describe('findExistingCategory / findExistingBrand \u2014 idempotency keys', () 
   });
 });
 
-describe('createOrReuseCategory \u2014 idempotency skips existing slugs, parent_id fallback', () => {
+describe('createOrReuseCategory, idempotency skips existing slugs, parent_id fallback', () => {
   const node = { key: 'protein', slug: 'protein', scope: 'type' as const, parent: null, order: 1, skus: [] };
   const childNode = { key: 'whey_protein', slug: 'whey-protein', scope: 'type' as const, parent: 'protein', order: 11, skus: [] };
   const name = { ar: 'بروتين', en: 'Protein' };
@@ -393,7 +393,7 @@ describe('imageUrlForSku', () => {
   });
 });
 
-describe('runApply \u2014 orchestration + write-log', () => {
+describe('runApply, orchestration + write-log', () => {
   let logFile: string;
   beforeEach(() => {
     logFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'write-log-')), 'store-write-log.md');

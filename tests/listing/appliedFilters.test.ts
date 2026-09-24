@@ -105,7 +105,7 @@ describe('brandFilter', () => {
     expect(brandFilter(filters)?.key).toBe('brands');
   });
 
-  it('is null when the payload carries no brand-like key \u2014 the data gate', () => {
+  it('is null when the payload carries no brand-like key, the data gate', () => {
     const filters: Filter[] = [{ key: 'price', label: 'السعر', type: 'range' }];
     expect(brandFilter(filters)).toBeNull();
     expect(brandFilter([])).toBeNull();

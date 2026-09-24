@@ -357,7 +357,7 @@ export function buildCategoryBody(node, name) {
 export function buildBrandBody(brand) {
   return {
     name: brand.name,
-    description: `${brand.arabic} \u2014 علامة ${brand.name} للمكملات الغذائية، متوفرة في اوبتيمال اكس.`,
+    description: `${brand.arabic}: علامة ${brand.name} للمكملات الغذائية، متوفرة في اوبتيمال اكس.`,
     metadata_url: brandSlug(brand.name),
     translations: {
       en: { name: brand.name, description: `${brand.name} supplements, available at OptimalX.` },
@@ -404,7 +404,7 @@ export function runPlan({ nodes, names, brands, assignments, flags }) {
     const name = nameFor(node, names);
     const indent = node.parent ? '    ' : '  ';
     lines.push(
-      `${indent}${node.slug} \u2014 ${name.ar} / ${name.en} (parent: ${node.parent ?? '-'}, skus: ${node.skus.length}, image_sku: ${node.imageSku ?? '-'})`
+      `${indent}${node.slug}, ${name.ar} / ${name.en} (parent: ${node.parent ?? '-'}, skus: ${node.skus.length}, image_sku: ${node.imageSku ?? '-'})`
     );
   }
   if (flags.brands) {

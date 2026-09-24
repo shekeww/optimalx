@@ -121,7 +121,7 @@ describe('refreshAccessToken', () => {
   });
 });
 
-describe('toTokenFile / writeTokenFile \u2014 token file shape', () => {
+describe('toTokenFile / writeTokenFile, token file shape', () => {
   it('computes expires_at from now + expires_in and keeps the four documented fields', () => {
     const shaped = toTokenFile(
       { access_token: 'AT', refresh_token: 'RT', expires_in: 100, scope: 'offline_access' },
