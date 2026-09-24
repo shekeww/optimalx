@@ -1,6 +1,6 @@
 # optimalx
 
-React storefront theme starter kit for [Salla](https://salla.sa) stores —
+React storefront theme starter kit for [Salla](https://salla.sa) stores -
 built with TanStack Start and Vite, rendered server-side in workerd via
 `@salla.sa/twilight-theme-engine`.
 
@@ -36,6 +36,6 @@ store's settings don't pin a release (`theme.twilight.version`).
 
 ## Deployment
 
-Salla builds and publishes your theme on its own infrastructure — push to your
+Salla builds and publishes your theme on its own infrastructure, push to your
 theme repository and the platform takes it from there. No deploy configuration,
 credentials, or server runtime settings ship with this starter kit.

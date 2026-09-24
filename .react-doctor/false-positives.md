@@ -1,4 +1,4 @@
-# React Doctor false positives — theme-custom
+# React Doctor false positives, theme-custom
 
 Each entry is suppressed at its own line with
 `// react-doctor-disable-next-line <plugin>/<rule>`, with the reason in a comment above it.

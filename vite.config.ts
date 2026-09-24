@@ -24,7 +24,7 @@ export default defineConfig(async () => ({
     }),
   ],
   // Offline preview switch, read once at config load and substituted as a
-  // literal so it survives every environment — including the workerd SSR
+  // literal so it survives every environment, including the workerd SSR
   // runner, where `process.env` is empty. `app/dev/offline-api.ts` turns a
   // non-empty base into a redirect of every api.salla.dev request; both are
   // empty strings on a normal `pnpm dev`, which leaves the shim inert.
@@ -81,7 +81,7 @@ export default defineConfig(async () => ({
       // URL and dies with "The file does not exist at …?v=<old hash>", which
       // takes down `salla theme dev` and `vite preview` alike.
       //
-      // Do NOT try to fix this with optimizeDeps.exclude — the Cloudflare plugin
+      // Do NOT try to fix this with optimizeDeps.exclude, the Cloudflare plugin
       // puts @cloudflare/unenv-preset/polyfill/performance into `include` itself,
       // and include wins, so the exclude is silently a no-op (verified: the entry
       // is still emitted into deps_ssr after a clean re-optimize with it set).
