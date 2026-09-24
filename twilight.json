@@ -840,15 +840,29 @@
       ]
     },
     {
-      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d202",
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d203",
       "title": {
-        "ar": "شريط البوسترات",
-        "en": "Poster carousel"
+        "ar": "العروض: الملصقات والمنتجات",
+        "en": "Offers: posters and products"
       },
-      "icon": "sicon-layout-carousel",
-      "path": "home.ox-posters",
+      "icon": "sicon-list-play",
+      "path": "home.ox-products-secondary",
       "is_default": true,
       "fields": [
+        {
+          "id": "title",
+          "key": "b2f1d000-0000-4000-8000-000000000207",
+          "type": "string",
+          "format": "text",
+          "label": "العنوان",
+          "label_en": "Title",
+          "description": null,
+          "placeholder": "اتركه فارغا لاستخدام نص المتجر",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "multilanguage": true,
+          "required": false
+        },
         {
           "id": "image_1",
           "key": "b2f1d000-0000-4000-8000-000000000401",
@@ -1082,56 +1096,6 @@
           "value": null,
           "multilanguage": true,
           "required": false
-        },
-        {
-          "id": "label",
-          "key": "b2f1d000-0000-4000-8000-000000000419",
-          "type": "string",
-          "format": "text",
-          "label": "عنوان القسم",
-          "label_en": "Section title",
-          "description": "اتركه فارغا لاستخدام العنوان الافتراضي.",
-          "icon": "sicon-format-text-alt",
-          "value": null,
-          "required": false
-        },
-        {
-          "id": "label_en",
-          "key": "b2f1d000-0000-4000-8000-000000000420",
-          "type": "string",
-          "format": "text",
-          "label": "عنوان القسم بالإنجليزية",
-          "label_en": "Section title (English)",
-          "description": "اتركه فارغا لاستخدام العنوان الافتراضي.",
-          "icon": "sicon-format-text-alt",
-          "value": null,
-          "required": false
-        }
-      ]
-    },
-    {
-      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d203",
-      "title": {
-        "ar": "شبكة منتجات إضافية",
-        "en": "Second product grid"
-      },
-      "icon": "sicon-list-play",
-      "path": "home.ox-products-secondary",
-      "is_default": true,
-      "fields": [
-        {
-          "id": "title",
-          "key": "b2f1d000-0000-4000-8000-000000000207",
-          "type": "string",
-          "format": "text",
-          "label": "العنوان",
-          "label_en": "Title",
-          "description": null,
-          "placeholder": "اتركه فارغا لاستخدام نص المتجر",
-          "icon": "sicon-format-text-alt",
-          "value": null,
-          "multilanguage": true,
-          "required": false
         }
       ]
     },
@@ -1207,6 +1171,42 @@
           "icon": "sicon-format-text-alt",
           "value": null,
           "multilanguage": true,
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "b2a1c4e0-1f2a-4c31-9d8e-5a0c7b61d202",
+      "title": {
+        "ar": "اكتشف أكثر",
+        "en": "Discover more"
+      },
+      "icon": "sicon-layout-carousel",
+      "path": "home.ox-posters",
+      "is_default": true,
+      "fields": [
+        {
+          "id": "label",
+          "key": "b2f1d000-0000-4000-8000-000000000419",
+          "type": "string",
+          "format": "text",
+          "label": "عنوان القسم",
+          "label_en": "Section title",
+          "description": "اتركه فارغا لاستخدام العنوان الافتراضي.",
+          "icon": "sicon-format-text-alt",
+          "value": null,
+          "required": false
+        },
+        {
+          "id": "label_en",
+          "key": "b2f1d000-0000-4000-8000-000000000420",
+          "type": "string",
+          "format": "text",
+          "label": "عنوان القسم بالإنجليزية",
+          "label_en": "Section title (English)",
+          "description": "اتركه فارغا لاستخدام العنوان الافتراضي.",
+          "icon": "sicon-format-text-alt",
+          "value": null,
           "required": false
         }
       ]
