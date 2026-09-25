@@ -157,14 +157,9 @@
   );
 }
 
-[dir='ltr'] .ox-cta-wedge {
-  clip-path: polygon(
-    0 0,
-    calc(100% - var(--ox-cta-run)) 0,
-    100% 100%,
-    var(--ox-cta-run) 100%
-  );
-}
+// No English mirror (owner, 2026-09-25: "in english, mirror all buttons"):
+// the wedge leans like "/" in both languages, the same one-lean rule as
+// `ox-angled()` (`_primitives.scss`).
 
 // The outline pill that answers it. One shape each, so the pair reads as a
 // primary and a secondary rather than as two buttons.
@@ -1593,8 +1588,8 @@ body {
   // (top-left and bottom-right, the text at the bottom-left), which
   // supersedes the 2026-09-23 "never mirrored" note above. The text column
   // follows the reading direction on its own (flex-start, logical padding);
-  // the arrow chip's cut is mirrored by the rule after `.ox-goal__cta`, and
-  // the photograph by the `[dir='ltr'] .ox-goal__photo` rule below, except
+  // the arrow chip keeps its Arabic cut in both languages (a control, owner
+  // 2026-09-25, see after `.ox-goal__cta`), and the photograph by the `[dir='ltr'] .ox-goal__photo` rule below, except
   // on a frame that carries print (the creatine tub on the ideal-weight
   // card, a merchant's own photograph), which would read backwards.
   [dir='ltr'] & {
@@ -1789,17 +1784,13 @@ body {
   color: var(--ox-accent);
 }
 
-// S12 (2026-09-25): the arrow chip mirrors with its card. The glyph carries
-// `ox-mirror` (scaleX(-1) in Arabic), and that flip also turns the chip's
-// own corner cut, so the Arabic chip is cut at the physical top-right, the
-// same corner as the card's own cut. In English the glyph is not flipped
-// and the primitive's LTR clip also cuts the top-right, so the chip did not
-// follow its mirrored card. Here the English chip takes the top-left cut:
-// the exact mirror of the Arabic chip, echoing the English card's top-left
-// cut. The glyph itself already points the reading way in both languages.
-[dir='ltr'] .ox-goal__cta .ox-iconbtn--angled {
-  clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
-}
+// The arrow chip is a control, so it keeps its Arabic shape in English too
+// (owner, 2026-09-25: "in english, mirror all buttons"; this replaces the
+// S12 rule that mirrored it with its card). The glyph carries `ox-mirror`
+// (scaleX(-1) in Arabic), which turns the chip's cut to the physical
+// top-right there; `.ox-iconbtn--angled.ox-mirror`'s own English polygon
+// (`_primitives.scss`) draws that same top-right cut unflipped. The glyph
+// itself still points the reading way in both languages.
 
 // Owner review 2026-09-23 (late), item 2: no fill on hover either: the
 // shared class's own background is transparent now, so brightening it back

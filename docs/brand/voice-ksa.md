@@ -1,5 +1,7 @@
 # OptimalX brand voice, Saudi Arabia: definition and KOS audit
 
+> Superseded for the Shopify store on 2026-09-25: the all-MSA register rule (section 3.2 rule 1) gives way to the Saudi touch profile in the Shopify repo, optimalx-shopify/docs/brand/voice-ksa.md (with docs/brand/saudi-touch.json and scripts/check-copy.mjs); read that first for any Shopify string.
+
 Written for: every agent and person who writes or reviews an Arabic or English string for this store, now and in later sessions. Read it whole before touching `locales/`.
 
 Date: 2026-09-22. Owner decision recorded the same day: the voice is defined here, audited against the Neurix KOS, and applied to every string globally. The dialect and diacritic gates stay and are enforced; nothing that reads as machine-written ships.

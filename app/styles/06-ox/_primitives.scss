@@ -11,8 +11,10 @@
 // The angle is 34deg from vertical (X-IDENTITY-2026-09-22.md §2.1: re-derived
 // from the mark itself, was 22deg); run = band height * tan(34deg).
 // Polygons are declared for RTL (the document default) and mirrored under
-// [dir="ltr"]. The mixins never emit a transition or an animation: a wedge
-// is a static paint-time clip on an element that never animates.
+// [dir="ltr"], with one exception: a control's own shape (`ox-angled()`,
+// the button parallelogram) keeps the Arabic lean in both languages, see its
+// own note below. The mixins never emit a transition or an animation: a
+// wedge is a static paint-time clip on an element that never animates.
 $ox-angle-tan: 0.6745;
 
 // Rounds to 0.1px rather than 1px: at 34° an integer round costs up to 0.35°
@@ -42,8 +44,8 @@ $ox-angle-tan: 0.6745;
 
 // The angled call to action: a parallelogram on the same 34 degrees (was 22
 // - X-IDENTITY-2026-09-22.md §2.1) as every other angled edge in the
-// identity, leaning top-inline-end to
-// bottom-inline-start so it matches the wedge and the hero split.
+// identity, leaning like "/" (the top edge sits to the right of the foot)
+// in both languages, see `ox-angled()`'s own note.
 //
 // clip-path rather than transform: skewX. A skew would slant the label with
 // the box and would need a counter-skewed inner wrapper, which is markup we
@@ -146,7 +148,24 @@ $ox-angle-tan: 0.6745;
   }
 }
 
+// ONE LEAN IN BOTH LANGUAGES (owner, 2026-09-25: "in english, mirror all
+// buttons"). A button leans like "/" in Arabic and in English alike, the
+// forward slash of the X mark's own stroke: the mark does not mirror with
+// the reading direction, so the control that carries it does not either.
+// Only the shape stays put; the label, the padding and the arrow inside
+// keep following the reading direction (logical properties, `ox-mirror`).
+// Every control takes this mixin (`.ox-btn` in every size, the card add
+// and buy, the buy zone, the sticky bars, the toast, the quantity bar); a
+// surface that borrows the parallelogram (a band plate, a photo cover)
+// takes `ox-angled-surface()` below and still mirrors.
 @mixin ox-angled($h) {
+  $run: ox-run($h);
+  clip-path: polygon(#{$run} 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
+}
+
+// The same parallelogram on a SURFACE (a band plate, a photo cover): it
+// mirrors with the reading direction like every wedge and plate.
+@mixin ox-angled-surface($h) {
   $run: ox-run($h);
   clip-path: polygon(#{$run} 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
   [dir='ltr'] & {
@@ -966,11 +985,10 @@ a[href]:focus-visible {
       // different selector from this one, so `small-angle`'s same-selector
       // match never fires here.
       clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
-      // Phase B (PJ-16): the LTR mirror, a 14 by 4 bite at the top of the
-      // reading start, the same correction as `.ox-badge` below.
-      [dir='ltr'] & {
-        clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%, 0 4px, 14px 4px);
-      }
+      // One shape in both languages (owner, 2026-09-25: "in english, mirror
+      // all buttons"): the chip is a control, so its notch stays where the
+      // Arabic chip draws it. `.ox-badge` below is a label and still
+      // mirrors.
     }
     &:disabled,
     &[aria-disabled='true'] {
@@ -1109,7 +1127,14 @@ a[href]:focus-visible {
   color: inherit;
   border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
   clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
-  [dir='ltr'] & {
+  // One shape in both languages (owner, 2026-09-25: "in english, mirror all
+  // buttons"): the chip draws the Arabic cut in English too. A chip that IS
+  // the mirrored glyph (the svg carrying `ox-mirror`, flipped by scaleX(-1)
+  // in Arabic only) has its Arabic cut flipped with it, so in English it
+  // takes the mirrored polygon to draw that same Arabic shape; a chip that
+  // wraps its glyph (the rail arrow faces, the card arrow) is never flipped
+  // and needs no English rule.
+  [dir='ltr'] &.ox-mirror {
     clip-path: polygon(0 0, calc(100% - #{ox-run(8px)}) 0, 100% 8px, 100% 100%, 0 100%);
   }
 }

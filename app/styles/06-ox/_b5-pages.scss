@@ -271,7 +271,9 @@
   inset-inline: 0;
   block-size: 160px;
   overflow: hidden;
-  @include ox-angled(160px);
+  // The surface variant: a plate mirrors with the reading direction (only a
+  // button keeps one lean in both languages, owner 2026-09-25).
+  @include ox-angled-surface(160px);
 }
 
 // The safe area: `.ox-bband__inner`/`.ox-bband__lockup` never sit under the
@@ -286,7 +288,7 @@
   .ox-bband__plate {
     inset-block: 0;
     block-size: 100%;
-    @include ox-angled(360px);
+    @include ox-angled-surface(360px);
   }
 
   .ox-page--services__band,

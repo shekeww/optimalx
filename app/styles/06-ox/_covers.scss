@@ -197,22 +197,23 @@
 }
 
 // The three media layers share the card's old polygon per tier (S11 4.2):
-// `ox-angled(40px)` below 768 (run 27.0), 48px from 768 (run 32.4), 64px
-// from 1024 (run 43.2), the `[dir='ltr']` mirror from the mixin. Three
+// `ox-angled-surface(40px)` below 768 (run 27.0), 48px from 768 (run 32.4),
+// 64px from 1024 (run 43.2), the `[dir='ltr']` mirror from the mixin (a
+// photo edge mirrors; only a button keeps one lean, owner 2026-09-25). Three
 // identical static clips on one box; no filter, no layer promotion. A
 // browser without `clip-path` drops the three declarations and the photo
 // covers the whole box, which hides the ground: the old square look.
 .ox-cover__photo,
 .ox-cover__scrim,
 .ox-cover__glow {
-  @include ox-angled(40px);
+  @include ox-angled-surface(40px);
 }
 
 @media (min-width: 768px) {
   .ox-cover__photo,
   .ox-cover__scrim,
   .ox-cover__glow {
-    @include ox-angled(48px);
+    @include ox-angled-surface(48px);
   }
 }
 
@@ -220,7 +221,7 @@
   .ox-cover__photo,
   .ox-cover__scrim,
   .ox-cover__glow {
-    @include ox-angled(64px);
+    @include ox-angled-surface(64px);
   }
 }
 
