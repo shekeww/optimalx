@@ -380,14 +380,16 @@ a[href]:focus-visible {
 }
 // Retuned to the approved design (the image reads 30/800/38 for a page title
 // and 15/400/24 for body). These land after the @apply above, so they win.
+// Body is 16/26 since the size floors (owner, 2026-09-25): one pixel up with
+// the ladder, the same 1.63 leading.
 @media (min-width: 1024px) {
   .ox-h1 {
     font-size: 30px;
     line-height: 38px;
   }
   .ox-body {
-    font-size: 15px;
-    line-height: 24px;
+    font-size: 16px;
+    line-height: 26px;
   }
 }
 
@@ -455,8 +457,11 @@ a[href]:focus-visible {
   display: inline-block;
   // The component publishes its drawn size as --ox-icon-size, so the chrome
   // can ask for 18 or 34 without a modifier class per number.
-  inline-size: var(--ox-icon-size, 24px);
-  block-size: var(--ox-icon-size, 24px);
+  // THE ICON FLOOR (owner, 2026-09-25: "avoid tiny icons"): nothing draws
+  // under 20px, whatever a call site asks for, so a 12, 13, 14, 16 or 18
+  // request renders at 20 and the call sites stay as they are.
+  inline-size: max(20px, var(--ox-icon-size, 24px));
+  block-size: max(20px, var(--ox-icon-size, 24px));
   flex: none;
   vertical-align: middle;
   color: currentColor;
@@ -468,7 +473,8 @@ a[href]:focus-visible {
   // <style> sets stroke-width from this custom property
   // (docs/build/progress/S6a.md §5, deviation 6, moved here from the
   // sprite's <style> block, the tidier home for it).
-  &--16 { inline-size: 16px; block-size: 16px; --ox-icon-stroke: 2.25px; }
+  // The 16 step draws at the 20 floor (size floors, 2026-09-25).
+  &--16 { inline-size: 20px; block-size: 20px; --ox-icon-stroke: 2.25px; }
   &--20 { inline-size: 20px; block-size: 20px; }
   &--24 { inline-size: 24px; block-size: 24px; }
   &--32 { inline-size: 32px; block-size: 32px; }
@@ -575,13 +581,16 @@ a[href]:focus-visible {
   // the button's centre; the margins below put this mask on the same spot
   // (a 3.4 top margin moves a centred box down 1.7), and the generated mask
   // strokes at the sprite's own 16 weight, so the two arrows are one.
+  // Size floors (owner, 2026-09-25): the glyph now fills the hero's 20 box
+  // (the icon floor draws its 16 request at 20), so the mask is 20 with no
+  // trailing blank, the same 20 of width either way.
   &--primary:not(.ox-btn--square):not(:has(.ox-icon))::after {
     content: '';
     flex: none;
-    inline-size: 16px;
-    block-size: 16px;
+    inline-size: 20px;
+    block-size: 20px;
     margin-block-start: 3.4px;
-    margin-inline-end: 4px;
+    margin-inline-end: 0;
     background: currentColor;
     -webkit-mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
     mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
@@ -800,7 +809,7 @@ a[href]:focus-visible {
     display: flex;
     align-items: center;
     gap: var(--ox-1);
-    font-size: 13px;
+    font-size: var(--ox-t-micro);
     line-height: var(--ox-lh-lead);
     color: var(--ox-fg-3);
   }
@@ -879,7 +888,7 @@ a[href]:focus-visible {
   font-size: var(--ox-t-body);
   &__count {
     margin-inline-start: auto;
-    font-size: 13px;
+    font-size: var(--ox-t-micro);
     color: var(--ox-fg-3);
   }
   input {
@@ -1107,11 +1116,13 @@ a[href]:focus-visible {
   // ox-allow: small-angle, ordered first (`.ox-badge` above already traces
   // why: the checker's own multi-line match bug otherwise loses the pragma
   // when block-size is not a block's first declaration).
-  block-size: 24px; // ox-allow: small-angle
+  // 28 since the size floors (owner, 2026-09-25): the owner's 24/16 chip
+  // scaled up by the same 4px margin round its glyph, so the glyph is 20.
+  block-size: 28px; // ox-allow: small-angle
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 24px;
+  inline-size: 28px;
   flex: none;
   // Owner review 2026-09-23, item 2: NO background fill. A filled face was
   // the complaint; a fully transparent, unbordered clip shows nothing at all
@@ -1146,7 +1157,8 @@ a[href]:focus-visible {
 // and since the S6b sprite swap that svg drew the 24-unit chevron edge to
 // edge inside the box: the enlarged arrow. Padding shrinks that svg's own
 // viewport to the same 16px the wrapped faces draw (24 - 2 x 1px border -
-// 2 x 3px = 16), and the 16 step's heavier stroke (`.ox-icon--16`, S6a
+// 2 x 3px = 16; since the size floors 28 - 2 - 6 = 20, the 20 the wrapped
+// faces' 16 request now draws at), and the 16 step's heavier stroke (`.ox-icon--16`, S6a
 // deviation 6) comes with it, so both constructions paint one arrow.
 .ox-icon.ox-iconbtn--angled {
   box-sizing: border-box;
@@ -1826,8 +1838,8 @@ body {
 // The chip: top bar, buy column, cart.
 .ox-gr--inline {
   gap: var(--ox-2);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
 
-  .ox-gr__value { font-size: 13px; }
+  .ox-gr__value { font-size: var(--ox-t-micro); }
   .ox-gr__text { gap: 4px; }
 }

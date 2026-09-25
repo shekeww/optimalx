@@ -114,8 +114,8 @@ nav.breadcrumbs .s-breadcrumb-arrow {
   color: var(--ox-ink-4);
 
   svg {
-    inline-size: 16px;
-    block-size: 16px;
+    inline-size: 20px;
+    block-size: 20px;
     fill: currentColor;
   }
 
@@ -2097,7 +2097,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // 0.9 of the Small step, the same ratio every other control in this row
   // takes, `--ox-t-small` is a clamp(), so the ratio is expressed as a
   // calc() rather than a second token.
-  font-size: calc(var(--ox-t-small) * 0.9);
+  font-size: max(var(--ox-t-micro), calc(var(--ox-t-small) * 0.9));
   font-weight: var(--ox-w-figure);
   font-variant-numeric: tabular-nums;
   line-height: var(--ox-lh-num);
@@ -2496,7 +2496,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // the card's content box, which is the button's own width: about 14.4px at
 // 360, 15.7 at 375, and the shared primary size again from about 139.
 .ox-card-product__buy--service {
-  font-size: clamp(13px, calc(16.7cqi - 6px), var(--ox-btn-primary-size, calc(19px * 0.9)));
+  font-size: clamp(14px, calc(16.7cqi - 6px), var(--ox-btn-primary-size, calc(19px * 0.9)));
 }
 
 // MOBILE ROW B, REVERTED (owner review, 2026-09-23, late night, item 2):
@@ -2956,7 +2956,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   background: var(--ox-swatch, var(--ox-plate));
   background-size: cover;
   background-position: center;
-  font-size: 11px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   line-height: 1;
   color: var(--ox-fg-2);
@@ -2977,7 +2977,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding-inline: var(--ox-2);
   border-radius: var(--ox-r-2);
   background: var(--ox-plate);
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -3006,7 +3006,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding-inline: 4px;
   border: 1px dashed var(--ox-bd-2);
   border-radius: var(--ox-r-pill);
-  font-size: 11px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   font-variant-numeric: tabular-nums;
   color: var(--ox-fg-3);

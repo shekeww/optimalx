@@ -82,16 +82,25 @@
 
      `title` is the step the design used everywhere and the scale never named:
      17 rising to 18, the panel and card heading. Before this it was written
-     as bare pixels in three files. */
+     as bare pixels in three files.
+
+     THE FLOORS (owner, 2026-09-25: "avoid tiny icons and texts across the
+     website"). The bottom three steps moved up one pixel each so nothing on
+     the store reads small against the bold identity: body 16 rising to 17
+     (was 15 to 16), small 14 to 15 (was 13 to 14), micro 13 to 14 (was 11.5
+     to 12). No text on a phone is under 13px, none on a desktop under 14px,
+     and a size written as bare pixels in a component is held to the same
+     floors (micro is the smallest size any rule may ask for). The steps
+     above body did not move: the complaint was the bottom of the scale. */
   --ox-t-display: clamp(34px, 25.83px + 2.095vw, 56px);
   --ox-t-h1: clamp(28px, 23.54px + 1.143vw, 40px);
   --ox-t-h2: clamp(24px, 21.03px + 0.762vw, 32px);
   --ox-t-h3: clamp(18px, 17.26px + 0.190vw, 20px);
   --ox-t-title: clamp(17px, 16.63px + 0.095vw, 18px);
   --ox-t-lead: clamp(17px, 15.89px + 0.286vw, 20px);
-  --ox-t-body: clamp(15px, 14.63px + 0.095vw, 16px);
-  --ox-t-small: clamp(13px, 12.63px + 0.095vw, 14px);
-  --ox-t-micro: clamp(11.5px, 11.31px + 0.048vw, 12px);
+  --ox-t-body: clamp(16px, 15.63px + 0.095vw, 17px);
+  --ox-t-small: clamp(14px, 13.63px + 0.095vw, 15px);
+  --ox-t-micro: clamp(13px, 12.63px + 0.095vw, 14px);
 
   /* ---------- Ours: Arabic line-height floors ----------
      Measured from public/assets/fonts/cairo-arabic.woff2, 1000 units per em:
@@ -434,6 +443,15 @@
 /* Every horizontal translate multiplies by --direction-factor, keyframes included. */
 [dir="rtl"] {
   --direction-factor: -1;
+}
+
+/* The Arabic floor (owner, 2026-09-25). Cairo's Arabic body height matches
+   its Latin x-height, but at the smallest sizes the dots and counters close
+   up first, so Arabic reads a step smaller than Latin at the same pixel
+   size. Only the bottom step moves: micro is 14px in Arabic at every width
+   (13 rising to 14 in Latin), so no Arabic word on a phone is under 14px. */
+:root[lang^="ar"] {
+  --ox-t-micro: 14px;
 }
 
 /* Some engines do not inherit letter-spacing into a form control, which is

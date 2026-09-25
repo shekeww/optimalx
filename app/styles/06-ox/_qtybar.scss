@@ -414,7 +414,7 @@
   --ox-qb-offset: 27px;
   --ox-qb-glyph: 20px;
   --ox-qb-value-size: 17px;
-  --ox-qb-cart: 18px;
+  --ox-qb-cart: 20px; // 20 since the size floors (owner, 2026-09-25)
   --ox-qb-add-gap: 10px;
   --ox-qb-add-pad-outer: 30px;
   --ox-qb-add-pad-inner: 12px;
@@ -487,7 +487,7 @@ button.ox-service__add.s-button-element {
   --ox-qb-value: 20px;
   --ox-qb-inner: 30px;
   --ox-qb-offset: 25.6px;
-  --ox-qb-glyph: 16px;
+  --ox-qb-glyph: 20px; // 20 since the size floors (owner, 2026-09-25); the ink stays clear of the cut at the 25.6 offset
   --ox-qb-value-size: 14px;
   --ox-qb-add-gap: 0px;
   --ox-qb-add-pad-outer: 25.6px;
@@ -504,7 +504,7 @@ button.ox-service__add.s-button-element {
   justify-content: stretch;
   // The glyph is 16 on the phone card (S11 5.3) and the card's own 19.8
   // token from 640, where the label can show beside it.
-  --ox-card-add-icon: 16px;
+  --ox-card-add-icon: 20px; // 20 since the size floors (owner, 2026-09-25)
 }
 
 // The add button: transparent inside the bar, no clip and no stroke of its
@@ -641,7 +641,7 @@ button.ox-service__add.s-button-element {
   }
 
   .ox-qtybar--card .ox-card-product__add-slot {
-    --ox-card-add-icon: 19.8px;
+    --ox-card-add-icon: 20px;
   }
 }
 

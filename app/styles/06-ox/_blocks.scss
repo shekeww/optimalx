@@ -104,7 +104,7 @@
   block-size: 24px;
   padding-inline: var(--ox-2);
   border-radius: var(--ox-r-pill);
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
 
   &.is-open {
@@ -135,7 +135,7 @@
 .ox-hours__today {
   margin-inline-start: var(--ox-2);
   color: var(--ox-fg-3);
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
 }
 

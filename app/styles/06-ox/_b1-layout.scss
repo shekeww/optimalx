@@ -115,7 +115,7 @@ body {
 
 .ox-announce__text {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-read);
   line-height: var(--ox-lh-snug);
   text-align: center;
@@ -167,7 +167,7 @@ body {
   gap: var(--ox-2);
   min-block-size: 32px;
   color: var(--ox-ink-2-on-dark);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   text-decoration: none;
 
@@ -204,7 +204,7 @@ body {
   align-items: center;
   gap: var(--ox-2);
   color: var(--ox-ink-3-on-dark);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   white-space: nowrap;
   text-decoration: none;
@@ -231,7 +231,7 @@ a.ox-util__trust-link {
   border: 0;
   color: var(--ox-ink-2-on-dark);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   cursor: pointer;
 
@@ -256,7 +256,7 @@ a.ox-util__trust-link {
   min-block-size: 44px;
   padding-inline: var(--ox-2);
   color: var(--ox-ink-2-on-dark);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   text-decoration: none;
 
@@ -309,7 +309,7 @@ a.ox-util__trust-link {
   // this row's 12px text with room to spare.
   .ox-util__trust-link {
     color: var(--ox-ink-3-on-dark);
-    font-size: 12px;
+    font-size: var(--ox-t-micro);
   }
 }
 
@@ -327,7 +327,7 @@ a.ox-util__trust-link {
   border: 0;
   color: inherit;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   cursor: pointer;
 
   &:hover .ox-localize__label {
@@ -450,6 +450,14 @@ a.ox-util__trust-link {
     outline: 2px solid var(--ox-ink-on-dark);
     outline-offset: 2px;
   }
+}
+
+// Size floors (owner, 2026-09-25): an icon that is the whole control draws
+// at 24 at least, whatever size the call site asks for (the header's 20
+// account and 22 cart, search and close glyphs).
+.ox-iconbtn .ox-icon {
+  inline-size: max(24px, var(--ox-icon-size, 24px));
+  block-size: max(24px, var(--ox-icon-size, 24px));
 }
 
 .ox-cartbtn__icon {
@@ -586,13 +594,15 @@ a.ox-util__trust-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-inline-size: 16px;
-  block-size: 16px;
+  // 18 round with the micro step inside (size floors, owner 2026-09-25):
+  // the count was 12px in a 16 bubble.
+  min-inline-size: 18px;
+  block-size: 18px;
   padding-inline: 4px;
   background: var(--ox-accent);
   border-radius: var(--ox-r-pill);
   color: var(--ox-on-accent);
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-figure);
   line-height: var(--ox-lh-num);
   animation: ox-count-bump var(--dur-confirm) var(--ease-out);
@@ -921,7 +931,7 @@ a.ox-util__trust-link {
 .ox-mega__heading {
   margin: 0 0 var(--ox-2);
   color: var(--ox-fg-3);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
 }
 
@@ -969,7 +979,7 @@ a.ox-util__trust-link {
   block-size: 32px;
   padding-inline-start: var(--ox-4);
   color: var(--ox-fg-3);
-  font-size: 13px;
+  font-size: var(--ox-t-small);
   font-weight: var(--ox-w-read);
   text-decoration: none;
 
@@ -1517,7 +1527,7 @@ a.ox-util__trust-link {
 .ox-sheet__heading {
   margin: 0 0 var(--ox-2);
   color: var(--ox-fg-3);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
 }
 
@@ -1624,7 +1634,7 @@ a.ox-util__trust-link {
 
 .ox-sheet__tile-label {
   overflow: hidden;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   line-height: var(--ox-lh-snug);
   display: -webkit-box;
@@ -1716,13 +1726,19 @@ a.ox-util__trust-link {
   }
 }
 
+// Tab bar glyphs at 24 (size floors, owner 2026-09-25; the call sites ask for 20).
+.ox-tab .ox-icon {
+  inline-size: 24px;
+  block-size: 24px;
+}
+
 .ox-tab__icon {
   position: relative;
   display: inline-flex;
 }
 
 .ox-tab__label {
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   color: var(--ox-ink-3);
 }
@@ -1975,7 +1991,7 @@ body.ox-has-tabbar .app-inner {
     align-items: center;
     gap: var(--ox-2);
     color: var(--ox-ink-2-on-dark);
-    font-size: 13px;
+    font-size: var(--ox-t-micro);
     font-weight: var(--ox-w-read);
     line-height: var(--ox-lh-caption);
   }
@@ -2006,7 +2022,7 @@ body.ox-has-tabbar .app-inner {
 .ox-footer__copyright {
   margin: 0;
   color: var(--ox-ink-3-on-dark);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
 }
 
 .ox-footer__en {
@@ -2075,7 +2091,7 @@ body.ox-has-tabbar .app-inner {
   gap: var(--ox-1);
   margin: 0;
   color: var(--ox-ink-3-on-dark);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
 }
 
 .ox-footer__credit-link {

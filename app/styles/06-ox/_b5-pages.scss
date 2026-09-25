@@ -559,7 +559,7 @@
   padding: var(--ox-3);
   vertical-align: top;
   text-align: start;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   color: var(--ox-fg-3);
   background: var(--ox-paper);
@@ -1082,7 +1082,7 @@
 
 .ox-visit-sticky__status {
   flex: 0 0 auto;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-read);
   white-space: nowrap;
 

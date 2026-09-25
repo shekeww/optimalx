@@ -203,6 +203,12 @@
   // the header and this band read as one block of near-black at the top of
   // the page, which is the first thing the reference does.
   background: var(--ox-graphite);
+  // A size container (owner, 2026-09-25: the hero fills the first screen on
+  // desktop, so its height is no longer one number): the pane, the scrim and
+  // the frames read the band's height as `100cqh`, which keeps the 34deg cut
+  // exact at any height. The panel is sized by its parent (inset 0, or 300px
+  // on a phone), never by its content, so the containment costs nothing.
+  container-type: size;
 }
 
 .ox-hero__photo {
@@ -276,20 +282,28 @@
   // strap's CENTRE; per the CSS above it is the strap's own near EDGE, so 26
   // double-counts the strap's own 10px half-width; 16px is what actually
   // lands the cut 16px off the strap, verified in docs/build/progress/S3b.md.)
+  //
+  // OWNER, 2026-09-25: the height is now the first screen on desktop, so H is
+  // the panel's own `100cqh` rather than a constant, and one rule serves every
+  // width from 640: half the run is `50cqh * tan`, the run `100cqh * tan`.
+  // The mid-height point of the cut moves 11px further from the copy (53%
+  // less 27px, was 16px) to make room for the strap pair below (a thin solid
+  // strap at the cut, then the wide one), so the pair's far edge stays where
+  // the single strap's was and the copy keeps its clearance.
   .ox-hero__photo {
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: calc(53% - 16px + 175.37px);
+    inline-size: calc(53% - 27px + 50cqh * var(--ox-angle-tan));
     // X-IDENTITY-2026-09-22.md §2.3's full-height-diagonal budget is
     // deliberately overridden here by the owner's explicit 2026-09-23 review
     // (item 1: "aligned exactly with the orange strap"), which needs one
     // continuous 34deg line, not the mark's vertical-then-lean construction.
-    // run = H * tan(34deg) = 520 * 0.6745 = 350.7 (ox-run(520px)); the box's
-    // own width does not enter the slope at all (both polygon vertices at
-    // y=0/y=100% move by the same fixed px run regardless of the box's own
-    // inline-size), so the pragma below names run against H, not the box.
-    /* identity: 34deg, run 350.7 of 520 */
-    clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
+    // run = H * tan(34deg); the box's own width does not enter the slope at
+    // all (both polygon vertices at y=0/y=100% move by the same run
+    // regardless of the box's own inline-size), so the pragma below names run
+    // against H, not the box.
+    /* identity: 34deg, run 100cqh x tan of H */
+    clip-path: polygon(0 0, 100% 0, calc(100% - 100cqh * var(--ox-angle-tan)) 100%, 0 100%);
   }
 
   // LTR RESTATES THE POLYGON, NEVER THE SIDE (UX-2026-09-24 P0-8;
@@ -302,8 +316,8 @@
   // inside it). Only the clip is physical, because `clip-path` takes no
   // logical values.
   [dir='ltr'] .ox-hero__photo {
-    /* identity: 34deg, run 350.7 of 520 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(520px)} 100%);
+    /* identity: 34deg, run 100cqh x tan of H */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, calc(100cqh * var(--ox-angle-tan)) 100%);
   }
 }
 
@@ -361,23 +375,41 @@
 // moves this bar toward the right. The 51 the file previously carried was
 // itself stale, computed off the pre-X-IDENTITY 22deg polygon and never
 // re-derived when the 34deg cut shipped.
+//
+// THE STRAP PAIR (owner, 2026-09-25: "the orange diagonal strap in hero page
+// to be a bit transparent and bolder, and a thin orange strap that is not
+// transparent is added on its left, at the edge of the diagonal black shape
+// behind them"). The wide strap is 36px (was 20) at 76% of the accent; the
+// thin one is 5px of solid accent, drawn by `::before` so the two can never
+// part, 6px from the wide one on the photograph's side and 1.5px over the
+// photograph's cut, so it sits on the dark shape's edge. The pseudo-element
+// inherits the parent's skew, so both run on the one 34deg line, and both
+// follow the pane into English through logical insets alone. The pair's far
+// edge sits at 53% + 18.5px, where the single strap's sat (53% + 20px).
 .ox-hero__edge {
   position: absolute;
   z-index: 2;
   inset-block: -12%;
-  inset-inline-end: 53%;
-  // 20px, DOUBLED FROM 10 (owner review 2026-09-23, item 2: "double the
-  // strap's weight").
-  inline-size: 20px;
-  background: var(--ox-accent);
+  inset-inline-end: calc(53% - 17.5px);
+  inline-size: 36px;
+  background: rgba(var(--ox-accent-rgb), 0.76);
   transform: skewX(var(--ox-skew));
   pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(100% + 6px);
+    inline-size: 5px;
+    background: var(--ox-accent);
+  }
 }
 
 // No `[dir='ltr']` side override: the strap marks the pane's own edge, and
 // the pane is placed logically, so the strap follows it into English
-// (UX-2026-09-24 P0-8). Its 20px weight and its lean are the owner's
-// 2026-09-23 review and are not touched here.
+// (UX-2026-09-24 P0-8). Its lean is the owner's 2026-09-23 review; its weight
+// and the thin strap beside it are the owner's 2026-09-25 call above.
 
 .ox-hero__dots {
   position: absolute;
@@ -497,19 +529,19 @@
     // side, and laid its wash over the copy panel instead of the picture.
     inset-inline-end: 0;
     inset-inline-start: auto;
-    inline-size: calc(53% - 16px + 175.37px);
+    inline-size: calc(53% - 27px + 50cqh * var(--ox-angle-tan));
     // Same fix as the photo above, same reason (owner review 2026-09-23,
     // item 1): the scrim shares the photo's box exactly, so it shares its
-    // full-height 34deg polygon exactly. H 520, run 350.7; see the photo
-    // rule above for the full derivation.
-    /* identity: 34deg, run 350.7 of 520 */
-    clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(520px)}) 100%, 0 100%);
+    // full-height 34deg polygon exactly, against the panel's own height; see
+    // the photo rule above for the full derivation.
+    /* identity: 34deg, run 100cqh x tan of H */
+    clip-path: polygon(0 0, 100% 0, calc(100% - 100cqh * var(--ox-angle-tan)) 100%, 0 100%);
   }
 
   // The scrim shares the pane's box, so it mirrors with it: the clip only.
   [dir='ltr'] .ox-hero__scrim {
-    /* identity: 34deg, run 350.7 of 520 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(520px)} 100%);
+    /* identity: 34deg, run 100cqh x tan of H */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, calc(100cqh * var(--ox-angle-tan)) 100%);
   }
 }
 
@@ -690,7 +722,7 @@
 
 .ox-hero__eyebrow {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: 600;
   letter-spacing: 0.02em;
   color: rgb(255 255 255 / 0.72);
@@ -814,27 +846,18 @@
 }
 
 @media (min-width: 1024px) {
+  // THE FIRST SCREEN (owner, 2026-09-25: "hero page to fill full page on
+  // desktop"): the viewport less what sits above the hero, the utility bar
+  // and the header, 137px at every desktop width in both languages (measured
+  // 2026-09-25). `vh` first for a browser without dynamic units, then `dvh`.
+  // Never under 560 (the tier's old height, so a short window keeps the whole
+  // copy column), never taller than 62.5% of the width (a 16:10 band), so a
+  // window taller than it is wide keeps the composition instead of a column
+  // of photograph. The pane, the scrim and the cut read this height through
+  // the panel's `100cqh` (§2 above), so nothing else restates it.
   .ox-hero {
-    min-block-size: 560px;
-  }
-
-  // H changes to 560 here (was 520 below 1024, §2 above), so the photo/scrim
-  // pane and its full-height 34deg cut must be recomputed against the new H:
-  // half-run = 560 * 0.33725 = 188.86, run = ox-run(560px) = 377.7. Verified
-  // at 1024/1280/1440/1920 in docs/build/progress/S3b.md; both figures are
-  // pure px, so neither varies with the viewport once >= 1024.
-  .ox-hero__photo,
-  .ox-hero__scrim {
-    inline-size: calc(53% - 16px + 188.86px);
-    /* identity: 34deg, run 377.7 of 560 */
-    clip-path: polygon(0 0, 100% 0, calc(100% - #{ox-run(560px)}) 100%, 0 100%);
-  }
-
-  // The clip only, as above: the pane's side is logical in both directions.
-  [dir='ltr'] .ox-hero__photo,
-  [dir='ltr'] .ox-hero__scrim {
-    /* identity: 34deg, run 377.7 of 560 */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(560px)} 100%);
+    min-block-size: clamp(560px, calc(100vh - 137px), 62.5vw);
+    min-block-size: clamp(560px, calc(100dvh - 137px), 62.5vw);
   }
 
   .ox-hero__inner {
@@ -965,7 +988,7 @@ button.ox-trust__btn:hover .ox-trust__title {
 }
 
 .ox-trust__title {
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
   line-height: 1.35;
   color: var(--ox-fg);
@@ -981,7 +1004,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 11.5px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   line-height: 1.35;
   color: var(--ox-ink-4);
@@ -1044,7 +1067,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 
   .ox-trust__line {
-    font-size: 12px;
+    font-size: var(--ox-t-micro);
   }
 }
 
@@ -1054,7 +1077,7 @@ button.ox-trust__btn:hover .ox-trust__title {
   }
 
   .ox-trust__line {
-    font-size: 13px;
+    font-size: var(--ox-t-micro);
   }
 }
 
@@ -1763,7 +1786,7 @@ body {
   // general-health card) lifted its icon and name 16.1 px above the other
   // five at 390 and at 1440, in both languages.
   min-block-size: calc(2 * 1.4em);
-  font-size: 11.5px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   line-height: 1.4;
   color: var(--ox-ink-2-on-dark);
@@ -1779,7 +1802,7 @@ body {
   align-items: center;
   gap: var(--ox-2);
   margin-block-start: var(--ox-2);
-  font-size: 11.5px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   color: var(--ox-accent);
 }
@@ -3503,7 +3526,7 @@ body:has(.ox-wa) .ox-footer__strip {
 
 .ox-poster__eyebrow {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--ox-accent);
@@ -3550,7 +3573,7 @@ body:has(.ox-wa) .ox-footer__strip {
   display: flex;
   align-items: center;
   gap: var(--ox-2);
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   color: rgb(255 255 255 / 0.82);
 }
 
@@ -3792,7 +3815,7 @@ body:has(.ox-wa) .ox-footer__strip {
 }
 
 .ox-pcard__caption {
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   line-height: 1.5;
   color: rgb(255 255 255 / 0.78);
 }
@@ -3909,7 +3932,7 @@ body:has(.ox-wa) .ox-footer__strip {
 
 .ox-certs__eyebrow {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: 700;
   letter-spacing: 0.08em;
   color: rgb(255 255 255 / 0.72);
@@ -3950,7 +3973,7 @@ body:has(.ox-wa) .ox-footer__strip {
 }
 
 .ox-certs__en {
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   color: rgb(255 255 255 / 0.76);
 }
 

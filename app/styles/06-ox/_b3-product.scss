@@ -176,7 +176,7 @@
 .ox-card-product__brand {
   min-block-size: 18px;
   margin: 0;
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   line-height: 18px;
   color: var(--ox-fg-3);
@@ -227,7 +227,7 @@
   min-block-size: 18px;
   margin: 0;
   overflow: hidden;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   line-height: 18px;
   color: var(--ox-ink-4);
@@ -263,7 +263,7 @@
 // cost every other card an 18px hole.
 .ox-card-product__stock {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   line-height: 18px;
   color: var(--ox-note);
@@ -514,7 +514,7 @@
   block-size: 28px;
   padding-inline: 14px;
   margin: 0;
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
   line-height: 28px;
   color: var(--ox-ink-on-dark);
@@ -975,9 +975,9 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
-  line-height: 16px;
+  line-height: 18px;
   color: var(--ox-ink-4);
 }
 
@@ -1038,7 +1038,7 @@
 }
 
 .ox-facts__label {
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   color: var(--ox-fg-3);
 }
@@ -1166,7 +1166,7 @@ input.ox-supply__value {
 
 .ox-supply__note {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   color: var(--ox-fg-3);
 }
@@ -1757,7 +1757,7 @@ body.is-sticky-product-bar.product-single {
 
 .ox-trust-grid__line {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
 }
@@ -1982,13 +1982,13 @@ body.is-sticky-product-bar.product-single {
 }
 
 .ox-bband__badge-ar {
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   color: var(--ox-ink-on-dark);
 }
 
 .ox-bband__badge-latin {
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   text-transform: uppercase;
   letter-spacing: var(--ox-latin-track);
@@ -2373,7 +2373,7 @@ body.is-sticky-product-bar.product-single {
 .ox-nutrition__caption {
   display: block;
   margin: 0;
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
   text-align: end;
@@ -2425,7 +2425,7 @@ body.is-sticky-product-bar.product-single {
 .ox-nutrition__meaning {
   display: block;
   margin-block-start: 2px;
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-read);
   line-height: 18px;
   color: var(--ox-fg-3);
@@ -2465,7 +2465,7 @@ body.is-sticky-product-bar.product-single {
 .ox-nutrition__note {
   margin: 0;
   margin-block-start: var(--ox-3);
-  font-size: 12px;
+  font-size: var(--ox-t-micro);
   color: var(--ox-fg-3);
 }
 
@@ -2561,7 +2561,7 @@ body.is-sticky-product-bar.product-single {
 }
 
 .ox-bundle__qty {
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   color: var(--ox-fg-3);
 }
 
@@ -2743,7 +2743,7 @@ body.is-sticky-product-bar.product-single {
 .ox-service__slot-note,
 .ox-service__credit {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ox-t-micro);
   color: var(--ox-fg-2);
 }
 
