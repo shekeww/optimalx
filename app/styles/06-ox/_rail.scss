@@ -179,3 +179,102 @@
     animation: none;
   }
 }
+
+// ---------------------------------------------------------------------------
+// The rail header's prev/next pair (BM-2, owner 2026-09-25, from a
+// screenshot of the home offers rail: the buttons beside "عرض الكل" read as
+// plain square outline boxes with thin chevrons, off the identity).
+// ---------------------------------------------------------------------------
+// Every rail header draws its pair with one markup: a 44px button with no
+// face of its own (so the focus ring sits on an unclipped box) holding an
+// `.ox-iconbtn--angled` span, the shared 24px corner-cut chip
+// (`_primitives.scss`), around a 16px chevron-start or chevron-end, which
+// mirror by themselves. The six families' own rules (`.ox-cat-rail__arrow`,
+// `.ox-brands__arrow`, `.ox-posters__arrow`, `.ox-offers-rail__arrow` in
+// `_b2-home.scss`, `.ox-related__arrow` in `_b3-product.scss`,
+// `.ox-featured__arrow` in `_b4-listing.scss`) painted the chip in ink with
+// its hairline at 60%, a grey square. Here the pair becomes the goal card's
+// arrow chip: the accent glyph and hairline, the cut corner, the hairline
+// going solid on hover, and the glyph stepping 2px the way it points. At a
+// rail end the button is disabled (assets/ox.js sets it on every rail,
+// the related rail included) and the chip greys out, so the pair always says
+// which way is left to go.
+//
+// One rule for the six families, written against each family's nav wrapper
+// so it outranks their own rules, which load after this file.
+$ox-rail-navs: '.ox-cat-rail__nav, .ox-brands__nav, .ox-posters__nav, .ox-offers-rail__nav, .ox-related__nav, .ox-featured__nav';
+$ox-rail-arrows: '.ox-cat-rail__arrow, .ox-brands__arrow, .ox-posters__arrow, .ox-offers-rail__arrow, .ox-related__arrow, .ox-featured__arrow';
+// The chip's outline, the corner cut at the reading end's top corner (the
+// primitive's own RTL cut; the LTR chip mirrors it above).
+$ox-rail-chip-outline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M0.5 8.15 L5.67 0.5 H23.5 V23.5 H0.5 Z' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+
+:is(#{$ox-rail-navs}) > :is(#{$ox-rail-arrows}) {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  color: var(--ox-accent);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
+
+  // The chip: the shared 24px face with its 8px corner cut, drawn as one
+  // outline so the cut reads as a diagonal edge rather than a gap. The
+  // primitive traces the cut by clipping a 1px border, which drops the
+  // stroke at the corner; on white at 60% that gap vanished and the chip
+  // read as a square. Same box, same cut (lean 8, run 5.4 at 34 degrees),
+  // same 60% hairline going solid on hover, now closed along the diagonal.
+  > .ox-iconbtn--angled {
+    position: relative;
+    border: 0;
+    clip-path: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, currentColor 60%, transparent);
+      mask: $ox-rail-chip-outline center / 100% 100% no-repeat;
+      pointer-events: none;
+    }
+
+    [dir='ltr'] &::before {
+      transform: scaleX(-1);
+    }
+  }
+
+  &:hover:not(:disabled) > .ox-iconbtn--angled::before {
+    background: currentColor;
+  }
+
+  &:disabled {
+    color: var(--ox-ink-4);
+    opacity: 0.45;
+    cursor: default;
+  }
+}
+
+// The step: the previous button is the first in its pair and points to the
+// reading start, the next one points to the reading end. `translate`
+// composes with the glyph's own mirroring `transform`, so the Arabic
+// chevrons keep their flip. No step and no glide under reduced motion.
+@media (prefers-reduced-motion: no-preference) {
+  :is(#{$ox-rail-navs}) > :is(#{$ox-rail-arrows}) .ox-icon {
+    transition: translate var(--dur-fast) var(--ease-out);
+  }
+
+  :is(#{$ox-rail-navs}) > :is(#{$ox-rail-arrows}):first-child:hover:not(:disabled) .ox-icon {
+    translate: calc(-2px * var(--direction-factor)) 0;
+  }
+
+  :is(#{$ox-rail-navs}) > :is(#{$ox-rail-arrows}):last-child:hover:not(:disabled) .ox-icon {
+    translate: calc(2px * var(--direction-factor)) 0;
+  }
+}
