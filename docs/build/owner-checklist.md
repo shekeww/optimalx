@@ -130,3 +130,7 @@ The six poster files you sent are live in the "اكتشف أكثر" rail and on 
 
 Replace the chips on the first four before launch (keep the offer, drop the outcome and superlative lines), or send versions without them. The subscription poster also lists InBody as included: that matches the theme's own gated line only while the "InBody measurement included" setting stays on. The two "buy 1 get 1" files are the same artwork in two slots; the inbody-consult slot links to the consultation product, so its poster should become the consultation offer when you have one.
 
+
+## Registration values (2026-09-25): mockups in place, real values pending
+
+The owner asked for mockups until the real values arrive. Set on both platforms (Shopify config/settings_data.json; the Salla preview overlay fixtures/store/overlay/settings.json, the Salla dashboard still empty): `cr_number` 4650000000 (a Madinah-format placeholder) and `maroof_url` https://maroof.sa/ (the portal root, no listing). `vat_number` stays empty on purpose: it also switches on the "prices include VAT" line on product pages and the tax line in the cart, which must only appear once the store is VAT-registered. Replace the two mockups with the real CR number and the store's own Maroof listing before the password comes off the store.
