@@ -1,0 +1,978 @@
+{
+  "version": 3,
+  "icons": [
+    {
+      "name": "check-circle",
+      "category": "status",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "info",
+      "category": "status",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "warning",
+      "category": "status",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "message-sent",
+      "category": "status",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "order-success",
+      "category": "status",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "coming-soon",
+      "category": "status",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "shipping",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "delivery-estimate",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "track-order",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "secure-payment",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "authentic",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "customer-service",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "returns",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "refund",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "expiry",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "registry",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "cash-on-delivery",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "bank-transfer",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "installments",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "store-credit",
+      "category": "trust",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "advisory",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "recommendation",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "inbody",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "plan",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "aftersales",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "written-question",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "video-consult",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "branch-visit",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "training",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "digital-library",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "phone",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "mail",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "map-pin",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "directions",
+      "category": "services",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "hours",
+      "category": "services",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "calendar",
+      "category": "booking",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "booking-slot",
+      "category": "booking",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "booking-confirmed",
+      "category": "booking",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "time-slot",
+      "category": "booking",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "time-morning",
+      "category": "booking",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "time-afternoon",
+      "category": "booking",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "time-evening",
+      "category": "booking",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "subscription",
+      "category": "booking",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "package",
+      "category": "booking",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "offers",
+      "category": "offers",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "bundles",
+      "category": "offers",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "gift-card",
+      "category": "offers",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "gift",
+      "category": "offers",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "points",
+      "category": "offers",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "referral",
+      "category": "offers",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "servings",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "serving-size",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-powder",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-capsule",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-tablet",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-softgel",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-liquid",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-bar",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-container",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "form-digital",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "caffeine",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "allergen",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "storage",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "gluten-free",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "lactose-free",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "low-sugar",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "vegan",
+      "category": "product-facts",
+      "family": "solid",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-measure",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-pour",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "step-shake",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-drink",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-with-water",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-with-meal",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-before-workout",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "step-after-workout",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "step-daily",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-unwrap",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-fill",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-rinse",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-choose-value",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-email-code",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-redeem",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "step-download",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "step-confirm",
+      "category": "how-to",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "menu",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "search",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "cart",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "user",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "home",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "store",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "wishlist",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "language",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "close",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "chevron-end",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "chevron-start",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "chevron-down",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "chevron-up",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "arrow",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "external",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "filter",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "sort",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "categories",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "list-view",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "expand",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "play",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": true
+    },
+    {
+      "name": "pause",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "share",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "copy",
+      "category": "navigation",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "cart-add",
+      "category": "buying",
+      "family": "line",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "plus",
+      "category": "buying",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "minus",
+      "category": "buying",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "check",
+      "category": "buying",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "lock",
+      "category": "buying",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "empty-cart",
+      "category": "empty-states",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "search-empty",
+      "category": "empty-states",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "not-found",
+      "category": "empty-states",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "rating-star-fill",
+      "category": "empty-states",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "rating-star-half",
+      "category": "empty-states",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": true
+    },
+    {
+      "name": "rating-star",
+      "category": "empty-states",
+      "family": "line",
+      "hasAccent": false,
+      "rtlFlip": false
+    },
+    {
+      "name": "protein",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "creatine",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "pre-workout",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "amino-acids",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "omega-3",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "vitamins-minerals",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "collagen-beauty",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "daily-health",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "snacks-bars",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "accessories",
+      "category": "categories",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-energy",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-performance",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-recovery",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-ideal-weight",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-general-health",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "goal-hair-skin",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "endurance",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "immunity",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "wellness",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    },
+    {
+      "name": "better-sleep",
+      "category": "goals",
+      "family": "solid",
+      "hasAccent": true,
+      "rtlFlip": false
+    }
+  ]
+}

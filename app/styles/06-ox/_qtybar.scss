@@ -45,7 +45,7 @@
 //   context        stepper: outer / value / inner   offset  glyph  add pad
 //   PDP            119: 47 / 28 / 44                27      20     30 / 12
 //   card < 640      82: 44 / 14 / 24                24      20     24 / 2 (glyph only)
-//   card <= 175     72: 38 / 14 / 20                18      20     23 / 2 (glyph only)
+//   card <= 175     72: 38 / 14 / 20                18      20     23 AR, 27 EN / 2 (glyph only)
 //   card >= 640     99: 47 / 16 / 36                26.9    20     30.3 / 12 (label), 26.9 (glyph)
 //   (glyphs 20 on the cards since the size floors, owner 2026-09-25)
 //
@@ -779,18 +779,35 @@ button.ox-service__add.s-button-element {
 // and a 360 phone's card holds 122 (a 171 card at 390 holds 137), where
 // the cart glyph ran over the divider and the plus. Up to a 175 card the
 // stepper tightens instead: outer 38 (offset 18), value 18, inner 20, and
-// the add cell keeps 23 before its glyph. The offsets are set on the ink,
-// not the box: the plus and minus ink sits 4.2 inside its 20 box and clears
-// the 34 degree cut by 5px at offset 18; the cart's handle, at the top of
-// its box on the cut side in English, clears it at 23. 38 + 18 + 20 + 45 =
+// the add cell keeps 23 (Arabic) or 27 (English) before its glyph. The
+// offsets are set on the ink, not the box: the plus and minus ink sits 4.2
+// inside its 20 box and clears the 34 degree cut by about 5px at offset 18
+// (4.4 to 5.2 measured level, 3.6 to 4.3 square to the cut, 2026-09-26);
+// the cart is set per language, below. 38 + 18 + 20 + 45 =
 // 121, inside the 122 bar. The tight stepper (2026-09-25) takes the value
 // to 14: 72, was 76, and the four go to the cart's cell (50 at 360, 65 at
-// 390), which is what the owner asked the smaller stepper to buy. The
-// mirrored lean turns the cut over, so the handle no longer meets it: in
-// English the cut is under the wheels, in Arabic over the basket's far top
-// corner, and the cart clears it by 5 or more at 18 before the glyph. At 18
-// the cart sits in the middle of what shows of its cell at mid-height (7
-// from the divider at 360, was 2.5).
+// 390), which is what the owner asked the smaller stepper to buy.
+//
+// THE CART AGAINST THE BUY-NOW'S LEAN (owner, 2026-09-26: the bar leans like
+// the buy-now again, section 1). The cart glyph is one drawing in both
+// languages (handle at its top left, wheels at its foot), so the restored
+// cut meets it differently per language and the add cell's padding before
+// the glyph is set per language, measured on the ink at 360 and 390:
+// - English: the add cell is at the bar's left end, cut at the top, right
+//   where the handle is. 27 before the glyph keeps the handle 5.5 clear of
+//   the cut on a 122 bar (a 360 grid), 3.8 from the divider; it was 18
+//   under the 2026-09-25 mirror, 23 before it (3.9 from the cut here).
+// - Arabic: the add cell is at the right end, cut at the foot, beside the
+//   wheels and the basket's lower corner. 23, the value before the mirror,
+//   keeps them 5.6 clear on the narrowest bar (117, the product page's
+//   related rail at 360) and 7.3 on a 122 bar.
+// The glyph stays centred in what is left of its cell, so a wider bar
+// only moves it further from the cut. The one bar that cannot hold 5 in
+// English is the 117 related-rail bar at 360: its add cell is 45, and a 20
+// cart 5 clear of the cut would run into the divider, so it keeps the 27
+// (3.6 from the cut, 1.8 from the divider) until that card is wider.
+// Custom property rather than a `[dir]` padding rule, so the bar without a
+// stepper keeps its own symmetric padding (section 5, which outranks this).
 @container oxcard (max-width: 175px) {
   .ox-qtybar.ox-qtybar--card {
     --ox-qb-qty: 72px;
@@ -798,10 +815,15 @@ button.ox-service__add.s-button-element {
     --ox-qb-value: 14px;
     --ox-qb-inner: 20px;
     --ox-qb-offset: 18px;
+    --ox-qb-narrow-pad: 23px;
+  }
+
+  [dir='ltr'] .ox-qtybar.ox-qtybar--card {
+    --ox-qb-narrow-pad: 27px;
   }
 
   .ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
-    padding-inline: 18px 2px;
+    padding-inline: var(--ox-qb-narrow-pad) 2px;
   }
 }
 
