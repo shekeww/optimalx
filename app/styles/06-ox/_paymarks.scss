@@ -1,18 +1,27 @@
 // The payment marks (S11 direction item 5, built in S12, 2026-09-25): the
 // methods a Saudi shopper looks for before paying, shown where the decision
-// happens (under the buy row) and where people look for reassurance (the
-// footer), each mark only while the owner's own switch for it is on. Two
-// variants of one list: `--pdp`, bare marks on the page ground, no caption,
-// no tiles, no borders; `--footer`, full colour on a white angled plate (the
+// happens (under the buy row, and in the cart's summary) and where people
+// look for reassurance (the footer), each mark only while the owner's own
+// switch for it is on. Three variants of one list: `--pdp` under the buy
+// row and `--cart` in the cart's trust block, a row packed at the inline
+// start with no caption; `--footer`, centred on a white angled plate (the
 // owner's 2026-09-24 ruling: every filled plate takes the parallelogram),
 // the one angled gesture in that row. Loads after `plates` because the
 // footer plate calls `ox-plate()`.
 //
-// Every mark sits in a 24 tall box, at most 48 wide, so square-ish marks
-// render the full 24 and heavy wordmarks are held by the cap. Text marks
-// (bank transfer, cash on delivery, a method with no public mark) are
-// 13/700 on a 24 line. Marks are never recoloured and never desaturated:
-// no `filter` anywhere (the providers' rules and the render budget).
+// THE ARTWORK AS SHIPPED on Shopify is Shopify's own licensed payment icon
+// set (`payment_type_img_url`): every mark is a 38 x 24 full-colour tile
+// that draws its own hairline frame and 3px corners inside the file. The
+// set has no one-colour files, so the product page and cart rows are in
+// colour and read as tiles, not the direction's quiet one-colour row of
+// bare marks (S11 7.3). That row needs the providers' own mono files, an
+// owner decision still open (the S12 buy-zone report). The two methods with
+// no brand (bank transfer, cash on delivery) are text pills drawn to the
+// tile's height, hairline and corner, so the row reads as one family.
+//
+// Every mark sits in a 24 tall box, at most 48 wide. Text pills are 13/700
+// on a 24 line. Marks are never recoloured and never desaturated: no
+// `filter` anywhere (the providers' rules and the render budget).
 //
 // Markup: Shopify `snippets/payment-methods.liquid` (the Salla `PayMarks`
 // component is not built yet; recorded in the S12 report). Static: marks
@@ -37,6 +46,14 @@
   block-size: 24px;
   margin: 0;
   padding: 0;
+}
+
+// The price floor (`pay_installments_min`, S11 7.4): the snippet and
+// assets/ox.js hide tabby and tamara with the `hidden` attribute, and the
+// display rule above outranks the theme's own `[hidden]` reset (same
+// specificity, later in the file), so the attribute needs its own rule.
+.ox-paymarks__item[hidden] {
+  display: none;
 }
 
 .ox-paymarks__mark {
@@ -76,7 +93,12 @@
 // (`.ox-buy__assure`, sections/main-product.liquid).
 // Column gap 12, not 16: with the two text pills the nine methods need
 // 587 at 16 against the 578 column at 1440, and one line there is the point.
-.ox-paymarks--pdp {
+// The cart row takes the same rhythm inside the summary's trust plate
+// (`.ox-cart-trust__marks`, `_b6-commerce.scss`, where the Salla reference
+// draws its own payment marks), wrapping to as many lines as that column
+// needs.
+.ox-paymarks--pdp,
+.ox-paymarks--cart {
   column-gap: 12px;
   row-gap: 12px;
 }

@@ -1419,16 +1419,25 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // `aspect-ratio: 3/2`, transparent like every other logo box - no
 // `--ox-paper` fill and no border). The box still reserves its own height,
 // so the banner's text does not move when the file lands.
+//
+// S12 (2026-09-25): the artwork starts on the banner's own text edge, like
+// the eyebrow, the name and the count above and below it. The centred box
+// with 12 px padding set the logo 12 px inside that edge in both
+// directions (measured at 390 and 1440). The box keeps its 108 height and
+// the logo keeps its 136 width; only the inline padding goes and the
+// content packs to the start.
 .ox-brandhero__logobox {
   display: flex;
   align-items: center;
-  justify-content: center;
-  inline-size: 160px;
+  justify-content: flex-start;
+  inline-size: 136px;
   block-size: 108px;
-  padding: var(--ox-3);
+  padding: var(--ox-3) 0;
 }
 
 .ox-brandhero__logobox--dark {
+  // A dark plate keeps its inner margin so it never touches its artwork.
+  padding-inline: var(--ox-3);
   background: var(--ox-ink);
 }
 
