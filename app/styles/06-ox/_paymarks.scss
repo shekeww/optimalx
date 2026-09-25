@@ -74,12 +74,18 @@
 .ox-paymarks__text {
   display: inline-flex;
   align-items: center;
-  gap: var(--ox-1);
+  // 8, the icon system's one icon-to-label gap in a row (icon-system.md 8.6).
+  gap: var(--ox-2);
   box-sizing: border-box;
   block-size: 24px;
-  // 6, not 8, since the size floors (owner, 2026-09-25): with the 20 glyph
-  // and the micro step both pills still share a 360 phone's second row.
-  padding-inline: 6px;
+  // 4, not 6: the glyph sits 4 from the hairline (the 20 glyph in the 24
+  // box has 2 above and below, the hairline included), and the 4 given up
+  // pays for the 8 gap, so a pill keeps its width. Measured at 360, 375,
+  // 390, 414, 768, 1024 and 1440 in both languages: every row wraps as
+  // before; at 6 the Arabic product page row at 360 and the English footer
+  // at 414 drop a pill to a line of its own. 6 since the size floors, 8
+  // before them.
+  padding-inline: 4px;
   border: 1px solid var(--ox-line-2);
   border-radius: 3px;
   font-size: var(--ox-t-micro);

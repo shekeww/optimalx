@@ -470,8 +470,9 @@ a[href]:focus-visible {
   overflow: visible;
   // THE BOLD STROKE (owner, 2026-09-25: "match and inspire the identity and
   // design of the icons with ... onthegoofficial.my, reflecting the bold
-  // premium energetic identity"). The reference's promise icons are solid
-  // masses; the owner's v2 set is drawn in line at 2 in its 24 grid, so the
+  // premium energetic identity"). The reference's value and feature icons
+  // are solid or heavy (its shipping and payment rows stay a light line);
+  // the owner's v2 set is drawn in line at 2 in its 24 grid, so the
   // theme draws that same geometry heavier instead of redrawing it (the solid
   // v3 set is the owner's to draw, icon-system.md section 8). The sprite's
   // inline <style> reads stroke-width from this custom property, in the
@@ -482,6 +483,13 @@ a[href]:focus-visible {
   //   44 and over: the owner's own 2, already 3.7px and more.
   // This replaces S6a deviation 6 (the 16 step alone at 2.25), which the
   // ladder now covers for every small size.
+  // The ladder reads the size class, not the drawn size: a context rule
+  // that draws an icon in another step than its call site asks for (a 28
+  // drawn at 24 on a phone, say) sets --ox-icon-stroke to the drawn size's
+  // step itself, or keeps the size. Measured 2026-09-26 on the home page,
+  // a product page, a listing, the categories page, the cart, services,
+  // the branch page, an empty search and the 404, at 390 and 1440: every
+  // drawn icon strokes at its own step.
   --ox-icon-stroke: 2.4px;
   // The 16 step draws at the 20 floor (size floors, 2026-09-25).
   &--16 { inline-size: 20px; block-size: 20px; }
@@ -493,11 +501,11 @@ a[href]:focus-visible {
 }
 
 // THE ICON TILE (owner, 2026-09-25, the onthegoofficial.my reference): the
-// reference stands its promise icons (protein, macros, delivery, secure pay)
-// in a solid accent disc with the glyph in white, and draws the rest as solid
-// masses. OptimalX takes the lesson on its own terms: a solid plate cut once
-// on the brand angle at its top inline-end corner (the corner that faces the
-// label), the same plate at every width, never a circle.
+// reference stands its value icons (protein, macros, calories, prebiotic)
+// white and solid in an accent disc, and gives its feature and benefit icons
+// solid parts. OptimalX takes the lesson on its own terms: a solid plate cut
+// once on the brand angle at its top inline-end corner (the corner that
+// faces the label), the same plate at every width, never a circle.
 //   .ox-icon-tile          graphite plate, the glyph in white and its accent
 //                          part in orange: for light surfaces.
 //   .ox-icon-tile--accent  orange plate, the whole glyph in white (mono): for
@@ -761,7 +769,10 @@ a[href]:focus-visible {
     padding: 0;
     border: 0;
     border-radius: 0;
-    font-size: inherit;
+    // The line's own size, never under the 15 button-label floor (size
+    // floors, review 2026-09-26: the services page's branch link sat in a
+    // 14px small line on phones).
+    font-size: max(15px, 1em);
     line-height: inherit;
     white-space: normal;
     text-decoration: underline;

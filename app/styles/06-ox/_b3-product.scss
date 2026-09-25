@@ -48,6 +48,15 @@
 
 .ox-card-product__plate {
   position: relative;
+  // Above the title link's stretched layer (its `::after` below, z-index
+  // auto), so a touch on the plate reaches the photo strip's own link and a
+  // swipe scrolls the strip (owner, 2026-09-26). Without it a sold-out card,
+  // whose plate is its own stacking context through the dimming opacity
+  // further down, sat under that layer and the strip never got the finger.
+  // Every point of the plate still opens the product: the strip link covers
+  // it, the badges and an empty chooser take no pointer events, and only
+  // the colour chooser keeps its own target.
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,21 +133,148 @@
   pointer-events: none;
 }
 
-.ox-card-product__img--hover {
+// THE PHOTO STRIP (owner, 2026-09-26: "images in product card should be
+// scrollable on mobile by swiping"). The Shopify card wraps its photos in one
+// link to the product, `.ox-card-product__media`, pinned over the plate above
+// its ground; the band and the mark are siblings behind it, so the plate's
+// shape and ground never move while the photos do. The link is the plate's
+// tap target (a tap opens the product, a swipe never fires it); the photos
+// inside it stay paint only (`pointer-events: none` above).
+.ox-card-product__media {
   position: absolute;
   inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease-out);
+  z-index: 1;
+  display: flex;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+
+  > .ox-card-product__img {
+    flex: none;
+  }
 }
 
-// No `@media (hover: hover)` guard here any more (CARD-2026-09-23 section 11):
-// `useHoverCapable()` already gates whether this element mounts at all, off
-// the same query, so a touch pointer never has it in the DOM to transition in
-// the first place.
-.ox-card-product:hover .ox-card-product__img--hover {
-  opacity: 1;
+// A touch screen: a native sideways scroller, one photo per snap, the first
+// photo at the reading start (the flex row follows `dir`). The block axis is
+// closed, so a vertical swipe always scrolls the page. A sideways swipe moves
+// the photos up to the last one; in a grid it stops there (`contain`, so it
+// never turns into the browser's own back gesture), in the product page's
+// card rows the next swipe past the last photo scrolls the row (`auto`,
+// native scroll chaining).
+.ox-card-product__media--strip {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > .ox-card-product__img {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+.ox-add-also__items .ox-card-product__media--strip {
+  overscroll-behavior-inline: auto;
+}
+
+// The card rails (every `.ox-rail__track` that holds cards: the home
+// category rails and the search page's featured rail) keep one photo on a
+// touch screen, the rail's own swipe browses products there. Measured
+// 2026-09-26 with real touch swipes at 390, every card of the home rail
+// given five photos: ten swipes on the photo row moved the rail one to two
+// cards with the strip, six (to the rail's end) with one photo, because
+// each card holds the finger until its last photo. The grids and the
+// product page's card rows keep the strip.
+// The clipped strip must also hand the rail every sideways swipe: an
+// `overflow: hidden` box is still a scroll container, and with the strip's
+// own `contain` it ended the scroll chain there, so a swipe on a photo
+// moved neither the photos nor the rail (0 cards in ten swipes). `auto`
+// lets the swipe through to the rail.
+@media not all and (hover: hover) and (pointer: fine) {
+  .ox-rail__track .ox-card-product__media--strip {
+    overflow: hidden;
+    overscroll-behavior-inline: auto;
+    scroll-snap-type: none;
+  }
+
+  .ox-rail__track .ox-card-product__img--more,
+  .ox-rail__track .ox-card-product__dots {
+    display: none;
+  }
+}
+
+// The strip's position: one dot a photo, the current one in the accent and
+// twice as long, so the state never rests on colour alone. The row fills the
+// card's own 12px gap under the plate (`gap: var(--ox-3)` on
+// `.ox-card-product`) and hands it back through its margins, so the body
+// below sits exactly where it sits on a card without dots. No transition:
+// colour never transitions on this card.
+.ox-card-product__dots {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  block-size: var(--ox-3);
+  margin-block: calc(var(--ox-3) * -1);
+  pointer-events: none;
+}
+
+.ox-card-product__dot {
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: 999px;
+  background: var(--ox-ink-4);
+  opacity: 0.4;
+
+  &.is-active {
+    inline-size: 12px;
+    background: var(--ox-accent);
+    opacity: 1;
+  }
+}
+
+// A pointer that can hover keeps the card it had: the first photo, the
+// second one faded in on hover (CARD-2026-09-23 section 11), no strip and no
+// dots. The third photo on never renders here, so a lazy image never loads.
+// The hover image now ships a real `src` (lazy), so this query is what keeps
+// it off a touch screen's plate, where it is the strip's second photo.
+@media (hover: hover) and (pointer: fine) {
+  // Not a scroller here, and never the end of a scroll chain: a trackpad's
+  // sideways scroll over a photo still moves the rail it sits in.
+  .ox-card-product__media--strip {
+    overflow: hidden;
+    overscroll-behavior-inline: auto;
+    scroll-snap-type: none;
+  }
+
+  .ox-card-product__img--more {
+    display: none;
+  }
+
+  .ox-card-product__img--hover {
+    display: block;
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+
+  .ox-card-product:hover .ox-card-product__img--hover {
+    opacity: 1;
+  }
+
+  .ox-card-product__dots {
+    display: none;
+  }
 }
 
 // CARD-2026-09-23 section 8: the second image's cross fade and the hover
@@ -1243,7 +1379,8 @@ input.ox-supply__value {
 .ox-delivery__row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  // 8, the icon system's one icon-to-label gap in a row (icon-system.md 8.6).
+  gap: var(--ox-2);
   min-block-size: 52px;
   padding-inline: var(--ox-4);
   margin: 0;
@@ -1731,7 +1868,8 @@ body.is-sticky-product-bar.product-single {
 .ox-trust-grid__item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  // 8, the icon system's one icon-to-label gap in a row (icon-system.md 8.6).
+  gap: var(--ox-2);
   min-block-size: 52px;
   padding-block: var(--ox-2);
   border-block-end: 1px solid var(--ox-bd);

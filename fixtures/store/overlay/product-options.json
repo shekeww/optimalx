@@ -8,16 +8,154 @@
         "type": "radio",
         "required": true,
         "details": [
-          { "id": 662137501, "name": "100 ريال", "option_id": 662137500, "additional_price": 0, "option_value": "100 ريال", "image": "", "color": "", "code": "662137501", "is_out": false, "is_default": 1, "skus_availability": {} },
-          { "id": 662137502, "name": "200 ريال", "option_id": 662137500, "additional_price": 100, "option_value": "200 ريال", "image": "", "color": "", "code": "662137502", "is_out": false, "is_default": 0, "skus_availability": {} },
-          { "id": 662137503, "name": "500 ريال", "option_id": 662137500, "additional_price": 400, "option_value": "500 ريال", "image": "", "color": "", "code": "662137503", "is_out": false, "is_default": 0, "skus_availability": {} }
+          {
+            "id": 662137501,
+            "name": "100 ريال",
+            "option_id": 662137500,
+            "additional_price": 0,
+            "option_value": "100 ريال",
+            "image": "",
+            "color": "",
+            "code": "662137501",
+            "is_out": false,
+            "is_default": 1,
+            "skus_availability": {}
+          },
+          {
+            "id": 662137502,
+            "name": "250 ريال",
+            "option_id": 662137500,
+            "additional_price": 150,
+            "option_value": "250 ريال",
+            "image": "",
+            "color": "",
+            "code": "662137502",
+            "is_out": false,
+            "is_default": 0,
+            "skus_availability": {}
+          },
+          {
+            "id": 662137503,
+            "name": "500 ريال",
+            "option_id": 662137500,
+            "additional_price": 400,
+            "option_value": "500 ريال",
+            "image": "",
+            "color": "",
+            "code": "662137503",
+            "is_out": false,
+            "is_default": 0,
+            "skus_availability": {}
+          },
+          {
+            "id": 662137504,
+            "name": "1000 ريال",
+            "option_id": 662137500,
+            "additional_price": 900,
+            "option_value": "1000 ريال",
+            "image": "",
+            "color": "",
+            "code": "662137504",
+            "is_out": false,
+            "is_default": 0,
+            "skus_availability": {}
+          }
         ]
       }
     ],
     "skus": [
-      { "id": 662137511, "product_id": 662137586, "price": { "amount": 100, "currency": "SAR" }, "regular_price": { "amount": 0, "currency": "SAR" }, "sale_price": null, "has_special_price": false, "stock_quantity": null, "unlimited_quantity": true, "is_default": true, "related_options": [662137500], "related_option_values": [662137501] },
-      { "id": 662137512, "product_id": 662137586, "price": { "amount": 200, "currency": "SAR" }, "regular_price": { "amount": 0, "currency": "SAR" }, "sale_price": null, "has_special_price": false, "stock_quantity": null, "unlimited_quantity": true, "is_default": false, "related_options": [662137500], "related_option_values": [662137502] },
-      { "id": 662137513, "product_id": 662137586, "price": { "amount": 500, "currency": "SAR" }, "regular_price": { "amount": 0, "currency": "SAR" }, "sale_price": null, "has_special_price": false, "stock_quantity": null, "unlimited_quantity": true, "is_default": false, "related_options": [662137500], "related_option_values": [662137503] }
+      {
+        "id": 662137511,
+        "product_id": 662137586,
+        "price": {
+          "amount": 100,
+          "currency": "SAR"
+        },
+        "regular_price": {
+          "amount": 0,
+          "currency": "SAR"
+        },
+        "sale_price": null,
+        "has_special_price": false,
+        "stock_quantity": null,
+        "unlimited_quantity": true,
+        "is_default": true,
+        "related_options": [
+          662137500
+        ],
+        "related_option_values": [
+          662137501
+        ]
+      },
+      {
+        "id": 662137512,
+        "product_id": 662137586,
+        "price": {
+          "amount": 250,
+          "currency": "SAR"
+        },
+        "regular_price": {
+          "amount": 0,
+          "currency": "SAR"
+        },
+        "sale_price": null,
+        "has_special_price": false,
+        "stock_quantity": null,
+        "unlimited_quantity": true,
+        "is_default": false,
+        "related_options": [
+          662137500
+        ],
+        "related_option_values": [
+          662137502
+        ]
+      },
+      {
+        "id": 662137513,
+        "product_id": 662137586,
+        "price": {
+          "amount": 500,
+          "currency": "SAR"
+        },
+        "regular_price": {
+          "amount": 0,
+          "currency": "SAR"
+        },
+        "sale_price": null,
+        "has_special_price": false,
+        "stock_quantity": null,
+        "unlimited_quantity": true,
+        "is_default": false,
+        "related_options": [
+          662137500
+        ],
+        "related_option_values": [
+          662137503
+        ]
+      },
+      {
+        "id": 662137514,
+        "product_id": 662137586,
+        "price": {
+          "amount": 1000,
+          "currency": "SAR"
+        },
+        "regular_price": {
+          "amount": 0,
+          "currency": "SAR"
+        },
+        "sale_price": null,
+        "has_special_price": false,
+        "stock_quantity": null,
+        "unlimited_quantity": true,
+        "is_default": false,
+        "related_options": [
+          662137500
+        ],
+        "related_option_values": [
+          662137504
+        ]
+      }
     ]
   }
 }

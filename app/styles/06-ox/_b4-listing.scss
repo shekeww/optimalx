@@ -1008,12 +1008,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 // Reset and apply stay in reach at the foot: the apply button takes two
 // thirds, carries the live count and is the one accent on the sheet.
+// The reset's third never drops under its own label and padding (run + 16
+// each side), so the cut never reaches "مسح الكل" (review, 2026-09-26: at
+// 390 to 445 a plain third was 115 to 133 wide for a 166 wide button).
 .ox-fsheet__foot {
   position: sticky;
   inset-block-end: 0;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  grid-template-columns: minmax(max-content, 1fr) minmax(0, 2fr);
   gap: var(--ox-3);
   padding: var(--ox-3) var(--ox-gutter) calc(var(--ox-3) + env(safe-area-inset-bottom, 0px));
   background: var(--ox-card);
@@ -1022,6 +1025,38 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-btn {
     inline-size: 100%;
     min-inline-size: 0;
+  }
+}
+
+// Under 440 the two angled buttons cannot both keep their labels off the
+// cut: the reset needs 166 in Arabic and the apply 212 or more with its
+// chevron and a two digit count, against 328 of foot at 360 and 358 at 390.
+// The apply keeps the full primary (the angle, the chevron, the accent) and
+// the reset steps down to the quiet underlined action the applied chips
+// already use for the same job (`.ox-listing__applied-clear`), still a 48
+// tall target at the button label size. The familiar phone sheet: one
+// strong action, the reset beside it in text.
+@media (max-width: 439.98px) {
+  .ox-fsheet__foot {
+    grid-template-columns: auto minmax(0, 1fr);
+
+    .ox-btn.ox-fsheet__reset {
+      padding-inline: var(--ox-3);
+      clip-path: none;
+      background: none;
+      color: var(--ox-fg);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+
+      &::before {
+        display: none;
+      }
+
+      &:hover {
+        background: none;
+        color: var(--ox-accent-dark);
+      }
+    }
   }
 }
 
@@ -3036,22 +3071,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // 390 on both, 1296 at 1440 on both. Two classes, because `_b5-pages.scss`
 // loads after this file and its single-class `.ox-page` would win a tie.
 //
-// THE LAST ROW. The home grid holds eight tiles, two full rows at 4-up; this
-// page holds all ten type roots, so from 1280 the last row carries two tiles
-// (`snacks-bars`, `accessories`, the two roots with no home tile). They are
-// placed in the middle two columns rather than left at the reading start of
-// an otherwise empty row. Below 1280 the grid is 2-up and ten fills five
-// rows exactly. The rule matches any trailing pair, so a store that adds or
-// drops a root never ends on an off-centre half row.
+// THE LAST ROW. This page holds all ten type roots, and so does the home
+// grid since 2026-09-26, so from 1280 the last row carries two tiles
+// (`snacks-bars`, `accessories`), placed in the middle two columns. The rule
+// now lives once, unscoped, in _b2-home.scss section 4 (the grid's own
+// 1280 tier), and serves both pages.
 // ---------------------------------------------------------------------------
 .ox-page.ox-cat-index {
   max-inline-size: calc(var(--ox-container) + 2 * var(--ox-gutter));
-}
-
-@media (min-width: 1280px) {
-  .ox-cat-index .ox-cats__grid > :nth-child(4n + 1):nth-last-child(2) {
-    grid-column-start: 2;
-  }
 }
 
 .ox-cat-index__section {

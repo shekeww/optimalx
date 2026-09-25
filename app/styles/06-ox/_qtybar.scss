@@ -91,22 +91,24 @@
   border: 0;
   border-radius: 0;
 
-  // THE MIRRORED LEAN (owner, 2026-09-25: "add to cart button to be
-  // mirrored"): the buy-now under the bar is `ox-angled()`, which leans like
-  // "/" in both languages, so the bar leans like "\" in both languages, the
-  // same run on the same 34 degrees, and the two stacked shapes read as a
-  // pair. The polygon is the exact mirror of `ox-angled()`'s own (top edge
-  // flush at the inline-left, foot shifted by the run), with no `[dir]`
-  // twin for the same reason that mixin has none. The glyph offsets below
-  // hold unchanged: the cut is the same triangle turned over, so every
-  // clearance measured against it is the same number.
+  // ONE LEAN WITH THE BUY-NOW (owner, 2026-09-26: "add to cart button is
+  // currently flipped/mirrored horizontally, it should be mirrored back to be
+  // exactly aligned with buy now button"; this reverses the 2026-09-25
+  // mirrored lean). The buy-now under the bar is `ox-angled(48px)`, a "/" in
+  // both languages, and the bar's paint takes the same mixin at the same 48:
+  // the bar and the buy-now share one box width and one polygon, so their
+  // cut edges sit at the same x at the top and at the foot, in Arabic and in
+  // English. No `[dir]` twin, for the reason the mixin has none (a button
+  // keeps one lean in both languages). The glyph clearances below are
+  // measured against this cut: the top of the bar is cut at its left end and
+  // the foot at its right end, whichever cell sits there.
   &::before,
   &::after {
     content: '';
     position: absolute;
     z-index: -1;
     pointer-events: none;
-    clip-path: polygon(0 0, calc(100% - #{ox-run(48px)}) 0, 100% 100%, #{ox-run(48px)} 100%);
+    @include ox-angled(48px);
   }
 
   // The stroke is the element's own edge colour: ink on a light ground, the

@@ -233,9 +233,12 @@
 // The diagonal is wider at the top, matching the reference, and it is a
 // physical polygon with a `[dir='ltr']` mirror rather than a logical one,
 // because `clip-path` takes no logical values.
-// From 640 only. At phone widths the split leaves neither half usable, so the
-// photograph stays full bleed there and the scrim below carries the type.
-@media (min-width: 640px) {
+// From 1024 only (hero review, 2026-09-26: from 640 to 1023 the copy ran over
+// the strap pair and into the photograph, 24 to 147px at 640 and 768, in both
+// languages). Below 1024 the split leaves neither half usable, so the band is
+// stacked there: the photograph on top, the copy under it (see THE PHONE HERO
+// IS STACKED below).
+@media (min-width: 1024px) {
   // THE PHOTO ELEMENT IS SIZED TO THE VISIBLE REGION, not to the whole band.
   //
   // This is why the frames read as "zoomed in". The img used to stretch across
@@ -509,7 +512,7 @@
   }
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   // REDUCED, not removed. The copy sits on solid graphite here so the scrim
   // no longer carries legibility, but taking it away entirely left the
   // photograph sitting brighter than the near-black chrome above it and the
@@ -559,7 +562,14 @@
 // geometry survives, and the copy sits underneath on the solid ground where it
 // can be read. No text is ever over the picture, both actions are visible, and
 // the band still reads as this store's hero rather than a generic stack.
-@media (max-width: 639px) {
+//
+// TABLETS TOO, 640 to 1023 (hero review, 2026-09-26). The split's dark side
+// is about 150 + 0.67 t px wide there (t the depth into the band), so the
+// eyebrow, the headline and the subline ran over the strap pair and into the
+// photograph in both languages. The stacked band keeps every line on the
+// solid ground at every width under 1024, and the frames fill a wider,
+// taller picture than the split's pane gave them.
+@media (max-width: 1023px) {
   .ox-hero {
     display: block;
     min-block-size: 0;
@@ -624,10 +634,30 @@
   }
 
   // The dots move onto the solid ground, where they are visible against
-  // something other than the photograph.
+  // something other than the photograph: 28px above the band's foot (272 of
+  // the phone's 300), whatever the band's height.
   .ox-hero__dots {
     inset-block-end: auto;
-    inset-block-start: 272px;
+    inset-block-start: calc(100% - 28px);
+  }
+}
+
+// The tablet band: 16:10 (62.5vw, the desktop band's own cap), so the athlete
+// keeps his face and the tub's label and the wide frames keep their subjects,
+// never over 560, and it yields to a short landscape window (the 156px
+// header, about 310px of copy and the 56px tab bar take about 530) down to
+// 240, so both calls to action stay on the first screen. The first
+// block-size is the fallback for a browser without `svh`. The copy is under
+// the picture, so the wash over it is the desktop's even 18%, not the
+// phone's darker foot.
+@media (min-width: 640px) and (max-width: 1023px) {
+  .ox-hero__panel {
+    block-size: clamp(240px, 62.5vw, 560px);
+    block-size: clamp(240px, min(62.5vw, calc(100svh - 530px)), 560px);
+  }
+
+  .ox-hero__scrim {
+    background: rgba(14, 16, 20, 0.18);
   }
 }
 
@@ -635,7 +665,7 @@
 // max-width rule rather than a base `display: none` plus a min-width override,
 // because the two rules have equal specificity and the later one wins: the
 // base was hiding it at every width.
-@media (max-width: 639px) {
+@media (max-width: 1023px) {
   .ox-hero__edge {
     display: none;
   }
@@ -786,48 +816,10 @@
   display: none;
 }
 
+// The 640 to 1023 split tier (the band at 520, the copy at 52% and 44%) is
+// gone: that range is stacked now (THE PHONE HERO IS STACKED above), so from
+// 640 only the second call to action and the wedge sizes change here.
 @media (min-width: 640px) {
-  .ox-hero {
-    // From here the desktop crop is served and its subject is right of
-    // centre, so the copy moves to the middle of the frame.
-    align-items: center;
-    min-block-size: 520px;
-  }
-
-  // The heavy horizontal gradient that used to live here is GONE. It dated
-  // from the full-bleed composition, where the copy sat on top of the
-  // photograph and needed 0.97 of near-black behind it to stay legible. The
-  // copy has been on solid graphite since the split landed, so all this did
-  // was re-darken the picture from a block further down the file than the one
-  // that had just lightened it.
-
-  // The copy sits opposite the photograph. The clip mirrors with the document,
-  // so the copy is at the logical START in both directions: the right in
-  // Arabic, the left in English, which is the reference and is also where each
-  // language begins reading. This used to be pinned to the physical left in
-  // both, which put Arabic copy on the side the eye reaches last.
-  .ox-hero__inner {
-    justify-content: flex-start;
-  }
-
-  .ox-hero__text {
-    max-inline-size: 52%;
-  }
-
-  // ENGLISH ONLY (owner review 2026-09-24, item 1b): the pane's inner edge is
-  // a 34deg diagonal, narrower at the top than the bottom (§2's derivation
-  // above), so a flat percentage of the CONTAINER lets Latin copy (wider
-  // than Arabic at the same font-size) run past the cut into the
-  // photograph ("today?" printed over the athlete at 1440 and 1905,
-  // docs/build/progress/S9a-V3.md). 44%, down from 52%: measured against the
-  // pane's own boundary at the headline's own top for this tier (H=520,
-  // run=ox-run(520px)=350.7) with a safety margin, so the whole column
-  // (eyebrow, headline, lead, actions) stays inside the cut at every width.
-  // The Arabic column is untouched: no `[dir='ltr']` selector reaches it.
-  [dir='ltr'] .ox-hero__text {
-    max-inline-size: 44%;
-  }
-
   .ox-hero__actions .ox-cta-pill {
     display: inline-flex;
   }
@@ -855,33 +847,84 @@
   // window taller than it is wide keeps the composition instead of a column
   // of photograph. The pane, the scrim and the cut read this height through
   // the panel's `100cqh` (§2 above), so nothing else restates it.
+  // `--ox-hero-offset` is what sits above the band: the home page's 137 by
+  // default; a page with a shorter header over the same band (the password
+  // page's 72) sets its own, so its band also ends at the fold.
+  //
+  // The copy sits in the middle of the band, opposite the photograph. The
+  // clip mirrors with the document, so the copy is at the logical START in
+  // both directions: the right in Arabic, the left in English, which is the
+  // reference and is also where each language begins reading.
   .ox-hero {
-    min-block-size: clamp(560px, calc(100vh - 137px), 62.5vw);
-    min-block-size: clamp(560px, calc(100dvh - 137px), 62.5vw);
+    align-items: center;
+    min-block-size: clamp(560px, calc(100vh - var(--ox-hero-offset, 137px)), 62.5vw);
+    min-block-size: clamp(560px, calc(100dvh - var(--ox-hero-offset, 137px)), 62.5vw);
   }
 
   .ox-hero__inner {
+    justify-content: flex-start;
     padding-block: var(--ox-16);
   }
 
-  // Columns 1 to 6 of 12 at the physical left (DIRECTION 4.3 rule 1, mirrored
-  // by the photograph).
+  // THE COPY AGAINST THE CUT (hero review, 2026-09-26). The column used to be
+  // one flat width (48% in Arabic, 40% in English), but the room beside the
+  // strap pair grows with depth: 0.6745px for every pixel down the band. So
+  // the column is uncapped and each block takes the measure that clears the
+  // pair's far edge by 16px or more at its own depth. The copy sits on the
+  // band's middle, so that room depends on the width and the copy's own
+  // height, never the band's height: the pair's far edge at mid-band is
+  // 47% of the band less 18.5px from the copy's side, the copy starts at the
+  // gutter (32px, or half of what the 1296px container leaves), and a block
+  // d px below the copy's top has 0.6745 (T / 2 - d) less than the middle,
+  // T being the copy's height (about 360 to 410). With `vw` standing for the
+  // band (a 15px scrollbar allowed for), that gives `47vw - 73.5px - k` up to
+  // 1360 wide and `613px - 3vw - k` past it, k per block below: the eyebrow
+  // (k 128 to 135, it wraps under 1100 and past 1900 in English, under 1120
+  // in Arabic), the headline (k 91, two lines under 1200), the subline and
+  // the buttons, which sit deepest and wrap only where they would cross (the
+  // Arabic pair under 1080). Balanced lines, so a wrap never leaves one word
+  // alone. Measured from 1024 to 2560 in both languages: 18px or more from
+  // every line box's top corner to the pair's far edge (it was -89 to 0 in
+  // English under 1366, -7 in Arabic at 1024). Home hero only: the password
+  // page reuses these classes and sets its own measures.
+  .ox-hero__text,
+  [dir='ltr'] .ox-hero__text {
+    max-inline-size: none;
+  }
+
   .ox-hero__text {
-    max-inline-size: 48%;
     gap: var(--ox-6);
   }
 
-  // Same fix as the tier below, this tier's own H/run (owner review
-  // 2026-09-24, item 1b). Measured at 1440 (getBoundingClientRect against
-  // the clip polygon, docs/build/progress/S9a-V3.md): the pane's inner
-  // boundary at the headline's own top sits at band-relative x=622.6; the
-  // text column starts at the container gutter (64.5 at 1440), leaving
-  // 558px before the cut. 40% of the 1296px container is 518.4px, inside
-  // that figure with margin from 1024 up through 1905 (the owner's own
-  // review width): the container caps at 1296 while the pane's own box
-  // keeps growing with the viewport past it, so the margin only widens.
-  [dir='ltr'] .ox-hero__text {
-    max-inline-size: 40%;
+  .s-block--ox-hero .ox-hero__eyebrow {
+    max-inline-size: min(47vw - 208px, 485px - 3vw);
+    text-wrap: balance;
+  }
+
+  [dir='ltr'] .s-block--ox-hero .ox-hero__eyebrow {
+    max-inline-size: min(47vw - 208px, 493px - 3vw);
+  }
+
+  .s-block--ox-hero .ox-hero__headline {
+    max-inline-size: min(47vw - 165px, 552px - 3vw);
+    text-wrap: balance;
+  }
+
+  [dir='ltr'] .s-block--ox-hero .ox-hero__headline {
+    max-inline-size: min(47vw - 165px, 528px - 3vw);
+  }
+
+  .s-block--ox-hero .ox-hero__sub {
+    max-inline-size: min(46ch, 47vw - 77px, 609px - 3vw);
+    text-wrap: pretty;
+  }
+
+  .s-block--ox-hero .ox-hero__actions {
+    max-inline-size: min(47vw + 10px, 706px - 3vw);
+  }
+
+  [dir='ltr'] .s-block--ox-hero .ox-hero__actions {
+    max-inline-size: min(47vw + 20px, 706px - 3vw);
   }
 
   .ox-hero__wedge--wide {
@@ -1490,6 +1533,18 @@ body {
   .ox-cats__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--ox-6);
+  }
+
+  // THE LAST ROW (owner, 2026-09-26: snacks-bars and accessories joined the
+  // home grid, so it holds all ten type roots like /collections). Ten at
+  // 4-up ends on a pair: it takes the middle two columns instead of sitting
+  // at the reading start of an otherwise empty row, at the same tile size.
+  // Below 1280 the grid is 2-up and ten fills five rows exactly. Any
+  // trailing pair matches, so adding or dropping a root never leaves an
+  // off-centre half row. One rule for both pages (it used to be scoped to
+  // `.ox-cat-index` in _b4-listing.scss section 14).
+  .ox-cats__grid > :nth-child(4n + 1):nth-last-child(2) {
+    grid-column-start: 2;
   }
 
   .ox-tile {

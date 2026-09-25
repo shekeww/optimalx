@@ -46,6 +46,17 @@
   inline-size: 100%;
 }
 
+// The directions link leads with its icon. `.ox-btn--link` is an inline box,
+// so the glyph sat 3 from its label (the width of the space the icon
+// snippet's line end leaves); as a flex row it takes the icon system's 8
+// (icon-system.md 8.6), keeps its underline (a flex container passes the
+// decoration on to its items) and stays at the inline start.
+.ox-advisory__action.ox-btn--link {
+  display: inline-flex;
+  justify-content: flex-start;
+  gap: var(--ox-2);
+}
+
 // The store rating (VISIT-2026-09-24 §4.3) beside the closing note. Wraps on
 // a narrow column rather than forcing the two onto one line.
 .ox-advisory__foot {

@@ -91,7 +91,11 @@
      to 12). No text on a phone is under 13px, none on a desktop under 14px,
      and a size written as bare pixels in a component is held to the same
      floors (micro is the smallest size any rule may ask for). The steps
-     above body did not move: the complaint was the bottom of the scale. */
+     above body did not move: the complaint was the bottom of the scale.
+     Small and micro are the two floor steps, so they run 390 to 1024, not
+     to 1440: the desktop floor (micro 14, small 15) holds from the first
+     desktop width, the common 1280 and 1366 laptops included, where a ramp
+     to 1440 left micro at 13.85 (review, 2026-09-26). */
   --ox-t-display: clamp(34px, 25.83px + 2.095vw, 56px);
   --ox-t-h1: clamp(28px, 23.54px + 1.143vw, 40px);
   --ox-t-h2: clamp(24px, 21.03px + 0.762vw, 32px);
@@ -99,8 +103,8 @@
   --ox-t-title: clamp(17px, 16.63px + 0.095vw, 18px);
   --ox-t-lead: clamp(17px, 15.89px + 0.286vw, 20px);
   --ox-t-body: clamp(16px, 15.63px + 0.095vw, 17px);
-  --ox-t-small: clamp(14px, 13.63px + 0.095vw, 15px);
-  --ox-t-micro: clamp(13px, 12.63px + 0.095vw, 14px);
+  --ox-t-small: clamp(14px, 13.39px + 0.158vw, 15px);
+  --ox-t-micro: clamp(13px, 12.39px + 0.158vw, 14px);
 
   /* ---------- Ours: Arabic line-height floors ----------
      Measured from public/assets/fonts/cairo-arabic.woff2, 1000 units per em:
@@ -452,6 +456,20 @@
    (13 rising to 14 in Latin), so no Arabic word on a phone is under 14px. */
 :root[lang^="ar"] {
   --ox-t-micro: 14px;
+}
+
+/* An Arabic run on an English page keeps the same floor (review,
+   2026-09-26: the language switch's "العربية" drew at 13 in the English
+   drawer). The token reaches a run that sizes itself on micro; the
+   zero-specificity size lifts a run that only inherits its parent's (the
+   switch's lang span inside a micro link) and loses to any rule of its own,
+   so a larger size stays as it is. Today that is the switch, the
+   certification's Arabic lines and a review's Arabic date. */
+:root:not([lang^="ar"]) [lang^="ar"] {
+  --ox-t-micro: 14px;
+}
+:where(:root:not([lang^="ar"]) [lang^="ar"]) {
+  font-size: max(1em, 14px);
 }
 
 /* Some engines do not inherit letter-spacing into a form control, which is

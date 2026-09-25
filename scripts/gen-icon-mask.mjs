@@ -31,12 +31,17 @@ export const SYMBOL_ID = 'ox-cart';
  * hero CTA's 16px arrow, where the sprite's `.ox-icon--16` rule strokes at
  * 2.25; the plus and minus are the 20px step glyphs, at the sprite's own 2.
  * The cart keeps the 1.8 it has always been drawn at.
+ * The bold stroke (owner, 2026-09-25, the onthegoofficial.my reference):
+ * every icon at 24 and under now strokes at 2.4 in the 24 grid (the
+ * `.ox-icon` ladder in `_primitives.scss`), and all four masks stand in for
+ * glyphs of 18 to 20px (the hero arrow and the step glyphs at the 20 floor,
+ * the cart on the add buttons), so all four take the same 2.4.
  */
 export const SYMBOLS = [
-  [SYMBOL_ID, '--ox-cart-glyph', '1.8'],
-  ['ox-chevron-end', '--ox-chevron-end-glyph', '2.25'],
-  ['ox-plus', '--ox-plus-glyph', '2'],
-  ['ox-minus', '--ox-minus-glyph', '2'],
+  [SYMBOL_ID, '--ox-cart-glyph', '2.4'],
+  ['ox-chevron-end', '--ox-chevron-end-glyph', '2.4'],
+  ['ox-plus', '--ox-plus-glyph', '2.4'],
+  ['ox-minus', '--ox-minus-glyph', '2.4'],
 ];
 export const START_MARKER = '/* ---------- Generated: scripts/gen-icon-mask.mjs (do not hand-edit) ---------- */';
 export const END_MARKER = '/* ---------- End generated ---------- */';

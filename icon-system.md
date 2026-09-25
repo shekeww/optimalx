@@ -296,9 +296,9 @@ Prepared 2026-09-25 after your direction: "match and inspire the identity and de
 
 The full audit, with crops, is the workshop note ref-icons-audit.md (session scratchpad, r8). In short:
 
-- **Two families with opposite rules.** The icons that carry a promise (protein, macros, delivery, secure payment, the comparison ticks) are **solid masses**: one colour, the detail cut out of the solid as negative space, two to four shapes per glyph. The interface glyphs (search, account, cart, close, chevrons) are thin lines. The weight is where the promise is.
-- **The accent is a container, not a line.** Promise icons stand white on a solid accent disc (a 30 glyph in a 40 to 44 disc), or white on black. The accent never draws a hairline.
-- **Big, and the same size on a phone.** Service icons 40, benefit icons 60, feature icons 80, value icons 30 in their disc, at 390 and at 1440 alike. The layout reflows; the icon never shrinks.
+- **Two families with opposite rules.** The icons that state what the product gives are **solid or heavy**: the value panel (protein, macros, calories, prebiotic) is fully solid, one colour, the detail cut out of the solid as negative space, two to four shapes per glyph; the feature row (80px) and the benefit row (60px) mix a heavy or thin outline with solid parts (a solid star in a ring, a solid core in a flame, one full silhouette); the comparison marks are solid discs with the tick or cross cut in. Everything else is **line**, and that includes the store's own shipping and payment promises: the service row (international delivery, processing, reliable delivery, secure payments) is a 2px outline at 40, and the trust row under the add to cart button a 1.5 line at 24, as light as the interface glyphs (search, account, cart, close, chevrons). The weight goes where the product's value is stated; no line on the reference is heavier than 1.5 in a 24 grid.
+- **The accent is a container, not a line.** The value icons stand white on a solid accent disc (a 30 glyph in a 40 to 44 disc), the benefit icons white on black. The accent never draws a hairline.
+- **Big, and the same size on a phone.** Service icons 40, benefit icons 60, feature icons 80, value icons 30 in their disc, at 390 and at 1440 alike. The layout reflows; the icon never shrinks. Much of the reference's boldness is this size and the heavy labels, not the stroke.
 - **Bold labels beside them.** 14 to 20px at 700 to 900, 8 to 10px from the glyph beside it, 17 to 18px under it when stacked.
 - **Almost no motion.** Only the play button scales on hover. The energy comes from mass and contrast.
 - **What we do not take:** the red, the round discs (ours are plates on the 34° angle), and the 9px labels of its buy-box trust row.
@@ -306,7 +306,7 @@ The full audit, with crops, is the workshop note ref-icons-audit.md (session scr
 ### 8.2 What the site does now with v2, before v3 arrives
 
 - **A heavier line, by size.** Your v2 files are drawn at 2 in the 24 grid; the theme now strokes them at 2.4 at 24 and under (a whole 2px line at the 20px minimum, the crispest a screen draws), 2.25 from 26 to 40, and your own 2 from 44 up. No icon on the site draws a line under 2px.
-- **The icon tile.** Promise icons stand in a solid plate cut once at 34° on the corner that faces the label, the same at every width: an **orange plate with the glyph all white** on dark bands and cards (the home advisory and guidance facts, the channel cards), a **graphite plate with the glyph white and its accent orange** on light surfaces (the review facts, the service headers, the branch map, the empty cart). Sizes: glyph 24 in a 44 plate, 32 in a 56, 40 in a 72.
+- **The icon tile.** Promise icons stand in a solid plate cut once at 34° on the corner that faces the label, the same at every width: an **orange plate with the glyph all white** on dark bands and cards (the home advisory and guidance facts, the channel cards), a **graphite plate with the glyph white and its accent orange** on light surfaces (the review facts, the service headers and service cards, the branch map, and the three empty and error states: the empty cart, an empty search and the 404 page). Sizes: glyph 24 in a 44 plate, 28 in a 48 (the services page's service cards), 32 in a 56, 40 in a 72.
 - **Sizes.** Nothing draws under 20px; the header and tab bar glyphs are 24; the product page's trust and delivery rows are 24.
 
 v3 gives the tiles and rows a drawing made for them, instead of a line icon made heavier.
@@ -344,18 +344,20 @@ Each is a new file named `<name>-solid` beside the line file of the same name (f
 | advisory-solid | orange plate 44/24: home and services facts; graphite 56/32: review facts | Two overlapping speech bubbles, the rear one solid, the front one knocked out of it with a 2 unit outline. | NEW, rtlFlip |
 | inbody-solid | orange plate 44/24 | The measurement platform as a solid slab, the two hand grips as solid posts, a figure knocked out between them. A device, not a body scan. | NEW |
 | recommendation-solid | orange plate 44/24 | A solid tag with a 34° cut corner, a forward arrow knocked out of it. | NEW, rtlFlip |
-| authentic-solid | orange plate 44/24; trust rows 24 | A solid seal (the v2 scalloped badge filled), the check knocked out. | NEW |
-| written-question-solid | orange plate 44/24: channel card; graphite 56/32: service header | A solid speech bubble with a tail, three dots knocked out. | NEW, rtlFlip |
-| video-consult-solid | orange plate 44/24; graphite 56/32 | A solid screen, the play triangle knocked out. | NEW |
-| branch-visit-solid | orange 44/24; graphite 56/32: service header, review facts, branch map | The storefront with its awning as a solid, the door knocked out, the awning stripes as knockouts at 2 units. | NEW |
-| training-solid | graphite 56/32 | A solid dumbbell, the grip thinner than the plates, the plates cut at 34°. | NEW |
+| authentic-solid | orange plate 44/24 (the product trust grid only if you choose Batch 2) | A solid seal (the v2 scalloped badge filled), the check knocked out. | NEW |
+| written-question-solid | orange plate 44/24: channel card; graphite 48/28: service card; graphite 56/32: service header | A solid speech bubble with a tail, three dots knocked out. | NEW, rtlFlip |
+| video-consult-solid | orange plate 44/24; graphite 48/28: service card; graphite 56/32 | A solid screen, the play triangle knocked out. | NEW |
+| branch-visit-solid | orange 44/24; graphite 48/28: service card; graphite 56/32: service header, review facts, branch map | The storefront with its awning as a solid, the door knocked out, the awning stripes as knockouts at 2 units. | NEW |
+| training-solid | graphite 48/28: service card; graphite 56/32: service header | A solid dumbbell, the grip thinner than the plates, the plates cut at 34°. | NEW |
 | plan-solid | graphite 56/32 | A solid clipboard, two ticks knocked out, 2 units apart. | NEW |
 | aftersales-solid | graphite 56/32 | A solid return loop around a small box, the loop's head cut at 34°. | NEW, rtlFlip |
 | empty-cart-solid | graphite 72/40: the empty cart | The cart basket as a solid, the wheels as solid dots, the dashed contents as the accent. | NEW, rtlFlip |
 | search-empty-solid | graphite 72/40: an empty search | A solid lens, the slash as the accent. | NEW |
 | not-found-solid | graphite 72/40: the 404 page | The same construction as search-empty-solid, with its own mark. | NEW |
 
-**Batch 2: trust and payment rows (24 bare, beside a bold label)**
+**Batch 2 (optional, your choice): trust and payment rows (24 bare, beside a bold label)**
+
+This batch is not a lesson from the reference. The reference draws its shipping and payment rows in line: its service row is a 2px outline at 40 and its trust row under the add to cart button a 1.5 line at 24. The site keeps your v2 line drawings in these rows at the heavier 2.4, which already outweighs them. Draw this batch only if you want the rows to share the solid look of the plates; skip it and they stay line.
 
 | Name | Where it stands | What to draw | Status |
 |---|---|---|---|
@@ -375,11 +377,17 @@ Each is a new file named `<name>-solid` beside the line file of the same name (f
 ### 8.6 What the theme draws, not the file
 
 - **The plates.** Never draw a disc, a square or a badge behind an icon: the theme draws the plate, cuts it at 34°, colours it and mirrors it for Arabic. The file is the glyph alone.
-- **Sizes and spacing.** No icon under 20px; plates of 44, 56 and 72; 8px between an icon and its label in a row, 12px beside a 44 plate, 16px beside a 56; 8 to 12px under a stacked icon.
+- **Sizes.** No icon under 20px; plates of 44, 48, 56 and 72.
+- **Spacing, measured on the site at 390 and 1440 in both languages (2026-09-26).**
+  - **A leading icon and its label in a row: 8px.** The utility bar, buttons and links, the product page's trust grid and delivery rows, the payment pills, the footer's registration lines, the plan and scope lists, the service cards' WhatsApp link, the advisory plate's directions link.
+  - **Beside a plate:** 12px beside a 44 or 48 plate (the advisory and guidance facts, the service cards), 16px beside a 56 (the review facts, the service headers).
+  - **Trailing arrows and chevrons that belong to their word: 4px,** so the glyph reads as part of the label: the menu's disclosure chevron, "view all" arrows, "show more" chevrons, the external-link glyph, the breadcrumb separators.
+  - **Under a stacked icon:** 8px in the goal cards (26 glyph), the channel cards (44 plate) and under the branch map's 56 plate; 4px in the category tiles' compact body, where the 36 glyph's own 3px of padding brings the visible gap to about 7; 16px under the 72 plate of an empty or error state.
+  - **Not an icon and label pair, spaced by their own component:** arrow faces in their own square or angled chip (the offer strip's arrow and WhatsApp faces, the branch gallery covers, the featured rail's call to action, the carousel arrows), the header's icon buttons, the chevron at the far end of an accordion row, the plus and minus of a quantity stepper beside the number, and the illustration column of a step list (the product page's how-to steps: a bare 44 beside the numbered text, 20px).
 - **Motion.** None on icons, as on the reference: the weight and the angle carry the energy.
 
 ### 8.7 How to deliver v3
 
 1. One folder, **optimal-x-icons-v3**, the same layout as v2: an `svg` folder with one file per icon, named exactly as the Name column, and an `icons.json` manifest with one entry per icon: name, category, hasAccent, rtlFlip, and one new field, family, set to "solid" or "line".
 2. Solid files use `fill="currentColor"` and no stroke; the optional accent part carries the class `ox-icon__accent`. No hard-coded colours, no embedded images.
-3. Send it in the three batches of 8.5. Each batch goes live as it arrives: I extend the import script to carry the solid family beside the line one, swap each call site of the batch to its solid name, and check every page at 390 and 1440 in both languages.
+3. Send it in the batches of 8.5 (Batch 2 only if you choose it). Each batch goes live as it arrives: I extend the import script to carry the solid family beside the line one, swap each call site of the batch to its solid name, and check every page at 390 and 1440 in both languages.
