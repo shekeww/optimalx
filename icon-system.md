@@ -287,3 +287,99 @@ The two diagonal shapes you liked behind the advisory section are a skewed accen
 - The how-to-use steps show the scoop, shaker and straw only on powders. Every other product shows the step numbers alone until its icons arrive. A number is honest; a scoop on a gift card is not.
 - The home poster's facts show the servings and serving-size icons only for a powder product.
 - When v2 lands, I map every step, stat, trust row and tile to the names above, retire the duplicates, and check every page on both platforms at 390 and 1440 in both languages.
+
+## 8. Icon system v3: the bold set (the next brief for Claude Design)
+
+Prepared 2026-09-25 after your direction: "match and inspire the identity and design of the icons with the icons and icons system in https://onthegoofficial.my, reflecting the bold premium energetic identity". Nobody but you draws an icon, so this section is the brief; the site already does everything it can with v2 in the meantime (8.2).
+
+### 8.1 What the reference does, and what we take
+
+The full audit, with crops, is the workshop note ref-icons-audit.md (session scratchpad, r8). In short:
+
+- **Two families with opposite rules.** The icons that carry a promise (protein, macros, delivery, secure payment, the comparison ticks) are **solid masses**: one colour, the detail cut out of the solid as negative space, two to four shapes per glyph. The interface glyphs (search, account, cart, close, chevrons) are thin lines. The weight is where the promise is.
+- **The accent is a container, not a line.** Promise icons stand white on a solid accent disc (a 30 glyph in a 40 to 44 disc), or white on black. The accent never draws a hairline.
+- **Big, and the same size on a phone.** Service icons 40, benefit icons 60, feature icons 80, value icons 30 in their disc, at 390 and at 1440 alike. The layout reflows; the icon never shrinks.
+- **Bold labels beside them.** 14 to 20px at 700 to 900, 8 to 10px from the glyph beside it, 17 to 18px under it when stacked.
+- **Almost no motion.** Only the play button scales on hover. The energy comes from mass and contrast.
+- **What we do not take:** the red, the round discs (ours are plates on the 34° angle), and the 9px labels of its buy-box trust row.
+
+### 8.2 What the site does now with v2, before v3 arrives
+
+- **A heavier line, by size.** Your v2 files are drawn at 2 in the 24 grid; the theme now strokes them at 2.4 at 24 and under (a whole 2px line at the 20px minimum, the crispest a screen draws), 2.25 from 26 to 40, and your own 2 from 44 up. No icon on the site draws a line under 2px.
+- **The icon tile.** Promise icons stand in a solid plate cut once at 34° on the corner that faces the label, the same at every width: an **orange plate with the glyph all white** on dark bands and cards (the home advisory and guidance facts, the channel cards), a **graphite plate with the glyph white and its accent orange** on light surfaces (the review facts, the service headers, the branch map, the empty cart). Sizes: glyph 24 in a 44 plate, 32 in a 56, 40 in a 72.
+- **Sizes.** Nothing draws under 20px; the header and tab bar glyphs are 24; the product page's trust and delivery rows are 24.
+
+v3 gives the tiles and rows a drawing made for them, instead of a line icon made heavier.
+
+### 8.3 Style rules for the solid family (give these to Claude Design with every batch)
+
+1. **Grid.** 24 by 24 artboard, 2px padding (20 by 20 live area), as v1 and v2. The theme draws these at 24 inside a 44 plate, at 32 inside a 56, and at 20 bare in a row.
+2. **Solid, one colour.** Filled silhouettes in `currentColor`, no stroke. Interior detail is cut out of the solid (a knockout), never drawn on top of it. The filled area covers roughly half of the live area: heavy enough to read as a mass at 20px, open enough for the knockouts to read.
+3. **Minimum sizes in the 24 grid.** Any solid part at least 2.5 units across; any knockout or gap at least 2 units; nothing thinner. Check every icon at 20px in one colour before approving it.
+4. **The brand angle.** One outer corner of the silhouette may be cut at 34° from vertical, the lean of the X mark and of the plates the icon stands in; every diagonal that expresses motion (an arrow, a return loop, a speed cut) leans at the same 34°. Other corners match v2: a small rounding (about 1 unit), never a large radius.
+5. **Two to four shapes.** One idea per icon. No gradients, no shadows, no text, no outline around the solid.
+6. **The accent, optional.** A solid icon may keep one separate part as its accent, with the class `ox-icon__accent`: the theme paints it orange on a graphite plate and white on an orange plate. Leave it out where the whole glyph is the idea; the plate already carries the colour.
+7. **Direction and claims.** Unchanged from section 2: draw directional icons pointing right and mark them rtlFlip; no medical crosses, heartbeats, flames for fat burning, scales with a downward arrow or bodies; InBody is a measurement device.
+8. **Brand marks are not drawn.** WhatsApp stays the official glyph (section 4.11), solid by design.
+
+### 8.4 Rules for the line family (the interface glyphs)
+
+The interface stays line: search, account, cart, menu, close, chevrons, arrows, plus and minus, filter, sort, language, share, copy, external. Keep drawing them at 2; the theme strokes them at 2.4. Three drawings need room at that weight:
+
+| Name | What to change | Status |
+|---|---|---|
+| plan | The ticks inside the clipboard close up at 2.4. Open them so each tick keeps 2 units of clear space. | REFINE |
+| inbody | The platform lines crowd the figure at 2.4. Keep the figure and one platform line, 2 units apart. | REFINE |
+| registry | The document's inner lines crowd the accent dot at 20px. One inner line, the dot 2 units clear of it. | REFINE |
+| every other line icon | Nothing to draw; the theme sets the heavier stroke. | KEEP |
+
+### 8.5 The solid set to draw
+
+Each is a new file named `<name>-solid` beside the line file of the same name (for example `svg/advisory-solid.svg`); the line file stays for the places that need a line. Batches in the order they go live:
+
+**Batch 1: the promise tiles (live today, in the plates of 8.2)**
+
+| Name | Where it stands | What to draw | Status |
+|---|---|---|---|
+| advisory-solid | orange plate 44/24: home and services facts; graphite 56/32: review facts | Two overlapping speech bubbles, the rear one solid, the front one knocked out of it with a 2 unit outline. | NEW, rtlFlip |
+| inbody-solid | orange plate 44/24 | The measurement platform as a solid slab, the two hand grips as solid posts, a figure knocked out between them. A device, not a body scan. | NEW |
+| recommendation-solid | orange plate 44/24 | A solid tag with a 34° cut corner, a forward arrow knocked out of it. | NEW, rtlFlip |
+| authentic-solid | orange plate 44/24; trust rows 24 | A solid seal (the v2 scalloped badge filled), the check knocked out. | NEW |
+| written-question-solid | orange plate 44/24: channel card; graphite 56/32: service header | A solid speech bubble with a tail, three dots knocked out. | NEW, rtlFlip |
+| video-consult-solid | orange plate 44/24; graphite 56/32 | A solid screen, the play triangle knocked out. | NEW |
+| branch-visit-solid | orange 44/24; graphite 56/32: service header, review facts, branch map | The storefront with its awning as a solid, the door knocked out, the awning stripes as knockouts at 2 units. | NEW |
+| training-solid | graphite 56/32 | A solid dumbbell, the grip thinner than the plates, the plates cut at 34°. | NEW |
+| plan-solid | graphite 56/32 | A solid clipboard, two ticks knocked out, 2 units apart. | NEW |
+| aftersales-solid | graphite 56/32 | A solid return loop around a small box, the loop's head cut at 34°. | NEW, rtlFlip |
+| empty-cart-solid | graphite 72/40: the empty cart | The cart basket as a solid, the wheels as solid dots, the dashed contents as the accent. | NEW, rtlFlip |
+| search-empty-solid | graphite 72/40: an empty search | A solid lens, the slash as the accent. | NEW |
+| not-found-solid | graphite 72/40: the 404 page | The same construction as search-empty-solid, with its own mark. | NEW |
+
+**Batch 2: trust and payment rows (24 bare, beside a bold label)**
+
+| Name | Where it stands | What to draw | Status |
+|---|---|---|---|
+| secure-payment-solid | product trust grid, utility bar | A solid card with the stripe knocked out, a small solid lock at its corner. | NEW |
+| shipping-solid | product trust grid, utility bar, delivery row | A solid truck, the wheels knocked out of the body line, the cab cut at 34°. | NEW, rtlFlip |
+| returns-solid | product trust grid | A solid box, the return arrow knocked out. | NEW, rtlFlip |
+| delivery-estimate-solid | delivery row | A solid clock face with the hands knocked out, a forward arrow. | NEW, rtlFlip |
+| cash-on-delivery-solid, bank-transfer-solid, installments-solid | payment chips | Solid versions of the v2 drawings, the same knockout rule. | NEW |
+
+**Batch 3: categories and goals (tiles 36, goal cards 26 over photographs)**
+
+| Name | Where it stands | What to draw | Status |
+|---|---|---|---|
+| the ten category icons (4.6), each as `<name>-solid` | category tiles and the categories page | Solid versions of the v1 drawings. A solid reads over a photograph or a plate far better than a line. | NEW |
+| the ten goal icons (4.7), each as `<name>-solid` | goal cards over photographs | Solid versions, the accent kept as the one orange part. | NEW |
+
+### 8.6 What the theme draws, not the file
+
+- **The plates.** Never draw a disc, a square or a badge behind an icon: the theme draws the plate, cuts it at 34°, colours it and mirrors it for Arabic. The file is the glyph alone.
+- **Sizes and spacing.** No icon under 20px; plates of 44, 56 and 72; 8px between an icon and its label in a row, 12px beside a 44 plate, 16px beside a 56; 8 to 12px under a stacked icon.
+- **Motion.** None on icons, as on the reference: the weight and the angle carry the energy.
+
+### 8.7 How to deliver v3
+
+1. One folder, **optimal-x-icons-v3**, the same layout as v2: an `svg` folder with one file per icon, named exactly as the Name column, and an `icons.json` manifest with one entry per icon: name, category, hasAccent, rtlFlip, and one new field, family, set to "solid" or "line".
+2. Solid files use `fill="currentColor"` and no stroke; the optional accent part carries the class `ox-icon__accent`. No hard-coded colours, no embedded images.
+3. Send it in the three batches of 8.5. Each batch goes live as it arrives: I extend the import script to carry the solid family beside the line one, swap each call site of the batch to its solid name, and check every page at 390 and 1440 in both languages.

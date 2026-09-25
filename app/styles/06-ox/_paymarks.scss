@@ -77,7 +77,9 @@
   gap: var(--ox-1);
   box-sizing: border-box;
   block-size: 24px;
-  padding-inline: var(--ox-2);
+  // 6, not 8, since the size floors (owner, 2026-09-25): with the 20 glyph
+  // and the micro step both pills still share a 360 phone's second row.
+  padding-inline: 6px;
   border: 1px solid var(--ox-line-2);
   border-radius: 3px;
   font-size: var(--ox-t-micro);

@@ -187,8 +187,8 @@
 // ---------------------------------------------------------------------------
 // Every rail header draws its pair with one markup: a 44px button with no
 // face of its own (so the focus ring sits on an unclipped box) holding an
-// `.ox-iconbtn--angled` span, the shared 24px corner-cut chip
-// (`_primitives.scss`), around a 16px chevron-start or chevron-end, which
+// `.ox-iconbtn--angled` span, the shared corner-cut chip (`_primitives.scss`,
+// 28px since the size floors), around a chevron-start or chevron-end, which
 // mirror by themselves. The six families' own rules (`.ox-cat-rail__arrow`,
 // `.ox-brands__arrow`, `.ox-posters__arrow`, `.ox-offers-rail__arrow` in
 // `_b2-home.scss`, `.ox-related__arrow` in `_b3-product.scss`,
@@ -204,9 +204,18 @@
 // so it outranks their own rules, which load after this file.
 $ox-rail-navs: '.ox-cat-rail__nav, .ox-brands__nav, .ox-posters__nav, .ox-offers-rail__nav, .ox-related__nav, .ox-featured__nav';
 $ox-rail-arrows: '.ox-cat-rail__arrow, .ox-brands__arrow, .ox-posters__arrow, .ox-offers-rail__arrow, .ox-related__arrow, .ox-featured__arrow';
-// The chip's outline, the corner cut at the reading end's top corner (the
-// primitive's own RTL cut; the LTR chip mirrors it above).
-$ox-rail-chip-outline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M0.5 8.15 L5.67 0.5 H23.5 V23.5 H0.5 Z' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+// The chip's outline, three mask layers painted in the face's own pixel box,
+// so the hairline stays one crisp pixel at any face size (24 before the size
+// floors, 28 now) and on a nav that sits on a half pixel:
+// - the four sides: lines 2px wide on the face's edges in an svg with no
+//   viewBox (it draws at the face's size in px), so the half inside the face
+//   paints a 1px line;
+// - minus a 12px square at the top left;
+// - plus that corner redrawn with its cut: the primitive's own corner (8px
+//   down, ox-run(8px) = 5.4px across), the 1px line centred 0.5px inside the
+//   cut (0.5,8.15 to 5.67,0.5), meeting the sides at 12px.
+$ox-rail-chip-sides: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23000' stroke-width='2'%3E%3Cline x1='0' y1='0' x2='100%25' y2='0'/%3E%3Cline x1='100%25' y1='0' x2='100%25' y2='100%25'/%3E%3Cline x1='0' y1='100%25' x2='100%25' y2='100%25'/%3E%3Cline x1='0' y1='0' x2='0' y2='100%25'/%3E%3C/g%3E%3C/svg%3E");
+$ox-rail-chip-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M0.5 12 V8.15 L5.67 0.5 H12' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
 
 :is(#{$ox-rail-navs}) > :is(#{$ox-rail-arrows}) {
   @include ox-focus(2px);
@@ -225,12 +234,16 @@ $ox-rail-chip-outline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
     display: none;
   }
 
-  // The chip: the shared 24px face with its 8px corner cut, drawn as one
-  // outline so the cut reads as a diagonal edge rather than a gap. The
-  // primitive traces the cut by clipping a 1px border, which drops the
-  // stroke at the corner; on white at 60% that gap vanished and the chip
-  // read as a square. Same box, same cut (lean 8, run 5.4 at 34 degrees),
-  // same 60% hairline going solid on hover, now closed along the diagonal.
+  // The chip: the shared face (_primitives.scss) with its 8px corner cut,
+  // drawn as one outline so the cut reads as a diagonal edge rather than a
+  // gap. The primitive traces the cut by clipping a 1px border, which drops
+  // the stroke at the corner; on white at 60% that gap vanished and the chip
+  // read as a square. Same box, same cut (the primitive's own polygon, lean
+  // 8, run 5.4 at 34 degrees), same 60% hairline going solid on hover, now
+  // closed along the diagonal. One shape in both languages (owner,
+  // 2026-09-25: "in english, mirror all buttons"): the face wraps its glyph
+  // and is never flipped, so the cut sits top left in Arabic and in English,
+  // and only the chevrons inside turn with the language.
   > .ox-iconbtn--angled {
     position: relative;
     border: 0;
@@ -241,12 +254,14 @@ $ox-rail-chip-outline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
       position: absolute;
       inset: 0;
       background: color-mix(in srgb, currentColor 60%, transparent);
-      mask: $ox-rail-chip-outline center / 100% 100% no-repeat;
+      mask:
+        $ox-rail-chip-corner 0 0 / 12px 12px no-repeat,
+        $ox-rail-chip-sides 0 0 / 100% 100% no-repeat,
+        linear-gradient(#000 0 0) 0 0 / 12px 12px no-repeat;
+      // After the shorthand, which resets it: the sides minus the corner
+      // square, then the redrawn corner added on top.
+      mask-composite: add, subtract, add;
       pointer-events: none;
-    }
-
-    [dir='ltr'] &::before {
-      transform: scaleX(-1);
     }
   }
 

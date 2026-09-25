@@ -136,6 +136,9 @@ body {
 .ox-utility__inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
+  // A gap between the three groups: at 1024 the English links ran into the
+  // trust row with none (WhatsApp touched "Authentic products").
+  column-gap: var(--ox-6);
   align-items: center;
   block-size: var(--ox-h-util);
 }
@@ -169,6 +172,10 @@ body {
   color: var(--ox-ink-2-on-dark);
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
+  // One line, like the trust items: at 1024 "Madinah branch" wrapped to two
+  // lines, 52px tall inside the 49px bar. The start column then takes the
+  // width the two links need (a 1fr track never shrinks below its content).
+  white-space: nowrap;
   text-decoration: none;
 
   &:hover {

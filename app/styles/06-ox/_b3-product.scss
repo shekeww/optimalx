@@ -1263,6 +1263,9 @@ input.ox-supply__value {
 
 .ox-delivery__truck {
   flex: 0 0 auto;
+  // 24, one size with the trust grid under it (the bold icons, 2026-09-25).
+  inline-size: 24px;
+  block-size: 24px;
 }
 
 .ox-delivery__text {
@@ -1740,6 +1743,10 @@ body.is-sticky-product-bar.product-single {
 
 .ox-trust-grid__icon {
   flex: 0 0 auto;
+  // 24 (the bold icons, owner 2026-09-25): the reference's buy-box trust row
+  // draws its glyphs at 24 beside a bold label; the call sites ask for 22.
+  inline-size: 24px;
+  block-size: 24px;
   color: var(--ox-verify, #14514c);
 }
 

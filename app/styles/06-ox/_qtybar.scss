@@ -43,9 +43,23 @@
 // glyph alone.
 //
 //   context        stepper: outer / value / inner   offset  glyph  add pad
-//   PDP            144: 52 / 48 / 44                27      20     30 / 12
-//   card < 640      94: 44 / 20 / 30                25.6    16     25.6 / 2 (glyph only)
-//   card >= 640    124: 48 / 32 / 44                25.6    16     30.3 / 12 (label), 26.9 (glyph)
+//   PDP            119: 47 / 28 / 44                27      20     30 / 12
+//   card < 640      82: 44 / 14 / 24                24      20     24 / 2 (glyph only)
+//   card <= 175     72: 38 / 14 / 20                18      20     23 / 2 (glyph only)
+//   card >= 640     99: 47 / 16 / 36                26.9    20     30.3 / 12 (label), 26.9 (glyph)
+//   (glyphs 20 on the cards since the size floors, owner 2026-09-25)
+//
+// THE TIGHT STEPPER (owner, 2026-09-25: "reduce the space between the
+// quantity number and the + icon, to reduce the size of the component
+// slightly so the add to cart icon has more space"): both step glyphs sit
+// flush against the number's cell (the outer cell is exactly offset +
+// glyph, the inner cell's glyph is pushed to the number's side), and the
+// number's cell is only as wide as one or two digits need (14px figures:
+// 7.8 a digit, 15.5 for two). Whatever the inner cell has left over lies
+// between its glyph and the divider, where it still counts toward the tap
+// target. On the card the number is an `output`, not a control, so each
+// step's hit area also takes its half of the number (section 5); on the
+// product page the number is the editable field and keeps its own box.
 //
 // Where the markup lives: the Shopify product page (sections/main-product.
 // liquid holds the bar, snippets/quantity.liquid the stepper group) and the
@@ -77,13 +91,22 @@
   border: 0;
   border-radius: 0;
 
+  // THE MIRRORED LEAN (owner, 2026-09-25: "add to cart button to be
+  // mirrored"): the buy-now under the bar is `ox-angled()`, which leans like
+  // "/" in both languages, so the bar leans like "\" in both languages, the
+  // same run on the same 34 degrees, and the two stacked shapes read as a
+  // pair. The polygon is the exact mirror of `ox-angled()`'s own (top edge
+  // flush at the inline-left, foot shifted by the run), with no `[dir]`
+  // twin for the same reason that mixin has none. The glyph offsets below
+  // hold unchanged: the cut is the same triangle turned over, so every
+  // clearance measured against it is the same number.
   &::before,
   &::after {
     content: '';
     position: absolute;
     z-index: -1;
     pointer-events: none;
-    @include ox-angled(48px);
+    clip-path: polygon(0 0, calc(100% - #{ox-run(48px)}) 0, 100% 100%, #{ox-run(48px)} 100%);
   }
 
   // The stroke is the element's own edge colour: ink on a light ground, the
@@ -315,6 +338,18 @@
   padding-inline-end: var(--ox-qb-offset);
 }
 
+// The INNER cell (against the divider) holds its glyph flush against the
+// number, never centred in the cell (the tight stepper, header note): the
+// number is to its left in Arabic (the increase) and to its right in
+// English (the decrease), inside the same `direction: ltr` group.
+[dir='rtl'] .ox-qtybar__step--inc {
+  justify-content: flex-start;
+}
+
+[dir='ltr'] .ox-qtybar__step--dec {
+  justify-content: flex-end;
+}
+
 .ox-qtybar__glyph {
   display: inline-flex;
   align-items: center;
@@ -406,10 +441,14 @@
 // ---------------------------------------------------------------------------
 // 4. The product page bar and its buy-now
 // ---------------------------------------------------------------------------
+// The tight stepper (header note): the outer cell is the offset plus the
+// glyph (27 + 20), the field keeps room for three 17px figures (28.3), and
+// the inner cell stays a 44 target with its glyph against the field. 119
+// wide, was 144.
 .ox-qtybar--pdp {
-  --ox-qb-qty: 144px;
-  --ox-qb-outer: 52px;
-  --ox-qb-value: 48px;
+  --ox-qb-qty: 119px;
+  --ox-qb-outer: 47px;
+  --ox-qb-value: 28px;
   --ox-qb-inner: 44px;
   --ox-qb-offset: 27px;
   --ox-qb-glyph: 20px;
@@ -482,15 +521,22 @@ button.ox-service__add.s-button-element {
 
 .ox-qtybar.ox-qtybar--card {
   grid-area: bar;
-  --ox-qb-qty: 94px;
+  // The tight stepper (header note): 82, was 90. The value is 14 (one 14px
+  // figure clears each glyph box by 3.1, two figures meet the boxes' own
+  // empty inset and still clear the ink by 3.4); the inner cell keeps 4
+  // between its glyph and the divider.
+  --ox-qb-qty: 82px;
   --ox-qb-outer: 44px;
-  --ox-qb-value: 20px;
-  --ox-qb-inner: 30px;
-  --ox-qb-offset: 25.6px;
-  --ox-qb-glyph: 20px; // 20 since the size floors (owner, 2026-09-25); the ink stays clear of the cut at the 25.6 offset
+  --ox-qb-value: 14px;
+  --ox-qb-inner: 24px;
+  --ox-qb-offset: 24px;
+  // 20 since the size floors (owner, 2026-09-25). The offset drops 25.6 to 24
+  // so the 20 glyph fits the 44 outer cell (24 + 20 = 44); its box corner
+  // stays 1px off the diagonal and the ink, inset 4.2 in the box, 5px off.
+  --ox-qb-glyph: 20px;
   --ox-qb-value-size: 14px;
   --ox-qb-add-gap: 0px;
-  --ox-qb-add-pad-outer: 25.6px;
+  --ox-qb-add-pad-outer: 24px;
   --ox-qb-add-pad-inner: 2px;
 }
 
@@ -604,8 +650,30 @@ button.ox-service__add.s-button-element {
   align-self: stretch;
   outline: none;
 
+  // THE SPLIT NUMBER (the tight stepper, 2026-09-25): the card's number is
+  // an `output`, never a target, so each step's hit area reaches over its
+  // own half of it: the decrease takes the half beside it, the increase the
+  // other half, and no two targets ever overlap (the reason the centred
+  // `ox-hit-area` stays off inside the bar). Transparent, so nothing paints;
+  // positioned, so it sits above the number for the tap. Inside the
+  // `direction: ltr` group the decrease is always on the number's left.
   &::after {
-    content: none;
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inline-size: calc(var(--ox-qb-value) / 2);
+    block-size: auto;
+    transform: none;
+  }
+
+  &.ox-qtybar__step--dec::after {
+    inset-inline-start: 100%;
+    inset-inline-end: auto;
+  }
+
+  &.ox-qtybar__step--inc::after {
+    inset-inline-start: auto;
+    inset-inline-end: 100%;
   }
 
   &:focus-visible {
@@ -629,12 +697,17 @@ button.ox-service__add.s-button-element {
   line-height: var(--ox-lh-num);
 }
 
+// The tight stepper from 640 (header note): 99, was 124. The outer cell is
+// the offset plus the glyph (26.9 + 20, to the tenth), the value 16, and the
+// inner cell 36, whose 16 beside the divider plus its 8 of the split number
+// keep the increase a 44 target (the decrease reaches 55).
 @media (min-width: 640px) {
   .ox-qtybar.ox-qtybar--card {
-    --ox-qb-qty: 124px;
-    --ox-qb-outer: 48px;
-    --ox-qb-value: 32px;
-    --ox-qb-inner: 44px;
+    --ox-qb-qty: 99px;
+    --ox-qb-outer: 47px;
+    --ox-qb-offset: 26.9px; // the outer-offset formula for the 20 glyph
+    --ox-qb-value: 16px;
+    --ox-qb-inner: 36px;
     --ox-qb-add-gap: var(--ox-2);
     --ox-qb-add-pad-outer: 30.3px;
     --ox-qb-add-pad-inner: 12px;
@@ -646,14 +719,18 @@ button.ox-service__add.s-button-element {
 }
 
 // THE ADD LABEL shows only when the add cell is at least 144 wide (S11 5.3):
-// with the 124 stepper beside it that is a 268 container, so up to 267 the
+// with the 99 stepper beside it (the tight stepper, 2026-09-25; was 124,
+// a 268 container) that would be 243, but the listing's own label rule
+// (`_b4-listing.scss`, `oxcard` up to 252) still hides the word to 252, so
+// this threshold is that one: up to 252 the
 // cell is icon only: the word collapses to nothing, the glyph keeps the
 // box at its own outer offset, the ring moves onto the glyph. Measured on
 // the proxy (S12): "أضف للسلة" is 73.7 wide at 15.4/600 and "Add to cart"
 // 71.4, so 30.3 + 19.8 + 8 + 73.7 + 12 = 143.8 fits the 144 cell in both
-// languages. `font-size: 0` leaves the text in the accessibility tree; the
-// card's unconditional `aria-label` is the name either way.
-@container oxcard (max-width: 267px) {
+// languages (from 253 the cell is 154). `font-size: 0` leaves the text in
+// the accessibility tree; the card's unconditional `aria-label` is the name
+// either way.
+@container oxcard (max-width: 252px) {
   .ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
     gap: 0;
     padding-inline: 26.9px 2px;
@@ -692,6 +769,37 @@ button.ox-service__add.s-button-element {
   .ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible::after {
     outline: 2px solid var(--ox-focus);
     outline-offset: 4px;
+  }
+}
+
+// THE NARROW PHONE CARD (size floors, owner 2026-09-25). With the glyphs at
+// 20 the phone tier needs a 138 bar (44 / 20 / 26 plus the 47.6 add cell),
+// and a 360 phone's card holds 122 (a 171 card at 390 holds 137), where
+// the cart glyph ran over the divider and the plus. Up to a 175 card the
+// stepper tightens instead: outer 38 (offset 18), value 18, inner 20, and
+// the add cell keeps 23 before its glyph. The offsets are set on the ink,
+// not the box: the plus and minus ink sits 4.2 inside its 20 box and clears
+// the 34 degree cut by 5px at offset 18; the cart's handle, at the top of
+// its box on the cut side in English, clears it at 23. 38 + 18 + 20 + 45 =
+// 121, inside the 122 bar. The tight stepper (2026-09-25) takes the value
+// to 14: 72, was 76, and the four go to the cart's cell (50 at 360, 65 at
+// 390), which is what the owner asked the smaller stepper to buy. The
+// mirrored lean turns the cut over, so the handle no longer meets it: in
+// English the cut is under the wheels, in Arabic over the basket's far top
+// corner, and the cart clears it by 5 or more at 18 before the glyph. At 18
+// the cart sits in the middle of what shows of its cell at mid-height (7
+// from the divider at 360, was 2.5).
+@container oxcard (max-width: 175px) {
+  .ox-qtybar.ox-qtybar--card {
+    --ox-qb-qty: 72px;
+    --ox-qb-outer: 38px;
+    --ox-qb-value: 14px;
+    --ox-qb-inner: 20px;
+    --ox-qb-offset: 18px;
+  }
+
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
+    padding-inline: 18px 2px;
   }
 }
 

@@ -1912,5 +1912,10 @@ body {
   font-size: var(--ox-t-micro);
 
   .ox-gr__value { font-size: var(--ox-t-micro); }
-  .ox-gr__text { gap: 4px; }
+  // The label and the count wrap as whole items (size floors, 2026-09-25):
+  // with 20px stars a 360 phone's buy column no longer holds the line, and
+  // squeezing broke both into two-line stubs; now the count drops under
+  // the label instead.
+  .ox-gr__text { gap: 0 4px; flex-wrap: wrap; }
+  .ox-gr__count { white-space: nowrap; }
 }
