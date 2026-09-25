@@ -50,7 +50,8 @@ function headTitle(
 export function commerceHeadExtend({
   noindex = false,
   titleKey,
-}: { noindex?: boolean; titleKey?: string } = {}) {
+  descriptionKey,
+}: { noindex?: boolean; titleKey?: string; descriptionKey?: string } = {}) {
   return (result: HeadDescriptor, ctx: TwilightContext): HeadDescriptor => {
     const origin = tryOriginOf(ctx.settings?.store?.url);
     const path = ctx.location?.pathname ?? '';
@@ -60,12 +61,23 @@ export function commerceHeadExtend({
         ? canonicalFor(origin, multilingual ? ctx.locale : null, path)
         : result.canonical;
 
+    // Phase B (CEN-20, the content-en-seo group's smallest edit here): a route
+    // that names a researched description key (the guides index) gets it in
+    // place of the store's generic line, the way every owned page head does;
+    // a key the dictionary does not carry leaves the engine's own value alone.
+    const researched = descriptionKey ? headString(ctx.locale, descriptionKey) : undefined;
+    const description =
+      researched && !isUnresolvedKey(researched) ? researched : result.description;
+    const title = headTitle(result.title, ctx.locale, titleKey);
+
     return {
       ...result,
-      title: headTitle(result.title, ctx.locale, titleKey),
+      title,
+      description,
       robots: robots(noindex),
       canonical,
-      openGraph: { ...result.openGraph, url: canonical },
+      openGraph: { ...result.openGraph, title, description, url: canonical },
+      twitter: result.twitter ? { ...result.twitter, title, description } : result.twitter,
       alternateLanguages: multilingual ? result.alternateLanguages : undefined,
     };
   };

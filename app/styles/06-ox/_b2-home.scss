@@ -55,6 +55,20 @@
   margin-block-start: 0;
 }
 
+// The category rails (S2e). On the engine their spacing was never one of the
+// tiers above but its own `.s-block` base rule, 32 and 64 from 640, which the
+// port had nothing to compile from, so its rails ran into one another
+// (phase B, HC-02). Written out here so both builds carry the same rhythm.
+.s-block--ox-category-rail {
+  margin-block-start: var(--ox-8);
+}
+
+@media (min-width: 640px) {
+  .s-block--ox-category-rail {
+    margin-block-start: var(--ox-16);
+  }
+}
+
 @media (min-width: 1024px) {
   // TIER 2, 64. The shopping flow: the goal row, the two grids (the second
   // one opens on the offer posters) and "اكتشف أكثر", which closes the
@@ -1546,9 +1560,10 @@ body {
 
 // Owner review 2026-09-23, item 2, revised by the coordinator's addendum
 // (same day): the two corner cuts move to the DIAGONAL corners: physical
-// top-right and bottom-left, never mirrored under [dir='ltr'] (still
-// physical, the reference composition, like the art tiles, S2h), and the
-// card's corners are sharp everywhere else (`border-radius: 0`, no rounding
+// top-right and bottom-left in Arabic. S12 (2026-09-25) mirrors them under
+// [dir='ltr'] (top-left and bottom-right, below), which retires the
+// earlier "never mirrored" rule for this card. The card's corners are sharp
+// everywhere else (`border-radius: 0`, no rounding
 // on this card at all). lean 40 / run 27.0 at the 390 probe: 15.6% of the
 // 173px card (2-col grid, container 358, gap 12; X-IDENTITY-2026-09-22.md
 // §2.4's own figure for this exact card width), well inside the 24% budget.
@@ -1571,6 +1586,19 @@ body {
   color: var(--ox-ink-on-dark);
   transition: transform var(--dur-base) var(--ease-out);
   clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+
+  // S12 (2026-09-25): the cuts follow the reading direction. In Arabic they
+  // sit at the physical top-right and bottom-left (the text at the
+  // bottom-right, the reading start); the English card is its exact mirror
+  // (top-left and bottom-right, the text at the bottom-left), which
+  // supersedes the 2026-09-23 "never mirrored" note above. The text column
+  // follows the reading direction on its own (flex-start, logical padding);
+  // the arrow chip's cut is mirrored by the rule after `.ox-goal__cta`.
+  // The photograph stays unflipped on purpose: a mirrored photo reverses
+  // the printed labels in it (the creatine tub on the ideal-weight card).
+  [dir='ltr'] & {
+    clip-path: polygon(#{ox-run(40px)} 0, 100% 0, 100% calc(100% - 40px), calc(100% - #{ox-run(40px)}) 100%, 0 100%, 0 40px);
+  }
 
   &:focus-visible {
     outline: none;
@@ -1720,6 +1748,18 @@ body {
   color: var(--ox-accent);
 }
 
+// S12 (2026-09-25): the arrow chip mirrors with its card. The glyph carries
+// `ox-mirror` (scaleX(-1) in Arabic), and that flip also turns the chip's
+// own corner cut, so the Arabic chip is cut at the physical top-right, the
+// same corner as the card's own cut. In English the glyph is not flipped
+// and the primitive's LTR clip also cuts the top-right, so the chip did not
+// follow its mirrored card. Here the English chip takes the top-left cut:
+// the exact mirror of the Arabic chip, echoing the English card's top-left
+// cut. The glyph itself already points the reading way in both languages.
+[dir='ltr'] .ox-goal__cta .ox-iconbtn--angled {
+  clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
+}
+
 // Owner review 2026-09-23 (late), item 2: no fill on hover either: the
 // shared class's own background is transparent now, so brightening it back
 // to a translucent orange square on hover would reintroduce exactly the
@@ -1735,6 +1775,10 @@ body {
     // lean 56 / run 37.8 at the 768 probe: 3-col grid, container 720 (gutter
     // 24), gap 16 -> card (720 - 32) / 3 = 229.3px; 37.8 / 229.3 = 16.5%.
     clip-path: polygon(0 0, calc(100% - #{ox-run(56px)}) 0, 100% 56px, 100% 100%, #{ox-run(56px)} 100%, 0 calc(100% - 56px));
+
+    [dir='ltr'] & {
+      clip-path: polygon(#{ox-run(56px)} 0, 100% 0, 100% calc(100% - 56px), calc(100% - #{ox-run(56px)}) 100%, 0 100%, 0 56px);
+    }
   }
 
   .ox-goal__body {
@@ -1762,6 +1806,10 @@ body {
     // width more than a "1440" tier elsewhere in the theme assumes. Flagged
     // in docs/build/progress/S3b.md rather than silently sized down.
     clip-path: polygon(0 0, calc(100% - #{ox-run(64px)}) 0, 100% 64px, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
+
+    [dir='ltr'] & {
+      clip-path: polygon(#{ox-run(64px)} 0, 100% 0, 100% calc(100% - 64px), calc(100% - #{ox-run(64px)}) 100%, 0 100%, 0 64px);
+    }
   }
 
   .ox-goal__body {
@@ -3066,7 +3114,9 @@ body {
   position: fixed;
   z-index: var(--ox-z-sticky);
   inset-block-end: calc(var(--ox-h-tabbar) + var(--ox-3));
-  inset-inline-start: var(--ox-4);
+  // Clear of a sideways phone's notch corner too (S12 chrome-ios): the
+  // inline start is the physical right in Arabic, the left in English.
+  inset-inline-start: max(var(--ox-4), env(safe-area-inset-right, 0px));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3083,8 +3133,16 @@ body {
   }
 }
 
+[dir='ltr'] .ox-wa {
+  inset-inline-start: max(var(--ox-4), env(safe-area-inset-left, 0px));
+}
+
+// The WhatsApp symbol is a third-party mark, so it takes no accent element
+// (S12 chrome-ios, owner: white on the green button, never orange): one
+// colour, the button's own white.
 .ox-wa__icon {
   color: currentColor;
+  --ox-icon-mono: currentColor;
 }
 
 @media (min-width: 1024px) {
@@ -3094,6 +3152,34 @@ body {
     inset-inline-start: var(--ox-6);
     inline-size: 56px;
     block-size: 56px;
+  }
+}
+
+// Never over the drawer or the shop sheet (phase B, HC-14): both put their
+// state on <body> (MobileDrawer.tsx `menu-opened`, ShopSheet.tsx
+// `modal-is-open`, the same two classes the port's ox.js sets), and the
+// header's own stacking context kept those overlays under this fixed button,
+// which covered the drawer's last row and the sheet's last tile at 390.
+body.menu-opened .ox-wa,
+body.modal-is-open .ox-wa {
+  display: none;
+}
+
+// The button never covers the footer's last line (S12 chrome-ios). Scrolled
+// to the end of the page it sat over the bottom strip's reading start, where
+// the copyright and the developer credit live (390: 18 of the credit link's
+// 71px under it; 1440: the copyright's first 16px). The strip reserves the
+// button's footprint under its own content instead, so the end of the page
+// is a clear band of the strip's ground for the button to rest on: on a
+// phone the button's 52 and its 12 above the tab bar plus an 8 gap, from
+// 1024 its 56 and its 24 above the edge plus 8.
+body:has(.ox-wa) .ox-footer__strip {
+  padding-block-end: calc(52px + var(--ox-3) + var(--ox-2));
+}
+
+@media (min-width: 1024px) {
+  body:has(.ox-wa) .ox-footer__strip {
+    padding-block-end: calc(56px + var(--ox-6) + var(--ox-2));
   }
 }
 

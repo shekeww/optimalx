@@ -186,12 +186,21 @@ export function ListingPage(props: ListingPageProps) {
   // map does not know, and for a key that fails to resolve, so an owner-made
   // category never shows a raw key as its heading.
   const researched = node ? t(node.h1Key) : '';
+  // A search reached with no query at all (the tab bar's search tab, the
+  // header's phone icon) used to print the dangling prefix "نتائج البحث عن"
+  // with nothing after it; it now shows the neutral search heading, the
+  // same branch the Shopify port's main-search.liquid takes (Phase B D08,
+  // 2026-09-25).
   const title = isSearch ? (
-    <>
-      {t('ox.search.results_prefix')} <Bdi lang={null}>{queryText}</Bdi>
+    queryText ? (
+      <>
+        {t('ox.search.results_prefix')} <Bdi lang={null}>{queryText}</Bdi>
 
-    </>
+      </>
 
+    ) : (
+      t('ox.header.search_label')
+    )
   ) : researched && researched !== node?.h1Key ? (
     researched
   ) : (

@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
-import { Copyright } from '@salla.sa/twilight-theme-engine/layout';
 import { useStore } from '@salla.sa/twilight-theme-engine/hooks/useStore';
 import { useTheme } from '@salla.sa/twilight-theme-engine/hooks/useTheme';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
@@ -10,10 +9,12 @@ import { Icon } from '../../common/Icon';
  * The bottom strip: the copyright at the inline-start, the Latin line at the
  * inline-end, and the accent wedge bleeding off the end edge.
  *
- * The copyright stays the engine's `copyright` hook slot with the engine's own
- * `Copyright` as the fallback (theme-engine chunk-DTWFNS3F.js:901-913), which
- * is both the contract a storefront app overrides and the only place the year
- * is computed rather than typed.
+ * The copyright stays the engine's `copyright` hook slot, the contract a
+ * storefront app overrides. Its fallback is the theme's own line
+ * (`ox.footer.copyright`, the year interpolated) rather than the engine's
+ * `Copyright`, which printed the English "Copyright | 2026 Optimal X" on the
+ * Arabic store (phase B, HC-16: the Shopify port's Arabic line is the named
+ * improvement, so the reference now prints the same one).
  *
  * The Latin line is behind `show_en_tagline`, off by default: it is not one of
  * the brand's approved taglines, so nothing unapproved reaches the storefront
@@ -25,6 +26,7 @@ export function FooterBottom() {
   const store = useStore();
 
   const showTagline = (settings as Record<string, unknown> | undefined)?.show_en_tagline === true;
+  const year = new Date().getFullYear();
 
   return (
     <div className="ox-footer__strip" data-testid="ox-footer-strip">
@@ -35,7 +37,7 @@ export function FooterBottom() {
             <HookSlot
               name="copyright"
               context={{ storeName: store?.name }}
-              fallback={<Copyright storeName={store?.name} />}
+              fallback={<span data-testid="ox-footer-copyright">{t('ox.footer.copyright', { year })}</span>}
 
             />
           </Suspense>

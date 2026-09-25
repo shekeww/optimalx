@@ -351,7 +351,13 @@
   --ox-12: 48px;
   --ox-16: 64px;
   --ox-24: 96px;
-  --ox-gutter: 16px;
+  /* The gutter never shrinks under a phone's side safe area (S12 chrome-ios):
+     the Shopify layout declares viewport-fit=cover, so a notched iPhone held
+     sideways lays the page under its notch, 47px at each side, and every
+     container, bar and sheet that insets by this token keeps its text clear
+     of it. Both insets are 0 in portrait and on a desktop, so the value
+     there is the plain step. */
+  --ox-gutter: max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   --ox-container: 1296px;
   --ox-container-narrow: 880px;
   --ox-container-text: 720px;
@@ -443,14 +449,14 @@ textarea {
 
 @media (min-width: 640px) {
   :root {
-    --ox-gutter: 24px;
+    --ox-gutter: max(24px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --ox-h-util: 48px;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
-    --ox-gutter: 32px;
+    --ox-gutter: max(32px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --ox-h-bar: 88px;
     /* The trust scroller is gone (its three items move into the utility
        strip) and the announcement bar drops to 36px at this width: announce
@@ -494,5 +500,8 @@ textarea {
 /* ---------- Generated: scripts/gen-icon-mask.mjs (do not hand-edit) ---------- */
 :root {
   --ox-cart-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M2 3h3l2.5 12h11l2-8H5.8'/%3E%3Ccircle cx='9' cy='19.5' r='1.7' fill='%23000' stroke='none'/%3E%3Ccircle cx='17.5' cy='19.5' r='1.7' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+  --ox-chevron-end-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M8.3 3L14.375 12L8.3 21'/%3E%3C/svg%3E");
+  --ox-plus-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M12 3V21'/%3E%3Cpath d='M3 12H21'/%3E%3C/svg%3E");
+  --ox-minus-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M3 12H21'/%3E%3C/svg%3E");
 }
 /* ---------- End generated ---------- */

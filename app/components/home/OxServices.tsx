@@ -363,10 +363,20 @@ function BandRow({ titleKey, noteKey, children, id }: BandRowProps) {
  * titles: there is nothing true to say in that shape yet.
  */
 function TrustRow() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { settings } = useTheme();
   const rating = readStoreRating(settings);
-  const address = settingText(settings as Settings, 'branch_address') ?? t('ox.blocks.branch.address');
+  // Phase B J-09 (2026-09-25): the setting is the owner's Arabic text, so on
+  // any other locale the row prints the locale's own address line (the one
+  // the branch block and the contact page print) rather than Arabic under
+  // an English heading; the Arabic band keeps the setting. The language is
+  // the i18n instance's own (the same one `t` reads), so the section renders
+  // wherever the band does, with no router or provider of its own.
+  const language = i18n?.language;
+  const arabic = !language || String(language).toLowerCase().startsWith('ar');
+  const address =
+    (arabic ? settingText(settings as Settings, 'branch_address') : undefined) ??
+    t('ox.blocks.branch.address');
   const credit = settingText(settings as Settings, 'consultation_credit_note');
 
   return (

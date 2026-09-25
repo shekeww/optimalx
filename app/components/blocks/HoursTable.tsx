@@ -20,6 +20,40 @@ export interface HoursTableProps {
   className?: string;
 }
 
+/** The weekday names, in `Date.getDay()` order, as locale keys. */
+const DAY_KEYS = [
+  'ox.blocks.hours.day_0',
+  'ox.blocks.hours.day_1',
+  'ox.blocks.hours.day_2',
+  'ox.blocks.hours.day_3',
+  'ox.blocks.hours.day_4',
+  'ox.blocks.hours.day_5',
+  'ox.blocks.hours.day_6',
+] as const;
+
+/**
+ * The row's label in the page's own language (Phase B J-09, 2026-09-25):
+ * a contiguous run of weekdays prints as "Saturday to Thursday" through
+ * `ox.blocks.hours.day_range`, a single day by its name, and anything the
+ * parser did not resolve to weekdays (a seasonal row, a list of separate
+ * days) exactly as the merchant typed it. The English page used to print
+ * the Arabic day words under English column heads.
+ */
+function rowLabel(
+  row: HoursRow,
+  t: (key: string, values?: Record<string, string>) => string
+): string {
+  const { days } = row;
+  if (days.length === 0) return row.label;
+  if (days.length === 1) return t(DAY_KEYS[days[0]]);
+  const contiguous = days.every((day, index) => index === 0 || day === (days[index - 1] + 1) % 7);
+  if (!contiguous) return row.label;
+  return t('ox.blocks.hours.day_range', {
+    from: t(DAY_KEYS[days[0]]),
+    to: t(DAY_KEYS[days[days.length - 1]]),
+  });
+}
+
 /**
  * The branch opening-hours table (DIRECTION 5.2 OxBranch, FINAL-content 5.3).
  * A real `<table>` with `th scope` (DIRECTION 9.2 "lists and tables"); today's
@@ -40,6 +74,7 @@ export function HoursTable({ rows, now, status, showPrayerNote = true, className
     : live.nextOpen
       ? t('ox.blocks.hours.opens_at', { time: live.nextOpen })
       : t('ox.blocks.hours.closed_now');
+  const label = (key: string, values?: Record<string, string>): string => String(t(key, values));
 
   return (
     <div className={['ox-hours', className].filter(Boolean).join(' ')}>
@@ -70,7 +105,7 @@ export function HoursTable({ rows, now, status, showPrayerNote = true, className
                 data-testid={isToday ? 'ox-hours-today' : undefined}
               >
                 <th scope="row">
-                  {row.label}
+                  {rowLabel(row, label)}
                   {isToday ? <span className="ox-hours__today">{t('ox.blocks.hours.today')}</span> : null}
                 </th>
                 {row.closed || !row.from || !row.to ? (

@@ -80,7 +80,17 @@ export function listingHeadExtend({ noindex = false }: ListingHeadOptions = {}) 
     data: ProductListLoaderData
   ): HeadDescriptor => {
     const origin = tryOriginOf(ctx.settings?.store?.url);
-    const path = ctx.location?.pathname ?? '';
+    // On the client the head runs before the engine's `syncNavigationState`
+    // has copied the router location into the twilight context (dist/
+    // chunk-BTWIOWGZ.js), so `ctx.location.pathname` is still the store's
+    // empty default at hydration: the slug resolved to nothing, the node to
+    // undefined, and the tab title fell back to the dashboard name
+    // ("بروتين") over the server's researched title. The browser's own
+    // pathname is the served path; it is read only when the context has
+    // none (Phase B D22, 2026-09-25).
+    const contextPath = ctx.location?.pathname ?? '';
+    const path =
+      contextPath || (typeof window !== 'undefined' && window.location ? window.location.pathname : '');
     const multilingual = Boolean(ctx.settings?.store?.settings?.is_multilingual);
     const baseCanonical =
       origin && path
@@ -99,7 +109,10 @@ export function listingHeadExtend({ noindex = false }: ListingHeadOptions = {}) 
     const slug = slugFromUrl(path);
     const node = nodeBySlug(slug);
     const t = headTranslator(ctx.locale);
-    const title = node ? t(node.titleKey) : result.title;
+    // The engine's own default title can be a raw dictionary key (the search
+    // route's `common.titles.search`, product-listing.js line 156, reaches
+    // the tab untranslated); resolve it the way the breadcrumb names are.
+    const title = node ? t(node.titleKey) : result.title ? resolvedLabel(result.title, t) : result.title;
     const description = node ? t(node.descriptionKey) : result.description;
 
     const nodes: JsonLdNode[] = result.jsonLd

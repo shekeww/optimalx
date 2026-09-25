@@ -40,3 +40,6 @@ references/
 
 # Build-time Vite cache (vite.config.ts cacheDir override)
 .vite-build/
+
+# a Shopify CLI app scaffold the owner created on 2026-09-24, its own git repo, never part of the theme
+optimal-x-seed/

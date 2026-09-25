@@ -2,8 +2,8 @@
 // goes through an injected `fetchImpl`; the default (dry run) path is
 // exercised end to end and must never touch a `fetch`. Uses the repo's own
 // docs/build/salla-ids.json and docs/build/research/optimalx-catalogue.csv
-// as fixtures, the same files the real script reads, so "43 ready, 4
-// gated" is asserted against real data, not a synthetic stand-in.
+// as fixtures, the same files the real script reads, so "47 ready, 0
+// gated" is asserted against real data; the gated branch uses a synthetic twin.
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -29,12 +29,12 @@ describe('buildProductTranslationPlan, the real catalogue', () => {
   const twins = loadTwinsFromCsv({ csvPath: CSV_PATH });
   const rows = buildProductTranslationPlan({ sallaIds, twins });
 
-  it('covers all 47 SKUs: 43 ready, exactly the 4 best-selling-claim SKUs gated', () => {
+  it('covers all 47 SKUs: 47 ready, none gated since the claims fix of 2026-09-25', () => {
     expect(rows).toHaveLength(47);
     const ready = rows.filter((r) => r.status === 'ready');
     const gated = rows.filter((r) => r.status === 'gated');
-    expect(ready).toHaveLength(43);
-    expect(gated.map((r) => r.sku).sort()).toEqual(['OX-021', 'OX-023', 'OX-026', 'OX-035']);
+    expect(ready).toHaveLength(47);
+    expect(gated).toEqual([]);
   });
 
   it('a ready row carries the translations.en payload with name/description/subtitle', () => {
@@ -47,10 +47,12 @@ describe('buildProductTranslationPlan, the real catalogue', () => {
   });
 
   it('a gated row carries no payload, and its problems name the failing rule', () => {
-    const ox021 = rows.find((r) => r.sku === 'OX-021')!;
-    expect(ox021.status).toBe('gated');
-    expect(ox021.payload).toBeUndefined();
-    expect(ox021.problems?.[0]).toContain('[claims:superlative]');
+    const gatedTwins = new Map([['OX-998', { sku: 'OX-998', name: 'x', subtitle: 'x', description: 'One of the best-selling items.' }]]);
+    const gatedRows = buildProductTranslationPlan({ sallaIds: { 'OX-998': { id: 5 } }, twins: gatedTwins });
+    const ox998 = gatedRows.find((r) => r.sku === 'OX-998')!;
+    expect(ox998.status).toBe('gated');
+    expect(ox998.payload).toBeUndefined();
+    expect(ox998.problems?.[0]).toContain('[claims:superlative]');
   });
 
   it('a SKU with no CSV twin is reported, never invented', () => {

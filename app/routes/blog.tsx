@@ -20,8 +20,14 @@ export const Route = createFileRoute('/{-$locale}/blog')({
   loader: ({ params }): Promise<BlogPageProps> => Blog.loader({ locale: params.locale }),
   // The engine titles this route from the platform bundle key
   // `blocks.footer.blog`, which no dictionary in this theme carries, so the
-  // browser tab read the key itself (UX-2026-09-24 P0-5).
-  head: withHead(Blog, commerceHeadExtend({ titleKey: 'ox.titles.blog' })),
+  // browser tab read the key itself (UX-2026-09-24 P0-5). Phase B (CEN-20):
+  // the researched guides-index title and description (ox.seo.blog.*, both
+  // locales, the same keys the Shopify head reads) instead of the bare
+  // "الأدلة" and the store's generic description.
+  head: withHead(
+    Blog,
+    commerceHeadExtend({ titleKey: 'ox.seo.blog.title', descriptionKey: 'ox.seo.blog.description' })
+  ),
   pendingComponent: () => <BlogSkeleton />,
   component: BlogComponent,
 });

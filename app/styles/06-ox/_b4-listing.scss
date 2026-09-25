@@ -77,6 +77,13 @@ nav.breadcrumbs .s-breadcrumb-item {
   align-items: center;
   gap: var(--ox-1);
   flex: none;
+  // The engine's own item classes size the crumb at 14px over a 20px line
+  // (measured on the reference at 390 and 1440); the nav's `--ox-t-small`
+  // above only ever reached the arrows. Stated here so the Shopify port,
+  // which reproduces the DOM shape without the engine's own sheet, renders
+  // the same 14px instead of inheriting the 13px (Phase B D13, 2026-09-25).
+  font-size: 14px;
+  line-height: 20px;
   color: var(--ox-fg-3);
 }
 
@@ -515,6 +522,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-listing__results.has-rail .ox-filters {
     display: block;
     position: sticky;
+    // A sticky grid item stretches to the row's full height by default, so
+    // the panel drew its border around 400px of nothing under a 350px form
+    // (Phase B D04, 2026-09-25); it hugs its content instead.
+    align-self: start;
     inset-block-start: calc(var(--ox-h-bar) + var(--ox-4));
     z-index: var(--ox-z-raised);
     max-block-size: calc(100vh - var(--ox-h-bar) - var(--ox-6));
@@ -1098,20 +1109,41 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 .ox-brand-tile__plate {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--ox-2);
   min-block-size: 158px;
-  padding: var(--ox-4);
-  background: var(--ox-plate);
-  border: 1px solid var(--ox-plate-2);
+  // 17 = the old 16 padding + 1 border, so the logo box keeps its exact
+  // width (168.66 at 1440, 105.83 at 390) now that the border is painted.
+  padding: calc(var(--ox-4) + 1px);
+  // S12 (2026-09-25): no grey fill behind a brand's artwork. The plate is
+  // the card's own white with a hairline, so every logo sits on a clean
+  // ground. On a white page a clipped `border` would vanish along the
+  // diagonal and the cut would read as a broken box, so the hairline is
+  // PAINTED the way `ox-secondary-face` paints an angled button: the
+  // element is the stroke colour, the inset pseudo carries the white fill,
+  // both wear the corner cut. Hover strengthens the stroke only, never a
+  // fill (the same "hover moves the stroke" rule).
+  background: var(--ox-line-2);
+  border: 0;
   @include ox-x-corner(40px);
 
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background: var(--ox-card);
+    pointer-events: none;
+    @include ox-x-corner(40px);
+  }
+
   .ox-brand-tile:hover & {
-    background: var(--ox-plate-2);
-    border-color: var(--ox-line-2);
+    background: var(--ox-line-3);
   }
 }
 
@@ -1130,9 +1162,9 @@ nav.breadcrumbs .s-breadcrumb-item button {
 //
 // TRANSPARENT (coordinator addendum, 2026-09-24, same day): no
 // `--ox-paper`/`--ox-ink` fill and no border behind a brand's artwork,
-// anywhere this tile draws - the plate underneath is still `--ox-plate` with
-// its own hairline, so the logo simply sits on the plate rather than on a
-// second, inner ground. `logo_ground: "dark"` is not read here for the same
+// anywhere this tile draws - the plate underneath is the card white with
+// its own hairline (S12), so the logo simply sits on the plate rather than
+// on a second, inner ground. `logo_ground: "dark"` is not read here for the same
 // reason S4d.md §4.1 already put it: no overlay row sets it any more (the
 // two white-only marks ship in their ink variant instead), so the modifier
 // class below is declared and never matched - left in place, inert, rather
@@ -1179,11 +1211,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-brand-tile__plate {
     @include ox-x-corner(48px);
   }
+
+  .ox-brand-tile__plate::before {
+    @include ox-x-corner(48px);
+  }
 }
 
 @media (min-width: 1280px) {
   .ox-brand-tile__plate {
     min-block-size: 176px;
+    @include ox-x-corner(64px);
+  }
+
+  .ox-brand-tile__plate::before {
     @include ox-x-corner(64px);
   }
 
@@ -1349,8 +1389,23 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-block-size: 200px;
   margin-block-start: var(--ox-4);
   padding: var(--ox-6);
-  background: var(--ox-plate);
+  // S12 (2026-09-25): the same clean ground as the brand tile, the card
+  // white with a painted hairline (the stroke is the element, the fill the
+  // inset pseudo, both cut), so the brand's artwork never sits on grey here
+  // either and the diagonal keeps its line on the white page.
+  isolation: isolate;
+  background: var(--ox-line-2);
   @include ox-x-corner(40px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background: var(--ox-card);
+    pointer-events: none;
+    @include ox-x-corner(40px);
+  }
 }
 
 .ox-brandhero__eyebrow {
@@ -1408,11 +1463,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
     padding: var(--ox-8);
     @include ox-x-corner(48px);
   }
+
+  .ox-brandhero::before {
+    @include ox-x-corner(48px);
+  }
 }
 
 @media (min-width: 1280px) {
   .ox-brandhero {
     min-block-size: 240px;
+    @include ox-x-corner(64px);
+  }
+
+  .ox-brandhero::before {
     @include ox-x-corner(64px);
   }
 }

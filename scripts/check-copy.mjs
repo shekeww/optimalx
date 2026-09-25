@@ -48,7 +48,7 @@ export const DIACRITICS = new RegExp(
   ']',
   'u'
 );
-const EM_DASH = '\u2014';
+const EM_DASH = String.fromCharCode(0x2014);
 const ARABIC = /\p{Script=Arabic}/u;
 const DIALECT = new RegExp(`(?<![\\p{L}\\p{M}])(${DIALECT_WORDS.join('|')})(?![\\p{L}\\p{M}])`, 'u');
 const DIALECT_PHRASE = new RegExp(`(?<![\\p{L}\\p{M}])(${DIALECT_PHRASES.map((p) => p.trim()).join('|')})(?![\\p{L}\\p{M}])`, 'u');

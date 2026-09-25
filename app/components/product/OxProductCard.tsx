@@ -21,6 +21,21 @@ import { useHoverCapable } from './lib/useHoverCapable';
 import { monthsUntilExpiry } from './lib/supply';
 import { bundleMembers } from './lib/variant';
 import { effectivePrice, isNewProduct, savingOf } from './lib/claims';
+import { channelByCode } from '../../content/services';
+
+/**
+ * A service or a booking (the four advisory products, OX-044 to OX-047,
+ * still typed `service` because the create API rejected `booking`,
+ * lib/variant.ts): a card never offers it as "add 1 to cart at 0.00". It
+ * presents the way its own page does (ServicePdp.tsx): the price line reads
+ * "مجاني" or the fee, and the one control is the channel's own verb
+ * ("احجز زيارتك", "اكتب سؤالك") leading to that page, where the booking is
+ * made. No stepper, no add button (Phase B D07, 2026-09-25, the same branch
+ * the Shopify port's snippets/product-card.liquid takes).
+ */
+export function isServiceProduct(product: Pick<Product, 'type'>): boolean {
+  return product.type === 'service' || product.type === 'booking';
+}
 
 /**
  * OptimalX's product card, registered over the engine's `product:card` key so
@@ -388,7 +403,13 @@ export const OxProductCard = memo(function OxProductCard({
 
         ) : null}
         <div className="ox-card-product__price">
-          <Price amount={price} size="card" currency={product.currency} />
+          {/* A free service reads "مجاني" where its page does (ServicePdp.tsx
+              `ox.common.free`), never "0.00 ر.س" (Phase B D07). */}
+          {isServiceProduct(product) && (price === 0 || price === undefined) ? (
+            <span className="ox-price ox-price--card ox-card-product__free">{t('ox.common.free')}</span>
+          ) : (
+            <Price amount={price} size="card" currency={product.currency} />
+          )}
 
           {product.is_on_sale ? (
             <>
@@ -528,6 +549,31 @@ function BuyControls({
           className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy"
         >
           {t('ox.card.buy_now')}
+        </Link>
+
+      </div>
+
+    );
+  }
+
+  // A service or a booking presents as a booking, never as "add 1 to cart"
+  // (Phase B D07, see `isServiceProduct`): one full-width link to its own
+  // page carrying the channel's own verb (services.ts `doorCtaKey`, the
+  // short form ServicePdp.tsx also prefers), else the generic booking or
+  // order-service label the page itself falls back to.
+  if (isServiceProduct(product)) {
+    const channel = channelByCode(product.sku ?? undefined);
+    const serviceLabelKey =
+      channel?.doorCtaKey ??
+      channel?.ctaKey ??
+      (product.type === 'booking' ? 'ox.pdp.book_now' : 'ox.booking.order_service');
+    return (
+      <div className="ox-card-product__action">
+        <Link
+          to={toInternalPath(product.url)}
+          className="ox-btn ox-btn--primary ox-btn--block ox-card-product__buy"
+        >
+          {t(serviceLabelKey)}
         </Link>
 
       </div>

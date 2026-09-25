@@ -151,6 +151,15 @@ body {
   justify-self: end;
 }
 
+// The WhatsApp symbol is a third-party mark (S12 chrome-ios): it carries no
+// accent element in the utility bar, the drawer foot or the float (`.ox-wa`,
+// _b2-home.scss). One colour, the link's own, so it reads quiet grey on the
+// dark bar, ink on the drawer's paper and white on the green float.
+.ox-util__contact .ox-icon,
+.ox-drawer__contact-link .ox-icon {
+  --ox-icon-mono: currentColor;
+}
+
 .ox-util__branch,
 .ox-util__contact {
   display: inline-flex;
@@ -364,6 +373,10 @@ a.ox-util__trust-link {
   align-items: center;
   flex: 0 0 auto;
   text-decoration: none;
+  // The wordmark is 27.5 to 40 tall; the link home is a 44 target all the
+  // same (S12 chrome-ios, DIRECTION's 44 by 44 rule), centred on the mark,
+  // so nothing moves.
+  @include ox-hit-area;
 
   img {
     display: block;
@@ -1171,9 +1184,23 @@ a.ox-util__trust-link {
   margin-inline-start: auto;
 }
 
+// The phone's search field is a 44 target (S12 chrome-ios): 4 taller than
+// the desktop pill, taken from the row's bottom padding (12 to 8), so the
+// header keeps its height and nothing below it moves.
 .ox-mobilebar__search {
   padding-inline: var(--ox-gutter);
-  padding-block-end: var(--ox-3);
+  padding-block-end: var(--ox-2);
+
+  .s-search-input,
+  input[type='search'],
+  input[type='text'] {
+    block-size: 44px;
+    line-height: 44px;
+  }
+
+  .ox-search__placeholder {
+    block-size: 44px;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1192,6 +1219,9 @@ a.ox-util__trust-link {
   background: rgba(14, 16, 20, 0.5);
   opacity: 0;
   transition: opacity var(--dur-base) var(--ease-out);
+  // A drag on the backdrop is never a page scroll (S12 chrome-ios): the
+  // page behind the drawer stays where it was.
+  touch-action: none;
 }
 
 .ox-drawer__panel-root {
@@ -1205,8 +1235,23 @@ a.ox-util__trust-link {
   color: var(--ox-ink);
   border-inline-end: 1px solid var(--ox-line);
   overflow-y: auto;
+  // The panel scrolls on its own (its list is taller than a phone) and never
+  // hands the overscroll on to the page behind it; the foot clears the home
+  // indicator when the viewport reaches under it (S12 chrome-ios).
+  overscroll-behavior: contain;
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+  // The head clears a status bar that reaches over the page (a home screen
+  // web app) and the rows clear a sideways phone's notch at the edge the
+  // panel slides from: the inline start, the physical right in Arabic
+  // (S12 chrome-ios). Both insets are 0 in portrait Safari.
+  padding-block-start: env(safe-area-inset-top, 0px);
+  padding-inline-start: env(safe-area-inset-right, 0px);
   transform: translateX(calc(var(--direction-factor) * -100%));
   transition: transform var(--dur-fast) var(--ease-in);
+}
+
+[dir='ltr'] .ox-drawer__panel-root {
+  padding-inline-start: env(safe-area-inset-left, 0px);
 }
 
 .ox-drawer.is-entered {
@@ -1378,6 +1423,10 @@ a.ox-util__trust-link {
   color: var(--ox-ink);
   overflow-y: auto;
   overscroll-behavior: contain;
+  // The sheet's foot clears the home indicator and its head the status bar
+  // when the viewport reaches under them (S12 chrome-ios); the sides inset
+  // by --ox-gutter, which already takes the side safe areas.
+  padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
   transform: translateY(100%);
   transition: transform var(--dur-base) var(--ease-in);
 }
@@ -1539,6 +1588,17 @@ a.ox-util__trust-link {
   background: var(--ox-card);
   border-block-start: 1px solid var(--ox-line);
   padding-block-end: env(safe-area-inset-bottom, 0px);
+  // A phone held sideways puts its notch corners over the two end tabs; the
+  // side insets keep every tab clear of them (S12 chrome-ios). Logical
+  // start/end so the same rule reads in both directions: the inline start
+  // is the physical right in Arabic, the left in English.
+  padding-inline-start: env(safe-area-inset-right, 0px);
+  padding-inline-end: env(safe-area-inset-left, 0px);
+}
+
+[dir='ltr'] .ox-tabbar {
+  padding-inline-start: env(safe-area-inset-left, 0px);
+  padding-inline-end: env(safe-area-inset-right, 0px);
 }
 
 .ox-tabbar__list {
@@ -1754,6 +1814,25 @@ body.ox-has-tabbar .app-inner {
   color: var(--ox-ink-3-on-dark);
 }
 
+// In the desktop grid the chip sits in a 150px column (phase B, HC-08): one
+// row of stars, value, label and count broke into five lines there and the
+// port clipped the count at the column's edge. Two rows instead, the stars
+// with the value, then the label and the count, which wrap between
+// themselves when the language needs it. The phone accordion has the full
+// width and keeps the one-row chip.
+@media (min-width: 1024px) {
+  .ox-footer__rating {
+    flex-wrap: wrap;
+    row-gap: var(--ox-1);
+    max-inline-size: 100%;
+  }
+
+  .ox-footer__rating .ox-gr__text {
+    flex-basis: 100%;
+    flex-wrap: wrap;
+  }
+}
+
 .ox-footer__brand {
   display: flex;
   flex-direction: column;
@@ -1792,7 +1871,12 @@ body.ox-has-tabbar .app-inner {
   // it is a full target, and the gap is measured from the target box rather
   // than the glyph so the marks keep their spacing.
   gap: var(--ox-2);
-  margin-inline-start: calc(var(--ox-3) * -1);
+  // Each anchor is a 44 round button with a visible ring now (the engine's
+  // SallaSocial and the port's `.ox-footer__social-link`), so the ring's own
+  // edge aligns with the column's reading start. The -12px start margin
+  // seated a bare glyph on that edge and pushed the ring to 4px from a
+  // phone's side (S12 chrome-ios).
+  margin-inline-start: 0;
   color: var(--ox-ink-2-on-dark);
   font-size: 18px;
 
@@ -1802,6 +1886,14 @@ body.ox-has-tabbar .app-inner {
     justify-content: center;
     inline-size: 44px;
     block-size: 44px;
+  }
+
+  // The engine draws its glyph at 14; the row's own size is 18 (S12
+  // chrome-ios, the port's ox-social glyph takes the same 18).
+  .s-social-icon,
+  .s-social-icon svg {
+    inline-size: 18px;
+    block-size: 18px;
   }
 
   a:hover {
@@ -1902,6 +1994,67 @@ body.ox-has-tabbar .app-inner {
   &::after {
     inline-size: 8px;
     inset-inline-end: 52px;
+  }
+}
+
+// The developer credit (S11-direction section 8, built S12 chrome-ios): one
+// quiet line on the copyright's side, clear of the wedge at the inline end.
+// "تطوير" / "Built by" in the copyright's own type, the name a 13/700 link in
+// the next ink, Latin, isolated LTR, no underline at rest; the link box is
+// 44 tall so the touch target is met without moving the text. The copyright
+// and the credit share `.ox-footer__strip-start`, so the gated Latin tagline
+// keeps the inline end of the strip: below 640 the group stacks its two
+// lines at the inline start (the strip grows from 66 to about 93), from 640
+// they share one line with a 1px rule between them.
+.ox-footer__strip-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-1);
+  padding-block: var(--ox-3);
+}
+
+.ox-footer__credit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  margin: 0;
+  color: var(--ox-ink-3-on-dark);
+  font-size: 13px;
+}
+
+.ox-footer__credit-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  color: var(--ox-ink-2-on-dark);
+  font-weight: var(--ox-w-title);
+  letter-spacing: 0;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-ink-on-dark);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+@media (min-width: 640px) {
+  .ox-footer__strip-start {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding-block: 0;
+  }
+
+  .ox-footer__strip-start .ox-footer__credit::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1px;
+    block-size: 12px;
+    margin-inline: var(--ox-3);
+    background: var(--ox-line-on-dark);
   }
 }
 
@@ -2043,6 +2196,67 @@ body.ox-has-tabbar .app-inner {
   .ox-sheet.is-entered {
     opacity: 1;
     transition: opacity var(--dur-base) var(--ease-out);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 13. Touch (S12 chrome-ios)
+// ---------------------------------------------------------------------------
+// Every link and button in the chrome (the header with its drawer, mega
+// panel and المزيد list, the shop sheet, the tab bar, the footer and the
+// WhatsApp float) opts out of the double-tap zoom gesture, so iOS Safari
+// fires its click at once: `manipulation` keeps panning and the pinch zoom,
+// only the double-tap wait is gone. The page's own rails keep the default.
+.ox-header :is(a, button, input, summary),
+.ox-sheet :is(a, button),
+.ox-tabbar :is(a, button),
+.ox-footer :is(a, button),
+.ox-wa {
+  touch-action: manipulation;
+}
+
+// 44 by 44 on the phone footer (DIRECTION's target rule): a one-word link
+// such as الأداء measured 31.6 wide, and the store-rating chip, a link to the
+// Google listing, 26 tall. The box grows, the text stays where it was.
+.ox-footer__link {
+  min-inline-size: 44px;
+}
+
+.ox-footer__rating {
+  min-block-size: 44px;
+}
+
+// A finger on a device wide enough for the desktop bar (a tablet): the
+// rows the mouse layout keeps dense (the utility links 32, the mega panel's
+// roots 36 and children 32, its brand row 32, the footer's links 28) become
+// 44 tall. `pointer: coarse` is a touch screen with no mouse, so a laptop's
+// layout is untouched.
+@media (pointer: coarse) {
+  .ox-util__branch,
+  .ox-util__contact,
+  .ox-mega__root,
+  .ox-mega__child,
+  .ox-mega__axis {
+    min-block-size: 44px;
+  }
+
+  .ox-mainbar__search {
+    .s-search-input,
+    input[type='search'],
+    input[type='text'] {
+      block-size: 44px;
+      line-height: 44px;
+    }
+  }
+}
+
+@media (pointer: coarse) and (min-width: 1024px) {
+  .ox-footer__link {
+    min-block-size: 44px;
+  }
+
+  .ox-footer__col ul {
+    gap: 0;
   }
 }
 

@@ -236,6 +236,26 @@ if (Object.keys(productImageOverlay).length) {
 }
 
 /**
+ * THE OPTIONS OVERLAY (2026-09-25). A product the Salla dashboard created
+ * without options gets them from `fixtures/store/overlay/product-options.json`
+ * (product id to { has_options, options, skus } in the Salla shape): the gift
+ * card's 100, 200 and 500 riyal values, which the owner's catalogue lists and
+ * the Shopify seed builds from the same file. Applied to the listing entry and
+ * the details, before the English overlay copies them.
+ */
+const productOptionsOverlay = OVERLAY ? load('overlay/product-options.json', {}) : {};
+if (Object.keys(productOptionsOverlay).length) {
+  const list = Array.isArray(snapshot.products) ? snapshot.products : snapshot.products?.data;
+  for (const p of list ?? []) if (p && productOptionsOverlay[String(p.id)]) Object.assign(p, { has_options: true });
+  for (const d of Object.values(snapshot.details ?? {})) {
+    const target = d?.data ?? d;
+    const hit = target && productOptionsOverlay[String(target.id)];
+    if (hit) Object.assign(target, hit);
+  }
+  console.log(`[store-api] OFFLINE_TAXONOMY=1: product options overlay for ${Object.keys(productOptionsOverlay).length} product(s)`);
+}
+
+/**
  * THE LANGUAGE OVERLAY (S9f, 2026-09-24). Owner report: "in english
  * version, products names and data are appearing in arabic". The live
  * Salla API answers a product's translation when the merchant has one and

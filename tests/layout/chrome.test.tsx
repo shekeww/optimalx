@@ -270,7 +270,14 @@ describe('Footer', () => {
     expect(container.querySelector('[data-hook-slot="footer:end"]')).not.toBeNull();
     const copyright = container.querySelector('[data-hook-slot="copyright"]');
     expect(copyright).not.toBeNull();
-    await waitFor(() => expect(screen.getByTestId('engine-copyright').textContent).toBe('اوبتيمال اكس'));
+    // The fallback is the theme's own Arabic line with the year, not the
+    // engine's English "Copyright | <year> <store>" (phase B, HC-16).
+    await waitFor(() =>
+      expect(screen.getByTestId('ox-footer-copyright').textContent).toBe(
+        `اوبتيمال اكس ${new Date().getFullYear()}. جميع الحقوق محفوظة.`
+      )
+    );
+    expect(screen.queryByTestId('engine-copyright')).toBeNull();
   });
 
   it('shows the VAT row only when a VAT number exists', () => {

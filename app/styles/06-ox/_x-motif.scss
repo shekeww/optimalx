@@ -80,8 +80,13 @@
 @mixin ox-x-notch($t, $j, $corner: end-start) {
   @if $corner == end-start {
     clip-path: polygon(0 0, calc(100% - #{$j}) 0, calc(100% - #{$j}) #{$t}, 100% #{$t}, 100% 100%, 0 100%);
+    // Phase B (PJ-16): the LTR shape is the mirror of the RTL one, a j by t
+    // bite at the top of the reading start. The earlier polygon bit the
+    // bottom-left from t down to the baseline, the whole height less t,
+    // which took the first letter off every English label under this notch
+    // ("ou save" on the saving badge).
     [dir='ltr'] & {
-      clip-path: polygon(0 0, 100% 0, 100% 100%, #{$j} 100%, #{$j} #{$t}, 0 #{$t});
+      clip-path: polygon(#{$j} 0, 100% 0, 100% 100%, 0 100%, 0 #{$t}, #{$j} #{$t});
     }
   } @else {
     clip-path: polygon(0 0, 100% 0, 100% 100%, #{$j} 100%, #{$j} #{$t}, 0 #{$t});

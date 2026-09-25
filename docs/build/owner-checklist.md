@@ -134,3 +134,22 @@ Replace the chips on the first four before launch (keep the offer, drop the outc
 ## Registration values (2026-09-25): mockups in place, real values pending
 
 The owner asked for mockups until the real values arrive. Set on both platforms (Shopify config/settings_data.json; the Salla preview overlay fixtures/store/overlay/settings.json, the Salla dashboard still empty): `cr_number` 4650000000 (a Madinah-format placeholder) and `maroof_url` https://maroof.sa/ (the portal root, no listing). `vat_number` stays empty on purpose: it also switches on the "prices include VAT" line on product pages and the tax line in the cart, which must only appear once the store is VAT-registered. Replace the two mockups with the real CR number and the store's own Maroof listing before the password comes off the store.
+
+
+## Open owner items after the parity review (2026-09-25)
+
+The Shopify store is the live deployment on optimalx.com.sa. These items came out of the parity review of both platforms and need a decision or a value only you hold; the theme is ready for each of them.
+
+| Item | What the theme does today | What you decide or provide |
+|---|---|---|
+| Store phone and email | Done 2026-09-25: the theme settings store_phone (+966553524524) and contact_email (contact@optimalx.com.sa) feed the contact page, the FAQ contact row and the structured data | Also set the same email as the store contact email in Settings, Store details, because Shopify uses it as the reply address on order emails |
+| Shipping and markets | Checked 2026-09-25 after your message: the store still ships to 29 countries (Egypt, the Emirates, Europe, the US and others) and Saudi Arabia is not among them, so a Saudi address cannot check out yet | In Settings, Shipping and delivery, add a Saudi Arabia zone with its rates and remove the other countries; in Settings, Markets, keep Saudi Arabia as the only active market |
+| Inventory | No product tracks stock, so any quantity is accepted | Turn on inventory tracking with real counts when you have them; the stepper then caps at the available stock |
+| Policies | The refund policy text (14-day returns, refund within 24 hours of the returned product reaching the store, sealed products only, gift cards not refundable) is ready in both languages in the Shopify repo, docs/policies/refund-policy.md; the app cannot write policies | Paste it into Settings, Policies, Refund policy (and the English under Languages, Translate), or add the write_legal_policies scope to the app so it can be published for you; terms, shipping and contact policies still need your terms |
+| The "جديد" badge | A card shows the badge only for a product tagged `new` inside its first 30 days | Tag the launch products you want badged (Products, Tags) |
+| The weight-subscription poster | Shown as sent; the baked-in "100% كاش باك" and "نتائج أخف" lines are claims the review rejects | A version without the result line and with the cashback rule stated exactly, or drop the poster |
+| Consultation credit | The 50-riyal first-order credit was removed from the video consultation copy and the services page description on 2026-09-25, because no coupon backs it yet; the theme prints the credit line only when the credit note setting is filled | Confirm the credit rule (amount, which orders, expiry) and create the coupon; the line then goes into the setting |
+| Gift card | Done 2026-09-25: the gift card sells 100, 200 and 500 riyals (Value in English) with the brand lockup as its image | A gift card visual when you have one |
+| Google reviews | Done 2026-09-25: the "شارك تجربتك" button opens Google's write-a-review form for your listing (place ID ChIJl_TCsg2VvRURcdBCfpCFmR4) | Nothing |
+| Store description in the admin | Online Store, Preferences still reads "برامج خسارة الوزن، تحليل InBody"; the theme replaces it on the home page, but Shopify shows it in its own surfaces (link previews of the store, the Shop app) | Change "تحليل InBody" to "قياس InBody" and drop the weight-loss wording, per the claims rules |
+| The password page message | The locked storefront carries its own copy and hides the message typed in Online Store preferences (the password section's "Show the store message from the admin" setting is off): that message says "تحليل إن بودي" and "InBody analysis", mixes Arabic and English in one paragraph and writes "قريبا" with a diacritic | Leave it off, or rewrite it with one language per line and the InBody test as a measurement (قياس), then tick the setting |

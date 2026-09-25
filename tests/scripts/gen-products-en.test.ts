@@ -3,12 +3,13 @@
 // check-copy.mjs / check-claims.mjs gate the locale files, and builds the
 // overlay object scripts/serve-store.mjs serves for `accept-language: en`.
 // Uses the repo's own CSV (the same file the real script reads) for the
-// "47 SKUs, 43 clean twins" assertions, plus synthetic fixtures for the
+// "47 SKUs, 47 clean twins" assertions (the four best-seller claims
+// left the catalogue on 2026-09-25), plus synthetic fixtures for the
 // gate's own behaviour.
 import { describe, expect, it } from 'vitest';
 import { loadTwinsFromCsv, gateTwin, buildOverlay, CSV_PATH } from '../../scripts/gen-products-en.mjs';
 
-describe('loadTwinsFromCsv \u2014 the real catalogue', () => {
+describe('loadTwinsFromCsv, the real catalogue', () => {
   it('reads all 47 SKUs, every one carrying a complete English twin', () => {
     const twins = loadTwinsFromCsv({ csvPath: CSV_PATH });
     expect(twins.size).toBe(47);
@@ -27,7 +28,7 @@ describe('gateTwin', () => {
   });
 
   it('flags an em dash (check-copy.mjs rule, language-independent)', () => {
-    const problems = gateTwin({ sku: 'OX-TEST', name: 'Whey \u2014 Protein', subtitle: 'x', description: 'x' });
+    const problems = gateTwin({ sku: 'OX-TEST', name: 'Whey ' + String.fromCharCode(0x2014) + ' Protein', subtitle: 'x', description: 'x' });
     expect(problems.some((p) => p.includes('[copy:em-dash]'))).toBe(true);
   });
 
@@ -41,10 +42,10 @@ describe('gateTwin', () => {
     expect(problems.some((p) => p.includes('[claim:banned-word]'))).toBe(true);
   });
 
-  it('the real catalogue: exactly the four SKUs citing a third-party best-seller ranking are gated', () => {
+  it('the real catalogue: no twin is gated since the best-seller and competitor claims left it (2026-09-25)', () => {
     const twins = loadTwinsFromCsv({ csvPath: CSV_PATH });
     const gated = [...twins.values()].filter((twin) => gateTwin(twin).length > 0).map((twin) => twin.sku);
-    expect(gated.sort()).toEqual(['OX-021', 'OX-023', 'OX-026', 'OX-035']);
+    expect(gated).toEqual([]);
   });
 });
 

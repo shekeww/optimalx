@@ -66,8 +66,8 @@ type Locale = 'ar' | 'en';
  * `locale:page.field`.
  */
 const ALLOWLIST: Record<string, string> = {
-  // S1 owns ox.tax.index.title (CATEGORIES_INDEX_KEYS, app/routes/categories.tsx).
-  'ar:categories.title': 'S1 content, request filed in progress/S3.md',
+  // ox.tax.index.title and en:tax.goal_energy.description were shortened on
+  // 2026-09-25 (Phase B D21) and no longer breach, so they left this list.
   // S4 owns every ox.tax.*.description EN value (locales/partials/tax.en.json).
   'en:tax.creatine.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.pre_workout.description': 'S4 content, request filed in progress/S3.md',
@@ -82,7 +82,6 @@ const ALLOWLIST: Record<string, string> = {
   'en:tax.mass_gainer.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.bundles.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.gift_cards.description': 'S4 content, request filed in progress/S3.md',
-  'en:tax.goal_energy.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.goal_general_health.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.goal_performance.description': 'S4 content, request filed in progress/S3.md',
   'en:tax.goal_recovery.title': 'S4 content, request filed in progress/S3.md',

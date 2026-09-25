@@ -979,9 +979,17 @@
   // Positioned: the scroller's own containing block (G2, DIRECTION 10.1).
   position: relative;
   display: flex;
-  gap: var(--ox-4);
+  // S11 item 2 (4.3): no column gap while the covers' ground is the accent,
+  // so two neighbouring cut triangles meet exactly and form one continuous
+  // slanted accent strap of constant width (27 / 32.4 / 43.2 per tier)
+  // between the photographs; the row gap between stacked rows stays 16.
+  // `padding-block: 4px` keeps a tile's focus ring (outline, offset 2) out
+  // of the row's own overflow clip below 640.
+  column-gap: 0;
+  row-gap: var(--ox-4);
   margin: 0;
-  padding: 0;
+  padding-block: 4px;
+  padding-inline: 0;
   list-style: none;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
@@ -1001,11 +1009,21 @@
   scroll-snap-align: start;
 }
 
+// The paper option (S11 4.4, the `cover_ground_gallery` setting): white
+// tiles get the 16 channel back; the class rides the list beside the covers'
+// own `ox-cover--ground-paper`, per surface, never per tile.
+.ox-branch-gallery__list--paper {
+  column-gap: var(--ox-4);
+}
+
 @media (min-width: 640px) {
   .ox-branch-gallery__list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     overflow: visible;
+    // The grid clips nothing, so the scroll row's focus-ring padding
+    // (S11 4.3, below 640 only) goes.
+    padding-block: 0;
   }
 
   // Three tiles (S9h: `BranchPage` drops the storefront tile, its own

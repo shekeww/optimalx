@@ -93,7 +93,12 @@ export function extractTimes(line: string): string[] {
     if (end - (i + 1) !== 2) continue;
     const hour = Number(text.slice(start, i));
     const minute = Number(text.slice(i + 1, end));
-    if (!Number.isFinite(hour) || hour > 23 || minute > 59) continue;
+    // A "24:00" close is midnight, the end of the day (1440 minutes, after
+    // every other time): the owner's own setting closes both rows at 24:00,
+    // and rejecting it dropped the whole table, the chip and the JSON-LD
+    // hours (Phase B J-18, 2026-09-25). Any other hour past 23 is noise.
+    const midnightClose = hour === 24 && minute === 0;
+    if (!Number.isFinite(hour) || (hour > 23 && !midnightClose) || minute > 59) continue;
     out.push(`${pad(hour)}:${pad(minute)}`);
     i = end - 1;
   }

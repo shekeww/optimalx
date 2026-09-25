@@ -10,6 +10,9 @@
 // primitives so every later partial can `@include ox-plate()`, it calls
 // `ox-run()`, which primitives defines.
 @import 'plates';
+// The payment marks (S11 item 5), S12: right after plates because the
+// footer plate calls `ox-plate()`.
+@import 'paymarks';
 @import 'x-motif';
 // The shared rail primitive (S4d, coordinator brief 2026-09-23: one cue and
 // one progress strap for every carousel). After x-motif because its chevron
@@ -24,3 +27,8 @@
 @import 'b5-pages';
 @import 'b6-commerce';
 @import 'b7-advisory';
+// LAST: the quantity bar (S11 item 3, S12). It restyles card markup that
+// `b4-listing` also styles for the Salla card, so it loads after every batch
+// partial and wins each tie by order rather than by a specificity race; the
+// mixins it calls live in `primitives`, far above.
+@import 'qtybar';

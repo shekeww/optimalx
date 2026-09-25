@@ -7,9 +7,10 @@
 //
 // ONE shape family for `OxBranch`'s own ground and the four `BranchGallery`
 // tiles (any future branch surface draws from it too): `ox-angled($lean)`
-// cuts the WHOLE card, photograph and content together, never a photo panel
-// beside a separate flat card. The lean ladder reuses
-// `.ox-branch-gallery__item--cut`'s own proven numbers: 40px below 768 (run
+// cuts the photograph, its scrim and its glow as one parallelogram over the
+// card's own accent ground (S11 item 2, below), with the content laid out
+// inside that shape, never a photo panel beside a separate flat card. The
+// lean ladder reuses `.ox-branch-gallery__item--cut`'s own proven numbers: 40px below 768 (run
 // 27.0), 48px from 768 (run 32.4), 64px from 1024 (run 43.2), X-IDENTITY
 // §2.3's 24% run/inline-size budget; the rendered percentages against the
 // real widths are recorded in docs/build/progress/S9c.md.
@@ -26,8 +27,8 @@
 // "unclipped box carries the interactive state" idiom `_b4-listing.scss`
 // uses for `.ox-brand-tile`/`.ox-featured__arrow` (X-IDENTITY §7.1
 // `focus-clipped`), applied here to a whole card's own `:focus-visible`
-// (the `.ox-pcard` inset box-shadow construction, `_b2-home.scss` §17.2)
-// rather than to a nested icon face. `outline: none` only ever fires on an
+// (since S11 a plain outline on the unclipped card, see the rule below)
+// rather than to a nested icon face. The focus rule only ever fires on an
 // element that is itself focusable (the four gallery links); the block
 // wrapper is never a focus target, so the same declaration is inert there.
 //
@@ -46,7 +47,27 @@
 // the photograph ground with no cover-specific override, and `--ox-focus`
 // becomes `--ox-paper` so the card's own focus ring reads against the photo.
 
+// S11 item 2 (creative director G2, 2026-09-25; owner override 1 recorded
+// there: the accent as a resting ground behind the branch covers). The clip
+// no longer sits on the card: the card is the GROUND, a vertical accent
+// gradient, and the three media layers (`__photo`, `__scrim`, `__glow`)
+// each carry the exact polygon the card used to, per tier. The two cut
+// triangles therefore show the accent instead of the page's paper: the top
+// inline-end one, beside the photograph's lightest corner, is the bright
+// accent; the bottom inline-start one, beside the scrim's darkest corner,
+// has deepened through `--ox-accent-dark` to `--ox-accent-deep`, so the
+// cuts read as the photo's lit and shadowed rims rather than stickers. The
+// accent area is small by construction (at most run wide, 27 / 32.4 / 43.2
+// per tier, tapering to nothing). `ox-cover--ground-paper` (one theme
+// setting per surface on both platforms, never per tile) puts the paper
+// ground back.
 .ox-cover {
+  --ox-cover-ground: linear-gradient(
+    to bottom,
+    var(--ox-accent) 0%,
+    var(--ox-accent-dark) 35%,
+    var(--ox-accent-deep) 100%
+  );
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -54,35 +75,47 @@
   flex-direction: column;
   justify-content: flex-end;
   border-radius: 0;
-  background: var(--ox-plate);
+  background: var(--ox-cover-ground);
   text-decoration: none;
-  @include ox-angled(40px);
+  clip-path: none;
 
   // The block's own floor: the container width * 10 / 16 at each tier
   // (358, 720, 960, 1296, S9c log), so the photograph always has a real
   // presence even when the content above it is short.
   min-block-size: 224px;
 
-  // The whole card is the clipped element (`.ox-pcard`'s own construction):
-  // `clip-path` clips a live outline, so the ring paints inside the box
-  // instead and survives the cut at every width. Inert on the block variant,
-  // which is never itself a focus target.
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--ox-focus);
+  // The card carries no clip any more, so a real outline survives: it sits
+  // on the page OUTSIDE the tile, in `--ox-ink` (never the band's
+  // `--ox-focus`, which is paper here and would vanish on the white page),
+  // and `z-index: 1` lifts it above the neighbouring tile now that the
+  // gallery's column gap is 0. Inert on the block variant, which is never
+  // itself a focus target. `[href]` lifts the rule over the global link ring
+  // (`a[href]:focus-visible`, `_primitives.scss`), which would otherwise
+  // paint the band's paper `--ox-focus` on the white page (measured, S12).
+  &:focus-visible,
+  &[href]:focus-visible {
+    outline: 2px solid var(--ox-ink);
+    outline-offset: 2px;
+    box-shadow: none;
+    z-index: 1;
   }
+}
+
+// The paper option (S11 4.4): `--ox-paper`, not `--ox-bg`, because the
+// cover is itself `.ox-band-dark`, which redeclares `--ox-bg` as graphite
+// on the same element.
+.ox-cover--ground-paper {
+  --ox-cover-ground: var(--ox-paper);
 }
 
 @media (min-width: 768px) {
   .ox-cover {
-    @include ox-angled(48px);
     min-block-size: 450px;
   }
 }
 
 @media (min-width: 1024px) {
   .ox-cover {
-    @include ox-angled(64px);
     min-block-size: 600px;
   }
 }
@@ -101,6 +134,34 @@
   cursor: pointer;
 }
 
+// The three media layers share the card's old polygon per tier (S11 4.2):
+// `ox-angled(40px)` below 768 (run 27.0), 48px from 768 (run 32.4), 64px
+// from 1024 (run 43.2), the `[dir='ltr']` mirror from the mixin. Three
+// identical static clips on one box; no filter, no layer promotion. A
+// browser without `clip-path` drops the three declarations and the photo
+// covers the whole box, which hides the ground: the old square look.
+.ox-cover__photo,
+.ox-cover__scrim,
+.ox-cover__glow {
+  @include ox-angled(40px);
+}
+
+@media (min-width: 768px) {
+  .ox-cover__photo,
+  .ox-cover__scrim,
+  .ox-cover__glow {
+    @include ox-angled(48px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cover__photo,
+  .ox-cover__scrim,
+  .ox-cover__glow {
+    @include ox-angled(64px);
+  }
+}
+
 .ox-cover__photo {
   position: absolute;
   inset: 0;
@@ -108,6 +169,9 @@
   block-size: 100%;
   object-fit: cover;
   object-position: var(--ox-cover-position, center);
+  // A photograph that has not decoded yet shows a dark parallelogram with
+  // accent corners, never a full orange rectangle.
+  background: var(--ox-graphite-3);
 }
 
 // Two gradients (bottom, reading-start), never a flat scrim: stops tuned per
@@ -149,21 +213,26 @@
   }
 }
 
-// The accent glow: a radial gradient feathered from the top reading-end cut
-// corner (diagonally opposite the overlay text), 0.12 to 0.18 of `--ox-accent`.
+// The accent glow: a radial gradient feathered from the top inline-END cut
+// corner (diagonally opposite the overlay text), 0.12 to 0.18 of
+// `--ox-accent`. That corner is the physical top-LEFT in RTL (`0% 0%`) and
+// the top-right in LTR (`100% 0%`): the bright accent triangle sits there
+// (S11 4.3), so the glow's centre and the lit corner share one corner in
+// both directions. Before S11 the two declarations were the other way round,
+// against this comment (measured, S11 M2).
 .ox-cover__glow {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: radial-gradient(
-    circle at 100% 0%,
+    circle at 0% 0%,
     rgba(var(--ox-accent-rgb), var(--ox-cover-glow, 0.14)) 0%,
     transparent 55%
   );
 
   [dir='ltr'] & {
     background: radial-gradient(
-      circle at 0% 0%,
+      circle at 100% 0%,
       rgba(var(--ox-accent-rgb), var(--ox-cover-glow, 0.14)) 0%,
       transparent 55%
     );

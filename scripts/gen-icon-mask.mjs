@@ -20,6 +20,18 @@ import { pathToFileURL } from 'node:url';
 export const SPRITE = path.join('app', 'assets', 'ox-sprite.svg');
 export const TARGET = path.join('app', 'styles', 'tokens.css');
 export const SYMBOL_ID = 'ox-cart';
+/**
+ * Every symbol that reaches CSS as a mask token, in the order the generated
+ * block lists them. S12 (2026-09-25) added the chevron (the global primary
+ * button's arrow, `_primitives.scss`) and the plus and minus (the quantity
+ * bar's engine mapping, S11 direction 2.2) beside the cart.
+ */
+export const SYMBOLS = [
+  [SYMBOL_ID, '--ox-cart-glyph'],
+  ['ox-chevron-end', '--ox-chevron-end-glyph'],
+  ['ox-plus', '--ox-plus-glyph'],
+  ['ox-minus', '--ox-minus-glyph'],
+];
 export const START_MARKER = '/* ---------- Generated: scripts/gen-icon-mask.mjs (do not hand-edit) ---------- */';
 export const END_MARKER = '/* ---------- End generated ---------- */';
 
@@ -80,8 +92,10 @@ export function maskDataUri(symbolBody) {
  * @returns {string}
  */
 export function renderBlock(spriteSource) {
-  const token = maskDataUri(readSymbolBody(spriteSource, SYMBOL_ID));
-  return `${START_MARKER}\n:root {\n  --ox-cart-glyph: ${token};\n}\n${END_MARKER}\n`;
+  const lines = SYMBOLS.map(
+    ([id, token]) => `  ${token}: ${maskDataUri(readSymbolBody(spriteSource, id))};`
+  );
+  return `${START_MARKER}\n:root {\n${lines.join('\n')}\n}\n${END_MARKER}\n`;
 }
 
 /**
@@ -117,7 +131,7 @@ function main(args) {
     return 0;
   }
   fs.writeFileSync(TARGET, next, 'utf8');
-  console.log(`gen-icon-mask: wrote --ox-cart-glyph from #${SYMBOL_ID} to ${TARGET}`);
+  console.log(`gen-icon-mask: wrote ${SYMBOLS.map(([, token]) => token).join(', ')} to ${TARGET}`);
   return 0;
 }
 

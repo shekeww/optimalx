@@ -43,11 +43,19 @@ export function ZeroResults({ query, className }: ZeroResultsProps) {
         className="ox-zero__state"
         icon="headset"
         title={
-          <>
-            {t('ox.search.no_results_prefix')} <Bdi lang={null}>{query}</Bdi>
-          </>
+          query ? (
+            <>
+              {t('ox.search.no_results_prefix')} <Bdi lang={null}>{query}</Bdi>
+            </>
+          ) : (
+            // No query at all: the h1 already says "البحث في المتجر", so the
+            // block leads with the search field's own guidance line rather
+            // than the dangling "لم نجد نتائج لكلمة" (Phase B D08, the same
+            // branch the Shopify port takes).
+            t('ox.search.placeholder')
+          )
         }
-        body={t('ox.search.no_results_hint')}
+        body={query ? t('ox.search.no_results_hint') : undefined}
         primary={
           <Button variant="secondary" size={48} to="/services">
             {t('ox.nav.services')}

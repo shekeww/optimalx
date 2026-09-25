@@ -1,0 +1,139 @@
+// The payment marks (S11 direction item 5, built in S12, 2026-09-25): the
+// methods a Saudi shopper looks for before paying, shown where the decision
+// happens (under the buy row) and where people look for reassurance (the
+// footer), each mark only while the owner's own switch for it is on. Two
+// variants of one list: `--pdp`, bare marks on the page ground, no caption,
+// no tiles, no borders; `--footer`, full colour on a white angled plate (the
+// owner's 2026-09-24 ruling: every filled plate takes the parallelogram),
+// the one angled gesture in that row. Loads after `plates` because the
+// footer plate calls `ox-plate()`.
+//
+// Every mark sits in a 24 tall box, at most 48 wide, so square-ish marks
+// render the full 24 and heavy wordmarks are held by the cap. Text marks
+// (bank transfer, cash on delivery, a method with no public mark) are
+// 13/700 on a 24 line. Marks are never recoloured and never desaturated:
+// no `filter` anywhere (the providers' rules and the render budget).
+//
+// Markup: Shopify `snippets/payment-methods.liquid` (the Salla `PayMarks`
+// component is not built yet; recorded in the S12 report). Static: marks
+// are not links and carry no hover; images reserve their box through their
+// width and height attributes, so a late decode shifts nothing.
+//
+// Rules: logical properties only, role tokens only, no shadow, no filter.
+
+.ox-paymarks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-paymarks__item {
+  display: inline-flex;
+  align-items: center;
+  block-size: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.ox-paymarks__mark {
+  display: block;
+  block-size: 24px;
+  inline-size: auto;
+  max-inline-size: 48px;
+  object-fit: contain;
+}
+
+// THE TEXT PILLS: a method with no brand (bank transfer, cash on delivery)
+// is its name in a 24 tall pill, a hairline box the size of a mark's own
+// tile, so the row reads as one family of 24 tall marks; never a redrawn
+// glyph (the owner's icon set has no bank symbol and agents never draw
+// icons). 13/700, the ink of the ground the row sits on.
+.ox-paymarks__text {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  block-size: 24px;
+  padding-inline: var(--ox-2);
+  border: 1px solid var(--ox-line-2);
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: var(--ox-w-title);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--ox-fg);
+}
+
+// The product page strip: in the buy zone under the buy-now button and
+// above the delivery rows, packed at the inline start; with every method on
+// it wraps to two lines on a phone and sits on one line at 1440. The space
+// above it is the buy column's own rhythm (16 on a phone, 18 from 1024,
+// the gap of `.ox-pdp__buy`), so the strip adds no margin of its own; the
+// store rating under it is the next item of the same trust group
+// (`.ox-buy__assure`, sections/main-product.liquid).
+// Column gap 12, not 16: with the two text pills the nine methods need
+// 587 at 16 against the 578 column at 1440, and one line there is the point.
+.ox-paymarks--pdp {
+  column-gap: 12px;
+  row-gap: 12px;
+}
+
+// The footer row: the last row of `.ox-footer__inner` (a flex column on a
+// phone, where the span is moot; the full width of the six-track grid from
+// 1024), a hairline above, the caption above the plate on a phone and beside
+// it, centred, from 1024.
+.ox-footer__pay {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ox-2);
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--ox-line-on-dark);
+}
+
+.ox-footer__pay-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-caption);
+  color: var(--ox-ink-3-on-dark);
+}
+
+// The white plate: the parallelogram is sized for the three lines the row
+// wraps to on a phone (`ox-plate(120px)`: lean 24, run 16.2, padding-inline
+// 32.2) and for one line from 1024 (`ox-plate(48px)`: lean 10, run 6.7,
+// padding-inline 22.7). On the dark footer the white plate is what lets
+// every provider's colours read as their guidelines require.
+.ox-paymarks--footer {
+  inline-size: 100%;
+  padding-block: 12px;
+  column-gap: 16px;
+  row-gap: 12px;
+  background: var(--ox-paper);
+  color: var(--ox-ink);
+  @include ox-plate(120px);
+
+  .ox-paymarks__text {
+    color: var(--ox-ink);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-footer__pay {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ox-4);
+    padding-block-start: 32px;
+  }
+
+  .ox-paymarks--footer {
+    inline-size: fit-content;
+    max-inline-size: 100%;
+    column-gap: 20px;
+    @include ox-plate(48px);
+  }
+}

@@ -1,5 +1,5 @@
 import { hookRegistry, type HookContext } from '@salla.sa/twilight-theme-engine/hooks';
-import type { Store } from '@salla.sa/twilight-theme-engine/types';
+import type { HookHandler, Store } from '@salla.sa/twilight-theme-engine/types';
 import { currentUrl, tryOriginOf } from './head';
 import {
   BRANCH_GEO,
@@ -140,24 +140,45 @@ export function siteJsonLd(
 }
 
 /**
+ * The mark this module leaves on its own `head:end` handler, so a second
+ * call can recognise it. `Symbol.for` reads the global symbol registry, which
+ * survives a re-evaluation of this module (the dev server re-runs
+ * app/router.tsx on every HMR invalidation while the engine's hook registry
+ * is a singleton that is not invalidated), so the mark is the same value on
+ * every evaluation.
+ */
+const SITE_JSONLD_HANDLER = Symbol.for('optimalx.siteJsonLdHandler');
+
+type MarkedHandler = HookHandler<HookContext> & { [SITE_JSONLD_HANDLER]?: true };
+
+/**
  * Registers the `head:end` handler that emits the site-wide JSON-LD on every
  * route. The slot is rendered by the engine's WidgetHead with `ssr`, so the
  * script is in the server HTML. `head:end` is registered by its raw string
  * name (the engine's home-page slots are string-only; keeping one convention).
  * Called once from app/router.tsx, next to registerThemeHooks().
+ *
+ * Idempotent (Phase B CEN-26, 2026-09-25): the reference served the
+ * Organization + WebSite + Store graph 14 to 18 times per page because every
+ * HMR re-evaluation of app/router.tsx registered one more copy of this
+ * handler into the singleton registry. A copy already present is left alone,
+ * so a document carries the graph exactly once no matter how many times the
+ * module ran.
  */
 export function registerHeadHooks() {
-  hookRegistry.register(
-    'head:end',
-    (context: HookContext) => {
-      const twilight = context.twilight;
-      const settings = twilight?.theme?.settings as unknown as Record<string, unknown> | undefined;
-      const translate = twilight?.i18n ? (key: string) => String(twilight.i18n.t(key)) : undefined;
-      const json = siteJsonLd(twilight?.store, twilight?.locale ?? 'ar', settings, translate);
-      if (!json) return null;
-      return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
+  const alreadyRegistered = hookRegistry
+    .getHandlers('head:end')
+    .some((definition) => (definition.handler as unknown as MarkedHandler)[SITE_JSONLD_HANDLER] === true);
+  if (alreadyRegistered) return;
 
-    },
-    50
-  );
+  const handler: MarkedHandler = (context: HookContext) => {
+    const twilight = context.twilight;
+    const settings = twilight?.theme?.settings as unknown as Record<string, unknown> | undefined;
+    const translate = twilight?.i18n ? (key: string) => String(twilight.i18n.t(key)) : undefined;
+    const json = siteJsonLd(twilight?.store, twilight?.locale ?? 'ar', settings, translate);
+    if (!json) return null;
+    return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
+  };
+  handler[SITE_JSONLD_HANDLER] = true;
+  hookRegistry.register('head:end', handler, 50);
 }

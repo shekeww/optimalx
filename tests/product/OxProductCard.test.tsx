@@ -904,10 +904,32 @@ describe('OxProductCard', () => {
     expect(container.querySelector('.ox-card-product__qty-value')?.textContent).toBe('1');
   });
 
+  it('presents a service or a booking as a booking door, never as an add at a quantity', () => {
+    // Phase B D07 (2026-09-25): a service (OX-044 to OX-047 are typed
+    // `service`; a real `booking` takes the same branch) gets one link to its
+    // own page under the channel verb, no stepper, no add button and no buy
+    // CTA, and a free one reads "مجاني" where its page does.
+    for (const overrides of [{ type: 'booking' }, { type: 'service' }]) {
+      const view = renderWithProviders(<OxProductCard product={makeProduct(overrides)} />);
+      expect(view.container.querySelector('.ox-card-product__qty')).toBeNull();
+      expect(screen.queryByTestId('add-button')).toBeNull();
+      expect(view.container.querySelector('button.ox-card-product__buy')).toBeNull();
+      const door = view.container.querySelector('a.ox-card-product__buy');
+      expect(door).not.toBeNull();
+      expect(door?.getAttribute('href')).toBe('/p1996831868');
+      view.unmount();
+    }
+    const free = renderWithProviders(
+      <OxProductCard product={makeProduct({ type: 'service', price: 0, sale_price: 0 })} />
+    );
+    expect(free.container.querySelector('.ox-card-product__free')?.textContent).toBe(t('ox.common.free'));
+    expect(free.container.querySelector('.ox-card-product__price')?.textContent).not.toContain('0.00');
+    free.unmount();
+  });
+
   it('leaves the stepper out with no quantity axis, and then sends no quantity', () => {
     for (const overrides of [
       { is_hidden_quantity: true },
-      { type: 'booking' },
       { max_quantity: 1 },
     ]) {
       const view = renderWithProviders(<OxProductCard product={makeProduct(overrides)} />);

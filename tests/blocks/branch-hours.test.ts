@@ -73,4 +73,26 @@ describe('branch hours parsing', () => {
       'Sa 10:00-23:00',
     ]);
   });
+
+  it('accepts a 24:00 close as the end of the day (the store setting, Phase B J-18)', () => {
+    const owner = 'السبت إلى الخميس: 9:00 إلى 24:00\nالجمعة: 16:00 إلى 24:00';
+    expect(extractTimes('9:00 إلى 24:00')).toEqual(['09:00', '24:00']);
+    expect(extractTimes('9:00 إلى 24:30')).toEqual(['09:00']);
+    expect(extractTimes('9:00 إلى 25:00')).toEqual(['09:00']);
+    const rows = parseBranchHours(owner);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].days).toEqual([6, 0, 1, 2, 3, 4]);
+    expect(rows[0].to).toBe('24:00');
+    // 2026-09-17 is a Thursday: open at 23:30, closed at 08:00 with the
+    // next opening at 09:00.
+    expect(hoursStatus(rows, new Date('2026-09-17T23:30:00')).isOpen).toBe(true);
+    const early = hoursStatus(rows, new Date('2026-09-17T08:00:00'));
+    expect(early.isOpen).toBe(false);
+    expect(early.nextOpen).toBe('09:00');
+    expect(toSchemaOpeningHours(rows)).toEqual([
+      'Sa 09:00-24:00',
+      'Su-Th 09:00-24:00',
+      'Fr 16:00-24:00',
+    ]);
+  });
 });

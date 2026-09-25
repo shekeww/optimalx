@@ -1,0 +1,729 @@
+// The quantity bar (S11 direction item 3, built in S12, 2026-09-25): the
+// add-to-cart action and the quantity stepper docked into ONE painted
+// parallelogram, the brand's secondary outline, on the product page and on
+// the product card. Under it sits the buy-now primary at the same width and
+// height, so every buy zone reads as the brand pair: outline above, filled
+// below.
+//
+// LOADS LAST (`_index.scss`, after every batch partial): the card half of
+// this file restyles markup that `_b4-listing.scss` also styles for the
+// Salla card (which still renders the previous controls), and a later file
+// wins every tie without a specificity race. The mixins it calls
+// (`ox-angled()`, `ox-run()`) are defined in `primitives`, long before.
+//
+// ONE HEIGHT, THE HERO'S (owner ruling 2026-09-25: the home hero's pair is
+// the global button, its cut, height, weight and arrow): the buy-now under
+// the bar is a primary at the hero's 48, and the bar shares its height
+// (S11 5.3: the pair never disagrees about its own scale), so the bar is
+// 48 tall on the product page at every width and on the card. Every 5.3
+// formula is applied at H = 48 (run 32.4); the 44/52/56 tiers of 5.3 are
+// superseded by the owner's height (recorded in the S12 report).
+//
+// Anatomy, in reading order:
+//   1. The paint: two absolutely positioned pseudo-elements on the bar host,
+//      behind the content (`z-index: -1` inside `isolation: isolate`), both
+//      clipped to the angle: `::before` inset 0 is the stroke, `::after`
+//      inset 1px is the fill. The clip lives on the pseudos only, so the
+//      cells, their hit areas and their focus rings are never clipped
+//      (X-IDENTITY 7.1 `focus-clipped`).
+//   2. The add cell at the inline start: transparent, no clip, no stroke of
+//      its own; the cart glyph and the label centred in its padding box.
+//   3. The divider: 1px `--ox-line-3`, a pseudo on the stepper group, inset
+//      10 from the top and bottom. Straight, never slanted.
+//   4. The stepper group at the inline end: three cells that read "- 1 +"
+//      left to right in both languages (a numeric control, `direction:
+//      ltr`). The cell against the bar's slanted end is the OUTER cell: the
+//      decrease in Arabic (the bar's left end), the increase in English
+//      (the right end); its glyph sits at the outer glyph offset.
+//
+// Sizes at H = 48, run 32.4. The outer glyph offset is run x (H + glyph) /
+// (2H) + 4, which keeps the glyph at least 3.5 clear of the diagonal at its
+// nearest corner; the add cell's outer padding is run x (H + 24) / (2H) + 6
+// for a 24 tall label line, run x (H + glyph) / (2H) + 4 when it holds the
+// glyph alone.
+//
+//   context        stepper: outer / value / inner   offset  glyph  add pad
+//   PDP            144: 52 / 48 / 44                27      20     30 / 12
+//   card < 640      94: 44 / 20 / 30                25.6    16     25.6 / 2 (glyph only)
+//   card >= 640    124: 48 / 32 / 44                25.6    16     30.3 / 12 (label), 26.9 (glyph)
+//
+// Where the markup lives: the Shopify product page (sections/main-product.
+// liquid holds the bar, snippets/quantity.liquid the stepper group) and the
+// Shopify product card (snippets/product-card.liquid). The Salla card
+// (OxProductCard.tsx) and the Salla engine's own PDP form still render the
+// previous controls, so their rules in `_b3-product.scss` section 9 and
+// `_b4-listing.scss` stay in place for them; every card rule below is
+// scoped under `.ox-qtybar--card` so the two never meet (recorded in the
+// S12 report as what the Salla build lacks).
+//
+// Rules: logical properties only, role tokens only, colour never
+// transitions, transform and opacity only, no shadow, no filter.
+
+// ---------------------------------------------------------------------------
+// 1. The bar host and its paint
+// ---------------------------------------------------------------------------
+.ox-qtybar {
+  --ox-qb-h: 48px;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: stretch;
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--ox-qb-h);
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    @include ox-angled(48px);
+  }
+
+  // The stroke is the element's own edge colour: ink on a light ground, the
+  // secondary face's rule. Hover on the add cell moves the stroke to the
+  // accent and never the fill (below).
+  &::before {
+    inset: 0;
+    background: var(--ox-qb-stroke, var(--ox-fg));
+  }
+
+  &::after {
+    inset: var(--ox-qb-inset, 1px);
+    background: var(--ox-qb-fill, var(--ox-card));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. The add cell
+// ---------------------------------------------------------------------------
+.ox-qtybar__add {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-qb-add-gap, 10px);
+  align-self: stretch;
+  block-size: auto;
+  min-block-size: var(--ox-qb-h);
+  margin: 0;
+  padding-block: 0;
+  // Outer padding at the inline start (the bar's cut end on that side),
+  // inner padding against the divider.
+  padding-inline: var(--ox-qb-add-pad-outer, 30px) var(--ox-qb-add-pad-inner, 12px);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  clip-path: none;
+  color: var(--ox-fg);
+  font-family: inherit;
+  font-size: var(--ox-btn-primary-size, calc(19px * 0.9));
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
+
+// The cart glyph on the add cell, the same `--ox-cart-glyph` mask every other
+// add button in the theme draws (one definition of the cart), one colour.
+.ox-qtybar__glyph--cart {
+  flex: none;
+  inline-size: var(--ox-qb-cart, 18px);
+  block-size: var(--ox-qb-cart, 18px);
+  background: currentColor;
+  -webkit-mask: var(--ox-cart-glyph) center / contain no-repeat;
+  mask: var(--ox-cart-glyph) center / contain no-repeat;
+}
+
+.ox-qtybar__label {
+  position: relative;
+  display: inline-block;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+// Focus never lands on the clipped pseudos: the add cell draws its ring
+// around its label, offset 4.
+.ox-qtybar__add:focus-visible .ox-qtybar__label {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 4px;
+}
+
+// Pressed: the label moves, the bar never does.
+.ox-qtybar__add:active:not(:disabled) .ox-qtybar__label {
+  transform: translateY(1px);
+}
+
+// Adding: the existing loading pattern (label and glyph to opacity 0, the
+// 20px ring centred in the add cell); the step cells wait until the request
+// settles. `is-loading` is set by assets/ox.js on the pressed submit for the
+// life of the request (the button is also `disabled` then, which is why the
+// unavailable state below excludes a loading button).
+.ox-qtybar__loader {
+  display: none;
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 20px;
+  block-size: 20px;
+  margin-block-start: -10px;
+  margin-inline-start: -10px;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: var(--ox-r-pill);
+  animation: ox-spin 0.8s linear infinite;
+}
+
+.ox-qtybar__add.is-loading {
+  cursor: progress;
+
+  .ox-qtybar__label,
+  .ox-qtybar__glyph--cart {
+    opacity: 0;
+  }
+
+  .ox-qtybar__loader {
+    display: block;
+  }
+}
+
+.ox-qtybar:has(.ox-qtybar__add.is-loading) .ox-qtybar__step {
+  pointer-events: none;
+}
+
+// Unavailable variant (the add button `disabled` and not merely loading):
+// stroke `--ox-line-2`, fill `--ox-plate`, every glyph and the label
+// `--ox-ink-4`. The step cells are disabled by the markup in that state.
+.ox-qtybar:has(.ox-qtybar__add:disabled:not(.is-loading)) {
+  --ox-qb-stroke: var(--ox-line-2);
+  --ox-qb-fill: var(--ox-plate);
+
+  .ox-qtybar__add,
+  .ox-qtybar__step,
+  .ox-qtybar__value {
+    color: var(--ox-ink-4);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. The stepper group, the divider and the cells
+// ---------------------------------------------------------------------------
+.ox-qtybar__qty {
+  position: relative;
+  flex: 0 0 var(--ox-qb-qty);
+  inline-size: var(--ox-qb-qty);
+  display: flex;
+  // LTR on purpose: the DOM order is decrease, value, increase, and a
+  // numeric control reads "- 1 +" in Arabic as well as in English.
+  direction: ltr;
+  align-items: stretch;
+  justify-content: flex-start;
+  block-size: auto;
+  min-block-size: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+
+  // The divider sits on the group's edge that touches the add cell. Inside
+  // this `direction: ltr` box `inset-inline-end` is the right edge, which
+  // is the add cell's side when the page is RTL (the group is at the bar's
+  // left end); the LTR page puts the group at the right end, so the divider
+  // moves to the left edge there.
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: 10px;
+    inset-inline-end: 0;
+    inline-size: 1px;
+    background: var(--ox-line-3);
+    pointer-events: none;
+  }
+}
+
+[dir='ltr'] .ox-qtybar__qty::before {
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+}
+
+.ox-qtybar__step {
+  position: relative;
+  flex: 0 0 var(--ox-qb-inner);
+  inline-size: var(--ox-qb-inner);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  block-size: auto;
+  min-block-size: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: var(--ox-fg);
+  cursor: pointer;
+  // The ring goes on the glyph wrapper (below), never on the cell, so no
+  // rectangle ever crosses the slant.
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+
+  // No `ox-hit-area` inside the bar: every cell is a real box and two
+  // overlapping targets would be ambiguous.
+  &::after {
+    content: none;
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    color: var(--ox-ink-4);
+    cursor: default;
+  }
+}
+
+// The OUTER cell, chosen by the page's direction: in Arabic the decrease
+// cell is against the bar's left end, in English the increase cell is
+// against the right end. Inside the `direction: ltr` group, "left" is
+// inline-start and "right" is inline-end.
+[dir='rtl'] .ox-qtybar__step--dec {
+  flex-basis: var(--ox-qb-outer);
+  inline-size: var(--ox-qb-outer);
+  justify-content: flex-start;
+  padding-inline-start: var(--ox-qb-offset);
+}
+
+[dir='ltr'] .ox-qtybar__step--inc {
+  flex-basis: var(--ox-qb-outer);
+  inline-size: var(--ox-qb-outer);
+  justify-content: flex-end;
+  padding-inline-end: var(--ox-qb-offset);
+}
+
+.ox-qtybar__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  inline-size: var(--ox-qb-glyph);
+  block-size: var(--ox-qb-glyph);
+  transition: transform var(--dur-fast) var(--ease-out);
+
+  > .ox-icon,
+  > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+.ox-qtybar__step:active:not(:disabled) .ox-qtybar__glyph {
+  transform: translateY(1px);
+}
+
+.ox-qtybar__step:focus-visible .ox-qtybar__glyph {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 3px;
+}
+
+// The value: an editable number input on the Shopify product page, an
+// output on the card.
+.ox-qtybar__value {
+  flex: 0 0 var(--ox-qb-value);
+  inline-size: var(--ox-qb-value);
+  min-inline-size: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  block-size: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--ox-fg);
+  font-family: inherit;
+  font-size: var(--ox-qb-value-size, 17px);
+  font-weight: var(--ox-w-figure);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--ox-lh-num);
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+  outline: none;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ox-focus);
+    outline-offset: -2px;
+  }
+}
+
+// Hover (fine pointer only): a step cell's glyph turns `--ox-accent-dark`;
+// the add cell moves the whole bar's stroke to the accent, the secondary
+// face's own "hover moves the stroke" rule. Instant, no colour transition.
+// Without `:has()` the stroke simply stays ink.
+@media (hover: hover) and (pointer: fine) {
+  .ox-qtybar__step:not(:disabled):hover .ox-qtybar__glyph {
+    color: var(--ox-accent-dark);
+  }
+
+  .ox-qtybar:has(.ox-qtybar__add:not(:disabled):hover)::before {
+    background: var(--ox-accent);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. The product page bar and its buy-now
+// ---------------------------------------------------------------------------
+.ox-qtybar--pdp {
+  --ox-qb-qty: 144px;
+  --ox-qb-outer: 52px;
+  --ox-qb-value: 48px;
+  --ox-qb-inner: 44px;
+  --ox-qb-offset: 27px;
+  --ox-qb-glyph: 20px;
+  --ox-qb-value-size: 17px;
+  --ox-qb-cart: 18px;
+  --ox-qb-add-gap: 10px;
+  --ox-qb-add-pad-outer: 30px;
+  --ox-qb-add-pad-inner: 12px;
+}
+
+// The buy-now under the bar is the global primary (`.ox-btn--primary` in
+// the Shopify markup): the hero's face, 48 tall, the arrow. The compiled
+// `.ox-buy__now` tiers (`_b3-product.scss`, 52 / 48 / 56 against the Salla
+// engine's own add row) keep serving the Salla product page, whose buy-now
+// carries no `.ox-btn` class; this two-class selector reaches only the
+// Shopify button and holds it at the bar's 48 at every width.
+.ox-buy__now.ox-btn--primary {
+  min-block-size: 48px;
+  block-size: 48px;
+  padding-inline: 48.4px;
+  line-height: var(--ox-lh-flat);
+}
+
+// A service's product page has no bar: its one control is the booking
+// primary (`.ox-service__add`, THE BOOKING CONTROL in `_b3-product.scss`),
+// already the hero's 48 face. It takes the hero's arrow too, the same
+// chevron mask the global primary draws. Scoped to the Shopify button (both
+// classes on one element); the Salla engine renders its own button inside
+// a host element, where an `::after` would land outside the control.
+button.ox-service__add.s-button-element {
+  gap: var(--ox-2);
+
+  &::after {
+    content: '';
+    flex: none;
+    inline-size: 16px;
+    block-size: 16px;
+    background: currentColor;
+    -webkit-mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
+    mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
+  }
+
+  [dir='rtl'] &::after {
+    transform: scaleX(-1);
+  }
+
+  &:disabled::after,
+  &.is-loading::after {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. The card bar
+// ---------------------------------------------------------------------------
+// The action grid becomes 'bar' 'buy' (was 'qty add' 'buy buy'): the
+// modifier is set by the card markup that renders the bar, so a card
+// without it (the Salla card) keeps the previous grid untouched.
+.ox-card-product__action.ox-card-product__action--bar {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'bar' 'buy';
+  column-gap: 0;
+  row-gap: var(--ox-2);
+}
+
+.ox-qtybar.ox-qtybar--card {
+  grid-area: bar;
+  --ox-qb-qty: 94px;
+  --ox-qb-outer: 44px;
+  --ox-qb-value: 20px;
+  --ox-qb-inner: 30px;
+  --ox-qb-offset: 25.6px;
+  --ox-qb-glyph: 16px;
+  --ox-qb-value-size: 14px;
+  --ox-qb-add-gap: 0px;
+  --ox-qb-add-pad-outer: 25.6px;
+  --ox-qb-add-pad-inner: 2px;
+}
+
+// The slot holds the add button and nothing else on this platform; it takes
+// the rest of the bar.
+.ox-qtybar--card .ox-card-product__add-slot {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  // The glyph is 16 on the phone card (S11 5.3) and the card's own 19.8
+  // token from 640, where the label can show beside it.
+  --ox-card-add-icon: 16px;
+}
+
+// The add button: transparent inside the bar, no clip and no stroke of its
+// own; the painted outline it used to carry (`ox-secondary-face` in
+// `_b4-listing.scss`, whose `::before` fill and accent hover would paint a
+// rectangle across the bar's diagonal) is the bar's now. Its cart glyph
+// stays the `::after` mask the card already draws, ahead of the label.
+.ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-qb-add-gap);
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: auto;
+  min-block-size: var(--ox-qb-h);
+  padding-block: 0;
+  padding-inline: var(--ox-qb-add-pad-outer) var(--ox-qb-add-pad-inner);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  clip-path: none;
+  color: var(--ox-fg);
+  font-size: var(--ox-card-add-font);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
+  outline: none;
+
+  &::before {
+    display: none;
+  }
+
+  &:hover {
+    background: transparent;
+    border-color: transparent;
+  }
+}
+
+[dir='ltr'] .ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
+  clip-path: none;
+}
+
+// A product whose options the card cannot choose: the add cell links to the
+// product page and holds the bar alone, full width, both ends cut.
+.ox-qtybar--card:not(:has(.ox-qtybar__qty)) .ox-card-product__add.ox-qtybar__add {
+  padding-inline: var(--ox-qb-add-pad-outer);
+}
+
+.ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible {
+  outline: none;
+}
+
+.ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible .ox-card-product__add-label {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 4px;
+}
+
+.ox-qtybar--card .ox-card-product__add-label {
+  position: relative;
+  z-index: 1;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.ox-qtybar--card .ox-card-product__add.ox-qtybar__add:active:not(:disabled) .ox-card-product__add-label {
+  transform: translateY(1px);
+}
+
+// Adding on the card: the label and the glyph hide (the compiled card rule)
+// and the bar's own ring shows in the add cell. Restated at this strength
+// because the card's secondary face lifts every child of the add button to
+// `position: relative`, which would put the ring in the flow.
+.ox-qtybar--card .ox-card-product__add.ox-qtybar__add .ox-qtybar__loader {
+  position: absolute;
+  z-index: 1;
+}
+
+.ox-qtybar--card .ox-card-product__add.ox-qtybar__add.is-loading .ox-qtybar__loader {
+  display: block;
+}
+
+.ox-qtybar--card .ox-card-product__qty.ox-qtybar__qty {
+  flex: 0 0 var(--ox-qb-qty);
+  inline-size: var(--ox-qb-qty);
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  min-block-size: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.ox-qtybar--card .ox-card-product__qty-btn.ox-qtybar__step {
+  flex: 0 0 var(--ox-qb-inner);
+  inline-size: var(--ox-qb-inner);
+  align-self: stretch;
+  outline: none;
+
+  &::after {
+    content: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+[dir='rtl'] .ox-qtybar--card .ox-card-product__qty-btn.ox-qtybar__step--dec,
+[dir='ltr'] .ox-qtybar--card .ox-card-product__qty-btn.ox-qtybar__step--inc {
+  flex-basis: var(--ox-qb-outer);
+  inline-size: var(--ox-qb-outer);
+}
+
+// The value grows and takes width from the add cell when it shows three
+// digits.
+.ox-qtybar--card .ox-card-product__qty-value.ox-qtybar__value {
+  flex: 1 0 var(--ox-qb-value);
+  inline-size: auto;
+  min-inline-size: var(--ox-qb-value);
+  font-size: var(--ox-qb-value-size);
+  line-height: var(--ox-lh-num);
+}
+
+@media (min-width: 640px) {
+  .ox-qtybar.ox-qtybar--card {
+    --ox-qb-qty: 124px;
+    --ox-qb-outer: 48px;
+    --ox-qb-value: 32px;
+    --ox-qb-inner: 44px;
+    --ox-qb-add-gap: var(--ox-2);
+    --ox-qb-add-pad-outer: 30.3px;
+    --ox-qb-add-pad-inner: 12px;
+  }
+
+  .ox-qtybar--card .ox-card-product__add-slot {
+    --ox-card-add-icon: 19.8px;
+  }
+}
+
+// THE ADD LABEL shows only when the add cell is at least 144 wide (S11 5.3):
+// with the 124 stepper beside it that is a 268 container, so up to 267 the
+// cell is icon only: the word collapses to nothing, the glyph keeps the
+// box at its own outer offset, the ring moves onto the glyph. Measured on
+// the proxy (S12): "أضف للسلة" is 73.7 wide at 15.4/600 and "Add to cart"
+// 71.4, so 30.3 + 19.8 + 8 + 73.7 + 12 = 143.8 fits the 144 cell in both
+// languages. `font-size: 0` leaves the text in the accessibility tree; the
+// card's unconditional `aria-label` is the name either way.
+@container oxcard (max-width: 267px) {
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
+    gap: 0;
+    padding-inline: 26.9px 2px;
+  }
+
+  .ox-qtybar--card .ox-card-product__add-label {
+    font-size: 0;
+  }
+
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible .ox-card-product__add-label {
+    outline: none;
+  }
+
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible::after {
+    outline: 2px solid var(--ox-focus);
+    outline-offset: 4px;
+  }
+}
+
+// Below 640 the card is icon only at every container width (S11 5.3) and
+// the glyph is 16, so the icon-only offset is 25.6 (the table).
+@media (max-width: 639px) {
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add {
+    gap: 0;
+    padding-inline: 25.6px 2px;
+  }
+
+  .ox-qtybar--card .ox-card-product__add-label {
+    font-size: 0;
+  }
+
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible .ox-card-product__add-label {
+    outline: none;
+  }
+
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add:focus-visible::after {
+    outline: 2px solid var(--ox-focus);
+    outline-offset: 4px;
+  }
+}
+
+// THE CARD'S BUY-NOW is the global primary at the hero's 48 (the global
+// rule already sets the height, the cut and the face); the card only keeps
+// it full width in its grid cell and narrows the padding, because a
+// full-width label is centred anyway and a 2-up phone card (137 wide)
+// cannot hold the hero's 48.4 a side. Below a 160 container the label and
+// the arrow no longer fit beside each other clear of the cut, so the arrow
+// steps out and the label stays (the label is the action).
+.ox-card-product__buy.ox-btn--primary {
+  grid-area: buy;
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding-inline: 24px;
+  line-height: var(--ox-lh-flat);
+}
+
+@container oxcard (max-width: 159px) {
+  .ox-card-product__buy.ox-btn--primary {
+    padding-inline: 16px;
+  }
+
+  .ox-card-product__buy.ox-btn--primary::after {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Reduced motion
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+  .ox-qtybar__glyph,
+  .ox-qtybar__label,
+  .ox-qtybar--card .ox-card-product__add-label {
+    transition: none;
+  }
+
+  .ox-qtybar__step:active:not(:disabled) .ox-qtybar__glyph,
+  .ox-qtybar__add:active:not(:disabled) .ox-qtybar__label,
+  .ox-qtybar--card .ox-card-product__add.ox-qtybar__add:active:not(:disabled) .ox-card-product__add-label {
+    transform: none;
+  }
+
+  .ox-qtybar__loader {
+    animation: none;
+    border-inline-end-color: currentColor;
+    opacity: 0.6;
+  }
+}
