@@ -1593,9 +1593,10 @@ body {
   // (top-left and bottom-right, the text at the bottom-left), which
   // supersedes the 2026-09-23 "never mirrored" note above. The text column
   // follows the reading direction on its own (flex-start, logical padding);
-  // the arrow chip's cut is mirrored by the rule after `.ox-goal__cta`.
-  // The photograph stays unflipped on purpose: a mirrored photo reverses
-  // the printed labels in it (the creatine tub on the ideal-weight card).
+  // the arrow chip's cut is mirrored by the rule after `.ox-goal__cta`, and
+  // the photograph by the `[dir='ltr'] .ox-goal__photo` rule below, except
+  // on a frame that carries print (the creatine tub on the ideal-weight
+  // card, a merchant's own photograph), which would read backwards.
   [dir='ltr'] & {
     clip-path: polygon(#{ox-run(40px)} 0, 100% 0, 100% calc(100% - 40px), calc(100% - #{ox-run(40px)}) 100%, 0 100%, 0 40px);
   }
@@ -1634,6 +1635,40 @@ body {
   block-size: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+// S12 (2026-09-25): the English card is the exact mirror of the Arabic one,
+// so the photograph mirrors too, with the cuts and the arrow: the subject
+// faces the reading direction in both languages and the crop is the
+// mirrored crop. Static, no transition: a one-off 2D transform on an image
+// that already sits in its own positioned box, no layer promotion.
+[dir='ltr'] .ox-goal__photo {
+  transform: scaleX(-1);
+}
+
+// Never on a frame that carries print, which would read backwards: the
+// ideal-weight frame shows a product label, the shaker's lettering and the
+// X mark, and a merchant's own photograph (`data-own-photo`, set by the
+// Shopify goal block) may carry anything. Those keep the Arabic orientation.
+[dir='ltr'] .ox-goal[data-goal='goal-ideal-weight'] .ox-goal__photo,
+[dir='ltr'] .ox-goal__photo[data-own-photo] {
+  transform: none;
+}
+
+// S12 (2026-09-25): the recovery photograph (`img-athlete-band.jpg`, 539 x
+// 569) has a pale rounded frame baked into the file, 16 px deep at the top
+// and 48 at the foot, which painted a light strip along the top of the
+// card at every width and in both languages (measured on both platforms).
+// The image box overshoots the card by 4 % at the top and 10 % at the foot
+// (the card's own overflow hides the excess), which puts both frame edges
+// outside the visible area at every tier (frame 3.2 % and 9.6 % of the
+// taller box); the photo stays centred and uncropped sideways. The height
+// is explicit because an image's `auto` height follows its own ratio, not
+// the insets. A merchant's own photograph has no such frame and keeps the
+// plain box.
+.ox-goal[data-goal='goal-recovery'] .ox-goal__photo:not([data-own-photo]) {
+  inset-block: -4% auto;
+  block-size: 114%;
 }
 
 .ox-goal__scrim {
@@ -1727,6 +1762,12 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   inline-size: 100%;
+  // S12 (2026-09-25): the line always reserves its two clamped lines, so
+  // the names and the "shop now" rows of one grid row share one baseline.
+  // Before, the body was bottom-anchored and a two-line description (the
+  // general-health card) lifted its icon and name 16.1 px above the other
+  // five at 390 and at 1440, in both languages.
+  min-block-size: calc(2 * 1.4em);
   font-size: 11.5px;
   font-weight: var(--ox-w-quiet);
   line-height: 1.4;

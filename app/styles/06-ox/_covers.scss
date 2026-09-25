@@ -126,12 +126,74 @@
   }
 }
 
-// The four gallery tiles: the literal 16:10 the direction names, since their
-// content (one statement, one line, one arrow) never outgrows it.
+// The four gallery tiles: the literal 16:10 the direction names, now as the
+// tile's floor. S12 (2026-09-25): a tile grows with its own text instead of
+// clipping it. Measured before: three-up at 640 and 768 the tiles were 192
+// to 235 wide and their text stood 24 to 233 px taller than the tile, cut
+// off at the top by `overflow: hidden`; at 1024 the English shelves tile
+// lost 19 px the same way. `aspect-ratio` keeps 16:10 as the preferred
+// size and `min-block-size: auto` lets the content win when it needs more,
+// which the spec allows only on a box that is not a scroll container, hence
+// `overflow: visible` (nothing here overflows: the three media layers are
+// inset 0 and the body is in flow). The list item stretches the tile to the
+// row's tallest one (Shopify: `snippets/branch-gallery.liquid` makes the
+// item a flex box), so one row always shares one height and the accent
+// strap stays continuous.
 .ox-cover--tile {
   aspect-ratio: 16 / 10;
-  min-block-size: 0;
+  min-block-size: auto;
+  overflow: visible;
   cursor: pointer;
+
+  // S12 (2026-09-25): the tiles' own scrim ramp, measured. The S9c
+  // per-photograph values (70 to 92 % at the foot fading to 22 to 32 % at
+  // 45 %) left the statement and the line over the photographs' lightest
+  // areas: the advisory-room line measured 3.5:1 against its median
+  // background pixel and 1.2:1 to 2.7:1 against the lighter tenth, the
+  // English waiting-area statement 2.3:1, under the 4.5:1 floor, at 390
+  // and 1440 in both languages. A four-stop ramp darkens only where the
+  // text sits and keeps the top of each photograph (the lit accent corner,
+  // the glow) open: every statement and line now clears 4.5:1 against the
+  // lighter tenth of the pixels behind it (S12 contrast probe).
+  --ox-cover-b0: 92%;
+  --ox-cover-b1: 72%;
+  --ox-cover-b2: 52%;
+  --ox-cover-s0: 50%;
+  --ox-cover-s1: 12%;
+}
+
+.ox-cover--tile .ox-cover__scrim {
+  background:
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0), transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1), transparent) 45%,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b2), transparent) 78%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to left,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0), transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-s1), transparent) 55%,
+      transparent 100%
+    );
+
+  [dir='ltr'] & {
+    background:
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1), transparent) 45%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b2), transparent) 78%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-s1), transparent) 55%,
+        transparent 100%
+      );
+  }
 }
 
 // The three media layers share the card's old polygon per tier (S11 4.2):
@@ -321,43 +383,23 @@
 }
 
 // ---------------------------------------------------------------------------
-// Per-photograph tuning (direction §2). advisory-room is lit centrally
-// through the frosted door, so darkness stays low; storefront (the GALLERY
-// tile) is bright at night (the sign, the coloured uplighting), so only the
-// bottom strip darkens; waiting-area is warm-toned already, so the glow
-// reads stronger against it; shelves crops to the top so the labelled shelf
-// row survives the 16:10 cut; storefront-block (the block's OWN ground, S9h)
-// carries the most text of any cover over the same storefront photograph, so
-// its scrim is tuned separately and far stronger.
+// Per-photograph tuning (direction §2). Since S12 the four gallery tiles
+// share one measured scrim ramp (`.ox-cover--tile` above): the per-tile
+// darkness values S9c set here (advisory-room kept low for its frosted
+// door, storefront darkened at the foot only) failed the text contrast
+// floor on the lighter photographs and are retired. What stays per
+// photograph: waiting-area is warm-toned already, so the glow reads
+// stronger against it; shelves crops to the top so the labelled shelf row
+// survives the 16:10 cut; storefront-block (the block's OWN ground, S9h)
+// carries the most text of any cover over the same storefront photograph,
+// so its scrim is tuned separately and far stronger.
 // ---------------------------------------------------------------------------
-.ox-cover--advisory-room {
-  --ox-cover-b0: 70%;
-  --ox-cover-b1: 22%;
-  --ox-cover-s0: 45%;
-  --ox-cover-s1: 8%;
-}
-
-.ox-cover--storefront {
-  --ox-cover-b0: 92%;
-  --ox-cover-b1: 30%;
-  --ox-cover-s0: 20%;
-  --ox-cover-s1: 0%;
-}
-
 .ox-cover--waiting-area {
-  --ox-cover-b0: 78%;
-  --ox-cover-b1: 30%;
-  --ox-cover-s0: 48%;
-  --ox-cover-s1: 10%;
   --ox-cover-glow: 0.18;
 }
 
 .ox-cover--shelves {
   --ox-cover-position: top;
-  --ox-cover-b0: 80%;
-  --ox-cover-b1: 32%;
-  --ox-cover-s0: 50%;
-  --ox-cover-s1: 10%;
 }
 
 // The block's own ground (S9h, owner screenshots 2026-09-24): the storefront

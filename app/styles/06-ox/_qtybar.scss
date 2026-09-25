@@ -379,6 +379,16 @@
   }
 }
 
+// The one `!important` in this file, and why: the engine's element reset
+// (`03-elements/form.scss`) sets every number input to `16px !important`
+// so iOS never zooms into a field, and no selector can outrank an important
+// declaration without one of its own. The bar's value is 17 (S11 5.3), above
+// that 16 floor, so the guard's purpose still holds. Scoped to the bar's own
+// input; nothing else moves.
+.ox-qtybar input.ox-qtybar__value {
+  font-size: var(--ox-qb-value-size, 17px) !important;
+}
+
 // Hover (fine pointer only): a step cell's glyph turns `--ox-accent-dark`;
 // the add cell moves the whole bar's stroke to the accent, the secondary
 // face's own "hover moves the stroke" rule. Instant, no colour transition.
@@ -432,11 +442,16 @@
 button.ox-service__add.s-button-element {
   gap: var(--ox-2);
 
+  // The same box and offsets as the global primary's arrow
+  // (`_primitives.scss`, measured on the hero: 4 of blank after the glyph,
+  // 1.7 below the centre).
   &::after {
     content: '';
     flex: none;
     inline-size: 16px;
     block-size: 16px;
+    margin-block-start: 3.4px;
+    margin-inline-end: 4px;
     background: currentColor;
     -webkit-mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
     mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
@@ -514,7 +529,7 @@ button.ox-service__add.s-button-element {
   border-radius: 0;
   clip-path: none;
   color: var(--ox-fg);
-  font-size: var(--ox-card-add-font);
+  font-size: var(--ox-card-add-font, calc(14px * 1.1));
   font-weight: var(--ox-w-ui);
   line-height: var(--ox-lh-flat);
   outline: none;

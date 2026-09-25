@@ -83,33 +83,28 @@
 
 // The footer row: the last row of `.ox-footer__inner` (a flex column on a
 // phone, where the span is moot; the full width of the six-track grid from
-// 1024), a hairline above, the caption above the plate on a phone and beside
-// it, centred, from 1024.
+// 1024), a hairline above, and the plate alone, centred at every width
+// (owner, 2026-09-25, after the first build: no caption above the marks;
+// the banner sits in the middle of the row).
 .ox-footer__pay {
   grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ox-2);
+  justify-content: center;
   padding-block-start: 24px;
   border-block-start: 1px solid var(--ox-line-on-dark);
 }
 
-.ox-footer__pay-title {
-  margin: 0;
-  font-size: 13px;
-  font-weight: var(--ox-w-ui);
-  line-height: var(--ox-lh-caption);
-  color: var(--ox-ink-3-on-dark);
-}
-
-// The white plate: the parallelogram is sized for the three lines the row
-// wraps to on a phone (`ox-plate(120px)`: lean 24, run 16.2, padding-inline
-// 32.2) and for one line from 1024 (`ox-plate(48px)`: lean 10, run 6.7,
-// padding-inline 22.7). On the dark footer the white plate is what lets
-// every provider's colours read as their guidelines require.
+// The white plate: as wide as its marks and never wider than the row, the
+// marks centred on every line it wraps to. The parallelogram is sized for
+// the three lines the row wraps to on a phone (`ox-plate(120px)`: lean 24,
+// run 16.2, padding-inline 32.2) and for one line from 1024
+// (`ox-plate(48px)`: lean 10, run 6.7, padding-inline 22.7). On the dark
+// footer the white plate is what lets every provider's colours read as
+// their guidelines require.
 .ox-paymarks--footer {
-  inline-size: 100%;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  justify-content: center;
   padding-block: 12px;
   column-gap: 16px;
   row-gap: 12px;
@@ -124,15 +119,10 @@
 
 @media (min-width: 1024px) {
   .ox-footer__pay {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--ox-4);
     padding-block-start: 32px;
   }
 
   .ox-paymarks--footer {
-    inline-size: fit-content;
-    max-inline-size: 100%;
     column-gap: 20px;
     @include ox-plate(48px);
   }

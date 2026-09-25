@@ -284,6 +284,11 @@ a.ox-util__trust-link {
   gap: var(--ox-6);
   block-size: var(--ox-h-trust);
   padding-inline: var(--ox-gutter);
+  // The snap position honours the gutter (S12 chrome-ios): without it the
+  // browser snapped the first item to the scrollport's edge, 16px in, and
+  // the English row, wider than a phone, opened with its first word flush
+  // against the screen edge.
+  scroll-padding-inline: var(--ox-gutter);
   background: var(--ox-band-header);
   border-block-end: 1px solid var(--ox-line-on-dark);
   overflow-x: auto;
@@ -1254,6 +1259,25 @@ a.ox-util__trust-link {
   padding-inline-start: env(safe-area-inset-left, 0px);
 }
 
+// The drawer panel and the shop sheet focus themselves when they open (the
+// dialog's own start point, tabindex -1), never a target the visitor aimed
+// at, so they draw no ring; opened from the keyboard the browser drew its
+// default amber ring round the whole panel (S12 chrome-ios). The first Tab
+// reaches a control, which draws the theme's own ring.
+.ox-drawer__panel-root:focus,
+.ox-sheet:focus {
+  outline: none;
+}
+
+// While the drawer or the sheet slides out it stays in the page (the script
+// hides it once the transition ends), and its transparent layer swallowed
+// the next tap on the page for that time. Once the entered state is gone,
+// taps pass through to the page (S12 chrome-ios).
+.ox-drawer:not(.is-entered),
+.ox-sheet:not(.is-entered) {
+  pointer-events: none;
+}
+
 .ox-drawer.is-entered {
   .ox-drawer__backdrop {
     opacity: 1;
@@ -1366,6 +1390,37 @@ a.ox-util__trust-link {
 .ox-drawer__panel-inner,
 .ox-footer__panel-inner {
   overflow: hidden;
+}
+
+// A collapsed panel is 0 tall but its links stayed in the tab order and in
+// VoiceOver's swipe order, so a keyboard or screen-reader user on a phone
+// landed on links nobody could see (S12 chrome-ios). `visibility: hidden`
+// takes them out of both; the hide waits for the collapse (`--dur-fast`)
+// and the show is instant, so the motion is unchanged. The footer rule
+// stops at 1024, where the Salla build renders plain columns and the
+// Shopify port forces every panel open.
+.ox-drawer__panel > .ox-drawer__panel-inner {
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-fast);
+}
+
+.ox-drawer__panel.is-open > .ox-drawer__panel-inner,
+.is-open > .ox-drawer__panel > .ox-drawer__panel-inner {
+  visibility: visible;
+  transition: none;
+}
+
+@media (max-width: 1023.98px) {
+  .ox-footer__panel > .ox-footer__panel-inner {
+    visibility: hidden;
+    transition: visibility 0s linear var(--dur-fast);
+  }
+
+  .ox-footer__panel.is-open > .ox-footer__panel-inner,
+  .is-open > .ox-footer__panel > .ox-footer__panel-inner {
+    visibility: visible;
+    transition: none;
+  }
 }
 
 .ox-drawer__foot {
@@ -2183,7 +2238,9 @@ body.ox-has-tabbar .app-inner {
   }
 
   .ox-drawer__panel,
-  .ox-footer__panel {
+  .ox-footer__panel,
+  .ox-drawer__panel > .ox-drawer__panel-inner,
+  .ox-footer__panel > .ox-footer__panel-inner {
     transition: none;
   }
 

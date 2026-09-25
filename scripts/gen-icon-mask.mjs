@@ -22,15 +22,21 @@ export const TARGET = path.join('app', 'styles', 'tokens.css');
 export const SYMBOL_ID = 'ox-cart';
 /**
  * Every symbol that reaches CSS as a mask token, in the order the generated
- * block lists them. S12 (2026-09-25) added the chevron (the global primary
- * button's arrow, `_primitives.scss`) and the plus and minus (the quantity
- * bar's engine mapping, S11 direction 2.2) beside the cart.
+ * block lists them, with the stroke width (in the symbol's 24 unit viewBox)
+ * the mask is drawn at. S12 (2026-09-25) added the chevron (the global
+ * primary button's arrow, `_primitives.scss`) and the plus and minus (the
+ * quantity bar's engine mapping, S11 direction 2.2) beside the cart. Each
+ * new mask takes the stroke the sprite itself paints at the size the mask
+ * stands in for, so the two never disagree about weight: the chevron is the
+ * hero CTA's 16px arrow, where the sprite's `.ox-icon--16` rule strokes at
+ * 2.25; the plus and minus are the 20px step glyphs, at the sprite's own 2.
+ * The cart keeps the 1.8 it has always been drawn at.
  */
 export const SYMBOLS = [
-  [SYMBOL_ID, '--ox-cart-glyph'],
-  ['ox-chevron-end', '--ox-chevron-end-glyph'],
-  ['ox-plus', '--ox-plus-glyph'],
-  ['ox-minus', '--ox-minus-glyph'],
+  [SYMBOL_ID, '--ox-cart-glyph', '1.8'],
+  ['ox-chevron-end', '--ox-chevron-end-glyph', '2.25'],
+  ['ox-plus', '--ox-plus-glyph', '2'],
+  ['ox-minus', '--ox-minus-glyph', '2'],
 ];
 export const START_MARKER = '/* ---------- Generated: scripts/gen-icon-mask.mjs (do not hand-edit) ---------- */';
 export const END_MARKER = '/* ---------- End generated ---------- */';
@@ -55,9 +61,10 @@ export function readSymbolBody(source, id) {
  * drawn here as "part of the silhouette" instead, the closest a one-colour
  * mask gets to the same shape.
  * @param {string} symbolBody
+ * @param {string} [strokeWidth] the wrapper's stroke width, default 1.8
  * @returns {string}
  */
-export function maskDataUri(symbolBody) {
+export function maskDataUri(symbolBody, strokeWidth = '1.8') {
   // <path>, <circle> and <rect>: the owner's icon set draws wheels and dots
   // as circles (2026-09-24), which a path-only matcher silently dropped.
   const elements = [...symbolBody.matchAll(/<(path|circle|rect)\b([^>]*)\/>/g)].map((match) => ({
@@ -82,7 +89,7 @@ export function maskDataUri(symbolBody) {
   });
   const svg =
     `%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' ` +
-    `stroke-width='1.8' stroke-linejoin='miter' stroke-linecap='square'%3E${parts.join('')}%3C/svg%3E`;
+    `stroke-width='${strokeWidth}' stroke-linejoin='miter' stroke-linecap='square'%3E${parts.join('')}%3C/svg%3E`;
   return `url("data:image/svg+xml,${svg}")`;
 }
 
@@ -93,7 +100,8 @@ export function maskDataUri(symbolBody) {
  */
 export function renderBlock(spriteSource) {
   const lines = SYMBOLS.map(
-    ([id, token]) => `  ${token}: ${maskDataUri(readSymbolBody(spriteSource, id))};`
+    ([id, token, strokeWidth]) =>
+      `  ${token}: ${maskDataUri(readSymbolBody(spriteSource, id), strokeWidth)};`
   );
   return `${START_MARKER}\n:root {\n${lines.join('\n')}\n}\n${END_MARKER}\n`;
 }

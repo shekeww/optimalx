@@ -130,7 +130,12 @@ $ox-angle-tan: 0.6745;
     clip-path: inherit;
   }
 
-  > * {
+  // Every visible child rides above the fill. A visually hidden note (the
+  // "opens in a new tab" `.ox-sr-only` span) keeps its own absolute
+  // position: lifted to `relative` it became a flex item, and the button's
+  // gap pushed the label 3.5 off centre (S12, measured on the reviews
+  // section's secondary).
+  > *:not(.ox-sr-only) {
     position: relative;
     z-index: 1;
   }
@@ -538,11 +543,19 @@ a[href]:focus-visible {
   // icon-only square, never while the button loads or is unavailable (an
   // arrow on a control that cannot be pressed points nowhere). Browsers
   // without `:has()` draw no arrow rather than two.
+  // The box is the hero's, measured on the proxy (S12): the hero draws the
+  // 16 glyph at the inline start of a 20 box (`.ox-btn__icon`), so 4 of
+  // blank follow it, and the inline svg sits on the label's line 1.7 below
+  // the button's centre; the margins below put this mask on the same spot
+  // (a 3.4 top margin moves a centred box down 1.7), and the generated mask
+  // strokes at the sprite's own 16 weight, so the two arrows are one.
   &--primary:not(.ox-btn--square):not(:has(.ox-icon))::after {
     content: '';
     flex: none;
     inline-size: 16px;
     block-size: 16px;
+    margin-block-start: 3.4px;
+    margin-inline-end: 4px;
     background: currentColor;
     -webkit-mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
     mask: var(--ox-chevron-end-glyph) center / contain no-repeat;
