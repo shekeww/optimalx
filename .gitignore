@@ -43,3 +43,8 @@ references/
 
 # a Shopify CLI app scaffold the owner created on 2026-09-24, its own git repo, never part of the theme
 optimal-x-seed/
+
+# probe output that browser tools write into the repo root during agent verification
+/s1[0-9]*-*.json
+/s1[0-9]*rv-*.json
+/.playwright-mcp/
