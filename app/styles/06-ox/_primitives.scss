@@ -468,16 +468,75 @@ a[href]:focus-visible {
   fill: none;
   stroke: currentColor;
   overflow: visible;
-  // S6a deviation 6: the 16px step of the size ladder takes a slightly
-  // heavier relative stroke so the glyph holds; the sprite's own inline
-  // <style> sets stroke-width from this custom property
-  // (docs/build/progress/S6a.md §5, deviation 6, moved here from the
-  // sprite's <style> block, the tidier home for it).
+  // THE BOLD STROKE (owner, 2026-09-25: "match and inspire the identity and
+  // design of the icons with ... onthegoofficial.my, reflecting the bold
+  // premium energetic identity"). The reference's promise icons are solid
+  // masses; the owner's v2 set is drawn in line at 2 in its 24 grid, so the
+  // theme draws that same geometry heavier instead of redrawing it (the solid
+  // v3 set is the owner's to draw, icon-system.md section 8). The sprite's
+  // inline <style> reads stroke-width from this custom property, in the
+  // symbol's 24 unit grid, on a ladder by the size the call site asks for:
+  //   24 and under: 2.4, a whole 2px line at the 20 floor (the crispest a 1x
+  //     screen draws) and 2.4px at 24;
+  //   26 to 40: 2.25, 2.4px at 26 rising to 3.75px at 40;
+  //   44 and over: the owner's own 2, already 3.7px and more.
+  // This replaces S6a deviation 6 (the 16 step alone at 2.25), which the
+  // ladder now covers for every small size.
+  --ox-icon-stroke: 2.4px;
   // The 16 step draws at the 20 floor (size floors, 2026-09-25).
-  &--16 { inline-size: 20px; block-size: 20px; --ox-icon-stroke: 2.25px; }
+  &--16 { inline-size: 20px; block-size: 20px; }
   &--20 { inline-size: 20px; block-size: 20px; }
   &--24 { inline-size: 24px; block-size: 24px; }
   &--32 { inline-size: 32px; block-size: 32px; }
+  &--26, &--28, &--32, &--36, &--40 { --ox-icon-stroke: 2.25px; }
+  &--44, &--48, &--56, &--64, &--96 { --ox-icon-stroke: 2px; }
+}
+
+// THE ICON TILE (owner, 2026-09-25, the onthegoofficial.my reference): the
+// reference stands its promise icons (protein, macros, delivery, secure pay)
+// in a solid accent disc with the glyph in white, and draws the rest as solid
+// masses. OptimalX takes the lesson on its own terms: a solid plate cut once
+// on the brand angle at its top inline-end corner (the corner that faces the
+// label), the same plate at every width, never a circle.
+//   .ox-icon-tile          graphite plate, the glyph in white and its accent
+//                          part in orange: for light surfaces.
+//   .ox-icon-tile--accent  orange plate, the whole glyph in white (mono): for
+//                          dark bands and dark cards, the white-on-orange
+//                          pairing of the primary button.
+// The class goes on the icon's own svg (`class:` of snippets/icon.liquid):
+// the plate is the svg's padding box, so the glyph keeps the size the call
+// site asks for and the tile grows round it (24 in a 44 tile, 32 in a 56).
+// A surface, so the cut mirrors with the reading direction like every plate;
+// a mirrored glyph's svg is flipped by `.ox-mirror` in Arabic, so it takes
+// the English polygon there and the flip lands it on the Arabic corner.
+@mixin ox-icon-plate-cut($lean) {
+  clip-path: polygon(0 #{$lean}, calc(#{$lean} * #{$ox-angle-tan}) 0, 100% 0, 100% 100%, 0 100%);
+  [dir='ltr'] & {
+    clip-path: polygon(0 0, calc(100% - #{$lean} * #{$ox-angle-tan}) 0, 100% #{$lean}, 100% 100%, 0 100%);
+  }
+}
+.ox-icon.ox-icon-tile {
+  --ox-icon-tile-pad: 10px;
+  box-sizing: border-box;
+  inline-size: calc(var(--ox-icon-size, 24px) + 2 * var(--ox-icon-tile-pad));
+  block-size: calc(var(--ox-icon-size, 24px) + 2 * var(--ox-icon-tile-pad));
+  padding: var(--ox-icon-tile-pad);
+  background: var(--ox-graphite);
+  color: var(--ox-ink-on-dark);
+  @include ox-icon-plate-cut(calc(var(--ox-icon-tile-pad) + 2px));
+  [dir='rtl'] &.ox-mirror {
+    clip-path: polygon(0 0, calc(100% - (var(--ox-icon-tile-pad) + 2px) * #{$ox-angle-tan}) 0, 100% calc(var(--ox-icon-tile-pad) + 2px), 100% 100%, 0 100%);
+  }
+  &.ox-icon--32,
+  &.ox-icon--36,
+  &.ox-icon--40 {
+    --ox-icon-tile-pad: 12px;
+  }
+}
+.ox-icon.ox-icon-tile--accent {
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  --ox-icon-mono: currentColor;
 }
 // Exactly one element per symbol is the accent: a fill with no stroke, except
 // ox-tick whose stroke is the accent (the only icon drawn that way).
@@ -1163,7 +1222,9 @@ a[href]:focus-visible {
 .ox-icon.ox-iconbtn--angled {
   box-sizing: border-box;
   padding: 3px;
-  --ox-icon-stroke: 2.25px;
+  // The 20 glyph inside the 28 chip strokes at the ladder's 20 step (the
+  // bold stroke, 2026-09-25), the same 2px line as the wrapped faces.
+  --ox-icon-stroke: 2.4px;
 }
 
 // ---------------------------------------------------------------------------
@@ -1669,13 +1730,23 @@ a[href]:focus-visible {
   @media (min-width: 1024px) { padding-block: var(--ox-16); }
   &__mark {
     display: inline-flex;
-    inline-size: 48px;
-    block-size: 48px;
+    align-items: center;
+    justify-content: center;
+    // The icon tile at badge size (the bold icons, 2026-09-25): a 72 graphite
+    // plate cut on the brand angle, the glyph 40 in white with its own accent
+    // part (the cart's dashed contents, the lens slash) kept orange. The plate
+    // is this wrapper, not the svg, so a mirrored glyph flips inside it and
+    // the cut needs no mirror rule of its own.
+    inline-size: 72px;
+    block-size: 72px;
     margin-block-end: var(--ox-4);
-    // Icon system v2 (2026-09-25): the empty-state drawings carry their own
-    // accent part (the cart's dashed contents, the lens slash), so the mark
-    // draws in ink and only that part takes the orange.
-    color: var(--ox-fg);
+    background: var(--ox-graphite);
+    color: var(--ox-ink-on-dark);
+    @include ox-icon-plate-cut(18px);
+    .ox-icon {
+      inline-size: 40px;
+      block-size: 40px;
+    }
   }
   &__title {
     margin: 0 0 var(--ox-2);

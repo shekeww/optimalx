@@ -2330,6 +2330,14 @@ body {
   // 2px drop puts the two on the same visual centre.
   margin-block-start: 2px;
 }
+// The bold icons (owner, 2026-09-25): the facts' glyphs stand in the accent
+// icon tile (`.ox-icon-tile--accent`, _primitives.scss), 24 in a 44 plate,
+// the reference's white glyph on the accent disc; a 44 plate beside one or
+// two 27px lines reads centred, so it drops the 2px optical nudge above.
+.ox-offer__icon.ox-icon-tile {
+  align-self: center;
+  margin-block-start: 0;
+}
 
 // THE LARGEST TEXT AFTER THE HEADING (the brief's own test): 18 rising to 20
 // at title weight, one step over the row titles (17 to 18, .ox-title) and
