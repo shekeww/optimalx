@@ -411,6 +411,43 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
+// The Shopify phone toolbar (Phase C FS-1): when the listing has filters, the
+// filter button and the sort select share one row in two equal halves under
+// the count, the pairing a Saudi shopper knows from the local stores'
+// listings, instead of three stacked lines (the angled button alone, then
+// the select alone). With no filter button the sort keeps its own line end.
+@media (max-width: 1023.98px) {
+  .ox-listing__controls:has(> .ox-fsheet) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+
+    > .ox-listing__count {
+      grid-column: 1 / -1;
+    }
+
+    > .ox-fsheet,
+    > .ox-fsheet > .ox-listing__filters-trigger {
+      display: flex;
+      inline-size: 100%;
+      min-inline-size: 0;
+    }
+
+    > .ox-listing__sort {
+      min-inline-size: 0;
+      margin-inline-start: 0;
+
+      // The select takes the button's 48 (the global button height) so the
+      // pair reads as one row, not a 48 beside a 44.
+      .ox-select {
+        inline-size: 100%;
+        min-inline-size: 0;
+        block-size: 48px;
+      }
+    }
+  }
+}
+
 @media (min-width: 1024px) {
   .ox-listing__toolbar {
     flex-direction: row;
@@ -424,7 +461,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
   // The rail carries the same facets from 1024 up, so the trigger is a
   // mobile-only control and is removed rather than hidden behind the rail.
-  .ox-listing__filters-trigger {
+  .ox-listing__filters-trigger,
+  .ox-fsheet {
     display: none;
   }
   .ox-listing__controls {
@@ -722,6 +760,307 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // ---------------------------------------------------------------------------
+// 7a. The Shopify filters (Phase C FS-1, snippets/filters.liquid): the
+// groups inside the rail and the phone sheet, the price pair, the sheet
+// itself and the applied chips row. Salla renders its own widget inside
+// `.ox-filters` and never meets these classes.
+//
+// One group anatomy everywhere: a legend in the title weight, then the
+// values as the store's filter chips (36 face, 44 hit area, the step notch
+// on the chosen state, _primitives.scss), each native value with its count
+// beside the word. Groups separate by a hairline, never a box in a box.
+// ---------------------------------------------------------------------------
+// "مسح التصفية" lives once, at the end of the applied chips (the rail head
+// carries the title alone since the FS-1 review).
+.ox-listing__applied-clear {
+  @include ox-focus(2px);
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  color: var(--ox-fg);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.ox-filters__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-filters__group {
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--ox-4) 0;
+  border: 0;
+  border-block-end: 1px solid var(--ox-bd);
+
+  &:last-of-type {
+    border-block-end: 0;
+    padding-block-end: 0;
+  }
+}
+
+// A floated legend leaves the fieldset's border slot and sits in the flow,
+// so the group's 16px top padding lands above the heading and the values
+// follow 12px under it (a rendered legend measured 28px of air under itself
+// and none above, 2026-09-25).
+.ox-filters__legend {
+  float: inline-start;
+  inline-size: 100%;
+  padding: 0;
+  color: var(--ox-fg);
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
+}
+
+.ox-filters__values {
+  display: flex;
+  flex-wrap: wrap;
+  clear: both;
+  gap: var(--ox-2);
+  margin: var(--ox-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-filters__chip {
+  gap: var(--ox-2);
+}
+
+// The price bands line up instead of wrapping ragged at four widths: one
+// column of full-width chips in the 280 rail (two bands never fit side by
+// side there), two equal columns in the phone sheet.
+.ox-filters__group[data-ox-filter-group='price'] > .ox-filters__values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+
+  > li {
+    display: flex;
+    min-inline-size: 0;
+  }
+
+  .ox-chip {
+    inline-size: 100%;
+    justify-content: center;
+  }
+}
+
+.ox-fsheet__panel .ox-filters__group[data-ox-filter-group='price'] > .ox-filters__values {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+// The count reads as a quiet figure beside the word, on the rest and on the
+// chosen (ink) face alike.
+.ox-filters__count {
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-figure);
+
+  .is-selected & {
+    color: inherit;
+    opacity: 0.72;
+  }
+}
+
+.ox-filters__more {
+  margin-block-start: var(--ox-1);
+
+  > summary {
+    @include ox-focus(2px);
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    color: var(--ox-fg);
+    font-size: var(--ox-t-small);
+    font-weight: var(--ox-w-ui);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &[open] > summary {
+    display: none;
+  }
+
+  > .ox-filters__values {
+    margin-block-start: var(--ox-2);
+  }
+}
+
+// The price pair: two fields side by side, the rail's apply button under
+// them across the full width.
+.ox-filters__range {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-3);
+  margin-block-start: var(--ox-4);
+}
+
+.ox-filters__range-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  min-inline-size: 0;
+}
+
+.ox-filters__range-label {
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+}
+
+.ox-filters__range-input {
+  min-block-size: 44px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-filters__range-apply {
+  grid-column: 1 / -1;
+}
+
+// The phone sheet. With no script it is a native <details>: the summary is
+// the toolbar's trigger and the panel shows as a full-height layer on open.
+// With the script (assets/ox.js initListingFilters) the panel moves to
+// <body>, gains `is-js`, and slides up the way the shop sheet does.
+.ox-fsheet > summary {
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.ox-fsheet__panel {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ox-z-modal);
+  display: flex;
+  flex-direction: column;
+  block-size: 100dvh;
+  background: var(--ox-card);
+  color: var(--ox-fg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &:focus {
+    outline: none;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  &.is-js {
+    transform: translateY(100%);
+    transition: transform var(--dur-base) var(--ease-in);
+  }
+
+  &.is-js:not(.is-entered) {
+    pointer-events: none;
+  }
+
+  &.is-js.is-entered {
+    transform: translateY(0);
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  :is(a, button, summary, label) {
+    touch-action: manipulation;
+  }
+}
+
+.ox-fsheet__head {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ox-3);
+  min-block-size: 56px;
+  padding-block-start: env(safe-area-inset-top, 0px);
+  padding-inline: var(--ox-gutter);
+  background: var(--ox-card);
+  border-block-end: 1px solid var(--ox-bd);
+}
+
+.ox-fsheet__title {
+  margin: 0;
+}
+
+.ox-fsheet__close {
+  color: var(--ox-ink);
+}
+
+.ox-fsheet__body {
+  flex: 1 0 auto;
+  padding: var(--ox-2) var(--ox-gutter) var(--ox-6);
+}
+
+// Reset and apply stay in reach at the foot: the apply button takes two
+// thirds, carries the live count and is the one accent on the sheet.
+.ox-fsheet__foot {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--ox-3);
+  padding: var(--ox-3) var(--ox-gutter) calc(var(--ox-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--ox-card);
+  border-block-start: 1px solid var(--ox-bd);
+
+  .ox-btn {
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+}
+
+.ox-fsheet__apply[aria-busy='true'] .ox-btn__label {
+  opacity: 0.6;
+}
+
+// The applied chips: what is on, above the grid, each chip its own way off.
+.ox-listing__applied-row {
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-listing__applied .ox-chip--removable {
+  padding-inline-end: var(--ox-3);
+  text-decoration: none;
+}
+
+.ox-listing__applied .ox-chip__remove {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-fsheet__panel.is-js {
+    transform: none;
+    opacity: 0;
+    transition: none;
+  }
+  .ox-fsheet__panel.is-js.is-entered {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 8. Search zero state (DIRECTION 5.3 ZeroResults, 6.8)
 // ---------------------------------------------------------------------------
 .ox-zero {
@@ -773,6 +1112,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
   text-align: center;
   max-inline-size: 420px;
   border-block-start: 1px solid var(--ox-plate-2);
+}
+
+// The free service doors under a query with no real match (Phase C, D06):
+// help after the zero state, under their own heading, on the grid's own
+// columns so they read as the store's services rather than as results.
+.ox-zero__doors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-4);
 }
 
 // ---------------------------------------------------------------------------
@@ -2137,6 +2485,18 @@ nav.breadcrumbs .s-breadcrumb-item button {
   inline-size: 100%;
   justify-self: stretch;
   @include ox-angled(44px);
+}
+
+// A SERVICE CARD'S BOOKING VERB (Shopify NL-2, Phase C, 2026-09-25) is the
+// longest label a card button carries ("اكتب سؤالك", "Book a visit"). The
+// phone button is 48 high with a 32.4 run, whose own floor is 135 wide
+// (X-IDENTITY 2.4, `run / 0.24`); the card is 122 wide at 360 and 130 at 375,
+// where the cuts clipped the first and last letters (measured on the glyph
+// ink). Below that width the label steps down with the card, `100cqi` being
+// the card's content box, which is the button's own width: about 14.4px at
+// 360, 15.7 at 375, and the shared primary size again from about 139.
+.ox-card-product__buy--service {
+  font-size: clamp(13px, calc(16.7cqi - 6px), var(--ox-btn-primary-size, calc(19px * 0.9)));
 }
 
 // MOBILE ROW B, REVERTED (owner review, 2026-09-23, late night, item 2):

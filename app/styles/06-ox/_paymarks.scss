@@ -67,11 +67,14 @@
 // THE TEXT PILLS: a method with no brand (bank transfer, cash on delivery)
 // is its name in a 24 tall pill, a hairline box the size of a mark's own
 // tile, so the row reads as one family of 24 tall marks; never a redrawn
-// glyph (the owner's icon set has no bank symbol and agents never draw
-// icons). 13/700, the ink of the ground the row sits on.
+// glyph (agents never draw icons). Since the owner's icon system v2
+// (2026-09-25) each pill leads with the owner's own 16px drawing,
+// bank-transfer or cash-on-delivery. 13/700, the ink of the ground the row
+// sits on.
 .ox-paymarks__text {
   display: inline-flex;
   align-items: center;
+  gap: var(--ox-1);
   box-sizing: border-box;
   block-size: 24px;
   padding-inline: var(--ox-2);

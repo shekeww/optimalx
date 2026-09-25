@@ -8,6 +8,7 @@
 // rather than a logical rewrite, because `clip-path` takes no logical values
 // (the same reasoning `_primitives.scss`'s wedge section already documents).
 @use 'sass:math';
+@use 'sass:map';
 
 // ---------------------------------------------------------------------------
 // 1. ox-x-corner, the mark's arm-foot corner cut (§3.3: need card, plan
@@ -235,4 +236,197 @@
   block-size: 4px;
   background: var(--ox-accent);
   @include ox-x-notch(4px, 14px);
+}
+
+// ---------------------------------------------------------------------------
+// 9. The slash pair, the brand's two orange diagonals (BM-1, owner
+//    2026-09-25: "i like the 2 orange diagonal shapes in the background, use
+//    them as brand assets and see where you could use them").
+// ---------------------------------------------------------------------------
+// Born as the advisory band's ground motif (`.ox-services__motif` and its
+// `--hair` twin, `_b2-home.scss`): a wide accent WASH and a thin HAIRLINE,
+// both skewed by `--ox-skew` (the brand's 34 degree lean, mirrored with the
+// reading direction), both fading in and out down their height with the peak
+// at 42%, bleeding off the reading end of their host. It is one element, so
+// the two shapes can never be placed apart: the wash is `::before`, the
+// hairline `::after`.
+//
+// Markup (sections render it through snippets/slash-motif.liquid, which
+// always writes aria-hidden):
+//
+//   <section class="... ox-slash-host">
+//     <span class="ox-slash [ox-slash--paper] [ox-slash--start] [ox-slash--sm|--lg]" aria-hidden="true"></span>
+//     ...content...
+//   </section>
+//
+// The span fills its host's padding box and clips the pair itself, so the
+// pair never adds sideways scroll whatever the host's own overflow is. It
+// paints at z-index -1, behind every in-flow child, which is why the host
+// isolates (`.ox-slash-host` or `@include ox-slash-host`): without a stacking
+// context of its own the pair would drop behind the host's background.
+//
+// Sizes, scaled from the band's 132 / 4 / 96 (wash / hairline / hairline's
+// distance from the edge), the wash bleeding a third of its width past the
+// edge:
+//   sm  88 / 3 / 64, bleed 32   (two thirds)
+//   md 132 / 4 / 96, bleed 48   (the band's phone tier, the original)
+//   lg 220 / 6 / 184, bleed 56  (the band's desktop tier since S4a)
+// The plain class is md stepping to lg from 1024 (the band's own ramp);
+// `--sm` is sm stepping to md from 1024; `--lg` is lg at every width.
+//
+// Tones: the dark ground (default) keeps the band's 16% wash and 55% hairline
+// peaks; `--paper` drops them to 9% and 30% so the pair reads as the same
+// accent on white without tinting the page.
+//
+// Placement law (the brief, 2026-09-25): at most one pair per screen height,
+// only on large calm surfaces, never behind body text it would lower the
+// contrast of, never on product photography, never on two neighbouring
+// sections.
+$ox-slash-sizes: (
+  sm: (w: 88px, bleed: -32px, hair: 3px, gap: 64px),
+  md: (w: 132px, bleed: -48px, hair: 4px, gap: 96px),
+  lg: (w: 220px, bleed: -56px, hair: 6px, gap: 184px),
+);
+
+$ox-slash-tones: (
+  dark: (wash: 0.16, line: 0.55),
+  paper: (wash: 0.09, line: 0.3),
+);
+
+// The size step alone, for a caller that changes tier at a breakpoint.
+@mixin ox-slash-size($size) {
+  $s: map.get($ox-slash-sizes, $size);
+  --ox-slash-w: #{map.get($s, w)};
+  --ox-slash-bleed: #{map.get($s, bleed)};
+  --ox-slash-hair: #{map.get($s, hair)};
+  --ox-slash-gap: #{map.get($s, gap)};
+}
+
+@mixin ox-slash-tone($tone) {
+  $t: map.get($ox-slash-tones, $tone);
+  --ox-slash-wash: #{map.get($t, wash)};
+  --ox-slash-line: #{map.get($t, line)};
+}
+
+// The host: a positioned stacking context the pair can sit behind content in.
+@mixin ox-slash-host {
+  position: relative;
+  isolation: isolate;
+}
+
+// The pair itself, drawn on the element this is included in.
+@mixin ox-slash-pair($size: md, $tone: dark, $edge: end) {
+  @include ox-slash-size($size);
+  @include ox-slash-tone($tone);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block: -8%;
+    transform: skewX(var(--ox-skew));
+    pointer-events: none;
+  }
+
+  &::before {
+    inline-size: var(--ox-slash-w);
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--ox-accent-rgb), 0) 0%,
+      rgba(var(--ox-accent-rgb), var(--ox-slash-wash)) 42%,
+      rgba(var(--ox-accent-rgb), 0) 100%
+    );
+  }
+
+  &::after {
+    inline-size: var(--ox-slash-hair);
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--ox-accent-rgb), 0) 0%,
+      rgba(var(--ox-accent-rgb), var(--ox-slash-line)) 42%,
+      rgba(var(--ox-accent-rgb), 0) 100%
+    );
+  }
+
+  @if $edge == start {
+    &::before {
+      inset-inline-start: var(--ox-slash-bleed);
+    }
+
+    &::after {
+      inset-inline-start: var(--ox-slash-gap);
+    }
+  } @else {
+    &::before {
+      inset-inline-end: var(--ox-slash-bleed);
+    }
+
+    &::after {
+      inset-inline-end: var(--ox-slash-gap);
+    }
+  }
+}
+
+.ox-slash-host {
+  @include ox-slash-host;
+}
+
+.ox-slash {
+  @include ox-slash-pair(md, dark, end);
+
+  @media (min-width: 1024px) {
+    @include ox-slash-size(lg);
+  }
+}
+
+.ox-slash--sm {
+  @include ox-slash-size(sm);
+
+  @media (min-width: 1024px) {
+    @include ox-slash-size(md);
+  }
+}
+
+.ox-slash--lg {
+  @include ox-slash-size(lg);
+}
+
+.ox-slash--paper {
+  @include ox-slash-tone(paper);
+}
+
+// The reading start instead of the reading end: the pair moves to the other
+// edge and keeps the brand's lean (the angle belongs to the reading
+// direction, never to the edge it sits on).
+.ox-slash--start {
+  &::before {
+    inset-inline-end: auto;
+    inset-inline-start: var(--ox-slash-bleed);
+  }
+
+  &::after {
+    inset-inline-end: auto;
+    inset-inline-start: var(--ox-slash-gap);
+  }
+}
+
+// Calm-ground gates. A paper placement whose layout leaves calm ground at the
+// reading end only from a width on (a centred empty state that fills a
+// phone, a state column that fills a tablet) shows the pair from that width,
+// so it never runs behind the body copy below it.
+.ox-slash--from-768 {
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
+
+.ox-slash--from-1024 {
+  @media (max-width: 1023.98px) {
+    display: none;
+  }
 }

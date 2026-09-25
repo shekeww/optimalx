@@ -2133,34 +2133,16 @@ body {
   );
 }
 
-// The ground motif: a skewed accent wash plus a hairline, bleeding off the
-// reading end, behind everything. The section's one angled band edge: the
-// only diagonal this band draws outside the CTA's own shape.
-.ox-services__motif {
-  position: absolute;
+// The ground motif: the brand's slash pair (`.ox-slash`, `_x-motif.scss`
+// section 9; BM-1 made the band's own wash and hairline the brand primitive),
+// at its default dark tone and its md-to-lg ramp, bleeding off the reading
+// end. The section's one angled band edge: the only diagonal this band draws
+// outside the CTA's own shape. It sits at z-index 0 here rather than the
+// primitive's -1, so it keeps painting over the optional band photograph and
+// its scrim, under `.ox-services__inner` (z-index 1), exactly as the two
+// motif spans did before.
+.ox-services > .ox-slash {
   z-index: 0;
-  inset-block: -8%;
-  inset-inline-end: -48px;
-  inline-size: 132px;
-  transform: skewX(var(--ox-skew));
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(var(--ox-accent-rgb), 0) 0%,
-    rgba(var(--ox-accent-rgb), 0.16) 42%,
-    rgba(var(--ox-accent-rgb), 0) 100%
-  );
-}
-
-.ox-services__motif--hair {
-  inset-inline-end: 96px;
-  inline-size: 4px;
-  background: linear-gradient(
-    to bottom,
-    rgba(var(--ox-accent-rgb), 0) 0%,
-    rgba(var(--ox-accent-rgb), 0.55) 42%,
-    rgba(var(--ox-accent-rgb), 0) 100%
-  );
 }
 
 .ox-services__inner {
@@ -2922,19 +2904,9 @@ body {
   }
 }
 
-// The band's ground motif widens from 1024 (the rows' own three-column grid
-// from this width is set with the rail rules above).
-@media (min-width: 1024px) {
-  .ox-services__motif {
-    inset-inline-end: -56px;
-    inline-size: 220px;
-  }
-
-  .ox-services__motif--hair {
-    inset-inline-end: 184px;
-    inline-size: 6px;
-  }
-}
+// The band's ground motif widens from 1024 through the primitive's own ramp
+// (`.ox-slash`: md below 1024, lg from it, the same 132 / 4 / 96 and
+// 220 / 6 / 184 tiers this band drew by hand before).
 
 // ---------------------------------------------------------------------------
 // 9. OxGuides and OxBranch wrappers (DIRECTION 6.2 rows 8 and 9)

@@ -470,9 +470,16 @@ a[href]:focus-visible {
 .ox-icon--mono {
   --ox-icon-mono: currentColor;
 }
+// Icon system v2 (2026-09-25): most v2 accents are a line, so the stroke
+// accent honours the same mono switch as the fill accent, and an icon on the
+// accent plate of a primary button draws its accent in the button's own ink
+// (the plus of cart-add would otherwise vanish into the orange).
+.ox-btn--primary .ox-icon {
+  --ox-icon-mono: currentColor;
+}
 .ox-icon__accent--stroke {
   fill: none;
-  stroke: var(--ox-accent);
+  stroke: var(--ox-icon-mono, var(--ox-accent));
 }
 .ox-sprite {
   position: absolute;
@@ -1628,7 +1635,10 @@ a[href]:focus-visible {
     inline-size: 48px;
     block-size: 48px;
     margin-block-end: var(--ox-4);
-    color: var(--ox-accent);
+    // Icon system v2 (2026-09-25): the empty-state drawings carry their own
+    // accent part (the cart's dashed contents, the lens slash), so the mark
+    // draws in ink and only that part takes the orange.
+    color: var(--ox-fg);
   }
   &__title {
     margin: 0 0 var(--ox-2);
