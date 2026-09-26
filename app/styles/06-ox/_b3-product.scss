@@ -70,15 +70,12 @@
   // never needed for CLS, only a stand-in for it.
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  // THE PLATE GROUND (owner review, 2026-09-24): the PDP gallery's own page
-  // ground, so the band and mark below have a surface to sit on. `--ox-bg`
-  // equals `--ox-card` in light mode (both `#FFFFFF`), so this is a
-  // no-visible-difference declaration against the card's own white surface -
-  // section 3.1's recorded departure from a grey plate (a lossy photograph's
-  // own baked-in white ground reading as a rectangle inside a grey box) still
-  // holds, because the ground here is white, not grey; only the band and the
-  // mark carry colour, at the same low contrast the gallery already proved
-  // keeps a white tub legible.
+  // THE PLATE GROUND: the clean page ground. `--ox-bg` equals `--ox-card` in
+  // light mode (both `#FFFFFF`), so the photo and its surface read as one
+  // white surface. The grey skewed band and the orange mark that used to sit
+  // on this ground were removed globally (owner, 2026-09-26: "the orange and
+  // gray shapes on the back of product image in product cards should be
+  // removed globally").
   background: var(--ox-bg);
 
   // The engine's own `<Image>` wraps the `<img>` in its own `position:
@@ -101,25 +98,13 @@
   }
 }
 
-// Off the shared `ox-plate-band`/`ox-plate-mark` mixins (`_primitives.scss`),
-// the same definition the PDP gallery's own `.ox-gallery__band`/
-// `.ox-gallery__mark` use, so the two surfaces cannot drift apart. Rendered
-// before the image in `OxProductCard.tsx`, so plain DOM paint order, no
-// z-index of their own needed, keeps them behind the packshot; the image
-// wrapper above takes `z-index: 1` to sit above them explicitly.
-.ox-card-product__band {
-  @include ox-plate-band;
-  pointer-events: none;
-}
-
-.ox-card-product__mark {
-  @include ox-plate-mark;
-  pointer-events: none;
-}
+// `.ox-card-product__band`/`.ox-card-product__mark` (the grey skewed band and
+// the orange mark behind the packshot) were removed here on 2026-09-26 with
+// the owner's global ruling; the photo sits on the plate's clean ground.
 
 .ox-card-product__img {
-  // Above the plate ground: the band and the mark are absolutely positioned
-  // siblings, so a static image painted under them (owner, 2026-09-25).
+  // Above the plate ground (kept: absolutely positioned overlays such as
+  // badges still share this box).
   position: relative;
   z-index: 1;
   inline-size: 100%;
@@ -136,8 +121,7 @@
 // THE PHOTO STRIP (owner, 2026-09-26: "images in product card should be
 // scrollable on mobile by swiping"). The Shopify card wraps its photos in one
 // link to the product, `.ox-card-product__media`, pinned over the plate above
-// its ground; the band and the mark are siblings behind it, so the plate's
-// shape and ground never move while the photos do. The link is the plate's
+// its clean ground, so the plate never moves while the photos do. The link is the plate's
 // tap target (a tap opens the product, a swipe never fires it); the photos
 // inside it stay paint only (`pointer-events: none` above).
 .ox-card-product__media {
@@ -599,31 +583,14 @@
   // that are themselves shot on white: the picture read as a white square
   // floating inside a grey square, and the seam between the two was the most
   // visible edge in the fold. On the page ground the photograph and its
-  // surface are one surface, which is what the reference does. The wedge band
-  // and the accent bar still draw, so the plate keeps its brand geometry.
+  // surface are one surface, which is what the reference does.
   background: var(--ox-bg);
   border-radius: var(--ox-r-4, 16px);
 }
 
-// Off the shared `ox-plate-band` mixin now (`_primitives.scss`): the card's
-// own plate draws the identical shape at its own scale (owner review,
-// 2026-09-24), so the definition lives once and the two cannot drift.
-.ox-gallery__band {
-  @include ox-plate-band;
-}
-
-// The accent bar on the plate, measured off the approved image rather than
-// guessed. Read at 1024 inside a plate spanning x 110 to 530 and y 118 to 508:
-// the bar is 23 wide, about 80 tall, it starts 37 in from the plate's inline
-// end and it STOPS about 23 per cent above the plate's floor. It used to sit
-// on `inset-block-end: 0` at 26 by 118, so `overflow: hidden` cut it into a
-// heavy orange triangle in the plate's bottom corner, which is the single
-// loudest thing in the fold and is not in the image at all. Everything is a
-// percentage so the same bar holds its proportion on a 343 wide phone plate.
-// Off the shared `ox-plate-mark` mixin now, same reason as the band above.
-.ox-gallery__mark {
-  @include ox-plate-mark;
-}
+// `.ox-gallery__band`/`.ox-gallery__mark` (the grey skewed band and the
+// orange accent bar behind the photograph) were removed on 2026-09-26 with
+// the owner's global ruling against decorative shapes behind product images.
 
 .ox-gallery__img {
   position: relative;
@@ -2427,7 +2394,8 @@ body.is-sticky-product-bar.product-single {
   margin-block-start: var(--ox-4);
 }
 
-// Method panel: one outline glyph per step at the step's inline start.
+// Method panel: one solid step glyph on its 44 plate at the step's inline
+// start (icon system v3, icon-system_2.md B9).
 .ox-howto__list {
   margin: 0;
   margin-block-start: 20px;
@@ -2437,7 +2405,10 @@ body.is-sticky-product-bar.product-single {
 
 .ox-howto__step {
   display: flex;
-  gap: 20px;
+  // Icon system v3 (icon-system_2.md B9/A6/A8): the step glyph stands at 24
+  // in the 44 graphite plate, 12 beside it (the 20 gap belonged to the bare
+  // 44 glyph the steps drew before).
+  gap: var(--ox-3);
   align-items: center;
   min-block-size: 96px;
   padding-block: var(--ox-3);

@@ -1364,6 +1364,13 @@ a.ox-util__trust-link {
   font-weight: var(--ox-w-quiet);
 }
 
+// A primary row that leads with an icon (icon system v3 2026-09-26: the
+// offers menu item of icon-system_2.md B7): the glyph sits at the reading
+// start like the category rows' 24 glyphs, the row keeps its primary weight.
+.ox-drawer__row--lead {
+  justify-content: flex-start;
+}
+
 .ox-drawer__row--child {
   justify-content: flex-start;
   padding-inline-start: calc(var(--ox-4) + var(--ox-4));

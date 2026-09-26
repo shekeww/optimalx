@@ -439,3 +439,148 @@
   --ox-cover-s1: 35%;
   --ox-cover-glow: 0.14;
 }
+
+// The visit band reshape (owner, 2026-09-26, with a screenshot of the home
+// band: "the visit us cover image to be shortened in height and to be
+// pushed up to be attached to the dark section above it and the cover image
+// to have the background behind it black not orange"). Three changes for
+// THIS variant only, superseding pieces of S11/S9h above for it:
+//
+// 1. The ground behind the photograph is the brand black (--ox-graphite,
+//    the same ground .ox-band-dark gives the advisory band), never the
+//    accent gradient: the orange angled rims go, and on the home band the
+//    cut triangles melt into the dark band behind the block
+//    (.ox-branch-block, _b2-home.scss section 9). :not() keeps the
+//    merchant's cover_ground_block = 'paper' setting working, since this
+//    rule sits after .ox-cover--ground-paper and would otherwise win by
+//    order.
+// 2. The 16:10 floor ladder above (450/600/810) is cut for this cover from
+//    768 up; the "always exactly 16:10" sentence in the S9h comment no
+//    longer holds for this variant. At 1440 the old 810 floor stood 246px
+//    of bare photograph over the content (measured 2026-09-26); the floors
+//    below sit under the content's own height, so the content decides the
+//    height now and the sign stays in frame through --ox-cover-position:
+//    top.
+// 3. From 1024 the body is two bottom-anchored columns, the head (eyebrow,
+//    title, rating, offer, address) at the reading start, where the side
+//    scrim is darkest, and the meta (the hours plate, the actions, the
+//    pickup note) beside it: the hours sit beside the heading, which is
+//    what actually shortens the band at desktop. Below 1024 the single
+//    stack stays (S9c direction §6, amended for this variant only, see
+//    _blocks.scss).
+.ox-cover--storefront-block:not(.ox-cover--ground-paper) {
+  --ox-cover-ground: var(--ox-graphite);
+}
+
+// The variant's own scrim coverage (measured 2026-09-26, after the
+// reshape). Below 1024 the head column's lines run nearly the full inline
+// size through the frame's upper half, where neither generic ramp reaches:
+// the Arabic title's far end crossed the storefront's lit LED strip at
+// 2.51:1 worst-pixel and the English address at 2.03:1 against its lighter
+// tenth. So below 1024 a third, top-down ramp grounds the upper zone, and
+// the side ramp keeps 45% ink out to 85% of the width before it fades, so
+// a full-width line sits on real ink end to end. From 1024 the head sits
+// at the reading start on the strong side ramp (every line measured over
+// 4.9:1 there), so the top ramp is dropped and the photograph's sign keeps
+// its faint presence in the frame's open top strip.
+.ox-cover--storefront-block .ox-cover__scrim {
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--ox-ink) 55%, transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) 40%, transparent) 40%,
+      transparent 70%
+    ),
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0, 88%), transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1, 38%), transparent) 45%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to left,
+      color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0, 55%), transparent) 0%,
+      color-mix(in srgb, var(--ox-ink) 45%, transparent) 85%,
+      transparent 100%
+    );
+
+  [dir='ltr'] & {
+    background:
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--ox-ink) 55%, transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) 40%, transparent) 40%,
+        transparent 70%
+      ),
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0, 88%), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1, 38%), transparent) 45%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0, 55%), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) 45%, transparent) 85%,
+        transparent 100%
+      );
+  }
+
+  @media (min-width: 1024px) {
+    background:
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0, 88%), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1, 38%), transparent) 45%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to left,
+        color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0, 55%), transparent) 0%,
+        color-mix(in srgb, var(--ox-ink) 45%, transparent) 85%,
+        transparent 100%
+      );
+
+    [dir='ltr'] & {
+      background:
+        linear-gradient(
+          to top,
+          color-mix(in srgb, var(--ox-ink) var(--ox-cover-b0, 88%), transparent) 0%,
+          color-mix(in srgb, var(--ox-ink) var(--ox-cover-b1, 38%), transparent) 45%,
+          transparent 100%
+        ),
+        linear-gradient(
+          to right,
+          color-mix(in srgb, var(--ox-ink) var(--ox-cover-s0, 55%), transparent) 0%,
+          color-mix(in srgb, var(--ox-ink) 45%, transparent) 85%,
+          transparent 100%
+        );
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-cover--storefront-block {
+    min-block-size: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cover--storefront-block {
+    min-block-size: 440px;
+  }
+
+  .ox-cover--storefront-block .ox-cover__body {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--ox-8);
+  }
+
+  .ox-cover--storefront-block .ox-branch__head {
+    flex: 1 1 38%;
+  }
+
+  .ox-cover--storefront-block .ox-branch__meta {
+    flex: 1 1 62%;
+  }
+}

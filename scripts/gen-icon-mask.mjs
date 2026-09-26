@@ -1,5 +1,5 @@
 // Generates the --ox-cart-glyph CSS custom property in app/styles/tokens.css
-// from the sprite's ox-cart symbol (app/assets/ox-sprite.svg).
+// from the sprite's ox-cart symbol.
 //
 // `_b3-product.scss` masks a pseudo-element with this token twice (the sticky
 // buy bar and the card's native add button, ~1355-1391): both take no
@@ -7,6 +7,18 @@
 // name="cart">` has to arrive as a CSS mask instead. Generating it from the
 // sprite symbol, rather than hand-copying the paths a second time, is what
 // keeps the two in agreement when the drawing changes (S2a, 2026-09-22).
+//
+// Icon system v3 (2026-09-26): the drawing of record is the owner's v3 set,
+// imported into the Shopify theme's sprite (the live deployment) by
+// optimalx-shopify/scripts/import-icons-v3.mjs, so SPRITE below reads the
+// sibling repo's snippets/ox-sprite.liquid, not app/assets/ox-sprite.svg
+// (still the v2 set; the Salla build is parked, owner 2026-09-25). The
+// tokens.css this script writes compiles into the Shopify stylesheet
+// through optimalx-shopify/scripts/build-css.mjs, and the masked cart must
+// match the v3 cart every page inlines. The v3 line files draw their solid
+// parts (the cart's wheels) as elements with their own fill and
+// stroke="none" rather than the accent class, so maskDataUri paints those
+// solid too.
 //
 // Run: node scripts/gen-icon-mask.mjs [--check]
 //   --check  exits 1 when tokens.css's generated block differs from what this
@@ -17,7 +29,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-export const SPRITE = path.join('app', 'assets', 'ox-sprite.svg');
+export const SPRITE = path.join('..', 'optimalx-shopify', 'snippets', 'ox-sprite.liquid');
 export const TARGET = path.join('app', 'styles', 'tokens.css');
 export const SYMBOL_ID = 'ox-cart';
 /**
@@ -80,7 +92,13 @@ export function maskDataUri(symbolBody, strokeWidth = '1.8') {
   const parts = elements.map(({ tag, attrs }) => {
     const pick = (name) => attrs.match(new RegExp(`\\s${name}="([^"]+)"`))?.[1];
     const isAccent = /class="ox-icon__accent"/.test(attrs);
-    const paint = isAccent ? " fill='%23000' stroke='none'" : '';
+    // v3 (2026-09-26): a line file's own solid part carries fill plus
+    // stroke="none" on the element (the cart's wheels) instead of the accent
+    // class; it is part of the silhouette the same way the accent is.
+    const ownFill = pick('fill');
+    const ownStroke = attrs.match(/\sstroke="([^"]*)"/)?.[1];
+    const isFilled = isAccent || ownStroke === 'none' || (ownFill && ownFill !== 'none');
+    const paint = isFilled ? " fill='%23000' stroke='none'" : '';
     if (tag === 'path') {
       const d = pick('d');
       if (!d) throw new Error('gen-icon-mask: <path> with no d attribute');

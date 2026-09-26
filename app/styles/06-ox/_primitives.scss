@@ -211,37 +211,13 @@ $ox-angle-tan: 0.6745;
   }
 }
 
-// The plate ground: the PDP gallery's own grey band and orange mark behind a
-// product photograph (owner review, 2026-09-24: the card's own plate now
-// carries the same ground, scaled down). Two mixins, one definition each, so
-// the gallery and the card read off the same rule and cannot drift apart -
-// `_b3-product.scss`'s `.ox-gallery__band`/`.ox-gallery__mark` and
-// `.ox-card-product__band`/`.ox-card-product__mark` both `@include` these.
-// Every value is a percentage of the plate itself, so the same rule scales
-// from a 137px card plate to a 580px gallery plate with no second set of
-// numbers to keep in step. `--ox-skew` is the identity's own 34deg
-// (`X-IDENTITY-2026-09-22.md` §2.1), consumed rather than re-derived.
-@mixin ox-plate-band {
-  position: absolute;
-  inset-block: -10%;
-  inset-inline-start: 22%;
-  inline-size: 46%;
-  background: var(--ox-plate-2);
-  opacity: 0.55;
-  transform: skewX(var(--ox-skew));
-  pointer-events: none;
-}
-
-@mixin ox-plate-mark {
-  position: absolute;
-  inset-block-end: 22%;
-  inset-inline-end: 8%;
-  inline-size: 4.5%;
-  block-size: 19%;
-  background: var(--ox-accent);
-  transform: skewX(var(--ox-skew));
-  pointer-events: none;
-}
+// The plate ground behind a product photograph is the clean card ground
+// itself since the owner's 2026-09-26 ruling ("the orange and gray shapes on
+// the back of product image in product cards should be removed globally"):
+// the `ox-plate-band`/`ox-plate-mark` mixins that drew the grey skewed band
+// and the orange skewed mark on the card, the PDP gallery and the featured
+// cover were removed with all their consumers. The photo now sits directly
+// on the plate's own `--ox-bg` ground.
 
 // ---------------------------------------------------------------------------
 // 2. Focus, hit area, visually hidden, containers, type
@@ -1294,6 +1270,15 @@ a[href]:focus-visible {
   }
   &__title {
     margin: 0;
+  }
+  // A header that carries an icon (snippets/section-header.liquid `icon`,
+  // icon-system v3 2026-09-26: the offers header of icon-system_2.md B7):
+  // the title turns a centred row, 16 between the 56 plate and the label
+  // (A8). The plate itself is .ox-icon-tile above.
+  &__title--icon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ox-4);
   }
   &__actions {
     grid-area: actions;

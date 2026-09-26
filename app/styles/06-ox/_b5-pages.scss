@@ -347,6 +347,192 @@
 }
 
 // ---------------------------------------------------------------------------
+// 2b. The full-bleed page cover (owner, 2026-09-26, an about-page screenshot:
+//     the cover photographs on "who we are" and "ask before you buy" extended
+//     vertically, aligned to the top with the title and the slogan on them,
+//     and the ground behind the image the brand black instead of white).
+//
+//     `.ox-bband--cover` renders OUTSIDE `.ox-page`, directly under the
+//     header, full bleed on `--ox-graphite` (the brand black, the same family
+//     as the header's own `--ox-band-header`, so the utility bar, the header
+//     and the cover read as one dark block). The breadcrumb moves onto the
+//     band in light ink. The photograph is clipped to the identity
+//     parallelogram at exactly 34deg whatever the band's height: the run is
+//     recomputed from the band's own fluid height (`--ox-cover-h` times the
+//     shared `--ox-angle-tan`), never a baked constant; below 1024 a
+//     full-height side cut is geometrically impossible (the run would exceed
+//     the width), so the phone keeps X-IDENTITY section 2.4's foot corner cut
+//     (lean 96, run 64.8), the hero's own stacked-band construction. Written
+//     as `.ox-bband.ox-bband--cover` so the cover wins every equal-order tie
+//     against `_b3-product.scss` section 12's base band and section 2a's
+//     plate cut above, at every tier. Salla emits no `ox-bband--cover`, so
+//     this block is inert on the reference build; only the Shopify page
+//     mastheads (sections/page-about.liquid, sections/page-services.liquid)
+//     carry it.
+.ox-bband.ox-bband--cover {
+  // svh, the small viewport: stable while a phone's URL bar shows, so the
+  // reserved height never changes after first paint (the LCP image fills
+  // exactly this reserved box, CLS 0 by reservation, owner requirement 4).
+  --ox-cover-h: clamp(420px, 62svh, 600px);
+  --ox-cover-run: calc(var(--ox-cover-h) * var(--ox-angle-tan));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  block-size: var(--ox-cover-h);
+  min-block-size: 0;
+  margin-block-end: var(--ox-12);
+  padding: var(--ox-3) var(--ox-gutter) var(--ox-6);
+  background: var(--ox-graphite);
+  border-radius: 0;
+}
+
+.ox-bband.ox-bband--cover .ox-bband__plate {
+  position: absolute;
+  inset: 0;
+  block-size: auto;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 96px), calc(100% - #{ox-run(96px)}) 100%, 0 100%);
+}
+
+[dir='ltr'] .ox-bband.ox-bband--cover .ox-bband__plate {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, #{ox-run(96px)} 100%, 0 calc(100% - 96px));
+}
+
+.ox-bband.ox-bband--cover .ox-bband__photo,
+.ox-bband.ox-bband--cover .ox-bband__scrim {
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+// "Aligned to the top": the tall crop keeps the top of the photograph at
+// every width, never the floor under the subject.
+.ox-bband.ox-bband--cover .ox-bband__photo {
+  object-position: 50% 0;
+}
+
+// The phone overlay: one smooth vertical ramp, strong where lines of type
+// actually sit (the breadcrumb at the head, the title and the slogan at the
+// foot), light through the middle so the photograph is seen. The values are
+// tuned against the worst pixel behind each line (requirement 3, 4.5 to 1).
+.ox-bband.ox-bband--cover .ox-bband__scrim {
+  background: linear-gradient(
+    to bottom,
+    rgba(13, 16, 20, 0.92),
+    rgba(13, 16, 20, 0.6) 12%,
+    rgba(13, 16, 20, 0.18) 30%,
+    rgba(13, 16, 20, 0.2) 46%,
+    rgba(13, 16, 20, 0.62) 58%,
+    rgba(13, 16, 20, 0.9) 70%,
+    rgba(13, 16, 20, 0.97) 100%
+  );
+}
+
+// Full ink for the slogan on the photograph (the measured worst pixels, the
+// bright product packaging, hold 4.5 to 1 against `--ox-ink-on-dark` under
+// the ramp above but not against the withdrawn `--ox-ink-2-on-dark`); the
+// size step against the headline keeps the hierarchy.
+.ox-bband.ox-bband--cover .ox-bband__sub {
+  color: var(--ox-ink-on-dark);
+}
+
+// The breadcrumb on the band, in light ink, above the plate.
+.ox-bband.ox-bband--cover .ox-crumbs {
+  position: relative;
+  z-index: 2;
+  color: var(--ox-ink-2-on-dark);
+
+  .s-breadcrumb-item a {
+    color: var(--ox-ink-2-on-dark);
+  }
+
+  .s-breadcrumb-item[aria-current='page'] span {
+    color: var(--ox-ink-on-dark);
+  }
+
+  .s-breadcrumb-arrow {
+    color: var(--ox-ink-3-on-dark);
+  }
+}
+
+// The title block rides the photograph: pushed to the foot on a phone (over
+// the strong end of the ramp), centred between the breadcrumb and the lockup
+// from 1024. The lockup gives up its own auto push so both sit together.
+.ox-bband.ox-bband--cover .ox-bband__inner {
+  margin-block-start: auto;
+  max-inline-size: 640px;
+}
+
+.ox-bband.ox-bband--cover .ox-bband__lockup {
+  margin-block-start: var(--ox-5);
+}
+
+@media (min-width: 1024px) {
+  .ox-bband.ox-bband--cover {
+    // 68svh sits inside the owner's 60 to 75 percent band; the 800px cap
+    // keeps the next section peeking on a tall desktop viewport.
+    --ox-cover-h: clamp(480px, 68svh, 800px);
+    // The base band turns into a two-column grid at this tier; the cover
+    // stays one column (breadcrumb, title block, lockup).
+    display: flex;
+    margin-block-end: var(--ox-16);
+    padding-block: var(--ox-4) var(--ox-8);
+    // The safe area against the full-height diagonal: a centred text block
+    // never reaches deeper than about 0.72 of the run on its inline side,
+    // measured against the tallest cover this clamp allows.
+    padding-inline: calc(var(--ox-cover-run) * 0.72 + var(--ox-gutter));
+  }
+
+  // The full parallelogram, exactly 34deg at any height: both block ends
+  // cut by the fluid run. Restated physically for LTR, the surface mirror,
+  // because clip-path takes no logical values.
+  .ox-bband.ox-bband--cover .ox-bband__plate {
+    clip-path: polygon(var(--ox-cover-run) 0, 100% 0, calc(100% - var(--ox-cover-run)) 100%, 0 100%);
+  }
+
+  [dir='ltr'] .ox-bband.ox-bband--cover .ox-bband__plate {
+    clip-path: polygon(0 0, calc(100% - var(--ox-cover-run)) 0, 100% 100%, var(--ox-cover-run) 100%);
+  }
+
+  // The desktop overlay runs from the inline start again, so the type sits
+  // on the darkest part of the frame in either reading direction; deeper
+  // and longer stops than the base band's, because the cover's type column
+  // is taller and its longest line ends near 67 percent of the frame (the
+  // start-aligned 640px block below), where the measured worst pixels are
+  // bright product packaging.
+  .ox-bband.ox-bband--cover .ox-bband__scrim {
+    background: linear-gradient(
+      to var(--ox-band-to, left),
+      rgba(13, 16, 20, 0.96) 36%,
+      rgba(13, 16, 20, 0.84) 62%,
+      rgba(13, 16, 20, 0.45) 82%,
+      rgba(13, 16, 20, 0.12) 100%
+    );
+  }
+
+  .ox-bband.ox-bband--cover .ox-bband__inner {
+    margin-block: auto;
+    gap: 18px;
+    // The base band centres this block in its grid column; on the cover the
+    // type hugs the dark inline start of the ramp instead, so its longest
+    // line never runs into the bright end of the photograph.
+    align-self: flex-start;
+  }
+
+  // The base grid rule gives the sub a 20px foot; the flex column's own
+  // gap already spaces it.
+  .ox-bband.ox-bband--cover .ox-bband__sub {
+    margin-block-end: 0;
+  }
+
+  .ox-bband.ox-bband--cover .ox-bband__lockup {
+    margin-block-start: 0;
+    align-self: flex-end;
+    align-items: flex-end;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 3. The statistic strip at page level
 // ---------------------------------------------------------------------------
 // `.ox-stats` carries no frame of its own, which is right inside the buy zone

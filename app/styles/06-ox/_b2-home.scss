@@ -95,6 +95,17 @@
   }
 }
 
+// The one exception to the tiers (owner, 2026-09-26: the visit band "to be
+// pushed up to be attached to the dark section above it"): when the visit
+// band directly follows the advisory band, the gap between them closes at
+// every width (0,2,0 outranks both tier rules above) and the two dark
+// sections read as one continuous dark chapter; the band's own dark ground
+// is section 9 below. Reordered in the editor, the band falls back to the
+// tiers.
+.s-block--ox-services + .s-block--ox-branch {
+  margin-block-start: 0;
+}
+
 // ---------------------------------------------------------------------------
 // 1b. The page's one reveal (homepage-spec "Motion, and the limits on it")
 // ---------------------------------------------------------------------------
@@ -2999,8 +3010,32 @@ body {
   }
 }
 
+// The visit band is the dark chapter's second half (owner, 2026-09-26):
+// the block sits on the same ground the advisory band above it draws
+// (.ox-band-dark's --ox-bg, --ox-graphite), so with the closed gap
+// (section 1's adjacency rule) the two sections read as one continuous
+// dark block, and the cover's black ground (_covers.scss, the
+// storefront-block reshape) melts into it. No top padding: the advisory
+// band's own internal bottom padding (56/80/96) is the air above the
+// cover, and the closing padding below mirrors that same ladder. The
+// brand motif stays in one place, on the advisory band alone; this band
+// draws none.
 .ox-branch-block {
   position: relative;
+  background: var(--ox-graphite);
+  padding-block-end: 56px;
+}
+
+@media (min-width: 768px) {
+  .ox-branch-block {
+    padding-block-end: 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-branch-block {
+    padding-block-end: var(--ox-24);
+  }
 }
 
 // ---------------------------------------------------------------------------

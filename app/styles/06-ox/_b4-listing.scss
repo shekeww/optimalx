@@ -3254,19 +3254,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // makes the cover read as a cover, not a bigger version of the grid's square
 // product tile.
 //
-// THE PLATE GROUND (owner review 2026-09-25: "in featured products, the gray
-// solid background to be replaced with the same background of the gray shape
-// and orange behind product image in product card"). The flat `--ox-plate`
-// grey is gone: the cover stands on the page ground with the product card's
-// own grey angled band and orange mark behind the packshot, off the shared
-// `ox-plate-band`/`ox-plate-mark` mixins (`_primitives.scss`), the one
-// definition `.ox-card-product__band`/`__mark` and the PDP gallery's
-// `.ox-gallery__band`/`__mark` also read. Every value in those mixins is a
-// percentage of its plate, so the same shapes land on this 3:2 cover in the
-// same proportion: the band runs behind the packshot, and the mark sits in
-// the free margin at the reading end, clear of a square packshot contained in
-// the middle two thirds. The 1px frame is the product card's own `--ox-bd`,
-// which keeps the white cover a surface on the white page.
+// THE PLATE GROUND: the clean page ground. The flat `--ox-plate` grey went
+// on 2026-09-25, and the grey angled band with the orange mark that replaced
+// it went on 2026-09-26 with the owner's global ruling ("the orange and gray
+// shapes on the back of product image in product cards should be removed
+// globally"); the packshot stands directly on the white cover. The 1px frame
+// is the product card's own `--ox-bd`, which keeps the white cover a surface
+// on the white page.
 //
 // The corner cut (X-IDENTITY 3.3 and 6, one angled primitive per cover): the
 // mark's arm-foot on the cover's top reading-end corner, three tiers, lean 40
@@ -3283,9 +3277,9 @@ nav.breadcrumbs .s-breadcrumb-item button {
   @include ox-x-corner(40px);
 
   // The engine's `<Image>` wraps the `<img>` in its own `position: relative`
-  // box carrying no class of its own; pinned flush to the plate and raised
-  // above the ground, the same treatment `.ox-card-product__plate` gives its
-  // own wrapper, so the packshot always paints over the band and the mark.
+  // box carrying no class of its own; pinned flush to the plate, the same
+  // treatment `.ox-card-product__plate` gives its own wrapper, so the
+  // packshot always fills the plate's box exactly.
   > :has(> .ox-featured__img) {
     position: absolute;
     inset: 0;
@@ -3305,30 +3299,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-// Rendered before the image in `FeaturedRail.tsx` (and
-// `snippets/featured-rail.liquid` on the port), so DOM paint order alone
-// keeps them behind the packshot. Paint only: a tap anywhere on the cover
-// lands on the card's own link.
-//
-// ONE SHAPE ON A WIDER PLATE. The mixins size a thickness off the plate's
-// WIDTH, which on the square card and gallery plates is also its height. On
-// this 3:2 cover the same percentage draws a band and a mark one and a half
-// times as thick for their length, a heavier slash than the card carries.
-// Each thickness is scaled by the plate's 2:3 height-to-width ratio, so the
-// band and the mark keep the card's own proportions; the band keeps the
-// mixin's centre line (22% + 46% / 2 = 45% from the reading start) and the
-// mark keeps its place in the free margin at the reading end, clear of a
-// square packshot.
-.ox-featured__band {
-  @include ox-plate-band;
-  inset-inline-start: calc(45% - 46% / 3);
-  inline-size: calc(46% * 2 / 3);
-}
-
-.ox-featured__mark {
-  @include ox-plate-mark;
-  inline-size: calc(4.5% * 2 / 3);
-}
+// `.ox-featured__band`/`.ox-featured__mark` (the grey skewed band and the
+// orange mark behind the packshot on this cover) were removed on 2026-09-26
+// with the owner's global ruling against decorative shapes behind product
+// images.
 
 .ox-featured__img {
   position: relative;

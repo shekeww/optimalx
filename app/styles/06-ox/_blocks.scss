@@ -13,7 +13,11 @@
 
 // The single content stack, title, rating, offer, address, hours, actions,
 // pickup note, in the SAME composition at every width (S9c direction §6):
-// no two-column split, on the cover or off it.
+// no two-column split, on the cover or off it. Amended 2026-09-26 (owner:
+// the visit band shortened at desktop): ON the storefront cover only, from
+// 1024, the head and the meta sit side by side; that variant rule lives
+// with the cover (_covers.scss, the storefront-block reshape). The flat
+// card and every width below 1024 keep this single stack.
 .ox-branch__head,
 .ox-branch__meta {
   display: flex;
