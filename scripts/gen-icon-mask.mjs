@@ -112,7 +112,7 @@ export function maskDataUri(symbolBody, strokeWidth = '1.8') {
   });
   const svg =
     `%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' ` +
-    `stroke-width='${strokeWidth}' stroke-linejoin='miter' stroke-linecap='square'%3E${parts.join('')}%3C/svg%3E`;
+    `stroke-width='${strokeWidth}' stroke-linejoin='round' stroke-linecap='round'%3E${parts.join('')}%3C/svg%3E`;
   return `url("data:image/svg+xml,${svg}")`;
 }
 

@@ -55,7 +55,7 @@ export function GoalCard({ slug, label, line, icon, to, photo, index = 0 }: Goal
       {photo ? <BandPhoto src={photo} className="ox-goal__photo" /> : null}
       <span className="ox-goal__scrim" aria-hidden="true" />
       <span className="ox-goal__body">
-        <Icon name={icon} size={26} className="ox-goal__icon" />
+        <Icon name={icon} size={32} className="ox-goal__icon" />
         <span className="ox-goal__label">{label}</span>
         {line ? <span className="ox-goal__line">{line}</span> : null}
         <span className="ox-goal__cta">
