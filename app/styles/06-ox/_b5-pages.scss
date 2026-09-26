@@ -414,18 +414,32 @@
 // The phone overlay: one smooth vertical ramp, strong where lines of type
 // actually sit (the breadcrumb at the head, the title and the slogan at the
 // foot), light through the middle so the photograph is seen. The values are
-// tuned against the worst pixel behind each line (requirement 3, 4.5 to 1).
+// tuned against the worst pixel behind each line (requirement 3, 4.5 to 1);
+// the 30 to 58 percent stops were deepened for the cover-scale title (review
+// r16 finding 2): the taller block tops out near half the band, where the
+// first ramp left the services headline at 4.44 to 1 at 390.
 .ox-bband.ox-bband--cover .ox-bband__scrim {
   background: linear-gradient(
     to bottom,
     rgba(13, 16, 20, 0.92),
     rgba(13, 16, 20, 0.6) 12%,
-    rgba(13, 16, 20, 0.18) 30%,
-    rgba(13, 16, 20, 0.2) 46%,
-    rgba(13, 16, 20, 0.62) 58%,
+    rgba(13, 16, 20, 0.22) 30%,
+    rgba(13, 16, 20, 0.36) 46%,
+    rgba(13, 16, 20, 0.74) 58%,
     rgba(13, 16, 20, 0.9) 70%,
     rgba(13, 16, 20, 0.97) 100%
   );
+}
+
+// Cover-scale type (review r16, finding 2): the base band's 30px headline
+// cap was drawn for the 252px contained band; on a 523 to 800px masthead it
+// read as a caption against the owner's title-led ask. The cover steps the
+// title toward the home hero's presence (28px on a phone up to 44px at the
+// desktop cap) and gives the slogan the lead scale so the pair keeps its
+// stride. Larger ink over the same scrim only raises the measured contrast
+// (reverified with the r16 contrast probe after this step).
+.ox-bband.ox-bband--cover .ox-bband__headline {
+  font-size: clamp(28px, 1rem + 2vw, 44px);
 }
 
 // Full ink for the slogan on the photograph (the measured worst pixels, the
@@ -433,6 +447,7 @@
 // the ramp above but not against the withdrawn `--ox-ink-2-on-dark`); the
 // size step against the headline keeps the hierarchy.
 .ox-bband.ox-bband--cover .ox-bband__sub {
+  font-size: var(--ox-t-lead);
   color: var(--ox-ink-on-dark);
 }
 

@@ -25,8 +25,16 @@
   /* 'Cairo VF' is our self-hosted variable file and must come first: the
      engine also loads a static Google Cairo from the dashboard, and leading
      with the shared name would let that resolve 400 and 700 while ours served
-     the rest. Plain 'Cairo' stays as the fallback. See 01-settings/fonts.scss. */
-  --ox-font: 'Cairo VF', 'Cairo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+     the rest. Plain 'Cairo' stays as the fallback. See 01-settings/fonts.scss.
+     'Cairo Fallback' is the metrics-matched local bridge face that shows only
+     while Cairo VF is in flight: per weight band and per script its
+     size-adjust holds each line at the width Cairo will claim, so the swap
+     moves nothing (the r16 page-covers review measured CLS 0.2209 from the
+     Arabic swap at 768). The faces live with the Cairo faces themselves
+     (Shopify assets/ox-fonts.css.liquid); where they are not defined, this
+     Salla build included, the browser skips the unknown name and falls
+     through to system-ui exactly as before. */
+  --ox-font: 'Cairo VF', 'Cairo', 'Cairo Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-main: var(--ox-font);
   --font-ar: var(--ox-font);
 
@@ -535,9 +543,9 @@ textarea {
 
 /* ---------- Generated: scripts/gen-icon-mask.mjs (do not hand-edit) ---------- */
 :root {
-  --ox-cart-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M2 5h3l2.3 9.5h11l2.3-7H5.8'/%3E%3Ccircle cx='9' cy='19.2' r='1.7' fill='%23000' stroke='none'/%3E%3Ccircle cx='17.2' cy='19.2' r='1.7' fill='%23000' stroke='none'/%3E%3C/svg%3E");
-  --ox-chevron-end-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M9.6 5l4.8 7-4.8 7'/%3E%3C/svg%3E");
-  --ox-plus-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
-  --ox-minus-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='miter' stroke-linecap='square'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+  --ox-cart-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M2 5h3l2.3 9.5h11l2.3-7H5.8'/%3E%3Ccircle cx='9' cy='19.2' r='1.7' fill='%23000' stroke='none'/%3E%3Ccircle cx='17.2' cy='19.2' r='1.7' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+  --ox-chevron-end-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M9.6 5l4.8 7-4.8 7'/%3E%3C/svg%3E");
+  --ox-plus-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+  --ox-minus-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
 }
 /* ---------- End generated ---------- */
