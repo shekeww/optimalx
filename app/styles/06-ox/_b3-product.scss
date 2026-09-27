@@ -33,7 +33,9 @@
   padding: var(--ox-4);
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-4, 16px);
+  // Square (owner, 2026-09-26: "avoid rounded cards and buttons globally, it
+  // should be sharp to match the identity of optimal x"). Was --ox-r-4.
+  border-radius: 0;
   // CARD-2026-09-23 section 7/S3c finding 6: no lift, no scale, no shadow.
   // The border colour is what moves on hover, and the second product image
   // (`.ox-card-product__img--hover`) is the real payload; a translateY on
@@ -43,6 +45,31 @@
 
   &:hover {
     border-color: var(--ox-bd-2);
+  }
+}
+
+// THE PHONE CARD'S INLINE PADDING: 12, was 16 (owner, 2026-09-26). It was
+// cut for the card's add bar and its 44 targets; the bar is gone (owner,
+// 2026-09-26, latest: "entirely remove add to cart button from all cards")
+// and the 12 stays for what it also bought: the photo 8 wider on a phone,
+// the photo first the way the leading Saudi stores compose a phone card, and
+// the card's one action 8 wider for its label.
+// THE PHONE PHOTO SPANS THE CARD (ADP-20, r26 adoption plan, 2026-09-27; the
+// full-width square photo of Sporter's phone card): below 640 the plate
+// takes back the card's inline padding (`--ox-card-bleed`, the same 12), so
+// the square photo spans the card's inner width, border to border (169 at
+// 390, 154 at 360, was 145 and 130), while the brand, title, spec, price and
+// the action keep their 12 inset. The top padding stays 16 and the photo
+// stays on the white plate. The overlays on the plate (the badges and the
+// swatch row, _b4-listing.scss section 12) add the bleed back to their
+// insets, so they sit exactly where they sat, on the text's 12 line. Every
+// card of a context grows by the same 24 (the square follows the width),
+// so a row stays one height.
+@media (max-width: 639px) {
+  .ox-card-product {
+    // The two values move together: the bleed is the padding it cancels.
+    padding-inline: var(--ox-3);
+    --ox-card-bleed: var(--ox-3);
   }
 }
 
@@ -69,6 +96,9 @@
   // reserves the correct square space before the image loads, the cap was
   // never needed for CLS, only a stand-in for it.
   aspect-ratio: 1 / 1;
+  // The phone photo's bleed (ADP-20, above): zero from 640 up, where the
+  // photo sits inside the card's 16 padding.
+  margin-inline: calc(var(--ox-card-bleed, 0px) * -1);
   overflow: hidden;
   // THE PLATE GROUND: the clean page ground. `--ox-bg` equals `--ox-card` in
   // light mode (both `#FFFFFF`), so the photo and its surface read as one
@@ -167,6 +197,40 @@
   overscroll-behavior-inline: auto;
 }
 
+// THE NO-PHOTO PLATE (snippets/card-placeholder.liquid; owner, 2026-09-26:
+// every card calm and intentional, never broken): a product with no
+// photograph yet (the advisory services, the digital guide, the products
+// whose pack photos are still coming) fills the square with the plate grey
+// and the glyph of what it is, at the icon system's 48 in a calm grey (a
+// two-tone glyph keeps its orange part). It was an empty white square with
+// the swatches floating on it. Paint only; a tap opens the product through
+// the link it sits in.
+.ox-card-product__placeholder {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  background: var(--ox-plate);
+  color: var(--ox-ink-4);
+  pointer-events: none;
+}
+
+// On a phone the plate spans the card border to border (ADP-20, section 1
+// above) under the card's 16 top padding, which a white photo never shows
+// but the grey no-photo plate did: a white band over a grey square that met
+// both side borders. The band takes the plate grey on such a card, so the
+// grey meets the top border as well; paint only, the card's box and every
+// row stay where they are.
+@media (max-width: 639px) {
+  .ox-card-product:has(> .ox-card-product__plate .ox-card-product__placeholder) {
+    background:
+      linear-gradient(var(--ox-plate), var(--ox-plate)) padding-box top / 100% var(--ox-4) no-repeat,
+      var(--ox-surface);
+  }
+}
+
 // The card rails (every `.ox-rail__track` that holds cards: the home
 // category rails and the search page's featured rail) keep one photo on a
 // touch screen, the rail's own swipe browses products there. Measured
@@ -242,6 +306,14 @@
     display: none;
   }
 
+  // THE CROSSFADE (owner, 2026-09-26: "hovering a product image should
+  // transition smoothly"): the second photo fades in over the first at
+  // --dur-slow (280), opacity only, so it runs on the compositor with no
+  // layout. The first photo stays whole under it and steps out only once the
+  // second is opaque (a zero-length change after the same 280), and steps
+  // back at once when the pointer leaves, before the second fades away: the
+  // plate never dips to its ground mid-fade, and a photo with a transparent
+  // ground never shows the other one through it.
   .ox-card-product__img--hover {
     display: block;
     position: absolute;
@@ -249,11 +321,34 @@
     inline-size: 100%;
     block-size: 100%;
     opacity: 0;
-    transition: opacity var(--dur-fast) var(--ease-out);
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+
+  .ox-card-product__media > .ox-card-product__img:first-child {
+    transition: opacity 0s linear;
   }
 
   .ox-card-product:hover .ox-card-product__img--hover {
     opacity: 1;
+  }
+
+  .ox-card-product:hover .ox-card-product__media:has(> .ox-card-product__img--hover) > .ox-card-product__img:first-child {
+    opacity: 0;
+    transition: opacity 0s linear var(--dur-slow);
+  }
+
+  // THE SWATCHES HOLD THE PHOTO: the pointer is on the card while it picks a
+  // flavour, so the second photo covered the very photo the swatch had just
+  // brought in. A pointer on the swatch row, and a card whose swatch has been
+  // changed (`is-picked`, assets/ox.js initCardSwatches), keep the first
+  // photo in view; the second one never fades in over them.
+  .ox-card-product:is(.is-picked, :has(.ox-card-product__variants:hover)) .ox-card-product__img--hover {
+    opacity: 0;
+  }
+
+  .ox-card-product:is(.is-picked, :has(.ox-card-product__variants:hover)):hover .ox-card-product__media:has(> .ox-card-product__img--hover) > .ox-card-product__img:first-child {
+    opacity: 1;
+    transition: opacity 0s linear;
   }
 
   .ox-card-product__dots {
@@ -264,9 +359,27 @@
 // CARD-2026-09-23 section 8: the second image's cross fade and the hover
 // border both go instant under reduced motion, never removed outright, the
 // second image is information, not decoration, so it still swaps.
+// A swatch's own photo (assets/ox.js initCardSwatches) arrives the same way
+// on every screen: a layer over the photo fades in at the same 280, then the
+// photo takes its picture and the layer goes. The plate's box never changes,
+// so nothing shifts.
+.ox-card-product__media > .ox-card-product__img--swap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+
+  &.is-in {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ox-card-product,
-  .ox-card-product__img--hover {
+  .ox-card-product__img--hover,
+  .ox-card-product__media > .ox-card-product__img,
+  .ox-card-product__media > .ox-card-product__img--swap {
     transition: none;
   }
 }
@@ -294,7 +407,13 @@
 }
 
 .ox-card-product__brand {
+  // Always rendered, empty without a brand, and never more than one line
+  // (owner, 2026-09-26: every card of a row one size).
+  block-size: 18px;
   min-block-size: 18px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   margin: 0;
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
@@ -306,6 +425,11 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  // Exactly two lines at every width (owner, 2026-09-26): a one-line title
+  // reserves the second, a longer one ends in an ellipsis. The floor below
+  // alone let a two-line title (2 x 1.4 x 17 = 47.6 at 1440) outgrow a one-
+  // line neighbour held at 46.
+  block-size: calc(var(--ox-lh-snug) * 2em);
   min-block-size: 40px;
   margin: 0;
   overflow: hidden;
@@ -325,30 +449,38 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: var(--ox-r-4, 16px);
+    // The card's own square corners (owner, 2026-09-26), so the focus ring
+    // drawn on this layer follows them.
+    border-radius: 0;
   }
 
-  &:focus-visible {
+  // `[href]` outranks the global `a[href]:focus-visible` ring (0,2,1), which
+  // otherwise drew a second, clipped ring around the title text.
+  &[href]:focus-visible {
     outline: none;
   }
 
   &:focus-visible::after {
     outline: var(--ox-focus-ring);
-    outline-offset: 2px;
+    // Inside the card box (r24 review, 2026-09-27): the card clips its
+    // overflow, so a ring drawn 2px outside showed only as a sliver.
+    outline-offset: -2px;
   }
 }
 
-// The spec line (CARD-2026-09-23 section 3.4): 13/600, --ox-ink-4 (4.93:1 on
-// --ox-card, clears AA so it may carry information). --ox-w-ui rather than
-// the quieter --ox-w-quiet this rule carried for the old merchant pitch line,
-// which read as a caption rather than a fact.
+// The spec line (CARD-2026-09-23 section 3.4): micro, --ox-ink-4 (4.93:1 on
+// --ox-card, clears AA so it may carry information). THE CARD TYPE SCALE
+// (owner, 2026-09-26, _b4-listing.scss section 12): the calm meta of the
+// leading Saudi grids (Noon 12/500 grey, Namshi 14/400 grey), so --ox-w-open
+// (500), was --ox-w-ui (600): at 600 beside a 15/600 title (14 in Arabic,
+// the floor) the two read as one weight and the title lost its step.
 .ox-card-product__chips {
   display: block;
   min-block-size: 18px;
   margin: 0;
   overflow: hidden;
   font-size: var(--ox-t-micro);
-  font-weight: var(--ox-w-ui);
+  font-weight: var(--ox-w-open);
   line-height: 18px;
   color: var(--ox-ink-4);
   white-space: nowrap;
@@ -372,9 +504,40 @@
 
 .ox-card-product__price {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--ox-2);
+  // The row gap is the box's own height, so a wrapped line starts below it
+  // and never shows a sliver.
+  gap: 30px var(--ox-2);
+  block-size: 30px;
   min-block-size: 30px;
+  min-inline-size: 0;
+  // One line, whatever the card carries (owner, 2026-09-26: every card of a
+  // row one size). The price always fits; a was-price that does not fit
+  // beside it (a four-figure sale on a 360 phone) wraps to a second line
+  // that this box never shows, so it leaves whole instead of being cut mid-
+  // number, and the saving badge on the photo still states the saving. It
+  // stays in the accessibility tree either way.
+  overflow: hidden;
+
+  > .ox-price--was {
+    font-size: var(--ox-t-micro);
+    white-space: nowrap;
+  }
+}
+
+// "من" ahead of the lowest price, on a card whose variants differ in price
+// and that does not buy through its swatches (sold out, a bundle, a
+// service), under a price sort or when its photo belongs to no variant
+// (snippets/product-card.liquid, `card_from`). A card that buys through its
+// swatches quotes its ringed variant's price, plain (review of 2026-09-27,
+// round 2).
+.ox-card-product__from {
+  flex: none;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-ui);
+  line-height: 18px;
+  color: var(--ox-fg-3);
 }
 
 // The stock line (CARD-2026-09-23 sections 0.2/3.6): text only, no icon, no
@@ -410,32 +573,17 @@
 // and unstyled. It is a mask on `.s-button-text::before` now, in _b4-listing,
 // off the same `--ox-cart-glyph` token the product page's button uses.
 
-.ox-card-product.is-out .ox-card-product__plate {
-  opacity: 0.72;
+// THE SOLD-OUT PHOTO (owner, 2026-09-26: "calm and intentional, not
+// broken"): muted a little, never greyed out, and on the photos only, so the
+// "نفدت الكمية" badge over them keeps its full strength.
+.ox-card-product.is-out .ox-card-product__media {
+  opacity: 0.85;
 }
 
-// Equal height in a mixed row (CARD-2026-09-23 section 5, DIRECTION 4.4): a
-// sold-out card drops the quantity row entirely rather than merely emptying
-// it, which would make it shorter than an in-stock neighbour on the same
-// row. RECOMPUTED (owner review, 2026-09-24): the variant chooser moved onto
-// the plate and the excerpt/consult rows are gone outright, both of which
-// shrank the live body itself, so the reservation shrinks with it, measured
-// live (`getBoundingClientRect`) on the catalogue's own listing: **204** at
-// 390 (title 44 + chips 18 + price 30 + action 88, three 8px gaps) against a
-// sold-out body's own natural 160 (title + chips + price + one 44px
-// control), a 44px difference; **210** at 1440 (title 46), against 162
-// natural, a 48px difference. The notify control keeps
-// `margin-block-start: auto` (`_b4-listing.scss`) to sit flush with the
-// bottom regardless.
-.ox-card-product.is-out .ox-card-product__body {
-  min-block-size: 204px;
-}
-
-@media (min-width: 1024px) {
-  .ox-card-product.is-out .ox-card-product__body {
-    min-block-size: 210px;
-  }
-}
+// The sold-out body's old reservation (204 at 390, 210 at 1440, for a card
+// that dropped its quantity row) is gone: every card's action box is one
+// fixed height now (_qtybar.scss section 5), so a sold-out card is its
+// neighbours' height by construction.
 
 // ---------------------------------------------------------------------------
 // 2. Page frame (design region 12)
@@ -622,7 +770,7 @@
   line-height: 28px;
   color: var(--ox-ink-on-dark);
   background: var(--ox-pill-dark, #14181f);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
 }
 
 .ox-gallery__wish {
@@ -844,9 +992,19 @@
   text-decoration: none;
 }
 
+// The product page's type scale (owner, 2026-09-26: "perfectly sized ...
+// familiar to saudi audience like top used website and apps in saudi
+// arabia"). Measured the same day on the leading Saudi stores' product
+// pages: the title 14 to 16 on a phone and 24 on a desktop at a regular
+// weight, the price 18 to 24 and 28, the option label 14 to 16, the chips
+// 14. OptimalX keeps its heavy title and its accent price a step above
+// those (the identity), without the 28 to 42 that ran a long name over
+// three lines at 390 and pushed the buy zone below the fold: the title 22
+// to 32, the subtitle 16 to 18, the price 30 to 36 (still the largest
+// figure at every width), the option label 15, the chips 14.
 .ox-pdp__h1 {
   margin: 0;
-  font-size: clamp(28px, 1.25rem + 1.6vw, 42px);
+  font-size: clamp(22px, 1rem + 1.2vw, 32px);
   font-weight: var(--ox-w-stmt);
   line-height: var(--ox-lh-head);
   color: var(--ox-fg);
@@ -854,7 +1012,7 @@
 
 .ox-pdp__subtitle {
   margin: 0;
-  font-size: 18px;
+  font-size: clamp(16px, 0.875rem + 0.3vw, 18px);
   font-weight: var(--ox-w-open);
   line-height: var(--ox-lh-caption);
   color: var(--ox-fg-2);
@@ -933,13 +1091,13 @@
 // "The accent is not the token"): the price, the add button, the active tab
 // indicator and the card buttons. The approved image sets the amount AND the
 // mark in the accent here, and only the mark on a card, which is why the two
-// sizes differ in colour. At 36/800 this is large text, so the 3:1 floor
-// applies and #F54915 on the page ground clears it.
+// sizes differ in colour. At 30 to 36/800 this is large text, so the 3:1
+// floor applies and #F54915 on the page ground clears it.
 .ox-price--hero {
   display: inline-flex;
   align-items: baseline;
   gap: 12px;
-  font-size: 36px;
+  font-size: clamp(30px, 1.25rem + 1.1vw, 36px);
   font-weight: var(--ox-w-figure);
   line-height: var(--ox-lh-tight);
   color: var(--ox-accent);
@@ -1818,6 +1976,262 @@ body.is-sticky-product-bar.product-single {
 }
 
 // ---------------------------------------------------------------------------
+// 9d. The option chips (the Shopify product page, `.ox-optchip`,
+// snippets/variant-swatches.liquid context 'pdp') (owner, 2026-09-26:
+// "variants attached to add to cart ... familiar to saudi audience by the
+// most used website and apps in saudi arabia, integrated with the identity")
+// ---------------------------------------------------------------------------
+// The pattern the leading Saudi stores share for a flavour, a size or an
+// amount: square chips of one height in an even grid, the chosen value
+// named beside the option, a sold-out value still on the grid but struck.
+// OptimalX's part is the selected mark: the identity's 34deg cut in the
+// accent. Equal columns keep the grid calm whatever the value lengths: the
+// snippet picks the tier from the group's widest value (an over-long
+// exception set apart on a row of its own) and the column count from the
+// tier and the number of values (its header, THE CHIP GRID), and hands
+// both over as `--ox-cols` (a phone-wide group) and `--ox-cols-wide` (a
+// group of 520 and up, a container query on the group itself, so the 705 wide column at 768 and the 578 one at 1440 are
+// measured, not the viewport). Every row takes the tallest chip's height,
+// every chip is a 44 tall tap target, and a long value wraps between words,
+// never inside one (the tiers leave every word its room).
+
+// THE SELECTED MARK, shared with the product card's swatches (one cut for
+// both, the cards chain includes it too): an accent triangle in the chip's
+// top-left corner whose long edge leans like "/" at 34deg from vertical.
+// A control's lean never mirrors (`ox-angled()`'s note), so the corner is
+// the same physical corner in both languages: the inline end in Arabic,
+// the inline start in English. Call it on a `::after`.
+@mixin ox-chip-cut($h: 18px) {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inline-size: ox-run($h);
+  block-size: $h;
+  background: var(--ox-accent);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  pointer-events: none;
+  [dir='ltr'] & {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+  }
+}
+
+// The square colour swatch inside a chip: the value's own colour arrives as
+// `--ox-swatch` (the one value-to-colour map, snippets/swatch-color.liquid,
+// read through variant-swatches' `vs_rows`); the hairline keeps white and
+// clear values visible. Square corners (owner, 2026-09-26: "avoid rounded
+// cards and buttons globally, it should be sharp").
+@mixin ox-chip-swatch($s: 18px) {
+  flex: none;
+  inline-size: $s;
+  block-size: $s;
+  border-radius: 0;
+  background: var(--ox-swatch, transparent);
+  box-shadow: inset 0 0 0 1px var(--ox-line-3);
+}
+
+// THE STRUCK MARK, shared with the product card's swatches (one mark for
+// both, _b4-listing.scss includes it too; review 2026-09-27: the card drew
+// a diagonal, the product page only a faded square): a 1.5px line corner to
+// corner across a faded square, leaning "/" like the cut and the buy-now in
+// both languages (a gradient's corner keyword is physical, so it never
+// mirrors). Call it on a `::before` of the positioned square.
+@mixin ox-chip-struck {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top left, transparent calc(50% - 0.75px), var(--ox-fg) calc(50% - 0.75px), var(--ox-fg) calc(50% + 0.75px), transparent calc(50% + 0.75px));
+}
+
+.ox-optgroup {
+  container-type: inline-size;
+}
+
+.ox-optgroup__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--ox-1);
+  margin: 0 0 var(--ox-2);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.ox-optgroup__name {
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
+}
+
+.ox-optgroup__current {
+  font-weight: var(--ox-w-read);
+  color: var(--ox-fg-2);
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: transparent;
+  text-underline-offset: 5px;
+
+  // The other option moved to the nearest variant that exists (assets/ox.js,
+  // a combination the product does not sell): its new value carries the
+  // accent underline for a moment, so the change never passes unseen. No
+  // box moves.
+  &.is-moved {
+    color: var(--ox-fg);
+    text-decoration-color: var(--ox-accent);
+  }
+}
+
+.ox-optchips {
+  display: grid;
+  grid-template-columns: repeat(var(--ox-cols, 2), minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: var(--ox-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@container (min-width: 520px) {
+  .ox-optchips {
+    grid-template-columns: repeat(var(--ox-cols-wide, 3), minmax(0, 1fr));
+  }
+}
+
+.ox-optchip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  min-inline-size: 0;
+  min-block-size: 44px;
+  padding: 6px var(--ox-3);
+  background: var(--ox-plate);
+  border: 1px solid transparent;
+  border-radius: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: var(--ox-w-read);
+  line-height: 18px;
+  color: var(--ox-fg);
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// The radio covers the whole chip, transparent: the tap lands on the real
+// control, and the keyboard reaches it in the group's own arrow order.
+.ox-optchip__input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+// Positioned for the struck mark; taps pass through to the radio.
+.ox-optchip__swatch {
+  @include ox-chip-swatch;
+  position: relative;
+  pointer-events: none;
+}
+
+// A flavour the map has no colour for: the card's neutral square with the
+// value's first letter (snippets/card-swatches.liquid), on the card ground
+// so it reads against the chip's plate; the letter at the card's floor.
+.ox-optchip__swatch--initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  --ox-swatch: var(--ox-surface);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
+  line-height: 1;
+  color: var(--ox-fg-2);
+}
+
+.ox-optchip__text {
+  min-inline-size: 0;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+// A flavour reads from the inline start (the square first, then the name)
+// so a long name has the chip's whole width and a second line lines up
+// under the first; short values stay centred.
+.ox-optchips--l .ox-optchip,
+.ox-optchips--xl .ox-optchip {
+  justify-content: flex-start;
+  text-align: start;
+}
+
+// A row of its own (the snippet's THE CHIP GRID, review 2026-09-27): a
+// value too long to share a row, set at the group's end, and the chip a
+// last row would hold alone, so no half-width chip ever stands by itself.
+// The layout of 520 and up counts its own columns, so its lone chip is
+// marked apart (`--fill-wide`).
+.ox-optchip--row,
+.ox-optchip--fill {
+  grid-column: 1 / -1;
+}
+
+@container (min-width: 520px) {
+  .ox-optchip--fill:not(.ox-optchip--fill-wide) {
+    grid-column: auto;
+  }
+
+  .ox-optchip--fill-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (hover: hover) {
+  .ox-optchip:hover {
+    border-color: var(--ox-line-3);
+  }
+}
+
+// Selected: the card ground inside a 2px accent edge (1px border plus a 1px
+// inset ring, so the box never moves) and the cut in the corner.
+.ox-optchip:has(.ox-optchip__input:checked) {
+  background: var(--ox-surface);
+  border-color: var(--ox-accent);
+  box-shadow: inset 0 0 0 1px var(--ox-accent);
+
+  &::after {
+    @include ox-chip-cut(18px);
+  }
+}
+
+.ox-optchip:has(.ox-optchip__input:focus-visible) {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+// Sold out (the variant this chip would pick is not available): visible,
+// still selectable (the WhatsApp ask takes over the add bar), struck: the
+// name struck through, and the square carries the card's own struck mark.
+.ox-optchip.is-off {
+  color: var(--ox-fg-3);
+
+  .ox-optchip__text {
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+
+  .ox-optchip__swatch {
+    opacity: 0.5;
+
+    &::before {
+      @include ox-chip-struck;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 10. The three trust items (design region 26)
 // ---------------------------------------------------------------------------
 // Stacked rows with a hairline between them on a phone, one 45 tall row split
@@ -2032,11 +2446,16 @@ body.is-sticky-product-bar.product-single {
   gap: var(--ox-4);
 }
 
+// The section-heading step, 22 rising to 26 (type review, 2026-09-26): on
+// the product page this is the brand statement, an h2 among the page's
+// other section headings, and its own 24 to 30 ramp drew it over the
+// product's own title (22 on a phone) and every heading on the page. The
+// FAQ band and the photo covers set their own title steps (_b5-pages.scss).
 .ox-bband__headline {
   display: flex;
   flex-direction: column;
   margin: 0;
-  font-size: clamp(24px, 1.1rem + 1.2vw, 30px);
+  font-size: var(--ox-t-h2);
   font-weight: var(--ox-w-stmt);
   line-height: var(--ox-lh-head);
   color: var(--ox-ink-on-dark);
@@ -2083,7 +2502,7 @@ body.is-sticky-product-bar.product-single {
   block-size: 34px;
   color: var(--ox-ink-on-dark);
   border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
 }
 
 .ox-bband__badge-text {
@@ -2394,8 +2813,8 @@ body.is-sticky-product-bar.product-single {
   margin-block-start: var(--ox-4);
 }
 
-// Method panel: one solid step glyph on its 44 plate at the step's inline
-// start (icon system v3, icon-system_2.md B9).
+// Method panel: one solid step glyph in its 44 tall tile box (no plate since
+// 2026-09-26) at the step's inline start (icon system v3, icon-system_2.md B9).
 .ox-howto__list {
   margin: 0;
   margin-block-start: 20px;
@@ -2406,8 +2825,8 @@ body.is-sticky-product-bar.product-single {
 .ox-howto__step {
   display: flex;
   // Icon system v3 (icon-system_2.md B9/A6/A8): the step glyph stands at 24
-  // in the 44 graphite plate, 12 beside it (the 20 gap belonged to the bare
-  // 44 glyph the steps drew before).
+  // in the 44 tall tile box (no plate since 2026-09-26), 12 beside it (the 20
+  // gap belonged to the bare 44 glyph the steps drew before).
   gap: var(--ox-3);
   align-items: center;
   min-block-size: 96px;
@@ -2575,7 +2994,7 @@ body.is-sticky-product-bar.product-single {
   block-size: 32px;
   color: var(--ox-on-accent);
   background: var(--ox-accent);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
 }
 
 .ox-nutrition__note {
@@ -2631,17 +3050,19 @@ body.is-sticky-product-bar.product-single {
   }
 }
 
+// The body step, like every other answer in the same accordion (type
+// review, 2026-09-26: a bare 15 sat beside the panels' 16).
 .ox-prepurchase__list {
   margin: 0;
   padding-inline-start: var(--ox-6);
-  font-size: 15px;
+  font-size: var(--ox-t-body);
   line-height: var(--ox-lh-body);
   color: var(--ox-fg-2);
 }
 
 .ox-prepurchase__medical {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--ox-t-body);
   line-height: var(--ox-lh-body);
   color: var(--ox-fg);
 }
@@ -2702,8 +3123,9 @@ body.is-sticky-product-bar.product-single {
 
 .ox-related__title {
   margin: 0;
-  font-size: 22px;
+  font-size: var(--ox-t-h2);
   font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-head);
   color: var(--ox-fg);
 }
 

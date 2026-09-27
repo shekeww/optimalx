@@ -175,7 +175,7 @@
 // The outline pill that answers it. One shape each, so the pair reads as a
 // primary and a secondary rather than as two buttons.
 .ox-cta-pill {
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
 }
 
 @media (min-width: 640px) {
@@ -778,10 +778,12 @@
 .ox-hero__headline {
   margin: 0;
   color: var(--ox-ink-on-dark);
-  // 22 at 390 (the reference's phone pane) rising to 56 at 1440, linear
-  // between. The ladder's `.ox-display` starts at 34, which is a shout on a
-  // 390 column carrying two lines of Arabic.
-  font-size: clamp(22px, calc(9.37px + 3.238vw), 56px);
+  // 26 at 390 rising to 56 at 1440, linear between. The ladder's
+  // `.ox-display` starts at 34, which is a shout on a 390 column carrying two
+  // lines of Arabic. The phone start is the page title's own step, 26 (type
+  // review, 2026-09-26): at 22 the page's one h1 drew the same size as every
+  // 22px section heading under it and the first screen had no hierarchy.
+  font-size: clamp(26px, calc(14.86px + 2.857vw), 56px);
   line-height: 1.25;
 }
 
@@ -1154,6 +1156,8 @@ button.ox-trust__btn:hover .ox-trust__title {
   max-inline-size: 62ch;
   color: var(--ox-fg-2);
   font-size: var(--ox-t-body);
+  // Reading copy (type review, 2026-09-26): it inherited the reset's 400.
+  font-weight: var(--ox-w-read);
   line-height: 1.5;
 }
 
@@ -1291,6 +1295,9 @@ body {
   z-index: 1;
   font-size: var(--ox-t-body);
   font-weight: var(--ox-w-title);
+  // Its own leading (type review, 2026-09-26): it inherited body's 26px, so
+  // a two-line name read as two loose lines rather than one name.
+  line-height: var(--ox-lh-snug);
   color: var(--ox-fg);
 }
 
@@ -1315,7 +1322,10 @@ body {
   overflow: hidden;
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-read);
-  line-height: 1.35;
+  // 1.5, the caption step (type review, 2026-09-26): the clamp needs
+  // overflow: hidden, and at 1.35 the box cut the dots under a yeh on the
+  // last clamped line ("نباتي" read "نباتى"), the defect .ox-goal__label had.
+  line-height: var(--ox-lh-caption);
   color: var(--ox-fg-2);
 }
 
@@ -1526,6 +1536,107 @@ body {
 
   .ox-tile__line {
     color: var(--ox-ink-2-on-dark);
+  }
+}
+
+// THE PHONE ART TILE (type review, 2026-09-26). Below 640 a 2-up tile is
+// about 173 wide, and the overlay column above (62% of it, bottom-aligned)
+// carried a 36 icon, a two-line name, a two-line subline and the arrow on a
+// 260 photograph whose packshot fills its upper 60%: names and sublines were
+// drawn across the tubs in both languages. On a phone the photograph takes
+// a square frame from its top edge (every packshot sits inside it whole) and
+// the words move under it onto the card's own plate, the photo-then-name
+// order of every category grid a shopper knows: the icon and the arrow share
+// the plate's first row, the name keeps two lines reserved so the tiles of a
+// row share one baseline (it is never clamped: a clamp needs overflow:
+// hidden, which cuts Arabic dots), and the subline shows one line. From 640
+// the tile is wide enough for the owner's overlay, which does not change.
+@media (max-width: 639.98px) {
+  // /collections wraps each tile in a list item: stretch it to the row too.
+  .ox-cats__grid > * > .ox-tile--art {
+    block-size: 100%;
+  }
+
+  // The plate and its hairline, the same on every tile (the black-tone tile's
+  // graphite edge belonged to its dark ground, which the plate replaces).
+  .ox-tile--art::before {
+    background: var(--ox-surface);
+    border-color: var(--ox-line-3);
+  }
+
+  .ox-tile__art {
+    aspect-ratio: 1 / 1;
+    min-block-size: 0;
+    object-position: 50% 0;
+  }
+
+  [dir='rtl'] .ox-tile__body,
+  [dir='ltr'] .ox-tile__body {
+    position: relative;
+    inset: auto;
+    inset-block: auto;
+    inset-inline: auto;
+    flex: 1;
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'icon foot'
+      'name name'
+      'line line';
+    align-content: start;
+    align-items: center;
+    justify-items: start;
+    gap: var(--ox-1) var(--ox-2);
+    inline-size: auto;
+    padding: var(--ox-3);
+    text-align: start;
+    color: var(--ox-fg);
+
+    &::before {
+      content: none;
+    }
+  }
+
+  .ox-tile--art .ox-tile__icon {
+    grid-area: icon;
+  }
+
+  .ox-tile--art .ox-tile__foot {
+    grid-area: foot;
+    inline-size: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  // A one-line name sits at the foot of its two reserved lines, on its
+  // subline, so the name and its description read as one unit.
+  .ox-tile--art .ox-tile__name {
+    grid-area: name;
+    display: flex;
+    align-items: flex-end;
+    min-block-size: calc(2em * var(--ox-lh-snug));
+  }
+
+  .ox-tile--art .ox-tile__line {
+    grid-area: line;
+    -webkit-line-clamp: 1;
+  }
+
+  // The dark photograph's light ink does not follow the words onto the
+  // plate, and the arrow takes the plate's accent like every other tile.
+  .ox-tile--art[data-category='vitamins-minerals'] {
+    --ox-tile-arrow: var(--ox-accent-dark);
+
+    .ox-tile__body,
+    .ox-tile__icon,
+    .ox-tile__name {
+      color: var(--ox-fg);
+    }
+
+    .ox-tile__line {
+      color: var(--ox-fg-2);
+    }
   }
 }
 
@@ -1829,6 +1940,12 @@ body {
   margin-block-end: var(--ox-1);
 }
 
+// Line height 1.6, not 1.3 (type audit, 2026-09-26): the clamp needs
+// overflow: hidden, and at 1.3 the box cut the two dots under a final yeh at
+// Statement weight, so "التعافي" read as "التعافى" on every width (1.4
+// still cut them; measured at 3x). 1.5 held them at the phone's 15 but not
+// at the 16 and 19 the label takes from 1024 (ink measured past the line
+// box at 3x, type review 2026-09-26); 1.6, the lead step, holds every size.
 .ox-goal__label {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1836,7 +1953,7 @@ body {
   overflow: hidden;
   font-size: 15px;
   font-weight: var(--ox-w-stmt);
-  line-height: 1.3;
+  line-height: var(--ox-lh-lead);
   color: var(--ox-paper);
 }
 
@@ -1851,10 +1968,12 @@ body {
   // Before, the body was bottom-anchored and a two-line description (the
   // general-health card) lifted its icon and name 16.1 px above the other
   // five at 390 and at 1440, in both languages.
-  min-block-size: calc(2 * 1.4em);
+  // 1.5, the caption step, as on .ox-goal__label (type review, 2026-09-26):
+  // at 1.4 the clamp cut the dots under a yeh ("التمرين", "فيتامين").
+  min-block-size: calc(2em * var(--ox-lh-caption));
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-quiet);
-  line-height: 1.4;
+  line-height: var(--ox-lh-caption);
   color: var(--ox-ink-2-on-dark);
 }
 
@@ -1970,27 +2089,21 @@ body {
 //    owner review 2026-09-23 late night, item 1: onto the shared rail
 //    primitive)
 // ---------------------------------------------------------------------------
-// The scroller's own display/gap/scroll-snap/no-scrollbar rules now come from
-// `.ox-rail__track` (`_rail.scss`); this class carries only the card width,
-// same figures `ProductsRailSkeleton`'s `.ox-skel-rail` already uses
-// elsewhere on this page, so a rail that DOES get a skeleton first (none of
-// this block's own instances do; see `CategoryRailSkeleton`) never disagrees
-// with one that renders straight in.
+// The scroller's own display/gap/scroll-snap/no-scrollbar rules come from
+// `.ox-rail__track` (`_rail.scss`), and since r27 (ADP-11) so does the card
+// width: the product rail grammar at the end of `_rail.scss` sizes every
+// card of `.ox-cat-rail__scroller` to the grid card of its context (171 at
+// 390, 229 at 768, 306 at 1296), where this class used to fix 172, then
+// 300, whatever the grid beside it drew.
 .ox-cat-rail__item {
-  flex: 0 0 auto;
-  inline-size: 172px;
+  min-inline-size: 0;
   scroll-snap-align: start;
 }
 
-@media (min-width: 1024px) {
-  .ox-cat-rail__item {
-    inline-size: 300px;
-  }
-}
-
-// The prev/next pair rides `SectionHeader`'s own `actions` slot (`display:
-// none` below 1024, `flex` from there), same construction as `.ox-brands__nav`
-// (§7 below).
+// The prev/next pair rides `SectionHeader`'s own `actions` slot, or the
+// rail's own row under the featured carousel, same construction as
+// `.ox-brands__nav` (§7 below). A product rail shows it at every width (the
+// head pair rule at the end of `_rail.scss`, H1 review 2026-09-27).
 .ox-cat-rail__nav {
   display: flex;
   align-items: center;
@@ -2024,14 +2137,133 @@ body {
 }
 
 // ---------------------------------------------------------------------------
+// 6c. One section-head pattern (r26 adoption plan ADP-10, 2026-09-27)
+// ---------------------------------------------------------------------------
+// Every home section head is the h2 role (--ox-t-h2: 22 on a phone, 26 on a
+// desktop; the category covers' own heads drop to it in
+// sections/ox-category-rail.liquid's stylesheet) and its "view all" is one
+// link: the accent's text step at 16/700 (--ox-accent-dark, 4.59:1 on
+// paper, the step small accent text takes; the full accent on a dark band),
+// led by the brand's slash, a 2px bar on the 34 degree angle that leans "/"
+// in both languages like every other angled mark, then the label and the
+// arrow, on a 44px tall hit. From 1024 a rail's square arrow pair sits in
+// the same head at the end (`.ox-sh__actions`, `_primitives.scss`), the
+// link stepped inward past it.
+.ox-sh .ox-sh__link {
+  gap: var(--ox-2);
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-accent-dark);
+
+  // The slash is a 2px bar, X-IDENTITY 2.3's bar exemption (its run is
+  // its own travel, not a cut into a small box), and it keeps one lean in
+  // English too (owner, 2026-09-25: the angled marks lean like "/" in both
+  // languages), hence the two pragmas.
+  &::before {
+    block-size: 14px; // ox-allow: small-angle
+    content: '';
+    flex: none;
+    inline-size: 2px;
+    background: var(--ox-accent);
+    transform: skewX(calc(-1 * var(--ox-angle))); // ox-allow: unmirrored
+  }
+
+  &:hover {
+    color: var(--ox-accent-deep);
+  }
+}
+
+.ox-band-dark .ox-sh .ox-sh__link {
+  color: var(--ox-accent);
+
+  &:hover {
+    color: var(--ox-accent-light);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6d. Two arts per cover (r26 adoption plan ADP-12, 2026-09-27)
+// ---------------------------------------------------------------------------
+// A cover, poster or campaign band given a phone image (the `mobile_image`
+// settings of sections/ox-poster.liquid, ox-posters.liquid,
+// ox-offers-posters.liquid and ox-category-rail.liquid) wraps its img in a
+// <picture class="ox-art"> whose source swaps the file under 640. The
+// wrapper draws no box of its own, so the img keeps sizing against its card,
+// band or cover exactly as it does bare, and the text stays live on top.
+.ox-art {
+  display: contents;
+}
+
+// ---------------------------------------------------------------------------
+// 6e. Bestsellers and newest as rails (r26 adoption plan ADP-06; owner
+//     decision OD-2 (b), 2026-09-27)
+// ---------------------------------------------------------------------------
+// sections/ox-products.liquid with `layout: rail` (templates/index.json sets
+// it on both home instances) draws its cards on the category rails' track
+// (.ox-cat-rail__scroller: the product rail grammar in `_rail.scss`, grid
+// card sizes, two whole and a peek on a phone, four whole from 1024) and
+// keeps the section head: the title, the bestsellers' subline, "view all"
+// and the rail's arrow pair, which a product rail carries at every width.
+//
+// On a phone the head is a centred stack, and the pair and the link would
+// each take a row of their own under the subline (161px of head). They
+// share one row instead, the link at the reading start and the pair at the
+// end, the way the category rail's own row sets its title and pair, so the
+// head is 109px and still centres its title and subline. Up to 1023 too:
+// from 640 the section head pins the link and the pair to its end, where
+// the bestsellers' English subline (about 370px, centred) ran under them
+// at 768. From 1024 the head has the room and keeps its desktop layout.
+// The markup already puts the pair after the link (sections/ox-products.liquid
+// passes `actions_last` to snippets/section-header.liquid, r32 review
+// 2026-09-27), so the row needs no reordering and Tab reads the link, the
+// pair, then the cards, as the eye does.
+@media (max-width: 1023.98px) {
+  .ox-products--rail .ox-sh:has(> .ox-sh__actions) {
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-between;
+
+    > .ox-sh__eyebrow,
+    > .ox-sh__title,
+    > .ox-sh__subline {
+      flex: 0 0 100%;
+    }
+
+    // The subline's 62ch measure would leave the link room beside it (at
+    // 768) and send the pair alone to a third row; it takes the full row.
+    > .ox-sh__subline {
+      max-inline-size: none;
+    }
+
+    > .ox-sh__actions,
+    > .ox-sh__link {
+      position: static;
+      transform: none;
+    }
+  }
+}
+
+// A rail that fits (four cards or fewer from 1024) disables both arrows
+// (assets/ox.js): the pair then leaves the head instead of showing two
+// grey chips, as the featured carousel's pair does.
+.ox-products--rail .ox-cat-rail__nav:has(> :first-child:disabled):has(> :last-child:disabled) {
+  display: none;
+}
+
+// ---------------------------------------------------------------------------
 // 7. OxBrands: the shop-by-brand CAROUSEL (DIRECTION 6.2 row 6; owner brief
 //    2026-09-23 late, item 1; hierarchy and eyebrow, owner brief 2026-09-24,
 //    item 1)
 // ---------------------------------------------------------------------------
 // The static strip is now a scroll-snap carousel on the shared rail primitive
-// (`_rail.scss`): 2.4 tiles visible at 390 so the next one peeks, 4 from 768,
-// 6 from 1280, gap `--ox-4`, no native scrollbar, the accent chevron cue at
-// the reading end and the progress strap under the row.
+// (`_rail.scss`): 2.4 tiles visible at 390 so the next one peeks, 4.4 from
+// 768 (four whole and a peek), 4 whole from 1024 with the head arrow pair, 6
+// from 1280, gap `--ox-4`, no native scrollbar. Below 1024 the row bleeds
+// to the inline-end screen edge like every other rail track (r26 plan 4.1),
+// so the peek runs off the screen instead of stopping at the gutter. The
+// chevron cue and the progress strap no longer paint (`_rail.scss`): at 768
+// four whole tiles and nothing else gave no sign that 17 more follow (H1
+// review, 2026-09-27), hence the 4.4 tier.
 //
 // NO EYEBROW (2026-09-24, item 1(a)): `OxBrands.tsx` no longer passes one, so
 // the section header is title + view-all only, the same shape `OxCategories`'
@@ -2045,7 +2277,8 @@ body {
 // (container 960) is a 146.7px tile, and the corner cut's 1440 tier (lean 64,
 // run 43.2) is 29.5% of that, over X-IDENTITY §2.3's 24% budget. At 1280 the
 // container is 1216, the tile is 189.3 and the same run is 22.8%, inside it.
-// The brief's three probes are met exactly: 2.4 at 390, 4 at 768, 6 at 1440.
+// The brief's three probes are met: 2.4 at 390, 4 whole at 768 (and now a
+// peek of the fifth), 6 at 1440.
 //
 // The tile itself (`.ox-brand-tile`, plate, corner cut, name mark, count) is
 // declared ONCE, in `_b4-listing.scss` section 11, because the same tile draws
@@ -2092,6 +2325,27 @@ body {
   }
 }
 
+// 768 to 1023: four whole tiles and 0.4 of the fifth, the phone's 2.4 tier
+// one step up: (720 - 3.4 x 16) / 4.4 = 151.3 at 768, whose 32.4 run (the
+// 48 lean from 768) is 21.4% of the tile, inside the 24% budget. From 1024
+// the four whole tiles above come back with the head arrow pair.
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .ox-brands__item {
+    inline-size: calc((100% - 3.4 * var(--ox-4)) / 4.4);
+  }
+}
+
+// The bleed: the row's box runs to the inline-end screen edge below 1024
+// and its own padding gives the gutter back, so the tiles keep their width
+// (their 100% is the content box, the container) and the last one still
+// ends on the gutter line at the end of the row.
+@media (max-width: 1023.98px) {
+  .ox-brands .ox-brands__row {
+    margin-inline-end: calc(-1 * var(--ox-gutter));
+    padding-inline-end: var(--ox-gutter);
+  }
+}
+
 @media (min-width: 1280px) {
   .ox-brands__item {
     // 1440: (1296 - 5 x 16) / 6 = 202.7
@@ -2101,7 +2355,8 @@ body {
 
 // The prev/next pair rides `SectionHeader`'s own `actions` slot, which is
 // `display: none` below 1024 and `flex` from there up, so the arrows exist at
-// 1024 and up exactly as the brief asks with no media query of their own.
+// 1024 and up exactly as the brief asks with no media query of their own;
+// below 1024 the 2.4 and 4.4 tiers' peek is the cue.
 .ox-brands__nav {
   display: flex;
   align-items: center;
@@ -2386,20 +2641,20 @@ body {
   color: var(--ox-fg);
 }
 
-// The one accent note on the plate besides the filled button: a 24px glyph
-// per fact. Both sit at 4.9:1 on this ground as graphical objects, well over
-// WCAG 1.4.11's 3:1.
+// A 24px glyph per fact, in the band's own text colour with its accent part
+// orange (the icon tile without a plate, owner 2026-09-26, _primitives.scss):
+// the ink on dark measures 17.35:1 on this ground, the orange part 5.30:1.
 .ox-offer__icon {
   flex: none;
-  color: var(--ox-accent);
+  color: var(--ox-fg);
   // Optical: the glyph's box is 24 and the line it labels is 20/1.35, so a
   // 2px drop puts the two on the same visual centre.
   margin-block-start: 2px;
 }
-// The bold icons (owner, 2026-09-25): the facts' glyphs stand in the accent
-// icon tile (`.ox-icon-tile--accent`, _primitives.scss), 24 in a 44 plate,
-// the reference's white glyph on the accent disc; a 44 plate beside one or
-// two 27px lines reads centred, so it drops the 2px optical nudge above.
+// The bold icons (owner, 2026-09-25, plates retired 2026-09-26): the facts'
+// glyphs stand in the icon tile (_primitives.scss), 24 in a 44 box with no
+// fill; a 44 box beside one or two 27px lines reads centred, so it drops the
+// 2px optical nudge above.
 .ox-offer__icon.ox-icon-tile {
   align-self: center;
   margin-block-start: 0;
@@ -2675,9 +2930,12 @@ body {
   background: var(--ox-accent);
 }
 
+// The door's glyph: the icon tile without a plate (owner, 2026-09-26), the
+// card's own text colour with the orange accent part (14.74:1 and 4.51:1 on
+// graphite-3).
 .ox-channel-door__icon {
   flex: none;
-  color: var(--ox-accent);
+  color: var(--ox-fg);
   margin-block-end: var(--ox-1);
 }
 
@@ -3238,7 +3496,8 @@ body {
 .ox-wa {
   position: fixed;
   z-index: var(--ox-z-sticky);
-  inset-block-end: calc(var(--ox-h-tabbar) + var(--ox-3));
+  // 12 above the tab bar: its 56, the home indicator and its 1px top rule.
+  inset-block-end: calc(var(--ox-h-tabbar) + 1px + var(--ox-3));
   // Clear of a sideways phone's notch corner too (S12 chrome-ios): the
   // inline start is the physical right in Arabic, the left in English.
   inset-inline-start: max(var(--ox-4), env(safe-area-inset-right, 0px));
@@ -3247,7 +3506,11 @@ body {
   justify-content: center;
   inline-size: 52px;
   block-size: 52px;
-  border-radius: var(--ox-r-pill);
+  // A true circle, not the pill token: the owner's sharp ruling of
+  // 2026-09-26 ("avoid rounded cards and buttons globally") squares every
+  // card and button and keeps the official WhatsApp circle round, so this
+  // one shape is pinned here and a radius token set to 0 cannot square it.
+  border-radius: 50%;
   background: #1faf54;
   color: #ffffff;
   transition: transform var(--dur-base) var(--ease-out);
@@ -3270,6 +3533,22 @@ body {
   --ox-icon-mono: currentColor;
 }
 
+// Under 1024 the float rides 12 above whichever bar holds the bottom edge
+// (round 26): the tab bar (above), a page's task bar while it stands in for
+// the tab bar (`body.ox-sticky-bar`: 64, its 1px rule and the home
+// indicator), or the screen's own edge when the merchant switches the tab
+// bar off. Scoped to phones and tablets: the class also toggles on a desktop
+// product page, where the buy bar never shows.
+@media (max-width: 1023px) {
+  body.ox-sticky-bar .ox-wa {
+    inset-block-end: calc(var(--ox-h-sticky) + 1px + env(safe-area-inset-bottom, 0px) + var(--ox-3));
+  }
+
+  body:not(.ox-has-tabbar) .ox-wa {
+    inset-block-end: calc(env(safe-area-inset-bottom, 0px) + var(--ox-3));
+  }
+}
+
 @media (min-width: 1024px) {
   // No tab bar from here up, so the button clears the viewport edge instead.
   .ox-wa {
@@ -3277,6 +3556,12 @@ body {
     inset-inline-start: var(--ox-6);
     inline-size: 56px;
     block-size: 56px;
+  }
+  // English too: the [dir='ltr'] notch rule above outranks the plain class,
+  // so English kept the phone's 16 from the edge where Arabic sits 24
+  // (measured 2026-09-26 at 1440: 16 left in English, 24 right in Arabic).
+  [dir='ltr'] .ox-wa {
+    inset-inline-start: max(var(--ox-6), env(safe-area-inset-left, 0px));
   }
 }
 
@@ -3763,9 +4048,19 @@ body:has(.ox-wa) .ox-footer__strip {
 //
 // visible | probe | container | formula                          | card
 // 1.15    | 390   | 358       | (358 - 0.15 x 16) / 1.15          | 309.2px
-// 2       | 768   | 720       | (720 - 1 x 16) / 2                | 352.0px
+// 2.15    | 768   | 720       | (720 - 1.15 x 16) / 2.15          | 326.3px
 // 3       | 1024  | 960       | (960 - 2 x 16) / 3                | 309.3px
 // 4       | 1440  | 1296      | (1296 - 3 x 16) / 4               | 312.0px
+//
+// 2.15, NOT 2 (H1 review, 2026-09-27): two whole cards at 768 left 8px of
+// the third on screen once the chevron cue stopped painting (`_rail.scss`),
+// so on a tablet nothing said that three more posters (the advisory and
+// the branch visit among them) follow. Two whole cards and 0.15 of the
+// third, the phone tier's own peek, is about 59px of the third card at 768
+// (r26 plan 4.6: "2 plus a peek"). From 1024 the track stops at the
+// container like every other rail (the head arrow pair moves it), where it
+// used to run on into the page margin and show a slice of a fifth poster
+// at 1440 (48px) and most of one at 1920.
 //
 // These breakpoints (768/1024/1280) are the carousel's own and deliberately
 // separate from the corner-cut/strap tiers below (640/1280, `GoalCard`'s own
@@ -3789,7 +4084,16 @@ body:has(.ox-wa) .ox-footer__strip {
 @media (min-width: 768px) {
   .ox-posters__slide,
   .ox-offers-rail__slide {
-    flex-basis: calc((100% - var(--ox-4)) / 2);
+    flex-basis: calc((100% - 1.15 * var(--ox-4)) / 2.15);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-posters__rail > .ox-posters__track,
+  .ox-offers-rail > .ox-offers-rail__track {
+    margin-inline: max(var(--ox-gutter), (100% - var(--ox-container)) / 2);
+    padding-inline: 0;
+    scroll-padding-inline: 0;
   }
 }
 
@@ -3821,7 +4125,8 @@ body:has(.ox-wa) .ox-footer__strip {
 }
 
 // The prev/next pair, `SectionHeader`'s own `actions` slot (display: none
-// below 1024, flex from there), same construction as `.ox-brands__nav`.
+// below 1024, flex from there), same construction as `.ox-brands__nav`;
+// below 1024 the 1.15 and 2.15 tiers' peek is the cue.
 .ox-posters__nav,
 .ox-offers-rail__nav {
   display: flex;
@@ -3983,6 +4288,10 @@ body:has(.ox-wa) .ox-footer__strip {
 .ox-pcard__line {
   margin: 0;
   font-size: 14px;
+  // Reversed reading copy on the photograph takes the dark band's Read step,
+  // 600 (.ox-band-dark re-points --ox-w-read there; this card is not in a
+  // band). It inherited the reset's 400 (type review, 2026-09-26).
+  font-weight: 600;
   line-height: 1.55;
   color: rgb(255 255 255 / 0.78);
 }
@@ -4181,6 +4490,11 @@ body:has(.ox-wa) .ox-footer__strip {
 
 .ox-cta-band__line {
   color: var(--ox-fg-3);
+  // Reading copy; the band re-points the token at 600 (type review,
+  // 2026-09-26: it inherited the reset's 15/400). At 16 it takes two lines
+  // on a phone, so the last line is never a single word.
+  font-weight: var(--ox-w-read);
+  text-wrap: pretty;
 }
 
 .ox-cta-band__cta {

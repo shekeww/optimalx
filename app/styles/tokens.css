@@ -103,14 +103,37 @@
      Small and micro are the two floor steps, so they run 390 to 1024, not
      to 1440: the desktop floor (micro 14, small 15) holds from the first
      desktop width, the common 1280 and 1366 laptops included, where a ramp
-     to 1440 left micro at 13.85 (review, 2026-09-26). */
+     to 1440 left micro at 13.85 (review, 2026-09-26).
+
+     THE SAUDI RETUNE (owner, 2026-09-26: "perfectly sized ... familiar to
+     saudi audience like top used website and apps"). Measured live on
+     Amazon.sa, Jarir, Nahdi, Namshi and a Salla store at 390 and 1440
+     (r24/saudi-type-reference.md): page titles 20 to 24 on a phone, section
+     headings 18 to 20 on a phone and 20 to 28 on a desktop, body 14 to 16.
+     Our section heading was 24 rising to 32, four pixels over every one of
+     them and, at 32, larger than our own page title (30 from 1024, the
+     approved design), so a home section outranked a listing's name. Now:
+       h1    26 rising to 30 by 1024, where the approved 30 takes over, so a
+             tablet no longer draws a 35px title that drops to 30 at 1024;
+       h2    22 rising to 26: one clear step under h1 at every width, still a
+             bold step above the marketplaces (the home hero's headline runs
+             its own ramp in _b2-home.scss and starts at h1's 26 too, so the
+             first screen is never flat against its 22px sections);
+       lead  17 rising to 18, the sentence under a 30px title;
+       body  16 at every width, the size .ox-body already drew on desktop,
+             so a review quote, an answer and a paragraph stop disagreeing
+             (16 against 17) on the same screen.
+     h3, title, small, micro and display did not move, and nothing moved
+     under a floor. Body is also the size and weight of the document itself
+     (_primitives.scss), so copy with no role of its own lands on this step
+     at the 500 floor instead of the engine reset's 15/400. */
   --ox-t-display: clamp(34px, 25.83px + 2.095vw, 56px);
-  --ox-t-h1: clamp(28px, 23.54px + 1.143vw, 40px);
-  --ox-t-h2: clamp(24px, 21.03px + 0.762vw, 32px);
+  --ox-t-h1: clamp(26px, 23.54px + 0.631vw, 30px);
+  --ox-t-h2: clamp(22px, 20.51px + 0.381vw, 26px);
   --ox-t-h3: clamp(18px, 17.26px + 0.190vw, 20px);
   --ox-t-title: clamp(17px, 16.63px + 0.095vw, 18px);
-  --ox-t-lead: clamp(17px, 15.89px + 0.286vw, 20px);
-  --ox-t-body: clamp(16px, 15.63px + 0.095vw, 17px);
+  --ox-t-lead: clamp(17px, 16.63px + 0.095vw, 18px);
+  --ox-t-body: 16px;
   --ox-t-small: clamp(14px, 13.39px + 0.158vw, 15px);
   --ox-t-micro: clamp(13px, 12.39px + 0.158vw, 14px);
 
@@ -354,12 +377,19 @@
   /* ---------- Ours: focus, radii ----------
      There is no shadow token. The approved design does not carry one drop
      shadow: surfaces are separated by value and a hairline. The focus ring is
-     the only ring on the page. */
+     the only ring on the page.
+     Sharp corners (owner, 2026-09-26: "avoid rounded cards and buttons
+     globally, it should be sharp to match the identity of optimal x"): every
+     --ox-r-N step is 0, so each card, button, field, badge, panel, tile and
+     sheet built on them is square, and a comment elsewhere that describes an
+     N px corner from these tokens is history. --ox-r-pill stays round for the
+     round exceptions only: the official WhatsApp circle, dot indicators,
+     radio indicators and loading spinners. The 34 degree cut is untouched. */
   --ox-focus-ring: 2px solid var(--ox-focus);
-  --ox-r-1: 6px;
-  --ox-r-2: 8px;
-  --ox-r-3: 12px;
-  --ox-r-4: 16px;
+  --ox-r-1: 0px;
+  --ox-r-2: 0px;
+  --ox-r-3: 0px;
+  --ox-r-4: 0px;
   --ox-r-pill: 9999px;
 
   /* ---------- Ours: spacing, containers, chrome heights, z-index ---------- */
@@ -382,6 +412,26 @@
   --ox-container: 1296px;
   --ox-container-narrow: 880px;
   --ox-container-text: 720px;
+  /* THE SHARED MEASURED SPEC (r26 adoption plan section 4, ADP-33): one
+     value per width range for the section rhythm, the space under a section
+     head, the gap between the cards of a rail and the slim listing cover
+     band. The phone values are here and the 1024 step is in the media block
+     below. New code reads these instead of a number of its own; the rules
+     that predate them keep theirs until their owners move them, and
+     scripts/check-layout.mjs keeps section stylesheets on them.
+     --ox-sec-y: a section's block padding, 48 on a phone, 64 from 1024.
+     --ox-sec-head: from a section head to its content, 16, then 24.
+     --ox-rail-gap: between two cards of a product rail, 12 on phones and
+       tablets (two grid cards and 8px of the third at 360 to 430, 20 with
+       the gap; three and 20px of the fourth at 768; the rail head carries
+       its arrow pair at every width, _rail.scss), 24 from 1024 (four whole
+       cards of 306 at 1296).
+     --ox-cover-band-ratio: the slim angled listing band (OD-10 option ii),
+       390 x 128 on a phone, 1296 x 260 from 1024. */
+  --ox-sec-y: var(--ox-12);
+  --ox-sec-head: var(--ox-4);
+  --ox-rail-gap: var(--ox-3);
+  --ox-cover-band-ratio: 390 / 128;
   --ox-h-util: 36px;
   --ox-h-bar: 64px;
   /* The mobile trust scroller that the utility bar's three items become
@@ -506,6 +556,11 @@ textarea {
        strip) and the announcement bar drops to 36px at this width: announce
        (36) + utility (--ox-h-util, 48) + mainbar (--ox-h-bar, 88) = 172. */
     --ox-header-h: 172px;
+    /* The shared measured spec's desktop step (ADP-33, see :root). */
+    --ox-sec-y: var(--ox-16);
+    --ox-sec-head: var(--ox-6);
+    --ox-rail-gap: var(--ox-6);
+    --ox-cover-band-ratio: 1296 / 260;
   }
 }
 

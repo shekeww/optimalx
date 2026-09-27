@@ -28,11 +28,16 @@
 // in the inherited Raed sheets keep winning where they apply: they are more
 // specific and they come later.
 // ---------------------------------------------------------------------------
+// ONE ROW OF 44 (r27 ADP-02, the crumb half): the trail is a single row of
+// exactly 44 including its margins, where it was 56 (12 + 32 + 12) plus the
+// page's own spacing, and every link is a 44 tall hit inside that row (the
+// links were 45 by 20 and 36 by 20, under the WCAG 2.2 AA 24 minimum). The
+// 12 of air above and below the 20 line now lives inside the links' hit.
 .ox-crumbs,
 nav.breadcrumbs {
   display: block;
   inline-size: 100%;
-  padding-block: var(--ox-3);
+  padding-block: 0;
   font-size: var(--ox-t-small);
   line-height: var(--ox-lh-lead);
   color: var(--ox-fg-3);
@@ -43,21 +48,17 @@ nav.breadcrumbs .s-breadcrumb-wrapper {
   display: flex;
   align-items: center;
   gap: var(--ox-1);
-  min-block-size: 32px;
-  // The 32px minimum is a content-box minimum: with the theme's border-box
-  // sizing the 4px block padding below would land INSIDE it on a one-row
-  // trail while the negative margin still took 8px back, and the trail lost
-  // 8px of height (measured 24 for 32 on the Shopify PDP at 390).
-  box-sizing: content-box;
+  // Exactly the row: the links fill it top to bottom, so the crumbs' font
+  // content area (3px past their 20px line boxes on a phone) stays inside
+  // the scrollport and the trail has no up-and-down play.
+  block-size: 44px;
+  box-sizing: border-box;
   // Sideways only, the `.ox-rail__track` treatment (`_rail.scss`): with
-  // `overflow-x: auto` alone the block axis computed to `auto` too, and the
-  // crumbs' font content area, 3px past their 20px line boxes on a phone,
-  // gave the trail 3px of up-and-down play (review round 2, 2026-09-24).
-  // `overflow-y: hidden` closes that axis; the 4px block padding, taken back
-  // by the negative margin so nothing moves, keeps that overhang and the
-  // 2px-offset focus ring inside the scrollport instead of clipped.
-  margin: -4px 0;
-  padding: 4px 0;
+  // `overflow-x: auto` alone the block axis computed to `auto` too (review
+  // round 2, 2026-09-24). `overflow-y: hidden` closes that axis; the focus
+  // ring sits inside the 44 tall link (below), never clipped.
+  margin: 0;
+  padding: 0;
   list-style: none;
   // A long trail scrolls rather than wrapping to three lines on a phone.
   overflow-x: auto;
@@ -87,9 +88,24 @@ nav.breadcrumbs .s-breadcrumb-item {
   color: var(--ox-fg-3);
 }
 
+// 15 from 1024 (spec 4.4, "small, crumbs": 14 on a phone, 15 on a desktop;
+// r27 fix round, they read 14 at 1440).
+@media (min-width: 1024px) {
+  .ox-crumbs .s-breadcrumb-item,
+  nav.breadcrumbs .s-breadcrumb-item {
+    font-size: var(--ox-t-small);
+  }
+}
+
+// The link is the whole height of the row: a 44 tall hit around its 20 line,
+// its width the word's own (45 and 36 wide, over the AA 24). The focus ring
+// is drawn 2 inside it so the scrollport never clips it.
 .ox-crumbs .s-breadcrumb-item a,
 nav.breadcrumbs .s-breadcrumb-item a {
-  @include ox-focus(2px);
+  @include ox-focus(-2px);
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   color: var(--ox-fg-2);
   text-decoration: none;
 
@@ -126,8 +142,8 @@ nav.breadcrumbs .s-breadcrumb-arrow {
 
 .ox-crumbs .s-breadcrumb-item button,
 nav.breadcrumbs .s-breadcrumb-item button {
-  @include ox-focus(2px);
-  min-block-size: 32px;
+  @include ox-focus(-2px);
+  min-block-size: 44px;
   padding-inline: var(--ox-1);
   color: var(--ox-fg-2);
   background: none;
@@ -186,10 +202,160 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-// The breadcrumb inside the masthead loses its own top padding: the band sets
-// the rhythm, and the trail sits 12 under the chrome.
-.ox-listing__band .ox-crumbs {
-  padding-block: var(--ox-3) var(--ox-4);
+// The breadcrumb inside the masthead is the 44 row alone (r27 ADP-02): its
+// links carry the 12 of air above and below the line, so the band adds none,
+// the cover band's own 8 on top included (snippets/cover-image.liquid, a
+// section stylesheet loaded after this one, hence the longer selector).
+.ox-listing__band .ox-crumbs,
+.ox-listing__band.ox-cover .ox-listing__band-inner > .ox-crumbs {
+  padding-block: 0;
+}
+
+// The head fills the text column beside the pane (r27): with the intro
+// moved after the grid the column held the h1 alone, and the pane's auto
+// margin shrank the head to the h1's own width, so the h1 sat at the
+// column's far end, away from the trail above it.
+.ox-listing__band.ox-cover .ox-listing__band-inner > .ox-listing__head {
+  inline-size: 100%;
+}
+
+// OD-10 OPTION II, THE DEFAULT (the owner's decision of 2026-09-27; the
+// section's `band_slim` setting, on unless the merchant turns it off, adds
+// the class to every category, subcategory and goal band with a cover). The
+// owner's cover as a slim angled band, 128 tall on a phone and 260 from
+// 1024, where the full cover is a 16:9 strip on a phone and a 320 to 440
+// pane. The desktop pane's own construction at every
+// width: the cover at the physical right with the 34 degree cut on its
+// inner edge, the trail and the h1 in the column beside it, on the same
+// mood ground and ink. The cover's own rules live in
+// snippets/cover-image.liquid, a section stylesheet loaded after this one,
+// hence the longer selectors.
+.ox-listing__band.ox-cover.ox-listing__band--slim {
+  --band-h: 128px;
+  --band-pane: 50cqw;
+
+  display: flex;
+  align-items: center;
+  min-block-size: var(--band-h);
+}
+
+.ox-listing__band.ox-listing__band--slim .ox-listing__band-cover {
+  --cover-v: 0.86;
+
+  // The pane stands at the physical right in both languages, as the full
+  // cover's pane does (the frames set their packshots on the right): the
+  // reading start in Arabic, the end in English. The text column takes the
+  // other side the same way.
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0 auto;
+  inline-size: var(--band-pane);
+  aspect-ratio: auto;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, calc(var(--band-h) * var(--ox-angle-tan, 0.6745)) 100%);
+
+  [dir='ltr'] & {
+    inset-inline: auto 0;
+  }
+
+  &::after {
+    content: none;
+  }
+}
+
+.ox-listing__band.ox-cover.ox-listing__band--slim .ox-listing__band-inner {
+  padding-block: 0 var(--ox-3);
+
+  > * {
+    max-inline-size: calc(100% - var(--band-pane) + var(--ox-gutter) - var(--ox-3));
+    margin-inline: auto 0;
+  }
+}
+
+[dir='ltr'] .ox-listing__band.ox-cover.ox-listing__band--slim .ox-listing__band-inner > * {
+  margin-inline: 0 auto;
+}
+
+.ox-listing__band--slim .ox-listing__title-row {
+  min-block-size: 0;
+}
+
+// Two lines at most beside the pane on a phone (r27 fix round: in a 167
+// column the longest Arabic h1s ran to 3 and 4 lines and the band grew to
+// 200). Below 640 the pane takes 36 percent of the band; the trail keeps
+// the column beside the pane's top edge and the head runs 32 further, into
+// the room the cut leaves below the trail, so the text's edge steps with
+// the cut, parallel to it, and the head is 257 wide at 390 and 238 at 360.
+// The h1 steps down to 20 inside the slim band only, and a head term's
+// subtitle (the part after its colon, a span in the section) is its own
+// quieter line, so "بري وورك اوت:" and "مكملات ما قبل التمرين" read as a
+// title and its line.
+@media (max-width: 639.98px) {
+  .ox-listing__band.ox-cover.ox-listing__band--slim {
+    --band-pane: 35cqw;
+  }
+
+  // A brand's name is short and its logo wide, so its pane keeps 48
+  // percent: the logo reads at about 90 wide.
+  .ox-listing__band.ox-listing__band--brand.ox-listing__band--slim {
+    --band-pane: 48cqw;
+  }
+
+  // Beside the logo the trail ends at the brands index: the name it would
+  // repeat is the h1 right under it, and in the column left beside the
+  // pane it was cut to its first letter.
+  .ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-crumbs .s-breadcrumb-item[aria-current='page'],
+  .ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-crumbs .s-breadcrumb-arrow:has(+ [aria-current='page']) {
+    display: none;
+  }
+
+  .ox-listing__band.ox-cover.ox-listing__band--slim .ox-listing__band-inner > .ox-listing__head,
+  .ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-listing__band-inner > .ox-listing__head {
+    max-inline-size: calc(100% - var(--band-pane) + var(--ox-gutter) - var(--ox-3) + 32px);
+  }
+
+  .ox-listing__band--slim .ox-listing__title {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+}
+
+// On a tablet the band is still 128: the h1 takes the section-head size
+// there (23 at 768), so two lines and the subtitle line hold the band.
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .ox-listing__band--slim .ox-listing__title {
+    font-size: var(--ox-t-h2);
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .ox-listing__band--slim .ox-listing__title-sub {
+    display: block;
+    margin-block-start: 2px;
+    color: var(--ox-fg-2);
+    font-size: var(--ox-t-small);
+    font-weight: var(--ox-w-ui);
+    line-height: 1.4;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__band.ox-cover.ox-listing__band--slim {
+    --band-h: 260px;
+    --band-pane: min(52cqw, var(--band-h) * 2.1);
+  }
+
+  .ox-listing__band.ox-listing__band--slim .ox-listing__band-cover {
+    --cover-v: 1;
+  }
+
+  .ox-listing__band.ox-cover.ox-listing__band--slim .ox-listing__band-inner {
+    padding-block: 0 var(--ox-6);
+
+    > * {
+      max-inline-size: calc(100% - var(--band-pane) + (100cqw - 100%) / 2 - var(--ox-12, 48px));
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -270,8 +436,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
   overflow: hidden;
 }
 
+// A 44 tall hit wherever the intro's toggle stands (r27, O30: it was 77 by
+// 26), the utility bands' own included.
 .ox-listing__intro-toggle {
   align-self: flex-start;
+}
+
+.ox-listing__intro .ox-listing__intro-toggle {
+  min-block-size: 44px;
 }
 
 @media (min-width: 1024px) {
@@ -280,20 +452,68 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 4. The toolbar: child chips, filters trigger and sort (6.3 blocks 3 and 2)
-//
-// One instrument rather than three stray controls: a rule above and below, the
-// sub-category scroller at the RTL start and the controls at the end, sharing
-// one 64 row on desktop and stacking on a phone. It sits directly on the grid,
-// which is where a shopper looks for it.
-// ---------------------------------------------------------------------------
-.ox-listing__toolbar {
+// THE INTRO AFTER THE GRID (r27 ADP-13): a category's or a goal's opening
+// copy moved out of the head to after the grid and the advisory plate,
+// under its own h2, as one line and "اقرأ المزيد". The line's height is the
+// clamp's own, fixed before the web font arrives; the toggle is a 44 tall
+// hit (it was 77 by 26). The head is centred like every section head of the
+// page; the line and its toggle start together in a text-width column at
+// the page's start edge, the way the explore links and the FAQ rows under
+// it start (r27 fix round: a start-aligned line between a centred head and
+// a centred toggle read unfinished).
+.ox-listing__about {
   display: flex;
   flex-direction: column;
-  gap: var(--ox-2);
-  padding-block: var(--ox-2);
-  border-block: 1px solid var(--ox-bd);
+  align-items: center;
+
+  .ox-sh {
+    margin-block-end: var(--ox-4);
+  }
+}
+
+.ox-listing__intro--below {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  inline-size: 100%;
+  max-inline-size: var(--ox-container-text);
+  text-align: start;
+
+  .ox-listing__intro-text.is-clamped {
+    -webkit-line-clamp: 1;
+  }
+
+  .ox-listing__intro-toggle {
+    align-self: flex-start;
+    min-block-size: 44px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. The toolbar: child chips, the live count, the filter and sort bar
+// (6.3 blocks 3 and 2; the identity pass r21, 2026-09-26)
+//
+// Owner, 2026-09-26: "a sticky filter and sort bar on phones while scrolling
+// a listing, the live result count, sort beside filter, applied chips under
+// the bar", every control sharp ("avoid rounded cards and buttons globally").
+//
+// FROM 1024: one ruled 64 row above the rail and the grid: the sub-category
+// scroller at the inline start, the live count, the sort at the end (the
+// rail carries the filters, so the phone trigger is removed there).
+//
+// BELOW 1024: the toolbar steps out of the layout (`display: contents`) and
+// its pieces stack in the grid head: the scroller, the count, then the bar,
+// the filter button and the sort select in two equal halves, which sticks to
+// the top of the screen for as long as the grid is in view (the sections put
+// the grid inside `.ox-listing__grid-head` for that: a sticky box travels
+// inside its parent only). The header is static on this store (owner,
+// 2026-09-23: "fixed at the top, not sticky"), so the bar sticks at 0. The
+// applied chips sit under the bar. A listing with no filter group keeps a
+// plain sort line: nothing to reach for while scrolling.
+// ---------------------------------------------------------------------------
+.ox-listing__toolbar {
+  display: contents;
 }
 
 .ox-listing__chips {
@@ -330,41 +550,97 @@ nav.breadcrumbs .s-breadcrumb-item button {
   > li {
     flex: none;
   }
+
+  // The sub-category links are square like every control (owner ruling
+  // 2026-09-26).
+  .ox-chip {
+    border-radius: 0;
+  }
+}
+
+// The sub-category links are thumb targets (r21 fix round: the review
+// measured 36): a 40 face and a 48 hit area, which the row's 4px block
+// padding keeps inside its scrollport. At every width since the r27 fix
+// round (spec 4.4, chips 40 to 48; they were 36 from 1024).
+.ox-listing__chips-row .ox-chip {
+  block-size: 40px;
+
+  &::after {
+    block-size: max(100%, 48px);
+  }
 }
 
 .ox-chip--link {
   text-decoration: none;
 }
 
-.ox-listing__controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--ox-2) var(--ox-3);
-  flex: none;
-  min-block-size: 44px;
-}
-
-// Below 1024 it takes the whole first line of the control row, so the count,
-// the filter trigger and the sort select are never three things fighting over
-// 390px; from 1024 it sits at the row's inline start beside them.
-// ORDER MATTERS (review 2026-09-24): this rule used to sit in section 6,
-// after the 1024 block below, so its `flex: 1 0 100%` outranked that block's
-// `flex: 1 1 auto` at every width (same specificity, later source). The
-// count then kept the whole controls row on desktop and pushed the sort
-// select out of its container, measured at x = -186 on a 1440 viewport, off
-// the left edge of the screen. It lives here now, ahead of the override.
+// The live count: how many products the view holds ("37 منتجا"), in the ink
+// at the label weight, figures tabular so the line does not jitter as the
+// client facets rewrite it. It is the first child of the controls (r21 fix
+// round), so it opens the row and the sort keeps the end; on the phone bar
+// it is the bar's second line (below).
 .ox-listing__count {
   display: flex;
   align-items: center;
-  flex: 1 0 100%;
   min-inline-size: 0;
+  margin-inline-end: auto;
 }
 
+.ox-listing__count .ox-listing__progress {
+  color: var(--ox-fg);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-listing__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ox-2) var(--ox-3);
+  min-inline-size: 0;
+  min-block-size: 44px;
+}
+
+// THE FILTER BUTTON (phones and tablets): a square face, the funnel, the
+// word in the title weight and, once something is on, the number of choices
+// on in an orange square, the one accent the bar carries (the orange marks
+// an active state only, owner 2026-09-26). The stroke darkens to the ink on
+// hover and while a filter is on.
 .ox-listing__filters-trigger {
+  @include ox-focus(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 48px;
+  padding-inline: var(--ox-3);
+  border: 1px solid var(--ox-line-3);
+  border-radius: 0;
+  background: var(--ox-surface);
+  color: var(--ox-fg);
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-flat);
+  white-space: nowrap;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover,
   &.is-active {
-    border-color: var(--ox-fg);
+    border-color: var(--ox-ink);
+  }
+
+  > .ox-icon {
+    flex: none;
   }
 }
 
@@ -372,92 +648,294 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-inline-size: 20px;
-  block-size: 20px;
-  padding-inline: var(--ox-1);
-  border-radius: var(--ox-r-pill);
-  background: var(--ox-ink);
-  color: var(--ox-paper);
+  min-inline-size: 22px;
+  block-size: 22px;
+  padding-inline: 6px;
+  border-radius: 0;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-figure);
+  line-height: 1;
+
+  // The trigger's own [hidden] (no filter on) must win over the display
+  // above: without this the square printed "0" beside the word.
+  &[hidden] {
+    display: none;
+  }
 }
 
+// THE SORT: the sort mark inside the field at its inline start, the order
+// shown in the title weight, a square field with the ink stroke on hover.
 .ox-listing__sort {
   display: flex;
   align-items: center;
   gap: var(--ox-2);
+  min-inline-size: 0;
   margin-inline-start: auto;
+}
 
-  // Width only. The `background` shorthand would drop the chevron the
-  // primitive draws as a background image, and the fill is already the card
-  // cream the design asks for.
-  .ox-select {
-    inline-size: auto;
-    min-inline-size: 176px;
+.ox-listing__sort-field {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.ox-listing__sort-icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--ox-3);
+  z-index: 1;
+  color: var(--ox-fg);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+// Width, radius, stroke and weight only. The `background` shorthand would
+// drop the chevron the primitive draws as a background image.
+.ox-listing__sort .ox-select {
+  inline-size: auto;
+  min-inline-size: 200px;
+  padding-inline-start: calc(var(--ox-3) + 20px + var(--ox-2));
+  border-radius: 0;
+  font-weight: var(--ox-w-title);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ox-ink);
   }
 }
 
+// The words "رتب حسب" beside the field from 640 up; below it they stay the
+// select's name for a screen reader (visually hidden, never display: none,
+// which would take the name away with them), the sort mark says it on screen.
 .ox-listing__sort-label {
-  display: none;
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  color: var(--ox-fg-3);
   font-size: var(--ox-t-small);
   font-weight: var(--ox-w-ui);
-  color: var(--ox-fg-3);
-  white-space: nowrap;
 }
 
 @media (min-width: 640px) {
   .ox-listing__sort-label {
-    display: inline;
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    overflow: visible;
+    clip-path: none;
   }
 }
 
-// The Shopify phone toolbar (Phase C FS-1): when the listing has filters, the
-// filter button and the sort select share one row in two equal halves under
-// the count, the pairing a Saudi shopper knows from the local stores'
-// listings, instead of three stacked lines (the angled button alone, then
-// the select alone). With no filter button the sort keeps its own line end.
-@media (max-width: 1023.98px) {
-  .ox-listing__controls:has(> .ox-fsheet) {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: center;
+// The grid under the bar and the applied chips: 4 more than the stack's own
+// gap on a phone, 8 more from 1024 (below).
+.ox-listing__grid-head > .ox-listing__results {
+  margin-block-start: var(--ox-1);
+}
 
-    > .ox-listing__count {
-      grid-column: 1 / -1;
+// A goal page's grid heading (r27): the grid head's own gap is its air; the
+// header's 24 (32 from 1024) stacked on it put 36 to 48 between the word
+// "المنتجات" and its own controls.
+.ox-listing .ox-listing__grid-head > .ox-sh {
+  margin-block-end: 0;
+}
+
+@media (max-width: 1023.98px) {
+  // The grid head's own rhythm on a phone: 12 between the stacked pieces,
+  // laid out as wrapping lines (r27 ADP-17) so the bar's two halves can
+  // share one line and the live count can sit beside the sub-category
+  // links. Every piece takes a whole line unless placed below. (Scoped to
+  // the listing: section 5's base rule for the grid head comes later in
+  // this file and would win a tie.)
+  .ox-listing .ox-listing__grid-head {
+    flex-flow: row wrap;
+    gap: var(--ox-3) 0;
+
+    > * {
+      flex: 1 1 100%;
+      min-inline-size: 0;
     }
+  }
+
+  // THE BAR, 56 TALL (r27 ADP-17; it was 86): the filter button and the
+  // sort, two 48 halves side by side, 3 of air and a hairline above and
+  // below, nothing else. The controls box steps out of the layout
+  // (`display: contents`) and each half is its own sticky box on one line
+  // of the grid head, so both hold to the top of the screen for as long as
+  // the grid is in view, as the whole bar did. Full bleed: the inline-start
+  // half reaches the screen's start edge, the other the end edge, and they
+  // meet with no seam, the page ground behind both so cards slide under.
+  .ox-listing__controls--bar {
+    display: contents;
 
     > .ox-fsheet,
-    > .ox-fsheet > .ox-listing__filters-trigger {
+    > .ox-listing__sort {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: var(--ox-z-sticky);
       display: flex;
-      inline-size: 100%;
+      flex: 1 1 40%;
+      align-items: stretch;
       min-inline-size: 0;
+      margin: 0;
+      padding-block: 3px;
+      background: var(--ox-bg);
+      border-block: 1px solid var(--ox-bd);
+    }
+
+    > .ox-fsheet {
+      margin-inline-start: calc(-1 * var(--ox-gutter));
+      padding-inline: var(--ox-gutter) var(--ox-1);
     }
 
     > .ox-listing__sort {
-      min-inline-size: 0;
-      margin-inline-start: 0;
+      margin-inline-end: calc(-1 * var(--ox-gutter));
+      padding-inline: var(--ox-1) var(--ox-gutter);
+    }
 
-      // The select takes the button's 48 (the global button height) so the
-      // pair reads as one row, not a 48 beside a 44.
+    // A trigger only the script can work (snippets/filters.liquid) leaves
+    // the sort the whole bar until it shows.
+    > .ox-fsheet[hidden] {
+      display: none;
+    }
+
+    // The live count (r21, owner: "the live result count"), still live
+    // (assets/ox.js rewrites it as the facets narrow the grid): its own
+    // line right above the bar, the calm grey at the micro size, 16 tall,
+    // so the bar itself is the two controls alone.
+    > .ox-listing__count {
+      margin-inline-end: 0;
+
+      .ox-listing__progress {
+        color: var(--ox-fg-3);
+        font-size: var(--ox-t-micro);
+        line-height: 16px;
+      }
+    }
+
+    > .ox-listing__sort {
+      .ox-listing__sort-label {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+
+      // The order in the half-width field (r21 fix round): the sort mark
+      // 10 from the edge and the chevron 10 from the other, so the order
+      // itself gets 109 of a 175 field at 390 and 94 at 360, where the
+      // short words ("الأقل سعرا", "الأعلى سعرا", "Highest price") fit
+      // whole; the price orders used to clip to the same "السعر من الأ".
+      .ox-listing__sort-icon {
+        inset-inline-start: 10px;
+      }
+
       .ox-select {
         inline-size: 100%;
         min-inline-size: 0;
         block-size: 48px;
+        min-block-size: 48px;
+        padding-inline: 34px 30px;
+        text-overflow: ellipsis;
+        background-position: left 10px center;
       }
+    }
+  }
+
+  [dir='ltr'] .ox-listing__controls--bar > .ox-listing__sort .ox-select {
+    background-position: right 10px center;
+  }
+
+  // With the filter button away (a script-only trigger before the script
+  // runs) the sort is the whole bar, edge to edge.
+  .ox-listing__controls--bar:has(> .ox-fsheet[hidden]) > .ox-listing__sort {
+    margin-inline-start: calc(-1 * var(--ox-gutter));
+    padding-inline-start: var(--ox-gutter);
+  }
+
+  // The toolbar's own pieces on the grid head's lines: the sub-category
+  // links and a plain sort line (a listing with no filter) take a line each.
+  .ox-listing__toolbar > .ox-listing__chips,
+  .ox-listing__toolbar > .ox-listing__controls,
+  .ox-listing__controls--bar > .ox-listing__count {
+    flex: 1 1 100%;
+    min-inline-size: 0;
+  }
+
+  // The count keeps its own line on the protein page too (r27 fix round):
+  // at the end of the sub-category line it met the scroller with no gap,
+  // and a chip clipped mid-word beside it read as one label ("Whey Protein
+  // Isolat 37 products").
+}
+
+// WITH NO SCRIPT (r27 fix round) the sort submits through its own confirm
+// button (the section's noscript): the half-width field and the button
+// could not share the bar's half (the field shrank to its icon, the button
+// to an empty angled box), so the form wraps, the field over the button,
+// each the half's full width. The noscript's children exist only when
+// scripting is off, so the rule never touches the scripted bar.
+// The filter half keeps its 48 button at the top of the taller line.
+.ox-listing__controls--bar:has(> .ox-listing__sort > noscript > .ox-listing__sort-submit) > .ox-fsheet {
+  align-items: flex-start;
+}
+
+.ox-listing__sort:has(> noscript > .ox-listing__sort-submit) {
+  flex-wrap: wrap;
+
+  > .ox-listing__sort-field,
+  > noscript,
+  .ox-listing__sort-submit {
+    flex: 1 1 100%;
+    inline-size: 100%;
+  }
+}
+
+// Under 380 (a 360 phone) the half-width field is 158 and the sort mark's
+// 34 left the order 94: "Highest price" needs 100 and clipped (r21 fix
+// round, measured). There the chevron alone marks the field, the order
+// starts 12 from the edge and gets 116, so every order reads whole in
+// both languages ("الأعلى سعرا" 78, "Highest price" 100).
+@media (max-width: 379.98px) {
+  .ox-listing__controls--bar > .ox-listing__sort {
+    .ox-listing__sort-icon {
+      display: none;
+    }
+
+    .ox-select {
+      padding-inline-start: var(--ox-3);
     }
   }
 }
 
 @media (min-width: 1024px) {
   .ox-listing__toolbar {
+    display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--ox-6);
     min-block-size: 64px;
-    padding-block: 0;
+    border-block: 1px solid var(--ox-bd);
   }
   .ox-listing__chips {
     min-block-size: 64px;
+  }
+  // With the sub-category scroller the count sits beside the sort at the
+  // end; without it the controls take the row, the count opens it and the
+  // sort keeps the end (the count lives inside the controls since the r21
+  // fix round).
+  .ox-listing__controls {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    min-block-size: 64px;
+  }
+  .ox-listing__chips + .ox-listing__controls {
+    flex: 0 1 auto;
   }
   // The rail carries the same facets from 1024 up, so the trigger is a
   // mobile-only control and is removed rather than hidden behind the rail.
@@ -465,13 +943,35 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-fsheet {
     display: none;
   }
-  .ox-listing__controls {
-    flex-wrap: nowrap;
-    min-block-size: 64px;
+  // The grid under the toolbar and the applied chips keeps the 24 the
+  // catalogue gave it before it moved into the grid head (16 + 8).
+  .ox-listing__grid-head > .ox-listing__results {
+    margin-block-start: var(--ox-2);
   }
-  .ox-listing__count {
-    flex: 1 1 auto;
-    min-block-size: 64px;
+}
+
+// The hairline scrollbar of the rail and the sheet (r21 fix round).
+@mixin ox-hairline-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--ox-line-3);
+    border-radius: 0;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ox-line-3) transparent;
   }
 }
 
@@ -486,11 +986,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
   gap: var(--ox-6);
 }
 
+// The anchor every server filter and sort lands on (#listing-grid, r21 fix
+// round): the header is static on this store, so 12 of air above it is
+// enough; the shopper lands on the count, the bar and the first cards.
 .ox-listing__grid-head {
   display: flex;
   flex-direction: column;
   gap: var(--ox-4);
-  scroll-margin-block-start: calc(var(--ox-h-bar) + var(--ox-4));
+  scroll-margin-block-start: var(--ox-3);
 }
 
 .ox-listing__results {
@@ -503,7 +1006,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-inline-size: 0;
 }
 
-// The rail is a panel, not a bare column: cream fill, one hairline, 16 radius,
+// The rail is a panel, not a bare column: cream fill, one hairline, square,
 // the same card contract the rest of the store uses. It renders only when the
 // API returned facets, so a store with none gets the full row for the grid and
 // that render is the designed one.
@@ -557,6 +1060,23 @@ nav.breadcrumbs .s-breadcrumb-item button {
     grid-template-columns: 280px minmax(0, 1fr);
     gap: var(--ox-8);
   }
+  // A rail only the script can work (snippets/filters.liquid) takes no
+  // column until it shows: with no script the grid keeps the full row.
+  .ox-listing__results.has-rail .ox-filters[hidden] {
+    display: none;
+  }
+  .ox-listing__results.has-rail:has(> .ox-filters[hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  // The rail's own scroll, in the store's colours: a 6 wide square hairline
+  // thumb on no track, never the system's arrowed bar (r21 review). Chromium
+  // and Safari draw it from the ::-webkit-scrollbar rules (the standard
+  // properties would switch those off, and Chromium's thin bar on Windows
+  // still carries its arrow buttons, measured in the fix round); Firefox,
+  // which has no such selector, takes the standard thin bar.
+  .ox-listing__results.has-rail .ox-filters {
+    @include ox-hairline-scrollbar;
+  }
   .ox-listing__results.has-rail .ox-filters {
     display: block;
     position: sticky;
@@ -570,7 +1090,9 @@ nav.breadcrumbs .s-breadcrumb-item button {
     overflow-y: auto;
     background: var(--ox-surface);
     border: 1px solid var(--ox-bd);
-    border-radius: var(--ox-r-4);
+    // Square (owner ruling 2026-09-26: "avoid rounded cards and buttons
+    // globally, it should be sharp").
+    border-radius: 0;
   }
 }
 
@@ -678,6 +1200,13 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
   salla-button::part(button),
   .s-button-element {
+    // The Shopify port's load-more is a link (sections/main-collection
+    // .liquid), where the engine drew a button: centred in its own 48 box
+    // (r27; the words sat at the box's top corner on every listing).
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     block-size: 48px;
     min-inline-size: 200px;
     padding-inline: var(--ox-6);
@@ -760,29 +1289,52 @@ nav.breadcrumbs .s-breadcrumb-item button {
 }
 
 // ---------------------------------------------------------------------------
-// 7a. The Shopify filters (Phase C FS-1, snippets/filters.liquid): the
-// groups inside the rail and the phone sheet, the price pair, the sheet
-// itself and the applied chips row. Salla renders its own widget inside
-// `.ox-filters` and never meets these classes.
+// 7a. The Shopify filters (Phase C FS-1, snippets/filters.liquid; the
+// identity pass r21, 2026-09-26): the groups inside the rail and the phone
+// sheet, the price pair, the sheet itself and the applied chips row. Salla
+// renders its own widget inside `.ox-filters` and never meets these classes.
 //
-// One group anatomy everywhere: a legend in the title weight, then the
-// values as the store's filter chips (36 face, 44 hit area, the step notch
-// on the chosen state, _primitives.scss), each native value with its count
-// beside the word. Groups separate by a hairline, never a box in a box.
+// Owner, 2026-09-26: "redesign every filter control in the identity: ...
+// sharp corners, the 34 degree cut on the primary actions, the orange accent
+// only for active and selected states, bold labels, generous tap areas,
+// counts in a calm secondary tone, smooth sheet motion honouring reduced
+// motion". So:
+//   - every group is a disclosure whose heading is a 48 row in the title
+//     weight, the number of choices on in an orange square beside it;
+//   - every value is an OPTION ROW, the full width of the group: a square
+//     box (or a round one where a group takes one value only: the goal and
+//     form tag groups, the price bands), the label, the count at the row's
+//     end in the calm grey. The box fills orange with a white tick when the
+//     value is on, and the label steps up to the title weight; nothing else
+//     on the rail or the sheet is orange;
+//   - every face is square: the rail, the sheet, the fields, the badges and
+//     the applied chips; the parallelogram stays on the buttons (the sheet's
+//     apply and reset, the rail's price apply), the brand's 34 degree cut.
+// The rows reuse the filter chip markup (the snippets and assets/ox.js keep
+// their hooks), reset here to a row.
 // ---------------------------------------------------------------------------
 // "مسح التصفية" lives once, at the end of the applied chips (the rail head
 // carries the title alone since the FS-1 review).
 .ox-listing__applied-clear {
   @include ox-focus(2px);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
   color: var(--ox-fg);
   font-size: var(--ox-t-small);
-  font-weight: var(--ox-w-ui);
+  font-weight: var(--ox-w-title);
   text-decoration: underline;
   text-underline-offset: 3px;
   white-space: nowrap;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
 }
 
 .ox-filters__form {
@@ -790,12 +1342,21 @@ nav.breadcrumbs .s-breadcrumb-item button {
   flex-direction: column;
 }
 
+// Every group is a disclosure (r21): the heading row is the <summary>, a 48
+// tall target with the number of values on and a chevron at its end. Every
+// group starts open (the fewest taps to a choice: a phone shopper picks a
+// brand and a size in four taps, sheet, brand, size, apply); a long group
+// shows its first five values and folds the rest behind "عرض الكل".
 .ox-filters__group {
   min-inline-size: 0;
   margin: 0;
-  padding: var(--ox-4) 0;
+  padding: 0;
   border: 0;
   border-block-end: 1px solid var(--ox-bd);
+
+  &[open] {
+    padding-block-end: var(--ox-3);
+  }
 
   &:last-of-type {
     border-block-end: 0;
@@ -803,71 +1364,211 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
-// A floated legend leaves the fieldset's border slot and sits in the flow,
-// so the group's 16px top padding lands above the heading and the values
-// follow 12px under it (a rendered legend measured 28px of air under itself
-// and none above, 2026-09-25).
+.ox-filters__summary {
+  @include ox-focus(2px);
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 48px;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
 .ox-filters__legend {
-  float: inline-start;
-  inline-size: 100%;
+  flex: 1 1 auto;
+  min-inline-size: 0;
   padding: 0;
   color: var(--ox-fg);
   font-size: var(--ox-t-body);
   font-weight: var(--ox-w-title);
 }
 
+// The number of values on in a group, the phone trigger's orange square
+// (`.ox-listing__filters-count`).
+.ox-filters__picked {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 22px;
+  block-size: 22px;
+  padding-inline: 6px;
+  border-radius: 0;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-figure);
+  line-height: 1;
+}
+
+.ox-filters__chevron {
+  flex: none;
+  color: var(--ox-fg);
+  transition: transform var(--dur-base) var(--ease-out);
+
+  .ox-filters__group[open] > .ox-filters__summary & {
+    transform: rotate(180deg);
+  }
+}
+
+// The values: one column of rows.
 .ox-filters__values {
   display: flex;
-  flex-wrap: wrap;
-  clear: both;
-  gap: var(--ox-2);
-  margin: var(--ox-3) 0 0;
+  flex-direction: column;
+  margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.ox-filters__chip {
-  gap: var(--ox-2);
-}
-
-// The price bands line up instead of wrapping ragged at four widths: one
-// column of full-width chips in the 280 rail (two bands never fit side by
-// side there), two equal columns in the phone sheet.
-.ox-filters__group[data-ox-filter-group='price'] > .ox-filters__values {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
 
   > li {
     display: flex;
     min-inline-size: 0;
   }
+}
 
-  .ox-chip {
-    inline-size: 100%;
-    justify-content: center;
+// What the facets hide (a value with nothing behind it, a group left with
+// one value, an emptied fold) stays hidden against the display rules above:
+// the reset's `[hidden]` alone is outranked by a class.
+.ox-filters__group[hidden],
+.ox-filters__more[hidden],
+.ox-filters__picked[hidden],
+.ox-filters__values > li[hidden],
+.ox-filters__count[hidden],
+.ox-listing .s-items-list-load-more[hidden],
+.ox-listing .s-items-list-end[hidden],
+.ox-listing__list[hidden] {
+  display: none;
+}
+
+// The grid while the client facets fetch the pages that hold their matches.
+.ox-grid-products.is-loading {
+  opacity: 0.55;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+// THE OPTION ROW. The chip primitive (`.ox-chip--filter`, _primitives.scss)
+// reset to a full-width row: no face, no border, no notch; a 44 tall target
+// on the rail (48 in the sheet, below), the whole row the tap area.
+.ox-filters__values .ox-filters__chip {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  inline-size: 100%;
+  max-inline-size: none;
+  block-size: auto;
+  min-block-size: 44px;
+  padding: var(--ox-1) 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  clip-path: none;
+  color: var(--ox-fg);
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-read);
+  line-height: var(--ox-lh-lead);
+  text-align: start;
+  text-decoration: none;
+  white-space: normal;
+  touch-action: manipulation;
+
+  // The box: 20 square, the grey stroke at rest, the ink on hover.
+  &::before {
+    content: '';
+    flex: none;
+    box-sizing: border-box;
+    inline-size: 20px;
+    block-size: 20px;
+    border: 1.5px solid var(--ox-line-3);
+    border-radius: 0;
+    background-color: var(--ox-surface);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+  }
+
+  &:hover {
+    background: none;
+    border-color: transparent;
+
+    &::before {
+      border-color: var(--ox-ink);
+    }
+  }
+
+  > .ox-icon {
+    flex: none;
+  }
+
+  .ox-chip__label {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  // On: the orange box with the white tick, the label in the title weight.
+  &.is-selected,
+  &[aria-pressed='true'] {
+    background: none;
+    border-color: transparent;
+    clip-path: none;
+    color: var(--ox-fg);
+    font-weight: var(--ox-w-title);
+
+    &::before {
+      border-color: var(--ox-accent);
+      background-color: var(--ox-accent);
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M4.5 10.5l3.5 3.5L15.5 6.5'/%3E%3C/svg%3E");
+    }
   }
 }
 
-.ox-fsheet__panel .ox-filters__group[data-ox-filter-group='price'] > .ox-filters__values {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+// One value per group (the goal and form tag paths, the price bands): the
+// round box of a radio, the one round face the ruling keeps; on, an orange
+// ring round a white centre.
+.ox-filters__values :is([data-ox-price-band], [data-ox-tag]:not([data-ox-tag-multi])) {
+  &::before {
+    border-radius: 50%;
+  }
+
+  &.is-selected::before,
+  &[aria-pressed='true']::before {
+    background-image: none;
+    background-color: var(--ox-on-accent);
+    border: 6px solid var(--ox-accent);
+  }
 }
 
-// The count reads as a quiet figure beside the word, on the rest and on the
-// chosen (ink) face alike.
+// The native values are labels round a visually hidden checkbox: the row
+// shows the focus the checkbox takes.
+.ox-filters__values .ox-filters__chip:has(input:focus-visible) {
+  outline: var(--ox-focus-ring);
+  outline-offset: 2px;
+}
+
+// The count: a quiet figure at the row's end, the same calm grey whether
+// the value is on or not.
 .ox-filters__count {
+  flex: none;
+  margin-inline-start: auto;
   color: var(--ox-fg-3);
   font-size: var(--ox-t-micro);
-  font-weight: var(--ox-w-figure);
+  font-weight: var(--ox-w-open);
+  font-variant-numeric: tabular-nums;
 
-  .is-selected & {
-    color: inherit;
-    opacity: 0.72;
+  .is-selected &,
+  [aria-pressed='true'] & {
+    color: var(--ox-fg-3);
+    opacity: 1;
   }
 }
 
+// "عرض الكل": the fold's own row, in the title weight, underlined.
 .ox-filters__more {
-  margin-block-start: var(--ox-1);
-
   > summary {
     @include ox-focus(2px);
     display: inline-flex;
@@ -875,33 +1576,34 @@ nav.breadcrumbs .s-breadcrumb-item button {
     min-block-size: 44px;
     color: var(--ox-fg);
     font-size: var(--ox-t-small);
-    font-weight: var(--ox-w-ui);
+    font-weight: var(--ox-w-title);
     text-decoration: underline;
     text-underline-offset: 3px;
     list-style: none;
     cursor: pointer;
+    touch-action: manipulation;
 
     &::-webkit-details-marker {
       display: none;
+    }
+
+    &:hover {
+      color: var(--ox-accent-dark);
     }
   }
 
   &[open] > summary {
     display: none;
   }
-
-  > .ox-filters__values {
-    margin-block-start: var(--ox-2);
-  }
 }
 
-// The price pair: two fields side by side, the rail's apply button under
-// them across the full width.
+// The price pair: two square fields side by side, the rail's apply button
+// under them across the full width.
 .ox-filters__range {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ox-3);
-  margin-block-start: var(--ox-4);
+  margin-block-start: var(--ox-3);
 }
 
 .ox-filters__range-field {
@@ -917,9 +1619,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
   font-weight: var(--ox-w-ui);
 }
 
-.ox-filters__range-input {
+.ox-filters__range .ox-input {
   min-block-size: 44px;
+  border-radius: 0;
+  font-weight: var(--ox-w-ui);
   font-variant-numeric: tabular-nums;
+
+  &:hover {
+    border-color: var(--ox-ink);
+  }
 }
 
 .ox-filters__range-apply {
@@ -945,10 +1653,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: flex;
   flex-direction: column;
   block-size: 100dvh;
+  border-radius: 0;
   background: var(--ox-card);
   color: var(--ox-fg);
   overflow-y: auto;
   overscroll-behavior: contain;
+  // Its scroll in the store's colours where the system draws a bar (a
+  // tablet, a narrow desktop window): the rail's hairline, never the
+  // arrowed grey strip (r21 fix round).
+  @include ox-hairline-scrollbar;
 
   &:focus {
     outline: none;
@@ -975,6 +1688,15 @@ nav.breadcrumbs .s-breadcrumb-item button {
   :is(a, button, summary, label) {
     touch-action: manipulation;
   }
+
+  // In the sheet the rows are 48 tall: a thumb, not a pointer.
+  .ox-filters__values .ox-filters__chip {
+    min-block-size: 48px;
+  }
+
+  .ox-filters__summary {
+    min-block-size: 52px;
+  }
 }
 
 .ox-fsheet__head {
@@ -995,15 +1717,17 @@ nav.breadcrumbs .s-breadcrumb-item button {
 
 .ox-fsheet__title {
   margin: 0;
+  font-weight: var(--ox-w-stmt);
 }
 
 .ox-fsheet__close {
   color: var(--ox-ink);
+  border-radius: 0;
 }
 
 .ox-fsheet__body {
   flex: 1 0 auto;
-  padding: var(--ox-2) var(--ox-gutter) var(--ox-6);
+  padding: var(--ox-1) var(--ox-gutter) var(--ox-6);
 }
 
 // Reset and apply stay in reach at the foot: the apply button takes two
@@ -1064,7 +1788,129 @@ nav.breadcrumbs .s-breadcrumb-item button {
   opacity: 0.6;
 }
 
+// THE PENDING STATE (r21 fix round; snippets/filter-client-island.liquid):
+// a URL with a client choice opens with the cards as plain plates, the
+// count and the load-more out of sight, until the script has drawn the
+// matches. The plates keep each card's box, so nothing moves when they fill.
+.ox-cf-pending [data-ox-grid] > li {
+  background: var(--ox-plate);
+}
+
+.ox-cf-pending [data-ox-grid] > li > *,
+.ox-cf-pending .ox-listing__progress,
+.ox-cf-pending .ox-listing .s-items-list-load-more,
+.ox-cf-pending .ox-listing .s-items-list-end {
+  visibility: hidden;
+}
+
+// THE IN-STOCK TOGGLE (r21 fix round; snippets/filter-native-group.liquid):
+// one option row at the head of the rail and the sheet, no heading, closed
+// by the groups' hairline.
+.ox-filters__toggle {
+  padding-block: var(--ox-1);
+  border-block-end: 1px solid var(--ox-bd);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// THE BRAND SEARCH (r21 fix round): a square field with the search mark at
+// its inline start, above the brand rows; the rows it does not match leave,
+// and the fold's own toggle steps aside while a search is on.
+.ox-filters__search {
+  position: relative;
+  margin-block-end: var(--ox-2);
+}
+
+.ox-filters__search-icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--ox-3);
+  z-index: 1;
+  color: var(--ox-fg-3);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.ox-filters__search .ox-input {
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding-inline-start: calc(var(--ox-3) + 18px + var(--ox-2));
+  border-radius: 0;
+
+  &:hover {
+    border-color: var(--ox-ink);
+  }
+}
+
+.ox-filters__values > li.is-search-miss,
+.ox-filters__group.is-searching .ox-filters__more > summary {
+  display: none;
+}
+
+// THE PRICE FIELDS (r21 fix round): the riyal mark inside each field at its
+// inline end, in the calm grey, clear of the typed amount.
+.ox-filters__range-box {
+  position: relative;
+  display: block;
+}
+
+.ox-filters__range-box .ox-input {
+  inline-size: 100%;
+  padding-inline-end: calc(var(--ox-3) + 20px);
+}
+
+.ox-filters__range-cur {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 50%;
+  inset-inline-end: var(--ox-3);
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-small);
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+// THE SIDE DRAWER (r21 fix round): from 600 the sheet stops at 440 at the
+// inline end over a scrim, so a label and its number sit a thumb apart
+// instead of 650 apart on a tablet; below 600 it keeps the whole screen.
+.ox-fsheet__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--ox-z-modal) - 1);
+  background: rgba(14, 16, 20, 0.5);
+  opacity: 0;
+  touch-action: none;
+  transition: opacity var(--dur-base) var(--ease-out);
+
+  &[hidden] {
+    display: none;
+  }
+
+  &.is-entered {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 600px) {
+  .ox-fsheet__panel.is-js {
+    inset-inline-start: auto;
+    inline-size: min(440px, 100%);
+    border-inline-start: 1px solid var(--ox-bd);
+    transform: translateX(calc(var(--direction-factor) * 100%));
+  }
+
+  .ox-fsheet__panel.is-js.is-entered {
+    transform: translateX(0);
+  }
+}
+
 // The applied chips: what is on, above the grid, each chip its own way off.
+// A square ink chip with the filter chip's notch (the X mark's step, the
+// motif X-IDENTITY gives filter chips), the label in white and the remove
+// mark in the orange, the one accent of the row: this is the active state.
 .ox-listing__applied-row {
   align-items: center;
   margin: 0;
@@ -1072,26 +1918,78 @@ nav.breadcrumbs .s-breadcrumb-item button {
   list-style: none;
 }
 
+// The notch is painted on a layer behind the chip (r21 fix round): drawn
+// with clip-path on the chip itself it also clipped the chip's 44 hit area
+// (`ox-hit-area`) to its 36 face, so a tap 3px off the chip missed it. On a
+// phone the face is 40 and the target 48.
 .ox-listing__applied .ox-chip--removable {
-  padding-inline-end: var(--ox-3);
+  isolation: isolate;
+  gap: var(--ox-2);
+  padding-inline: var(--ox-3) var(--ox-2);
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  clip-path: none;
+  font-weight: var(--ox-w-ui);
   text-decoration: none;
+  touch-action: manipulation;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--ox-ink);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
+  }
+
+  &:hover {
+    background: transparent;
+    border-color: transparent;
+
+    .ox-chip__remove {
+      background: var(--ox-accent);
+      color: var(--ox-on-accent);
+    }
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .ox-listing__applied .ox-chip--removable {
+    block-size: 40px;
+
+    &::after {
+      block-size: max(100%, 48px);
+    }
+  }
 }
 
 .ox-listing__applied .ox-chip__remove {
   inline-size: 20px;
   block-size: 20px;
+  margin-inline-start: 0;
+  border-radius: 0;
+  color: var(--ox-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ox-filters__chevron,
+  .ox-grid-products.is-loading {
+    transition: none;
+  }
+  // The sheet appears in place: a short fade, no travel.
   .ox-fsheet__panel.is-js {
     transform: none;
     opacity: 0;
-    transition: none;
+    transition: opacity var(--dur-fast) var(--ease-out);
   }
   .ox-fsheet__panel.is-js.is-entered {
     transform: none;
     opacity: 1;
-    transition: none;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+  .ox-fsheet__backdrop {
+    transition: opacity var(--dur-fast) var(--ease-out);
   }
 }
 
@@ -1163,10 +2061,14 @@ nav.breadcrumbs .s-breadcrumb-item button {
 //
 // The corner is this screen's one wedge, and nothing on it moves (A9).
 // ---------------------------------------------------------------------------
+// THE GRID SOONER ON A GOAL PAGE (r27 ADP-13, ADP-17): the hero's h1 takes
+// the listing h1 role (26 on a phone, 30 on a desktop; the 34 to 56 display
+// size retired) and its jump link went, so the hero is 256 tall on a phone
+// and 320 on a desktop (it was 360 and 420, the grid at 2653 on a phone).
 .ox-goal-hero {
   position: relative;
   overflow: hidden;
-  min-block-size: 360px;
+  min-block-size: 256px;
   display: flex;
   align-items: center;
 }
@@ -1218,7 +2120,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   display: flex;
   flex-direction: column;
   gap: var(--ox-3);
-  padding-block: var(--ox-12);
+  padding-block: var(--ox-8);
   align-items: flex-start;
 }
 
@@ -1239,20 +2141,32 @@ nav.breadcrumbs .s-breadcrumb-item button {
   max-inline-size: 42em;
 }
 
+// Three lines at most on a phone (r27 fix round: the English performance
+// lead ran to six at 360 and pushed the first card under the tab bar); the
+// whole intro follows the grid under its own heading.
+@media (max-width: 639.98px) {
+  .ox-goal-hero__lead {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+}
+
 .ox-goal-hero__cta {
   margin-block-start: var(--ox-2);
 }
 
 @media (min-width: 1024px) {
   .ox-goal-hero {
-    min-block-size: 420px;
+    min-block-size: 320px;
   }
   .ox-goal-hero__corner {
     display: none;
   }
   .ox-goal-hero__photo,
   .ox-goal-hero.has-photo .ox-goal-hero__photo {
-    @include ox-wedge(420px);
+    @include ox-wedge(320px);
     display: block;
     position: absolute;
     inset-block: 0;
@@ -1266,10 +2180,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
     }
   }
   .ox-goal-hero__inner {
-    padding-block: var(--ox-16);
+    padding-block: var(--ox-12);
   }
   .ox-goal-hero__title {
-    max-inline-size: 11em;
+    max-inline-size: 14em;
   }
 }
 
@@ -1302,8 +2216,34 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
+// The explainer's disclosure (snippets/goal-landing-intro.liquid): a 44
+// tall summary that names what a tap does, "عرض أقل" while the text is open
+// and "عرض المزيد" once closed, with the sprite's chevron turned by the
+// state, never the native triangle (r27 fix round: a 26 tall "عرض المزيد"
+// sat over text that was already open).
 .ox-explainer__toggle {
+  display: inline-flex;
+  align-items: center;
   align-self: flex-start;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+  color: var(--ox-fg);
+  font-weight: var(--ox-w-ui);
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.ox-explainer__disclosure[open] .ox-explainer__more,
+.ox-explainer__disclosure:not([open]) .ox-explainer__less {
+  display: none;
+}
+
+.ox-explainer__disclosure[open] .ox-explainer__chevron {
+  transform: rotate(180deg);
 }
 
 @media (min-width: 1024px) {
@@ -1565,7 +2505,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   background: var(--ox-ink);
 }
 
+// No logo shift (2026-09-27): the logo fills the box's fixed content height
+// (72, 96 from 1280), so it never resizes between the img attributes' ratio
+// and the file's own; object-fit: contain letterboxes it in the same spot.
 .ox-brand-tile__logo {
+  block-size: 100%;
   max-inline-size: 100%;
   max-block-size: 100%;
   object-fit: contain;
@@ -1872,6 +2816,175 @@ nav.breadcrumbs .s-breadcrumb-item button {
   }
 }
 
+// THE BRAND PAGE AS A LISTING BAND (r27 ADP-16, the Shopify port;
+// sections/main-collection.liquid). The warm plate, the trail and the ruled
+// title row every listing opens on, where the brand page opened on a white
+// cut panel 200 to 240 tall with the grid at 1042 on a phone. The brand's
+// real logo stands on a white sharp tile in the row's media slot (120 by
+// 40 on a phone, 160 by 56 from 1024), the page's h1 is the brand's name
+// with the Latin name the tub prints under it on the Arabic page, and the
+// count closes the head. The `.ox-brandhero` rules above stay for the
+// Salla build's own banner.
+.ox-brandband__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 120px;
+  block-size: 40px;
+  padding: 0 var(--ox-1);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-bd);
+  border-radius: 0;
+}
+
+// The logo fills the tile's height (r27 fix round): a square logo file (the
+// MuscleTech mark sits in a 180 by 180 square) shrank to an unreadable
+// glyph inside the padded tile; contain keeps a wide mark whole.
+.ox-brandband__logo .ox-brandband__img {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ox-brandband__logo--dark {
+  background: var(--ox-ink);
+}
+
+.ox-brandband__img {
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  inline-size: auto;
+  block-size: auto;
+  object-fit: contain;
+}
+
+.ox-brandband__latin {
+  display: block;
+  margin-block-start: 2px;
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-flat);
+  unicode-bidi: isolate;
+}
+
+.ox-brandband__count {
+  margin: 0;
+  color: var(--ox-fg-2);
+}
+
+@media (min-width: 1024px) {
+  .ox-brandband__logo {
+    inline-size: 160px;
+    block-size: 56px;
+    padding: 0 var(--ox-2);
+  }
+}
+
+// THE BRAND PAGE ON THE SLIM BAND (OD-10 option ii, the default; r27 fix
+// round). The category band's frame, 128 tall on a phone and 260 from
+// 1024: the warm plate with the trail, the name and the Latin name in the
+// text column, and where a category shows its cover, the brand's real logo
+// large on a white pane at the physical right with the same 34 degree cut
+// on its inner edge (the logo sized to the pane, so a square file reads as
+// a mark, not a glyph). A brand with no logo file keeps the plate alone at
+// its own height, never an empty pane.
+.ox-listing__band--brand.ox-listing__band--slim {
+  --band-h: 128px;
+  --band-pane: 50cqw;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  min-block-size: var(--band-h);
+}
+
+.ox-brandband__pane {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0 auto;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--band-pane);
+  // The logo centres in the part of the pane the cut leaves whole.
+  padding-inline-end: calc(var(--band-h) * var(--ox-angle-tan, 0.6745) / 2);
+  background: var(--ox-card);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, calc(var(--band-h) * var(--ox-angle-tan, 0.6745)) 100%);
+
+  [dir='ltr'] & {
+    inset-inline: auto 0;
+    padding-inline: calc(var(--band-h) * var(--ox-angle-tan, 0.6745) / 2) 0;
+  }
+
+  .ox-brandband__img {
+    inline-size: 72%;
+    block-size: 56%;
+    max-inline-size: 240px;
+  }
+
+  // A raster logo never draws past its own pixel size (2026-09-27 review):
+  // a maker's small file (Basix 163 by 60, Core Champs 195 by 118) was
+  // stretched up to 1.5 times into the 240 by 145 box and went soft. It
+  // takes its natural size inside the same box instead; an SVG still fills.
+  .ox-brandband__img:not([src*='.svg']) {
+    inline-size: auto;
+    block-size: auto;
+    max-inline-size: min(72%, 240px);
+    max-block-size: 56%;
+  }
+}
+
+.ox-brandband__pane.ox-brandband__logo--dark {
+  background: var(--ox-ink);
+}
+
+.ox-listing__band--brand.ox-listing__band--slim .ox-listing__band-inner {
+  position: relative;
+  z-index: 1;
+  padding-block: 0 var(--ox-3);
+}
+
+.ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-listing__band-inner > * {
+  max-inline-size: calc(100% - var(--band-pane) + var(--ox-gutter) - var(--ox-3));
+  margin-inline: auto 0;
+}
+
+[dir='ltr'] .ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-listing__band-inner > * {
+  margin-inline: 0 auto;
+}
+
+.ox-listing__band--brand.ox-listing__band--slim .ox-brandband__latin {
+  margin-block-start: 0;
+}
+
+// The head fills its column, so the name starts where the trail starts.
+.ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-listing__band-inner > .ox-listing__head {
+  inline-size: 100%;
+}
+
+@media (min-width: 1024px) {
+  .ox-listing__band--brand.ox-listing__band--slim.has-logo {
+    --band-h: 260px;
+    --band-pane: min(52cqw, var(--band-h) * 2.1);
+  }
+
+  .ox-listing__band--brand.ox-listing__band--slim .ox-listing__band-inner {
+    padding-block: 0 var(--ox-6);
+  }
+
+  .ox-listing__band--brand.ox-listing__band--slim:not(.has-logo) {
+    min-block-size: 0;
+  }
+
+  .ox-listing__band--brand.ox-listing__band--slim.has-logo .ox-listing__band-inner > * {
+    max-inline-size: calc(100% - var(--band-pane) + (100cqw - 100%) / 2 - var(--ox-12, 48px));
+  }
+}
+
 // ---------------------------------------------------------------------------
 // 12. The product card, built to CARD-2026-09-23
 //
@@ -1904,9 +3017,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // see `_b3-product.scss`'s own note on `.ox-card-product__wish`). This
 // override re-points an inset the base file set the other way, so it stays
 // stated rather than left to inherit.
+// Below 640 the plate spans the card border to border (ADP-20,
+// _b3-product.scss section 1): the column adds the bleed back, so it keeps
+// its corner on the text's 12 line.
 .ox-card-product__badges {
   inset-inline-start: auto;
-  inset-inline-end: 0;
+  inset-inline-end: var(--ox-card-bleed, 0px);
   align-items: flex-end;
 }
 
@@ -1918,6 +3034,8 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // loads after `_primitives`, so this wins at equal specificity.
 .ox-card-product__badges .ox-badge {
   clip-path: none;
+  // Square (owner, 2026-09-26: "avoid rounded cards and buttons globally").
+  border-radius: 0;
 }
 
 // The saving pill: solid go, reversed type. #0F7B4F against white measures
@@ -1928,7 +3046,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // differently, and with it gone there is nothing left to except it for.
 .ox-card-product__saving-badge {
   gap: var(--ox-1);
-  border-radius: var(--ox-r-1);
+  border-radius: 0;
   background: var(--ox-go);
   border-color: var(--ox-go);
   color: var(--ox-paper);
@@ -1951,6 +3069,38 @@ nav.breadcrumbs .s-breadcrumb-item button {
   background: var(--ox-card);
   border-color: var(--ox-bd-2);
   color: var(--ox-fg);
+}
+
+// The Shopify card's dietary tag (review of 2026-09-27: the glyph alone read
+// as a stray icon): the glyph and its word, one line, never wider than the
+// plate.
+.ox-card-product__badges {
+  max-inline-size: calc(100% - var(--ox-card-bleed, 0px) * 2);
+}
+
+.ox-card-product__diet {
+  max-inline-size: 100%;
+
+  > span {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ox-icon {
+    flex: none;
+  }
+}
+
+// THE SALE FOLLOWS THE SWATCH (review of 2026-09-27, snippets/product-card
+// .liquid): the saving badge and the struck price render on a card whose
+// swatches set its price, hidden until the chosen variant is on sale;
+// assets/ox.js shows, sets or hides them with the price. The badge's own
+// `display` would otherwise outrank the `hidden` attribute.
+.ox-card-product__saving-badge[hidden],
+.ox-card-product__price > [hidden],
+.ox-card-product__price > .ox-card-product__was--off {
+  display: none;
 }
 
 // The colour column on the plate's trailing edge. It is a PREVIEW, not a
@@ -2002,7 +3152,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   // product's real colour and is never touched, only the boundary framing
   // it lightens.
   border: 1px solid color-mix(in srgb, var(--ox-line-3) 50%, transparent);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
   // Set from the product's own option hex; the fallback keeps the dot visible
   // if a colour ever arrives empty.
   background: var(--ox-swatch, var(--ox-plate));
@@ -2019,14 +3169,66 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // a thumbnail (homepage-scale-spec, "Type"). Two lines at the body step is 44
 // at 390, 46 at 1440 (CARD-2026-09-23 section 3.3), which is the row the card
 // and its skeleton both reserve.
+// THE CARD TYPE SCALE (owner, 2026-09-26: "audit all cards and text sizes
+// both on desktop and mobile for a smooth and clear and perfectly sized
+// shopping experience that feels familiar to saudi audience like top used
+// website and apps in saudi arabia"). Measured the same day on the live
+// product grids of Noon, Amazon.sa, Nahdi, Jarir and Namshi at 390 and
+// 1440: the photo first; the title 12 to 14 on a phone and 14 to 16 on a
+// desktop, at a regular or medium weight, two or three lines; the price the
+// heaviest text on the card (600 to 700; 13 to 16 on a phone, 15 to 28 on a
+// desktop) with its currency beside it; the was-price 12 to 13, lighter,
+// struck and grey; the meta 11 to 13, calm grey. OptimalX keeps its figure-
+// weight price and holds every step on the site floors (13 on a phone, 14
+// in Arabic, 14 on a desktop; tokens.css):
+//
+//   role                  narrow card     wider card    weight
+//   brand, spec line      micro           micro         550, 500, grey
+//   title (two lines)     15              16            600
+//   price                 18              20            900
+//   was-price, "from"     micro           micro         550 struck, 600
+//   badges, swatch labels micro           micro         700, 600
+//   buy now, choose       17.1, the global primary (owner, 2026-09-22), 700
+//   ask (sold out)        16, the global secondary, 600
+//   (no add and no stepper on any card since the owner's latest ruling of
+//   2026-09-26; the card's one action, _qtybar.scss section 5)
+//
+// "Narrow" is the phone card, a content box of 170 or less (132 on a 360
+// grid, 147 at 390, 148 in the home rails); the tablet grid (192), the
+// desktop grids (196 to 274) and the product page's rails are wider. The
+// title was 16 to 17 at 700, as loud as the price beside it; one step down
+// at 600 it reads as the name and the price reads first. The title box is
+// exactly two lines at every size (a one-line title reserves the second, a
+// longer one ends in an ellipsis), so every card of a row keeps one height.
 .ox-card-product__name {
-  min-block-size: 44px;
-  font-size: var(--ox-t-body);
+  block-size: calc(var(--ox-lh-snug) * 2em);
+  min-block-size: 0;
+  font-size: 16px;
+  font-weight: var(--ox-w-ui);
 }
 
-@media (min-width: 1024px) {
+@container oxcard (max-width: 170px) {
   .ox-card-product__name {
-    min-block-size: 46px;
+    font-size: 15px;
+  }
+
+  .ox-card-product__price .ox-price--card {
+    font-size: 18px;
+  }
+
+  // The struck price without its riyal mark on a phone card, the way Noon
+  // strikes the old figure beside the new one: the mark already stands next
+  // to the price, and without it a three-figure sale fits whole beside an
+  // 18px price on a 360 phone (18 + 8 + 44 in 130; with the mark it was 56
+  // wide and left the row). Hidden the screen-reader way, so the currency is
+  // still read.
+  .ox-card-product__price > .ox-price--was .ox-price__mark {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
@@ -2099,7 +3301,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-block-size: 40px;
   background: var(--ox-card);
   border: 1px solid var(--ox-bd-2);
-  border-radius: var(--ox-r-2);
+  border-radius: 0;
 }
 
 .ox-card-product__qty-btn {
@@ -2649,7 +3851,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   min-block-size: 44px;
   padding-inline: var(--ox-4);
   @include ox-secondary-face(var(--ox-fg), var(--ox-card));
-  border-radius: var(--ox-r-2);
+  border-radius: 0;
   font-family: inherit;
   font-size: var(--ox-t-small);
   font-weight: var(--ox-w-ui);
@@ -2688,7 +3890,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   padding-inline: var(--ox-4);
   background: var(--ox-fill);
   border: 1px solid var(--ox-bd);
-  border-radius: var(--ox-r-2);
+  border-radius: 0;
   color: var(--ox-ink-4);
   font-family: inherit;
   font-size: var(--ox-t-small);
@@ -2942,7 +4144,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
     block-size: 32px;
     padding-inline: var(--ox-2);
     background: color-mix(in srgb, var(--ox-card) 78%, transparent);
-    border-radius: var(--ox-r-1);
+    border-radius: 0;
     pointer-events: auto;
   }
 }
@@ -2960,7 +4162,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   @include ox-hit-area;
   inline-size: 24px;
   block-size: 24px;
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
   cursor: pointer;
 }
 
@@ -2981,7 +4183,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   justify-content: center;
   inline-size: 24px;
   block-size: 24px;
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
   border: 1px solid var(--ox-bd-2);
   // Set from the value's own colour (`--ox-swatch`, inline style), the
   // engine's or `NAMED_COLORS`' (VariantChips.tsx); the fallback keeps the
@@ -3010,7 +4212,7 @@ nav.breadcrumbs .s-breadcrumb-item button {
   inline-size: auto;
   max-inline-size: 96px;
   padding-inline: var(--ox-2);
-  border-radius: var(--ox-r-2);
+  border-radius: 0;
   background: var(--ox-plate);
   font-size: var(--ox-t-micro);
   overflow: hidden;
@@ -3040,11 +4242,188 @@ nav.breadcrumbs .s-breadcrumb-item button {
   block-size: 24px;
   padding-inline: 4px;
   border: 1px dashed var(--ox-bd-2);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
   font-variant-numeric: tabular-nums;
   color: var(--ox-fg-3);
+}
+
+// ---------------------------------------------------------------------------
+// THE SQUARE SWATCHES on the Shopify card (owner, 2026-09-26: "every
+// flavor/variant should have its own color, and consider make it a square
+// instead of circle"; snippets/card-swatches.liquid). Scoped to the card's
+// plate row, so the product page's own chips keep their rules. One system for
+// every option: an 18 square in the value's colour (the colour, or the
+// flavour's colour from snippets/swatch-color.liquid), a neutral square with
+// the first letter when a flavour has no colour yet, a square-cornered text
+// chip for a size or a gift value.
+//
+// Targets (review of 2026-09-27: flush 24 by 28 cells let a slightly off tap
+// pick the neighbour): each swatch is a 24 wide, 32 tall cell, 4 apart, and
+// reaches 44 tall past the row (the hit-area mixin's own pseudo, held to the
+// cell's width). The row takes the pointer itself, so a tap in a gap, on the
+// row's edge or on "+N" lands on the row and does nothing: a near miss never
+// picks the neighbour and never opens the product. The rest of the plate
+// still opens it.
+//
+// The chosen value: the accent ring and, in its top-left corner, the accent
+// wedge at the identity's 34 degrees, leaning "/" like the buy-now in both
+// languages (clip-path is physical, so it never mirrors). A value no variant
+// can sell is struck the same "/" way and faded; it stays selectable.
+// ---------------------------------------------------------------------------
+.ox-card-product__variants.ox-card-product__variants {
+  // The phone photo's bleed (ADP-20, _b3-product.scss section 1) is added
+  // back to the row's inset and taken off its width, so on a phone the row
+  // sits where it sat before the photo grew and the card-width thresholds
+  // below still hold.
+  &:not(:empty) {
+    inset-block-end: 6px;
+    inset-inline-start: calc(6px + var(--ox-card-bleed, 0px));
+    gap: 4px;
+    block-size: 32px;
+    max-inline-size: calc(100% - 12px - var(--ox-card-bleed, 0px) * 2);
+    padding-inline: 3px;
+    border-radius: 0;
+    background: color-mix(in srgb, var(--ox-card) 86%, transparent);
+    pointer-events: auto;
+  }
+
+  .ox-swatch {
+    inline-size: 24px;
+    block-size: 32px;
+    border-radius: 0;
+    pointer-events: auto;
+
+    &::after {
+      inline-size: 100%;
+      block-size: 44px;
+    }
+  }
+
+  .ox-swatch__face {
+    position: relative;
+    inline-size: 18px;
+    block-size: 18px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--ox-fg) 18%, transparent);
+    border-radius: 0;
+    background: var(--ox-swatch, var(--ox-plate));
+    // The unmapped value's first letter at the floor (micro, 13 on a phone
+    // and 14 in Arabic; was 10, under it); one letter clears the 18 square.
+    font-size: var(--ox-t-micro);
+    font-weight: var(--ox-w-title);
+    line-height: 1;
+    color: var(--ox-fg-2);
+  }
+
+  // A size or a gift value: a chip, as tall as the squares' row allows.
+  .ox-swatch--text {
+    inline-size: auto;
+    padding-inline: 2px;
+
+    .ox-swatch__face {
+      inline-size: auto;
+      min-inline-size: 18px;
+      max-inline-size: 76px;
+      block-size: 20px;
+      padding-inline: 4px;
+      overflow: hidden;
+      background: var(--ox-card);
+      // At the floor (was 11): "4.4 باوند" and "1000 ريال" are the longest
+      // values, about 60 at 14.
+      font-size: var(--ox-t-micro);
+      font-weight: var(--ox-w-ui);
+      color: var(--ox-fg);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .ox-swatch:has(> .ox-swatch__input:checked) .ox-swatch__face {
+    outline: 2px solid var(--ox-accent);
+    outline-offset: 1px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: var(--ox-accent);
+      clip-path: polygon(0 0, 6.7px 0, 0 10px);
+    }
+  }
+
+  // The struck mark shared with the product page's chips (_b3-product.scss
+  // 9d, ox-chip-struck): the "/" across the faded square.
+  .ox-swatch.is-off .ox-swatch__face {
+    opacity: 0.5;
+
+    &::before {
+      @include ox-chip-struck;
+    }
+  }
+
+  .ox-swatch:has(> .ox-swatch__input:focus-visible) {
+    outline: none;
+
+    .ox-swatch__face {
+      outline: 2px solid var(--ox-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  .ox-card-product__variant-more {
+    min-inline-size: 22px;
+    block-size: 18px;
+    margin-inline-start: 0;
+    padding-inline: 3px;
+    border-radius: 0;
+    font-size: var(--ox-t-micro);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .ox-card-product__variant-more--narrow {
+    display: none;
+  }
+}
+
+// Four squares or three chips show on a roomy card; on a narrow one the tail
+// (the last shown value that is not ringed, snippets/card-swatches.liquid)
+// steps back and the second "+N" (one more) shows. Squares: four and a count
+// take 140 (3 + 4 x 24 + 3 x 4 + 4 + 22 + 3), so from a 152 card (the row
+// stops 12 short of the plate); below it three and the count take 112, which
+// the narrowest card, the product page's 125 rail at 360, still holds. Chips:
+// up to a 208 card, two (the gaps added 8). The rules carry the block's own
+// doubled class: at the (0,2,0) they had, the block's default
+// `display: none` for the second count (0,3,0) won, so a narrow card hid a
+// value and showed no count at all (review of 2026-09-27: six flavours, three
+// squares, no "+3").
+@container oxcard (max-width: 151px) {
+  .ox-card-product__variants.ox-card-product__variants--colour,
+  .ox-card-product__variants.ox-card-product__variants--flavour {
+    .ox-swatch--tail,
+    .ox-card-product__variant-more--wide {
+      display: none;
+    }
+
+    .ox-card-product__variant-more--narrow {
+      display: inline-flex;
+    }
+  }
+}
+
+@container oxcard (max-width: 208px) {
+  .ox-card-product__variants.ox-card-product__variants--text {
+    .ox-swatch--tail,
+    .ox-card-product__variant-more--wide {
+      display: none;
+    }
+
+    .ox-card-product__variant-more--narrow {
+      display: inline-flex;
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -3226,6 +4605,93 @@ nav.breadcrumbs .s-breadcrumb-item button {
 @media (min-width: 768px) {
   .ox-featured__item {
     flex-basis: calc((100% + var(--ox-3)) / 2 - var(--ox-3));
+  }
+}
+
+// THE CURATED PICKS AS THE GRID'S OWN CARDS (r27 ADP-14,
+// snippets/featured-rail.liquid `cards: true`): each card exactly the width
+// of a grid card on the same page, in every range, so a pick never reads
+// bigger or smaller than the product under it (the covers were 642 by 546
+// at 1440 over 228 by 431 cards). The widths are the grid's own columns
+// (section 5) solved on the block's width (`cqw`, the listing container):
+// 2 with a 16 gap on a phone, 3 with a 16 gap from 640, and from 1024 the
+// grid beside the 280 filter column and its 32 gap (3 columns, then 4 from
+// 1280, gap 24) or the full row (4, gap 24). The rail's own gap is 12 on
+// phones and tablets and the track runs on to the screen's end edge there,
+// so the next card peeks 20 past the second on every phone (32 at 768);
+// from 1024 the gap is the grid's 24 and the arrows sit in the head.
+.ox-featured--cards {
+  container-type: inline-size;
+
+  --ox-feat-card: calc((100cqw - var(--ox-4)) / 2);
+
+  .ox-featured__row {
+    gap: var(--ox-3);
+    margin-inline-end: calc(-1 * var(--ox-gutter));
+    padding-inline-end: var(--ox-gutter);
+    scroll-padding-inline: 0;
+  }
+
+  .ox-featured__item--card {
+    display: flex;
+    flex: 0 0 var(--ox-feat-card);
+    scroll-snap-align: start;
+
+    > * {
+      inline-size: 100%;
+    }
+  }
+}
+
+@media (min-width: 640px) {
+  .ox-featured--cards {
+    --ox-feat-card: calc((100cqw - 2 * var(--ox-4)) / 3);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-featured--cards {
+    --ox-feat-card: calc((100cqw - 3 * var(--ox-6)) / 4);
+
+    .ox-featured__row {
+      gap: var(--ox-6);
+      margin-inline-end: 0;
+      padding-inline-end: 0;
+    }
+  }
+
+  .ox-featured--cards.ox-featured--with-rail {
+    --ox-feat-card: calc((100cqw - 280px - var(--ox-8) - 2 * var(--ox-6)) / 3);
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-featured--cards.ox-featured--with-rail {
+    --ox-feat-card: calc((100cqw - 280px - var(--ox-8) - 3 * var(--ox-6)) / 4);
+  }
+}
+
+// Whole cards over the grid (r27 fix round): beside the filter column the
+// rail's head and track start where the grid starts, so the track is the
+// grid's own column (984 at 1440: 4 cards of 228 and 3 gaps of 24) and
+// shows 3 or 4 whole picks, never a sliver of a fifth past them. The arrow
+// pair shows only when the picks outnumber the whole cards in view
+// (featured-rail.liquid names a set of 3 or fewer "fit3", of 4 or fewer
+// "fit4").
+@media (min-width: 1024px) {
+  .ox-featured--cards.ox-featured--with-rail > * {
+    margin-inline-start: calc(280px + var(--ox-8));
+  }
+
+  .ox-featured--cards.ox-featured--fit4:not(.ox-featured--with-rail) .ox-featured__nav,
+  .ox-featured--cards.ox-featured--with-rail.ox-featured--fit3 .ox-featured__nav {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ox-featured--cards.ox-featured--with-rail.ox-featured--fit4 .ox-featured__nav {
+    display: none;
   }
 }
 

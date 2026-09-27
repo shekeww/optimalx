@@ -251,6 +251,80 @@
   }
 }
 
+// The line's facts under its name (r27 ADP-31, sections/main-cart.liquid).
+// The options, one row each: the option's name quiet, the value in the ink,
+// a colour or flavour value led by its 16 square (the fill from
+// snippets/swatch-color.liquid, the card's and the product page's map; a
+// hairline keeps an edge on white and cream fills; sharp like every
+// swatch). Then the expiry in the product page's own face (.ox-pdp__expiry:
+// 14, the icon one step quieter) and, from a real compare-at price only, the
+// saving in the card's saving green (.ox-card-product__saving).
+.ox-cart__opts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  margin: var(--ox-1) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ox-fg-3);
+}
+
+.ox-cart__opt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--ox-2);
+  min-inline-size: 0;
+  line-height: 20px;
+}
+
+.ox-cart__opt-value {
+  color: var(--ox-fg);
+  font-weight: var(--ox-w-quiet);
+}
+
+.ox-cart__swatch {
+  flex: none;
+  inline-size: 16px;
+  block-size: 16px;
+  background: var(--ox-swatch, transparent);
+  border: 1px solid rgb(13 16 20 / 20%);
+  border-radius: 0;
+}
+
+.ox-cart__line-expiry {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: var(--ox-1) 0 0;
+  font-size: 14px;
+  line-height: var(--ox-lh-lead);
+  color: var(--ox-fg-2);
+}
+
+.ox-cart__line-expiry-icon {
+  flex: none;
+  color: var(--ox-fg-3);
+}
+
+.ox-cart__line-saving {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-1);
+  margin: var(--ox-1) 0 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  line-height: 18px;
+  color: var(--ox-go);
+}
+
+.ox-cart__line-saving-amount {
+  display: inline-flex;
+  gap: var(--ox-1);
+  font-variant-numeric: tabular-nums;
+}
+
 // ---------------------------------------------------------------------------
 // 2. Cart summary (DIRECTION 5.5 CartSummary)
 // ---------------------------------------------------------------------------
@@ -402,7 +476,7 @@
 
   &__track {
     block-size: 6px;
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
     background: var(--ox-plate-2);
     overflow: hidden;
   }
@@ -413,7 +487,7 @@
     display: block;
     block-size: 100%;
     background: var(--ox-accent);
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
   }
 
   &.is-reached {
@@ -458,6 +532,52 @@
   padding: 0;
   list-style: none;
   color: var(--ox-fg-3);
+}
+
+// Proof and facts at the checkout button (r27 ADP-31). The shipping row
+// reads quieter than the figures around it (it is a note, not an amount).
+// Under the button: the payment marks' plate, then the store's gated Google
+// rating chip with its 44 hit, then the trust lines; 16 from the button,
+// 12 inside the group.
+.ox-cart__ship-value {
+  font-weight: var(--ox-w-quiet);
+  color: var(--ox-fg-2);
+}
+
+.ox-cart__lock {
+  display: inline-flex;
+  flex: none;
+}
+
+.ox-cart__assure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-3);
+  margin-block-start: var(--ox-4);
+}
+
+// The chip keeps its stars and figure on one line and, when the words do
+// not fit beside them (a 360 phone), drops the words under them as one
+// group instead of breaking the label around the figure.
+.ox-cart__rating {
+  align-self: flex-start;
+  flex-wrap: wrap;
+  row-gap: var(--ox-1);
+  min-block-size: 44px;
+}
+
+.ox-cart [data-ox-cart-summary] .ox-cart-trust__lines {
+  margin-block-start: var(--ox-4);
+}
+
+.ox-cart [data-ox-cart-summary] .ox-cart__assure + .ox-cart-trust__lines {
+  margin-block-start: var(--ox-3);
+}
+
+// The advisory plate after the summary (r27 ADP-36): its own 32 above it,
+// and the page's 64 end below it rather than 32 plus 64.
+.ox-cart .ox-advisory {
+  margin-block-end: 0;
 }
 
 // The empty cart: the EmptyState in the content column, at the height the
@@ -664,7 +784,7 @@
     flex: none;
     inline-size: 24px;
     block-size: 24px;
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
     background: var(--ox-plate);
     color: var(--ox-fg);
     font-weight: var(--ox-w-figure);
@@ -745,7 +865,7 @@
       min-block-size: 36px;
       padding-inline: var(--ox-3);
       border: 1px solid var(--ox-bd-2);
-      border-radius: var(--ox-r-pill);
+      border-radius: 0;
       background: var(--ox-surface);
       color: var(--ox-fg);
       font-size: 15px;
@@ -869,6 +989,9 @@
 
   article {
     font-size: 16px;
+    // Reading copy (type review, 2026-09-26): the paragraphs inherited the
+    // reset's 400, the thin Arabic the weight floor exists to prevent.
+    font-weight: var(--ox-w-read);
     line-height: var(--ox-lh-prose);
 
     h2,

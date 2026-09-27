@@ -369,6 +369,27 @@ a[href]:focus-visible {
   }
 }
 
+// The document's own copy (type review, 2026-09-26). Text that carries no
+// role of its own inherits from body, and body was still the engine reset's
+// 15/400 (02-generic/reset.scss): section sublines, breadcrumbs, the hours
+// figures, the rating chip, a band's one line and the nutrition figures
+// all drew at 400, under the 500 floor, and unclassed copy at 15, off the
+// scale. Body now sits on the scale's body step at the Open weight. The
+// reset's 26px leading stays: it is the .ox-body leading at 16, and moving
+// it to a ratio would change the height of every row that inherits it.
+body {
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-open);
+}
+
+// A dark band re-points --ox-w-open at 550 (tokens.css), but inherited text
+// takes body's computed 500, not the token, so the band declares the weight
+// once more for the copy inside it that has no role of its own. Any rule of
+// a component's own, later in the cascade, still wins.
+.ox-band-dark {
+  font-weight: var(--ox-w-open);
+}
+
 // Figure. A number that is the point, and the only step above Statement. The
 // unit that travels with it drops to Quiet: a heavy figure against a light
 // unit is what makes a price read as a price rather than as a heading.
@@ -476,51 +497,49 @@ a[href]:focus-visible {
   &--44, &--48, &--56, &--64, &--96 { --ox-icon-stroke: 2px; }
 }
 
-// THE ICON TILE (owner, 2026-09-25, the onthegoofficial.my reference): the
-// reference stands its value icons (protein, macros, calories, prebiotic)
-// white and solid in an accent disc, and gives its feature and benefit icons
-// solid parts. OptimalX takes the lesson on its own terms: a solid plate cut
-// once on the brand angle at its top inline-end corner (the corner that
-// faces the label), the same plate at every width, never a circle.
-//   .ox-icon-tile          graphite plate, the glyph in white and its accent
-//                          part in orange: for light surfaces.
-//   .ox-icon-tile--accent  orange plate, the whole glyph in white (mono): for
-//                          dark bands and dark cards, the white-on-orange
-//                          pairing of the primary button.
-// The class goes on the icon's own svg (`class:` of snippets/icon.liquid):
-// the plate is the svg's padding box, so the glyph keeps the size the call
-// site asks for and the tile grows round it (24 in a 44 tile, 32 in a 56).
-// A surface, so the cut mirrors with the reading direction like every plate;
-// a mirrored glyph's svg is flipped by `.ox-mirror` in Arabic, so it takes
-// the English polygon there and the flip lands it on the Arabic corner.
-@mixin ox-icon-plate-cut($lean) {
-  clip-path: polygon(0 #{$lean}, calc(#{$lean} * #{$ox-angle-tan}) 0, 100% 0, 100% 100%, 0 100%);
-  [dir='ltr'] & {
-    clip-path: polygon(0 0, calc(100% - #{$lean} * #{$ox-angle-tan}) 0, 100% #{$lean}, 100% 100%, 0 100%);
-  }
-}
+// THE ICON TILE, WITHOUT A PLATE (owner, 2026-09-26: "regarding the icons
+// system, these icons are to be without background fill and the white fill
+// becomes black"). The graphite and orange plates of 2026-09-25 are retired:
+// a tile is the glyph alone, in the content ink of its surface, the row of
+// icon-system_2.md A7 that has no plate. `--ox-fg` is the body ink (#12171E)
+// on a light surface, and every dark band (`.ox-band-dark`: the home
+// advisory band and the Start here band of the services page among them)
+// re-declares it as the ink on dark, so there the glyph turns white with
+// still no fill behind it. The accent part of a two-tone glyph keeps the
+// brand orange (A5). Measured on the real grounds, 2026-09-26: the ink
+// 17.99:1 on paper and 15.92:1 on the plate grey; the ink on dark 17.35:1 on
+// the band and 14.74:1 on the door card (graphite-3); the orange accent part
+// 5.30:1 on the band, 4.51:1 on the door card and 3.59:1 on paper (one part
+// of a glyph, over the 3:1 WCAG 1.4.11 asks of a graphic).
+//   .ox-icon-tile          the glyph in the content ink, its accent orange.
+//   .ox-icon-tile--accent  the name stays so no call site changes; it draws
+//                          the same as the tile now (the orange plate with
+//                          its mono white glyph is retired with the plates).
+// The class goes on the icon's own svg (`class:` of snippets/icon.liquid).
+// The glyph keeps the size the call site asks for, and the A6 box keeps its
+// height (24 in a 44 box, 32 in a 56: the block padding below), so no row
+// grows or shrinks. The box has no inline padding: with the plate gone, the
+// glyph itself is what the eye lines up, so it stands on the text column's
+// edge in a stacked card (the channel doors, the branch map) and the gap a
+// shopper sees beside a label is the row's own A8 gap (16 beside a 32, 12
+// beside a 24), where the empty inline padding had added 10 or 12 more
+// (review of 2026-09-26: the door glyph 12 inside every other line, 28 from
+// the offers title). With no plate there is no cut to draw and nothing to
+// mirror.
 .ox-icon.ox-icon-tile {
   --ox-icon-tile-pad: 10px;
   box-sizing: border-box;
-  inline-size: calc(var(--ox-icon-size, 24px) + 2 * var(--ox-icon-tile-pad));
+  inline-size: var(--ox-icon-size, 24px);
   block-size: calc(var(--ox-icon-size, 24px) + 2 * var(--ox-icon-tile-pad));
-  padding: var(--ox-icon-tile-pad);
-  background: var(--ox-graphite);
-  color: var(--ox-ink-on-dark);
-  @include ox-icon-plate-cut(calc(var(--ox-icon-tile-pad) + 2px));
-  [dir='rtl'] &.ox-mirror {
-    clip-path: polygon(0 0, calc(100% - (var(--ox-icon-tile-pad) + 2px) * #{$ox-angle-tan}) 0, 100% calc(var(--ox-icon-tile-pad) + 2px), 100% 100%, 0 100%);
-  }
+  padding-block: var(--ox-icon-tile-pad);
+  padding-inline: 0;
+  background: none;
+  color: var(--ox-fg);
   &.ox-icon--32,
   &.ox-icon--36,
   &.ox-icon--40 {
     --ox-icon-tile-pad: 12px;
   }
-}
-.ox-icon.ox-icon-tile--accent {
-  background: var(--ox-accent);
-  color: var(--ox-on-accent);
-  --ox-icon-mono: currentColor;
 }
 // Exactly one element per symbol is the accent: a fill with no stroke, except
 // ox-tick whose stroke is the accent (the only icon drawn that way).
@@ -534,9 +553,70 @@ a[href]:focus-visible {
 .ox-icon__accent {
   fill: var(--ox-icon-mono, var(--ox-accent));
   stroke: none;
+  // Unset everywhere but on the WhatsApp mark below.
+  translate: var(--ox-icon-accent-shift, none);
 }
 .ox-icon--mono {
   --ox-icon-mono: currentColor;
+}
+// THE WHATSAPP MARK (owner, 2026-09-26: "fix whatsapp icon and style
+// globally so the phone icon is centered in the circle and its colors as
+// the same color as the circle instead of orange"). The owner's set never
+// draws it (icon-system_2.md A13 and B13; scripts/import-icons-v3.mjs
+// carries ox-whatsapp and ox-whatsapp-s byte for byte), so the theme sets it
+// once here for every call site: snippets/icon.liquid tags each WhatsApp svg
+// `ox-icon--wa`, and the small twin `ox-icon--wa-s` as well.
+// - One colour: the handset (the symbol's accent part) takes the bubble's
+//   own colour through the mono switch, so the mark is never orange
+//   anywhere: white on the green float, the green or the ink of its call
+//   site on a light ground, the ink on dark on a dark band.
+// - Centred: measured against the bubble's circle (the arc's centre) in the
+//   24 grid, the handset sat 0.1 to the side and 0.8 low in ox-whatsapp and
+//   0.7 to the side and 1.7 low in ox-whatsapp-s, where it came within
+//   0.5 of the ring (the midpoint of the handset's box centre and its mass
+//   centre, the optical centre of a diagonal shape). The shift moves the
+//   handset onto the circle's centre in the symbol's own units; the path
+//   data stays as drawn, and it is the same for Arabic and English (the
+//   mark never mirrors).
+.ox-icon--wa {
+  --ox-icon-mono: currentColor;
+  --ox-icon-accent-shift: -0.1px -0.8px;
+}
+.ox-icon--wa-s {
+  --ox-icon-accent-shift: -0.7px -1.7px;
+}
+// A link button turns its label orange on hover (`.ox-btn--link` below); the
+// mark inside it keeps the link's resting ink, so hovering the branch band's
+// WhatsApp link no longer paints the mark #D03709 (measured 2026-09-26 on the
+// home page and the branch page, both widths).
+.ox-btn--link:hover .ox-icon--wa {
+  color: var(--ox-fg);
+}
+// NO ORANGE ROUND THE MARK EITHER (review of 2026-09-26). A WhatsApp action
+// wears the ink secondary face everywhere (the contact rows, the advisory,
+// the empty states, the sold-out and price-pending asks, the password page),
+// never the orange primary. The secondary face moves its 1px stroke to the
+// accent on hover (`ox-secondary-face`), and the quantity bar's add cell does
+// the same (_qtybar.scss); with the mark inside, the stroke keeps its resting
+// colour (the ink, or the paper on a dark band: the element's own text
+// colour) and doubles to 2px instead, so the hover still answers the pointer
+// with no orange next to the mark. Four classes and a :has() outrank the
+// mixin's hover and the dark band's (`.ox-band-dark .ox-btn--secondary:hover`);
+// a browser without :has() keeps the ordinary hover.
+.ox-btn.ox-btn--secondary:has(.ox-icon--wa):not(.ox-btn--square):hover {
+  background: currentColor;
+  border-color: currentColor;
+  &::before {
+    inset: 2px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .ox-qtybar:has(.ox-qtybar__add .ox-icon--wa):has(.ox-qtybar__add:not(:disabled):hover) {
+    --ox-qb-inset: 2px;
+    &::before {
+      background: var(--ox-qb-stroke, var(--ox-fg));
+    }
+  }
 }
 // Icon system v2 (2026-09-25): most v2 accents are a line, so the stroke
 // accent honours the same mono switch as the fill accent, and an icon on the
@@ -965,7 +1045,7 @@ a[href]:focus-visible {
   }
 }
 .ox-check input {
-  border-radius: 4px;
+  border-radius: 0;
   &:checked {
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23F7F7F8' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M5 10.5l3.5 3.5L15.5 7'/%3E%3C/svg%3E");
     background-size: 20px 20px;
@@ -1021,7 +1101,7 @@ a[href]:focus-visible {
     block-size: 36px;
     padding-inline: var(--ox-4);
     border: 1px solid var(--ox-line-3);
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
     background: var(--ox-card);
     font-size: var(--ox-t-body);
     font-family: inherit;
@@ -1066,7 +1146,7 @@ a[href]:focus-visible {
     block-size: 24px;
     margin-inline-start: var(--ox-1);
     border: 0;
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
     background: transparent;
     color: inherit;
     font-size: 16px;
@@ -1273,8 +1353,8 @@ a[href]:focus-visible {
   }
   // A header that carries an icon (snippets/section-header.liquid `icon`,
   // icon-system v3 2026-09-26: the offers header of icon-system_2.md B7):
-  // the title turns a centred row, 16 between the 56 plate and the label
-  // (A8). The plate itself is .ox-icon-tile above.
+  // the title turns a centred row, 16 between the 56 tile box and the label
+  // (A8). The tile itself is .ox-icon-tile above, without a plate.
   &__title--icon {
     display: inline-flex;
     align-items: center;
@@ -1728,17 +1808,14 @@ a[href]:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    // The icon tile at badge size (the bold icons, 2026-09-25): a 72 graphite
-    // plate cut on the brand angle, the glyph 40 in white with its own accent
-    // part (the cart's dashed contents, the lens slash) kept orange. The plate
-    // is this wrapper, not the svg, so a mirrored glyph flips inside it and
-    // the cut needs no mirror rule of its own.
+    // The icon tile at badge size, without a plate since the owner's ruling
+    // of 2026-09-26 (the icon tile above): the glyph 40 in the content ink,
+    // its own accent part (the cart's dashed contents, the lens slash) kept
+    // orange, in the same 72 box so the title below keeps its place.
     inline-size: 72px;
     block-size: 72px;
     margin-block-end: var(--ox-4);
-    background: var(--ox-graphite);
-    color: var(--ox-ink-on-dark);
-    @include ox-icon-plate-cut(18px);
+    color: var(--ox-fg);
     .ox-icon {
       inline-size: 40px;
       block-size: 40px;

@@ -210,6 +210,15 @@
   margin-block-start: var(--ox-2);
 }
 
+// The FAQ page's plain band carries that page's h1 (type review,
+// 2026-09-26): the page-title step, 26 rising to 30, like the listing,
+// search, cart, contact, branch and blog titles, so the store has one
+// page-title size outside the photo covers. The band's own headline rule is
+// the product page's section-heading step (_b3-product.scss).
+.ox-page--faq__band .ox-bband__headline {
+  font-size: var(--ox-t-h1);
+}
+
 .ox-page--services__band,
 .ox-page--about__band,
 .ox-page--faq__band,
@@ -479,7 +488,9 @@
 }
 
 .ox-bband.ox-bband--cover .ox-bband__lockup {
-  margin-block-start: var(--ox-5);
+  // 0, the value the undefined --ox-5 fell back to (the scale has no 20
+  // step): the band's own 16 flex gap spaces the lockup, as from 1024.
+  margin-block-start: 0;
 }
 
 @media (min-width: 1024px) {
@@ -492,37 +503,43 @@
     display: flex;
     margin-block-end: var(--ox-16);
     padding-block: var(--ox-4) var(--ox-8);
-    // The safe area against the full-height diagonal: a centred text block
-    // never reaches deeper than about 0.72 of the run on its inline side,
-    // measured against the tallest cover this clamp allows.
-    padding-inline: calc(var(--ox-cover-run) * 0.72 + var(--ox-gutter));
+    // Round 23 (owner 2026-09-26: "all cover images should fill the page
+    // horizontally (full page)"): the photograph runs edge to edge (below),
+    // so the type no longer keeps the old diagonal's safe area; it sits on
+    // the page container's own inline edge, the line the header's logo and
+    // every section below share, at any width (32 at 1024, 64.5 at 1440,
+    // 304.5 at 1920).
+    --ox-cover-inset: max(var(--ox-gutter), (100% - var(--ox-container)) / 2);
+    padding-inline: var(--ox-cover-inset);
   }
 
-  // The full parallelogram, exactly 34deg at any height: both block ends
-  // cut by the fluid run. Restated physically for LTR, the surface mirror,
-  // because clip-path takes no logical values.
-  .ox-bband.ox-bband--cover .ox-bband__plate {
-    clip-path: polygon(var(--ox-cover-run) 0, 100% 0, calc(100% - var(--ox-cover-run)) 100%, 0 100%);
-  }
-
+  // Round 23: full bleed. The 34deg parallelogram left a run-wide graphite
+  // triangle beside the photograph at each side (413px at 1440, the owner's
+  // "fill the page horizontally"); the whole rectangle shows now, and the
+  // identity stays with the band's two accent wedges at the top and the
+  // phone's foot corner cut below 1024.
+  .ox-bband.ox-bband--cover .ox-bband__plate,
   [dir='ltr'] .ox-bband.ox-bband--cover .ox-bband__plate {
-    clip-path: polygon(0 0, calc(100% - var(--ox-cover-run)) 0, 100% 100%, var(--ox-cover-run) 100%);
+    clip-path: none;
   }
 
-  // The desktop overlay runs from the inline start again, so the type sits
-  // on the darkest part of the frame in either reading direction; deeper
-  // and longer stops than the base band's, because the cover's type column
-  // is taller and its longest line ends near 67 percent of the frame (the
-  // start-aligned 640px block below), where the measured worst pixels are
-  // bright product packaging.
+  // The desktop overlay (round 23, measured): darkest where the type sits,
+  // from the inline start to the end of the 640px type column, then a short
+  // fall so the rest of the photograph reads, plus a low foot ramp under
+  // the lockup. The column's end is computed from the same inset as the
+  // padding above, so the dark part follows the type at every width
+  // instead of a percentage that fell short of it at 1024. Worst pixels
+  // measured with scratchpad r23/pb/contrast-probe.mjs (4.5 to 1 floor).
   .ox-bband.ox-bband--cover .ox-bband__scrim {
-    background: linear-gradient(
-      to var(--ox-band-to, left),
-      rgba(13, 16, 20, 0.96) 36%,
-      rgba(13, 16, 20, 0.84) 62%,
-      rgba(13, 16, 20, 0.45) 82%,
-      rgba(13, 16, 20, 0.12) 100%
-    );
+    background:
+      linear-gradient(to top, rgba(13, 16, 20, 0.5) 0, rgba(13, 16, 20, 0) 34%),
+      linear-gradient(
+        to var(--ox-band-to, left),
+        rgba(13, 16, 20, 0.9) 0,
+        rgba(13, 16, 20, 0.82) calc(max(var(--ox-gutter), (100% - var(--ox-container)) / 2) + 640px),
+        rgba(13, 16, 20, 0.3) calc(max(var(--ox-gutter), (100% - var(--ox-container)) / 2) + 640px + 20%),
+        rgba(13, 16, 20, 0.06) 100%
+      );
   }
 
   .ox-bband.ox-bband--cover .ox-bband__inner {
@@ -993,6 +1010,16 @@
   margin: 0;
 }
 
+// On the services page "how to start" is a section of its own, between the
+// "choose and book" and "questions" sections, so it takes their section
+// step (22 rising to 26) rather than the h3 step its class carries, which
+// drew it at 18 and 20 beside its 22 and 26 siblings (type review,
+// 2026-09-26).
+.ox-svc-cat__how .ox-how__title {
+  font-size: var(--ox-t-h2);
+  line-height: var(--ox-lh-head);
+}
+
 .ox-how__list,
 .ox-pickup__list {
   display: grid;
@@ -1052,7 +1079,7 @@
   flex: none;
   inline-size: 28px;
   block-size: 28px;
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
   background: var(--ox-card);
   color: var(--ox-fg-2);
   font-size: 14px;

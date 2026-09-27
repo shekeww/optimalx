@@ -25,6 +25,12 @@
 // segment are invisible, so a rail that fits draws no affordance at all and
 // the server-rendered html never promises one.
 //
+// Since r27 the cue paints on no rail and product rails size their cards
+// by the grammar at the end of this file (ADP-11, r26 adoption plan section
+// 4.6): below 1024 a rail shows whole cards and a real peek, and the head
+// arrow pair moves it from 1024; a product rail, whose card is pinned to the
+// grid card, carries its head pair at every width (the end of this file).
+//
 // Identity: the two cue arms are the only angled elements here, they are thin
 // parallelogram BARS (X-IDENTITY §2.3's bar exemption: a bar's run is its own
 // travel, not a bite out of its inline-size) and they carry no block-size of
@@ -69,8 +75,19 @@
 }
 
 // The cue: a 44px target with no face of its own, carrying the mark's
-// chevron. Present only once the hook has measured a rail that can still
-// scroll, so it is never a dead control.
+// chevron. It used to show once the hook had measured a rail that could
+// still scroll (`.ox-rail[data-rail='scroll'] & { display: grid; }`).
+// RETIRED (r26 adoption plan ADP-11 and section 4.6, 2026-09-27; r22 F9):
+// the cue sat on a card at every width, on the second card's brand row at
+// 390, on the peeking poster and review, and on the fourth card at 1440.
+// One carousel grammar now: below 1024 the next card's peek says a row
+// scrolls (the posters, offers, brands, reviews, covers and featured rows
+// are sized for one), from 1024 the square arrow pair in the section head
+// moves it, and a product rail keeps that pair in its head at every width
+// (its peek is 8px, see the grammar below), so no control ever sits on a
+// card. The markup and assets/ox.js keep
+// the cue wired (it still carries the rail's "next" hook), so it can return
+// with that one line, like the progress strap below.
 .ox-rail__cue {
   @include ox-focus(2px);
   position: absolute;
@@ -88,10 +105,6 @@
   background: transparent;
   border: 0;
   cursor: pointer;
-
-  .ox-rail[data-rail='scroll'] & {
-    display: grid;
-  }
 }
 
 // One arm of the mark's chevron. `--ox-skew` is
@@ -291,5 +304,126 @@ $ox-rail-chip-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 
   :is(#{$ox-rail-navs}) > :is(#{$ox-rail-arrows}):last-child:hover:not(:disabled) .ox-icon {
     translate: calc(2px * var(--direction-factor)) 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// THE PRODUCT RAIL GRAMMAR (r26 adoption plan ADP-11, section 4.6; r22 F8)
+// ---------------------------------------------------------------------------
+// Every product rail draws the grid card of its context, never a narrower
+// rail card of its own (the one-size ruling: a card is the same size in a
+// rail and in the grid beside it), and shows whole cards plus a peek:
+//
+//   width        cards   grid gap   rail gap   card          what shows
+//   under 640    2       16         12         171 at 390    2 and 8px of the
+//                                              156 at 360    third card (20
+//                                              191 at 430    with its gap), the
+//                                                            same at every
+//                                                            phone width
+//   640 to 1023  3       16         12         229 at 768    3 and 20px of the
+//                                                            fourth (32 with
+//                                                            its gap)
+//   from 1024    4       24         24         306 at 1296   4 whole cards
+//
+// The card width is the grid's own formula, (content - (n - 1) x grid gap)
+// / n, taken on the track's content box, which is the container: the track
+// bleeds to the inline-end screen edge below 1024 through a negative margin
+// that its own padding gives back, so the visible part of the next card is
+// that gutter plus the grid gaps minus the rail gaps (16 + 16 - 2 x 12 = 8
+// on a phone, 24 + 2 x 16 - 3 x 12 = 20 at 768) and the last card still
+// ends on the gutter line when the rail is scrolled to its end. From 1024
+// nothing bleeds and the cards fill the container exactly, four whole ones.
+// Snap is mandatory, each card aligning its start. No autoplay, no dots, no
+// cue.
+//
+// THE HEAD PAIR AT EVERY WIDTH (H1 review, 2026-09-27, P1): the one-size
+// ruling pins the card to the grid card, so the phone peek cannot grow past
+// 8px of the third card (the plan's "20" counted the 12px gap before it),
+// which is a hairline, not a cue. A product rail therefore keeps its square
+// arrow pair in its own head row at every width, at the end, never on a
+// card (the category rail's .ox-cat-rail__sub, the product page's
+// .ox-related__head, and the section head of the search page's latest
+// rail); it is the pair the desktop already draws, disabled at the ends by
+// assets/ox.js and hidden while the rail fits. This relaxes section 4.6's
+// "no arrows below 1024" for product rails only, pending the owner's word
+// on the other two levers (a rail card narrower than the grid card, or an
+// 8px rail gap on a phone, which shows 16px of the third card).
+//
+// The rails: the home category rails and the search page's latest rail
+// (.ox-cat-rail__scroller, sections/ox-category-rail.liquid and
+// sections/main-search.liquid) and the product page's recommendations
+// (sections/ox-recommendations.liquid, the related rail, 402 x 605 at 1440
+// before, three cards and a sliver). The rail gap is --ox-rail-gap
+// (tokens.css). The 4px block padding the track takes back with a negative
+// margin keeps a card's focus ring inside the scrollport, as on
+// .ox-rail__track above.
+$ox-product-rail-tracks: '.ox-rail__track.ox-cat-rail__scroller, .ox-related__body > .ox-add-also__items';
+
+:is(#{$ox-product-rail-tracks}) {
+  --ox-rail-cols: 2;
+  --ox-rail-card-gap: var(--ox-4);
+
+  display: flex;
+  gap: var(--ox-rail-gap);
+  margin-block: -4px;
+  margin-inline: 0 calc(-1 * var(--ox-gutter));
+  padding-block: 4px;
+  padding-inline: 0 var(--ox-gutter);
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > * {
+    flex: 0 0 calc((100% - (var(--ox-rail-cols) - 1) * var(--ox-rail-card-gap)) / var(--ox-rail-cols));
+    min-inline-size: 0;
+    scroll-snap-align: start;
+  }
+}
+
+@media (min-width: 640px) {
+  :is(#{$ox-product-rail-tracks}) {
+    --ox-rail-cols: 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  :is(#{$ox-product-rail-tracks}) {
+    --ox-rail-cols: 4;
+    --ox-rail-card-gap: var(--ox-6);
+
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+
+// The head pair of a product rail at every width (see above). The category
+// rail's row under the featured carousel shows its pair from its own
+// stylesheet (sections/ox-category-rail.liquid); these two are the product
+// page's head (_b3-product.scss hides its pair below 1024) and a category
+// rail or the search page's latest rail drawn with the section head, whose
+// actions slot _primitives.scss hides below 1024. From 640 that slot and
+// the "view all" link are both pinned to the head's inline end, so the link
+// steps inward past the pair there too, as it does from 1024; under 640 the
+// head is a centred stack and the pair sits under the title.
+.ox-related__head > .ox-related__nav {
+  display: flex;
+  gap: var(--ox-1);
+}
+
+.ox-cat-rail .ox-sh > .ox-sh__actions {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .ox-cat-rail .ox-sh:has(> .ox-sh__actions) > .ox-sh__link {
+    inset-inline-end: calc(2 * 44px + var(--ox-2) + var(--ox-4));
   }
 }

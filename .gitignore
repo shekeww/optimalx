@@ -48,3 +48,6 @@ optimal-x-seed/
 /s1[0-9]*-*.json
 /s1[0-9]*rv-*.json
 /.playwright-mcp/
+
+# owner-provided photos and art (large binaries; the theme uses derived files)
+owner-assets/

@@ -403,6 +403,30 @@ a.ox-util__trust-link {
   }
 }
 
+// The light ring on the dark bars (global-sharp review P1, 2026-09-26). The
+// global `a[href]:focus-visible` ring (_primitives, specificity 0,2,1, ink)
+// outranked each link's own light ring above (a class plus the pseudo-class,
+// 0,2,0) and drew ink on the near-black bar, about 1.1:1: the skip link, the
+// branch and WhatsApp links, the language switch, the logo, the nav links and
+// the account, search and cart icon links. Each selector here adds [href]
+// (0,3,0), so the light ring wins on the bar again. The drawer logo, the mega
+// panel and the filter sheet's close link sit on paper and keep the ink ring,
+// so they are not listed; the ticker link is the page-covers round's own.
+.ox-skip[href]:focus-visible {
+  outline-color: var(--ox-paper);
+}
+
+.ox-util__branch[href]:focus-visible,
+.ox-util__contact[href]:focus-visible,
+.ox-util__lang[href]:focus-visible,
+.ox-mainbar__logo[href]:focus-visible,
+.ox-mobilebar__logo[href]:focus-visible,
+.ox-nav__link[href]:focus-visible,
+.ox-mainbar__actions .ox-iconbtn[href]:focus-visible,
+.ox-mobilebar__actions .ox-iconbtn[href]:focus-visible {
+  outline-color: var(--ox-ink-on-dark);
+}
+
 // The owner's mark, drawn from public/assets/brand/. The component sets width
 // and height on the img from the asset's intrinsic ratio, so the box is
 // reserved before the image decodes and the header never shifts. Nothing here
@@ -578,7 +602,7 @@ a.ox-util__trust-link {
     block-size: 16px;
     padding-inline: 4px;
     background: var(--ox-accent);
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
     color: var(--ox-on-accent);
     font-size: 12px;
     font-weight: var(--ox-w-figure);
@@ -607,12 +631,27 @@ a.ox-util__trust-link {
   block-size: 18px;
   padding-inline: 4px;
   background: var(--ox-accent);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
   color: var(--ox-on-accent);
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-figure);
   line-height: var(--ox-lh-num);
   animation: ox-count-bump var(--dur-confirm) var(--ease-out);
+}
+
+// The phone header's cart (round 26): the only cart control on a phone
+// (owner ruling 2026-09-27, "the cart should be kept on header"), so its
+// glyph has to read whole. At the shared -4 offset the 18px plate sat on the
+// basket's top outer corner and covered a third of the 24px glyph box (196
+// of 576 px). Here the plate moves out to the 44px target's own corner (the
+// glyph is centred in it, 10px of padding each side), so it overlaps the
+// glyph box by 8 at most, the basket's empty top corner, and stays inside
+// the button's box (never over the row's edge or the screen gutter). Sharp
+// and in the accent, as everywhere. Desktop's header cart keeps the shared
+// offset.
+.ox-mobilebar .ox-cartbtn .ox-count {
+  inset-block-start: -10px;
+  inset-inline-end: -10px;
 }
 
 @keyframes ox-count-bump {
@@ -643,7 +682,7 @@ a.ox-util__trust-link {
 .ox-search__placeholder {
   block-size: 40px;
   background: var(--ox-search);
-  border-radius: var(--ox-r-pill);
+  border-radius: 0;
 }
 
 .ox-search salla-search {
@@ -673,7 +712,7 @@ a.ox-util__trust-link {
     padding-inline: calc(25px + 16px + var(--ox-2)) 20px;
     background: var(--ox-search);
     border: 0;
-    border-radius: var(--ox-r-pill);
+    border-radius: 0;
     color: var(--ox-ink-on-dark);
     font-size: 14px;
     font-weight: var(--ox-w-read);
@@ -935,11 +974,15 @@ a.ox-util__trust-link {
   flex-direction: column;
 }
 
+// One line box for every column heading (r28 fix: the headings used to
+// inherit the page's reading line, 38 tall for 14px text), so the two
+// columns' first tile rows start on the same line.
 .ox-mega__heading {
   margin: 0 0 var(--ox-2);
   color: var(--ox-fg-3);
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
 }
 
 // Column A: حسب النوع. Two tracks, protein's five children nested under it.
@@ -1024,13 +1067,18 @@ a.ox-util__trust-link {
   list-style: none;
 }
 
+// The icon is pinned 16 from the tile's top edge (r28 fix, owner request
+// "same icon position"): centring the content moved an icon up whenever its
+// label wrapped, so a row's icons sat on three different lines. Labels hang
+// below the icon on one line height for goals and types alike.
 .ox-mega__goal {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--ox-1);
   block-size: 100%;
+  padding-block-start: var(--ox-4);
   padding-inline: var(--ox-3);
   background: var(--ox-card);
   border: 1px solid var(--ox-bd);
@@ -1055,8 +1103,180 @@ a.ox-util__trust-link {
   overflow: hidden;
   font-size: 14px;
   font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-head);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// Column A as tiles (owner, 2026-09-27: "shop by type in menu to also have
+// their icons just like shop by goal, apply it on أقسام أخرى too"). The type
+// roots and the utility categories take the goal tile itself
+// (`.ox-mega__goal`: the 24 icon above the label, 92 tall, sharp, border and
+// fill only) in a grid of five across at every desktop width: 142 wide at
+// 1440 and 1920, 98 at the 537 of column A at 1024 (r28 fix: four across
+// there made three type rows and pushed أقسام أخرى below a 768 screen). The
+// ten types are two full rows, the three utility tiles one. The labels are
+// longer than the goals' one word, so they wrap to two lines instead of the
+// goal label's ellipsis (every label measured whole at 98 wide).
+.ox-mega__typegrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: 92px;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-mega__type-label {
+  display: -webkit-box;
+  line-height: var(--ox-lh-head);
+  white-space: normal;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ox-mega__heading--next {
+  margin-block-start: var(--ox-6);
+}
+
+// The group's head row: حسب النوع with its "كل الأنواع" link right beside it
+// at the reading start (r28 fix: at the far end it sat 32px from حسب الهدف
+// and read as a crumb into the goal column), set like the brand axis (ink,
+// the accent chevron). The row is the heading's own line box; the link's
+// 32px hit area overflows it evenly, so both columns' tiles start level.
+.ox-mega__headrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--ox-4);
+  block-size: calc(var(--ox-t-micro) * var(--ox-lh-snug));
+  margin-block-end: var(--ox-2);
+
+  .ox-mega__heading {
+    margin: 0;
+  }
+}
+
+.ox-mega__all {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 32px;
+  color: var(--ox-fg);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// Protein's five children under the type tiles: one wrapping row, led by a
+// link to protein with the protein icon, then sharp chips (40 tall, the
+// spec's subcategory chip floor, 44 on a touch screen).
+// Two classes, so the margin outranks the chip row rule below (margin 0).
+.ox-mega__subtypes.ox-mega__chips {
+  align-items: center;
+  margin-block-start: var(--ox-4);
+}
+
+.ox-mega__subtypes-head {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 40px;
+  margin-inline-end: var(--ox-1);
+  color: var(--ox-fg);
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-title);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ox-accent-dark);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (pointer: coarse) {
+  .ox-mega__all,
+  .ox-mega__subtypes-head {
+    min-block-size: 44px;
+  }
+}
+
+.ox-mega__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  .ox-mega__child {
+    block-size: auto;
+    min-block-size: 40px;
+    padding-inline: var(--ox-3);
+    border: 1px solid var(--ox-bd);
+    border-radius: 0;
+    color: var(--ox-fg);
+
+    &:hover {
+      background: var(--ox-fill);
+      border-color: var(--ox-bd-2);
+    }
+
+    &:focus-visible {
+      outline-offset: 2px;
+    }
+  }
+}
+
+@media (pointer: coarse) {
+  .ox-mega__chips .ox-mega__child {
+    min-block-size: 44px;
+  }
+}
+
+// A short desktop screen (r28 fix): a laptop's browser window is often 657
+// to 760 tall (1366x768 and 1280x800 screens less the browser's own bars),
+// and the whole panel, أقسام أخرى included, has to show without scrolling
+// inside it. Below 760 of height the panel's padding steps down to 24, every
+// tile (goals and types alike, so the two columns still match) to 80 with
+// its icon 12 from the top, and the gaps before the chips and before أقسام
+// أخرى to 8 and 16. Measured: 1366x657, 1280x720 and 1536x730 fit whole in
+// both languages.
+@media (min-width: 1024px) and (max-height: 760px) {
+  .ox-mega {
+    padding: var(--ox-6);
+  }
+
+  .ox-mega__goalgrid,
+  .ox-mega__typegrid {
+    grid-auto-rows: 80px;
+  }
+
+  .ox-mega__goal {
+    padding-block-start: var(--ox-3);
+  }
+
+  .ox-mega__subtypes.ox-mega__chips {
+    margin-block-start: var(--ox-2);
+  }
+
+  .ox-mega__heading--next {
+    margin-block-start: var(--ox-4);
+  }
 }
 
 // The brand axis under حسب الهدف (the owner's navigation review): حسب العلامة
@@ -1371,10 +1591,36 @@ a.ox-util__trust-link {
   justify-content: flex-start;
 }
 
+// Protein's children start on their parent's label column (the row's 16
+// padding, the 24 icon, the 12 gap), now that every type row leads with its
+// icon (owner, 2026-09-27): the empty icon column is what nests them.
 .ox-drawer__row--child {
   justify-content: flex-start;
-  padding-inline-start: calc(var(--ox-4) + var(--ox-4));
+  padding-inline-start: calc(var(--ox-4) + 24px + var(--ox-3));
   font-weight: var(--ox-w-read);
+}
+
+// أقسام أخرى, its own section at the list's level after the brand axis
+// (r28 fix: it used to sit inside the closed type group), between two
+// rules so the offers row after it does not read as a fourth entry. Its
+// heading is the shop sheet's own section heading (micro, quiet grey), so
+// bundles, the digital library and gift cards never read as product types.
+.ox-drawer__others {
+  margin-block: var(--ox-2);
+  padding-block-end: var(--ox-2);
+  border-block: 1px solid var(--ox-line);
+}
+
+.ox-drawer__subhead {
+  display: flex;
+  align-items: flex-end;
+  min-block-size: 40px;
+  margin: 0;
+  padding-block-end: var(--ox-1);
+  padding-inline: var(--ox-4);
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
 }
 
 // Account leaves the mobile bar and arrives here as its own group,
@@ -1588,22 +1834,15 @@ a.ox-util__trust-link {
   list-style: none;
 }
 
-.ox-sheet__grid--goal {
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 96px;
-}
-
+// One grid for the three groups (owner, 2026-09-27: "shop by type in menu to
+// also have their icons just like shop by goal, apply it on أقسام أخرى
+// too"): the type and utility tiles left their 2-column 64 and 56px text
+// rows for the goal tiles' own 3-column, 96px grid, icon above the label.
+.ox-sheet__grid--goal,
 .ox-sheet__grid--type,
 .ox-sheet__grid--utility {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.ox-sheet__grid--type {
-  grid-auto-rows: 64px;
-}
-
-.ox-sheet__grid--utility {
-  grid-auto-rows: 56px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 96px;
 }
 
 .ox-sheet__foot {
@@ -1612,8 +1851,8 @@ a.ox-util__trust-link {
   border-block-start: 1px solid var(--ox-bd);
 }
 
-// One tile anatomy, three roles. Hit area is the whole tile (96/64/56, all
-// over the 44px floor).
+// One tile anatomy, three roles. Hit area is the whole tile (96, over the
+// 44px floor).
 .ox-sheet__tile {
   display: flex;
   align-items: center;
@@ -1636,10 +1875,32 @@ a.ox-util__trust-link {
   }
 }
 
-.ox-sheet__tile--goal {
+// The icon is pinned 16 from the tile's top edge (r28 fix, owner request
+// "same icon position"): centred content lifted an icon 10px whenever its
+// label wrapped to two lines, so one row's icons sat at different heights.
+.ox-sheet__tile--goal,
+.ox-sheet__tile--type,
+.ox-sheet__tile--utility,
+.ox-sheet__tile--all {
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-block-start: var(--ox-4);
+}
+
+// The type grid's closing cell (r28 fix): ten types in three columns left
+// the tenth alone on a fourth row. "كل الأنواع" takes the cells left in
+// that row (snippets/shop-sheet.liquid counts them), in the same tile
+// anatomy, its label in the accent's dark ink with the onward chevron.
+.ox-sheet__all--span2 {
+  grid-column: span 2;
+}
+
+.ox-sheet__tile--all .ox-sheet__tile-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  color: var(--ox-accent-dark);
 }
 
 .ox-sheet__tile-icon {
@@ -1657,15 +1918,35 @@ a.ox-util__trust-link {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Bottom tab bar
+// 9. Bottom tab bar (the phone navigation, round 26)
 // ---------------------------------------------------------------------------
+// The phone's destinations, below 1024 only: home, the catalogue sheet, the
+// offers, the advisory (اسأل) and the account (snippets/tab-bar.liquid).
+// No cart and no search here: both live in the header (owner ruling
+// 2026-09-27, final: "the cart should be kept on header"), so no job has
+// two controls. The brand black, the header's own ground, so the page sits
+// between two black bands and the orange active state reads on it: 5.3:1
+// for the active label here, where on the white bar it measured 3.6:1,
+// under AA for a 14px label (which is why the white bar kept its active
+// label in ink). Orange means active and nothing else in this bar: one tab
+// at a time carries it (glyph, label and the notched top bar), every glyph
+// at rest takes the grey ink. Sharp everywhere. The ground and inks are
+// custom properties, one place to read them.
 .ox-tabbar {
+  --ox-tab-ground: var(--ox-band-header);
+  --ox-tab-ink: var(--ox-ink-2-on-dark);
+  --ox-tab-ink-hover: var(--ox-ink-on-dark);
+  --ox-tab-active: var(--ox-accent);
+
   position: fixed;
   inset-block-end: 0;
   inset-inline: 0;
   z-index: var(--ox-z-sticky);
-  background: var(--ox-card);
-  border-block-start: 1px solid var(--ox-line);
+  background: var(--ox-tab-ground);
+  border-block-start: 1px solid var(--ox-line-on-dark);
+  border-radius: 0;
+  // The home indicator on an iPhone: the tabs stay 56 tall above it and the
+  // ground runs under it (the page reserves both, `--ox-h-tabbar` below).
   padding-block-end: env(safe-area-inset-bottom, 0px);
   // A phone held sideways puts its notch corners over the two end tabs; the
   // side insets keep every tab clear of them (S12 chrome-ios). Logical
@@ -1680,16 +1961,20 @@ a.ox-util__trust-link {
   padding-inline-end: env(safe-area-inset-right, 0px);
 }
 
+// Equal columns for however many tabs render (five; four or three when the
+// offers are switched off or the store has no services page yet), capped on
+// a tablet so they stay one group under the thumb instead of spreading 150
+// apart across a 768 screen.
 .ox-tabbar__list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   // A zero-width column gap put every tab flush against its neighbour: two
   // 82x56 targets with no offset between them, which a pointer-target audit
-  // flags even though each one already clears the 24px floor on its own
-  // (`.ox-footer__link` below sets the same "comfortably over the 24px
-  // floor" precedent for the spacing itself, not just the target size).
+  // flags even though each one already clears the 24px floor on its own.
   column-gap: var(--ox-1);
-  margin: 0;
+  max-inline-size: 560px;
+  margin: 0 auto;
   padding: 0;
   list-style: none;
 }
@@ -1700,29 +1985,34 @@ a.ox-util__trust-link {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
   inline-size: 100%;
   block-size: 56px;
+  padding: 0 2px;
   background: none;
   border: 0;
-  color: var(--ox-ink-3);
+  border-radius: 0;
+  color: var(--ox-tab-ink);
   font: inherit;
-  font-size: 20px;
   text-decoration: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
+  // The active tab: glyph and label in the accent, the label a step
+  // bolder, and the identity's tab indicator along the tab's top edge, over
+  // the bar's own hairline (the top, not the bottom, so it never sits on an
+  // iPhone's home indicator): a 4px accent bar with the t 4 / j 14.0 notch
+  // (X-IDENTITY-2026-09-22 §3.3 and §6, "Mobile tab bar": 4px, raised from
+  // 3, which is below the clamp floor; notch only, no lean, the bar is 56
+  // tall, under the 158 law). The mixin mirrors the bite with the reading
+  // direction, the way the old bottom-edge indicator did.
   &.is-active {
-    color: var(--ox-accent);
+    color: var(--ox-tab-active);
 
-    // X-IDENTITY-2026-09-22.md §3.3/§6: the active tab's own 4px accent bar,
-    // notch only (no lean: the bar is 56 tall, under the 158 law, and §3.2's
-    // named exception list does not reach the tab bar). A pseudo rather than
-    // new markup: this batch's footer/tabbar scope is _b1-layout.scss rules
-    // only.
-    &::after {
+    &::before {
       content: '';
       position: absolute;
-      inset-block-end: 0;
+      inset-block-start: -1px;
       inset-inline: 0;
       block-size: 4px;
       background: var(--ox-accent);
@@ -1730,31 +2020,51 @@ a.ox-util__trust-link {
     }
   }
 
-  &.is-active .ox-tab__label {
-    color: var(--ox-ink);
-  }
+  @media (hover: hover) {
+    &:hover {
+      color: var(--ox-tab-ink-hover);
+    }
 
-  &:focus-visible {
-    outline: var(--ox-focus-ring);
-    outline-offset: -2px;
+    &.is-active:hover {
+      color: var(--ox-tab-active);
+    }
   }
 }
 
-// Tab bar glyphs at 24 (size floors, owner 2026-09-25; the call sites ask for 20).
+// Two classes deep: the global `a[href]:focus-visible` ring is ink, which
+// vanishes on this black bar, and it outranks a single class.
+.ox-tabbar .ox-tab:focus-visible {
+  outline: 2px solid var(--ox-ink-on-dark);
+  outline-offset: -2px;
+}
+
+// Tab bar glyphs at 24 (size floors, owner 2026-09-25), one colour: the
+// tab's own ink. The offers glyph is the one two-tone icon in the bar (its
+// stripe is `.ox-icon__accent`, orange by default, _primitives.scss), and
+// on an inactive tab that stripe was a second orange mark next to the real
+// active tab. Orange is this bar's active signal and only the active tab
+// may carry it, so the stripe takes the tab ink here: grey at rest, the
+// accent when its tab is active (icon-system_2.md A5, "the body colour
+// when an icon must be one colour"). The drawer keeps its two-tone glyph.
 .ox-tab .ox-icon {
+  --ox-icon-mono: currentColor;
+
   inline-size: 24px;
   block-size: 24px;
 }
 
-.ox-tab__icon {
-  position: relative;
-  display: inline-flex;
-}
-
+// The label at the size floor (--ox-t-micro: 13 in English, 14 in Arabic on
+// a phone), one line.
 .ox-tab__label {
   font-size: var(--ox-t-micro);
   font-weight: var(--ox-w-ui);
-  color: var(--ox-ink-3);
+  line-height: 1.2;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.ox-tab.is-active .ox-tab__label {
+  font-weight: 700;
 }
 
 // Only while the bar is mounted: the setting can switch it off. The page
@@ -1764,6 +2074,41 @@ a.ox-util__trust-link {
 // reached the end of the page and the footer's last 57px sat under the bar.
 body.ox-has-tabbar .app-inner {
   padding-block-end: calc(var(--ox-h-tabbar) + 1px);
+}
+
+// One bar at a time on the bottom edge. A page's task bar (the product
+// page's buy bar once the buy zone scrolls away, the cart's checkout bar,
+// the branch and services visit bar) sets `body.ox-sticky-bar` and takes
+// the tab bar's place until it goes: stacked, the two would hold 121px plus
+// the home indicator of a phone's screen, and the task bar is the next step
+// on those pages (the reference stores keep only the task bar there too).
+// The cart page's own stylesheet carries the same rule; this one is the
+// bar's, so it holds on every page that sets the class.
+//
+// The swap is one motion, not a gap: the tab bar slides down and out on the
+// task bar's own curve and timing (`.ox-sticky`, _b3-product.scss section
+// 11: out at --dur-base on --ease-in, in at --dur-slow on --ease-out) while
+// the task bar slides up and fades in behind it. The tab bar stays opaque
+// while it slides (no fade of its own), so the bottom edge is always held by
+// one bar or the other. It used to drop out at once (display: none) while
+// the product page's bar was still at opacity 0 and 62px down, and for about
+// 250ms the page showed through at the bottom edge. It takes no taps from the
+// moment it starts to leave, and visibility drops once the slide ends, so
+// the tab links leave the tab order too. The tab bar paints after the page
+// (layout/theme.liquid), so it stays on top while it slides away.
+.ox-tabbar {
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    visibility 0s;
+}
+
+body.ox-sticky-bar .ox-tabbar {
+  transform: translateY(100%);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform var(--dur-base) var(--ease-in),
+    visibility 0s linear var(--dur-base);
 }
 
 // A fixed bottom bar that stands in for the tab bar sets `body.ox-sticky-bar`
@@ -2246,6 +2591,11 @@ body.ox-has-tabbar .app-inner {
     animation: none;
   }
 
+  .ox-tabbar,
+  body.ox-sticky-bar .ox-tabbar {
+    transition: none;
+  }
+
   .ox-nav__dropdown,
   .ox-mega {
     animation: ox-fade-in var(--dur-fast) var(--ease-out);
@@ -2357,3 +2707,535 @@ body.ox-has-tabbar .app-inner {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 14. Header and search (adoption plan r26, batch N, round 28)
+// ---------------------------------------------------------------------------
+// 14a. THE DRAWER CARDS (ADP-05, snippets/drawer-cards.liquid): four picture
+// cards at the top of the phone drawer, two by two, after OTG's drawer. The
+// photo layer carries the mark's 34 degree corner (`ox-x-corner`, the cut
+// the featured tiles and plan cards already use); the link itself stays
+// unclipped, so its focus ring is whole. White text sits on a dark scrim
+// (the advisory card on the accent's deep end, the store's spine), at the
+// micro size in two lines at most, so the longest title (الفيتامينات
+// والمعادن, Vitamins & Minerals) fits the 134px card of a 360 phone.
+.ox-dcards {
+  padding: var(--ox-3) var(--ox-4) var(--ox-2);
+}
+
+.ox-dcards__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ox-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-dcard {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  aspect-ratio: 4 / 3;
+  min-block-size: 96px;
+  padding: var(--ox-2) var(--ox-3);
+  border-radius: 0;
+  color: var(--ox-ink-on-dark);
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-dcard__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  // A dark ground under the photo, so the white title reads before the lazy
+  // image arrives (and a contrast checker, which cannot see the photo,
+  // measures it against this ground).
+  background: var(--ox-graphite);
+  @include ox-x-corner(24px);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13, 16, 20, 0.86) 0%, rgba(13, 16, 20, 0.5) 42%, rgba(13, 16, 20, 0) 78%);
+  }
+}
+
+.ox-dcard--advisory .ox-dcard__media {
+  background: var(--ox-accent-deep);
+}
+
+// The advisory card's ground stays deep over the whole text block (r28 fix:
+// at 360 its title and InBody line wrap to four lines and reach 80 percent
+// of the card's height, where the lighter top of the old gradient let the
+// room photo through at 3.7:1). The accent's deep end at 80 percent or more
+// keeps white text above 4.5:1 even over a white pixel; the photo shows in
+// the top fifth only.
+.ox-dcard--advisory .ox-dcard__media::after {
+  background: linear-gradient(to top, rgba(168, 45, 7, 0.96) 0%, rgba(168, 45, 7, 0.88) 50%, rgba(168, 45, 7, 0.82) 82%, rgba(245, 73, 21, 0.18) 100%);
+}
+
+.ox-dcard__art {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: 65% 50%;
+}
+
+// The packshot group's centre in each frame (cover-image.liquid's focal
+// table reads 0.72 for creatine-light's product pair).
+.ox-dcard[data-category='creatine'] .ox-dcard__art {
+  object-position: 76% 50%;
+}
+
+.ox-dcard--advisory .ox-dcard__art {
+  object-position: 80% 50%;
+}
+
+.ox-dcard__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.ox-dcard__title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ox-dcard__line {
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-snug);
+}
+
+// 14b. THE SEARCH SUGGESTIONS (ADP-01, snippets/search-suggest-shell.liquid,
+// sections/ox-search-suggest.liquid, assets/ox-search.js). The panel hangs
+// from the search form (`.ox-search` is `position: relative`) and overlays
+// the page, so opening it moves nothing. On the phone it spans the screen
+// under the search row, a sheet on paper with the accent's 2px top rule; on
+// the desktop it is 480 wide under the pill, anchored at the pill's
+// inline end so it grows toward the middle of the bar in both languages.
+// Rows are 48 tall at least (the product rows 72), the packshot a 56px
+// square on white, the title 15/600 on two lines, the price 15/800; the
+// active row (keyboard or pointer) takes the fill and a 3px accent rule at
+// its inline start. Sharp everywhere, no shadow.
+.ox-suggest {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  z-index: var(--ox-z-overlay);
+  display: block;
+  max-block-size: min(72dvh, 620px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: var(--ox-1) var(--ox-2);
+  background: var(--ox-card);
+  border-block-start: 2px solid var(--ox-accent);
+  border-block-end: 1px solid var(--ox-line);
+  color: var(--ox-ink);
+  text-align: start;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// The header is one layer (z 100) with the WhatsApp float and the tab bar,
+// which come later in the page and so paint over it: while the panel is
+// open the header steps up to the overlay layer, so the panel is never
+// covered by the float (measured at 390: the float sat on the last row),
+// and the float itself steps out while the shopper is choosing (r28 fix:
+// half of it showed under the phone panel's edge).
+.ox-header:has(.ox-search.is-suggesting) {
+  z-index: var(--ox-z-overlay);
+}
+
+body:has(.ox-search.is-suggesting) .ox-wa {
+  visibility: hidden;
+}
+
+// On the phone the open panel reaches from under the search row to the top
+// of the tab bar (r28 fix: it stopped partway down and the page, the hero's
+// call to action and the float, showed under it). assets/ox-search.js
+// measures that height on open, on scroll and when the on-screen keyboard
+// resizes the view, and sets --ox-suggest-h on the form; without the script
+// value the panel keeps its old cap.
+@media (max-width: 1023.98px) {
+  .ox-mobilebar__search .ox-suggest {
+    block-size: var(--ox-suggest-h, auto);
+    max-block-size: var(--ox-suggest-h, min(72dvh, 620px));
+  }
+}
+
+.ox-mainbar__search .ox-suggest {
+  inset-block-start: calc(100% + var(--ox-2));
+  inset-inline: auto 0;
+  inline-size: min(480px, calc(100vw - 64px));
+  border-inline: 1px solid var(--ox-line);
+}
+
+.ox-suggest__list {
+  display: block;
+}
+
+.ox-suggest__group {
+  padding-block: var(--ox-1);
+
+  & + & {
+    border-block-start: 1px solid var(--ox-bd);
+  }
+}
+
+.ox-suggest__head {
+  margin: var(--ox-2) var(--ox-4) var(--ox-1);
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
+}
+
+.ox-suggest__row,
+.ox-suggest__coll,
+.ox-suggest__all,
+.ox-suggest__ask {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ox-3);
+  min-block-size: 48px;
+  padding-inline: var(--ox-4);
+  color: var(--ox-ink);
+  text-decoration: none;
+
+  &:hover,
+  &.is-active {
+    background: var(--ox-fill);
+  }
+
+  &.is-active::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 3px;
+    background: var(--ox-accent);
+  }
+}
+
+.ox-suggest__row {
+  min-block-size: 72px;
+  padding-block: var(--ox-2);
+}
+
+// A product with no photo (a digital guide, say) shows its kind's glyph in
+// the frame instead of an empty square (r28 fix).
+.ox-suggest__thumb {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 56px;
+  block-size: 56px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--ox-bd);
+  color: var(--ox-fg-3);
+}
+
+.ox-suggest__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ox-suggest__text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.ox-suggest__title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+  line-height: var(--ox-lh-snug);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ox-suggest__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--ox-2);
+  line-height: var(--ox-lh-snug);
+}
+
+// 15/800 (spec 4.4): the price primitive's own 900 is set back to the
+// row's weight (r28 fix: it rendered 15/900).
+.ox-suggest__price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: var(--ox-w-stmt);
+
+  .ox-price {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+}
+
+.ox-suggest__price .ox-suggest__was {
+  color: var(--ox-fg-3);
+  font-size: 13px;
+  font-weight: var(--ox-w-open);
+}
+
+.ox-suggest__choices,
+.ox-suggest__pending {
+  color: var(--ox-fg-3);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-open);
+}
+
+.ox-suggest__pending {
+  color: var(--ox-fg-2);
+  font-weight: var(--ox-w-ui);
+}
+
+.ox-suggest__tag {
+  padding-inline: 6px;
+  border: 1px solid var(--ox-accent);
+  color: var(--ox-accent-dark);
+  font-size: 13px;
+  font-weight: var(--ox-w-title);
+  line-height: 20px;
+}
+
+.ox-suggest__coll {
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+
+  bdi {
+    font-weight: var(--ox-w-title);
+  }
+}
+
+// "See all results" stays in view at the panel's bottom edge while the rows
+// scroll under it (r28 fix: at 390 with two collection rows and long titles
+// it was cut at the panel's edge).
+.ox-suggest__all {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  justify-content: space-between;
+  margin-block-start: var(--ox-1);
+  background: var(--ox-card);
+  border-block-start: 1px solid var(--ox-bd);
+  color: var(--ox-accent-dark);
+  font-size: 15px;
+  font-weight: var(--ox-w-title);
+}
+
+.ox-suggest__chevron {
+  flex: none;
+  color: var(--ox-accent);
+}
+
+.ox-suggest__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  padding: var(--ox-1) var(--ox-4) var(--ox-2);
+}
+
+.ox-suggest__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+  padding-inline: var(--ox-3);
+  border: 1px solid var(--ox-bd);
+  color: var(--ox-ink);
+  font-size: 14px;
+  font-weight: var(--ox-w-ui);
+  text-decoration: none;
+
+  &:hover,
+  &.is-active {
+    background: var(--ox-fill);
+    border-color: var(--ox-accent);
+  }
+}
+
+.ox-suggest__ask {
+  min-block-size: 64px;
+  margin-block-start: var(--ox-1);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-suggest__ask-icon {
+  flex: none;
+}
+
+.ox-suggest__ask-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-suggest__ask-title {
+  font-size: 15px;
+  font-weight: var(--ox-w-title);
+}
+
+.ox-suggest__ask-line,
+.ox-suggest__none-line {
+  color: var(--ox-fg-2);
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-open);
+}
+
+.ox-suggest__none .ox-suggest__ask {
+  font-size: 15px;
+  font-weight: var(--ox-w-ui);
+}
+
+.ox-suggest__none-line {
+  margin: var(--ox-3) var(--ox-4) var(--ox-2);
+}
+
+// 14c. THE CYCLING PLACEHOLDER (ADP-03). An aria-hidden line over the empty,
+// unfocused field, in the placeholder's own place, colour and type; the
+// input's real placeholder turns transparent under it (it is still what
+// assistive technology reads). assets/ox-search.js sets `is-cycling` only
+// while the field is empty and unfocused, so typing or focus shows the
+// field as it always was.
+.ox-search__cycle {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: calc(25px + 16px + var(--ox-2)) 20px;
+  display: none;
+  align-items: center;
+  overflow: hidden;
+  color: var(--ox-ink-3-on-dark);
+  font-size: 14px;
+  font-weight: var(--ox-w-read);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.ox-mobilebar__search .ox-search__cycle {
+  inset-block: 0 var(--ox-2);
+  inset-inline: calc(var(--ox-gutter) + 25px + 16px + var(--ox-2)) calc(var(--ox-gutter) + 20px);
+}
+
+.ox-search.is-cycling {
+  .ox-search__cycle {
+    display: flex;
+  }
+
+  .ox-search__input::placeholder {
+    color: transparent;
+  }
+}
+
+// 14d. THE TRUST STRIP BEFORE THE FOOTER (ADP-02, sections/footer.liquid):
+// same band, same items, same words, its hairline moved to the top edge
+// where it now meets the page. Here it has no first screen to save, so it
+// stops scrolling sideways (r28 fix: the third item was cut at the screen
+// edge): the three items wrap, centred, one row at 390 in Arabic, two plus
+// one at 360 and in English.
+.ox-util__trust--foot {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ox-2) var(--ox-6);
+  block-size: auto;
+  min-block-size: var(--ox-h-trust);
+  padding-block: var(--ox-2);
+  overflow-x: visible;
+  scroll-snap-type: none;
+  border-block-start: 1px solid var(--ox-line-on-dark);
+  border-block-end: 0;
+
+  .ox-util__trust-item {
+    min-block-size: 24px;
+  }
+}
+
+// 14e. THE HEADER'S LAYER WHILE A MENU IS OPEN (r28 fix). The shop sheet,
+// the drawer and the mega panel all live inside the header, one layer
+// (z 100) level with the listing's sticky filter and sort bar, the WhatsApp
+// float and the tab bar, which come later in the page and so painted over
+// them: on every listing and search page the filter bar ran across the
+// sheet's type tiles and, once scrolled, covered the sheet's and the
+// drawer's close buttons. While one is open the header steps up, the sheet
+// and the drawer to the modal layer, the mega panel to the overlay layer.
+.ox-header:has(.ox-sheet:not([hidden])),
+.ox-header:has(.ox-drawer:not([hidden])) {
+  z-index: var(--ox-z-modal);
+}
+
+.ox-header:has([data-ox-nav-trigger][aria-expanded='true']) {
+  z-index: var(--ox-z-overlay);
+}
+
+// 14f. THE MEGA PANEL'S BRAND LOGOS (ADP-04, snippets/mega-panel.liquid): up
+// to eight real logos under حسب العلامة, held until the owner's
+// featured-brands menu and the logo files exist. Sharp white tiles 48 tall
+// (the logo within 40), as many to a row as column B holds.
+.ox-mega__brands {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--ox-2);
+  margin: var(--ox-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-mega__brand {
+  display: grid;
+  place-items: center;
+  block-size: 48px;
+  padding: var(--ox-1) var(--ox-2);
+  background: #fff;
+  border: 1px solid var(--ox-bd);
+
+  &:hover {
+    border-color: var(--ox-bd-2);
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-mega__brand-logo {
+  inline-size: auto;
+  max-inline-size: 100%;
+  block-size: auto;
+  max-block-size: 40px;
+  object-fit: contain;
+}
