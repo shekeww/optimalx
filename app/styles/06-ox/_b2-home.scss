@@ -1311,9 +1311,10 @@ body {
 // 11.5-12px, under the 16px line the floor applies below, and this rule
 // carried no font-weight (no `.ox-*` role class in `CategoryTile.tsx`
 // either), so it rendered at 400, on the tinted cards and, worse, on
-// `.ox-tile--black`'s and the `vitamins-minerals` art card's near-black
-// ground. `--ox-w-read` clears both the <16px floor (500) and the
-// dark-ground floor (450) at its 550 root value.
+// `.ox-tile--black`'s and the dark art card's near-black ground (the
+// `protein` card since 2026-09-28, `vitamins-minerals` before it).
+// `--ox-w-read` clears both the <16px floor (500) and the dark-ground floor
+// (450) at its 550 root value.
 .ox-tile__line {
   z-index: 1;
   display: -webkit-box;
@@ -1455,8 +1456,9 @@ body {
   // A soft white radial scrim behind the text - insurance, not the primary
   // contrast strategy: five of the six grounds measure 10.46:1-17.84:1
   // against `--ox-fg` unaided (docs/build/progress/S2h.md), so this only
-  // widens an already-passing margin there. `vitamins-minerals` is the one
-  // exception and turns the scrim off below instead of relying on it.
+  // widens an already-passing margin there. `protein` (on its near-black
+  // ground since 2026-09-28) is the one exception and turns the scrim off
+  // below instead of relying on it.
   &::before {
     content: '';
     position: absolute;
@@ -1490,8 +1492,8 @@ body {
 // `--black` (its shaker-era tone) and `--art` (its own photograph, measured
 // pastel, not the black card's graphite). `--art` is declared after
 // `--black` above, so at equal specificity this wins for every art card;
-// `vitamins-minerals`'s own dark-ground override, below, is more specific
-// again and wins over this in turn for that one slug only.
+// `protein`'s own dark-ground override, below, is more specific again and
+// wins over this in turn for that one slug only.
 .ox-tile--art .ox-tile__foot {
   // Inside the overlay column the foot no longer needs to fall to the far
   // edge (the column itself is bottom-aligned): one step under the subline.
@@ -1518,14 +1520,15 @@ body {
   --ox-tile-arrow: var(--ox-accent-deep);
 }
 
-// `vitamins-minerals`'s own photograph (multivitamins.webp) measures near-
-// black (`#0F0F0F`) at the top-left, not the flat pastel every other ground
-// here measures (docs/build/progress/S2h.md): `--ox-fg` ink is 1.07:1 raw
-// against it and only 3.00:1 with the white scrim above, short of the 4.5:1
-// text floor. Light ink instead - the same swap `.ox-tile--black` already
-// makes two blocks up (17.46:1 measured here) - so the scrim is switched off
-// rather than stacked uselessly behind text it can no longer help.
-.ox-tile--art[data-category='vitamins-minerals'] {
+// The one dark art ground: `protein`'s photograph (the owner's Gold Standard
+// whey, 2026-09-28) sits on near-black, not the flat pastel every other
+// ground here measures, so `--ox-fg` ink would read at about 1.1:1 against
+// it. Light ink instead, the same swap `.ox-tile--black` already makes two
+// blocks up, and the scrim is switched off rather than stacked uselessly
+// behind text it can no longer help. Until 2026-09-28 this block belonged
+// to `vitamins-minerals`, whose photograph was the dark one; its new
+// photograph (Opti-Men on cream) takes the default dark ink and scrim.
+.ox-tile--art[data-category='protein'] {
   --ox-tile-arrow: var(--ox-accent);
 
   .ox-tile__body {
@@ -1551,7 +1554,7 @@ body {
 // Below 640 the card is the desktop composition: the photograph edge to
 // edge, the icon, name, subline and arrow over its own ground at the bottom
 // left, the arrow at the end of the desktop's 62% column, per-tile ink as on
-// desktop (light on the dark vitamins ground).
+// desktop (light on the dark protein ground).
 // What it solves is the reason the 2026-09-26 plate existed: a 2-up tile is
 // 138 to 297 wide (320 to 639 wide screens; 158 at 360, 173 at 390, 193 at
 // 430), and the words at the desktop sizes stand about 135 high (158 with a
@@ -1688,10 +1691,10 @@ body {
   // Measured on the art files (scripts/check-art-tiles.mjs --print): the
   // clear line, then the bottom-row colours left to right in physical terms
   // (the photograph does not mirror in English).
-  // cat-bg-protein.webp, sha256 578742ec36e3
+  // cat-bg-protein.webp, sha256 2c3f68871c2e
   .ox-tile--art[data-category='protein'] {
-    --ox-art-clear: 0.725;
-    --ox-art-ground: linear-gradient(to right, #F4E7D5, #F4E7D8 14.5%, #F4E7D5 21.3%, #F4E7D7 26.5%, #F2E5D3 30.4%, #F3E6D4 48.5%, #F1E2CF 65.2%, #EDE1CC);
+    --ox-art-clear: 0.65;
+    --ox-art-ground: linear-gradient(to right, #070707, #0C0C0C 43.7%, #060606);
   }
 
   // cat-bg-creatine.webp, sha256 0288b57f892b
@@ -1727,10 +1730,10 @@ body {
     --ox-tile-arrow: var(--ox-accent-deep);
   }
 
-  // cat-bg-vitamins-minerals.webp, sha256 4d18447929e5
+  // cat-bg-vitamins-minerals.webp, sha256 ba3220f1504d
   .ox-tile--art[data-category='vitamins-minerals'] {
-    --ox-art-clear: 0.595;
-    --ox-art-ground: linear-gradient(to right, #050505, #030303 26.6%, #070707 56.2%, #020202);
+    --ox-art-clear: 0.61;
+    --ox-art-ground: linear-gradient(to right, #F3E5D1, #F3E6D2 12.4%, #F4E4CD 22.5%, #F3E3CD 51.2%, #EFE0C9 61%, #EDDCC4 87.6%, #EDDBC4 95.4%, #EEDDC7);
   }
 
   // The owner's collagen photograph (2026-09-27); its export carried a white
