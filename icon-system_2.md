@@ -2,7 +2,7 @@
 
 Prepared 2026-09-26 from your direction: "match and inspire the identity and design of the icons with the icons and icons system in https://onthegoofficial.my, reflecting the bold premium energetic identity", and "it should create every icon needed for the whole website for consistency, define size and function and style and everything needed for every icon".
 
-This file defines **every icon the website uses**, 139 in all: every icon in use on the site today, minus four retired duplicates (B13), plus six the new features need (booking, subscriptions, the 3-month package, cashback credit). Draw the whole set in Claude Design to these rules and deliver it as **optimal-x-icons-v3**. It replaces v2 file for file under the same names, so every page switches at once and the whole site speaks one visual language.
+This file defines **every icon the website uses**, 141 in all: every icon in use on the site today, minus four retired duplicates (B13), plus six the new features need (booking, subscriptions, the 3-month package, cashback credit), plus two line versions for the phone tab bar (offers-line and advisory-line, B1). Draw the whole set in Claude Design to these rules and deliver it as **optimal-x-icons-v3**. It replaces v2 file for file under the same names, so every page switches at once and the whole site speaks one visual language.
 
 ---
 
@@ -116,6 +116,8 @@ Column keys. **Family:** S solid, L line. **Size:** the tokens of A6 (20, 24, 24
 | user | الحساب | Account in header and tab bar | Head and shoulders, one continuous line | L | 24 | none | no |
 | home | الرئيسية | Tab bar home | A house outline with a door opening | L | 24 | none | no |
 | store | تسوق | Tab bar shop, shop menu | A shopping bag with two handles | L | 24 | none | no |
+| offers-line | العروض | Tab bar offers tab only (the phone navigation). Added 2026-09-27: the tab bar shows the solid offers glyph (B7) next to line home, store and user, and a filled glyph reads as selected there | The price tag of B7 (34 degree cut corner, the hole) as a line drawing, stroke 2, no stripe, the same weight as home, store and user | L | 24 | none | yes |
+| advisory-line | اسأل | Tab bar ask tab only (the phone navigation), same reason as offers-line | The two overlapping speech bubbles of B5 as a line drawing, stroke 2: the front bubble whole, the rear bubble's hidden part left out | L | 24 | none | yes |
 | wishlist | المفضلة | Save a product (cards, header) | A heart outline | L | 24, 20 on cards | none | no |
 | language | اللغة | The EN and العربية switch in header and drawer | A globe of three strokes, one meridian at 34 degrees | L | 20 | none | no |
 | close | إغلاق | Close drawers, sheets, chips, dialogs | Two crossing strokes | L | 24, 20 in chips | none | no |
