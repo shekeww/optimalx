@@ -3689,6 +3689,827 @@ label.ox-fbt__row {
 }
 
 // ---------------------------------------------------------------------------
+// 20. The reference adoption on the product page (r33 batch P, the r26
+//     adoption plan, 2026-09-27): the first screen, the photo that swipes,
+//     the canonical buy column, the size prices, the ask line, the read
+//     more, the description first, the sticky strip, the before you buy
+//     block, the nutrition extras and the sticky bars' new states. Written
+//     after sections 2 to 18 on purpose: same specificity, so these win.
+// ---------------------------------------------------------------------------
+
+// ADP-22: THE FIRST PHONE SCREEN. The photo takes the full content width
+// (358 at 390, the plate's inner padding goes: the packshot is shot on
+// white, the plate is the page ground), the gallery's rows close to 8 and
+// the page's top to 8 under the crumb row, so the title starts inside 640
+// at 390 x 844 with the approved search row kept. The thumb strip is for
+// 768 and up; a phone swipes the photo and reads the dots.
+@media (max-width: 767px) {
+  .ox-pdp__top {
+    gap: var(--ox-4);
+    margin-block-start: var(--ox-2);
+  }
+
+  .ox-gallery {
+    gap: var(--ox-2);
+  }
+
+  .ox-gallery__plate {
+    padding: 0;
+  }
+
+  .ox-thumbs {
+    display: none;
+  }
+}
+
+// ADP-23: TWO COLUMNS FROM 768 at the approved 577:668 (buy about 323,
+// media about 373, a 24 gap at 768), the buy column at the inline start as
+// from 1024 (section 2 names the tracks for the same mirroring reason). The
+// thumbs run under the plate, as a row. A product's page only: a service
+// keeps its one column under 1024 as before (its day and time picker needs
+// the width, and a service with no photo has no media to place; the fix
+// round of the P review, F1).
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ox-pdp--physical .ox-pdp__top {
+    grid-template-columns: minmax(0, 577fr) minmax(0, 668fr);
+    grid-template-areas: 'buy media';
+    column-gap: var(--ox-6);
+  }
+
+  .ox-pdp--physical .ox-pdp__buy {
+    grid-area: buy;
+  }
+
+  .ox-pdp--physical .ox-pdp__media {
+    grid-area: media;
+  }
+
+  .ox-pdp--physical .ox-gallery__plate {
+    padding: var(--ox-4);
+  }
+}
+
+// A SERVICE WITH NO PHOTO (.ox-pdp--solo, printed by main-product.liquid on
+// the page wrapper, which comes before the media in the markup): no empty
+// gallery plate from the first paint, and the whole row for the buy zone
+// from 1024. snippets/service-buy.liquid does the same through a :has() on
+// its own buy zone, which only matches once the parser reaches it: under
+// 1024, where the gallery sits above the buy column, the buy column then
+// jumped 729 px up at 768 (CLS 0.55, the third agent of the P fix round).
+.ox-pdp--solo .ox-pdp__media {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .ox-pdp--solo .ox-pdp__top {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'buy';
+  }
+}
+
+// ADP-22 on small and short phones (the P review, F4): under 390 wide, or
+// under 844 tall, the photo gives up only what the price needs to clear the
+// tab bar at first paint (the screen height less the 500 the rest of the
+// first screen takes, never under 86 percent of the column, centred on the
+// white page ground), and the two 16 gaps around the title close to 12. At
+// 390 x 844 and on taller phones nothing changes (the photo stays 358).
+@media (max-width: 389px), (max-width: 767px) and (max-height: 843px) {
+  .ox-pdp--physical .ox-pdp__top {
+    gap: var(--ox-3);
+  }
+
+  .ox-pdp--physical .ox-pdp__buy {
+    gap: var(--ox-3);
+  }
+
+  .ox-pdp--physical .ox-gallery__plate {
+    justify-self: center;
+    inline-size: clamp(86%, calc(100vh - 500px), 100%);
+    inline-size: clamp(86%, calc(100svh - 500px), 100%);
+  }
+}
+
+// THE PHOTO SWIPES (ADP-22 item 2): the plate holds one sideways snap
+// track, a photo per stop, the chosen variant's own photo first. A vertical
+// swipe always scrolls the page (the block axis is closed); the track stops
+// at its ends (contain, never the browser's back gesture).
+.ox-gallery__track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 100%;
+  align-self: stretch;
+  min-inline-size: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ox-gallery__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+// The magnifier cue (O7, O27): paint only, the photo is the zoom target.
+.ox-gallery__loupe {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: var(--ox-3);
+  inset-inline-end: var(--ox-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 40px;
+  block-size: 40px;
+  color: var(--ox-fg);
+  background: var(--ox-plate);
+  border-radius: 0;
+  pointer-events: none;
+}
+
+// The dots (phones only): 8 round dots, the one exception to the sharp rule
+// the owner named; the current one is the accent and twice as long, so the
+// state never rests on colour alone (the product card's own dots).
+.ox-gallery__dots {
+  order: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-2);
+  block-size: 8px;
+}
+
+.ox-gallery__dot {
+  flex: none;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 999px;
+  background: var(--ox-plate-2);
+
+  &.is-active {
+    inline-size: 16px;
+    background: var(--ox-accent);
+  }
+}
+
+// ADP-28: "view the label", a sharp outlined button, only when the store
+// carries a label photo. Under the gallery from 768; on a phone the same
+// action is a 40 x 40 plate button stacked over the magnifier in the
+// photo's bottom inline-end corner (the loupe's own plate), where a
+// centred packshot leaves the plate empty: a row of its own would push the
+// title past the first screen, and the top corner sat on the tub's lid
+// (the P review, F3).
+.ox-gallery {
+  position: relative;
+}
+
+.ox-gallery__label {
+  order: 3;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+  margin: 0;
+  padding-inline: var(--ox-4);
+  font: inherit;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-flat);
+  color: var(--ox-fg);
+  background: var(--ox-surface);
+  border: 1px solid var(--ox-fg);
+  border-radius: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) {
+  .ox-gallery__label:hover {
+    border-color: var(--ox-accent);
+  }
+}
+
+.ox-gallery__label-plate {
+  position: absolute;
+  z-index: 3;
+  inset-block-end: calc(var(--ox-3) + 40px + var(--ox-2));
+  inset-inline-end: var(--ox-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 40px;
+  block-size: 40px;
+  margin: 0;
+  padding: 0;
+  color: var(--ox-fg);
+  background: var(--ox-plate);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+
+  // The 44 hit around the 40 plate.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) {
+  .ox-gallery__label-plate:hover {
+    color: var(--ox-accent);
+  }
+}
+
+@media (max-width: 767px) {
+  .ox-gallery__label {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-gallery__label-plate {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .ox-gallery__dots {
+    display: none;
+  }
+}
+
+// ADP-27: the brand line is a link to the brand; its hit area is 44 tall
+// without growing the 20 line (a transparent layer over it).
+.ox-pdp__brand-link {
+  position: relative;
+  display: inline-block;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: -12px;
+    inset-inline: -8px;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) {
+  .ox-pdp__brand-link:hover {
+    color: var(--ox-fg);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+// ADP-29: THE STOCK LINE at the price's row end ("متوفر" in the go colour
+// with a small square dot, or sold out in the stop colour); the saving
+// badge wraps to its own line under both.
+.ox-pdp__price-block:has(> .ox-pdp__stock) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--ox-4);
+  row-gap: var(--ox-2);
+
+  > .ox-pdp__stock {
+    order: 1;
+    margin-inline-start: auto;
+  }
+
+  > .ox-pdp__badges {
+    order: 2;
+    flex: 1 0 100%;
+  }
+}
+
+.ox-pdp__stock {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-2);
+  margin: 0;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-title);
+  line-height: 20px;
+  color: var(--ox-go);
+  white-space: nowrap;
+
+  &.is-out {
+    color: var(--ox-stop);
+  }
+}
+
+.ox-pdp__stock-dot {
+  flex: none;
+  inline-size: 8px;
+  block-size: 8px;
+  background: currentColor;
+  border-radius: 0;
+}
+
+// PDP-03: THE LABEL CHIPS, at most four short chips that wrap to a second
+// row when the column is narrower than the four (a sideways scroller cut
+// the last chip mid-word at 360 to 1023, the P review F5), each chip a 44
+// target that opens the nutrition panel.
+.ox-quick {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  min-inline-size: 0;
+}
+
+.ox-quick__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-quick__item {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.ox-quick__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 44px;
+  padding-inline: var(--ox-3);
+  font-size: var(--ox-t-small);
+  line-height: 20px;
+  color: var(--ox-fg);
+  text-decoration: none;
+  background: var(--ox-plate);
+  border: 1px solid transparent;
+  border-radius: 0;
+
+  &[href] {
+    cursor: pointer;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+@media (hover: hover) {
+  .ox-quick__chip[href]:hover {
+    border-color: var(--ox-line-3);
+  }
+}
+
+.ox-quick__value {
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-figure);
+  white-space: nowrap;
+}
+
+.ox-quick__label {
+  font-weight: var(--ox-w-read);
+  color: var(--ox-fg-2);
+}
+
+.ox-quick__chip--mark {
+  gap: var(--ox-2);
+}
+
+.ox-quick__glyph {
+  flex: none;
+  color: var(--ox-verify);
+}
+
+.ox-quick__caption {
+  margin: 0;
+  font-size: var(--ox-t-micro);
+  line-height: 18px;
+  color: var(--ox-fg-3);
+}
+
+// ADP-37: SIZE CHIPS PRINT THEIR PRICE, stacked under the size: the size,
+// the price, and the saving in riyals when the compare-at price is real.
+.ox-optchips--priced .ox-optchip {
+  flex-direction: column;
+  gap: 2px;
+  padding-block: var(--ox-2);
+}
+
+.ox-optchip__price {
+  display: flex;
+  justify-content: center;
+  font-size: var(--ox-t-small);
+  line-height: 20px;
+}
+
+.ox-optchip__save {
+  display: block;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-title);
+  line-height: 18px;
+  color: var(--ox-go);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// PDP-02: THE LEAD, a three line teaser with a native "read more" (the
+// details toggle); open, the whole text shows. It works with no script. A
+// service keeps it under its title; every other product opens its
+// Description section with the lead in full (below, F8 of the P review).
+.ox-pdp__lead-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+
+  .ox-pdp__lead {
+    margin-block-start: 0;
+  }
+
+  &:has(> .ox-pdp__more[open]) .ox-pdp__lead {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+  }
+}
+
+.ox-pdp__more[hidden] {
+  display: none;
+}
+
+// Closed, the toggle sits on the third line at its inline end, over a fade
+// of the page ground: it takes no row of its own, so showing or hiding it
+// (decided again once the web font is in) never moves anything under the
+// lead (a row of 44 moved a service's booking form, and the unseen spacer
+// that replaced it left a gap; the P review, F14). Its hit is 44 tall, 10
+// over the line above and 10 into the gap under the lead. Open, it is a row
+// under the whole text.
+.ox-pdp__more:not([open]) {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+
+  .ox-pdp__more-toggle {
+    position: relative;
+    min-block-size: 24px;
+    padding-inline-start: var(--ox-8);
+    background: linear-gradient(to right, transparent, var(--ox-bg) var(--ox-6));
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: -10px;
+      inset-inline: 0;
+    }
+  }
+}
+
+[dir='rtl'] .ox-pdp__more:not([open]) .ox-pdp__more-toggle {
+  background: linear-gradient(to left, transparent, var(--ox-bg) var(--ox-6));
+}
+
+// F8: the lead in full, the Description section's first paragraph, a step
+// above the prose under it.
+.ox-pdp__lead--full {
+  display: block;
+  margin: 0 0 var(--ox-4);
+  overflow: visible;
+  font-size: var(--ox-t-lead);
+  line-height: var(--ox-lh-body);
+  color: var(--ox-fg);
+  -webkit-line-clamp: unset;
+}
+
+.ox-pdp__more-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-1);
+  min-block-size: 44px;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-title);
+  color: var(--ox-accent-dark);
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-pdp__more-close {
+  display: none;
+}
+
+.ox-pdp__more[open] {
+  .ox-pdp__more-open {
+    display: none;
+  }
+
+  .ox-pdp__more-close {
+    display: inline;
+  }
+
+  .ox-pdp__more-icon {
+    transform: rotate(180deg);
+  }
+}
+
+.ox-pdp__more-icon {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+// PDP-06: THE ASK LINE, the advisory spine inside the buy zone: one line
+// and its two text actions under the trust rows, on the page ground.
+.ox-pdp__ask {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  padding-block-start: var(--ox-4);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-pdp__ask-line {
+  margin: 0;
+  font-size: var(--ox-t-body);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
+  color: var(--ox-fg);
+}
+
+.ox-pdp__ask-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--ox-6);
+  margin: 0;
+}
+
+.ox-pdp__ask-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-2);
+  min-block-size: 44px;
+  font-size: var(--ox-t-small);
+  font-weight: var(--ox-w-ui);
+  color: var(--ox-fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+
+  &:focus-visible {
+    outline: var(--ox-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.ox-pdp__ask-icon {
+  flex: none;
+}
+
+// ADP-24: THE HEADING ROLES below the buy zone: every panel's h2 at the
+// section h2 step (22 to 26), the calculator's and the safety rows' h3 at
+// the h3 step (18 to 20); the 15 px h2 is gone. Scoped to the product
+// page's lower region: .ox-panel__title also heads the about, contact,
+// services, FAQ and address cards, which keep their own 17 and 18 (the P
+// review, F2).
+.ox-pdp__below .ox-panel__title {
+  font-size: var(--ox-t-h2);
+  line-height: var(--ox-lh-head);
+}
+
+.ox-pdp__below .ox-supply__title {
+  font-size: var(--ox-t-h3);
+  line-height: var(--ox-lh-snug);
+}
+
+// One head pattern below the buy zone: every section head at the start, as
+// the brand band and the panels already are (the shared section head is
+// centred elsewhere on the store; the P review, F7).
+.ox-pdp__below .ox-sh {
+  align-items: flex-start;
+  text-align: start;
+}
+
+// ADP-24: the description reads in a column of the narrow panel width
+// (880) from 1024, at the start under its head, not across 1296.
+@media (min-width: 1024px) {
+  .ox-pdp__description .ox-prose,
+  .ox-pdp__description .ox-pdp__lead--full {
+    max-inline-size: 880px;
+  }
+}
+
+// PDP-12: the anchor strip sticks to the top of the screen inside the
+// region below the buy zone only (it is that region's first child, so it
+// stops at the region's end); the header stays static. 48 tall with its
+// rule (the shared spec's in-page strip), the tabs keeping their 44 hit.
+.ox-pdp__below > .ox-strip {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--ox-z-raised);
+  background: var(--ox-bg);
+
+  .ox-strip__tab {
+    min-block-size: 47px;
+  }
+}
+
+// PDP-15: BEFORE YOU BUY, always open, one headed row per fact.
+.ox-safety__rows {
+  display: flex;
+  flex-direction: column;
+  margin-block-start: var(--ox-4);
+  border-block-start: 1px solid var(--ox-bd);
+}
+
+.ox-safety__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-3);
+  padding-block: var(--ox-3);
+  border-block-end: 1px solid var(--ox-bd);
+
+  &:last-child {
+    border-block-end: 0;
+    padding-block-end: 0;
+  }
+}
+
+.ox-safety__icon {
+  flex: none;
+  margin-block-start: 2px;
+  color: var(--ox-verify);
+}
+
+.ox-safety__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-1);
+  min-inline-size: 0;
+}
+
+.ox-safety__title {
+  margin: 0;
+  font-size: var(--ox-t-h3);
+  font-weight: var(--ox-w-title);
+  line-height: var(--ox-lh-snug);
+  color: var(--ox-fg);
+}
+
+.ox-safety__text {
+  margin: 0;
+  font-size: var(--ox-t-body);
+  line-height: var(--ox-lh-body);
+  color: var(--ox-fg-2);
+}
+
+.ox-safety__text--strong {
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
+}
+
+@media (min-width: 1024px) {
+  .ox-safety__rows {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--ox-8);
+  }
+
+  .ox-safety__row,
+  .ox-safety__row:last-child {
+    padding-block-end: var(--ox-3);
+    border-block-end: 1px solid var(--ox-bd);
+  }
+}
+
+// PDP-14: THE NUTRITION EXTRAS: the blend line above the table, a per 100 g
+// column when the rows carry one, the ingredients and the label's own
+// "contains" line under it.
+.ox-nutrition__blend {
+  margin: 0;
+  margin-block-start: var(--ox-4);
+  padding: var(--ox-2) var(--ox-3);
+  font-size: var(--ox-t-small);
+  line-height: var(--ox-lh-snug);
+  color: var(--ox-fg-2);
+  background: var(--ox-plate);
+}
+
+.ox-nutrition__table--100 {
+  thead th:last-child,
+  tbody td:last-child,
+  thead th:nth-last-child(2),
+  tbody td:nth-last-child(2) {
+    inline-size: 25%;
+  }
+}
+
+.ox-nutrition__extra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-2);
+  margin-block-start: var(--ox-4);
+}
+
+.ox-nutrition__ingredients,
+.ox-nutrition__contains {
+  margin: 0;
+  font-size: var(--ox-t-small);
+  line-height: var(--ox-lh-body);
+  color: var(--ox-fg-2);
+}
+
+.ox-nutrition__ingredients-key,
+.ox-nutrition__contains {
+  font-weight: var(--ox-w-title);
+  color: var(--ox-fg);
+}
+
+// ADP-22 items 4 and 5: THE STICKY BAR carries buy now alone (the pair
+// needs 412 of a 360 row, r33/P fit.mjs, so OD-4 (i) falls back to buy now
+// only), the price with the chosen values under it, or, before a chip is
+// touched on a product with options, "choose" (no arrow: it goes back up
+// to the options, not forward).
+.ox-sticky [hidden] {
+  display: none;
+}
+
+.ox-sticky__info {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.ox-sticky__picked {
+  max-inline-size: 46vw;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--ox-t-micro);
+  line-height: 18px;
+  color: var(--ox-fg-2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ox-sticky__choose {
+  white-space: nowrap;
+
+  &::after {
+    display: none;
+  }
+}
+
+// ADP-26: the service's booking bar on its own page carries the service's
+// price ("مجاني" when free) where the product bar carries the product's.
+.ox-visit-sticky__price {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+
+  .ox-service__free {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-pdp__more-icon {
+    transition: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 19. Reduced motion (DIRECTION 7, the global contract)
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
