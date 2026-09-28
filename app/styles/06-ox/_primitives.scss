@@ -11,10 +11,11 @@
 // The angle is 34deg from vertical (X-IDENTITY-2026-09-22.md §2.1: re-derived
 // from the mark itself, was 22deg); run = band height * tan(34deg).
 // Polygons are declared for RTL (the document default) and mirrored under
-// [dir="ltr"], with one exception: a control's own shape (`ox-angled()`,
-// the button parallelogram) keeps the Arabic lean in both languages, see its
-// own note below. The mixins never emit a transition or an animation: a
-// wedge is a static paint-time clip on an element that never animates.
+// [dir="ltr"], controls included since 2026-09-28 (`ox-angled()`, the
+// button parallelogram, see its own note below): English is the mirror
+// image of the Arabic design. The mixins never emit a transition or an
+// animation: a wedge is a static paint-time clip on an element that never
+// animates.
 $ox-angle-tan: 0.6745;
 
 // Rounds to 0.1px rather than 1px: at 34° an integer round costs up to 0.35°
@@ -44,8 +45,8 @@ $ox-angle-tan: 0.6745;
 
 // The angled call to action: a parallelogram on the same 34 degrees (was 22
 // - X-IDENTITY-2026-09-22.md §2.1) as every other angled edge in the
-// identity, leaning like "/" (the top edge sits to the right of the foot)
-// in both languages, see `ox-angled()`'s own note.
+// identity, leaning like "/" in Arabic (the top edge sits to the right of
+// the foot) and like "\" in English, see `ox-angled()`'s own note.
 //
 // clip-path rather than transform: skewX. A skew would slant the label with
 // the box and would need a counter-skewed inner wrapper, which is markup we
@@ -148,19 +149,24 @@ $ox-angle-tan: 0.6745;
   }
 }
 
-// ONE LEAN IN BOTH LANGUAGES (owner, 2026-09-25: "in english, mirror all
-// buttons"). A button leans like "/" in Arabic and in English alike, the
-// forward slash of the X mark's own stroke: the mark does not mirror with
-// the reading direction, so the control that carries it does not either.
-// Only the shape stays put; the label, the padding and the arrow inside
-// keep following the reading direction (logical properties, `ox-mirror`).
-// Every control takes this mixin (`.ox-btn` in every size, the card add
-// and buy, the buy zone, the sticky bars, the toast, the quantity bar); a
-// surface that borrows the parallelogram (a band plate, a photo cover)
-// takes `ox-angled-surface()` below and still mirrors.
+// ENGLISH MIRRORS ARABIC (owner, 2026-09-28: "mirror buttons in english to
+// match the design in arabic", shown both options he chose the true mirror
+// image; this reverses the 2026-09-25 one-lean rule). A button leans like
+// "/" in Arabic and like "\" in English, as every wedge, plate and cover
+// already did, so the English page is the Arabic page seen in a mirror.
+// Every control takes this mixin (`.ox-btn` in every size, the card buy,
+// the buy zone, the sticky bars, the toast, the quantity bar, which shares
+// the buy-now's box and polygon so the two stay aligned in each language).
+// The English twin is keyed on `:where([dir='ltr'])`, so it adds no
+// specificity: it beats only the Arabic polygon emitted just above it, and
+// any caller that later sets its own clip-path (or none) still wins in both
+// languages exactly as before. The Arabic output is unchanged.
 @mixin ox-angled($h) {
   $run: ox-run($h);
   clip-path: polygon(#{$run} 0, 100% 0, calc(100% - #{$run}) 100%, 0 100%);
+  :where([dir='ltr']) & {
+    clip-path: polygon(0 0, calc(100% - #{$run}) 0, 100% 100%, #{$run} 100%);
+  }
 }
 
 // The same parallelogram on a SURFACE (a band plate, a photo cover): it
@@ -1120,10 +1126,11 @@ body {
       // different selector from this one, so `small-angle`'s same-selector
       // match never fires here.
       clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
-      // One shape in both languages (owner, 2026-09-25: "in english, mirror
-      // all buttons"): the chip is a control, so its notch stays where the
-      // Arabic chip draws it. `.ox-badge` below is a label and still
-      // mirrors.
+      // English mirrors Arabic (owner, 2026-09-28, `ox-angled()`'s note):
+      // the notch bites the top of the reading start, as on `.ox-badge`.
+      :where([dir='ltr']) & {
+        clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%, 0 4px, 14px 4px);
+      }
     }
     &:disabled,
     &[aria-disabled='true'] {
@@ -1264,15 +1271,18 @@ body {
   color: inherit;
   border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
   clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
-  // One shape in both languages (owner, 2026-09-25: "in english, mirror all
-  // buttons"): the chip draws the Arabic cut in English too. A chip that IS
-  // the mirrored glyph (the svg carrying `ox-mirror`, flipped by scaleX(-1)
-  // in Arabic only) has its Arabic cut flipped with it, so in English it
-  // takes the mirrored polygon to draw that same Arabic shape; a chip that
-  // wraps its glyph (the rail arrow faces, the card arrow) is never flipped
-  // and needs no English rule.
-  [dir='ltr'] &.ox-mirror {
+  // English mirrors Arabic (owner, 2026-09-28, `ox-angled()`'s note). A
+  // chip that wraps its glyph (the rail arrow faces, the card arrow) is
+  // never flipped: its cut sits top left in Arabic, so English takes the
+  // mirrored polygon (top right). A chip that IS the mirrored glyph (the
+  // svg carrying `ox-mirror`, flipped by scaleX(-1) in Arabic only) shows
+  // its cut top right in Arabic, so English, unflipped, keeps the base
+  // polygon (top left). Zero-specificity keys, as in `ox-angled()`.
+  :where([dir='ltr']) & {
     clip-path: polygon(0 0, calc(100% - #{ox-run(8px)}) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+  :where([dir='ltr']) &.ox-mirror {
+    clip-path: polygon(0 8px, #{ox-run(8px)} 0, 100% 0, 100% 100%, 0 100%);
   }
 }
 

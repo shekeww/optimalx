@@ -253,10 +253,10 @@ $ox-rail-chip-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
   // the stroke at the corner; on white at 60% that gap vanished and the chip
   // read as a square. Same box, same cut (the primitive's own polygon, lean
   // 8, run 5.4 at 34 degrees), same 60% hairline going solid on hover, now
-  // closed along the diagonal. One shape in both languages (owner,
-  // 2026-09-25: "in english, mirror all buttons"): the face wraps its glyph
-  // and is never flipped, so the cut sits top left in Arabic and in English,
-  // and only the chevrons inside turn with the language.
+  // closed along the diagonal. English mirrors Arabic (owner, 2026-09-28,
+  // `ox-angled()`'s note): the cut sits top left in Arabic and top right
+  // in English, the outline layer flipped whole (its corner mask with it),
+  // and the chevrons inside turn with the language as before.
   > .ox-iconbtn--angled {
     position: relative;
     border: 0;
@@ -275,6 +275,10 @@ $ox-rail-chip-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
       // square, then the redrawn corner added on top.
       mask-composite: add, subtract, add;
       pointer-events: none;
+    }
+
+    :where([dir='ltr']) &::before {
+      transform: scaleX(-1);
     }
   }
 

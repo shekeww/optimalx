@@ -1997,10 +1997,10 @@ body.is-sticky-product-bar.product-single {
 
 // THE SELECTED MARK, shared with the product card's swatches (one cut for
 // both, the cards chain includes it too): an accent triangle in the chip's
-// top-left corner whose long edge leans like "/" at 34deg from vertical.
-// A control's lean never mirrors (`ox-angled()`'s note), so the corner is
-// the same physical corner in both languages: the inline end in Arabic,
-// the inline start in English. Call it on a `::after`.
+// corner at the inline end (top left in Arabic) whose long edge leans like
+// "/" at 34deg from vertical. English mirrors Arabic (owner, 2026-09-28,
+// `ox-angled()`'s note): the triangle sits top right there and its edge
+// leans "\". Call it on a `::after`.
 @mixin ox-chip-cut($h: 18px) {
   content: '';
   position: absolute;
@@ -2011,9 +2011,8 @@ body.is-sticky-product-bar.product-single {
   background: var(--ox-accent);
   clip-path: polygon(0 0, 100% 0, 0 100%);
   pointer-events: none;
-  [dir='ltr'] & {
-    inset-inline-end: auto;
-    inset-inline-start: 0;
+  :where([dir='ltr']) & {
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
   }
 }
 
@@ -2035,13 +2034,17 @@ body.is-sticky-product-bar.product-single {
 // both, _b4-listing.scss includes it too; review 2026-09-27: the card drew
 // a diagonal, the product page only a faded square): a 1.5px line corner to
 // corner across a faded square, leaning "/" like the cut and the buy-now in
-// both languages (a gradient's corner keyword is physical, so it never
-// mirrors). Call it on a `::before` of the positioned square.
+// Arabic and "\" in English (a gradient's corner keyword is physical, so
+// the English twin names the other corner). Call it on a `::before` of the
+// positioned square.
 @mixin ox-chip-struck {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(to top left, transparent calc(50% - 0.75px), var(--ox-fg) calc(50% - 0.75px), var(--ox-fg) calc(50% + 0.75px), transparent calc(50% + 0.75px));
+  :where([dir='ltr']) & {
+    background: linear-gradient(to top right, transparent calc(50% - 0.75px), var(--ox-fg) calc(50% - 0.75px), var(--ox-fg) calc(50% + 0.75px), transparent calc(50% + 0.75px));
+  }
 }
 
 .ox-optgroup {

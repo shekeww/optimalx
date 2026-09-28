@@ -253,6 +253,9 @@ nav.breadcrumbs .s-breadcrumb-item button {
   aspect-ratio: auto;
   clip-path: polygon(0 0, 100% 0, 100% 100%, calc(var(--band-h) * var(--ox-angle-tan, 0.6745)) 100%);
 
+  // The pane and its cut stay in English too (owner, 2026-09-28: English
+  // mirrors Arabic, every button included): a cover carries print, and a
+  // cut moved to the top of the inner edge runs through the packshots.
   [dir='ltr'] & {
     inset-inline: auto 0;
   }
@@ -1941,6 +1944,12 @@ nav.breadcrumbs .s-breadcrumb-item button {
     z-index: -1;
     background: var(--ox-ink);
     clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 4px, 100% 4px, 100% 100%, 0 100%);
+
+    // English mirrors Arabic (owner, 2026-09-28): the notch at the reading
+    // start, as on the filter chip and `.ox-badge` (`_primitives.scss`).
+    :where([dir='ltr']) & {
+      clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%, 0 4px, 14px 4px);
+    }
   }
 
   &:hover {
@@ -4268,9 +4277,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // still opens it.
 //
 // The chosen value: the accent ring and, in its top-left corner, the accent
-// wedge at the identity's 34 degrees, leaning "/" like the buy-now in both
-// languages (clip-path is physical, so it never mirrors). A value no variant
-// can sell is struck the same "/" way and faded; it stays selectable.
+// wedge at the identity's 34 degrees, leaning "/" like the buy-now in
+// Arabic; English mirrors it (owner, 2026-09-28: the wedge moves to the top
+// right and leans "\"). A value no variant can sell is struck the same way
+// and faded; it stays selectable.
 // ---------------------------------------------------------------------------
 .ox-card-product__variants.ox-card-product__variants {
   // The phone photo's bleed (ADP-20, _b3-product.scss section 1) is added
@@ -4350,6 +4360,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
       inset: -1px;
       background: var(--ox-accent);
       clip-path: polygon(0 0, 6.7px 0, 0 10px);
+
+      :where([dir='ltr']) & {
+        clip-path: polygon(calc(100% - 6.7px) 0, 100% 0, 100% 10px);
+      }
     }
   }
 

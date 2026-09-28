@@ -92,14 +92,16 @@
   // ONE LEAN WITH THE BUY-NOW (owner, 2026-09-26: "add to cart button is
   // currently flipped/mirrored horizontally, it should be mirrored back to be
   // exactly aligned with buy now button"; this reverses the 2026-09-25
-  // mirrored lean). The buy-now under the bar is `ox-angled(48px)`, a "/" in
-  // both languages, and the bar's paint takes the same mixin at the same 48:
-  // the bar and the buy-now share one box width and one polygon, so their
-  // cut edges sit at the same x at the top and at the foot, in Arabic and in
-  // English. No `[dir]` twin, for the reason the mixin has none (a button
-  // keeps one lean in both languages). The glyph clearances below are
-  // measured against this cut: the top of the bar is cut at its left end and
-  // the foot at its right end, whichever cell sits there.
+  // mirrored lean). The buy-now under the bar is `ox-angled(48px)`, and the
+  // bar's paint takes the same mixin at the same 48: the bar and the buy-now
+  // share one box width and one polygon, so their cut edges sit at the same
+  // x at the top and at the foot in each language. Since 2026-09-28 the
+  // mixin mirrors in English (owner: English mirrors Arabic), so both lean
+  // "/" in Arabic and "\" in English, together. The glyph clearances below
+  // are measured against the cut and hold in both: each end loses one
+  // corner of the same run (Arabic: the top at the left end, the foot at
+  // the right end; English: the top at the right end, the foot at the
+  // left), and a centred glyph clears a top corner and a foot corner alike.
   &::before,
   &::after {
     content: '';

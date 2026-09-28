@@ -280,8 +280,8 @@
   inset-inline: 0;
   block-size: 160px;
   overflow: hidden;
-  // The surface variant: a plate mirrors with the reading direction (only a
-  // button keeps one lean in both languages, owner 2026-09-25).
+  // The surface variant: a plate mirrors with the reading direction, as
+  // every button does since 2026-09-28.
   @include ox-angled-surface(160px);
 }
 

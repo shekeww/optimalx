@@ -256,9 +256,9 @@
 // a colour or flavour value led by its 16 square (the fill from
 // snippets/swatch-color.liquid, the card's and the product page's map; a
 // hairline keeps an edge on white and cream fills; sharp like every
-// swatch). Then the expiry in the product page's own face (.ox-pdp__expiry:
-// 14, the icon one step quieter) and, from a real compare-at price only, the
-// saving in the card's saving green (.ox-card-product__saving).
+// swatch). Then, from a real compare-at price only, the saving in the card's
+// saving green (.ox-card-product__saving). No expiry line (owner,
+// 2026-09-28: the expiry cannot be traced on every product).
 .ox-cart__opts {
   display: flex;
   flex-direction: column;
@@ -290,21 +290,6 @@
   background: var(--ox-swatch, transparent);
   border: 1px solid rgb(13 16 20 / 20%);
   border-radius: 0;
-}
-
-.ox-cart__line-expiry {
-  display: flex;
-  align-items: center;
-  gap: var(--ox-2);
-  margin: var(--ox-1) 0 0;
-  font-size: 14px;
-  line-height: var(--ox-lh-lead);
-  color: var(--ox-fg-2);
-}
-
-.ox-cart__line-expiry-icon {
-  flex: none;
-  color: var(--ox-fg-3);
 }
 
 .ox-cart__line-saving {

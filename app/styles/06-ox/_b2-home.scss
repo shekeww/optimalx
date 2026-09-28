@@ -166,11 +166,19 @@
     calc(100% - var(--ox-cta-run)) 100%,
     0 100%
   );
-}
 
-// No English mirror (owner, 2026-09-25: "in english, mirror all buttons"):
-// the wedge leans like "/" in both languages, the same one-lean rule as
-// `ox-angled()` (`_primitives.scss`).
+  // English mirrors Arabic (owner, 2026-09-28): "/" in Arabic, "\" in
+  // English, the same rule and the same zero-specificity key as
+  // `ox-angled()` (`_primitives.scss`).
+  :where([dir='ltr']) & {
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--ox-cta-run)) 0,
+      100% 100%,
+      var(--ox-cta-run) 100%
+    );
+  }
+}
 
 // The outline pill that answers it. One shape each, so the pair reads as a
 // primary and a secondary rather than as two buttons.
@@ -1912,8 +1920,8 @@ body {
   // (top-left and bottom-right, the text at the bottom-left), which
   // supersedes the 2026-09-23 "never mirrored" note above. The text column
   // follows the reading direction on its own (flex-start, logical padding);
-  // the arrow chip keeps its Arabic cut in both languages (a control, owner
-  // 2026-09-25, see after `.ox-goal__cta`), and the photograph by the `[dir='ltr'] .ox-goal__photo` rule below, except
+  // the arrow chip mirrors too (owner 2026-09-28, see after
+  // `.ox-goal__cta`), and the photograph by the `[dir='ltr'] .ox-goal__photo` rule below, except
   // on a frame that carries print (the creatine tub on the ideal-weight
   // card, a merchant's own photograph), which would read backwards.
   [dir='ltr'] & {
@@ -2116,13 +2124,12 @@ body {
   color: var(--ox-accent);
 }
 
-// The arrow chip is a control, so it keeps its Arabic shape in English too
-// (owner, 2026-09-25: "in english, mirror all buttons"; this replaces the
-// S12 rule that mirrored it with its card). The glyph carries `ox-mirror`
-// (scaleX(-1) in Arabic), which turns the chip's cut to the physical
-// top-right there; `.ox-iconbtn--angled.ox-mirror`'s own English polygon
-// (`_primitives.scss`) draws that same top-right cut unflipped. The glyph
-// itself still points the reading way in both languages.
+// The arrow chip mirrors with the language (owner, 2026-09-28: English
+// mirrors Arabic). The glyph carries `ox-mirror` (scaleX(-1) in Arabic),
+// which turns the chip's cut to the physical top-right there;
+// `.ox-iconbtn--angled.ox-mirror`'s English rule (`_primitives.scss`)
+// keeps the base polygon, unflipped, so English draws the top-left cut,
+// the mirror image. The glyph points the reading way in both languages.
 
 // Owner review 2026-09-23 (late), item 2: no fill on hover either: the
 // shared class's own background is transparent now, so brightening it back
@@ -2269,7 +2276,7 @@ body {
 // link: the accent's text step at 16/700 (--ox-accent-dark, 4.59:1 on
 // paper, the step small accent text takes; the full accent on a dark band),
 // led by the brand's slash, a 2px bar on the 34 degree angle that leans "/"
-// in both languages like every other angled mark, then the label and the
+// in Arabic and "\" in English like every other angled mark, then the label and the
 // arrow, on a 44px tall hit. From 1024 a rail's square arrow pair sits in
 // the same head at the end (`.ox-sh__actions`, `_primitives.scss`), the
 // link stepped inward past it.
@@ -2280,16 +2287,16 @@ body {
   color: var(--ox-accent-dark);
 
   // The slash is a 2px bar, X-IDENTITY 2.3's bar exemption (its run is
-  // its own travel, not a cut into a small box), and it keeps one lean in
-  // English too (owner, 2026-09-25: the angled marks lean like "/" in both
-  // languages), hence the two pragmas.
+  // its own travel, not a cut into a small box). It mirrors with the
+  // language through --ox-skew (owner, 2026-09-28: English mirrors Arabic),
+  // the same -34deg as before in Arabic.
   &::before {
     block-size: 14px; // ox-allow: small-angle
     content: '';
     flex: none;
     inline-size: 2px;
     background: var(--ox-accent);
-    transform: skewX(calc(-1 * var(--ox-angle))); // ox-allow: unmirrored
+    transform: skewX(var(--ox-skew));
   }
 
   &:hover {
@@ -4310,6 +4317,12 @@ body:has(.ox-wa) .ox-footer__strip {
   color: var(--ox-paper);
   text-decoration: none;
   clip-path: polygon(0 0, calc(100% - #{ox-run(40px)}) 0, 100% 40px, 100% 100%, #{ox-run(40px)} 100%, 0 calc(100% - 40px));
+
+  // English mirrors Arabic (owner, 2026-09-28): the cuts move to the top
+  // left and the bottom right, as on `.ox-goal`.
+  :where([dir='ltr']) & {
+    clip-path: polygon(#{ox-run(40px)} 0, 100% 0, 100% calc(100% - 40px), calc(100% - #{ox-run(40px)}) 100%, 0 100%, 0 40px);
+  }
 
   &:focus-visible {
     outline: none;
