@@ -21,7 +21,7 @@ No additional harvest was run and no web search was used for this document. Ever
 - Input files: ac_all.json (dict of seed to suggestion list), ac_all.txt (same data as text), seeds_all.txt (the seed list). Files are in the same folder as this document.
 - 192 unique seeds. 2,285 suggestions in total, 2,168 unique strings (117 suggestions appear under more than one seed, for example "افضل بروتين للتنشيف" is returned for both "افضل بروتين" and "بروتين للتنشيف").
 - Seed mix: Arabic product heads (بروتين، كرياتين، اوميغا 3), Arabic modifiers (للتنشيف، للتضخيم، للنساء، للمبتدئين), question stems (متى، كم، كيف، هل، الفرق بين، اضرار، فوائد، سعر), dialect phrasings (وش افضل بروتين، ابي بروتين), Latin-script product and brand names (whey, creatine, iso 100, gold standard, c4), brand transliterations (اوبتيموم نيوتريشن، ديماتيز، ماسل تك), retailer names (النهدي، الدواء، نون، امازون، ايهيرب) and local intent (مكملات المدينة المنورة، محل مكملات).
-- Seven seeds returned zero suggestions: بروتين بار قليل السكر، مكملات رياضية اصلية، مكملات تقليد، كرياتين ونتائجه، بروتين لزيادة الوزن للنحاف، فوائد البي سي اي اي، اي اتش ار بي. They are recorded as gaps, not as evidence of zero demand; autocomplete suppresses long or rare strings.
+- Seven seeds returned zero suggestions: بروتين بار قليل السكر، مكملات رياضية اصلية، مكملات تقليد، كرياتين ونتائجه، بروتين لزيادة الوزن للنحاف، فوائد الBCAA، اي اتش ار بي. They are recorded as gaps, not as evidence of zero demand; autocomplete suppresses long or rare strings.
 - Two seed pairs returned near-identical lists, which shows Google normalising the spelling before suggesting: اشواجاندا returned exactly the list of اشواغاندا; ديماتايز and دايماتيز both returned the ديماتيز list (the latter with one extra Persian-script item). The store search must normalise the same way (section 5, section 7).
 - Autocomplete returns at most 15 suggestions per seed, so member counts below are a floor on breadth, not a volume estimate. No search-volume numbers appear in this document because none were collected.
 
@@ -128,12 +128,12 @@ Cluster IDs: C = type category or product-type page, G = goal collection, A = au
 - H1: بري وورك اوت (مكملات ما قبل التمرين)
 - Title: بري وورك اوت مكمل قبل التمرين بأفضل سعر | اوبتيمال اكس
 
-#### C11. أحماض أمينية (بي سي اي اي و اي اي اي)
+#### C11. أحماض أمينية (BCAA و EAA)
 - Page: type category, slug `/category/amino-acids`
 - Head query: احماض امينية
 - Intent: transactional with an informational tail (فوائد، ما هو، شرح)
-- Members (n=21, verbatim from S1; seeds احماض امينية، بي سي اي اي، bcaa، ماسل تك): احماض امينية eaa | احماض امينية bcaa | احماض امينية اساسية | بي سي اي اي فوائد | مكمل بي سي اي اي | مشروب بي سي اي اي | bcaa مكمل | bcaa فوائد | bcaas | bcaa ما هو | bcaa xtend | bcaa مشروب | bcaa فوائد وأضرار | bcaa سعر | bcaa powder | bcaa معنى | bcaa eaa | bcaa glutamine | bcaa شرح | امينو ماسل تك | eaa ماسل تك
-- H1: أحماض أمينية: بي سي اي اي و اي اي اي
+- Members (n=21, verbatim from S1; seeds احماض امينية، BCAA، bcaa، ماسل تك): احماض امينية eaa | احماض امينية bcaa | احماض امينية اساسية | BCAA فوائد | مكمل BCAA | مشروب BCAA | bcaa مكمل | bcaa فوائد | bcaas | bcaa ما هو | bcaa xtend | bcaa مشروب | bcaa فوائد وأضرار | bcaa سعر | bcaa powder | bcaa معنى | bcaa eaa | bcaa glutamine | bcaa شرح | امينو ماسل تك | eaa ماسل تك
+- H1: أحماض أمينية: BCAA و EAA
 - Title: أحماض أمينية للرياضيين بأفضل سعر | اوبتيمال اكس
 
 #### C12. جلوتامين
@@ -644,7 +644,7 @@ BUILD.md budgets 8 launch articles. The 15 guide clusters below are ranked by me
 | U06 | كم سكوب بروتين في اليوم | guide article | /guides/protein-dose | 23 |
 | C10 | بري وورك اوت | type category | /category/pre-workout | 22 |
 | U02 | كم سكوب كرياتين في اليوم | guide article | /guides/creatine-dose | 22 |
-| C11 | أحماض أمينية (بي سي اي اي و اي اي اي) | type category | /category/amino-acids | 21 |
+| C11 | أحماض أمينية (BCAA و EAA) | type category | /category/amino-acids | 21 |
 | G02 | الصحة العامة | goal collection | /goal/general-health | 21 |
 | G06a | الوزن المثالي: زيادة الكتلة (التضخيم) | goal collection | /goal/ideal-weight | 21 |
 | G06b | الوزن المثالي: التنشيف | goal collection | /goal/ideal-weight | 21 |
@@ -798,8 +798,8 @@ Format: Q (S1 verbatim) [cluster] / MSA heading / answer.
 ### 4.5 Amino acids (3)
 
 30. Q: bcaa ما هو [C11]
-    - Heading: ما الفرق بين بي سي اي اي و اي اي اي؟
-    - Answer: بي سي اي اي ثلاثة أحماض أمينية متفرعة السلسلة، أما اي اي اي فتشمل الأحماض الأمينية الأساسية التسعة كلها بما فيها الثلاثة المتفرعة. من يحصل على بروتين كاف من الطعام والمكمل قد لا يحتاج إلى أي منهما.
+    - Heading: ما الفرق بين BCAA و EAA؟
+    - Answer: BCAA ثلاثة أحماض أمينية متفرعة السلسلة، أما EAA فتشمل الأحماض الأمينية الأساسية التسعة كلها بما فيها الثلاثة المتفرعة. من يحصل على بروتين كاف من الطعام والمكمل قد لا يحتاج إلى أي منهما.
 31. Q: فوائد الجلوتامين للرياضيين [C12]
     - Heading: ما فائدة الجلوتامين للرياضيين؟
     - Answer: الجلوتامين حمض أميني يوجد بكثرة في العضلات، ويستخدمه بعض المتدربين لدعم التعافي بعد الحصص المكثفة. الجرعة الشائعة 5 غرامات بعد التمرين أو قبل النوم.
@@ -900,8 +900,8 @@ BUILD.md records that synonyms and typo tolerance are the platform's search engi
 | 35 | applied / ابلايد / ابلايد نيوتريشن / أبلايد نيوترشن | ابلايد نيوترشن | B03 |
 | 36 | muscletech / مسل تك / ماصل تك / ماسلتك / ماسلتيك / مصل تك | ماسل تك | B04 |
 | 37 | nitro tech / نيترو / نيتروتك / نايترو تك | نيترو تك | P05 |
-| 38 | bcaa / بي سي اي اي / بي سي ايه ايه / بي سي اي / بيسي | بي سي اي اي | C11 |
-| 39 | eaa / اي اي اي / ايه ايه ايه / امينو / امينو اسيد | احماض امينية اساسية (اي اي اي) | C11 |
+| 38 | bcaa / BCAA / بي سي ايه ايه / بي سي اي / بيسي | BCAA | C11 |
+| 39 | eaa / EAA / ايه ايه ايه / امينو / امينو اسيد | احماض امينية اساسية (EAA) | C11 |
 | 40 | glutamine / جلوتامين / غلوتامين / جلوتامين بودر | جلوتامين | C12 |
 | 41 | citrulline / سيترولين مالات / سترولين / سيترولين ماليت | سيترولين ماليت | C13 |
 | 42 | beta alanine / بيتا الانين / بيتا الأنين / بيتا الانين | بيتا الانين | C13 |
@@ -969,7 +969,7 @@ English is the secondary language. Titles keep the same shape as the Arabic ones
 | C08 | سناكات بروتين | Protein Snacks | Protein Snacks: Chips, Cookies, Oats \| OptimalX |
 | C09 | كرياتين مونوهيدرات | Creatine Monohydrate | Creatine Monohydrate in Saudi Arabia \| OptimalX |
 | C10 | بري وورك اوت (مكملات ما قبل التمرين) | Pre-Workout | Pre-Workout Supplements \| OptimalX |
-| C11 | أحماض أمينية: بي سي اي اي و اي اي اي | Amino Acids: BCAA and EAA | BCAA and EAA Amino Acids \| OptimalX |
+| C11 | أحماض أمينية: BCAA و EAA | Amino Acids: BCAA and EAA | BCAA and EAA Amino Acids \| OptimalX |
 | C12 | جلوتامين | Glutamine | Glutamine Powder and Capsules \| OptimalX |
 | C13 | سيترولين ماليت وبيتا الانين | Citrulline Malate and Beta-Alanine | Citrulline Malate and Beta-Alanine \| OptimalX |
 | C14 | ال كارنتين وسي ال ايه | L-Carnitine and CLA | L-Carnitine and CLA \| OptimalX |
@@ -1072,8 +1072,8 @@ Everything below is read off S1 (2026-09-17). Where two spellings compete, the c
 | Pre-workout | بري ورك اوت | بري وورك اوت، بري وركاوت، pre workout، مكمل قبل التمرين | Google normalised the seed بري وورك اوت to بري ورك اوت in every suggestion; the store title uses the MSA-friendly "بري وورك اوت" per the brief, and section 5 maps the rest. |
 | Creatine monohydrate | كرياتين مونوهيدرات | مونوهايدريت، monohydrate | 15 rows with مونوهيدرات, 1 with مونوهايدريت. |
 | Micronised | ميكرونيزد | ميكرونايزد، micronized | |
-| BCAA | بي سي اي اي | bcaa | Latin bcaa returned 15 rows, Arabic بي سي اي اي only 3 supplement rows before drifting into alphabet strings. Show both on the page. |
-| EAA | eaa | اي اي اي | The Arabic seed اي اي اي returned only a song; Saudis write EAA in Latin. |
+| BCAA | BCAA | bcaa | Latin bcaa returned 15 rows, Arabic BCAA only 3 supplement rows before drifting into alphabet strings. Show both on the page. |
+| EAA | eaa | EAA | The Arabic seed EAA returned only a song; Saudis write EAA in Latin. |
 | Glutamine | جلوتامين | glutamine | |
 | Citrulline malate | سيترولين ماليت | سيترولين مالات | ماليت 3 rows, مالات 1 row. |
 | Beta-alanine | بيتا الانين | | Single spelling in S1. |

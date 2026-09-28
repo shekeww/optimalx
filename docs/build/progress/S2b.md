@@ -194,7 +194,7 @@ dialect, no em-dash, no AI-tell constructions - `pnpm check:copy` and
 | `ox.content.categories.protein.card_line` | واي، ايزوليت، كازين، نباتي | Whey, isolate, casein, plant |
 | `ox.content.categories.creatine.card_line` | مونوهيدرات، مطحون ناعم | Monohydrate, micronised |
 | `ox.content.categories.pre_workout.card_line` | بكافيين | Caffeinated |
-| `ox.content.categories.amino_acids.card_line` | بي سي اي اي، اي اي اي، أرجينين | BCAA, EAA, arginine |
+| `ox.content.categories.amino_acids.card_line` | BCAA، EAA، أرجينين | BCAA, EAA, arginine |
 | `ox.content.categories.vitamins_minerals.card_line` | ملتي فيتامين، فيتامين د3، مغنيسيوم | Multivitamin, vitamin D3, magnesium |
 | `ox.content.categories.collagen_beauty.card_line` | كولاجين ببتيدات، بيوتين | Collagen peptides, biotin |
 | `ox.content.categories.omega_3.card_line` | زيت سمك، أوميغا 3-6-9 | Fish oil, omega 3-6-9 |
