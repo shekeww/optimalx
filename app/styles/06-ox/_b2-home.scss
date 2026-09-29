@@ -1440,8 +1440,12 @@ body {
 // the whole art above the foot.
 .ox-tile--art {
   --ox-tile-hn: 1;
-  --ox-tile-foot: 52px;
+  --ox-tile-foot: 60px;
   --ox-tile-pad: var(--ox-2);
+  // The name's line box and the icon beside it (below 1280, THE WORDS):
+  // the name is 14px at a 1.3 lead in this band.
+  --ox-tile-lh: calc(14px * 1.3);
+  --ox-tile-icon: 20px;
   --ox-art-top: 0;
   --ox-art-clear: 1;
   --ox-art-left: 0;
@@ -1515,9 +1519,10 @@ body {
 }
 
 // THE WORDS: the foot, exactly `--ox-tile-foot` high along the card's bottom
-// edge, so its top is the clear line. Below 1280 it holds the name and the
-// arrow at the reading end; from 1280 the icon beside the name and the
-// subline beside the arrow join them. The name is never clamped (a clamp
+// edge, so its top is the clear line. Below 1280 it holds the icon beside
+// the name and the arrow at the reading end (owner, 2026-09-29: "the icons
+// in the cards were removed, restore them", THE ICON BESIDE THE NAME
+// below); from 1280 the subline beside the arrow joins them. The name is never clamped (a clamp
 // needs overflow: hidden, which cuts Arabic dots): each band's name size is
 // measured against the longest word ("الإكسسوارات") in the name's column, and
 // each band's foot holds the most lines a name takes there (two below 1280,
@@ -1712,22 +1717,30 @@ body {
 // the longest word in each name's column). Every card is square (owner,
 // 2026-09-29: "on mobile card to become shorter in length for a square
 // aspect ratio", then "category cards to also be shorter in height on
-// desktop to be a square aspect ratio").
+// desktop to be a square aspect ratio"). Below 1280 the foot is the name's
+// first line (beside the icon) plus the arrow's 28 under it plus the pad
+// and the 5 over the name (its glyph box stays under the clear line),
+// rounded up (THE ICON BESIDE THE NAME, below).
 // - below 360: two across, 138 to 158; the name at 14px (the longest word 83
-//   wide in a 90px column, two lines at most), the foot 52;
-// - 360 to 767: two across, 158 to 344; the name at 16px (95 in 102 at 360),
-//   the foot 60. 640 to 767 stays two across: five across there leaves a
-//   106px card, whose name column holds no two-line name at a readable size;
+//   wide: 98 beside the icon, 90 beside the arrow at 320, two lines at
+//   most), the icon 20, the foot 60;
+// - 360 to 767: two across, 158 to 344; the name at 16px (95: 110 beside the
+//   icon, 102 beside the arrow at 360), the icon 20, the foot 66. 640 to 767
+//   stays two across: five across there leaves a 106px card, whose name
+//   column holds no two-line name at a readable size;
 // - 768 to 1023: five across on an 8px gap, 135 to 186; the name at 14px
-//   (83 in 87 at 768), the foot 52;
-// - 1024 to 1279: five across, 176 to 227; the name at 16px, the foot 60;
+//   (83: 90 beside the icon, 86 beside the arrow at 768), the icon 24, the
+//   foot 60;
+// - 1024 to 1279: five across, 176 to 227; the name at 16px, the icon 24,
+//   the foot 66;
 // - from 1280: five across, 221 to 240; the icon beside the name (one line:
 //   the longest name, 153, in a 161px column at 1280) and the subline
 //   beside the arrow, the foot 76.
 @media (min-width: 360px) {
   .ox-tile--art {
-    --ox-tile-foot: 60px;
+    --ox-tile-foot: 66px;
     --ox-tile-pad: var(--ox-3);
+    --ox-tile-lh: calc(var(--ox-t-body) * 1.3);
   }
 
   .ox-tile--art .ox-tile__name {
@@ -1751,8 +1764,10 @@ body {
   }
 
   .ox-tile--art {
-    --ox-tile-foot: 52px;
+    --ox-tile-foot: 60px;
     --ox-tile-pad: var(--ox-2);
+    --ox-tile-lh: calc(14px * 1.3);
+    --ox-tile-icon: 24px;
   }
 
   .ox-tile--art .ox-tile__name {
@@ -1766,13 +1781,72 @@ body {
   }
 
   .ox-tile--art {
-    --ox-tile-foot: 60px;
+    --ox-tile-foot: 66px;
     --ox-tile-pad: var(--ox-3);
+    --ox-tile-lh: calc(var(--ox-t-body) * 1.3);
   }
 
   .ox-tile--art .ox-tile__name {
     font-size: var(--ox-t-body);
   }
+}
+
+// THE ICON BESIDE THE NAME, below 1280 (owner, 2026-09-29: "in Browse by
+// type, the icons in the cards were removed, restore them"). Three things
+// share a column of 119 to 134 at the narrowest cards: the icon, the name (up to 83 or
+// 95 for its longest word) and the arrow, and a row of all three leaves the
+// name 59 to 66. So the foot is a text flow, not a grid: the icon rides the
+// name's first line (its box is the name's line box, `--ox-tile-lh`, so the
+// line never grows), and the arrow stands in the foot's end corner under
+// that line, with a float at the reading end whose shape is only the
+// arrow's own square: the first line runs the whole column beside the icon,
+// a second line stops short of the arrow. The float is as tall as the
+// foot's content box and the shape starts 28 above its end, so a line
+// longer than the foot allows would drop below the arrow and past the card,
+// never up onto the photograph (the measure in the round's notes counts the
+// lines: two at most at every width). The icon keeps the name's ink (the
+// dark art ground turns it light with the name).
+@media (max-width: 1279.98px) {
+  .ox-tile--art .ox-tile__body {
+    display: block;
+    // The block's own strut would set a 26 line (the page's body lead); the
+    // name's inline box and the icon set the line alone.
+    line-height: 0;
+    // The name's glyph box is taller than its 1.3 line (26 at 14px, 30 at
+    // 16px): 5 over it keeps the whole box under the clear line.
+    padding-block-start: 5px;
+
+    &::before {
+      content: '';
+      float: inline-end;
+      inline-size: calc(28px + var(--ox-1));
+      block-size: 100%;
+      shape-outside: inset(calc(100% - 28px) 0 0 0);
+    }
+  }
+
+  .ox-tile--art .ox-tile__icon {
+    display: inline-block;
+    vertical-align: top;
+    inline-size: var(--ox-tile-icon);
+    block-size: var(--ox-tile-icon);
+    margin-block: calc((var(--ox-tile-lh) - var(--ox-tile-icon)) / 2);
+    margin-inline-end: var(--ox-1);
+  }
+
+  .ox-tile--art .ox-tile__foot {
+    position: absolute;
+    inset-block-end: var(--ox-tile-pad);
+    inset-inline-end: var(--ox-tile-pad);
+  }
+}
+
+// The icon's accent part takes the arrow's colour at every width (the mono
+// switch, _primitives.scss): the brand orange measured under 3:1 on the
+// pastel grounds (1.1:1 on the omega-3 orange), the arrow's own colour is
+// set per ground to clear it.
+.ox-tile--art .ox-tile__icon {
+  --ox-icon-mono: var(--ox-tile-arrow);
 }
 
 // From 1280 the tinted card (no curated art) takes its larger padding and
@@ -1997,9 +2071,11 @@ body {
 
 // Never on a frame that carries print, which would read backwards: the
 // ideal-weight frame shows a product label, the shaker's lettering and the
-// X mark, and a merchant's own photograph (`data-own-photo`, set by the
-// Shopify goal block) may carry anything. Those keep the Arabic orientation.
+// X mark, the hair-skin frame the collagen and biotin packs, and a
+// merchant's own photograph (`data-own-photo`, set by the Shopify goal
+// block) may carry anything. Those keep the Arabic orientation.
 [dir='ltr'] .ox-goal[data-goal='goal-ideal-weight'] .ox-goal__photo,
+[dir='ltr'] .ox-goal[data-goal='goal-hair-skin'] .ox-goal__photo,
 [dir='ltr'] .ox-goal__photo[data-own-photo] {
   transform: none;
 }
@@ -2018,6 +2094,75 @@ body {
 .ox-goal[data-goal='goal-recovery'] .ox-goal__photo:not([data-own-photo]) {
   inset-block: -4% auto;
   block-size: 114%;
+}
+
+// Owner, 2026-09-29: "hair and skin card in shop by goal shows a flower
+// which is irrelevant". The hair-skin frame is now the owner's collagen
+// scene (`img-goal-collagen.webp`, the spare 26: the Applied Nutrition,
+// Organic Nation and NeoCell collagen, the NOW biotin and the shaker, all
+// carried), and a packshot never sits under the card's words, so the frame
+// is not laid under the whole card: it is drawn whole (5:4, the file's own
+// shape, nothing cropped) in the room above the words, centred, its edges
+// feathered into the card's dark ground, with the same 0.42 and scrim as
+// the other five. The packs stand between 8 and 80 % of the frame's height
+// and 9 to 95 % of its width, inside the feathering (top 6, sides 8 and 4,
+// foot 14 %); `--goal-photo-h` is the frame's height per tier, set so the
+// packs end above the name's line box (the top plus 0.8 of the height,
+// against the 54 to 220 the words leave: 320 with a two-line name, 390, 768, 1024,
+// 1440), and the frame's own foot, the marble, runs under the name.
+.ox-goal[data-goal='goal-hair-skin'] {
+  --goal-photo-h: 56px;
+  --goal-photo-top: 4px;
+}
+
+.ox-goal[data-goal='goal-hair-skin'] .ox-goal__photo:not([data-own-photo]) {
+  inset: var(--goal-photo-top) 0 auto;
+  margin-inline: auto;
+  inline-size: min(100% - 16px, var(--goal-photo-h) * 1.25);
+  block-size: auto;
+  aspect-ratio: 5 / 4;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 6%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 6%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+
+@media (min-width: 360px) {
+  .ox-goal[data-goal='goal-hair-skin'] {
+    --goal-photo-h: 88px;
+  }
+}
+
+@media (min-width: 640px) {
+  .ox-goal[data-goal='goal-hair-skin'] {
+    --goal-photo-h: 116px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-goal[data-goal='goal-hair-skin'] {
+    --goal-photo-h: 140px;
+  }
+}
+
+// From 1280 the frame is as wide as the card allows (180 at 1440), and it
+// starts under the 64 cut, which clipped the shaker's cap at the top.
+@media (min-width: 1280px) {
+  .ox-goal[data-goal='goal-hair-skin'] {
+    --goal-photo-h: 264px;
+    --goal-photo-top: 60px;
+  }
+}
+
+// The ideal-weight frame's lower half is a creatine tub whose label the
+// card's "shop now" and arrow sat on (measured at 390, 2026-09-29), so the
+// frame is drawn at twice the card's height from its top: the tub (from 52 %
+// of the file's height) falls below the card's edge, and the man with the
+// shaker fills the card, framed on his face.
+.ox-goal[data-goal='goal-ideal-weight'] .ox-goal__photo:not([data-own-photo]) {
+  inset-block: 0 auto;
+  block-size: 200%;
+  object-position: 65% 0;
 }
 
 .ox-goal__scrim {
@@ -2160,6 +2305,41 @@ body {
 // `currentColor` instead, a hairline-to-solid transition rather than a fill.
 .ox-goal:hover .ox-goal__cta .ox-iconbtn--angled {
   border-color: currentColor;
+}
+
+// Below 1280 the glyph rides the name's row at 24 (2026-09-29, with the
+// hair-skin frame): stacked above the name it took a 40 row of its own on
+// a card only 200 to 248 tall, and that row is the room the hair-skin
+// packs stand in above the words (54 to 120 free where 38 to 80 was). The
+// grid keeps the body's bottom anchor and its order: glyph and name, the
+// line's two reserved lines, then "shop now". From 1280 the tall card keeps
+// the glyph above the name.
+@media (max-width: 1279.98px) {
+  .ox-goal__body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: end;
+    align-items: center;
+    justify-items: start;
+    column-gap: var(--ox-2);
+    row-gap: 4px;
+  }
+
+  .ox-goal__icon {
+    grid-column: 1;
+    inline-size: 24px;
+    block-size: 24px;
+    margin: 0;
+  }
+
+  .ox-goal__label {
+    grid-column: 2;
+  }
+
+  .ox-goal__line,
+  .ox-goal__cta {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (min-width: 640px) {
