@@ -2071,16 +2071,17 @@ body {
 
 // Never on a frame that carries print, which would read backwards: the
 // ideal-weight frame shows a product label, the shaker's lettering and the
-// X mark, the hair-skin frame the collagen and biotin packs, and a
+// X mark, the recovery frame (since 2026-09-29) the shaker's lettering and
+// the towel's X mark, and a
 // merchant's own photograph (`data-own-photo`, set by the Shopify goal
 // block) may carry anything. Those keep the Arabic orientation.
 [dir='ltr'] .ox-goal[data-goal='goal-ideal-weight'] .ox-goal__photo,
-[dir='ltr'] .ox-goal[data-goal='goal-hair-skin'] .ox-goal__photo,
+[dir='ltr'] .ox-goal[data-goal='goal-recovery'] .ox-goal__photo,
 [dir='ltr'] .ox-goal__photo[data-own-photo] {
   transform: none;
 }
 
-// S12 (2026-09-25): the recovery photograph (`img-athlete-band.jpg`, 539 x
+// S12 (2026-09-25): the athlete-band photograph (`img-athlete-band.jpg`, 539 x
 // 569) has a pale rounded frame baked into the file, 16 px deep at the top
 // and 48 at the foot, which painted a light strip along the top of the
 // card at every width and in both languages (measured on both platforms).
@@ -2091,67 +2092,18 @@ body {
 // is explicit because an image's `auto` height follows its own ratio, not
 // the insets. A merchant's own photograph has no such frame and keeps the
 // plain box.
-.ox-goal[data-goal='goal-recovery'] .ox-goal__photo:not([data-own-photo]) {
+// It moved from recovery to hair-skin on 2026-09-29 (owner: "use the background
+// image of recovery in hair & skin"), and recovery took its own photograph:
+// `img-goal-recovery.webp`, a crop of the athlete drinking after training with
+// a towel on his shoulder, the packs of the source frame left out (owner: "not
+// as products but as a feeling"), framed on his face.
+.ox-goal[data-goal='goal-hair-skin'] .ox-goal__photo:not([data-own-photo]) {
   inset-block: -4% auto;
   block-size: 114%;
 }
 
-// Owner, 2026-09-29: "hair and skin card in shop by goal shows a flower
-// which is irrelevant". The hair-skin frame is now the owner's collagen
-// scene (`img-goal-collagen.webp`, the spare 26: the Applied Nutrition,
-// Organic Nation and NeoCell collagen, the NOW biotin and the shaker, all
-// carried), and a packshot never sits under the card's words, so the frame
-// is not laid under the whole card: it is drawn whole (5:4, the file's own
-// shape, nothing cropped) in the room above the words, centred, its edges
-// feathered into the card's dark ground, with the same 0.42 and scrim as
-// the other five. The packs stand between 8 and 80 % of the frame's height
-// and 9 to 95 % of its width, inside the feathering (top 6, sides 8 and 4,
-// foot 14 %); `--goal-photo-h` is the frame's height per tier, set so the
-// packs end above the name's line box (the top plus 0.8 of the height,
-// against the 54 to 220 the words leave: 320 with a two-line name, 390, 768, 1024,
-// 1440), and the frame's own foot, the marble, runs under the name.
-.ox-goal[data-goal='goal-hair-skin'] {
-  --goal-photo-h: 56px;
-  --goal-photo-top: 4px;
-}
-
-.ox-goal[data-goal='goal-hair-skin'] .ox-goal__photo:not([data-own-photo]) {
-  inset: var(--goal-photo-top) 0 auto;
-  margin-inline: auto;
-  inline-size: min(100% - 16px, var(--goal-photo-h) * 1.25);
-  block-size: auto;
-  aspect-ratio: 5 / 4;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 6%, #000 86%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 6%, #000 86%, transparent);
-  mask-composite: intersect;
-}
-
-@media (min-width: 360px) {
-  .ox-goal[data-goal='goal-hair-skin'] {
-    --goal-photo-h: 88px;
-  }
-}
-
-@media (min-width: 640px) {
-  .ox-goal[data-goal='goal-hair-skin'] {
-    --goal-photo-h: 116px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .ox-goal[data-goal='goal-hair-skin'] {
-    --goal-photo-h: 140px;
-  }
-}
-
-// From 1280 the frame is as wide as the card allows (180 at 1440), and it
-// starts under the 64 cut, which clipped the shaker's cap at the top.
-@media (min-width: 1280px) {
-  .ox-goal[data-goal='goal-hair-skin'] {
-    --goal-photo-h: 264px;
-    --goal-photo-top: 60px;
-  }
+.ox-goal[data-goal='goal-recovery'] .ox-goal__photo:not([data-own-photo]) {
+  object-position: 40% 0;
 }
 
 // The ideal-weight frame's lower half is a creatine tub whose label the
@@ -2371,17 +2323,21 @@ body {
 
 @media (min-width: 1280px) {
   .ox-goal {
-    min-block-size: 400px;
+    // Half the height on desktop (owner, 2026-09-29: "make the shop by your
+    // goal cards 50% shorter in height on desktop"): 400 became 208, the
+    // words' own height (204 measured at 1280 to 1920) plus 4; the cut
+    // steps down with the card, 64 to 48, so it stays a corner, not a side.
+    min-block-size: 208px;
     // lean 64 / run 43.2 at the 1440 probe: 6-col grid, container 1296
     // (capped), gap 24 -> card (1296 - 120) / 6 = 196px; 43.2 / 196 = 22.0%,
     // inside the 24% budget (X-IDENTITY §2.3) but nearer the ceiling than
     // the other two tiers, because the 6-up track narrows the card at this
     // width more than a "1440" tier elsewhere in the theme assumes. Flagged
     // in docs/build/progress/S3b.md rather than silently sized down.
-    clip-path: polygon(0 0, calc(100% - #{ox-run(64px)}) 0, 100% 64px, 100% 100%, #{ox-run(64px)} 100%, 0 calc(100% - 64px));
+    clip-path: polygon(0 0, calc(100% - #{ox-run(48px)}) 0, 100% 48px, 100% 100%, #{ox-run(48px)} 100%, 0 calc(100% - 48px));
 
     [dir='ltr'] & {
-      clip-path: polygon(#{ox-run(64px)} 0, 100% 0, 100% calc(100% - 64px), calc(100% - #{ox-run(64px)}) 100%, 0 100%, 0 64px);
+      clip-path: polygon(#{ox-run(48px)} 0, 100% 0, 100% calc(100% - 48px), calc(100% - #{ox-run(48px)}) 100%, 0 100%, 0 48px);
     }
   }
 
@@ -2396,7 +2352,17 @@ body {
 
 @media (min-width: 1536px) {
   .ox-goal {
-    min-block-size: 440px;
+    min-block-size: 220px;
+  }
+}
+
+// The section's own height reservation (sections/ox-goals.liquid, a clamp
+// sized for the old 400 to 440 cards) would leave an empty band under the
+// half-height row, so from 1280 it follows the cards: the row's height is
+// fixed by their min-block-size and the section renders with them.
+@media (min-width: 1280px) {
+  .ox-goals {
+    min-block-size: 0 !important;
   }
 }
 
