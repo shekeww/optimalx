@@ -1198,8 +1198,8 @@ body {
   --ox-need-tint-violet: #EFEAF5; // 4.20:1
 }
 
-// 2-up at 390 (container 358: two 171px columns and a 16px gap), 4-up from
-// 1280 (`.ox-cats__grid` media query below).
+// Two across below 768 (container 358 at 390: two 173px squares and a 12px
+// gap), five across from 768 (section 4b's bands, below).
 .ox-cats__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1396,118 +1396,182 @@ body {
 }
 
 // ---------------------------------------------------------------------------
-// 4b. The art tile (S2h, 2026-09-23): the owner's own curated packshot
-//    photograph as the card's WHOLE background, for the six root slugs
-//    `content/categories.ts` gives a `backgroundImage` for (`CategoryTile.tsx`'s
-//    `art` prop) - creatine, pre-workout, amino-acids, omega-3,
-//    vitamins-minerals, collagen-beauty. `protein` and `daily-health`, the
-//    other two home tiles, carry no curated art yet and keep the tinted-
-//    ground card above unchanged.
+// 4b. The art tile: the owner's own curated packshot photograph for each of
+//    the ten type roots (`content/categories.ts`'s `backgroundImage`,
+//    `CategoryTile.tsx`'s `art` prop; snippets/taxonomy.liquid's has_art on
+//    the Shopify port). Reworked 2026-09-29 (owner: "shop by category icons
+//    to be smaller so it fills in 2 rows, 5x2, and on mobile card to become
+//    shorter in length for a square aspect ratio").
 // ---------------------------------------------------------------------------
-// `padding: 0`: the photograph runs edge to edge, clipped to the same notch
-// `.ox-tile__art` shares with `::before` above; `::before` itself stays
-// (border, hover, focus all still resolve through it) but its fill goes
-// transparent so the photograph is what shows.
+// ONE COMPOSITION AT EVERY WIDTH. The card is square (two across below 768,
+// five across from 768), so its height never waits for an image and a row's
+// cards are equal. The words sit in a foot of fixed
+// height along the card's bottom edge (`--ox-tile-foot`), on the art's own
+// ground, and the photograph is fitted into the rest:
+// - a band of the art, from `--ox-art-top` (above the packshot) to
+//   `--ox-art-clear` (under the packshot and its shadow), both shares of the
+//   art's height measured on each file, is scaled to the card's height less
+//   the foot, so the packshot is whole and above the words at every size;
+// - the art is pinned to the card's right edge in both languages (the
+//   photograph does not mirror, and every packshot sits in its art's right
+//   half), and its width is capped so the card's left edge never cuts into
+//   the packshot (`--ox-art-left`, the share of the art's width that may go);
+// - where the art does not reach, the card continues the art's own edges:
+//   left of it (a phone's square is wider than the fitted art) a layer the
+//   art's height carries its left-column colours (`--ox-art-edge`, top to
+//   bottom), and under it (the lowest packshots) the card's own layer
+//   carries its bottom-row colours (`--ox-art-ground`, left to right). The
+//   art's left 6% and bottom 10% fade into them, so the join does not show
+//   and the card reads as one photograph. scripts/check-art-tiles.mjs
+//   (FADE_LEFT, FADE_BOTTOM) keeps every packshot out of those two edges.
+// `--ox-tile-hn` is the card's height over its width (1: square at every
+// width since 2026-09-29; the formulas keep it for another shape).
+// `--ox-art-w` is the art's width against the card's width: the band scaled
+// to the photo's height, times 2/3 (the art's shape), or the width cap;
+// `--ox-art-hh` is the same art's height against the card's height (the
+// percentages resolve against whichever size the property using them
+// measures). The lift is a transform, a share of the art's own rendered
+// height, so it stays right when the width cap draws the art smaller than
+// the band asks.
+// Each art's values belong to the file named above its block, and
+// `npm run check` in the theme repo (scripts/check-art-tiles.mjs) fails when
+// the file no longer matches that sha256 or the values no longer fit it; its
+// `--print` measures a new file. An art without values keeps the defaults:
+// the whole art above the foot.
 .ox-tile--art {
-  padding: 0;
+  --ox-tile-hn: 1;
+  --ox-tile-foot: 52px;
+  --ox-tile-pad: var(--ox-2);
+  --ox-art-top: 0;
+  --ox-art-clear: 1;
+  --ox-art-left: 0;
+  --ox-art-ground: var(--ox-surface);
+  --ox-art-edge: var(--ox-art-ground);
+  --ox-art-band: calc(var(--ox-art-clear) - var(--ox-art-top));
+  --ox-art-w: min(
+    calc((var(--ox-tile-hn) * 100% - var(--ox-tile-foot)) * 2 / (3 * var(--ox-art-band))),
+    calc(100% / (1 - var(--ox-art-left)))
+  );
+  --ox-art-hh: min(
+    calc((100% - var(--ox-tile-foot)) / var(--ox-art-band)),
+    calc(150% / (var(--ox-tile-hn) * (1 - var(--ox-art-left))))
+  );
+  --ox-tile-arrow: var(--ox-accent-dark);
 
-  &::before {
-    background: transparent;
-  }
-}
-
-// `aspect-ratio`, never a fixed `block-size` (the brief): the card's real
-// height tracks its own rendered inline size at the asset's native 2:3
-// (1024x1536), so it stays correct at every width the grid renders rather
-// than only at the two measured checkpoints below. `min-block-size` is the
-// floor under that - insurance so the subline still has room at the
-// narrowest supported width (320) rather than the true sizing mechanism.
-// Measured: 173x260 at the 2-up 390 checkpoint (container 358, `--ox-3` gap,
-// (358-12)/2 = 173, x1.5 = 259.5); 306x459 at the 4-up 1280+ checkpoint
-// (container capped at 1296, `--ox-6` gap, (1296-72)/4 = 306, x1.5 = 459).
-.ox-tile__art {
-  position: relative;
-  z-index: 0;
   display: block;
-  inline-size: 100%;
-  aspect-ratio: 2 / 3;
-  min-block-size: 260px;
-  object-fit: cover;
-  object-position: center;
-}
+  aspect-ratio: 1;
+  min-block-size: 0;
+  padding: 0;
+  // `clip` after the card's `hidden`: a `hidden` box can still be scrolled by
+  // script or by find in page, which slid the photograph inside the card (a
+  // browser without `clip` keeps `hidden`).
+  overflow: hidden;
+  overflow: clip;
 
-.ox-tile--art .ox-tile__icon {
-  inline-size: 36px;
-  block-size: 36px;
-}
-
-// The content column: pinned to the card's PHYSICAL LEFT in BOTH languages
-// (the reference's own composition, not a reading-direction mirror - the
-// packshot itself always sits in the artwork's lower/right half), so it is
-// written with `[dir]` selectors rather than a single logical inset that
-// would flip to the other side under LTR.
-.ox-tile__body {
-  position: absolute;
-  z-index: 1;
-  inset-block: var(--ox-3);
-  inline-size: 62%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  // Owner call 2026-09-23: the text block sits at the BOTTOM left of the
-  // artwork, the count and arrow row directly under it, so the packshot in
-  // the upper half of every photograph stays clear.
-  justify-content: flex-end;
-  gap: var(--ox-1);
-  color: var(--ox-fg);
-
-  // A soft white radial scrim behind the text - insurance, not the primary
-  // contrast strategy: five of the six grounds measure 10.46:1-17.84:1
-  // against `--ox-fg` unaided (docs/build/progress/S2h.md), so this only
-  // widens an already-passing margin there. `protein` (on its near-black
-  // ground since 2026-09-28) is the one exception and turns the scrim off
-  // below instead of relying on it.
+  // The ground beside and under the photograph, and no hairline: a gradient
+  // repeats into a transparent border, which drew the far edge's colour down
+  // the card's first and last pixel.
   &::before {
+    background: var(--ox-art-ground);
+    border-width: 0;
+  }
+
+  // The left edge continued: from the card's left edge to under the art's
+  // feathered 6%, the art's height, lifted with it.
+  &::after {
     content: '';
     position: absolute;
-    z-index: -1;
-    inset: calc(var(--ox-3) * -1);
-    background: radial-gradient(
-      ellipse at bottom left,
-      rgba(255, 255, 255, 0.35) 0%,
-      rgba(255, 255, 255, 0) 70%
-    );
+    z-index: 0;
+    inset-block-start: 0;
+    left: 0;
+    inline-size: calc(100% - var(--ox-art-w) * 0.94);
+    block-size: var(--ox-art-hh);
+    background: var(--ox-art-edge);
+    transform: translateY(calc(var(--ox-art-top) * -100%));
+    -webkit-mask-image: linear-gradient(to top, transparent, #000 10%);
+    mask-image: linear-gradient(to top, transparent, #000 10%);
+    pointer-events: none;
   }
 }
 
-[dir='rtl'] .ox-tile__body {
-  inset-inline-end: var(--ox-3);
-  // Physical LEFT in both languages (owner: "bottom left"): in RTL the
-  // flex cross-axis start is the right edge, so the items pin to flex-end.
-  align-items: flex-end;
-  text-align: end;
+.ox-tile__art {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0;
+  right: 0;
+  left: auto;
+  display: block;
+  inline-size: var(--ox-art-w);
+  max-inline-size: none;
+  block-size: auto;
+  min-block-size: 0;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  transform: translateY(calc(var(--ox-art-top) * -100%));
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%), linear-gradient(to top, transparent, #000 10%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 6%), linear-gradient(to top, transparent, #000 10%);
+  mask-composite: intersect;
 }
 
-[dir='ltr'] .ox-tile__body {
-  inset-inline-start: var(--ox-3);
-  align-items: flex-start;
+// THE WORDS: the foot, exactly `--ox-tile-foot` high along the card's bottom
+// edge, so its top is the clear line. Below 1280 it holds the name and the
+// arrow at the reading end; from 1280 the icon beside the name and the
+// subline beside the arrow join them. The name is never clamped (a clamp
+// needs overflow: hidden, which cuts Arabic dots): each band's name size is
+// measured against the longest word ("الإكسسوارات") in the name's column, and
+// each band's foot holds the most lines a name takes there (two below 1280,
+// one from 1280), so the words sit at the foot and a row's arrows stay in
+// line. The first row takes the space the words leave; should a renamed
+// collection ever need more, that row goes to nothing and the words run on
+// down past the card's edge, never up onto the photograph. The grid mirrors
+// with the reading direction, so the English card is the Arabic one seen in
+// a mirror. The whole card is the link, so the arrow needs no tap target of
+// its own.
+.ox-tile__body {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  box-sizing: border-box;
+  block-size: var(--ox-tile-foot);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    '. .'
+    'name foot';
+  align-items: end;
+  gap: 0 var(--ox-1);
+  padding: 0 var(--ox-tile-pad) var(--ox-tile-pad);
+  color: var(--ox-fg);
   text-align: start;
 }
 
-// Reset, not an addition: `.ox-tile--black`'s own descendant rules above
-// match `.ox-tile__icon`/`__name`/`__line` at any nesting depth,
-// which now includes `collagen-beauty` - the one slug that carries BOTH
-// `--black` (its shaker-era tone) and `--art` (its own photograph, measured
-// pastel, not the black card's graphite). `--art` is declared after
-// `--black` above, so at equal specificity this wins for every art card;
-// `protein`'s own dark-ground override, below, is more specific again and
-// wins over this in turn for that one slug only.
-.ox-tile--art .ox-tile__foot {
-  // Inside the overlay column the foot no longer needs to fall to the far
-  // edge (the column itself is bottom-aligned): one step under the subline.
-  margin-block-start: var(--ox-2);
+.ox-tile--art .ox-tile__icon,
+.ox-tile--art .ox-tile__line {
+  display: none;
 }
 
+.ox-tile--art .ox-tile__name {
+  grid-area: name;
+  font-size: 14px;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+}
+
+.ox-tile--art .ox-tile__foot {
+  grid-area: foot;
+  inline-size: auto;
+  margin: 0;
+  padding: 0;
+}
+
+// Reset, not an addition: `.ox-tile--black`'s own descendant rules above
+// match `.ox-tile__icon`/`__name`/`__line` at any nesting depth, which
+// includes `collagen-beauty`, the one slug that carries both `--black` (its
+// shaker-era tone) and `--art` (its own photograph on a pastel ground). At
+// equal specificity this later rule wins for every art card; `protein`'s own
+// dark-ground rule, below, is more specific again and wins over it.
 .ox-tile--art .ox-tile__icon,
 .ox-tile--art .ox-tile__name {
   color: var(--ox-fg);
@@ -1517,36 +1581,13 @@ body {
   color: var(--ox-fg-2);
 }
 
-.ox-tile--art {
-  --ox-tile-arrow: var(--ox-accent-dark);
-}
-
-// The owner's omega-3 photograph (2026-09-27) sits on a deeper peach than the
-// other grounds: the arrow in accent-dark measured 2.63 to 2.65:1 there (under
-// the 3:1 graphic floor); accent-deep clears it, at every width.
-.ox-tile--art[data-category='omega-3'] {
-  --ox-tile-arrow: var(--ox-accent-deep);
-}
-
 // The one dark art ground: `protein`'s photograph (the owner's Gold Standard
-// whey, 2026-09-28) sits on near-black, not the flat pastel every other
-// ground here measures, so `--ox-fg` ink would read at about 1.1:1 against
-// it. Light ink instead, the same swap `.ox-tile--black` already makes two
-// blocks up, and the scrim is switched off rather than stacked uselessly
-// behind text it can no longer help. Until 2026-09-28 this block belonged
-// to `vitamins-minerals`, whose photograph was the dark one; its new
-// photograph (Opti-Men on cream) takes the default dark ink and scrim.
+// whey, 2026-09-28) sits on near-black, so the words take light ink, the
+// same swap `.ox-tile--black` makes above, and the arrow the literal accent.
 .ox-tile--art[data-category='protein'] {
   --ox-tile-arrow: var(--ox-accent);
 
-  .ox-tile__body {
-    color: var(--ox-ink-on-dark);
-
-    &::before {
-      background: none;
-    }
-  }
-
+  .ox-tile__body,
   .ox-tile__icon,
   .ox-tile__name {
     color: var(--ox-ink-on-dark);
@@ -1557,117 +1598,235 @@ body {
   }
 }
 
-// THE PHONE ART TILE (owner, 2026-09-27: "in shop by category on mobile, the
-// images in cards should be filling the card just like it is on desktop").
-// Below 640 the card is the desktop composition: the photograph edge to
-// edge, the icon, name, subline and arrow over its own ground at the bottom
-// left, the arrow at the end of the desktop's 62% column, per-tile ink as on
-// desktop (light on the dark protein ground).
-// What it solves is the reason the 2026-09-26 plate existed: a 2-up tile is
-// 138 to 297 wide (320 to 639 wide screens; 158 at 360, 173 at 390, 193 at
-// 430), and the words at the desktop sizes stand about 135 high (158 with a
-// two-line name), more than the plain ground these photographs leave under
-// their packshots at that width (the creatine powder reaches 80% of its
-// art's height), so the overlay drew names across the tubs. On a phone the
-// ground goes on below the photograph instead:
-// - the photograph keeps the card's full width at its own 2:3 from the top
-//   edge, so every packshot stays whole, as on desktop;
-// - the words follow it in flow and ride up over it only as far as its
-//   plain ground reaches. `--ox-art-clear` is the packshot's lowest point,
-//   its shadow included, plus a margin, as a share of the art's height,
-//   measured on each art file. The photograph's negative bottom margin
-//   hands the rest of the art to the words: a percentage of the card's
-//   width, 150% being the untrimmed art's height, which holds for the
-//   trimmed creatine art too because its trim comes off the top;
-// - under the photograph the card's own layer carries that art's
-//   bottom-row colours (`--ox-art-ground`, left to right), so the join does
-//   not show and the card reads as one photograph. The layer drops its
-//   hairline here: a gradient repeats into a transparent border, which drew
-//   the far edge's colour down the card's first and last pixel;
-// - `aspect-ratio` trims empty ground off the top of the creatine art, whose
-//   powder sits lowest, so its card runs no taller than the protein tub
-//   (which starts at its art's top edge) needs.
-// The grid stretches the two cards of a row to the taller one, so a row
-// shares one size and the words sit at each card's foot (at 390 the rows
-// run 304 to 325 high, and the section is 14px taller than the plate's). The
-// name keeps two lines and is never clamped (a clamp needs overflow:
-// hidden, which cuts Arabic dots). The subline keeps one line of whole list
-// items: snippets/tile-line.liquid also writes it as one span per item, and
-// an item that does not fit wraps to a second line this card does not draw,
-// so the line never ends on a cut word or an ellipsis and it starts where
-// the name starts. The whole card is the link, so the arrow needs no tap
-// target of its own.
-// Each art's values belong to the file named above its block, and
-// `npm run check` in the theme repo (scripts/check-art-tiles.mjs) fails when
-// the file no longer matches that sha256 or the values no longer fit it; its
-// `--print` measures a new file. An art without values keeps clear 1, its
-// words wholly under the photograph.
-
-// The subline's item copy is for the phone art tile only: from 640 the tile
-// draws the one-string copy, as it always has.
+// The subline's item copy (snippets/tile-line.liquid): the tile draws it
+// from 1280 only, as one line of whole items (below).
 .ox-tile__items {
   display: none;
 }
 
-@media (max-width: 639.98px) {
-  // /collections wraps each tile in a list item: stretch it to the row too.
-  .ox-cats__grid > * > .ox-tile--art {
-    block-size: 100%;
-  }
+// THE PER-ART VALUES, measured on the art files (scripts/check-art-tiles.mjs
+// --print): the band's top and clear lines (shares of the art's height), the
+// share of the art's width the card's left edge may cut, the bottom-row
+// colours left to right in physical terms (the photograph does not mirror in
+// English) and the left-column colours top to bottom.
+// cat-bg-protein.webp, sha256 2c3f68871c2e
+.ox-tile--art[data-category='protein'] {
+  --ox-art-top: 0.065;
+  --ox-art-clear: 0.675;
+  --ox-art-left: 0.34;
+  --ox-art-ground: linear-gradient(to right, #070707, #0C0C0C 43.7%, #060606);
+  --ox-art-edge: linear-gradient(to bottom, #111111, #131313 4.7%, #0F0F0F 54.7%, #070707);
+}
 
-  // `clip`, not the card's `hidden`: the words' scrim reaches 12px past the
-  // card here, and a `hidden` box can still be scrolled by script or by
-  // find in page, which slid the photograph up inside the card (the browser
-  // without `clip` keeps `hidden`).
+// cat-bg-creatine.webp, sha256 0288b57f892b
+.ox-tile--art[data-category='creatine'] {
+  --ox-art-top: 0.155;
+  --ox-art-clear: 0.82;
+  --ox-art-left: 0.065;
+  --ox-art-ground: linear-gradient(to right, #DBFAD2, #D6FAD0 34.9%, #D1F9CB 47.5%, #CBF5C5);
+  --ox-art-edge: linear-gradient(to bottom, #DFFBDB, #E0FCDC 13.9%, #DFFBD8 17.7%, #DFFBD8 25%, #E0FCDC 27.1%, #DFFBD8 29.2%, #DBFBD7 45.6%, #DDFCD8 54.7%, #DCFBD4 58.4%, #DCFBD5 90.6%, #DBFAD2);
+}
+
+// cat-bg-pre-workout.webp, sha256 2520123d8dad
+.ox-tile--art[data-category='pre-workout'] {
+  --ox-art-top: 0.11;
+  --ox-art-clear: 0.7;
+  --ox-art-left: 0.28;
+  --ox-art-ground: linear-gradient(to right, #DBFCBD, #D9FDBF 20.8%, #D9FDBC 24.4%, #D8FCBC 38%, #D8FDB8 41.6%, #D8FCBA 51.1%, #D6FCB6 54.7%, #D6FCB6 74%, #D3FCB2 79.7%, #D2FCB0);
+  --ox-art-edge: linear-gradient(to bottom, #DBFCBD, #DCFEBE 6.2%, #DEFCC0 14.1%, #DDFCC0 30.6%, #DBFCBC 32.8%, #DDFCC0 38.6%, #DBFCBF 78.1%, #DEFCC0 87%, #DBFCBD);
+}
+
+// cat-bg-amino-acids.webp, sha256 894d8994ee7f
+.ox-tile--art[data-category='amino-acids'] {
+  --ox-art-top: 0.005;
+  --ox-art-clear: 0.66;
+  --ox-art-left: 0.375;
+  --ox-art-ground: linear-gradient(to right, #F6F6F6, #F5F8F7 19.4%, #F8F8F8 22.7%, #F5F8F7 31.9%, #F6F6F6);
+  --ox-art-edge: linear-gradient(to bottom, #F6F6F6, #F7F9F8 37.7%, #F6F6F6);
+}
+
+// The arrow a step deeper on the orange ground: `--ox-accent-dark` measured
+// 2.5 to 2.8:1 there, under the 3:1 graphic floor; `--ox-accent-deep` clears
+// it.
+// cat-bg-omega-3.webp, sha256 c45db45afd9f
+.ox-tile--art[data-category='omega-3'] {
+  --ox-art-top: 0.08;
+  --ox-art-clear: 0.735;
+  --ox-art-left: 0.405;
+  --ox-art-ground: linear-gradient(to right, #FEAE87, #FCA87C 20.7%, #FCA87F 24.6%, #FDA779 45.9%, #FCA77C 48.9%, #FDA67C 61.5%, #FDA47A 70.9%, #FCA476 74.1%, #FCA478 85.6%, #FCA275 93%, #FDA578);
+  --ox-art-edge: linear-gradient(to bottom, #FEB088, #FCAE88 4.2%, #FCB491 14.5%, #FDB491 33.8%, #FDB38E 37%, #FCB491 55.2%, #FCB28D 58.8%, #FDB18D 75%, #FCB08A 77.5%, #FEAF89 88.9%, #FBAE85 91.1%, #FEAE87);
+  --ox-tile-arrow: var(--ox-accent-deep);
+}
+
+// cat-bg-vitamins-minerals.webp, sha256 ba3220f1504d
+.ox-tile--art[data-category='vitamins-minerals'] {
+  --ox-art-top: 0.055;
+  --ox-art-clear: 0.66;
+  --ox-art-left: 0.405;
+  --ox-art-ground: linear-gradient(to right, #F3E5D1, #F3E6D2 12.4%, #F4E4CD 22.5%, #F3E3CD 51.2%, #EFE0C9 61%, #EDDCC4 87.6%, #EDDBC4 95.4%, #EEDDC7);
+  --ox-art-edge: linear-gradient(to bottom, #F9EAD8, #F8E9D7 13.5%, #F7E8D4 16.7%, #F8E9D7 27.9%, #F6E7D3 54.2%, #F7E8D4 75%, #F3E4D0);
+}
+
+// The owner's collagen photograph (2026-09-27); its export carried a white
+// stripe down the right edge, cropped off the file itself (6 px of the
+// original, 2:3 kept), so no rule has to hide it.
+// cat-bg-collagen-beauty.webp, sha256 5c9508523b43
+.ox-tile--art[data-category='collagen-beauty'] {
+  --ox-art-top: 0.05;
+  --ox-art-clear: 0.665;
+  --ox-art-left: 0.39;
+  --ox-art-ground: linear-gradient(to right, #DECDFC, #DFCEFD 54.6%, #DDCCFD 73.4%, #DBCBF9 77.4%, #DBCAFA 86%, #DBCBF9 95.3%, #DCCEFC);
+  --ox-art-edge: linear-gradient(to bottom, #DECFFD, #E0D0FD 2.1%, #DECDFC);
+}
+
+// cat-bg-daily-health.webp, sha256 706cd343ae4a
+.ox-tile--art[data-category='daily-health'] {
+  --ox-art-top: 0.135;
+  --ox-art-clear: 0.675;
+  --ox-art-left: 0.405;
+  --ox-art-ground: linear-gradient(to right, #D3EEFE, #CDECFD 32.4%, #CCEBFE 58.7%, #CCECFC 62%, #CCEBFE 68.7%, #C8E9FE 92.2%, #CAEBFD);
+  --ox-art-edge: linear-gradient(to bottom, #D1EEFD, #CFECFD 22.9%, #D2ECFF 29.2%, #D0EDFD 43.8%, #D2EDFD 54.1%, #CFECFD 59.4%, #CFECFE 89.6%, #D1EFFE);
+}
+
+// The one wide packshot: its band is short, so the width cap (the bar starts
+// at 11% of the art's width) is what sizes it.
+// cat-bg-snacks-bars.webp, sha256 378466e97903
+.ox-tile--art[data-category='snacks-bars'] {
+  --ox-art-top: 0.005;
+  --ox-art-clear: 0.34;
+  --ox-art-left: 0.09;
+  --ox-art-ground: linear-gradient(to right, #D3EEFE, #BAE1FD);
+  --ox-art-edge: linear-gradient(to bottom, #DAF1FD, #D3EEFE);
+}
+
+// cat-bg-accessories.webp, sha256 40c017d48160
+.ox-tile--art[data-category='accessories'] {
+  --ox-art-top: 0.005;
+  --ox-art-clear: 0.67;
+  --ox-art-left: 0.25;
+  --ox-art-ground: linear-gradient(to right, #F9EAD8, #F4E1CC);
+  --ox-art-edge: #F9EAD8;
+}
+
+// THE BANDS, measured 2026-09-29 (card widths with the page's scrollbar,
+// the longest word in each name's column). Every card is square (owner,
+// 2026-09-29: "on mobile card to become shorter in length for a square
+// aspect ratio", then "category cards to also be shorter in height on
+// desktop to be a square aspect ratio").
+// - below 360: two across, 138 to 158; the name at 14px (the longest word 83
+//   wide in a 90px column, two lines at most), the foot 52;
+// - 360 to 767: two across, 158 to 344; the name at 16px (95 in 102 at 360),
+//   the foot 60. 640 to 767 stays two across: five across there leaves a
+//   106px card, whose name column holds no two-line name at a readable size;
+// - 768 to 1023: five across on an 8px gap, 135 to 186; the name at 14px
+//   (83 in 87 at 768), the foot 52;
+// - 1024 to 1279: five across, 176 to 227; the name at 16px, the foot 60;
+// - from 1280: five across, 221 to 240; the icon beside the name (one line:
+//   the longest name, 153, in a 161px column at 1280) and the subline
+//   beside the arrow, the foot 76.
+@media (min-width: 360px) {
   .ox-tile--art {
-    --ox-art-clear: 1;
-    --ox-art-ground: var(--ox-surface);
-
-    gap: 0;
-    overflow: clip;
+    --ox-tile-foot: 60px;
+    --ox-tile-pad: var(--ox-3);
   }
 
-  // The ground under the words, and no hairline: on desktop the photograph
-  // covers this layer whole, so its edge never shows there either.
-  .ox-tile--art::before {
-    background: var(--ox-art-ground);
-    border-width: 0;
+  .ox-tile--art .ox-tile__name {
+    font-size: var(--ox-t-body);
+  }
+}
+
+@media (min-width: 640px) {
+  .ox-cats__grid {
+    gap: var(--ox-4);
+  }
+}
+
+// FIVE ACROSS (owner, 2026-09-29: "fills in 2 rows, 5x2"): the ten type
+// roots fill two rows exactly, on the home and on /collections, so the 4-up
+// grid's centred last pair (and its rule) is gone.
+@media (min-width: 768px) {
+  .ox-cats__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--ox-2);
   }
 
-  .ox-tile__art {
-    flex: none;
+  .ox-tile--art {
+    --ox-tile-foot: 52px;
+    --ox-tile-pad: var(--ox-2);
+  }
+
+  .ox-tile--art .ox-tile__name {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ox-cats__grid {
+    gap: var(--ox-4);
+  }
+
+  .ox-tile--art {
+    --ox-tile-foot: 60px;
+    --ox-tile-pad: var(--ox-3);
+  }
+
+  .ox-tile--art .ox-tile__name {
+    font-size: var(--ox-t-body);
+  }
+}
+
+// From 1280 the tinted card (no curated art) takes its larger padding and
+// image slot, and the art card its full foot: the icon beside the name, the
+// subline and the arrow on the last row. The subline keeps one line of whole
+// items: snippets/tile-line.liquid also writes it as one span per item, and
+// an item that does not fit wraps to a second line the card does not draw,
+// so the line never ends on a cut word or an ellipsis. The one-string copy
+// stays for screen readers only.
+@media (min-width: 1280px) {
+  .ox-cats__grid {
+    gap: var(--ox-6);
+  }
+
+  .ox-tile {
+    min-block-size: 220px;
+    padding: var(--ox-4);
+  }
+
+  .ox-tile__image {
+    block-size: 96px;
+  }
+
+  .ox-tile--art {
+    --ox-tile-foot: 76px;
+    --ox-tile-pad: var(--ox-4);
+
     min-block-size: 0;
-    object-position: 50% 100%;
-    margin-block-end: calc(-150% * (1 - var(--ox-art-clear)));
+    padding: 0;
   }
 
-  .ox-tile__body,
-  [dir='rtl'] .ox-tile__body,
-  [dir='ltr'] .ox-tile__body {
-    position: relative;
-    inset: auto;
-    flex: 1 0 auto;
-    align-self: stretch;
-    inline-size: auto;
-    padding: 0 var(--ox-3) var(--ox-3);
+  .ox-tile__body {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      '. . .'
+      'icon name name'
+      'line line foot';
+    row-gap: var(--ox-1);
+    column-gap: var(--ox-1);
   }
 
-  // The column is the card's full width so names keep to one line where
-  // they can; the foot keeps the desktop column's 62% of the card, so the
-  // English arrow ends under the words as it does there (the percentage
-  // here is of the card less its two var(--ox-3) sides, hence 1.24 of one
-  // side on top). In Arabic its end is the card's left edge either way.
-  .ox-tile--art .ox-tile__foot {
-    inline-size: calc(62% + var(--ox-3) * 1.24);
-    margin-block-start: var(--ox-1);
-    padding-block-start: 0;
+  .ox-tile--art .ox-tile__icon {
+    display: block;
+    grid-area: icon;
+    align-self: center;
+    inline-size: 24px;
+    block-size: 24px;
   }
 
-  // One line of whole items: the item copy is drawn, the one-string copy
-  // stays for screen readers only. The empty first box gives even a first
-  // item too long for the line somewhere to wrap to, rather than be cut.
   .ox-tile--art .ox-tile__line {
     display: block;
+    grid-area: line;
+    align-self: center;
     -webkit-line-clamp: none;
     block-size: calc(var(--ox-lh-caption) * 1em);
   }
@@ -1685,6 +1844,8 @@ body {
     display: inline;
   }
 
+  // The empty first box gives even a first item too long for the line
+  // somewhere to wrap to, rather than be cut.
   .ox-tile--art .ox-tile__items::before {
     content: '';
     display: inline-block;
@@ -1694,145 +1855,6 @@ body {
     display: inline-block;
     vertical-align: top;
     white-space: nowrap;
-  }
-
-  // Measured on the art files (scripts/check-art-tiles.mjs --print): the
-  // clear line, then the bottom-row colours left to right in physical terms
-  // (the photograph does not mirror in English).
-  // cat-bg-protein.webp, sha256 2c3f68871c2e
-  .ox-tile--art[data-category='protein'] {
-    --ox-art-clear: 0.65;
-    --ox-art-ground: linear-gradient(to right, #070707, #0C0C0C 43.7%, #060606);
-  }
-
-  // cat-bg-creatine.webp, sha256 0288b57f892b
-  .ox-tile--art[data-category='creatine'] {
-    --ox-art-clear: 0.815;
-    --ox-art-ground: linear-gradient(to right, #DBFAD2, #D6FAD0 34.9%, #D1F9CB 47.5%, #CBF5C5);
-
-    // A tenth of the art off the top: the tub starts at 19% of it.
-    .ox-tile__art {
-      aspect-ratio: 1024 / 1382;
-    }
-  }
-
-  // cat-bg-pre-workout.webp, sha256 2520123d8dad
-  .ox-tile--art[data-category='pre-workout'] {
-    --ox-art-clear: 0.66;
-    --ox-art-ground: linear-gradient(to right, #DBFCBD, #D9FDBF 20.8%, #D9FDBC 24.4%, #D8FCBC 38%, #D8FDB8 41.6%, #D8FCBA 51.1%, #D6FCB6 54.7%, #D6FCB6 74%, #D3FCB2 79.7%, #D2FCB0);
-  }
-
-  // cat-bg-amino-acids.webp, sha256 894d8994ee7f
-  .ox-tile--art[data-category='amino-acids'] {
-    --ox-art-clear: 0.66;
-    --ox-art-ground: linear-gradient(to right, #F6F6F6, #F5F8F7 19.4%, #F8F8F8 22.7%, #F5F8F7 31.9%, #F6F6F6);
-  }
-
-  // The arrow a step deeper on the orange ground: `--ox-accent-dark`
-  // measures 2.5 to 2.8:1 there where the English arrow sits, off the scrim;
-  // `--ox-accent-deep` clears the 3:1 graphic floor (3.6:1 measured).
-  // cat-bg-omega-3.webp, sha256 c45db45afd9f
-  .ox-tile--art[data-category='omega-3'] {
-    --ox-art-clear: 0.73;
-    --ox-art-ground: linear-gradient(to right, #FEAE87, #FCA87C 20.7%, #FCA87F 24.6%, #FDA779 45.9%, #FCA77C 48.9%, #FDA67C 61.5%, #FDA47A 70.9%, #FCA476 74.1%, #FCA478 85.6%, #FCA275 93%, #FDA578);
-    --ox-tile-arrow: var(--ox-accent-deep);
-  }
-
-  // cat-bg-vitamins-minerals.webp, sha256 ba3220f1504d
-  .ox-tile--art[data-category='vitamins-minerals'] {
-    --ox-art-clear: 0.61;
-    --ox-art-ground: linear-gradient(to right, #F3E5D1, #F3E6D2 12.4%, #F4E4CD 22.5%, #F3E3CD 51.2%, #EFE0C9 61%, #EDDCC4 87.6%, #EDDBC4 95.4%, #EEDDC7);
-  }
-
-  // The owner's collagen photograph (2026-09-27); its export carried a white
-  // stripe down the right edge, cropped off the file itself (6 px of the
-  // original, 2:3 kept), so no rule has to hide it.
-  // cat-bg-collagen-beauty.webp, sha256 5c9508523b43
-  .ox-tile--art[data-category='collagen-beauty'] {
-    --ox-art-clear: 0.64;
-    --ox-art-ground: linear-gradient(to right, #DECDFC, #DFCEFD 54.6%, #DDCCFD 73.4%, #DBCBF9 77.4%, #DBCAFA 86%, #DBCBF9 95.3%, #DCCEFC);
-  }
-
-  // cat-bg-daily-health.webp, sha256 706cd343ae4a
-  .ox-tile--art[data-category='daily-health'] {
-    --ox-art-clear: 0.665;
-    --ox-art-ground: linear-gradient(to right, #D3EEFE, #CDECFD 32.4%, #CCEBFE 58.7%, #CCECFC 62%, #CCEBFE 68.7%, #C8E9FE 92.2%, #CAEBFD);
-  }
-
-  // cat-bg-snacks-bars.webp, sha256 378466e97903
-  .ox-tile--art[data-category='snacks-bars'] {
-    --ox-art-clear: 0.34;
-    --ox-art-ground: linear-gradient(to right, #D3EEFE, #BAE1FD);
-  }
-
-  // cat-bg-accessories.webp, sha256 40c017d48160
-  .ox-tile--art[data-category='accessories'] {
-    --ox-art-clear: 0.655;
-    --ox-art-ground: linear-gradient(to right, #F9EAD8, #F4E1CC);
-  }
-}
-
-@media (min-width: 640px) {
-  .ox-cats__grid {
-    gap: var(--ox-4);
-  }
-}
-
-// From 1280: four across. The card's one angled gesture used to upgrade from
-// the notch to the mark's own corner cut here; coordinator addendum, owner
-// review 2026-09-23, removes it at this tier too (see `.ox-tile`'s own
-// comment above): no clip-path, no `--ox-tile-lean`/`-run`, at this
-// breakpoint or any other.
-@media (min-width: 1280px) {
-  .ox-cats__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--ox-6);
-  }
-
-  // THE LAST ROW (owner, 2026-09-26: snacks-bars and accessories joined the
-  // home grid, so it holds all ten type roots like /collections). Ten at
-  // 4-up ends on a pair: it takes the middle two columns instead of sitting
-  // at the reading start of an otherwise empty row, at the same tile size.
-  // Below 1280 the grid is 2-up and ten fills five rows exactly. Any
-  // trailing pair matches, so adding or dropping a root never leaves an
-  // off-centre half row. One rule for both pages (it used to be scoped to
-  // `.ox-cat-index` in _b4-listing.scss section 14).
-  .ox-cats__grid > :nth-child(4n + 1):nth-last-child(2) {
-    grid-column-start: 2;
-  }
-
-  .ox-tile {
-    min-block-size: 220px;
-    padding: var(--ox-4);
-  }
-
-  // The art card keeps its edge-to-edge photograph at this tier too: the
-  // `padding: var(--ox-4)` just above would otherwise beat section 4b's
-  // `padding: 0` (same specificity, later media block) and inset the
-  // artwork by 16px inside a visible frame (seen at 1440, 2026-09-23).
-  .ox-tile--art {
-    padding: 0;
-  }
-
-  .ox-tile__image {
-    block-size: 96px;
-  }
-
-  // 306x459 (measured above): the art tile's own floor at the 4-up tier.
-  .ox-tile__art {
-    min-block-size: 459px;
-  }
-
-  [dir='rtl'] .ox-tile__body {
-    inset-inline-end: var(--ox-4);
-  }
-
-  [dir='ltr'] .ox-tile__body {
-    inset-inline-start: var(--ox-4);
-  }
-
-  .ox-tile__body {
-    inset-block: var(--ox-4);
   }
 }
 

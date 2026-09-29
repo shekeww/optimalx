@@ -2449,34 +2449,19 @@ nav.breadcrumbs .s-breadcrumb-item button {
   justify-content: center;
   gap: var(--ox-2);
   min-block-size: 158px;
-  // 17 = the old 16 padding + 1 border, so the logo box keeps its exact
-  // width (168.66 at 1440, 105.83 at 390) now that the border is painted.
+  // 17 = the old 16 padding + the 1px painted hairline, kept after the
+  // hairline went so the logo box keeps its exact width (168.66 at 1440,
+  // 105.83 at 390) and no logo moves.
   padding: calc(var(--ox-4) + 1px);
-  // S12 (2026-09-25): no grey fill behind a brand's artwork. The plate is
-  // the card's own white with a hairline, so every logo sits on a clean
-  // ground. On a white page a clipped `border` would vanish along the
-  // diagonal and the cut would read as a broken box, so the hairline is
-  // PAINTED the way `ox-secondary-face` paints an angled button: the
-  // element is the stroke colour, the inset pseudo carries the white fill,
-  // both wear the corner cut. Hover strengthens the stroke only, never a
-  // fill (the same "hover moves the stroke" rule).
-  background: var(--ox-line-2);
+  // No frame (owner, 2026-09-29: "remove the frame/stroke on the brands
+  // cards"): the plate is the card's own white with no hairline, so each
+  // logo sits on a clean ground. The painted stroke of S12 (2026-09-25),
+  // its inset white pseudo and its stronger hover stroke are gone; the plate
+  // keeps its corner cut. No hover fill either, the "hover never fills" rule
+  // stands, so the link's own focus ring is its only state.
+  background: var(--ox-card);
   border: 0;
   @include ox-x-corner(40px);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    z-index: -1;
-    background: var(--ox-card);
-    pointer-events: none;
-    @include ox-x-corner(40px);
-  }
-
-  .ox-brand-tile:hover & {
-    background: var(--ox-line-3);
-  }
 }
 
 // The logo field: ONE FIXED BOX on every tile (owner brief 2026-09-24, item
@@ -2547,19 +2532,11 @@ nav.breadcrumbs .s-breadcrumb-item button {
   .ox-brand-tile__plate {
     @include ox-x-corner(48px);
   }
-
-  .ox-brand-tile__plate::before {
-    @include ox-x-corner(48px);
-  }
 }
 
 @media (min-width: 1280px) {
   .ox-brand-tile__plate {
     min-block-size: 176px;
-    @include ox-x-corner(64px);
-  }
-
-  .ox-brand-tile__plate::before {
     @include ox-x-corner(64px);
   }
 
@@ -4464,11 +4441,10 @@ nav.breadcrumbs .s-breadcrumb-item button {
 // 390 on both, 1296 at 1440 on both. Two classes, because `_b5-pages.scss`
 // loads after this file and its single-class `.ox-page` would win a tie.
 //
-// THE LAST ROW. This page holds all ten type roots, and so does the home
-// grid since 2026-09-26, so from 1280 the last row carries two tiles
-// (`snacks-bars`, `accessories`), placed in the middle two columns. The rule
-// now lives once, unscoped, in _b2-home.scss section 4 (the grid's own
-// 1280 tier), and serves both pages.
+// THE ROWS. This page holds all ten type roots, and so does the home grid
+// since 2026-09-26: two across below 768 and five across in two full rows
+// from 768, square cards at every width (owner, 2026-09-29), the one grid
+// in _b2-home.scss sections 4 and 4b serving both pages.
 // ---------------------------------------------------------------------------
 .ox-page.ox-cat-index {
   max-inline-size: calc(var(--ox-container) + 2 * var(--ox-gutter));
