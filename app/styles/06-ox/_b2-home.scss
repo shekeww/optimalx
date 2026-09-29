@@ -2106,15 +2106,14 @@ body {
   object-position: 40% 0;
 }
 
-// The ideal-weight frame's lower half is a creatine tub whose label the
-// card's "shop now" and arrow sat on (measured at 390, 2026-09-29), so the
-// frame is drawn at twice the card's height from its top: the tub (from 52 %
-// of the file's height) falls below the card's edge, and the man with the
-// shaker fills the card, framed on his face.
+// Ideal weight (owner, 2026-09-29: "replace the background with a relevant
+// background"): the branch's advisory room (`store-advisory-room.webp`), where
+// the weight management programme starts with the InBody measurement and the
+// advice; the old frame repeated the recovery athlete with a creatine tub. The
+// advisor at the desk sits right of centre; the frosted glass carries the X
+// mark, so it keeps its orientation in English (the list above).
 .ox-goal[data-goal='goal-ideal-weight'] .ox-goal__photo:not([data-own-photo]) {
-  inset-block: 0 auto;
-  block-size: 200%;
-  object-position: 65% 0;
+  object-position: 72% 50%;
 }
 
 .ox-goal__scrim {

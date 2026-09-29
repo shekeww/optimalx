@@ -2234,6 +2234,69 @@ body.is-sticky-product-bar.product-single {
   }
 }
 
+// OPTION STATES (owner, 2026-09-29: "the unavailable variant should show that
+// it cant be picked"; snippets/variant-swatches.liquid's header, assets/ox.js
+// initOptionStates()). The line under a value: sold out, unavailable with the
+// other choice, or what a pick changes. It shares one column with the name
+// beside the square (`__body`); in a size chip it takes the price's place
+// (the price returns with the state).
+.ox-optchip__body {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.ox-optchip__note {
+  display: block;
+  font-size: var(--ox-t-micro);
+  font-weight: var(--ox-w-read);
+  line-height: 18px;
+  color: var(--ox-fg-2);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.ox-optchip:has(.ox-optchip__note:not([hidden])) {
+  .ox-optchip__price,
+  .ox-optchip__save {
+    display: none;
+  }
+}
+
+// A group that can show a line (a product with gaps or a sold-out variant)
+// keeps every chip a line taller from the first paint: a line that appears
+// with a later choice never moves the page (18 + 18 + 12 + the border).
+.ox-optchips--states .ox-optchip {
+  min-block-size: 50px;
+}
+
+// Not sold with the other choice (`is-na`): the radio is disabled, so the
+// chip reads as a place, not a button: no plate, a dashed edge, the square
+// faded, the not-allowed pointer. The text stays above 4.5:1 on the page
+// ground although a disabled control is exempt from the contrast floor.
+.ox-optchip.is-na {
+  background: transparent;
+  border: 1px dashed var(--ox-line-3);
+  color: var(--ox-fg-3);
+  cursor: not-allowed;
+
+  .ox-optchip__input {
+    cursor: not-allowed;
+  }
+
+  .ox-optchip__swatch {
+    opacity: 0.35;
+  }
+}
+
+@media (hover: hover) {
+  .ox-optchip.is-na:hover {
+    border-color: var(--ox-line-3);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // 10. The three trust items (design region 26)
 // ---------------------------------------------------------------------------
