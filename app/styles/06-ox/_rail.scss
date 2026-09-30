@@ -407,6 +407,33 @@ $ox-product-rail-tracks: '.ox-rail__track.ox-cat-rail__scroller, .ox-related__bo
   }
 }
 
+// THE DESKTOP BLEED OF A HOME CATEGORY SECTION (owner, 2026-10-01: "the
+// carousels in category sections ... in desktop they should have more
+// horizontal space in their rows"). From 1024 the featured row and the
+// "more from" rail run on past the container to the screen edge at their
+// reading end, as they already do below 1024 (THE BLEED in
+// sections/ox-category-rail.liquid): the track's box takes the distance to
+// the screen edge with a negative end margin and its end padding gives the
+// same back, so its content box, and with it every card's width (a share of
+// that box), stays the container's; the first card still starts on the
+// heading's line, the last still ends on the container's line when the rail
+// is scrolled to its end, and a wide screen shows more of the row (about one
+// more rail card at 1920, where the 1296 container leaves 305 px a side).
+// The section clips what 100vw adds under a classic scrollbar, so the page
+// never scrolls sideways. The cover row keeps the container (its own
+// measured composition, snippets/category-covers.liquid).
+@media (min-width: 1024px) {
+  .ox-cat-rail {
+    overflow-x: clip;
+  }
+
+  .ox-cat-rail .ox-cfeat__track,
+  .ox-cat-rail .ox-rail__track.ox-cat-rail__scroller {
+    margin-inline-end: calc(50% - 50vw);
+    padding-inline-end: calc(50vw - 50%);
+  }
+}
+
 // The head pair of a product rail at every width (see above). The category
 // rail's row under the featured carousel shows its pair from its own
 // stylesheet (sections/ox-category-rail.liquid); these two are the product
