@@ -1403,9 +1403,9 @@ body {
 //    to be smaller so it fills in 2 rows, 5x2, and on mobile card to become
 //    shorter in length for a square aspect ratio").
 // ---------------------------------------------------------------------------
-// ONE COMPOSITION AT EVERY WIDTH. The card is square (two across below 768,
-// five across from 768), so its height never waits for an image and a row's
-// cards are equal. The words sit in a foot of fixed
+// ONE COMPOSITION AT EVERY WIDTH. The card is square two across below 768
+// and 4:5 five across from 768 (2026-09-30), so its height never waits for
+// an image and a row's cards are equal. The words sit in a foot of fixed
 // height along the card's bottom edge (`--ox-tile-foot`), on the art's own
 // ground, and the photograph is fitted into the rest:
 // - a band of the art, from `--ox-art-top` (above the packshot) to
@@ -1757,6 +1757,14 @@ body {
 // FIVE ACROSS (owner, 2026-09-29: "fills in 2 rows, 5x2"): the ten type
 // roots fill two rows exactly, on the home and on /collections, so the 4-up
 // grid's centred last pair (and its rule) is gone.
+// LARGER CARDS (owner, 2026-09-30: "category cards to be larger on desktop
+// both horizontally by having reduced gap between the cards, and
+// vertically by extending in height by 25%"): the five-across card is 4:5,
+// a quarter taller than it is wide, and from 1024 the gap is 8px (it was
+// 16, and 24 from 1280), so each card is wider too (182.6 at 1024 and
+// 252.8 from 1440, from 176.2 and 240). 768 to 1023 already had the 8px
+// gap and takes the same 4:5, so the 5x2 grid has one shape from 768 up;
+// the photograph's band grows with the card and the words' foot stays.
 @media (min-width: 768px) {
   .ox-cats__grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1764,6 +1772,7 @@ body {
   }
 
   .ox-tile--art {
+    aspect-ratio: 4 / 5;
     --ox-tile-foot: 60px;
     --ox-tile-pad: var(--ox-2);
     --ox-tile-lh: calc(14px * 1.3);
@@ -1777,7 +1786,7 @@ body {
 
 @media (min-width: 1024px) {
   .ox-cats__grid {
-    gap: var(--ox-4);
+    gap: var(--ox-2);
   }
 
   .ox-tile--art {
@@ -1858,7 +1867,7 @@ body {
 // stays for screen readers only.
 @media (min-width: 1280px) {
   .ox-cats__grid {
-    gap: var(--ox-6);
+    gap: var(--ox-2);
   }
 
   .ox-tile {
