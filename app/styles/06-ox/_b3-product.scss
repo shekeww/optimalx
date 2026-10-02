@@ -1322,6 +1322,13 @@
   padding-block-start: var(--ox-4);
   margin-block-start: var(--ox-4);
   border-block-start: 1px solid var(--ox-bd);
+
+  // The facts toggle (theme round): [hidden] must beat the display above;
+  // the stylesheet's own [hidden] reset ties on specificity and loses on
+  // order, so a hidden calculator stayed visible (review blocker 1).
+  &[hidden] {
+    display: none;
+  }
 }
 
 .ox-supply__title {
@@ -2802,6 +2809,12 @@ body.is-sticky-product-bar.product-single {
   background: var(--ox-surface);
   border: 1px solid var(--ox-bd);
   border-radius: var(--ox-r-4, 16px);
+
+  // [hidden] must beat the display above (see .ox-supply): covers the
+  // nutrition panel's JS hide and main-addresses' AddAddress panel.
+  &[hidden] {
+    display: none;
+  }
 }
 
 .ox-panel__head {
@@ -2858,6 +2871,12 @@ body.is-sticky-product-bar.product-single {
   min-block-size: 36px;
   padding-block: var(--ox-2);
   border-block-end: 1px solid var(--ox-bd);
+
+  // [hidden] must beat the display above (see .ox-supply): the size and
+  // servings rows hide per variant.
+  &[hidden] {
+    display: none;
+  }
 }
 
 .ox-details__key {
@@ -2978,6 +2997,12 @@ body.is-sticky-product-bar.product-single {
   font-weight: var(--ox-w-quiet);
   color: var(--ox-ink-4);
   text-align: end;
+
+  // [hidden] must beat the display above (see .ox-supply): one serving
+  // size caption per facts group.
+  &[hidden] {
+    display: none;
+  }
 }
 
 // Two columns, as the approved image draws them: the nutrient at the inline
@@ -4102,6 +4127,12 @@ label.ox-fbt__row {
   flex-direction: column;
   gap: var(--ox-2);
   min-inline-size: 0;
+
+  // [hidden] must beat the display above (see .ox-supply): one chip block
+  // per facts group.
+  &[hidden] {
+    display: none;
+  }
 }
 
 .ox-quick__list {
@@ -4429,6 +4460,12 @@ label.ox-fbt__row {
   &:last-child {
     border-block-end: 0;
     padding-block-end: 0;
+  }
+
+  // [hidden] must beat the display above (see .ox-supply): the caffeine
+  // line belongs to one facts group only.
+  &[hidden] {
+    display: none;
   }
 }
 
